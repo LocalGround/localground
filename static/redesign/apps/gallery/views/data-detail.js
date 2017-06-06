@@ -29,7 +29,8 @@ define([
         getTemplate: function () {
             if (this.dataType == "photos") {
                 return Handlebars.compile(PhotoTemplate);
-            } else if (this.dataType == "audio") {
+            }
+            if (this.dataType == "audio") {
                 return Handlebars.compile(AudioTemplate);
             }
             return Handlebars.compile(SiteTemplate);
@@ -100,7 +101,7 @@ define([
             this.app.vent.trigger("add-new-marker", this.model);
         },
 
-        deleteMarkerTrigger: function(){
+        deleteMarkerTrigger: function () {
             this.app.vent.trigger("delete-marker", this.model);
         },
 
@@ -134,8 +135,7 @@ define([
             this.render();
         },
         templateHelpers: function () {
-
-            var lat, lng, context;
+            var lat, lng;
             //sets filler html string if a marker location has not been set
             if (this.model.get("geometry")) {
                 lat =  this.model.get("geometry").coordinates[1].toFixed(4);
@@ -153,7 +153,7 @@ define([
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
-            var c, i, f;
+            var c;
             if (this.model.get("children") && this.model.get("children").photos) {
                 c = new Carousel({
                     model: this.model,
@@ -172,9 +172,6 @@ define([
             }
         },
         editRender: function () {
-            var that = this,
-                audio_attachments = [],
-                player;
             if (this.form) {
                 this.form.remove();
             }
@@ -183,23 +180,6 @@ define([
                 schema: this.model.getFormSchema(),
                 app: this.app
             }).render();
-
-            /*if (this.dataType.indexOf("form_") != -1 || this.dataType == "markers") {
-                audio_attachments = [];
-                if (this.model.get("children") && this.model.get("children").audio) {
-                    audio_attachments = this.model.get("children").audio.data;
-                }
-                _.each(audio_attachments, function (item) {
-                    var $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
-                    player = new AudioPlayer({
-                        model: new Audio(item),
-                        audioMode: "basic",
-                        app: that.app
-                    });
-                    $elem.append(player.$el[0]);
-                });
-            }*/
-            //https://github.com/powmedia/backbone-forms#custom-editors
             this.$el.find('#model-form').append(this.form.$el);
         },
 
@@ -221,8 +201,8 @@ define([
         },
 
         rotatePhoto: function (e) {
-            var $elem = $(e.target);
-            var rotation = $elem.attr("rotation");
+            var $elem = $(e.target),
+                rotation = $elem.attr("rotation");
             this.$el.find(".rotate-message").show();
             this.$el.find(".edit-photo").css({
                 filter: "brightness(0.4)"

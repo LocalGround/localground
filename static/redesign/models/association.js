@@ -16,7 +16,8 @@ define(["models/base"], function (Base) {
             */
             var model = data.model,
                 attachmentType = data.attachmentType,
-                attachmentID = data.attachmentID;
+                attachmentID = data.attachmentID,
+                formID;
             if (!model) {
                 console.error("Association requires a 'model' argument.");
                 return false;
@@ -29,7 +30,8 @@ define(["models/base"], function (Base) {
 			if (model.get("overlay_type") === "marker") {
 	            this.urlRoot = '/api/0/markers/' + model.id + '/' + attachmentType + '/';
 			} else if (model.get("overlay_type").indexOf("form_") != -1) {
-                this.urlRoot = '/api/0/forms/' + model.get("form_id") + '/data/' + model.id + "/" + attachmentType + '/';
+                formID = model.get("overlay_type").split("_")[1];
+                this.urlRoot = '/api/0/forms/' + formID + '/data/' + model.id + "/" + attachmentType + '/';
 			}
             if (attachmentID) {
                 this.idAttribute = 'object_id';

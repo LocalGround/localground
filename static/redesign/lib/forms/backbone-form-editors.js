@@ -204,6 +204,7 @@ define([
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
             this.renderAudioPlayers();
             this.enableMediaReordering();
+            console.log(this.$el.html());
             return this;
         },
         renderAudioPlayers: function () {

@@ -59,11 +59,8 @@ define(["models/base",
 
             attach: function (model, order, callbackSuccess, callbackError) {
                 var association = new Association({
-                    overlay_type: this.get("overlay_type"),
-                    form_id: parseInt(this.get("overlay_type").split("_")[1], 10),
-                    record_id: this.get("id"),
-                    model_type: model.getKey(),
-                    source_id: this.id
+                    model: this,
+                    attachmentType: model.getKey()
                 });
                 association.save({ object_id: model.id, ordering: order }, {
                     success: callbackSuccess,
@@ -71,21 +68,13 @@ define(["models/base",
                 });
             },
 
-            detach: function (model_id, key, callback) {
+            detach: function (attachmentType, attachmentID, callback) {
                 var association = new Association({
-                    overlay_type: this.get("overlay_type"),
-                    object_id: model_id,
-                    form_id: parseInt(this.get("overlay_type").split("_")[1], 10),
-                    record_id: this.get("id"),
-                    model_type: key,
-                    source_id: this.id
+                    model: this,
+                    attachmentType: attachmentType,
+                    attachmentID: attachmentID
                 });
-                association.destroy({
-                    success: callback,
-                    error: function () {
-                        alert("Item not deleted");
-                    }
-                });
+                association.destroy({success: callback});
             },
             getFormSchema: function () {
                 var fields = this.get("fields"),

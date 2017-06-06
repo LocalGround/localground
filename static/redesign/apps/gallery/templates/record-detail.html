@@ -71,13 +71,13 @@
                 </button>
             </div>
         {{/if}}
-        {{#ifnotequal lat "undefined"}}
+        {{#if lat }}
             <div class="latlong-container">
             <p class="latlong" style="font-style: italic">
                 ({{lat}}, {{lng}})
             </p>
             </div>
-        {{/ifnotequal}}
+        {{/if}}
     {{/ifequal}}
     
 
