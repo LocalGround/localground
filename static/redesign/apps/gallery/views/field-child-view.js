@@ -12,6 +12,7 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
             this.setRatingsFromModel();
+            this.setChoicesFromModel();
         },
         modelEvents: {
             'draw': 'render'
@@ -22,11 +23,11 @@ define([
             'blur input.fieldname': 'setAlias',
             'blur input.rating-value': 'saveNewRating',
             'blur input.rating-name': 'saveNewRating',
-            'blur input.choice': 'saveNewRating',
+            'blur input.choice': 'saveNewChoice',
             'change select.fieldType': 'setDataType',
             'click .add-new-rating': 'addNewRating',
             'click .remove-rating': 'removeRating',
-            'click .add-new-choice': 'addNewCoice',
+            'click .add-new-choice': 'addNewChoice',
             'click .remove-choice': 'removeChoice'
         },
         templateHelpers: function () {
@@ -51,11 +52,13 @@ define([
 
         setRatingsFromModel: function () {
             if (this.model.get("data_type") != "rating") { return; }
+            console.log("Loading Ratings");
             this.ratingsList = this.model.get("extras") || [];
         },
 
         setChoicesFromModel: function () {
             if (this.model.get("data_type") != "choice") { return; }
+            console.log("Loading Choices");
             this.choicesList = this.model.get("extras") || [];
         },
 
@@ -78,9 +81,9 @@ define([
         removeChoice: function (e) {
             e.preventDefault();
             if (window.confirm("Want to remove choice?")){
-                var choice = $(e.target).closest(".choice");
-                $(choice).remove();
-                //this.updateRatingList();
+                var choice_row = $(e.target).closest(".choice-row");
+                $(choice_row).remove();
+                this.updateChoiceList();
             }
         },
 
@@ -117,27 +120,29 @@ define([
             //AN attempt to solve the problem, but this.ratingsList is undefined
             // despite that it is an empty array, therefore nothing can be pushed
             //console.log("update ratings list called");
-            if (this.$el.find('.choice').length == 0) { return; }
+            if (this.$el.find('.choice-row').length == 0) { return; }
             this.choicesList = [];
             var that = this,
-                $rows = this.$el.find('.choice'),
+                $rows = this.$el.find('.choice-row'),
                 $row;
             $rows.each(function () {
                 $row = $(this);
 
-                console.log($row.val());
+                console.log($row);
+                console.log($row.find(".choice").val());
 
-                /*
+                ///*
                 that.choicesList.push({
-                    name: $row.val()
+                    name: $row.find(".choice").val()
                 });
-                */
+                //*/
             });
-            //console.log(this.choicesList);
-            //this.saveChoicesToModel();
+            console.log(this.choicesList);
+            this.saveChoicesToModel();
         },
 
         addNewRating: function (e) {
+
             this.ratingsList.push({
                 name: "",
                 value: ""
@@ -160,6 +165,8 @@ define([
             this.model.set("data_type", this.$el.find(".fieldType").val());
             if (this.model.get("data_type") == "rating") {
                 this.render();
+            } else if (this.model.get("data_type") == "choice") {
+                this.render();
             }
         },
         saveRatingsToModel: function () {
@@ -170,7 +177,7 @@ define([
 
         saveChoicesToModel: function () {
 
-            this.model.set("extras", this.ratingsList);
+            this.model.set("extras", this.choicesList);
         },
         saveField: function () {
             var that = this,
@@ -221,7 +228,6 @@ define([
             if (fieldType === "-1") {
                 this.model.errorFieldType = true;
             }
-            // Go through an array of rating rows to check for empty names and values
         },
 
         validateRating: function () {
@@ -247,10 +253,10 @@ define([
             // No need to check if incorrect type
             if (this.model.get("data_type") != "choice") return true;
             var errors = false;
-            for (var i = 0; i < this.ratingsList.length; ++i){
-                console.log(this.ratingsList[i]);
-                if (this.ratingsList[i].name.trim() === ""){
-                    this.ratingsList[i].errorRatingName = true;
+            for (var i = 0; i < this.choicesList.length; ++i){
+                console.log(this.choicesList[i]);
+                if (this.choicesList[i].name.trim() === ""){
+                    this.choicesList[i].errorRatingName = true;
                     errors = true;
                 }
             }
@@ -267,6 +273,13 @@ define([
                 var ratingTextBoxes = this.$el.find('.rating');
                 ratingTextBoxes.each(function (index) {
                     $(this).val(that.ratingsList[index]);
+                });
+            }
+
+            else if (this.choicesList){
+                var choiceTextBoxes = this.$el.find('.choice');
+                choiceTextBoxes.each(function (index) {
+                    $(this).val(that.choicesList[index]);
                 });
             }
 

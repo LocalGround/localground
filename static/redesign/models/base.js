@@ -245,6 +245,14 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                         lng: geoJSON.coordinates[0]
                     });
                 }
+            },
+            getFormSchema: function () {
+                return {
+                    name: { type: 'TextArea', title: "Name" },
+                    caption:  { type: 'TextArea', title: "Caption" },
+                    attribution: { type: 'TextArea', title: "Attribution" },
+                    tags: { type: 'List', itemType: 'Text' }
+                };
             }
         });
         return Base;

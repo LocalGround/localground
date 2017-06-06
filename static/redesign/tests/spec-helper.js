@@ -365,6 +365,26 @@ define(
                             }
                         ],
                         "data_type": "rating"
+                    },
+                    {
+                        "id": 5,
+                        "form": 1,
+                        "col_alias": "Test Choice",
+                        "col_name": "test_choice",
+                        "is_display_field": false,
+                        "ordering": 5,
+                        "extras": [
+                            {
+                                "name": "Red"
+                            },
+                            {
+                                "name": "Green"
+                            },
+                            {
+                                "name": "Blue"
+                            }
+                        ],
+                        "data_type": "choice"
                     }]
             });
             this.photos = new Photos([
@@ -396,6 +416,32 @@ define(
                 new Record({ id: 1, test_text: "Blue team", display_name: "Blue team", tags: ['my house'], test_integer: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, photo_count: 3, audio_count: 1 }),
                 new Record({id: 2, test_text: "Green team", tags: ['friend\'s house', 'tag1'], test_integer: 8, project_id: 1, overlay_type: "form_1", photo_count: 1, audio_count: 2 }),
                 new Record({id: 3, test_text: "Red team", tags: ['coffee shop'], test_integer: 12, project_id: 2, overlay_type: "form_1", photo_count: 2, audio_count: 3 })
+            ], { 'url': 'dummy/url' });
+            this.form_2 = new Records([
+                new Record({ id: 2,
+                    overlay_type: "form_2",
+                    geometry: null,
+                    project_id: 1,
+                    rating_1: 1,
+                    choice_1: "Beta",
+                    choice_2: "Delta",
+                    new_rating: 2,
+                    new_choice: "Hello",
+                    photo_count: 0,
+                    audio_count: 0
+                }),
+                new Record({ id: 3,
+                    overlay_type: "form_2",
+                    geometry: null,
+                    project_id: 1,
+                    rating_1: 2,
+                    choice_1: "Alpha",
+                    choice_2: "Charlie",
+                    new_rating: 1,
+                    new_choice: "World",
+                    photo_count: 0,
+                    audio_count: 0
+                }),
             ], { 'url': 'dummy/url' });
 
             this.fields = this.form.fields;

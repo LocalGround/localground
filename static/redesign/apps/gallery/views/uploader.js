@@ -178,6 +178,7 @@ define ([
             },
 
             addModels: function () {
+                console.log('uploader: addModels');
                 var selectedModels = [];
                 this.collection.each(function (model) {
                     if (model.get("isSelected")) {

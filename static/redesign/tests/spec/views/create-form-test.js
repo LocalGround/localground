@@ -67,7 +67,7 @@ define([
 
             it("Put fields into collection", function () {
                 expect(newCreateForm.collection).toEqual(newCreateForm.model.fields);
-                expect(newCreateForm.collection.length).toEqual(4);
+                expect(newCreateForm.collection.length).toEqual(newCreateForm.model.fields.length);
             });
         });
 
@@ -230,7 +230,7 @@ define([
 
                     //save the form:
                     newCreateForm.saveFormSettings();
-                    expect(Field.prototype.save).toHaveBeenCalledTimes(4);
+                    expect(Field.prototype.save).toHaveBeenCalledTimes(5);
                     expect(newCreateForm.collection.at(0).get("col_alias")).toBe("new field 1");
                     expect(newCreateForm.collection.at(1).get("col_alias")).toBe("new field 2");
                     expect(newCreateForm.collection.at(2).get("col_alias")).toBe("new field 3");

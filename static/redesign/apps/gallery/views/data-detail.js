@@ -1,13 +1,8 @@
 define([
     "jquery",
-    "backbone",
     "underscore",
     "handlebars",
     "marionette",
-    "models/association",
-    "models/audio",
-    "apps/gallery/views/media_browser",
-    "apps/gallery/views/add-media",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
     "text!../templates/record-detail.html",
@@ -15,11 +10,9 @@ define([
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
-    "form", //extends Backbone
-    "form-list"
-], function ($, Backbone, _, Handlebars, Marionette, Association, Audio,
-             MediaBrowser, AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
-             MapImageTemplate, AudioPlayer, Carousel, Icon) {
+    "lib/forms/backbone-form"
+], function ($, _, Handlebars, Marionette, PhotoTemplate, AudioTemplate, SiteTemplate,
+             AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -27,8 +20,6 @@ define([
             'click .edit-mode': 'switchToEditMode',
             'click .save-model': 'saveModel',
             'click .delete-model': 'deleteModel',
-            'click #add-media-button': 'showMediaBrowser',
-            'click .detach_media': 'detachModel',
             'click .hide': 'hideMapPanel',
             'click .show': 'showMapPanel',
             'click .rotate-left': 'rotatePhoto',
@@ -39,40 +30,19 @@ define([
         getTemplate: function () {
             if (this.dataType == "photos") {
                 return Handlebars.compile(PhotoTemplate);
-            } else if (this.dataType == "audio") {
+            }
+            if (this.dataType == "audio") {
                 return Handlebars.compile(AudioTemplate);
             } else if (this.dataType == "map_images") {
                 return Handlebars.compile(MapImageTemplate);
             }
             return Handlebars.compile(SiteTemplate);
         },
-        showMediaBrowser: function () {
-            /*
-              I also made a js class that is like data-list.js but has only
-              photos and audio as options.
-
-              I am likely to set default collection to photos
-              by assigning its data type to be photos
-            */
-            var addMediaLayoutView = new AddMedia({
-                app: this.app
-            });
-            this.app.vent.trigger("show-modal", {
-                title: 'Media Browser',
-                width: 1100,
-                height: 400,
-                view: addMediaLayoutView,
-                saveButtonText: "Add",
-                showSaveButton: true,
-                saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
-            });
-        },
         initialize: function (opts) {
             _.extend(this, opts);
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
-            this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
         },
 
@@ -140,7 +110,7 @@ define([
             this.app.vent.trigger("add-new-marker", this.model);
         },
 
-        deleteMarkerTrigger: function(){
+        deleteMarkerTrigger: function () {
             this.app.vent.trigger("delete-marker", this.model);
         },
 
@@ -161,49 +131,6 @@ define([
         modelEvents: {
             change: "render"
         },
-
-        attachModels: function (models) {
-            var that = this;
-            if (this.model.get("id")) {
-                this.attachMedia(models);
-            } else {
-                this.model.save(null, {
-                    success: function () {
-                        that.attachMedia(models);
-                        that.model.collection.add(that.model);
-                    }
-                });
-            }
-            this.app.vent.trigger('hide-modal');
-        },
-
-        attachMedia: function (models) {
-            var that = this, i, ordering;
-            for (i = 0; i < models.length; ++i) {
-                ordering = this.model.get("photo_count") + this.model.get("audio_count");
-                this.model.attach(models[i], (ordering + i + 1), function () {
-                    that.model.fetch({reset: true});
-                });
-            }
-        },
-        /*
-          Problem stems from that the model is undefined
-          and it has to be defined inside the function
-        */
-        detachModel: function (e) {
-            var that = this,
-                $elem = $(e.target),
-                dataType = $elem.attr("data-type"),
-                dataID = $elem.attr("data-id"),
-                name = $elem.attr("media-name");
-            if (!confirm("Are you sure you want to detach " +
-                    name + " from this site? Note that this will not delete the media file -- it just detaches it.")) {
-                return;
-            }
-            this.model.detach(dataID, dataType, function () {
-                that.model.fetch({reset: true});
-            });
-        },
         switchToViewMode: function () {
             this.app.mode = "view";
             this.render();
@@ -217,14 +144,12 @@ define([
             this.render();
         },
         templateHelpers: function () {
-
-            var lat, lng, context;
-            //sets filler html string if a marker location has not been set
+            var lat, lng;
             if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
-                lat = this.model.get("geometry").coordinates[1].toFixed(4);
-                lng = this.model.get("geometry").coordinates[0].toFixed(4);
+                lat =  this.model.get("geometry").coordinates[1].toFixed(4);
+                lng =  this.model.get("geometry").coordinates[0].toFixed(4);
             }
-            context = {
+            return {
                 mode: this.app.mode,
                 dataType: this.dataType,
                 audioMode: "detail",
@@ -233,7 +158,6 @@ define([
                 lat: lat,
                 lng: lng
             };
-            return context;
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
@@ -256,87 +180,14 @@ define([
             }
         },
         editRender: function () {
-            var fields,
-                i,
-                field,
-                type,
-                name,
-                title,
-                that = this,
-                audio_attachments = [],
-                player;
-            if (this.dataType.indexOf('form_') != -1) {
-                fields = {};
-                for (i = 0; i < this.model.get("fields").length; i++) {
-                    /* https://github.com/powmedia/backbone-forms */
-                    field = this.model.get("fields")[i];
-                    field.val = this.model.get(field.col_name);
-                    type = field.data_type.toLowerCase();
-                    name = field.col_name;
-                    title = field.col_alias;
-                    switch (type) {
-                    case "rating":
-                        var options = [],
-                            extras = JSON.parse(field.extras),
-                            j;
-                        for (j = 0; j < extras.length; j++) {
-                            options.push({
-                                val: extras[j].value,
-                                label: extras[j].name
-                            });
-                        }
-                        fields[name] = { type: 'Select', title: title, options: options };
-                        break;
-                    case "choice":
-                        var options = JSON.parse(field.extras);
-                        //dummy options for testing
-                        options = ["red", "orange", "green", "blue", "yellow", "purple"];
-                        fields[name] = { type: 'Select', title: title, options: options };
-                        break;
-                    case "date-time":
-                        // TODO: make this a date picker / calendar like the spreadsheet
-                        // Samples:
-                        // https://github.com/dbushell/Pikaday
-                        // https://coderwall.com/p/70pw4a/datepicker-for-backbone-form
-                        fields[name] = { type: 'DateTime', title: title };
-                        break;
-                    case "boolean":
-                        fields[name] = { type: 'Checkbox', title: title };
-                        break;
-                    case "integer":
-                    case "decimal":
-                        fields[name] = { type: 'Number', title: title };
-                        break;
-                    default:
-                        fields[name] = { type: 'TextArea', title: title };
-                    }
-                }
-                this.form = new Backbone.Form({
-                    model: this.model,
-                    schema: fields
-                }).render();
-            } else {
-                this.form = new Backbone.Form({
-                    model: this.model,
-                    schema: this.model.schema
-                }).render();
+            if (this.form) {
+                this.form.remove();
             }
-            if (this.dataType.indexOf("form_") != -1 || this.dataType == "markers") {
-                audio_attachments = [];
-                if (this.model.get("children") && this.model.get("children").audio) {
-                    audio_attachments = this.model.get("children").audio.data;
-                }
-                _.each(audio_attachments, function (item) {
-                    var $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
-                    player = new AudioPlayer({
-                        model: new Audio(item),
-                        audioMode: "basic",
-                        app: that.app
-                    });
-                    $elem.append(player.$el[0]);
-                });
-            }
-            //https://github.com/powmedia/backbone-forms#custom-editors
+            this.form = new DataForm({
+                model: this.model,
+                schema: this.model.getFormSchema(),
+                app: this.app
+            }).render();
             this.$el.find('#model-form').append(this.form.$el);
         },
 
@@ -346,7 +197,6 @@ define([
             } else {
                 this.editRender();
             }
-            // render audio player if audio mode:
             if (this.dataType == "audio") {
                 var player = new AudioPlayer({
                     model: this.model,
@@ -356,52 +206,11 @@ define([
                 this.$el.find(".player-container").append(player.$el);
             }
 
-            // The Column arranger functions go here
-            this.sortMediaTable();
         },
 
-        sortMediaTable: function(){
-            //http://stackoverflow.com/questions/13885665/how-to-exclude-an-element-from-being-dragged-in-sortable-list
-            var sortableFields = this.$el.find(".attached-media-container");
-            var that  = this;
-            sortableFields.sortable({
-                helper: this.fixHelper,
-                items : '.attached-container',
-                //cancel: ''//,
-                // Still need work on getting the right models since below code returns undefined error
-                //*
-                update: function (event, ui) {
-                    var newOrder = ui.item.index(),
-                        modelID = ui.item.find('.detach_media').attr('data-id'),
-                        association;
-
-                    association = new Association({
-                        form_id: that.model.get("overlay_type").split("_")[1],
-                        overlay_type: that.model.get("overlay_type"),
-                        record_id: that.model.get("id"),
-                        model_type: "photos",
-                        object_id: modelID,
-                        id: modelID
-                    });
-                    association.save({ ordering: newOrder}, {patch: true});
-                }
-            }).disableSelection();
-        },
-
-        // Fix helper with preserved width of cells
-        fixHelper: function(e, ui){
-            // I want to apply changes made to the media only, not the add media
-            // However, by default it does sort all the items around,
-            // even with target name tag inside children
-            ui.children().each(function(){
-                $(this).width($(this).width());
-            });
-            return ui;
-        },
-
-        rotatePhoto: function(e){
-            var $elem = $(e.target);
-            var rotation = $elem.attr("rotation");
+        rotatePhoto: function (e) {
+            var $elem = $(e.target),
+                rotation = $elem.attr("rotation");
             this.$el.find(".rotate-message").show();
             this.$el.find(".edit-photo").css({
                 filter: "brightness(0.4)"

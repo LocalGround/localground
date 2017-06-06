@@ -47,6 +47,7 @@ require(['boot'], function () {
         'spec/views/project-item-test.js',
         'spec/views/share-form-test.js',
         'spec/views/project-user-test.js',
+        'spec/views/data-detail-test.js',
 
         // PRINT
         'spec/views/generate-print-test.js',
@@ -61,8 +62,10 @@ require(['boot'], function () {
         //MAP Editor
         'spec/views/map-editor/marker-listing-manager-test.js',
         'spec/views/map-editor/marker-listing-test.js',
-        'spec/views/map-editor/marker-listing-detail-test.js'
+        'spec/views/map-editor/marker-listing-detail-test.js',
 
+        //FORMS
+        'spec/lib/form-field-date-time-test.js'
     ];
 
     require(specs, function () {

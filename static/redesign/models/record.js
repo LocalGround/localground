@@ -59,11 +59,8 @@ define(["models/base",
 
             attach: function (model, order, callbackSuccess, callbackError) {
                 var association = new Association({
-                    overlay_type: this.get("overlay_type"),
-                    form_id: parseInt(this.get("overlay_type").split("_")[1], 10),
-                    record_id: this.get("id"),
-                    model_type: model.getKey(),
-                    source_id: this.id
+                    model: this,
+                    attachmentType: model.getKey()
                 });
                 association.save({ object_id: model.id, ordering: order }, {
                     success: callbackSuccess,
@@ -71,27 +68,74 @@ define(["models/base",
                 });
             },
 
-            detach: function (model_id, key, callback) {
+            detach: function (attachmentType, attachmentID, callback) {
                 var association = new Association({
-                    overlay_type: this.get("overlay_type"),
-                    object_id: model_id,
-                    form_id: parseInt(this.get("overlay_type").split("_")[1], 10),
-                    record_id: this.get("id"),
-                    model_type: key,
-                    source_id: this.id
+                    model: this,
+                    attachmentType: attachmentType,
+                    attachmentID: attachmentID
                 });
-                association.destroy({
-                    success: callback,
-                    error: function () {
-                        alert("Item not deleted");
-                    }
-                });
+                association.destroy({success: callback});
             },
-    
-            save: function (key, val, options) {
-                return Backbone.Model.prototype.save.call(this, key, val, options);
+            getFormSchema: function () {
+                var fields = this.get("fields"),
+                    field,
+                    type,
+                    name,
+                    title,
+                    i,
+                    options,
+                    extras,
+                    j,
+                    schema = {};
+                console.log(fields);
+                for (i = 0; i < this.get("fields").length; i++) {
+                    field = this.get("fields")[i];
+                    field.val = this.get(field.col_name);
+                    type = field.data_type.toLowerCase();
+                    name = field.col_name;
+                    title = field.col_alias;
+                    switch (type) {
+                    case "rating":
+                        options = [];
+                        extras = JSON.parse(field.extras);
+                        for (j = 0; j < extras.length; j++) {
+                            options.push({
+                                val: extras[j].value,
+                                label: extras[j].name
+                            });
+                        }
+                        schema[name] = { type: 'Select', title: title, options: options };
+                        break;
+                    case "choice":
+                        options = [];
+                        extras = JSON.parse(field.extras);
+                        for (j = 0; j < extras.length; j++) {
+                            options.push(extras[j].name);
+                        }
+                        schema[name] = { type: 'Select', title: title, options: options };
+                        break;
+                    case "date-time":
+                        schema[name] = {
+                            title: title,
+                            type: 'DateTimePicker'
+                        };
+                        break;
+                    case "boolean":
+                        schema[name] = { type: 'Checkbox', title: title };
+                        break;
+                    case "integer":
+                    case "decimal":
+                        schema[name] = { type: 'Number', title: title };
+                        break;
+                    default:
+                        schema[name] = { type: 'TextArea', title: title };
+                    }
+                }
+                schema.children = { type: 'MediaEditor', title: 'children' };
+                console.log(schema);
+                return schema;
             }
-    
+
         });
         return Record;
-});
+    });

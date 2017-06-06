@@ -8,22 +8,33 @@
 {{#if showError }}
     <div class="form-confirmation failure-message">Error Saving. Please review messages</div>
 {{/if}}
+
+<!--h3>Name</h3-->
 <div class="inline-form">
     <label for="formName">Name: </label>
     <input type="text" id="formName" class="formName" value="{{name}}">
 </div>
+<!--h3>Description</h3--->
 <div class="inline-form">
     <label for="caption">Description: </label>
     <textarea id="caption" class="caption" rows="5" cols="50"
     placeholder="Describe this form">{{caption}}</textarea>
 </div>
+<div class="fields-header inline-form">
+<h3>Fields</h3>
 
+<a class="new_field_button button-tertiary">
+    <i class="fa fa-plus add" aria-hidden="true">
+    </i>Add Column
+</a>
+</div>
 <div class="inline-form">
-    <label>Fields:</label>
+    <!--label>Fields:</label-->
     <div id="fieldTableDiv" class = "container-3-4">
         <table class="fieldTable">
             <thead>
                 <tr>
+                    <th></th>
                     <th class="th-display-field">Display Field</th>
                     <th class="th-field-name">Field Name</th>
                     <th class="th-data-type">Data Type</th>
@@ -32,9 +43,5 @@
             </thead>
             <tbody id="fieldList"></tbody>
         </table>
-        <a class="new_field_button button-tertiary">
-            <i class="fa fa-plus add" aria-hidden="true">
-            </i>Add Column
-        </a>
     </div>
 </div>

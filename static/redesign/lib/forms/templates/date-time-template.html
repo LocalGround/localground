@@ -1,0 +1,41 @@
+<input class="datepicker input-small-custom" value="{{ dateString }}" type="text" />
+<br>
+<table class="time-table">
+    <tr>
+        <td>
+        <input class="hours" value="{{ hoursString }}" type="number" min="1" max="12"/>
+        </td>
+        <td>
+        <input class="minutes" value="{{ minutesString }}" type="number"  min="00" max="59"/>
+        </td>
+        <td>
+        <input class="seconds" value="{{ secondsString }}" type="number"  min="00" max="59"/>
+        </td>
+        <td>
+        <select class="am_pm">
+          <option value="AM" {{#ifnot isPm}}selected{{/ifnot}}>AM</option>
+          <option value="PM" {{#if isPm}}selected{{/if}}>PM</option>
+        </select>
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+            hours
+        </td>
+        <td>
+            minutes
+        </td>
+        <td>
+            seconds
+        </td>
+        <td>
+        </td>
+    </tr>
+</table>
+
+<!-- Somehow, we have to figure out how to make this AM/PM work because
+    12AM is 0 military and 12PM is 12 military
+    could be achieved by doing 12 modulo (%) but have 0 become 12
+    along with the general 24 modulo to ensure accurate hours
+-->

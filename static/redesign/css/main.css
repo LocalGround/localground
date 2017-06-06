@@ -380,9 +380,15 @@ nav .selected{
     text-align: left;
 }
 
-.form-reorder {
+.form-reorder, {
     cursor: move;
 }
+
+/*
+.rating-row, .choice-row {
+    cursor: move;
+}
+*/
 
 #model-form fieldset label,
 .inline-form label {
@@ -861,7 +867,6 @@ tbody .failure-message, tbody .success-message {
     content: "\f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142";
     color: #DDD;
     font-size: 10px;
-    position: absolute;
     margin-left: 1px;
     cursor: move;
 }
@@ -2098,7 +2103,17 @@ span.plus {
 /**************************
 * FIELDS                  *
 **************************/
+#fieldList > tr > td {
+    padding: 15px 5px 15px 5px;
+}
 
+.fieldTable {
+    border-collapse: collapse;
+}
+
+.fieldTable > tbody > tr, .fieldTable > thead > tr {
+    border-bottom: solid 1px #F0F0F0 !important;
+}
 /*
   Ratings
 */
@@ -2107,4 +2122,18 @@ span.plus {
     background-color: #FFDDDD;
     color: #D22;
     font-weight: bold;
+}
+
+
+/*
+  Date / Time
+*/
+/* Map View */
+.hours, .minutes, .seconds{
+    width: 50px !important;
+}
+
+.time-table td{
+    font-size: 12px;
+    color: #888;
 }
