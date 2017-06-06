@@ -59,22 +59,15 @@ define([
             }));
         },
         dateTimeValidator: function (value, formValues) {
-
-
             try {
-                console.log(value);
                 var d = new Date(value);
-                if (d == "Invalid Date"){
+                if (d == "Invalid Date") {
                     return {
                         type: 'date',
                         message: 'Invalid date / time value. Please try again.'
                     };
                 }
-                console.log(d);
-
             } catch (ex) {
-                console.log(value);
-                console.log(ex);
                 return {
                     type: 'date',
                     message: 'Invalid date / time value. Please try again.'
@@ -88,25 +81,23 @@ define([
                 am_pm = this.$el.find('.am_pm').val(),
                 hours = this.$el.find('.hours').val(),
                 hours00 = hours.substr(hours.length - 2),
+                hourInt = parseInt(hours00, 10),
                 minutes = this.$el.find('.minutes').val(),
                 minutes00 = minutes.substr(minutes.length - 2),
                 seconds = this.$el.find('.seconds').val(),
                 seconds00 = seconds.substr(seconds.length - 2);
 
-            if (am_pm == "PM"){
-                var hourInt = parseInt(hours00);
-                hourInt = hourInt < 12? hourInt + 12: 12;
+            if (am_pm == "PM") {
+                hourInt = hourInt < 12 ? hourInt + 12 : 12;
                 hours00 = String(hourInt);
             } else {
-                var hourInt = parseInt(hours00);
-                if (hourInt < 10){
+                if (hourInt < 10) {
                     hours00 = "0" + String(hourInt);
-                } else if (hourInt == 12){
-                    hours00 == "00";
+                } else if (hourInt == 12) {
+                    hours00 = "00";
                 }
             }
-
-            return date + "T" + hours00 + ":" + minutes00+ ":" + seconds00;
+            return date + "T" + hours00 + ":" + minutes00 + ":" + seconds00;
         },
         render: function () {
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
@@ -204,7 +195,6 @@ define([
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
             this.renderAudioPlayers();
             this.enableMediaReordering();
-            console.log(this.$el.html());
             return this;
         },
         renderAudioPlayers: function () {

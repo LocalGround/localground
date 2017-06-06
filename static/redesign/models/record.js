@@ -86,6 +86,7 @@ define(["models/base",
                     options,
                     extras,
                     j;
+                console.log( this.get("fields"));
                 for (i = 0; i < this.get("fields").length; i++) {
                     field = this.get("fields")[i];
                     field.val = this.get(field.col_name);
