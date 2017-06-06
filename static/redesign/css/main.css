@@ -867,7 +867,6 @@ tbody .failure-message, tbody .success-message {
     content: "\f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142";
     color: #DDD;
     font-size: 10px;
-    position: absolute;
     margin-left: 1px;
     cursor: move;
 }
@@ -2101,7 +2100,17 @@ span.plus {
 /**************************
 * FIELDS                  *
 **************************/
+#fieldList > tr > td {
+    padding: 15px 5px 15px 5px;
+}
 
+.fieldTable {
+    border-collapse: collapse;
+}
+
+.fieldTable > tbody > tr, .fieldTable > thead > tr {
+    border-bottom: solid 1px #F0F0F0 !important;
+}
 /*
   Ratings
 */

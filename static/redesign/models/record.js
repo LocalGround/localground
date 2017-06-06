@@ -85,8 +85,9 @@ define(["models/base",
                     i,
                     options,
                     extras,
-                    j;
-                console.log( this.get("fields"));
+                    j,
+                    schema = {};
+                console.log(fields);
                 for (i = 0; i < this.get("fields").length; i++) {
                     field = this.get("fields")[i];
                     field.val = this.get(field.col_name);
@@ -103,7 +104,7 @@ define(["models/base",
                                 label: extras[j].name
                             });
                         }
-                        fields[name] = { type: 'Select', title: title, options: options };
+                        schema[name] = { type: 'Select', title: title, options: options };
                         break;
                     case "choice":
                         options = [];
@@ -111,27 +112,28 @@ define(["models/base",
                         for (j = 0; j < extras.length; j++) {
                             options.push(extras[j].name);
                         }
-                        fields[name] = { type: 'Select', title: title, options: options };
+                        schema[name] = { type: 'Select', title: title, options: options };
                         break;
                     case "date-time":
-                        fields[name] = {
+                        schema[name] = {
                             title: title,
                             type: 'DateTimePicker'
                         };
                         break;
                     case "boolean":
-                        fields[name] = { type: 'Checkbox', title: title };
+                        schema[name] = { type: 'Checkbox', title: title };
                         break;
                     case "integer":
                     case "decimal":
-                        fields[name] = { type: 'Number', title: title };
+                        schema[name] = { type: 'Number', title: title };
                         break;
                     default:
-                        fields[name] = { type: 'TextArea', title: title };
+                        schema[name] = { type: 'TextArea', title: title };
                     }
                 }
-                fields.children = { type: 'MediaEditor', title: 'children' };
-                return fields;
+                schema.children = { type: 'MediaEditor', title: 'children' };
+                console.log(schema);
+                return schema;
             }
 
         });

@@ -20,6 +20,7 @@ define([
 
         initSpies = function () {
             spyOn(DateTimePicker.prototype, 'initialize').and.callThrough();
+            spyOn(DateTimePicker.prototype, 'dateTimeValidator').and.callThrough();
             spyOn(Pikaday.prototype, 'show').and.callThrough();
             spyOn(Pikaday.prototype, 'hide').and.callThrough();
         };
@@ -153,6 +154,27 @@ define([
                 fixture.trigger("click");
                 expect(Pikaday.prototype.show).toHaveBeenCalledTimes(1);
                 expect(Pikaday.prototype.hide).toHaveBeenCalledTimes(2);
+            });
+        });
+        
+        describe("Form: DateTime Editor Test: User makes changes to input", function () {
+            beforeEach(function () {
+                initSpies();
+            });
+
+            afterEach(function () {
+                $('.pika-single').remove();
+            });
+
+            it("Saves date correctly when user makes a valid date change", function () {
+                //John: fixt this test, and write some other tests to check for correct
+                // hours, minutes, seconds, and date validation when user edits textboxes:
+                initRecord(this, timeAM);
+                expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(0);
+                fixture.find('input.hours').val("3");
+                var errors = form.commit({ validate: true });
+                expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(1);
+                expect(errors).toBeNull();
             });
         });
     });

@@ -6,14 +6,14 @@ define([
     "models/audio",
     "apps/gallery/views/add-media",
     "lib/audio/audio-player",
+    "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/pikaday.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
     "text!../forms/templates/date-time-template.html",
     "text!../forms/templates/media-editor-template.html",
-    "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js",
     "form"
-], function ($, Backbone, Handlebars, Association, Audio, AddMedia, AudioPlayer,
-             Pikaday, dateFns, DateTimeTemplate, MediaTemplate, moment) {
+], function ($, Backbone, Handlebars, Association, Audio, AddMedia, AudioPlayer, moment,
+             Pikaday, dateFns, DateTimeTemplate, MediaTemplate) {
     "use strict";
     Backbone.Form.editors.DatePicker = Backbone.Form.editors.Text.extend({
 
@@ -43,6 +43,7 @@ define([
         picker: null,
         format: "YYYY-MM-DD",
         initialize: function (options) {
+            //moment.tz.setDefault('America/San_Francisco');
             // add date / time validator before calling the
             // parent initialization function:
             options.schema.validators = [this.dateTimeValidator];
