@@ -118,6 +118,9 @@ define(["jquery",
                 console.log("draw once called");
                 console.log(this.collection);
                 this.render();
+                if (this.collection.length == 0) {
+                    return;
+                }
                 var $selected = this.$el.find("#map-select").val(),
                     selectedMapModel = this.collection.get($selected);
 
