@@ -156,7 +156,7 @@ define([
                 expect(Pikaday.prototype.hide).toHaveBeenCalledTimes(2);
             });
         });
-        
+
         describe("Form: DateTime Editor Test: User makes changes to input", function () {
             beforeEach(function () {
                 initSpies();
