@@ -123,6 +123,11 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
                 json.filters = JSON.stringify(json.filters);
             }
             return json;
+        },
+        save: function (attrs, opts) {
+            console.log(this.attributes);
+            Base.prototype.save.apply(this, arguments);
+            console.log("done");
         }
     });
     return Layer;

@@ -27,8 +27,8 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.model = opts.model;
-                if (this.app.currentMap) {
-                    this.displayLayers(this.app.currentMap);
+                if (this.app.selectedMapModel) {
+                    this.displayLayers(this.app.selectedMapModel);
                 }
                 this.restoreState();
 
@@ -57,6 +57,7 @@ define(["marionette",
                 this.listenTo(this.collection, 'add', this.render);
             },
             createNewLayer: function (e) {
+                console.log("createNewLayer triggered", this.app.selectedMapModel);
                 var layer = new Layer({
                     map_id: this.app.selectedMapModel.id,
                     data_source: "photos", //default

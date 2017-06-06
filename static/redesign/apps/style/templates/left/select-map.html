@@ -5,13 +5,19 @@
     </div>
     <h4>Map</h4>
 </div>
+
+
+
+
+{{#if noItems}}
+    <p>Click the plus sign to create a new map</p>
+
+
+{{else}}
 <select id="map-select" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">
 {{#each items}}
     <option value="{{ this.id }}">{{ this.name }}</option>
 {{/each}}
 </select>
 
-
-{{#if noItems}}
-    <p>informational message about what to do</p>
 {{/if}}

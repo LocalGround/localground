@@ -43,6 +43,7 @@ define(["jquery",
             },
 
             createLayer: function (layer, collection) {
+                console.log("right panel createLayer() triggered. 1. layer, 2. collection", layer, collection);
                 this.triggerShowPanel();
                 this.model = layer;
                 this.collection = collection;
@@ -96,6 +97,7 @@ define(["jquery",
             },
 
             saveLayer: function () {
+                
                 var that = this;
                 var title = this.$el.find(".layer-title").val(),
                     dataSource = this.$el.find(".selected-data-source").val(),
@@ -104,9 +106,12 @@ define(["jquery",
                 if (this.model.get("filters") === null) {
                     this.model.set("filters", { 'tag' : 'nothing' });
                 }
-               // this.model.set("title", title);
-              //  this.model.set("data_source", dataSource);
+                this.model.set("title", title);
+                this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
+                console.log("saveLayer() triggered", this.model.toJSON());
+                console.log(this.model.urlRoot);
+
                 this.model.save(null, {
                     error: function () {
                         console.log('error');

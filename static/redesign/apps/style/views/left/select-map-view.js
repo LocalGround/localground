@@ -17,7 +17,7 @@ define(["jquery",
             template: Handlebars.compile(MapTemplate),
             templateHelpers: function() {
                 return {
-                    noItem: (this.collection.length === 0),
+                    noItems: (this.collection.length === 0),
                     isShowing: this.isShowing
                 }
             },
@@ -48,6 +48,7 @@ define(["jquery",
                             // setting the current model from 'success' due to asynchronicity
                             that.setModel();
                             console.log("success: ", that.collection);
+                            that.app.vent.trigger("init-collection", );
                         }
                     });
                     console.log("drawOnce triggered from 'if' (collection does not exist)");
@@ -66,7 +67,7 @@ define(["jquery",
                 console.log("setModel");
 
                 if (this.collection.length > 0 ) {
-                    this.app.currentMap = this.collection.at(0);
+                    this.app.selectedMapModel = this.collection.at(0);
                 }
 
             },
@@ -107,8 +108,8 @@ define(["jquery",
             },
 
             setMapAndRender: function () {
-                // if it's undefined
-                if (!typeof this.app.selectedMapModel) { 
+                console.log("setMapAndRender:", this.app.selectedMapModel);
+                if (!this.app.selectedMapModel) {
                     this.setModel();
                 }
                 this.render();
