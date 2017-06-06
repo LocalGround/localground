@@ -65,7 +65,7 @@ define(["jquery",
             setModel: function () {
                 console.log("setModel");
 
-                if (this.collection >0 ) {
+                if (this.collection.length > 0 ) {
                     this.app.currentMap = this.collection.at(0);
                 }
 
@@ -92,7 +92,7 @@ define(["jquery",
                 this.collection.add(this.map);
                 
                 this.map.save(null, {
-                    success: this.render,
+                    success: this.setMapAndRender.bind(this),
                     error: function (model, response){
                         var messages = JSON.parse(response.responseText);
                         console.log(messages);
@@ -104,6 +104,14 @@ define(["jquery",
                     }
                     
                 });
+            },
+
+            setMapAndRender: function () {
+                // if it's undefined
+                if (!typeof this.app.selectedMapModel) { 
+                    this.setModel();
+                }
+                this.render();
             },
 
             drawOnce: function () {
