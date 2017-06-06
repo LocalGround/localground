@@ -174,7 +174,7 @@ define([
                 fixture.find('input.hours').val("3");
                 var errors = form.commit({ validate: true });
                 expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(1);
-                expect(errors).toBeNull();
+                expect(errors).toBeUndefined();
             });
         });
     });

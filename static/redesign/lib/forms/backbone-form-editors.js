@@ -89,7 +89,13 @@ define([
             }
             return null;
         },
+        /*setValue: function (value) {
+            //sets the DOM value based on the current value:
+            console.log('setValue:', value);
+            //this.$el.val(value);
+        },*/
         getValue: function () {
+            //gets info from the DOM and returns it:
             console.log('getValue', this.picker.getDate(), this.format);
             //contatenate the date and time input values
             var date = dateFns.format(this.picker.getDate(), this.format),//this.$el.find('.datepicker').val(),
@@ -142,6 +148,7 @@ define([
                     return s;
                 }
             });
+            this.picker.setDate(this.value);
             return this;
         }
     });
