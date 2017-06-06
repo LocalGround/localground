@@ -10,9 +10,10 @@ define([
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
     "text!../forms/templates/date-time-template.html",
     "text!../forms/templates/media-editor-template.html",
+    "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js",
     "form"
 ], function ($, Backbone, Handlebars, Association, Audio, AddMedia, AudioPlayer,
-             Pikaday, dateFns, DateTimeTemplate, MediaTemplate) {
+             Pikaday, dateFns, DateTimeTemplate, MediaTemplate, moment) {
     "use strict";
     Backbone.Form.editors.DatePicker = Backbone.Form.editors.Text.extend({
 
@@ -39,7 +40,8 @@ define([
 
     Backbone.Form.editors.DateTimePicker = Backbone.Form.editors.Base.extend({
         tagName: "div",
-
+        picker: null,
+        format: "YYYY-MM-DD",
         initialize: function (options) {
             // add date / time validator before calling the
             // parent initialization function:
@@ -48,8 +50,8 @@ define([
             var template = Handlebars.compile(DateTimeTemplate);
             var hours = parseInt(dateFns.format(this.value, 'HH'));
             var isPm = hours >= 12 ? true: false;
-            var ds = dateFns.format(this.value, 'YYYY-MM-DD');
-            console.log(ds);
+            var ds = dateFns.format(this.value, this.format);
+            console.log('initialize:', ds);
             this.$el.append(template({
                 dateString: ds,
                 hoursString: dateFns.format(this.value, 'hh'),
@@ -59,6 +61,7 @@ define([
                 hours: hours,
                 isPm: isPm
             }));
+            console.log(this.$el.html());
         },
         dateTimeValidator: function (value, formValues) {
             try {
@@ -78,8 +81,9 @@ define([
             return null;
         },
         getValue: function () {
+            console.log('getValue', this.picker.getDate(), this.format);
             //contatenate the date and time input values
-            var date = this.$el.find('.datepicker').val(),
+            var date = dateFns.format(this.picker.getDate(), this.format),//this.$el.find('.datepicker').val(),
                 am_pm = this.$el.find('.am_pm').val(),
                 hours = this.$el.find('.hours').val(),
                 hours00 = hours.substr(hours.length - 2),
@@ -87,7 +91,8 @@ define([
                 minutes = this.$el.find('.minutes').val(),
                 minutes00 = minutes.substr(minutes.length - 2),
                 seconds = this.$el.find('.seconds').val(),
-                seconds00 = seconds.substr(seconds.length - 2);
+                seconds00 = seconds.substr(seconds.length - 2),
+                val;
 
             if (am_pm == "PM") {
                 hourInt = hourInt < 12 ? hourInt + 12 : 12;
@@ -102,23 +107,32 @@ define([
             if (date === '1969-12-31') {
                 return '';
             }
-            return date + "T" + hours00 + ":" + minutes00 + ":" + seconds00;
+            val = date + "T" + hours00 + ":" + minutes00 + ":" + seconds00;
+            console.log('getValue:', val);
+            return val;
         },
         render: function () {
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
-            var that = this,
-                picker = new Pikaday({
-                    field: this.$el.find('.datepicker')[0],
-                    format: "YYYY-MM-DD",
-                    toString: function (date, format) {
-                        var s = dateFns.format(date, format);
-                        console.log(s);
-                        if (s === '1969-12-31') {
-                            return "";
-                        }
-                        return s;
+            var that = this;
+            this.picker = new Pikaday({
+                field: this.$el.find('.datepicker')[0],
+                format: this.format,
+                blurFieldOnSelect: false,
+                defaultDate: this.$el.find('.datepicker').val(),
+                onSelect: function (date, format) {
+                    console.log('onselect:', date);
+                    console.log(dateFns.format(date, that.format));
+                },
+                toString: function (date, format) {
+                    console.log('toString:', date);
+                    var s = dateFns.format(date, format);
+                    if (s === '1969-12-31') {
+                        return "";
                     }
-                });
+                    console.log('toString:', s);
+                    return s;
+                }
+            });
             return this;
         }
     });
