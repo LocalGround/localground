@@ -1,11 +1,15 @@
 
+<!-- A <div> tag may be necessary to fit in the whole row inside.
+     However, it is unknown how to solve the row format problem
+-->
+
 <td>
     <!-- Radio button -->
+    <i class="fa fa-grip fa-rotate-90"></i> <!-- The rotate grip item will need to be extended to fit the whole row-->
     <input class=display-field type="radio" name="display_field"
     {{#if is_display_field}}checked{{/if}}><br>
 </td>
 <td>
-    <i class="fa fa-grip fa-rotate-90"></i>
     <input type="text" class="fieldname" placeholder="field name" value="{{ col_alias }}">
     {{#if errorFieldName}}<span>Field Name Missing</span>{{/if}}
     {{#if serverErrorMessage}}<span>{{serverErrorMessage}}</span>{{/if}}
