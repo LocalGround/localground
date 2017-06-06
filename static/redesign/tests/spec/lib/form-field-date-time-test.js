@@ -1,57 +1,46 @@
 var rootDir = "../../";
 define([
     "jquery",
+    "backbone",
     rootDir + "models/record",
-    rootDir + "models/form",
     rootDir + "lib/forms/backbone-form",
+    "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/pikaday.min.js",
     "tests/spec-helper"
 ],
-    function ($, Record, FormModel, DataForm) {
+    function ($, Backbone, Record, DataForm, Pikaday) {
         'use strict';
-        var fixture, initRecordAndForm, initSpies, record, formModel, form;
+        var fixture,
+            initRecord,
+            initSpies,
+            record,
+            form,
+            timeAM = '2017-04-21T03:25:51',
+            timePM = '2017-04-21T23:25:51',
+            DateTimePicker = Backbone.Form.editors.DateTimePicker;
 
         initSpies = function () {
-            //spyOn(ProjectUserView.prototype,'doDelete').and.callThrough();
-            //spyOn(ProjectUser.prototype,'destroy').and.callThrough();
+            spyOn(DateTimePicker.prototype, 'initialize').and.callThrough();
+            spyOn(Pikaday.prototype, 'show').and.callThrough();
+            spyOn(Pikaday.prototype, 'hide').and.callThrough();
         };
-        initRecordAndForm = function (scope) {
-            var dateTime = '2017-04-28T22:25:51';
-            formModel = new FormModel({
-                "url": "http://localhost:7777/api/0/forms/1/",
-                "id": 1,
-                "name": "Test Form",
-                "caption": "",
-                "overlay_type": "form",
-                "tags": [],
-                "owner": "MrJBRPG",
-                "data_url": "http://localhost:7777/api/0/forms/1/data/",
-                "fields_url": "http://localhost:7777/api/0/forms/1/fields/",
-                "slug": "slug_64358",
-                "project_ids": [ 1 ],
-                "fields": [
-                    {
-                        "id": 1,
-                        "form": 1,
-                        "col_alias": "DateTime Test",
-                        "col_name": "datetime_test",
-                        "is_display_field": true,
-                        "ordering": 1,
-                        "data_type": "date-time",
-                        "url": "http://localhost:7777/api/0/forms/1/fields/1"
-                    }]
-            });
-            formModel.fields.at(0).set("val", dateTime);
+        initRecord = function (scope, t) {
+            //create the simplest record possible:
             record = new Record({
                 id: 1,
-                datetime_test: dateTime,
-                display_name: dateTime,
-                tags: ['my house'],
+                datetime_test: t,
+                display_name: t,
                 project_id: 1,
                 overlay_type: "form_1",
-                geometry: {"type": "Point", "coordinates": [-122.294, 37.864]},
-                photo_count: 3,
-                audio_count: 1,
-                fields: formModel.fields.toJSON()
+                fields: [{
+                    "id": 1,
+                    "form": 1,
+                    "col_alias": "DateTime Test",
+                    "col_name": "datetime_test",
+                    "ordering": 1,
+                    "data_type": "date-time",
+                    "url": "http://localhost:7777/api/0/forms/1/fields/1",
+                    "val": t
+                }]
             });
             form = new DataForm({
                 model: record,
@@ -62,16 +51,68 @@ define([
             fixture = setFixtures("<div></div>").append(form.$el);
         };
 
-        describe("Initialize Record and Form", function () {
+        describe("Form: DateTime Editor Test: Initializes and Renders Correctly", function () {
             beforeEach(function () {
                 initSpies();
-                initRecordAndForm(this);
+            });
+
+            afterEach(function () {
+                $('.pika-single').remove();
             });
 
             it("Initializes correctly", function () {
+                initRecord(this, timeAM);
                 expect(form.schema).toEqual(record.getFormSchema());
                 expect(form.model).toEqual(record);
-                console.log(form.$el.html());
+                expect(DateTimePicker.prototype.initialize).toHaveBeenCalledTimes(1);
+            });
+
+            it("Renders all controls", function () {
+                initRecord(this, timeAM);
+                expect(fixture).toContainElement("input.datepicker");
+                expect(fixture).toContainElement("table.time-table");
+                expect(fixture).toContainElement("input.hours");
+                expect(fixture).toContainElement("input.minutes");
+                expect(fixture).toContainElement("input.seconds");
+                //TODO: John, check for all inputs
+                expect(1).toEqual(-1);
+            });
+
+            it("Sets all form values correctly when time is AM value", function () {
+                initRecord(this, timeAM);
+                expect(fixture.find("input.datepicker").val()).toEqual("2017-04-21");
+                //TODO: John, check that all inputs get set correctly
+                expect(1).toEqual(-1);
+            });
+
+            it("Sets all form values correctly when time is PM value", function () {
+                initRecord(this, timePM);
+                expect(fixture.find("input.datepicker").val()).toEqual("2017-04-21");
+                //TODO: John, check that all inputs get set correctly
+                expect(1).toEqual(-1);
+            });
+
+            it("Sets all form values to empty when time is null value", function () {
+                initRecord(this, null);
+                expect(fixture.find("input.datepicker").val()).toEqual("");
+                //TODO: John, check that all inputs get set correctly
+                expect(1).toEqual(-1);
+            });
+
+            it("Triggers the calendar popul when the user clicks on the calendar", function () {
+                initRecord(this, null);
+                expect(Pikaday.prototype.show).toHaveBeenCalledTimes(0);
+                expect(Pikaday.prototype.hide).toHaveBeenCalledTimes(1);
+
+                //click input and make sure calendar appears:
+                fixture.find("input.datepicker").trigger("click");
+                expect(Pikaday.prototype.show).toHaveBeenCalledTimes(1);
+                expect(Pikaday.prototype.hide).toHaveBeenCalledTimes(1);
+
+                //click outside the input and make sure calendar disappears:
+                fixture.trigger("click");
+                expect(Pikaday.prototype.show).toHaveBeenCalledTimes(1);
+                expect(Pikaday.prototype.hide).toHaveBeenCalledTimes(2);
             });
         });
     });

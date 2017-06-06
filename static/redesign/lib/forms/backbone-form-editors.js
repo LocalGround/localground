@@ -48,8 +48,9 @@ define([
             var template = Handlebars.compile(DateTimeTemplate);
             var hours = parseInt(dateFns.format(this.value, 'HH'));
             var isPm = hours >= 12 ? true: false;
+            var ds = dateFns.format(this.value, 'YYYY-MM-DD');
             this.$el.append(template({
-                dateString: dateFns.format(this.value, 'YYYY-MM-DD'),
+                dateString: ds,
                 hoursString: dateFns.format(this.value, 'hh'),
                 minutesString: dateFns.format(this.value, 'mm'),
                 secondsString: dateFns.format(this.value, 'ss'),
@@ -97,17 +98,28 @@ define([
                     hours00 = "00";
                 }
             }
+            if (date === '1969-12-31') {
+                return null;
+            }
             return date + "T" + hours00 + ":" + minutes00 + ":" + seconds00;
         },
         render: function () {
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
-            var picker = new Pikaday({
-                field: this.$el.find('.datepicker')[0],
-                format: "YYYY-MM-DD",
-                toString: function (date, format) {
-                    return dateFns.format(date, format);
-                }
-            });
+            var that = this,
+                picker = new Pikaday({
+                    field: this.$el.find('.datepicker')[0],
+                    format: "YYYY-MM-DD",
+                    parse: function (dateString, format) {
+                        return dateFns.parse(dateString);
+                    },
+                    toString: function (date, format) {
+                        var s = dateFns.format(that.$el.find('.datepicker').val(), format);
+                        if (s === '1969-12-31') {
+                            return "";
+                        }
+                        return s;
+                    }
+                });
             return this;
         }
     });
