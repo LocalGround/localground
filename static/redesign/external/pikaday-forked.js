@@ -514,13 +514,15 @@
 
                 switch(e.keyCode){
                     case 13:
+                        break;
                     case 27:
                         if (opts.field) {
                             opts.field.blur();
                         }
                         break;
                     case 37:
-                        e.preventDefault();
+                        //e.preventDefault();
+                        console.log("Subtract day by 1");
                         self.adjustDate('subtract', 1);
                         break;
                     case 38:
@@ -795,6 +797,10 @@
             if (typeof date === 'string') {
                 date = new Date(Date.parse(date));
             }
+            if (typeof date === 'object') {
+              var utc = date.getTime() + (date.getTimezoneOffset() * 60000 + 500);
+              date = new Date(utc)
+            }
             if (!isDate(date)) {
                 return;
             }
@@ -866,6 +872,8 @@
                 newDay = new Date(day.valueOf() + difference);
             } else if (sign === 'subtract') {
                 newDay = new Date(day.valueOf() - difference);
+            } else {
+                newDay = new Date(day.valueOf());
             }
 
             this.setDate(newDay);
