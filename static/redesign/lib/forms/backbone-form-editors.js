@@ -78,13 +78,13 @@ define([
                 if (d == "Invalid Date") {
                     return {
                         type: 'date',
-                        message: 'Invalid date / time value. Please try again.'
+                        message: 'Invalid date / time value. Format is: YYYY-MM-DDThh:mm:ss. Please try again.'
                     };
                 }
             } catch (ex) {
                 return {
                     type: 'date',
-                    message: 'Invalid date / time value. Please try again.'
+                    message: 'Invalid date / time value. Format is: YYYY-MM-DDThh:mm:ss. Please try again.'
                 };
             }
             return null;
