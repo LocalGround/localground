@@ -73,6 +73,7 @@ define([
             //console.log(this.$el.html());
         },
         dateTimeValidator: function (value, formValues) {
+            console.log(value);
             try {
                 var d = new Date(value);
                 if (d == "Invalid Date") {
@@ -96,9 +97,9 @@ define([
         },*/
         getValue: function () {
             //gets info from the DOM and returns it:
-            console.log('getValue', this.picker.getDate(), this.format);
+            console.log('getValue', this.$el.find('input.datepicker').val(), this.format);
             //contatenate the date and time input values
-            var date = dateFns.format(this.picker.getDate(), this.format),//this.$el.find('.datepicker').val(),
+            var date = dateFns.format(this.$el.find('input.datepicker').val(), this.format),//this.$el.find('.datepicker').val(),
                 am_pm = this.$el.find('.am_pm').val(),
                 hours = this.$el.find('.hours').val(),
                 hours00 = hours.substr(hours.length - 2),
@@ -148,7 +149,7 @@ define([
                     return s;
                 }
             });
-            this.picker.setDate(this.value);
+            //this.picker.setDate(this.value);
             return this;
         }
     });

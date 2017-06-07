@@ -540,19 +540,20 @@
 
         self._onInputChange = function(e)
         {
-            console.log('self._onInputChange; hasMoment:', hasMoment);
             var date;
-
             if (e.firedBy === self) {
                 return;
             }
             if (opts.parse) {
+                console.log('PARSE:', opts.parse);
                 date = opts.parse(opts.field.value, opts.format);
             } else if (hasMoment) {
+                console.log('hasMoment');
                 date = moment(opts.field.value, opts.format, opts.formatStrict);
                 date = (date && date.isValid()) ? date.toDate() : null;
             }
             else {
+                'date parse';
                 date = new Date(Date.parse(opts.field.value));
             }
             if (isDate(date)) {
@@ -570,6 +571,7 @@
 
         self._onInputClick = function()
         {
+            console.log('clicked');
             self.show();
         };
 
@@ -782,8 +784,7 @@
         /**
          * set the current selection
          */
-        setDate: function(date, preventOnSelect)
-        {
+        setDate: function(date, preventOnSelect) {
             if (!date) {
                 this._d = null;
 
@@ -801,6 +802,7 @@
               var utc = date.getTime() + (date.getTimezoneOffset() * 60000 + 500);
               date = new Date(utc)
             }
+            console.log('date set', date);
             if (!isDate(date)) {
                 return;
             }

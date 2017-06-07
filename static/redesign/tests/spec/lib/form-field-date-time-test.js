@@ -4,7 +4,7 @@ define([
     "backbone",
     rootDir + "models/record",
     rootDir + "lib/forms/backbone-form",
-    "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/pikaday.min.js",
+    rootDir + "external/pikaday-forked",
     "tests/spec-helper"
 ],
     function ($, Backbone, Record, DataForm, Pikaday) {
