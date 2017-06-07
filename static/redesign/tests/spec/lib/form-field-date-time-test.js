@@ -179,15 +179,14 @@ define([
                 });
 
                 it("Keeps date correctly when user makes a valid date change through date input", function () {
-                    //var newDateTimePicker = new DateTimePicker({});
                     initRecord(this, timeAM);
                     var oldDate = fixture.find("input.datepicker").val();
                     var newDate = "2017-04-22";
-                    //newDateTimePicker.$el.find("input.datepicker").trigger("click");
+                    fixture.find("input.datepicker").trigger("click");
                     expect(fixture.find("input.datepicker").val()).not.toEqual(newDate);
                     fixture.find('input.datepicker').val(newDate);
                     expect(fixture.find("input.datepicker").val()).toEqual(newDate);
-                    //newDateTimePicker.$el.find("input.datepicker").trigger("blur");
+                    fixture.find("input.datepicker").trigger("blur");
                     expect(fixture.find("input.datepicker").val()).toEqual(newDate);
                     var errors = form.commit({ validate: true });
                     expect(errors).toBeUndefined();
