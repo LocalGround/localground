@@ -15,7 +15,12 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 tags: 'Text'
             },
             getDataTypePlural: function () {
-                return this.collection.getDataType();
+                if (this.collection && this.collection.getDataType) {
+                    return this.collection.getDataType();
+                }
+                var type = this.get("overlay_type");
+                return (type == 'audio') ? 'audio' : type + "s";
+
             },
             getDataType: function () {
                 return this.get("overlay_type");

@@ -2,9 +2,9 @@ define([
     "underscore",
     "backbone-pageable",
     "collections/baseMixin"
-], function (_, BackbonePageableCollection, BaseMixin) {
+], function (_, BackbonePageable, BaseMixin) {
     "use strict";
-    var PageableCollection = BackbonePageableCollection.extend({
+    var PageableCollection = BackbonePageable.extend({
         getDataType: function () {
             return this.key;
         },
@@ -76,7 +76,7 @@ define([
                 options.data = options.data || {};
                 options.data = { query: this.query };
             }
-            return BackbonePageableCollection.prototype.fetch.call(this, options);
+            return BackbonePageable.prototype.fetch.call(this, options);
         }
     });
     return PageableCollection;
