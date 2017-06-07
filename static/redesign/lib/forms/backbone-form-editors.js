@@ -106,8 +106,10 @@ define([
                 hourInt = parseInt(hours00, 10),
                 minutes = this.$el.find('.minutes').val(),
                 minutes00 = minutes.substr(minutes.length - 2),
+                minuteInt = parseInt(minutes00, 10),
                 seconds = this.$el.find('.seconds').val(),
                 seconds00 = seconds.substr(seconds.length - 2),
+                secondInt = parseInt(seconds00, 10),
                 val;
 
             if (am_pm == "PM") {
@@ -120,6 +122,19 @@ define([
                     hours00 = "00";
                 }
             }
+
+            if (minuteInt < 10) {
+                minutes00 = "0" + String(minuteInt);
+            } else if (minuteInt == 0) {
+                minutes00 = "00";
+            }
+
+            if (secondInt < 10) {
+                seconds00 = "0" + String(secondInt);
+            } else if (secondInt == 0) {
+                seconds00 = "00";
+            }
+
             if (date === '1969-12-31') {
                 return '';
             }
