@@ -4,7 +4,7 @@ define([
     "backbone",
     rootDir + "models/record",
     rootDir + "lib/forms/backbone-form",
-    "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/pikaday.min.js",
+    rootDir + "external/pikaday-forked",
     "tests/spec-helper"
 ],
     function ($, Backbone, Record, DataForm, Pikaday) {
@@ -140,7 +140,7 @@ define([
                 expect(fixture.find("select.am_pm").val()).toEqual("AM");
             });
 
-            it("Triggers the calendar popul when the user clicks on the calendar", function () {
+            it("Triggers the calendar popup when the user clicks on the calendar", function () {
                 initRecord(this, null);
                 expect(Pikaday.prototype.show).toHaveBeenCalledTimes(0);
                 expect(Pikaday.prototype.hide).toHaveBeenCalledTimes(1);
@@ -156,7 +156,7 @@ define([
                 expect(Pikaday.prototype.hide).toHaveBeenCalledTimes(2);
             });
         });
-        
+
         describe("Form: DateTime Editor Test: User makes changes to input", function () {
             beforeEach(function () {
                 initSpies();
@@ -166,15 +166,34 @@ define([
                 $('.pika-single').remove();
             });
 
-            it("Saves date correctly when user makes a valid date change", function () {
-                //John: fixt this test, and write some other tests to check for correct
-                // hours, minutes, seconds, and date validation when user edits textboxes:
-                initRecord(this, timeAM);
-                expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(0);
-                fixture.find('input.hours').val("3");
-                var errors = form.commit({ validate: true });
-                expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(1);
-                expect(errors).toBeNull();
+            describe("Valid Date Changes through various ways", function(){
+                it("Saves date correctly when user makes a valid time change with single digits", function () {
+                    initRecord(this, timeAM);
+                    expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(0);
+                    fixture.find('input.hours').val("3");
+                    fixture.find('input.minutes').val("2");
+                    fixture.find('input.seconds').val("1");
+                    var errors = form.commit({ validate: true });
+                    expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(1);
+                    expect(errors).toBeUndefined();
+                });
+
+                it("Keeps date correctly when user makes a valid date change through date input", function () {
+                    initRecord(this, timeAM);
+                    var oldDate = fixture.find("input.datepicker").val();
+                    var newDate = "2017-04-22";
+                    fixture.find("input.datepicker").trigger("click");
+                    expect(fixture.find("input.datepicker").val()).not.toEqual(newDate);
+                    fixture.find('input.datepicker').val(newDate);
+                    expect(fixture.find("input.datepicker").val()).toEqual(newDate);
+                    fixture.find("input.datepicker").trigger("blur");
+                    expect(fixture.find("input.datepicker").val()).toEqual(newDate);
+                    var errors = form.commit({ validate: true });
+                    expect(errors).toBeUndefined();
+                });
+
             });
+
+
         });
     });

@@ -118,7 +118,7 @@ define([
             it("Sets fields property for custom data types in data entry", function () {
                 var entry = dataManager.getData('form_1');
                 expect(entry.fields).toEqual(jasmine.any(Fields));
-                expect(entry.fields.length).toEqual(4);
+                expect(entry.fields.length).toEqual(5);
                 expect(DataManager.prototype.attachFieldsToRecords).toHaveBeenCalledTimes(1);
                 //expect(entry.fields.fetch).toHaveBeenCalled();
                 expect(entry.isSite).toBeTruthy();

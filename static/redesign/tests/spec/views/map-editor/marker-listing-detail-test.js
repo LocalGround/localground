@@ -1,12 +1,13 @@
 var rootDir = "../../../";
 define([
+    "jquery",
     rootDir + "apps/map/views/marker-listing-detail",
     rootDir + "lib/maps/overlays/icon",
     rootDir + "models/base",
     rootDir + "collections/basePageable",
     "tests/spec-helper"
 ],
-    function (MarkerView, Icon, BaseModel, BaseCollection) {
+    function ($, MarkerView, Icon, BaseModel, BaseCollection) {
         'use strict';
         var markerView,
             icon,
@@ -23,6 +24,8 @@ define([
                 spyOn(MarkerView.prototype, 'render').and.callThrough();
                 spyOn(MarkerView.prototype, 'hoverHighlight').and.callThrough();
                 spyOn(MarkerView.prototype, 'clearHoverHighlight').and.callThrough();
+                spyOn(MarkerView.prototype, 'showMarker').and.callThrough();
+                spyOn(MarkerView.prototype, 'hideMarker').and.callThrough();
 
                 //Model / Collection Spies:
                 spyOn(BaseModel.prototype, 'trigger').and.callThrough();
@@ -213,7 +216,7 @@ define([
                     expect($i.hasClass("toggle-visibility")).toBeTruthy();
                     expect($i.hasClass("fa-eye")).toBeTruthy();
                     expect($i.hasClass("fa-eye-slash")).toBeFalsy();
-                    
+
                     //important: increments the model modelCounter for the whole block:
                     ++modelCounter;
                 });
@@ -224,58 +227,96 @@ define([
             beforeEach(function () {
                 modelCounter = 0;
                 initSpies();
+                spyOn(MarkerView.prototype, 'saveState').and.callThrough();
+                spyOn(MarkerView.prototype, 'restoreState').and.callThrough();
                 initGlobals(this);
+                clearMarkerEntriesFromLocalStorage();
+                initMarkerView(this);
+                markerView.render();
+                fixture = setFixtures($('<ul></ul>').append(markerView.$el));
             });
 
             it("listens for show / hide marker requests", function () {
-                expect(1).toEqual(1);
-                /*
-                'click a .fa-eye': 'hideMarker',
-                'click a .fa-eye-slash': 'showMarker'
-                */
+                expect(MarkerView.prototype.showMarker).toHaveBeenCalledTimes(0);
+                expect(MarkerView.prototype.hideMarker).toHaveBeenCalledTimes(0);
+                expect(MarkerView.prototype.render).toHaveBeenCalledTimes(1);
+
+                //click hide marker icon:
+                fixture.find('.fa-eye').trigger('click');
+                expect(MarkerView.prototype.showMarker).toHaveBeenCalledTimes(0);
+                expect(MarkerView.prototype.hideMarker).toHaveBeenCalledTimes(1);
+                expect(MarkerView.prototype.render).toHaveBeenCalledTimes(2);
+                expect(fixture).toContainElement('.fa-eye-slash');
+                expect(fixture).not.toContainElement('.fa-eye');
+
+                //click show marker icon:
+                fixture.find('.fa-eye-slash').trigger('click');
+                expect(MarkerView.prototype.showMarker).toHaveBeenCalledTimes(1);
+                expect(MarkerView.prototype.hideMarker).toHaveBeenCalledTimes(1);
+                expect(MarkerView.prototype.render).toHaveBeenCalledTimes(3);
+                expect(fixture).toContainElement('.fa-eye');
+                expect(fixture).not.toContainElement('.fa-eye-slash');
             });
 
             it("highlights when hoverHighlight called", function () {
-                expect(1).toEqual(1);
-                /*
-                hoverHighlight: function () {
-                    this.clearHoverHighlight();
-                    if (!this.$el.hasClass('highlight')) {
-                        this.$el.addClass("hover-highlight");
-                    }
-                }
-                */
+                expect(MarkerView.prototype.clearHoverHighlight).toHaveBeenCalledTimes(0);
+                expect(fixture.find('li').hasClass('hover-highlight')).toBeFalsy();
+                markerView.hoverHighlight();
+                expect(fixture.find('li').hasClass('hover-highlight')).toBeTruthy();
+                expect(MarkerView.prototype.clearHoverHighlight).toHaveBeenCalledTimes(1);
+            });
+            it("does not highlight when hoverHighlight called if active", function () {
+                markerView.model.set('active', true);
+                expect(fixture.find('a').hasClass('highlight')).toBeTruthy();
+                expect(MarkerView.prototype.clearHoverHighlight).toHaveBeenCalledTimes(0);
+                expect(fixture.find('li').hasClass('hover-highlight')).toBeFalsy();
+                markerView.hoverHighlight();
+                expect(fixture.find('li').hasClass('hover-highlight')).toBeFalsy();
+            });
+
+            it("active / inactive marker status changes color", function () {
+                markerView.model.set('active', true);
+                expect(fixture.find('a').hasClass('highlight')).toBeTruthy();
+                markerView.model.set('active', false);
+                expect(fixture.find('a').hasClass('highlight')).toBeFalsy();
             });
 
             it("unhighlights when clearHoverHighlight called", function () {
-                expect(1).toEqual(1);
-                // $("li").removeClass("hover-highlight");
+                fixture.find('li').addClass('hover-highlight');
+                expect(fixture.find('li').hasClass('hover-highlight')).toBeTruthy();
+                markerView.clearHoverHighlight();
+                expect(fixture.find('li').hasClass('hover-highlight')).toBeFalsy();
             });
 
             it("hides marker when hideMarker called", function () {
-                expect(1).toEqual(1);
-                /*
-                hideMarker: function (e) {
-                    this.displayOverlay = false;
-                    this.saveState();
-                    this.model.trigger('hide-marker');
-                    this.render();
-                    e.preventDefault();
-                },
-                */
+                expect(MarkerView.prototype.redrawHidden).toHaveBeenCalledTimes(0);
+                expect(BaseModel.prototype.trigger).toHaveBeenCalledTimes(1);
+                expect(BaseModel.prototype.trigger).toHaveBeenCalledWith('show-marker');
+                expect(MarkerView.prototype.render).toHaveBeenCalledTimes(1);
+                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(1);
+                markerView.hideMarker();
+                expect(markerView.displayOverlay).toBeFalsy();
+                expect(BaseModel.prototype.trigger).toHaveBeenCalledWith('hide-marker');
+                expect(MarkerView.prototype.redrawHidden).toHaveBeenCalledTimes(1);
+                expect(BaseModel.prototype.trigger).toHaveBeenCalledTimes(2);
+                expect(MarkerView.prototype.render).toHaveBeenCalledTimes(2);
+                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(2);
             });
 
             it("shows marker when showMarker called", function () {
-                expect(1).toEqual(1);
-                /*
-                showMarker: function (e) {
-                    this.displayOverlay = true;
-                    this.model.trigger('show-marker');
-                    this.render();
-                    this.saveState();
-                    e.preventDefault();
-                }
-                */
+                expect(MarkerView.prototype.redrawVisible).toHaveBeenCalledTimes(0);
+                expect(BaseModel.prototype.trigger).toHaveBeenCalledTimes(1);
+                expect(BaseModel.prototype.trigger).toHaveBeenCalledWith('show-marker');
+                expect(MarkerView.prototype.render).toHaveBeenCalledTimes(1);
+                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(1);
+                markerView.displayOverlay = false;
+                markerView.showMarker();
+                expect(markerView.displayOverlay).toBeTruthy();
+                expect(BaseModel.prototype.trigger).toHaveBeenCalledWith('show-marker');
+                expect(MarkerView.prototype.redrawVisible).toHaveBeenCalledTimes(1);
+                expect(BaseModel.prototype.trigger).toHaveBeenCalledTimes(2);
+                expect(MarkerView.prototype.render).toHaveBeenCalledTimes(2);
+                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(2);
             });
 
             it("gives a visual cue that the overlay is visible", function () {

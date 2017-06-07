@@ -19,7 +19,6 @@ define(["jquery",
                  * 4. displayOverlay (optional; defaults to false)
                 */
                 _.extend(this, opts);
-                console.log(this.model);
                 this.stateKey += this.model.get("overlay_type") + "-" + this.model.id;
                 this.restoreState();
 
@@ -43,7 +42,8 @@ define(["jquery",
                 'clear-hover': 'clearHoverHighlight',
                 'change:active': 'render',
                 'change:geometry': 'render',
-                'show-marker': 'redrawVisible'
+                'show-marker': 'redrawVisible',
+                'hide-marker': 'redrawHidden'
             },
             tagName: "li",
             templateHelpers: function () {
@@ -63,7 +63,7 @@ define(["jquery",
             },
             hoverHighlight: function () {
                 this.clearHoverHighlight();
-                if (!this.$el.hasClass('highlight')) {
+                if (!this.$el.find('a').hasClass('highlight')) {
                     this.$el.addClass("hover-highlight");
                 }
             },
@@ -72,17 +72,17 @@ define(["jquery",
             },
             hideMarker: function (e) {
                 this.displayOverlay = false;
-                this.saveState();
                 this.model.trigger('hide-marker');
-                this.render();
-                e.preventDefault();
+                if (e) {
+                    e.preventDefault();
+                }
             },
             showMarker: function (e) {
                 this.displayOverlay = true;
                 this.model.trigger('show-marker');
-                this.render();
-                this.saveState();
-                e.preventDefault();
+                if (e) {
+                    e.preventDefault();
+                }
             },
             redrawVisible: function () {
                 this.displayOverlay = true;

@@ -6,13 +6,13 @@ define([
     "models/audio",
     "apps/gallery/views/add-media",
     "lib/audio/audio-player",
-    "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/pikaday.min.js",
+    //"moment",
+    "external/pikaday-forked",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
     "text!../forms/templates/date-time-template.html",
     "text!../forms/templates/media-editor-template.html",
     "form"
-], function ($, Backbone, Handlebars, Association, Audio, AddMedia, AudioPlayer, moment,
+], function ($, Backbone, Handlebars, Association, Audio, AddMedia, AudioPlayer,
              Pikaday, dateFns, DateTimeTemplate, MediaTemplate) {
     "use strict";
     Backbone.Form.editors.DatePicker = Backbone.Form.editors.Text.extend({
@@ -73,40 +73,36 @@ define([
             //console.log(this.$el.html());
         },
         dateTimeValidator: function (value, formValues) {
+            console.log(value);
             try {
                 var d = new Date(value);
                 if (d == "Invalid Date") {
                     return {
                         type: 'date',
-                        message: 'Invalid date / time value. Please try again.'
+                        message: 'Invalid date / time value. Format is: YYYY-MM-DDThh:mm:ss. Please try again.'
                     };
                 }
             } catch (ex) {
                 return {
                     type: 'date',
-                    message: 'Invalid date / time value. Please try again.'
+                    message: 'Invalid date / time value. Format is: YYYY-MM-DDThh:mm:ss. Please try again.'
                 };
             }
             return null;
         },
-        setValue: function (value) {
-            //sets the DOM value based on the current value:
-            console.log(value);
-            //this.$el.val(value);
-        },
         getValue: function () {
-            //gets info from the DOM and returns it:
-            console.log('getValue', this.picker.getDate(), this.format);
             //contatenate the date and time input values
-            var date = dateFns.format(this.picker.getDate(), this.format),//this.$el.find('.datepicker').val(),
+            var date = dateFns.format(this.$el.find('input.datepicker').val(), this.format),//this.$el.find('.datepicker').val(),
                 am_pm = this.$el.find('.am_pm').val(),
                 hours = this.$el.find('.hours').val(),
                 hours00 = hours.substr(hours.length - 2),
                 hourInt = parseInt(hours00, 10),
                 minutes = this.$el.find('.minutes').val(),
                 minutes00 = minutes.substr(minutes.length - 2),
+                minuteInt = parseInt(minutes00, 10),
                 seconds = this.$el.find('.seconds').val(),
                 seconds00 = seconds.substr(seconds.length - 2),
+                secondInt = parseInt(seconds00, 10),
                 val;
 
             if (am_pm == "PM") {
@@ -119,6 +115,19 @@ define([
                     hours00 = "00";
                 }
             }
+
+            if (minuteInt < 10) {
+                minutes00 = "0" + String(minuteInt);
+            } else if (minuteInt == 0) {
+                minutes00 = "00";
+            }
+
+            if (secondInt < 10) {
+                seconds00 = "0" + String(secondInt);
+            } else if (secondInt == 0) {
+                seconds00 = "00";
+            }
+
             if (date === '1969-12-31') {
                 return '';
             }
@@ -148,6 +157,7 @@ define([
                     return s;
                 }
             });
+            //this.picker.setDate(this.value);
             return this;
         }
     });

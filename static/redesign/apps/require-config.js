@@ -42,6 +42,7 @@ require.config({
         'print_base': "./print_base",
         //'marionette': 'https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/3.1.0/backbone.marionette.min',
         'marionette': 'external/backbone.marionette',
+        //'moment': '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min',
         'sandbox': 'external/mediator/sandbox',
         'slick': 'external/slick.min',
         'text': 'external/text',
