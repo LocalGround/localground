@@ -320,25 +320,15 @@ define([
             });
 
             it("gives a visual cue that the overlay is visible", function () {
-                expect(1).toEqual(1);
-                /*
-                redrawVisible: function () {
-                    this.displayOverlay = true;
-                    this.saveState();
-                    this.render();
-                }
-                */
+                markerView.showMarker();
+                expect(fixture).toContainElement('.fa-eye');
+                expect(fixture).not.toContainElement('.fa-eye-slash');
             });
 
             it("gives a visual cue that the overlay is hidden", function () {
-                expect(1).toEqual(1);
-                /*
-                redrawHidden: function () {
-                    this.displayOverlay = false;
-                    this.saveState();
-                    this.render();
-                }
-                */
+                markerView.hideMarker();
+                expect(fixture).toContainElement('.fa-eye-slash');
+                expect(fixture).not.toContainElement('.fa-eye');
             });
         });
 

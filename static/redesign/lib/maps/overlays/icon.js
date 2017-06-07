@@ -29,7 +29,13 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
             return scale;
         },
         generateGoogleIcon: function () {
-            var opts = {
+            var opts = this.toJSON();
+            opts.anchor = new google.maps.Point(this.anchor[0], this.anchor[1]);
+            opts.origin =  this.origin || new google.maps.Point(0, 0);
+            return opts;
+        },
+        toJSON: function () {
+            return {
                 fillColor: this.fillColor,
                 fillOpacity: this.fillOpacity,
                 strokeColor: this.strokeColor,
@@ -38,15 +44,12 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
                 path: this.path,
                 markerSize: this.width,
                 scale: this.getScale(),
-                anchor: new google.maps.Point(this.anchor[0], this.anchor[1]),
                 url: this.url,
                 //size: new google.maps.Size(this.width, this.height),
-                origin: this.origin || new google.maps.Point(0, 0),
                 viewBox: this.getViewBox(),
                 width: this.width,
                 height: this.height
             };
-            return opts;
         }
     });
     return Icon;

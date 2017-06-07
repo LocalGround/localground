@@ -8,6 +8,9 @@ define([
         getDataType: function () {
             return this.key;
         },
+        getTitle: function () {
+            return this.name || "Sites";
+        },
         fillColor: "#ed867d",
         size: 23,
         events: {

@@ -43,7 +43,8 @@ define(
                 event: {
                     addListenerOnce: function () {},
                     addListener: function () {},
-                    trigger: function () {}
+                    trigger: function () {},
+                    clearListeners: function () {}
                 },
                 LatLngBounds: function () {},
                 LatLng: function (lat, lng) {
@@ -75,6 +76,15 @@ define(
                     this.getMapTypeId = function () {
                         return 5;
                     };
+                },
+                Marker: function () {
+                    return {
+                        setOptions: function () {},
+                        setMap: function () {}
+                    };
+                },
+                Point: function () {
+                    return;
                 }
             };
             var $map_container = $('<div id="map_canvas"></div>');

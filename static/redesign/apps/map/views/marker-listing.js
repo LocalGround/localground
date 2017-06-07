@@ -21,18 +21,15 @@ define(["marionette",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.collection = this.data.collection;
-                this.fields = this.data.fields;
-                this.title = this.title || this.data.name;
-                this.typePlural = this.data.id.replace("-", "_");
+                this.title = this.title || this.collection.getTitle();
+                this.typePlural = this.collection.getDataType();
                 this.initDisplayFlags();
                 this.template = Handlebars.compile(ListTemplate);
 
                 Marionette.CompositeView.prototype.initialize.call(this);
                 if (!this.isMapImageCollection()) {
                     this.icon = new Icon({
-                        shape: opts.data.collection.key,
-                        //fillColor: opts.fillColor,
+                        shape: this.collection.getDataType(),
                         fillColor: this.collection.fillColor,
                         width: this.collection.size,
                         height: this.collection.size
@@ -56,7 +53,7 @@ define(["marionette",
                     this.displayOverlays = true;
                     this.isShowing = true;
                 }
-                this.stateKey += "_" + this.collection.key;
+                this.stateKey += this.collection.getDataType();
                 this.restoreState();
             },
             templateHelpers: function () {

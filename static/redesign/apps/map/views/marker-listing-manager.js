@@ -25,10 +25,7 @@ define(["marionette",
             },
 
             addMarkerListingsToUI: function () {
-                var formColors = ['#60C7CC', '#CF2045', '#A3A737', '#F27CA5'],
-                    colorCounter = 0,
-                    i = 0,
-                    fillColor,
+                var i = 0,
                     key,
                     data,
                     selector,
@@ -36,18 +33,13 @@ define(["marionette",
                     dm = this.app.dataManager,
                     dataSources = dm.getDataSources();
                 for (i = 0; i < dataSources.length; i++) {
-                    fillColor = null;
                     key = dataSources[i].value;
                     data =  dm.getData(key);
-                    if (key.indexOf("form_") != -1) {
-                        fillColor = formColors[colorCounter];
-                        ++colorCounter;
-                    }
                     overlayView = new MarkerListing({
-                        data: data,
+                        collection: data.collection,
+                        fields: data.fields,
                         app: this.app,
-                        title: dataSources[i].name,
-                        fillColor: fillColor
+                        title: dataSources[i].name
                     });
                     this.overlayViews.push(overlayView);
                     selector = key + '-list';
