@@ -15,6 +15,8 @@ urlpatterns = patterns('',
     (r'^style/$', login_required(direct_to_template), {'template_name': 'pages/style.html'}),
     (r'^presentation/$', direct_to_template, {'template_name': 'pages/presentation.html'}),
     (r'^pages/(?P<page_name>\w+)/', 'localground.apps.site.views.pages.about_pages'),
+    (r'^documentation/$', direct_to_template, {'template_name': 'pages/documentation.html'}),
+    (r'^about/$', direct_to_template, {'template_name': 'pages/about.html'}),
 
     # django authentication:
     (r'^accounts/', include('registration.backends.hmac.urls')),
