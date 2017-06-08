@@ -1237,6 +1237,7 @@ tbody .failure-message, tbody .success-message {
 }
 #left-panel, #right-panel {
     overflow-y: auto;
+    padding-bottom: 100px;
 }
 
 .left #right-panel, .none #right-panel{

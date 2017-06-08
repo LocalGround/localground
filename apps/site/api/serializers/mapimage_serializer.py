@@ -15,7 +15,8 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     )
     status = serializers.PrimaryKeyRelatedField(
         read_only=False,
-        required=True,
+        required=False,
+        default=1,
         queryset=models.StatusCode.objects.all()
     )
     project_id = serializers.PrimaryKeyRelatedField(
@@ -46,6 +47,30 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     file_path = serializers.SerializerMethodField()
     file_name = serializers.SerializerMethodField()
     
+    '''
+    Proposal: 
+    I think that when an image is inserted, a default ImageOpts
+    object should be created. This can be overwritten by the
+    image processor. Sample code:
+    -----------------------------------------------------------
+    map_image = models.ImageOpts(
+        source_mapimage=self.mapimage,
+        file_name_orig=file_name,
+        zoom=p.zoom,
+        host=self.mapimage.host,
+        virtual_path=self.mapimage.virtual_path
+    )
+
+    #pseudocode: 
+    if extents is not None:
+        map_image.extents = extents
+        map_image.northeast = extents.getNortheast()
+        map_image.southwest = extents.getSouthwest()
+        map_image.center = extents.getCenter()
+
+    map_image.center = p.center
+    map_image.save(user=self.user)
+    '''
     
     def get_fields(self, *args, **kwargs):
         fields = super(MapImageSerializerCreate, self).get_fields(*args, **kwargs)
@@ -157,7 +182,9 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     
 class MapImageSerializerUpdate(MapImageSerializerCreate):
     media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
-    status = serializers.PrimaryKeyRelatedField(queryset=models.StatusCode.objects.all(), read_only=False)
+    status = serializers.PrimaryKeyRelatedField(
+        queryset=models.StatusCode.objects.all(),
+        read_only=False)
     class Meta:
         model = models.MapImage
         fields = BaseNamedSerializer.Meta.fields + (

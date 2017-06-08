@@ -47,7 +47,7 @@ define([
                     ext = ext.toLowerCase();
                     var isAudio = this.options.audioTypes.indexOf(ext) != -1,
                         url = 'photos/';
-                    if (this.options.dataType == 'map-images') {
+                    if (this.options.dataType == 'map_images') {
                         url = 'map-images/';
                     } else if (isAudio) {
                         url =  'audio/';
