@@ -18,7 +18,6 @@ html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, selec
 
 a{
 	text-decoration:none;
-	font-size:12px;
 }
 
 table{
@@ -1485,6 +1484,13 @@ button , a{
 	margin:50px 0 20px;
 }
 
+.article h4 {
+	font-weight:300;
+	font-size:20px;
+	padding-bottom: 6px;
+	margin:20px 0 20px;
+}
+
 .article h1{
 	font-weight: 300;
 	padding: 40px 0px 44px;
@@ -2224,4 +2230,13 @@ a.logotype{
 	border-top: 1px solid #e4e5eb;
 	padding: 14px 20px;
 	right: 0;
+}
+
+.article ul {
+    margin-left: 40px;
+}
+
+.contributors li {
+    margin-bottom: 10px;
+    line-height: 1.2em;
 }
