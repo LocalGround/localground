@@ -21,14 +21,18 @@ define(["marionette",
         template: false,
         displayOverlay: false,
 
-        modelEvents: {
-            'change:geometry': 'reRender',
-            'change:active': 'render',
-            //'change': 'render',
-            'show-marker': 'show',
-            'hide-marker': 'hide',
-            'zoom-to-overlay': 'zoomTo',
-            'reset-overlay': 'restoreModelGeometry'
+        modelEvents: function () {
+            var events = {
+                'change:active': 'render',
+                'show-marker': 'show',
+                'hide-marker': 'hide',
+                'zoom-to-overlay': 'zoomTo',
+                'reset-overlay': 'restoreModelGeometry'
+            };
+            if (this.model.get('overlay_type') !== 'map-image') {
+                events['change:geometry'] = 'reRender';
+            }
+            return events;
         },
         /** called when object created */
         initialize: function (opts) {

@@ -8,6 +8,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
     var GroundOverlay = function (app, opts) {
         Polyline.call(this, app, opts);
         this.editPolygon = null;
+        this.timer = null;
         this.getShapeType = function () {
             return "GroundOverlay";
         };
@@ -15,14 +16,11 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         this.createOverlay = function (isShowingOnMap) {
             this._googleOverlay = new google.maps.GroundOverlay(
                 this.model.get("overlay_path"),
-                new google.maps.LatLngBounds(
-                    new google.maps.LatLng(this.model.get("south"), this.model.get("west")),
-                    new google.maps.LatLng(this.model.get("north"), this.model.get("east"))
-                ),
+                this.getBoundsFromGeoJSON(),
                 {
                     map: isShowingOnMap ? this.map : null,
                     opacity: 1,
-                    clickable: false
+                    clickable: true
                 }
             );
         };
@@ -56,12 +54,13 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         };
 
         this.redraw = function () {
+            console.log("REDRAW");
             if (this.app.mode == 'edit' && this.model.get("active") && this.model.get("geometry")) {
                 this.editPolygon = new google.maps.Rectangle({
                     bounds: this.getBounds(),
-                    strokeColor: '#FF0000',
+                    strokeColor: '#ed867d',
                     strokeOpacity: 1.0,
-                    strokeWeight: 5,
+                    strokeWeight: 4,
                     fillColor: '#FFF',
                     fillOpacity: 0,
                     map: this.map,
@@ -78,15 +77,52 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         this.attachEventHandlers = function () {
             var that = this;
             google.maps.event.addListener(this.editPolygon, 'bounds_changed', function () {
-                console.log('bounds_changed', that.editPolygon.getBounds());
-                var bounds = that.editPolygon.getBounds();
                 that._googleOverlay.setMap(null);
-                that.model.set("south", bounds.getSouthWest().lat());
-                that.model.get("west", bounds.getSouthWest().lng());
-                that.model.set("north", bounds.getNorthEast().lat());
-                that.model.set("east", bounds.getNorthEast().lng());
+                that.setGeometryFromOverlay();
                 that.createOverlay(true);
+                if (that.timer) {
+                    clearTimeout(that.timer);
+                }
+                that.timer = setTimeout(function () { that.model.save(); }, 500);
             });
+            google.maps.event.addListener(this._googleOverlay, 'click', function () {
+                console.log('clicked.');
+                that.app.router.navigate("//" + that.model.getDataTypePlural() + "/" + that.model.get("id"));
+            });
+        };
+
+        this.getBoundsFromGeoJSON = function () {
+            var coordinates = this.model.get("geometry").coordinates[0],
+                north = coordinates[0][1],
+                east = coordinates[0][0],
+                south = coordinates[2][1],
+                west = coordinates[2][0];
+            return new google.maps.LatLngBounds(
+                new google.maps.LatLng(south, west),
+                new google.maps.LatLng(north, east)
+            );
+        };
+
+        this.getGeoJSONFromBounds = function () {
+            var bounds = this.editPolygon.getBounds().toJSON(),
+                north = bounds.north,
+                south = bounds.south,
+                east = bounds.east,
+                west = bounds.west;
+            return {
+                "type": "Polygon",
+                "coordinates": [[
+                    [east, north],
+                    [east, south],
+                    [west, south],
+                    [west, north],
+                    [east, north]
+                ]]
+            };
+        };
+
+        this.setGeometryFromOverlay = function () {
+            this.model.set("geometry", this.getGeoJSONFromBounds());
         };
 
         /**
