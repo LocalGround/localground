@@ -9,18 +9,20 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         Polyline.call(this, app, opts);
         this.editPolygon = null;
         this.timer = null;
-        this.isShowingOnMap = false;
+        this.isShowingOnMap = true;
         this.getShapeType = function () {
             return "GroundOverlay";
         };
 
         this.createOverlay = function (isShowingOnMap) {
-            this.isShowingOnMap = isShowingOnMap;
+            if (typeof isShowingOnMap !== 'undefined') {
+                this.isShowingOnMap = isShowingOnMap;
+            }
             this._googleOverlay = new google.maps.GroundOverlay(
-                this.model.get("overlay_path"),
+                this.model.get("overlay_path") || this.model.get("file_path"),
                 this.getBoundsFromGeoJSON(),
                 {
-                    map: isShowingOnMap ? this.map : null,
+                    map: this.isShowingOnMap ? this.map : null,
                     opacity: 1,
                     clickable: true
                 }
@@ -57,8 +59,10 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         };
 
         this.redraw = function () {
-            console.log("REDRAW");
             if (this.app.mode == 'edit' && this.model.get("active") && this.model.get("geometry")) {
+                if (this.editPolygon) {
+                    this.editPolygon.setMap(null);
+                }
                 this.editPolygon = new google.maps.Rectangle({
                     bounds: this.getBounds(),
                     strokeColor: '#ed867d',

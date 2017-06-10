@@ -30,6 +30,15 @@
         Add New
         {{/if}}
     </h4>
+    {{#if geometry}}
+        <button class="button-secondary delete-marker-button" id="delete-geometry">Detach Overlay From Map</button>
+    {{else}}
+        <div class="add-bounding-box">
+            <button class="button-secondary add-marker-button" id="add-rectangle">
+                Place Overlay
+            </button>
+        </div>
+    {{/if}}
     <div class="img-card map-image">
         <img src="{{ overlay_path }}" />
     </div>

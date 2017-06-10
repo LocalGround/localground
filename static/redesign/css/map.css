@@ -130,15 +130,15 @@ li:hover .fa-eye  {
 }
 
 
-#add-marker-button, #delete-marker-button {
+#add-geometry, #add-rectangle, #delete-geometry {
     display: block;
     text-align: center;
     margin: 30px auto;
-    min-width: 160px;
+    min-width: 180px;
     width: auto;
 }
 
-#add-marker-button:focus, #delete-marker-button:focus {
+#add-geometry:focus, #add-rectangle:focus, #delete-geometry:focus {
     outline: none;
 }
 

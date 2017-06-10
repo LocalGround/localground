@@ -125,7 +125,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             models.MapImage.objects.get_objects(
                 obj.owner,
                 project=obj,
-                processed_only=True
+                processed_only=False
             ),
             name="Map Images"
         )
