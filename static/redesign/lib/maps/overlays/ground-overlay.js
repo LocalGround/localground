@@ -7,7 +7,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
      */
     var GroundOverlay = function (app, opts) {
         Polyline.call(this, app, opts);
-
+        this.editPolygon = null;
         this.getShapeType = function () {
             return "GroundOverlay";
         };
@@ -41,6 +41,52 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
 
         this.getBounds = function () {
             return this._googleOverlay.getBounds();
+        };
+
+        this.getPolygonFromBounds = function () {
+            var bounds = this.getBounds(),
+                path = [],
+                ne = bounds.getNorthEast(),
+                sw = bounds.getSouthWest();
+            path.push(ne);
+            path.push(new google.maps.LatLng(sw.lat(), ne.lng()));
+            path.push(sw);
+            path.push(new google.maps.LatLng(ne.lat(), sw.lng()));
+            return path;
+        };
+
+        this.redraw = function () {
+            if (this.app.mode == 'edit' && this.model.get("active") && this.model.get("geometry")) {
+                this.editPolygon = new google.maps.Rectangle({
+                    bounds: this.getBounds(),
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 5,
+                    fillColor: '#FFF',
+                    fillOpacity: 0,
+                    map: this.map,
+                    draggable: true,
+                    geodesic: true,
+                    editable: true
+                });
+                this.attachEventHandlers();
+            } else if (this.editPolygon) {
+                this.editPolygon.setMap(null);
+            }
+        };
+
+        this.attachEventHandlers = function () {
+            var that = this;
+            google.maps.event.addListener(this.editPolygon, 'bounds_changed', function () {
+                console.log('bounds_changed', that.editPolygon.getBounds());
+                var bounds = that.editPolygon.getBounds();
+                that._googleOverlay.setMap(null);
+                that.model.set("south", bounds.getSouthWest().lat());
+                that.model.get("west", bounds.getSouthWest().lng());
+                that.model.set("north", bounds.getNorthEast().lat());
+                that.model.set("east", bounds.getNorthEast().lng());
+                that.createOverlay(true);
+            });
         };
 
         /**

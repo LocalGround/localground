@@ -1641,6 +1641,9 @@ li.current .photo {
 /********************************/
 /*       SPREADSHEET STYLES     */
 /********************************/
+.handsontable td {
+    white-space: normal !important;
+}
 .spreadsheet .active-slide {
     position: relative;
     height: auto;
@@ -1846,15 +1849,6 @@ audio {
     padding: 0px !important;
     margin: 0px auto !important;
     /*border: solid 1px #000;*/
-}
-
-.spreadsheet .play-ctrls {
-    text-align: center;
-    margin: 0px auto;
-}
-
-.spreadsheet .play {
-    margin: 0px auto;
 }
 
 .play.pause {

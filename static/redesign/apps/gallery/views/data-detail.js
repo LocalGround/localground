@@ -133,10 +133,12 @@ define([
         },
         switchToViewMode: function () {
             this.app.mode = "view";
+            this.app.vent.trigger('mode-change');
             this.render();
         },
         switchToEditMode: function () {
             this.app.mode = "edit";
+            this.app.vent.trigger('mode-change');
             this.render();
         },
         switchToAddMode: function () {

@@ -125,7 +125,7 @@ define(["jquery", "underscore"], function ($, _) {
             });
 
             google.maps.event.addListener(this._googleOverlay, "drag", function (mEvent) {
-                if (model.getKey() != "markers") {
+                if (model.getDataTypePlural() != "markers") {
                     that.app.vent.trigger("dragging", {
                         latLng: mEvent.latLng
                     });

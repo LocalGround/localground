@@ -60,7 +60,7 @@ define(["models/base",
             attach: function (model, order, callbackSuccess, callbackError) {
                 var association = new Association({
                     model: this,
-                    attachmentType: model.getKey()
+                    attachmentType: model.getDataTypePlural()
                 });
                 association.save({ object_id: model.id, ordering: order }, {
                     success: callbackSuccess,

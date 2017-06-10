@@ -37,7 +37,7 @@ define(["marionette",
             this.map = opts.app.getMap();
             this.initInfoBubble(opts);
             this.initOverlayType();
-            this.listenTo(this.app.vent, "mode-change", this.changeMode);
+            this.listenTo(this.app.vent, "mode-change", this.redraw);
         },
         initInfoBubble: function (opts) {
             this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
@@ -67,7 +67,7 @@ define(["marionette",
         updateOverlay: function () {
             this.getGoogleOverlay().setMap(null);
             this.initOverlayType();
-            this.changeMode();
+            //this.changeMode();
         },
 
         initOverlayType: function () {
@@ -118,7 +118,7 @@ define(["marionette",
             this.displayOverlay = true;
             var go = this.getGoogleOverlay();
             go.setMap(this.map);
-            this.changeMode();
+            //this.changeMode();
         },
         reRender: function () {
             console.log('rerender');
@@ -189,20 +189,23 @@ define(["marionette",
             return this._overlay.getBounds();
         },
 
-        changeMode: function () {
+        /*changeMode: function () {
+            console.log('changeMode', this.model.get("active"));
             if (this.app.getMode() === "view") {
                 this.makeViewable();
             } else {
                 this.makeEditable();
             }
-        },
+        },*/
 
         makeViewable: function () {
             this._overlay.makeViewable();
         },
 
         makeEditable: function () {
-            this._overlay.makeEditable(this.model);
+            if (this.model.get("active")) {
+                this._overlay.makeEditable(this.model);
+            }
         },
 
         redraw: function () {
