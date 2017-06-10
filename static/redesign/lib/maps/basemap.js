@@ -96,7 +96,9 @@ define(["marionette",
                         r = getGeoJSONFromBounds(rect);
                     rect.setMap(null);
                     that.targetedModel.set("geometry", r);
-                    console.log(that.targetedModel);
+                    that.addMarkerClicked = false;
+                    that.targetedModel = null;
+                    that.drawingManager.setMap(null);
                 });
                 this.drawingManager.setMap(this.map);
             },
