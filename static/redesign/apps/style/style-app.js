@@ -25,6 +25,8 @@ define([
         screenType: "style",
         showLeft: true,
         showRight: false,
+        layerHasBeenAltered: false,
+        layerHasBeenSaved: false,
         currentCollection: null,
         start: function (options) {
             // declares any important global functionality;

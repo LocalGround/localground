@@ -61,15 +61,15 @@ define(["jquery",
 
                 this.listenTo(this.collection, 'reset', this.drawOnce);
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
+                this.listenTo(this.app.vent, 'update-map-list', this.updateMapList);
             },
 
             setModel: function () {
                 console.log("setModel");
-
                 if (this.collection.length > 0 ) {
                     this.app.selectedMapModel = this.collection.at(0);
+                    //this.app.selectedMapModel = this.model;
                 }
-
             },
 
             newMap: function (mapAttrs) {
@@ -90,7 +90,6 @@ define(["jquery",
                     project_id: this.app.getProjectID()
                 });
               
-                this.collection.add(this.map);
                 
                 this.map.save(null, {
                     success: this.setMapAndRender.bind(this),
@@ -102,17 +101,28 @@ define(["jquery",
                             console.log("should have error message", that.slugError);
                         }
                         that.app.vent.trigger("send-modal-error", that.slugError);
-                    }
-                    
+                    } 
                 });
             },
 
             setMapAndRender: function () {
+                this.collection.add(this.map);
+                this.modal.hide();
                 console.log("setMapAndRender:", this.app.selectedMapModel);
                 if (!this.app.selectedMapModel) {
                     this.setModel();
                 }
+                this.app.selectedMapModel = this.map;
+                console.log("new selected map model", this.app.selectedMapModel);
+                this.showSection();
                 this.render();
+                this.$el.find('#map-select').val(this.map.id);
+                
+                this.setCenterZoom(this.map);
+                this.setMapTypeId(this.map);
+                this.app.vent.trigger("change-map", this.map);
+                this.app.vent.trigger("hide-right-panel");
+
             },
 
             drawOnce: function () {
@@ -141,6 +151,15 @@ define(["jquery",
                 this.app.vent.trigger("hide-right-panel");
             },
 
+            updateMapList: function () {
+                var id = this.$el.find('#map-select').val(),
+                selectedMapModel = this.collection.get(id);
+
+                this.setCenterZoom(selectedMapModel);
+                this.setMapTypeId(selectedMapModel);
+                this.app.vent.trigger("change-map", selectedMapModel);
+            },
+
             showAddMapModal: function () {
                 var createMapModel = new NewMap({
                     app: this.app
@@ -157,7 +176,6 @@ define(["jquery",
                     showDeleteButton: false
                 });
                 this.modal.show();
-                this.showSection();
             },
 
             setCenterZoom: function (selectedMapModel) {

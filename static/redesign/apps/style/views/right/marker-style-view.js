@@ -49,7 +49,6 @@ define(["jquery",
                     tagName: "tr",
                     className: "table-row",
                     templateHelpers: function () {
-                       console.log("childview update. selectedProp", this.selectedProp);
                         return {
                             dataType: this.dataType,
                             icons: IconLookup.getIcons(),
@@ -257,7 +256,7 @@ define(["jquery",
                 
                 while (currentFloor < max) {
                     this.layerDraft.continuous.add({
-                        "rule": $selected + " >= " + currentFloor.toFixed(0) + " and " + $selected + " < " + (currentFloor + segmentSize).toFixed(0),
+                        "rule": $selected + " >= " + currentFloor.toFixed(0) + " and " + $selected + " <= " + (currentFloor + segmentSize).toFixed(0),
                         "title": "between " + currentFloor.toFixed(0) + " and " + (currentFloor + segmentSize).toFixed(0),
                         "fillOpacity": parseFloat(this.$el.find("#palette-opacity").val()),
                         "strokeWeight": parseFloat(this.$el.find("#stroke-weight").val()),
@@ -288,7 +287,7 @@ define(["jquery",
                 key = this.model.get('data_source'),
                 $selected = this.$el.find("#cat-prop").val(),
                 counter = 0,
-                fillColorList = ["#446e91", "#449169", "#e81502", "#e88401", "#6c00e8"];
+                fillColorList = ["446e91", "449169", "e81502", "e88401", "6c00e8"];
                 this.categoricalData = this.app.dataManager.getData(key);
                 this.selectedProp = $selected
                 console.log("updated selected property", this.selectedProp);
@@ -301,24 +300,25 @@ define(["jquery",
                         instanceCount[d.get($selected)]++;
                     }                    
                 });
-               
+               console.log(list);
                 list.forEach(function(item){
                     that.layerDraft.categorical.add({
-                        "rule": item,
+                        "rule": that.selectedProp + " = " + item,
                         "title": item,
-                        "fillOpacity": parseFloat(that.$el.find("#palette-opacity").val()),
+                        "fillOpacity": 1,
                         "strokeWeight": parseFloat(that.$el.find("#stroke-weight").val()),
                         "strokeOpacity": parseFloat(that.$el.find("#stroke-opacity").val()),
                         "width": parseFloat(that.$el.find("#marker-width").val()) || 20,
                         "shape": that.$el.find(".global-marker-shape").val(),
-                        "fillColor": "#" + that.selectedColorPalette[counter],
+                        "fillColor": "#" + fillColorList[counter],
                         "strokeColor": that.model.get("metadata").strokeColor,
                         "id": instanceCount.item, 
                         "instanceCount": instanceCount[item]
                     });
+                    counter++;
                 });
                 this.collection = this.layerDraft.categorical;
-                this.model.set("symbols", this.layerDraft.continuous.toJSON());
+                this.model.set("symbols", this.layerDraft.categorical.toJSON());
                 this.updateMap();
                 this.render();
             },
@@ -456,7 +456,8 @@ define(["jquery",
                 this.collection.each(function(symbol) {
                     symbol.set(newKey, newValue);
                 });
-
+                this.app.layerHasBeenAltered = true;
+                this.app.layerHasBeenSaved = false;
             }
 
         });

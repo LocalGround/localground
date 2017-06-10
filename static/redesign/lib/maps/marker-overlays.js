@@ -70,6 +70,11 @@ define(['marionette',
                 });
             },
 
+            remove: function () {
+                this.hideAll();
+                Marionette.CollectionView.prototype.remove.call(this);
+            },
+
             getBounds: function () {
                 var bounds = new google.maps.LatLngBounds();
                 this.children.each(function (overlay) {

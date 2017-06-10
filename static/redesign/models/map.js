@@ -38,7 +38,8 @@ define(["models/base", "collections/layers"], function (Base, Layers) {
                     subtitle: {type: "subtitle", font: "Lato", fw: "regular", color: "gray", size: "12"},
                     paragraph: {type: "paragraph", font: "Lato", fw: "regular", color: "black", size: "12"},
                     tags: {type: "tags", font: "Lato", fw: "regular", color: "black", size: "10"}
-                }
+                },
+                layers: []
             });
         },
 

@@ -83,9 +83,21 @@ section {
 
 #layers {
     background: white;
-    border: 1px solid #e4e5eb;
-    padding: 10px;
+   /* border: 1px solid #e4e5eb; */
+    /*padding: 10px 0px; */
     margin-top: 10px;
+}
+
+.layer-column {
+    padding: 0px 10px 5px 10px;
+}
+
+.selected-layer {
+    background-color: #4e70d4;
+}
+
+.selected-layer * {
+    color: white;
 }
 
 .layer-name {
@@ -204,7 +216,14 @@ th {
 }
 
 .edit {
-    float: right
+    margin-top: 7px;
+    float: right;
+}
+
+.layer-delete {
+    float: right;
+    margin-top: 10px;
+    margin-left: 8px;
 }
 
 .symbols-table th {
@@ -317,4 +336,8 @@ palette-options {
     border-color: #e4e5eb;
     box-shadow: 0 2px 0px 0 rgba(0,0,0,.02);
     background-size: 60px 40px;;
+}
+
+.style-main-panel .button-primary {
+    width: auto;
 }

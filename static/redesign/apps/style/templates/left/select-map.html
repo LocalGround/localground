@@ -11,13 +11,11 @@
 
 {{#if noItems}}
     <p>Click the plus sign to create a new map</p>
-
-
 {{else}}
 <select id="map-select" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">
-{{#each items}}
+    {{#each items}}
     <option value="{{ this.id }}">{{ this.name }}</option>
-{{/each}}
+    {{/each}}
 </select>
 
 {{/if}}
