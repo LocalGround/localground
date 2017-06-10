@@ -9,11 +9,13 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         Polyline.call(this, app, opts);
         this.editPolygon = null;
         this.timer = null;
+        this.isShowingOnMap = false;
         this.getShapeType = function () {
             return "GroundOverlay";
         };
 
         this.createOverlay = function (isShowingOnMap) {
+            this.isShowingOnMap = isShowingOnMap;
             this._googleOverlay = new google.maps.GroundOverlay(
                 this.model.get("overlay_path"),
                 this.getBoundsFromGeoJSON(),
@@ -23,6 +25,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
                     clickable: true
                 }
             );
+            this.attachGroundOverlayEventHandler();
         };
 
         this.makeViewable = this.makeEditable = function (model) {
@@ -62,19 +65,26 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
                     strokeOpacity: 1.0,
                     strokeWeight: 4,
                     fillColor: '#FFF',
-                    fillOpacity: 0,
+                    fillOpacity: 0.5,
                     map: this.map,
                     draggable: true,
-                    geodesic: true,
                     editable: true
                 });
-                this.attachEventHandlers();
+                this.attachPolygonEventHandler();
             } else if (this.editPolygon) {
                 this.editPolygon.setMap(null);
             }
         };
 
-        this.attachEventHandlers = function () {
+        this.attachGroundOverlayEventHandler = function () {
+            var that = this;
+            google.maps.event.addListener(this._googleOverlay, 'click', function () {
+                console.log('clicked.');
+                that.app.router.navigate("//" + that.model.getDataTypePlural() + "/" + that.model.get("id"));
+            });
+        };
+
+        this.attachPolygonEventHandler = function () {
             var that = this;
             google.maps.event.addListener(this.editPolygon, 'bounds_changed', function () {
                 that._googleOverlay.setMap(null);
@@ -83,11 +93,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
                 if (that.timer) {
                     clearTimeout(that.timer);
                 }
-                that.timer = setTimeout(function () { that.model.save(); }, 500);
-            });
-            google.maps.event.addListener(this._googleOverlay, 'click', function () {
-                console.log('clicked.');
-                that.app.router.navigate("//" + that.model.getDataTypePlural() + "/" + that.model.get("id"));
+                //that.timer = setTimeout(function () { that.model.save(); }, 500);
             });
         };
 
