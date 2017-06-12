@@ -113,14 +113,6 @@ define([
                 expect(record.get("choice_test")).toEqual("Beta");
                 expect(errors).toBeUndefined();
             });
-
-            it("Make sure that form validates correctly and throws error", function () {
-                initRecord(this, "Alpha");
-                fixture.find('select').val("Beta");
-                var errors = form.commit({ validate: true });
-                expect(record.get("choice_test")).toEqual("Delta");
-                expect(1).toEqual(-1);
-            });
         });
 
     });
