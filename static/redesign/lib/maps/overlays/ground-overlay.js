@@ -9,7 +9,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         Polyline.call(this, app, opts);
         this.editPolygon = null;
         this.timer = null;
-        this.isShowingOnMap = true;
+        this.isShowingOnMap = false;
         this.getShapeType = function () {
             return "GroundOverlay";
         };
@@ -18,6 +18,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             if (typeof isShowingOnMap !== 'undefined') {
                 this.isShowingOnMap = isShowingOnMap;
             }
+            console.log(isShowingOnMap, this.isShowingOnMap, this.model.get('file_path'));
             this._googleOverlay = new google.maps.GroundOverlay(
                 this.model.get("overlay_path") || this.model.get("file_path"),
                 this.getBoundsFromGeoJSON(),
@@ -69,7 +70,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
                     strokeOpacity: 1.0,
                     strokeWeight: 4,
                     fillColor: '#FFF',
-                    fillOpacity: 0.5,
+                    fillOpacity: 0,
                     map: this.map,
                     draggable: true,
                     editable: true
@@ -93,7 +94,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             google.maps.event.addListener(this.editPolygon, 'bounds_changed', function () {
                 that._googleOverlay.setMap(null);
                 that.setGeometryFromOverlay();
-                that.createOverlay(true);
+                that.createOverlay();
                 if (that.timer) {
                     clearTimeout(that.timer);
                 }

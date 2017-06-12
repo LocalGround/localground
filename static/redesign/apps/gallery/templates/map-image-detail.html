@@ -40,7 +40,11 @@
         </div>
     {{/if}}
     <div class="img-card map-image">
+    {{#if overlay_path}}
         <img src="{{ overlay_path }}" />
+    {{else}}
+        <img src="{{ file_path }}" />
+    {{/if}}
     </div>
 
     <div id="model-form">

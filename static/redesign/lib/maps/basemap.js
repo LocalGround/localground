@@ -70,7 +70,7 @@ define(["marionette",
                     rectangleOptions: {
                         strokeColor: '#ed867d',
                         fillColor: '#ed867d',
-                        fillOpacity: 0.5,
+                        fillOpacity: 0,
                         strokeWeight: 4,
                         clickable: false,
                         editable: true,
@@ -99,6 +99,7 @@ define(["marionette",
                     that.addMarkerClicked = false;
                     that.targetedModel = null;
                     that.drawingManager.setMap(null);
+                    $('body').css({ cursor: 'auto' });
                 });
                 this.drawingManager.setMap(this.map);
             },

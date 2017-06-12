@@ -47,9 +47,7 @@ define([
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
         },
         activateRectangleTrigger: function () {
-            this.$el.css({
-                cursor: 'crosshair'
-            });
+            $('body').css({ cursor: 'crosshair' });
             this.app.vent.trigger("add-new-marker", this.model);
             this.app.vent.trigger("add-rectangle", this.model);
         },
