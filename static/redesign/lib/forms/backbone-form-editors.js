@@ -203,7 +203,6 @@ define([
                 this.model.save(null, {
                     success: function () {
                         that.attachMedia(models);
-                        that.model.collection.add(that.model);
                     }
                 });
             }
