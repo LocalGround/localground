@@ -12,39 +12,6 @@ define([
             continuousFixture,
             categoricalMarkerStyleView,
             Layer,
-
-            /*
-            initView = function (that) {
-                // 1) add spies for all relevant objects:
-                spyOn(that.app.vent, 'trigger').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'initialize').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'buildPalettes').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'buildColumnList').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'hideColorRamp').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'selectDataType').and.callThrough();
-
-                // 2) initialize categorical MarkerStyleView object:
-                markerStyleView = new MarkerStyleView({
-                    app: that.app,
-                    model: that.testMap.get("layers").at(2)
-                });
-                markerStyleView.render();
-
-                //initialize continuous MarkerStyleView object:
-                continuousMarkerStyleView = new MarkerStyleView({
-                    app: that.app,
-                    model: that.testMap.get("layers").at(0)
-                });
-                continuousMarkerStyleView.render();
-
-                // 3) set fixture:
-                fixture = setFixtures('<div></div>');
-                fixture.append(markerStyleView.$el);
-
-                continuousFixture = setFixtures('<div></div>');
-                continuousFixture.append(continuousMarkerStyleView.$el);
-            },
-            */
             initSpies = function (that) {
                 // 1) add spies for all relevant objects:
                 spyOn(that.app.vent, 'trigger').and.callThrough();
@@ -60,7 +27,6 @@ define([
                 spyOn(MarkerStyleView.prototype, 'updateStrokeWeight').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'updateStrokeOpacity').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'updateStrokeColor').and.callThrough();
-              //  spyOn(Layer.prototype, 'trigger').and.callThrough();
 
             },
             
@@ -93,8 +59,6 @@ define([
 
                 //spies
                 spyOn(categoricalMarkerStyleView, 'updateMetadata').and.callThrough(); 
-             //   spyOn(categoricalMarkerStyleView, 'updateGlobalShape').and.callThrough();
-             //   spyOn(categoricalMarkerStyleView, 'updateWidth').and.callThrough();
             };
 
 
@@ -226,13 +190,8 @@ define([
             it(" 'updateStrokeColor()' should update stroke color ", function () {
                 //open the color picker:
                 $(continuousFixture.find('#stroke-color-picker').trigger("click"));
-                jasmine.clock().tick(500);
-
-                //now close color picker:
-                // Note: I had to comb through the source file to understand what event
-                //       was in charge of calling the hide event:
-                //       /redesign/external/colorpicker/js/colorpicker-forked.js
-                $(document).trigger('mousedown');
+                jasmine.clock().tick(600);
+                $(document).trigger("mousedown");
                 expect(continuousMarkerStyleView.updateStrokeColor).toHaveBeenCalledTimes(1);
 
             });
@@ -271,17 +230,18 @@ define([
                 expect(continuousMarkerStyleView.model.get("metadata").buckets).toEqual(5);  
                 expect(continuousMarkerStyleView.selectedColorPalette).toEqual(["f7f7f7", "cccccc", "969696", "636363", "252525"]);
             });
-/*
-            it("showPalettes function should display and hide list of palettes", function() {
-                console.log($(continuousFixture.find('.palette-wrapper')).css('display'));
-                $(continuousFixture.find('.selected-palette-wrapper').trigger('click'));
-                expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('block');
 
-                console.log($(continuousFixture.find('.palette-wrapper')).css('display'));
-                $(continuousFixture.find('.selected-palette-wrapper').trigger('click'));
-                expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('block');
-                console.log($(continuousFixture.find('.palette-wrapper')).css('display'));
+            it("showPalettes function should display and hide list of palettes", function() {
+            
+               $(continuousFixture.find('.palette-wrapper')).css('display', 'none');
+               expect(continuousFixture.find(".palette-wrapper").css('display')).toEqual('none');
+
+                $(continuousFixture.find('.selected-palette-wrapper').click());
+                expect(continuousFixture.find(".palette-wrapper").css('display')).toEqual('block');
+
+                $('body').click();
+                expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('none');
             });
-*/
+
         });
     });

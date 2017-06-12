@@ -34,7 +34,7 @@
                 <td>
                     <select id="cat-prop">
                         {{#each categoricalList}}
-                            <option value="{{ this.value }}">{{ this.text }}</option>
+                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} value="{{ this.value }}">{{ this.text }}</option>
                         {{/each}}
                     </select>
                 </td>

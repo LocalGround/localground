@@ -61,7 +61,6 @@ define(["marionette",
                         height: this.model.collection.size
                     };
                 _.extend(iconOpts, this.iconOpts);
-                console.log(iconOpts, this.iconOpts);
                 icon = new Icon(iconOpts);
                 this._icon = icon;
             }
@@ -125,11 +124,6 @@ define(["marionette",
             //this.changeMode();
         },
         reRender: function () {
-            console.log('rerender');
-            /*this.redraw();
-            if (this.model.get("geometry")) {
-                this.show();
-            }*/
             this.render();
         },
 

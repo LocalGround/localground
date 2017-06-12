@@ -27,12 +27,32 @@ define(["jquery",
             },
             events: {
                 //edit event here, pass the this.model to the right panel
-                "click .edit" : "sendCollection",
+                'click .edit' : 'sendCollection',
+                'click .layer-delete' : 'deleteLayer',
                 'change input': 'showHideOverlays'
             },
 
             sendCollection: function () {
+               // this.$el.addClass('selected-layer');
+                this.$el.attr('id', this.model.id);
+                console.log(this.model.id);
+                this.app.vent.trigger('handle-selected-layer', this.model.id);
                 this.app.vent.trigger("edit-layer", this.model, this.collection);
+            },
+
+            deleteLayer: function () {
+                if (!confirm("Are you sure you want to delete this layer?")) {
+                    return;
+                }
+                console.log("deleteLayer()", this.model);
+                console.log("collection before delete: ", this.collection);
+                this.model.destroy();
+                this.collection.remove(this.model);
+                this.deleteOverlays();
+                //this.hideOverlays();
+                console.log("collection after delete: ", this.collection);
+                this.app.vent.trigger('update-layer-list');
+                this.app.vent.trigger("hide-right-panel");
             },
 
             updateTitle: function (title) {
@@ -42,6 +62,7 @@ define(["jquery",
 
             updateMapOverlays: function () {
                 console.log('rebuilding map overlays');
+                console.log(this.model.getSymbols());
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
                 this.initMapOverlays();
@@ -75,6 +96,7 @@ define(["jquery",
                     });
                     that.markerOverlayList.push(overlays);
                 });
+                console.log(this.markerOverlayList);
             },
 
             showOverlays: function () {
@@ -86,6 +108,15 @@ define(["jquery",
             hideOverlays: function () {
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.hideAll();
+                });
+            },
+
+            deleteOverlays: function () {
+                console.log("deleteOverlays() called")
+              //  this.$el.find('.gmnoprint').remove();
+                
+                _.each(this.markerOverlayList, function (overlays) {
+                    overlays.remove();
                 });
             },
 

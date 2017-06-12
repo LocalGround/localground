@@ -35,6 +35,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'init-collection', this.displayLayers);
                 this.listenTo(this.app.vent, 'change-map', this.displayLayers);
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
+                this.listenTo(this.app.vent, 'handle-selected-layer', this.handleSelectedLayer);
             },
 
             events: function () {
@@ -48,6 +49,11 @@ define(["marionette",
                 this.$el.find("#new-layer-options").toggle();
             },
 
+            handleSelectedLayer: function (id) {
+                this.$el.find('.layer-column').removeClass('selected-layer');
+                this.$el.find('#' + id).addClass('selected-layer');
+            },
+
             //display layers when map is changed
             displayLayers: function (selectedMapModel) {
                 if(!selectedMapModel) {return;}
@@ -57,6 +63,18 @@ define(["marionette",
                 this.listenTo(this.collection, 'add', this.render);
             },
             createNewLayer: function (e) {
+                console.log("Altered?: ", this.app.layerHasBeenAltered)
+                console.log("Saved?: ", this.app.layerHasBeenSaved)
+                var continueAction = true;
+                if (this.app.layerHasBeenAltered && !this.layerHasBeenSaved) {
+                    console.log("should send save confirmation");
+                    continueAction = confirm("You have unsaved changes on your currently selected layer. If you continue, your changes will not be saved. Do you wish to continue?");
+                }
+                if(!continueAction) {
+                    console.log("should exit createLayer()");
+                    return;
+                }
+                console.log("createNewLayer triggered", this.app.selectedMapModel);
                 var layer = new Layer({
                     map_id: this.app.selectedMapModel.id,
                     data_source: "photos", //default

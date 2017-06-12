@@ -21,7 +21,6 @@ define([
         },
 
         redraw: function () {
-            console.log(this.getShapeType());
             if (this.getShapeType() === "Point") {
                 if (this.model.get("active")) {
                     var icon = {};
@@ -40,7 +39,6 @@ define([
                     }
                 }
             } else {
-                console.log("else", this.getShapeType());
                 this._overlay.redraw();
             }
         }

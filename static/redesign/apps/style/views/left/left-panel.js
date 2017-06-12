@@ -21,10 +21,11 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
             },
             events: {
-                "click #new-layer-options a" : "createNewLayer",
+                'click #new-layer-options a' : 'createNewLayer',
                 'click .hide': 'hidePanel',
                 'click .show': 'showPanel',
-                "click .map-save" : "saveMap"
+                'click .map-save' : 'saveMap',
+                'click #map-delete': 'deleteMap'
             },
 
             regions: {
@@ -37,17 +38,17 @@ define(["jquery",
                 // only load views after the LayoutView has
                 // been rendered to the screen:
                 var sv, lv, skv, ps;
-                sv = new SelectMapView({ app: this.app });
-                this.menu.show(sv);
+                this.sv = new SelectMapView({ app: this.app });
+                this.menu.show(this.sv);
 
-                lv = new LayerListView({ app: this.app });
-                this.layers.show(lv);
+                this.lv = new LayerListView({ app: this.app });
+                this.layers.show(this.lv);
 
-                skv = new SkinView({ app: this.app });
-                this.skins.show(skv);
+                this.skv = new SkinView({ app: this.app });
+                this.skins.show(this.skv);
 
-                ps = new PanelStylesView({ app: this.app });
-                this.styles.show(ps);
+                this.ps = new PanelStylesView({ app: this.app });
+                this.styles.show(this.ps);
             },
             handleNewMap: function (model) {
                 // is 'this.app.model' necessary?
@@ -84,6 +85,37 @@ define(["jquery",
                         console.log('success');
                     }
                 });
+            }, 
+
+            deleteMap: function () {
+                if (!confirm("Are you sure you want to delete this map?")) {
+                    return;
+                }
+                
+                // delete marker overlays from selected map's layers
+                this.lv.children.call("deleteOverlays");
+                
+                // delete selected map's layers
+                var listModel;
+                while (listModel = this.lv.collection.first()) {
+                    listModel.destroy();
+                }
+
+                // delete selected map
+                this.model.destroy();
+
+                // re-render menu region
+                this.menu.show(this.sv, {forceShow: true});
+            
+                //rerender layers
+                //this.app.vent.trigger('update-layer-list');
+                
+                // resets the map list so the correct layers are displayed
+                this.app.vent.trigger('update-map-list');
+
+                // hide the right panel if it is open; 
+                //necessary so the user cannot edit a non-existent layer
+                this.app.vent.trigger("hide-right-panel");
             }
         });
         return LeftPanelLayout;
