@@ -65,7 +65,10 @@ require(['boot'], function () {
         'spec/views/map-editor/marker-listing-detail-test.js',
 
         //FORMS
-        'spec/lib/form-field-date-time-test.js'
+        'spec/lib/form-field-date-time-test.js',
+        'spec/lib/form-field-choice-test.js',
+        'spec/lib/form-field-rating-test.js',
+        'spec/lib/form-field-add-media-test.js'
     ];
 
     require(specs, function () {

@@ -76,8 +76,6 @@ define([
                 expect(fixture).toContainElement("input.minutes");
                 expect(fixture).toContainElement("input.seconds");
                 expect(fixture).toContainElement("select.am_pm");
-                //TODO: John, check for all inputs
-                //expect(1).toEqual(-1);
             });
 
             it("Sets all form values correctly when time is AM value", function () {
@@ -176,6 +174,23 @@ define([
                     var errors = form.commit({ validate: true });
                     expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(1);
                     expect(errors).toBeUndefined();
+                });
+
+                it("Saves date as null if date is blank and every time value is 0", function () {
+                    initRecord(this, timeAM);
+                    expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(0);
+                    fixture.find('input.datepicker').val("");
+                    fixture.find('input.hours').val("0");
+                    fixture.find('input.minutes').val("0");
+                    fixture.find('input.seconds').val("0");
+                    var errors = form.commit({ validate: true });
+                    expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(1);
+                    expect(errors).toBeUndefined();
+                });
+
+                it("Saves date as null if the date field is null", function () {
+                    initRecord(this, timeAM);
+                    expect(1).toEqual(-1);
                 });
 
                 it("Keeps date correctly when user makes a valid date change through date input", function () {

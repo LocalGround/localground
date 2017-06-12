@@ -6,7 +6,6 @@ define([
     "models/audio",
     "apps/gallery/views/add-media",
     "lib/audio/audio-player",
-    //"moment",
     "external/pikaday-forked",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
     "text!../forms/templates/date-time-template.html",
@@ -15,6 +14,14 @@ define([
 ], function ($, Backbone, Handlebars, Association, Audio, AddMedia, AudioPlayer,
              Pikaday, dateFns, DateTimeTemplate, MediaTemplate) {
     "use strict";
+
+    Backbone.Form.editors.Rating = Backbone.Form.editors.Select.extend({
+        getValue: function () {
+            var value = this.$el.val();
+            return parseInt(value, 10);
+        }
+    });
+
     Backbone.Form.editors.DatePicker = Backbone.Form.editors.Text.extend({
 
         initialize: function (options) {
@@ -43,9 +50,6 @@ define([
         picker: null,
         format: "YYYY-MM-DD",
         initialize: function (options) {
-            //moment.tz.setDefault('America/San_Francisco');
-            // add date / time validator before calling the
-            // parent initialization function:
             options.schema.validators = [this.dateTimeValidator];
             Backbone.Form.editors.Text.prototype.initialize.call(this, options);
             var template = Handlebars.compile(DateTimeTemplate);
@@ -61,19 +65,19 @@ define([
             var isPm = hours >= 12 ? true: false;
             var ds = dateFns.format(this.value, this.format);
             console.log('initialize:', ds);
-            this.$el.append(template({
-                dateString: ds,
-                hoursString: dateFns.format(this.value, 'hh'),
-                minutesString: dateFns.format(this.value, 'mm'),
-                secondsString: dateFns.format(this.value, 'ss'),
-                am_pm_String: dateFns.format(this.value, 'a'),
-                hours: hours,
-                isPm: isPm
-            }));
-            //console.log(this.$el.html());
+            this.$el.append(template(
+                {
+                    dateString: ds,
+                    hoursString: dateFns.format(this.value, 'hh'),
+                    minutesString: dateFns.format(this.value, 'mm'),
+                    secondsString: dateFns.format(this.value, 'ss'),
+                    am_pm_String: dateFns.format(this.value, 'a'),
+                    hours: hours,
+                    isPm: isPm
+                })
+            );
         },
         dateTimeValidator: function (value, formValues) {
-            console.log(value);
             try {
                 var d = new Date(value);
                 if (d == "Invalid Date") {
@@ -92,7 +96,8 @@ define([
         },
         getValue: function () {
             //contatenate the date and time input values
-            var date = dateFns.format(this.$el.find('input.datepicker').val(), this.format),//this.$el.find('.datepicker').val(),
+            var date = dateFns.format(this.$el.find('input.datepicker').val(), this.format),
+                dateStr = this.$el.find('.datepicker').val(),
                 am_pm = this.$el.find('.am_pm').val(),
                 hours = this.$el.find('.hours').val(),
                 hours00 = hours.substr(hours.length - 2),
@@ -128,9 +133,17 @@ define([
                 seconds00 = "00";
             }
 
+            var allZeros = (hours00 == '00' && minutes00 == '00' && seconds00 == '00');
+            console.log(dateStr, allZeros);
+
+            if (dateStr === '' && allZeros){
+                return null;
+            }
+
             if (date === '1969-12-31') {
                 return '';
             }
+
             val = date + "T" + hours00 + ":" + minutes00 + ":" + seconds00;
             console.log('getValue:', val);
             return val;
@@ -188,7 +201,6 @@ define([
                 this.model.save(null, {
                     success: function () {
                         that.attachMedia(models);
-                        that.model.collection.add(that.model);
                     }
                 });
             }
