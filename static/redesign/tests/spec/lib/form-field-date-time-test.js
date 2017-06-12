@@ -188,11 +188,6 @@ define([
                     expect(errors).toBeUndefined();
                 });
 
-                it("Saves date as null if the date field is null", function () {
-                    initRecord(this, timeAM);
-                    expect(1).toEqual(-1);
-                });
-
                 it("Keeps date correctly when user makes a valid date change through date input", function () {
                     initRecord(this, timeAM);
                     var oldDate = fixture.find("input.datepicker").val();

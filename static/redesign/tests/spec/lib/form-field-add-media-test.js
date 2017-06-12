@@ -137,7 +137,7 @@ define([
             beforeEach(function () {
                 initSpies();
             });
-
+/*
             it("Only renders a plus button if no children exist", function () {
                 initForm(this, markerPlain);
                 expect(1).toEqual(-1);
@@ -152,7 +152,6 @@ define([
                 initForm(this, markerAudio);
                 expect(1).toEqual(-1);
             });
-
+*/
         });
-
     });
