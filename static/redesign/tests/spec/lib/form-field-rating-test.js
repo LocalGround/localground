@@ -1,5 +1,5 @@
 /*
-  Still making changes so that the choices and ratings can be used for the tests
+  Still making changes so that the ratings and ratings can be used for the tests
 */
 
 var rootDir = "../../";
@@ -27,25 +27,35 @@ define([
             spyOn(Pikaday.prototype, 'hide').and.callThrough();
             */
         };
-        initRecord = function (scope, t) {
+        initRecord = function (scope, rating) {
             //create the simplest record possible:
+            //step 1: create a form with fields:
+            var form_fields = [{
+                "id": 1,
+                "form": 1,
+                "col_alias": "rating Test",
+                "col_name": "rating_test",
+                "ordering": 1,
+                "data_type": "rating",
+                "url": "http://localhost:7777/api/0/forms/1/fields/1",
+                "val": rating,
+                "extras": JSON.stringify([
+                    { "name": "One", "value": 1},
+                    { "name": "Two", "value": 2}
+                ])
+            }];
+            //step 2: create a record with the appropriate "rating" type:
             record = new Record({
                 id: 1,
-                datetime_test: t,
-                display_name: t,
+                rating_test: rating,
+                display_name: rating,
                 project_id: 1,
                 overlay_type: "form_1",
-                fields: [{
-                    "id": 1,
-                    "form": 1,
-                    "col_alias": "Rating Test",
-                    "col_name": "rating_test",
-                    "ordering": 1,
-                    "data_type": "rating",
-                    "url": "http://localhost:7777/api/0/forms/1/fields/1",
-                    "val": t
-                }]
+                fields: form_fields
             });
+            //step 3: create a Backbone form to allow the user to do data entry
+            //        (inside of the data-detail.js file):
+            console.log(record.getFormSchema());
             form = new DataForm({
                 model: record,
                 schema: record.getFormSchema(),
@@ -58,21 +68,40 @@ define([
         describe("Form: Rating Editor Test: Initializes and Renders Correctly", function () {
             beforeEach(function () {
                 initSpies();
-                initRecord();
             });
 
 
 
             it("Initializes correctly", function () {
+                initRecord(this, "One");
                 expect(form.schema).toEqual(record.getFormSchema());
                 expect(form.model).toEqual(record);
-                expect(DateTimePicker.prototype.initialize).toHaveBeenCalledTimes(1);
             });
 
             it("Renders all controls correctly", function(){
-                // Need more specifics before expanding on the tests
-                expect(fixture).toContainElement("select:option");
-                expect("Need to specify Rating Render Controls Test").toEqual(-1);
+                initRecord(this, "One");
+                expect(fixture).toContainElement("select > option");
+                expect(fixture.find('select > option').length).toEqual(2);
+                expect($(fixture.find('select > option')[0]).text()).toEqual("One");
+                expect($(fixture.find('select > option')[1]).text()).toEqual("Two");
+                expect($(fixture.find('select > option')[0]).val()).toEqual("1");
+                expect($(fixture.find('select > option')[1]).val()).toEqual("2");
+            });
+
+            it("Make sure selected matches One", function () {
+                initRecord(this, "One");
+                expect($(fixture.find('select > option:selected')).val()).toEqual("1");
+            });
+
+            it("Make sure selected matches Two", function () {
+                initRecord(this, "Two");
+                expect($(fixture.find('select > option:selected')).val()).toEqual("1");
+            });
+
+            it("Make sure selected matches Two after after switching option", function () {
+                initRecord(this, "One");
+                fixture.find('select').val("2");
+                expect($(fixture.find('select > option:selected')).val()).toEqual("2");
             });
 
         });

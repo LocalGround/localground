@@ -78,7 +78,6 @@ define([
 
             it("Renders all controls correctly", function () {
                 initRecord(this, "Alpha");
-                // Need more specifics before expanding on the tests
                 expect(fixture).toContainElement("select > option");
                 expect(fixture.find('select > option').length).toEqual(2);
                 expect($(fixture.find('select > option')[0]).val()).toEqual("Alpha");
@@ -87,12 +86,18 @@ define([
 
             it("Make sure selected matches Alpha", function () {
                 initRecord(this, "Alpha");
-                expect(1).toEqual(-1);
+                expect($(fixture.find('select > option:selected')).val()).toEqual("Alpha");
             });
 
             it("Make sure selected matches Beta", function () {
                 initRecord(this, "Beta");
-                expect(1).toEqual(-1);
+                expect($(fixture.find('select > option:selected')).val()).toEqual("Beta");
+            });
+
+            it("Make sure selected matches Beta after switching options", function () {
+                initRecord(this, "Alpha");
+                fixture.find('select').val("Beta");
+                expect($(fixture.find('select > option:selected')).val()).toEqual("Beta");
             });
         });
 
