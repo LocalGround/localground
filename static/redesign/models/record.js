@@ -100,11 +100,11 @@ define(["models/base",
                         extras = JSON.parse(field.extras);
                         for (j = 0; j < extras.length; j++) {
                             options.push({
-                                val: extras[j].value,
+                                val: parseInt(extras[j].value, 10),
                                 label: extras[j].name
                             });
                         }
-                        schema[name] = { type: 'Select', title: title, options: options };
+                        schema[name] = { type: 'Rating', title: title, options: options };
                         break;
                     case "choice":
                         options = [];
@@ -112,7 +112,7 @@ define(["models/base",
                         for (j = 0; j < extras.length; j++) {
                             options.push(extras[j].name);
                         }
-                        schema[name] = { type: 'Select', title: title, options: options };
+                        schema[name] = { type: 'Select', title: title, options: options, listType: 'Number' };
                         break;
                     case "date-time":
                         schema[name] = {

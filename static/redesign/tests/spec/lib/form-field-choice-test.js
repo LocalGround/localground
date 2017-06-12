@@ -5,28 +5,17 @@
 var rootDir = "../../";
 define([
     "jquery",
-    "backbone",
     rootDir + "models/record",
     rootDir + "lib/forms/backbone-form",
-    rootDir + "apps/gallery/views/data-detail", // Maybe needed???
     "tests/spec-helper"
 ],
-    function ($, Backbone, Record, DataForm, DataDetail) {
+    function ($, Record, DataForm) {
         'use strict';
         var fixture,
             initRecord,
-            initSpies,
             record,
             form;
 
-        initSpies = function () {
-            /*
-            spyOn(DateTimePicker.prototype, 'initialize').and.callThrough();
-            spyOn(DateTimePicker.prototype, 'dateTimeValidator').and.callThrough();
-            spyOn(Pikaday.prototype, 'show').and.callThrough();
-            spyOn(Pikaday.prototype, 'hide').and.callThrough();
-            */
-        };
         initRecord = function (scope, choice) {
             //create the simplest record possible:
             //step 1: create a form with fields:
@@ -55,7 +44,6 @@ define([
             });
             //step 3: create a Backbone form to allow the user to do data entry
             //        (inside of the data-detail.js file):
-            console.log(record.getFormSchema());
             form = new DataForm({
                 model: record,
                 schema: record.getFormSchema(),
@@ -66,10 +54,6 @@ define([
         };
 
         describe("Form: Choice Editor Test: Initializes and Renders Correctly", function () {
-            beforeEach(function () {
-                initSpies();
-            });
-
             it("Initializes correctly", function () {
                 initRecord(this, "Alpha");
                 expect(form.schema).toEqual(record.getFormSchema());
@@ -102,9 +86,6 @@ define([
         });
 
         describe("Form Saves Data Correctly", function () {
-            beforeEach(function () {
-                initSpies();
-            });
 
             it("Make sure selected matches Beta", function () {
                 initRecord(this, "Alpha");
@@ -112,14 +93,6 @@ define([
                 var errors = form.commit({ validate: true });
                 expect(record.get("choice_test")).toEqual("Beta");
                 expect(errors).toBeUndefined();
-            });
-
-            it("Make sure that form validates correctly and throws error", function () {
-                initRecord(this, "Alpha");
-                fixture.find('select').val("Beta");
-                var errors = form.commit({ validate: true });
-                expect(record.get("choice_test")).toEqual("Delta");
-                expect(1).toEqual(-1);
             });
         });
 

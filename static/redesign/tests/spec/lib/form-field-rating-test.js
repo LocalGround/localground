@@ -5,28 +5,17 @@
 var rootDir = "../../";
 define([
     "jquery",
-    "backbone",
     rootDir + "models/record",
     rootDir + "lib/forms/backbone-form",
-    rootDir + "apps/gallery/views/data-detail", // Maybe needed???
     "tests/spec-helper"
 ],
-    function ($, Backbone, Record, DataForm, DataDetail) {
+    function ($, Record, DataForm) {
         'use strict';
         var fixture,
             initRecord,
-            initSpies,
             record,
             form;
 
-        initSpies = function () {
-            /*
-            spyOn(DateTimePicker.prototype, 'initialize').and.callThrough();
-            spyOn(DateTimePicker.prototype, 'dateTimeValidator').and.callThrough();
-            spyOn(Pikaday.prototype, 'show').and.callThrough();
-            spyOn(Pikaday.prototype, 'hide').and.callThrough();
-            */
-        };
         initRecord = function (scope, rating) {
             //create the simplest record possible:
             //step 1: create a form with fields:
@@ -55,7 +44,6 @@ define([
             });
             //step 3: create a Backbone form to allow the user to do data entry
             //        (inside of the data-detail.js file):
-            console.log(record.getFormSchema());
             form = new DataForm({
                 model: record,
                 schema: record.getFormSchema(),
@@ -66,20 +54,15 @@ define([
         };
 
         describe("Form: Rating Editor Test: Initializes and Renders Correctly", function () {
-            beforeEach(function () {
-                initSpies();
-            });
-
-
 
             it("Initializes correctly", function () {
-                initRecord(this, "One");
+                initRecord(this, 1);
                 expect(form.schema).toEqual(record.getFormSchema());
                 expect(form.model).toEqual(record);
             });
 
-            it("Renders all controls correctly", function(){
-                initRecord(this, "One");
+            it("Renders all controls correctly", function () {
+                initRecord(this, 1);
                 expect(fixture).toContainElement("select > option");
                 expect(fixture.find('select > option').length).toEqual(2);
                 expect($(fixture.find('select > option')[0]).text()).toEqual("One");
@@ -89,19 +72,24 @@ define([
             });
 
             it("Make sure selected matches One", function () {
-                initRecord(this, "One");
+                initRecord(this, 1);
                 expect($(fixture.find('select > option:selected')).val()).toEqual("1");
             });
 
             it("Make sure selected matches Two", function () {
-                initRecord(this, "Two");
-                expect($(fixture.find('select > option:selected')).val()).toEqual("1");
+                initRecord(this, 2);
+                expect($(fixture.find('select > option:selected')).val()).toEqual("2");
             });
+        });
+        describe("Form: Rating Editor Test: Saves Data Correctly", function () {
 
             it("Make sure selected matches Two after after switching option", function () {
-                initRecord(this, "One");
+                initRecord(this, 1);
+                expect(record.get("rating_test")).toEqual(1);
                 fixture.find('select').val("2");
-                expect($(fixture.find('select > option:selected')).val()).toEqual("2");
+                var errors = form.commit({ validate: true });
+                expect(record.get("rating_test")).toEqual(2);
+                expect(errors).toBeUndefined();
             });
 
         });

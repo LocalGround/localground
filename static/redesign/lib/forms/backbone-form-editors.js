@@ -14,6 +14,14 @@ define([
 ], function ($, Backbone, Handlebars, Association, Audio, AddMedia, AudioPlayer,
              Pikaday, dateFns, DateTimeTemplate, MediaTemplate) {
     "use strict";
+
+    Backbone.Form.editors.Rating = Backbone.Form.editors.Select.extend({
+        getValue: function () {
+            var value = this.$el.val();
+            return parseInt(value, 10);
+        }
+    });
+
     Backbone.Form.editors.DatePicker = Backbone.Form.editors.Text.extend({
 
         initialize: function (options) {
