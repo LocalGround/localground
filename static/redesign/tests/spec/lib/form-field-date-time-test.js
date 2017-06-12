@@ -76,8 +76,6 @@ define([
                 expect(fixture).toContainElement("input.minutes");
                 expect(fixture).toContainElement("input.seconds");
                 expect(fixture).toContainElement("select.am_pm");
-                //TODO: John, check for all inputs
-                //expect(1).toEqual(-1);
             });
 
             it("Sets all form values correctly when time is AM value", function () {

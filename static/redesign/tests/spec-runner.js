@@ -55,7 +55,9 @@ require(['boot'], function () {
         'spec/views/spreadsheet-test.js',
 
         //FORMS
-        'spec/lib/form-field-date-time-test.js'
+        'spec/lib/form-field-date-time-test.js',
+        'spec/lib/form-field-choice-test.js',
+        'spec/lib/form-field-rating-test.js'
     ];
 
     require(specs, function () {

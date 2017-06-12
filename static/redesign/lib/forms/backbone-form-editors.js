@@ -6,7 +6,6 @@ define([
     "models/audio",
     "apps/gallery/views/add-media",
     "lib/audio/audio-player",
-    //"moment",
     "external/pikaday-forked",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
     "text!../forms/templates/date-time-template.html",
@@ -43,9 +42,6 @@ define([
         picker: null,
         format: "YYYY-MM-DD",
         initialize: function (options) {
-            //moment.tz.setDefault('America/San_Francisco');
-            // add date / time validator before calling the
-            // parent initialization function:
             options.schema.validators = [this.dateTimeValidator];
             Backbone.Form.editors.Text.prototype.initialize.call(this, options);
             var template = Handlebars.compile(DateTimeTemplate);
@@ -61,19 +57,19 @@ define([
             var isPm = hours >= 12 ? true: false;
             var ds = dateFns.format(this.value, this.format);
             console.log('initialize:', ds);
-            this.$el.append(template({
-                dateString: ds,
-                hoursString: dateFns.format(this.value, 'hh'),
-                minutesString: dateFns.format(this.value, 'mm'),
-                secondsString: dateFns.format(this.value, 'ss'),
-                am_pm_String: dateFns.format(this.value, 'a'),
-                hours: hours,
-                isPm: isPm
-            }));
-            //console.log(this.$el.html());
+            this.$el.append(template(
+                {
+                    dateString: ds,
+                    hoursString: dateFns.format(this.value, 'hh'),
+                    minutesString: dateFns.format(this.value, 'mm'),
+                    secondsString: dateFns.format(this.value, 'ss'),
+                    am_pm_String: dateFns.format(this.value, 'a'),
+                    hours: hours,
+                    isPm: isPm
+                })
+            );
         },
         dateTimeValidator: function (value, formValues) {
-            console.log(value, formValues);
             try {
                 var d = new Date(value);
                 if (d == "Invalid Date") {
@@ -90,11 +86,6 @@ define([
             }
             return null;
         },
-        /*setValue: function (value) {
-            //sets the DOM value based on the current value:
-            console.log('setValue:', value);
-            //this.$el.val(value);
-        },*/
         getValue: function () {
             //gets info from the DOM and returns it:
             console.log('getValue', this.$el.find('input.datepicker').val(), this.format);
