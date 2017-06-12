@@ -27,12 +27,12 @@ define([
             spyOn(Pikaday.prototype, 'hide').and.callThrough();
             */
         };
-        initRecord = function (scope, t) {
+        initRecord = function (scope, choice) {
             //create the simplest record possible:
             record = new Record({
                 id: 1,
-                datetime_test: t,
-                display_name: t,
+                choice_test: choice,
+                display_name: choice,
                 project_id: 1,
                 overlay_type: "form_1",
                 fields: [{
@@ -43,7 +43,15 @@ define([
                     "ordering": 1,
                     "data_type": "choice",
                     "url": "http://localhost:7777/api/0/forms/1/fields/1",
-                    "val": t
+                    "val": choice,
+                    "extras": [
+                        {
+                            "name": "Alpha"
+                        },
+                        {
+                            "name": "Beta"
+                        }
+                    ]
                 }]
             });
             form = new DataForm({
@@ -58,7 +66,7 @@ define([
         describe("Form: Choice Editor Test: Initializes and Renders Correctly", function () {
             beforeEach(function () {
                 initSpies();
-                initRecord();
+                initRecord(this, "Alpha");
             });
 
 
