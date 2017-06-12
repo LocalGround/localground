@@ -15,7 +15,7 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
                 width: 20,
                 height: 20,
                 fillColor: "#4e70d4",
-                strokeColor: "#4e70d4",
+                strokeColor: "#FFFFFF",
                 strokeWeight: 3,
                 strokeOpacity: 1,
                 shape: "circle"
