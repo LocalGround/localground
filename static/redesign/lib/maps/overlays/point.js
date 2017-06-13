@@ -35,6 +35,14 @@ define(["jquery", "underscore"], function ($, _) {
             this._googleOverlay.setPosition(this.getGoogleGeometryFromModel());
         };
 
+        this.hide = function () {
+            this._googleOverlay.setMap(null);
+        };
+
+        this.show = function () {
+            this._googleOverlay.setMap(this.map);
+        };
+
         this.getCenter = function () {
             return this.getGoogleGeometryFromModel();
         };

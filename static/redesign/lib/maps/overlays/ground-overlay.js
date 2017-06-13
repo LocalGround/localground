@@ -18,7 +18,6 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             if (typeof isShowingOnMap !== 'undefined') {
                 this.isShowingOnMap = isShowingOnMap;
             }
-            console.log(isShowingOnMap, this.isShowingOnMap, this.model.get('file_path'));
             this._googleOverlay = new google.maps.GroundOverlay(
                 this.model.get("overlay_path") || this.model.get("file_path"),
                 this.getBoundsFromGeoJSON(),
@@ -33,6 +32,20 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
 
         this.makeViewable = this.makeEditable = function (model) {
             return true;
+        };
+
+        this.hide = function () {
+            this._googleOverlay.setMap(null);
+            if (this.editPolygon) {
+                this.editPolygon.setMap(null);
+            }
+        };
+
+        this.show = function () {
+            this._googleOverlay.setMap(this.map);
+            if (this.editPolygon && this.model.get("active")) {
+                this.editPolygon.setMap(this.map);
+            }
         };
 
         this.getGoogleLatLngFromModel = function () {
@@ -94,11 +107,11 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             google.maps.event.addListener(this.editPolygon, 'bounds_changed', function () {
                 that._googleOverlay.setMap(null);
                 that.setGeometryFromOverlay();
-                that.createOverlay();
+                that.createOverlay(true);
                 if (that.timer) {
                     clearTimeout(that.timer);
                 }
-                //that.timer = setTimeout(function () { that.model.save(); }, 500);
+                that.timer = setTimeout(function () { that.model.save(); }, 500);
             });
         };
 

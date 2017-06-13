@@ -115,14 +115,6 @@ define(["marionette",
         isShowingOnMap: function () {
             return this.getGoogleOverlay().getMap() != null && this.displayOverlay;
         },
-
-        /** shows the google.maps overlay on the map. */
-        show: function () {
-            this.displayOverlay = true;
-            var go = this.getGoogleOverlay();
-            go.setMap(this.map);
-            //this.changeMode();
-        },
         reRender: function () {
             this.render();
         },
@@ -134,10 +126,19 @@ define(["marionette",
             }
         },
 
+        /** shows the google.maps overlay on the map. */
+        show: function () {
+            console.log('show!');
+            this.displayOverlay = true;
+            this._overlay.displayOverlay = true;
+            this._overlay.show();
+        },
+
         /** hides the google.maps overlay from the map. */
         hide: function () {
-            var go = this.getGoogleOverlay();
-            go.setMap(null);
+            this.displayOverlay = false;
+            this._overlay.displayOverlay = false;
+            this._overlay.hide();
             this.model.trigger("hide-bubble");
             //this.displayOverlay = false;
         },

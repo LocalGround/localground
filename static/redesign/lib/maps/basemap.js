@@ -96,6 +96,7 @@ define(["marionette",
                         r = getGeoJSONFromBounds(rect);
                     rect.setMap(null);
                     that.targetedModel.set("geometry", r);
+                    that.targetedModel.trigger('show-marker');
                     that.addMarkerClicked = false;
                     that.targetedModel = null;
                     that.drawingManager.setMap(null);
@@ -128,7 +129,6 @@ define(["marionette",
                 }
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
                 this.targetedModel.save();
-                this.targetedModel.trigger('show-marker');
                 this.addMarkerClicked = false;
                 this.targetedModel = null;
             },
@@ -175,6 +175,7 @@ define(["marionette",
             },
 
             deleteMarker: function (model) {
+                model.trigger('hide-marker');
                 model.set("geometry", null);
                 model.save();
             },
