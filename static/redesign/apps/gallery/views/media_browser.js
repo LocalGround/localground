@@ -323,9 +323,7 @@ define ([
                         selectedModels.push(model);
                     }
                 });
-                
-                console.log('media-browser: addModels', selectedModels);
-                this.app.vent.trigger('add-models-to-marker', selectedModels);
+                this.parentModel.trigger('add-models-to-marker', selectedModels);
             }
 
         });

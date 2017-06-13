@@ -231,7 +231,6 @@ define([
             });
         },
         initialize: function (opts) {
-            console.log(opts);
             _.extend(this, opts);
             this.collection = new Backbone.Collection();
             var that = this;
@@ -445,7 +444,7 @@ define([
                     selectedModels.push(model);
                 // }
             });
-            this.app.vent.trigger('add-models-to-marker', selectedModels);
+            this.parentModel.trigger('add-models-to-marker', selectedModels);
         }
     });
     return CreateMediaView;

@@ -187,7 +187,7 @@ define([
         initialize: function (options) {
             Backbone.Form.editors.Base.prototype.initialize.call(this, options);
             this.app = this.form.app;
-            this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
+            this.listenTo(this.model, 'add-models-to-marker', this.attachModels);
             var template = Handlebars.compile(MediaTemplate);
             this.$el.append(template({
                 children: this.value
@@ -237,7 +237,8 @@ define([
         },
         showMediaBrowser: function (e) {
             var addMediaLayoutView = new AddMedia({
-                app: this.app
+                app: this.app,
+                parentModel: this.model
             });
             this.app.vent.trigger("show-modal", {
                 title: 'Media Browser',
