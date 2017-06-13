@@ -70,7 +70,7 @@ def make_directory(path):
             if not os.path.exists(p):
                 # print '"%s" does not exist' % p
                 os.mkdir(p)
-                os.chown(p, uid, gid)
+                #os.chown(p, uid, gid)
                 os.chmod(p, permissions)
 
 def save_file_to_disk(owner, model_name_plural, file, uuid=None):
