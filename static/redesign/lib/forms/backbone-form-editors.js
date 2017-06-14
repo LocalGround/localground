@@ -135,10 +135,7 @@ define([
                 seconds00 = "00";
             }
 
-            var allZeros = (hours00 == '00' && minutes00 == '00' && seconds00 == '00');
-            console.log(dateStr, allZeros);
-
-            if (dateStr === '' && allZeros){
+            if (dateStr === ''){
                 return null;
             }
 

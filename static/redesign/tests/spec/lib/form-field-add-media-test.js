@@ -131,26 +131,46 @@ define([
                 expect(MediaEditor.prototype.attachModels).toHaveBeenCalledTimes(1);
             });
         });
-        
+
         describe("Form: Add Media Field Test: Renders correctly", function () {
 
             beforeEach(function () {
                 initSpies();
             });
 
+            /*
+            * This is a rough draft format of rendering the items. Changes will be made if needed
+            */
+
             it("Only renders a plus button if no children exist", function () {
                 initForm(this, markerPlain);
-                expect(1).toEqual(-1);
+                var mediaContainer = fixture.find(".attached-media-container");
+                console.log(fixture.find(".attached-media-container"))
+                console.log(mediaContainer[0]);
+                console.log(this);
+                expect(mediaContainer[0].children.length).toEqual(1); // The one child should only be the add media with plus
             });
 
             it("Renders 2 photos if there are 2 child photos", function () {
                 initForm(this, markerPhotos);
-                expect(1).toEqual(-1);
+                var mediaContainer = fixture.find(".attached-media-container");
+                var photos = fixture.find(".photo-attached");
+                console.log(fixture.find(".attached-media-container"))
+                console.log(mediaContainer[0]);
+                console.log(this);
+                expect(mediaContainer[0].children.length).toEqual(3);
+                expect(photos.length).toEqual(2); // The one child should only be the add media with plus
             });
 
             it("Renders 2 audio files if there are 2 child audio files", function () {
                 initForm(this, markerAudio);
-                expect(1).toEqual(-1);
+                var mediaContainer = fixture.find(".attached-media-container");
+                var audio_files = fixture.find(".photo-attached");
+                console.log(fixture.find(".attached-media-container"))
+                console.log(mediaContainer[0]);
+                console.log(this);
+                expect(mediaContainer[0].children.length).toEqual(3);
+                expect(audio_files.length).toEqual(2); // The one child should only be the add media with plus
             });
 
         });
