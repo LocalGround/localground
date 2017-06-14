@@ -17,7 +17,7 @@ define(['marionette',
             collectionEvents: {
                 'zoom-to-extents': 'zoomToExtents',
                 'change:geometry': 'geometryUpdated',
-                'show-marker': 'showAll',
+                'show-markers': 'showAll',
                 'hide-markers': 'hideAll'
             },
 
