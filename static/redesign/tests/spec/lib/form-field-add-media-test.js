@@ -11,7 +11,7 @@
  *   - IF USER CLICKS THE 'DELETE MEDIA BUTTON', IT
  *     REMOVES MEDIA FILE
  *   - IF THE MARKER ALREADY HAS MEDIA, IT SHOULD
- *     RENDER MEDIA THUMBNAILS NEXT TO PLUS BUTTON
+ *     RENDER MEDIA THUMBNAILS NEXT TO PLUS BUTTON // Covered in the render tests (?)
  *
  */
 var rootDir = "../../";
@@ -36,20 +36,25 @@ define([
         initSpies = function () {
             spyOn(MediaEditor.prototype, "initialize").and.callThrough();
             spyOn(MediaEditor.prototype, "attachModels").and.callThrough();
+            spyOn(MediaEditor.prototype, "showMediaBrowser").and.callThrough();
+            spyOn(MediaEditor.prototype, "attachMedia").and.callThrough();
+            spyOn(MediaEditor.prototype, "detachModel").and.callThrough();
         };
 
         initMarkers = function () {
             markerPlain = new Marker({
                 "name": "No media",
                 "caption": "",
+                "project_id": 1,
                 "overlay_type": "marker",
                 "children": {},
                 "photo_count": 0,
                 "audio_count": 0
             });
             markerPhotos = new Marker({
-                "name": "No media",
+                "name": "Photo media",
                 "caption": "",
+                "project_id": 2,
                 "overlay_type": "marker",
                 "photo_count": 2,
                 "audio_count": 0,
@@ -74,8 +79,9 @@ define([
                 }
             });
             markerAudio = new Marker({
-                "name": "No media",
+                "name": "Audio media",
                 "caption": "",
+                "project_id": 3,
                 "overlay_type": "marker",
                 "photo_count": 0,
                 "audio_count": 2,
@@ -165,7 +171,7 @@ define([
             it("Renders 2 audio files if there are 2 child audio files", function () {
                 initForm(this, markerAudio);
                 var mediaContainer = fixture.find(".attached-media-container");
-                var audio_files = fixture.find(".photo-attached");
+                var audio_files = fixture.find(".audio-attached");
                 console.log(fixture.find(".attached-media-container"))
                 console.log(mediaContainer[0]);
                 console.log(this);
@@ -173,6 +179,29 @@ define([
                 expect(audio_files.length).toEqual(2); // The one child should only be the add media with plus
             });
 
+        });
+
+        describe("Form: Add Media Field Test: Testing that All Interactions Work Properly", function(){
+            //
+            //
+            beforeEach(function(){
+                initSpies();
+            });
+
+            it("Opens up the media browser when clicking add media plus button", function(){
+                initForm(this, markerPlain);
+                var addMediaButton = fixture.find("#add-media-button");
+                console.log(fixture.find("#add-media-button"))
+                console.log(addMediaButton);
+                //expect(modalWindow[0].css('display')).toEqual('none');
+                fixture.find("#add-media-button").trigger('click');
+                //MediaEditor.prototype.showMediaBrowser();
+                var modalWindow = fixture.find(".modal");
+                console.log(fixture.find('.modal'));
+                console.log(modalWindow);
+                expect($(modalWindow[0]).css('display')).toEqual('block');
+                //expect(1).toEqual(-1);
+            });
         });
 
     });
