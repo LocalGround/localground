@@ -61,24 +61,4 @@ define([
                 name: "LayerListView"
             });
         });
-
-        /*describe("Events tests", function () {
-            beforeEach(function () {
-                initView(this);
-            });
-            afterEach(function () {
-                Backbone.history.stop();
-            });
-            it(": events should trigger correct functions", function () {
-                expect(layerListView.showDropDown).toHaveBeenCalledTimes(0);
-                fixture.find('.add-layer').trigger("click");
-                expect(layerListView.showDropDown).toHaveBeenCalledTimes(1);
-            });
-
-            it(": events should trigger correct functions", function () {
-                expect(layerListView.createNewLayer).toHaveBeenCalledTimes(0);
-                $(fixture.find('#new-layer-options a').get(0)).trigger("click");
-                expect(layerListView.createNewLayer).toHaveBeenCalledTimes(1);
-            });
-        });*/
     });

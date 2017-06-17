@@ -1,4 +1,6 @@
-/*** Begin Map Styles ****/
+/****************************************************************************************/
+/*                                       Style App                                      */
+/****************************************************************************************/
 .filter .data, #toolbar-main {
     position: static;
 }
@@ -15,16 +17,20 @@
     display: flex;    
 }
 
+.left-wrapper {
+    overflow-y: scroll;
+}
 
-#right-panel h3 {
+.right-panel .right-panel-header {
     padding: 0px 20px 20px 20px;
     border-bottom: 1px solid #e4e5eb;
     text-transform: uppercase;
     letter-spacing: .04em;
     font-size: 12px;
     font-weight: 600;
+    margin-top: 20px;
 }
-section {
+.style-section {
     border: none;
     margin: 0px 16px;
     padding: 12px 0;
@@ -33,42 +39,36 @@ section {
     font: 11px;
 }
   
-.style-section-header {
+.style-section-header-wrapper {
    padding: 10px;
     font-size: 12px;
     font-weight: 600;
     color: #666;
 }
 
-.style-section-header h4 {
+.style-section-header-wrapper h4 {
    display: inline;
    font-weight: 600;
    color: #666;
 }
 
-.style-section-header a {
+.style-section-header-wrapper a {
     color: #666;
 }
 
-.style-section-header {
-    padding: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #666;
-}
-
-.style-section-header h4 {
+.style-section-header-wrapper h4 {
     display: inline;
     font-weight: 600;
     color: #666;
 }
 
-.style-section-header a {
+.style-section-header-wrapper a {
     color: #666;
 }
 
-#map-select {
-    width: calc(100%);
+/*
+.map-select {
+    width: calc(93%);
     margin-top: 10px;
     font-weight: 400;
     font-family: 'Open Sans';
@@ -78,10 +78,13 @@ section {
     border-color: #e4e5eb;
     box-shadow: 0 2px 0px 0 rgba(0,0,0,.02);
     background-size: 60px 40px;
+    margin-left: 10px;
     overflow: hidden;
+    background-color: white;
 }
+*/
 
-#layers {
+.layers {
     background: white;
     border: 1px solid #e4e5eb;
     padding: 10px;
@@ -93,16 +96,45 @@ section {
     font-size: 12px;
     margin-left: 4px;
 }
-#skin-select {
+
+/*
+.skin-select {
     display: block;
     margin: 5px 15px;
 }
+*/
 
-#skin-header {
+.style-wide-select {
+    width: calc(93%);
+    margin-top: 10px;
+    font-weight: 300;
+    font-family: 'Open Sans';
+    font-size: 12px;
+    border-style: none none solid none;
+    border-width: 1px;
+    border-color: #e4e5eb;
+    box-shadow: 0 2px 0px 0 rgba(0,0,0,.02);
+    background-size: 60px 40px;
+    margin-left: 10px;
+    overflow: hidden;
+    background-color: white;
+}
+
+.map-select-option {
+    font-weight: 300;
+}
+
+
+.skin-header {
     display: inline;
 }
 
-table {
+#font-size, #color-picker {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.style-main-panel table {
     font-size: 12px;
 }
 
@@ -127,27 +159,10 @@ table.color-properties {
     width: 100%;
 }
 
-tbody {
-    display: table-row-group;
-    vertical-align: middle;
-    border-color: inherit;
-}
-
-tr {
-    display: table-row;
-    vertical-align: inherit;
-    border-color: inherit;
-}
-
 table.color-properties td:first-child {
     text-align: right;
     width: 33%;
     padding: 6px;
-}
-
-ul {
-    font-size: 12px;
-    padding-left: 0;
 }
 
 .toggle-buttons ul {
@@ -199,20 +214,13 @@ ul {
     padding: 4px 4px;
 }
 
-th {
-    width: 57px;
-}
-
 .edit {
     float: right
 }
 
 .symbols-table th {
     text-align: left;
-}
-
-#new-layer-options {
-    display: none;
+    width: 57px;
 }
 
 .palette-item{
@@ -282,10 +290,6 @@ th {
     width: 100%;
 }
 
-palette-options {
-    width: 25px;
-}
-
 .palette-list {
     padding: 10px 7px;
     list-style-type: none;
@@ -298,7 +302,7 @@ palette-options {
 }
 
 .palette-icon {
-    position: fixed;
+    position: absolute;
     margin-top: 11px;
 }
 
@@ -312,10 +316,19 @@ palette-options {
     margin-top: 10px;
     font-weight: 400;
     font-family: 'Open Sans';
-    font-size: 14px;
+    font-size: 12px;
     border-style: none none solid none;
     border-width: 1px;
     border-color: #e4e5eb;
     box-shadow: 0 2px 0px 0 rgba(0,0,0,.02);
-    background-size: 60px 40px;;
+    background-size: 60px 40px;
+}
+
+.marker-style-select {
+    background-color: white;
+    border-style: none none solid none;
+    border-width: 1px;
+    border-color: #e4e5eb;
+    box-shadow: 0 2px 0px 0 rgba(0,0,0,.02);
+    background-size: 60px 40px;
 }

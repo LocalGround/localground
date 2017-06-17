@@ -21,7 +21,6 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
             },
             events: {
-                "click #new-layer-options a" : "createNewLayer",
                 'click .hide': 'hidePanel',
                 'click .show': 'showPanel',
                 "click .map-save" : "saveMap"
