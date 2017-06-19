@@ -201,11 +201,21 @@ define([
                 initForm(this, markerAudio);
                 var mediaContainer = fixture.find(".attached-media-container");
                 var audio_files = fixture.find(".audio-attached");
+                var audioBasic = fixture.find(".audio-basic");
                 console.log(fixture.find(".attached-media-container"))
                 console.log(mediaContainer[0]);
                 console.log(this);
                 expect(mediaContainer[0].children.length).toEqual(3);
                 expect(audio_files.length).toEqual(2);
+
+                // Now inspect the two individual audio_files
+                console.log(audio_files[0]);
+                console.log(audio_files[1]);
+                console.log(audioBasic[0]);
+                console.log(audioBasic[1]);
+                // The simeple way
+                expect(audio_files[0]).toContainElement(audioBasic[0]);
+                expect(audio_files[1]).toContainElement(audioBasic[1]);
             });
 
         });
