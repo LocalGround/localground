@@ -31,6 +31,7 @@ define(["underscore", "models/tileset", "collections/base"], function (_, TileSe
                     mapTypeID = tileset.getMapTypeID();
                 switch (sourceName) {
                 case "stamen":
+                case "cooper center":
                 case "mapbox":
                     that.mapTypes[mapTypeID] = tileset.getMapType();
                     that.mapTypeIDs.push(mapTypeID);

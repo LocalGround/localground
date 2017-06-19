@@ -7,8 +7,9 @@ define(['jquery'], function ($) {
          * http://demographics.coopercenter.org/racial-dot-map-access-and-use-policy/
          */
         this.maxZoom = opts.max;
+        this.minZoom = opts.min;
         this.name = opts.name;
-        this.url = opts.url.split('{z}')[0].split('//')[1];
+        this.url = opts.url.split('{z}')[0];
         this.tileSize = new google.maps.Size(256, 256);
         this.colorDotsURL = 'http://demographics.virginia.edu/DotMap/tiles4/';
         this.bwDotsURL = 'http://demographics.virginia.edu/DotMap/tiles5/';
@@ -150,6 +151,7 @@ define(['jquery'], function ($) {
             var dotURL = this.url + zoom + '/' + coord.x + '/' + coord.y + '.png',
                 blankURL = 'http://demographics.virginia.edu/DotMap/tiles4/blank.png',
                 url;
+            //return dotURL;
             if (zoom == 4 && coord.x >= 0 && coord.x <= 5 && coord.y >= 3 && coord.y <= 7 && this.tileExists(coord, zoom)) {
                 url = dotURL;
             } else if (zoom == 5 && coord.x >= 0 && coord.x <= 10 && coord.y >= 6 && coord.y <= 14 && this.tileExists(coord, zoom)) {
