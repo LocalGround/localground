@@ -424,8 +424,10 @@ nav .selected{
 }
 
 #model-form select {
-    height: 25px;
+    height: 30px;
     font-size: 14px;
+    border: solid #EEE 1px;
+    background: white;
 }
 
 #model-form fieldset>div>div,
