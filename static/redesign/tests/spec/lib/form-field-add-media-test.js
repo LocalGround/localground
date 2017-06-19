@@ -185,16 +185,13 @@ define([
                 // The simeple way
                 expect(photos[0]).toContainElement(mediaAttached[0]);
                 expect(photos[1]).toContainElement(mediaAttached[1]);
-                //*
-                // The More detailed way
-                expect(mediaAttached[0]).toHaveCss(
-                    {background: "url('http://localhost:7777/profile/photos/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvcGhvdG9zL3NjcmVlbnNob3QyMDE3MDYxMWF0MzM1MDNwbV81MDAucG5nIzE0OTcyOTc3MzE=/')"}
+                // The more detailed way
+                expect($(mediaAttached[0]).attr("style")).toEqual(
+                    'background: url(\'http://localhost:7777/profile/photos/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvcGhvdG9zL3NjcmVlbnNob3QyMDE3MDYxMWF0MzM1MDNwbV81MDAucG5nIzE0OTcyOTc3MzE=/\');'
                 );
-                expect(mediaAttached[1]).toHaveCss(
-                    {background: "url('http://localhost:7777/profile/photos/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvcGhvdG9zL3NjcmVlbnNob3QyMDE3MDYxMWF0MzMxNTlwbV81MDAucG5nIzE0OTcyOTc3MzE=/')"}
+                expect($(mediaAttached[1]).attr("style")).toEqual(
+                    'background: url(\'http://localhost:7777/profile/photos/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvcGhvdG9zL3NjcmVlbnNob3QyMDE3MDYxMWF0MzMxNTlwbV81MDAucG5nIzE0OTcyOTc3MzE=/\');'
                 );
-                //*/
-                expect(1).toEqual(-1);
             });
 
             it("Renders 2 audio files if there are 2 child audio files", function () {
@@ -202,6 +199,7 @@ define([
                 var mediaContainer = fixture.find(".attached-media-container");
                 var audio_files = fixture.find(".audio-attached");
                 var audioBasic = fixture.find(".audio-basic");
+                var audioSource = fixture.find("source");
                 console.log(fixture.find(".attached-media-container"))
                 console.log(mediaContainer[0]);
                 console.log(this);
@@ -213,9 +211,14 @@ define([
                 console.log(audio_files[1]);
                 console.log(audioBasic[0]);
                 console.log(audioBasic[1]);
+                console.log(audioSource[0]);
+                console.log(audioSource[1]);
                 // The simeple way
                 expect(audio_files[0]).toContainElement(audioBasic[0]);
                 expect(audio_files[1]).toContainElement(audioBasic[1]);
+                // The more detailed way
+                expect(audioSource[0]).toHaveAttr("src", "http://localhost:7777/profile/audio/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvYXVkaW8vdG1wbGVxMWZ4XzE0OTcyOTc5MzMubXAzIzE0OTcyOTc5NDc=/");
+                expect(audioSource[1]).toHaveAttr("src", "http://localhost:7777/profile/audio/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvYXVkaW8vdG1waW80ZmxmXzE0OTcyOTc5MzMubXAzIzE0OTcyOTc5NDc=/");
             });
 
         });
