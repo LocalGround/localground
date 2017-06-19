@@ -18,10 +18,11 @@ var rootDir = "../../";
 define([
     "backbone",
     "models/marker",
+    "apps/gallery/views/add-media",
     rootDir + "lib/forms/backbone-form",
     "tests/spec-helper"
 ],
-    function (Backbone, Marker, DataForm) {
+    function (Backbone, Marker, AddMedia, DataForm) {
         'use strict';
         var fixture,
             initForm,
@@ -33,12 +34,15 @@ define([
             initSpies,
             MediaEditor = Backbone.Form.editors.MediaEditor;
 
-        initSpies = function () {
+        initSpies = function (scope) {
             spyOn(MediaEditor.prototype, "initialize").and.callThrough();
             spyOn(MediaEditor.prototype, "attachModels").and.callThrough();
             spyOn(MediaEditor.prototype, "showMediaBrowser").and.callThrough();
             spyOn(MediaEditor.prototype, "attachMedia").and.callThrough();
             spyOn(MediaEditor.prototype, "detachModel").and.callThrough();
+
+            spyOn(scope.app.vent, 'trigger').and.callThrough();
+            spyOn(AddMedia.prototype, "initialize").and.callThrough();
         };
 
         initMarkers = function () {
@@ -119,7 +123,7 @@ define([
         describe("Form: Add Media Field Test: Initializes and Renders Correctly", function () {
 
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
                 initMarkers();
             });
 
@@ -133,7 +137,7 @@ define([
             it("Listens for 'add-models-to-marker' event", function () {
                 initForm(this, markerPlain);
                 expect(MediaEditor.prototype.attachModels).toHaveBeenCalledTimes(0);
-                this.app.vent.trigger('add-models-to-marker', [this.photos.at(0), this.photos.at(1)]);
+                form.app.vent.trigger('add-models-to-marker', [this.photos.at(0), this.photos.at(1)]);
                 expect(MediaEditor.prototype.attachModels).toHaveBeenCalledTimes(1);
             });
         });
@@ -141,7 +145,7 @@ define([
         describe("Form: Add Media Field Test: Renders correctly", function () {
 
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
             });
 
             /*
@@ -182,31 +186,43 @@ define([
         });
 
         describe("Form: Add Media Field Test: Testing that All Interactions Work Properly", function(){
-            //
-            //
+
             beforeEach(function(){
-                initSpies();
+                initSpies(this);
+                initMarkers();
             });
 
-            it("Opens up the media browser when clicking add media plus button", function(){
-                /*
-                // I am almost there for the modal display, but after attemtpting to search for modal,
-                // it does not come up despite that in the map browser, it clearly is present in the HTML version
-                // through inspector mode initalized without a style called display
-                */
+            it("Calls the showMediaBrowser method when plus button clicked", function () {
                 initForm(this, markerPlain);
-                var addMediaButton = fixture.find("#add-media-button");
-                console.log(fixture.find("#add-media-button"))
-                console.log(addMediaButton);
                 //expect(modalWindow[0].css('display')).toEqual('none');
+                expect(MediaEditor.prototype.showMediaBrowser).toHaveBeenCalledTimes(0);
                 fixture.find("#add-media-button").trigger('click');
-                //MediaEditor.prototype.showMediaBrowser();
-                var modalWindow = fixture.find(".modal");
-                console.log(fixture.find('.modal'));
-                // As of now, it shows length of 0, even though the .modal class is present in the web browser version
-                console.log(modalWindow);
-                expect($(modalWindow[0]).css('display')).toEqual('block');
-                //expect(1).toEqual(-1);
+                expect(MediaEditor.prototype.showMediaBrowser).toHaveBeenCalledTimes(1);
+            });
+
+            it("showMediaBrowser triggers the opening of the modal window correctly", function () {
+                initForm(this, markerPlain);
+                expect(AddMedia.prototype.initialize).toHaveBeenCalledTimes(0);
+                expect(this.app.vent.trigger).not.toHaveBeenCalledWith('show-modal', {
+                    title: 'Media Browser',
+                    width: 1100,
+                    height: 400,
+                    view: jasmine.any(Object),
+                    saveButtonText: "Add",
+                    showSaveButton: true,
+                    saveFunction: jasmine.any(Function)
+                });
+                fixture.find("#add-media-button").trigger('click');
+                expect(AddMedia.prototype.initialize).toHaveBeenCalledTimes(1);
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('show-modal', {
+                    title: 'Media Browser',
+                    width: 1100,
+                    height: 400,
+                    view: jasmine.any(Object),
+                    saveButtonText: "Add",
+                    showSaveButton: true,
+                    saveFunction: jasmine.any(Function)
+                });
             });
         });
 
