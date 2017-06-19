@@ -151,7 +151,7 @@ define(['jquery'], function ($) {
             var dotURL = this.url + zoom + '/' + coord.x + '/' + coord.y + '.png',
                 blankURL = 'http://demographics.virginia.edu/DotMap/tiles4/blank.png',
                 url;
-            //return dotURL;
+            return dotURL;
             if (zoom == 4 && coord.x >= 0 && coord.x <= 5 && coord.y >= 3 && coord.y <= 7 && this.tileExists(coord, zoom)) {
                 url = dotURL;
             } else if (zoom == 5 && coord.x >= 0 && coord.x <= 10 && coord.y >= 6 && coord.y <= 14 && this.tileExists(coord, zoom)) {
@@ -178,10 +178,12 @@ define(['jquery'], function ($) {
             return url;
         };
         this.getTile = function (coord, zoom) {
+        var url = this.url + zoom + '/' + coord.x + '/' + coord.y + '.png';
+            console.log(zoom, url, coord.x, coord.y);
             return $('<div></div>').css({
                 'width': '256px',
                 'height': '256px',
-                'backgroundImage': 'url(' + this.getTileUrl(coord, zoom) + ')'
+                'backgroundImage': 'url(' + url + ')'
             }).get(0);
         };
 

@@ -32,8 +32,22 @@ define(["models/base", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "lib/ma
                         name: this.getMapTypeID()
                     });
                 case "cooper center":
+                    return new VirginiaDotMap({
+                        url: this.get("base_tile_url"),
+                        max: this.get("max_zoom"),
+                        min: this.get("min_zoom"),
+                        name: this.getMapTypeID()
+                    });
+                    /*
                     var that = this;
                     return new google.maps.ImageMapType({
+                        getTile: function (coord, zoom) {
+                            return $('<div></div>').css({
+                                'width': '256px',
+                                'height': '256px',
+                                'backgroundImage': 'url(' + that.getTileUrl(coord, zoom) + ')'
+                            }).get(0);
+                        },
                         getTileUrl: function (coord, zoom) {
                             var url = that.get("base_tile_url").split('{z}')[0];
                             return url + zoom + '/' + coord.x + '/' + coord.y + '.png';
@@ -43,6 +57,7 @@ define(["models/base", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "lib/ma
                         minZoom: this.get("min_zoom"),
                         name: this.getMapTypeID()
                     });
+                    */
                 case "google":
                     if (this.isCustom()) {
                         return new google.maps.StyledMapType(
