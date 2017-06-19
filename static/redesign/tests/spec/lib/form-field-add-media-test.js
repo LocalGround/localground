@@ -146,6 +146,7 @@ define([
 
             beforeEach(function () {
                 initSpies(this);
+                initMarkers();
             });
 
             /*
@@ -155,21 +156,45 @@ define([
             it("Only renders a plus button if no children exist", function () {
                 initForm(this, markerPlain);
                 var mediaContainer = fixture.find(".attached-media-container");
-                console.log(fixture.find(".attached-media-container"))
-                console.log(mediaContainer[0]);
-                console.log(this);
+                //console.log(fixture.find(".attached-media-container"))
+                //console.log(mediaContainer[0]); // Any indexed values of any html element collection will return the html element itself
+                //console.log(this);
                 expect(mediaContainer[0].children.length).toEqual(1); // The one child should only be the add media with plus
+
+                var addMediaButton = fixture.find("#add-media-button");
+                //console.log(mediaContainer[0]);
+                //console.log(addMediaButton[0]);
+                expect(mediaContainer[0]).toContainElement(addMediaButton[0]);
             });
 
             it("Renders 2 photos if there are 2 child photos", function () {
                 initForm(this, markerPhotos);
                 var mediaContainer = fixture.find(".attached-media-container");
                 var photos = fixture.find(".photo-attached");
+                var mediaAttached = fixture.find(".attached-media");
                 console.log(fixture.find(".attached-media-container"))
                 console.log(mediaContainer[0]);
                 console.log(this);
                 expect(mediaContainer[0].children.length).toEqual(3);
-                expect(photos.length).toEqual(2); // The one child should only be the add media with plus
+                expect(photos.length).toEqual(2);
+                // Now inspect the two individual photos
+                console.log(photos[0]);
+                console.log(photos[1]);
+                console.log(mediaAttached[0]);
+                console.log(mediaAttached[1]);
+                // The simeple way
+                expect(photos[0]).toContainElement(mediaAttached[0]);
+                expect(photos[1]).toContainElement(mediaAttached[1]);
+                //*
+                // The More detailed way
+                expect(mediaAttached[0]).toContainCss(
+                    {background: "url('http://localhost:7777/profile/photos/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvcGhvdG9zL3NjcmVlbnNob3QyMDE3MDYxMWF0MzM1MDNwbV81MDAucG5nIzE0OTcyOTc3MzE=/')"}
+                );
+                expect(mediaAttached[1]).toContainCss(
+                    {background: "url('http://localhost:7777/profile/photos/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvcGhvdG9zL3NjcmVlbnNob3QyMDE3MDYxMWF0MzMxNTlwbV81MDAucG5nIzE0OTcyOTc3MzE=/')"}
+                );
+                //*/
+                expect(1).toEqual(-1);
             });
 
             it("Renders 2 audio files if there are 2 child audio files", function () {
@@ -180,7 +205,7 @@ define([
                 console.log(mediaContainer[0]);
                 console.log(this);
                 expect(mediaContainer[0].children.length).toEqual(3);
-                expect(audio_files.length).toEqual(2); // The one child should only be the add media with plus
+                expect(audio_files.length).toEqual(2);
             });
 
         });
