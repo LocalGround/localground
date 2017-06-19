@@ -113,6 +113,14 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.AudioList.as_view(),
         name='audio-list'),
     url(
+        r'^map-images/(?P<map_id>[0-9]+)/overlays/$',
+        views.MapImageOverlayList.as_view(),
+        name='imageopts-list'),
+    url(
+        r'^map-images/(?P<map_id>[0-9]+)/overlays/(?P<pk>[0-9]+)/$',
+        views.MapImageOverlayInstance.as_view(),
+        name='imageopts-detail'),
+    url(
         r'^map-images/(?P<pk>[0-9]+)/$',
         views.MapImageInstance.as_view(),
         name='mapimage-detail'),
