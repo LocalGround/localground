@@ -187,10 +187,10 @@ define([
                 expect(photos[1]).toContainElement(mediaAttached[1]);
                 //*
                 // The More detailed way
-                expect(mediaAttached[0]).toContainCss(
+                expect(mediaAttached[0]).toHaveCss(
                     {background: "url('http://localhost:7777/profile/photos/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvcGhvdG9zL3NjcmVlbnNob3QyMDE3MDYxMWF0MzM1MDNwbV81MDAucG5nIzE0OTcyOTc3MzE=/')"}
                 );
-                expect(mediaAttached[1]).toContainCss(
+                expect(mediaAttached[1]).toHaveCss(
                     {background: "url('http://localhost:7777/profile/photos/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvcGhvdG9zL3NjcmVlbnNob3QyMDE3MDYxMWF0MzMxNTlwbV81MDAucG5nIzE0OTcyOTc3MzE=/')"}
                 );
                 //*/
