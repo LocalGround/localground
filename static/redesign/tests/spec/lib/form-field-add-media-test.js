@@ -5,7 +5,7 @@
  * NEEDED TESTS:
  *   - MAKE SURE THAT IT RENDERES A PLUS BUTTON
  *   - IF USER CLICKS PLUS BUTTON, IT TRIGGERS
- *     THE MEDIA BROWSER
+ *     THE MEDIA BROWSER (Almost there)
  *   - IF USER SELECTS MEDIA, IT SHOULD
  *     RENDER MEDIA THUMBNAILS NEXT TO PLUS BUTTON
  *   - IF USER CLICKS THE 'DELETE MEDIA BUTTON', IT
@@ -189,6 +189,11 @@ define([
             });
 
             it("Opens up the media browser when clicking add media plus button", function(){
+                /*
+                // I am almost there for the modal display, but after attemtpting to search for modal,
+                // it does not come up despite that in the map browser, it clearly is present in the HTML version
+                // through inspector mode initalized without a style called display
+                */
                 initForm(this, markerPlain);
                 var addMediaButton = fixture.find("#add-media-button");
                 console.log(fixture.find("#add-media-button"))
@@ -198,6 +203,7 @@ define([
                 //MediaEditor.prototype.showMediaBrowser();
                 var modalWindow = fixture.find(".modal");
                 console.log(fixture.find('.modal'));
+                // As of now, it shows length of 0, even though the .modal class is present in the web browser version
                 console.log(modalWindow);
                 expect($(modalWindow[0]).css('display')).toEqual('block');
                 //expect(1).toEqual(-1);
