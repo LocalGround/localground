@@ -3,9 +3,6 @@
  * LOCATED IN lib/forms/backbone-form-editor.
  *
  * NEEDED TESTS:
- *   - MAKE SURE THAT IT RENDERES A PLUS BUTTON
- *   - IF USER CLICKS PLUS BUTTON, IT TRIGGERS
- *     THE MEDIA BROWSER (Almost there)
  *   - IF USER SELECTS MEDIA, IT SHOULD
  *     RENDER MEDIA THUMBNAILS NEXT TO PLUS BUTTON
  *   - IF USER CLICKS THE 'DELETE MEDIA BUTTON', IT
@@ -36,6 +33,7 @@ define([
 
         initSpies = function (scope) {
             spyOn(MediaEditor.prototype, "initialize").and.callThrough();
+            spyOn(MediaEditor.prototype, "render").and.callThrough();
             spyOn(MediaEditor.prototype, "attachModels").and.callThrough();
             spyOn(MediaEditor.prototype, "showMediaBrowser").and.callThrough();
             spyOn(MediaEditor.prototype, "attachMedia").and.callThrough();
@@ -149,21 +147,12 @@ define([
                 initMarkers();
             });
 
-            /*
-            * This is a rough draft format of rendering the items. Changes will be made if needed
-            */
-
             it("Only renders a plus button if no children exist", function () {
                 initForm(this, markerPlain);
                 var mediaContainer = fixture.find(".attached-media-container");
-                //console.log(fixture.find(".attached-media-container"))
-                //console.log(mediaContainer[0]); // Any indexed values of any html element collection will return the html element itself
-                //console.log(this);
                 expect(mediaContainer[0].children.length).toEqual(1); // The one child should only be the add media with plus
 
                 var addMediaButton = fixture.find("#add-media-button");
-                //console.log(mediaContainer[0]);
-                //console.log(addMediaButton[0]);
                 expect(mediaContainer[0]).toContainElement(addMediaButton[0]);
             });
 
@@ -172,16 +161,9 @@ define([
                 var mediaContainer = fixture.find(".attached-media-container");
                 var photos = fixture.find(".photo-attached");
                 var mediaAttached = fixture.find(".attached-media");
-                console.log(fixture.find(".attached-media-container"))
-                console.log(mediaContainer[0]);
-                console.log(this);
                 expect(mediaContainer[0].children.length).toEqual(3);
                 expect(photos.length).toEqual(2);
                 // Now inspect the two individual photos
-                console.log(photos[0]);
-                console.log(photos[1]);
-                console.log(mediaAttached[0]);
-                console.log(mediaAttached[1]);
                 // The simeple way
                 expect(photos[0]).toContainElement(mediaAttached[0]);
                 expect(photos[1]).toContainElement(mediaAttached[1]);
@@ -200,19 +182,9 @@ define([
                 var audio_files = fixture.find(".audio-attached");
                 var audioBasic = fixture.find(".audio-basic");
                 var audioSource = fixture.find("source");
-                console.log(fixture.find(".attached-media-container"))
-                console.log(mediaContainer[0]);
-                console.log(this);
                 expect(mediaContainer[0].children.length).toEqual(3);
                 expect(audio_files.length).toEqual(2);
-
                 // Now inspect the two individual audio_files
-                console.log(audio_files[0]);
-                console.log(audio_files[1]);
-                console.log(audioBasic[0]);
-                console.log(audioBasic[1]);
-                console.log(audioSource[0]);
-                console.log(audioSource[1]);
                 // The simeple way
                 expect(audio_files[0]).toContainElement(audioBasic[0]);
                 expect(audio_files[1]).toContainElement(audioBasic[1]);
@@ -263,5 +235,69 @@ define([
                 });
             });
         });
+
+        describe("Form: Attach and Detach media / models", function(){
+            beforeEach(function(){
+                initSpies(this);
+                initMarkers();
+            });
+
+            it("Executes attachModels successfully", function(){
+                /*
+                 * Assume that the add button is clicked and a few models will be added from the helper file
+
+                 form.attachModels (the two models provided);
+
+                 then check the following:
+                 new length is two more than previous
+                 form re-renders with two more
+                */
+                initForm(this, markerPlain);
+                expect(MediaEditor.prototype.render).toHaveBeenCalledTimes(1);
+                expect(MediaEditor.prototype.attachModels).toHaveBeenCalledTimes(0);
+                expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(0);
+                expect(form.app.vent.trigger).not.toHaveBeenCalledWith('hide-modal');
+                form.app.vent.trigger('add-models-to-marker', [this.photos.at(0), this.photos.at(1)]);
+                expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(1);
+                expect(MediaEditor.prototype.attachModels).toHaveBeenCalledTimes(1);
+                expect(form.app.vent.trigger).toHaveBeenCalledWith('hide-modal');
+                expect(MediaEditor.prototype.render).toHaveBeenCalledTimes(1);
+
+            });
+
+            it("Executes detachModel successfully", function(){
+                /*
+                * Search for the one existing media to detach,
+                * then check that detach model has been called
+                *
+                */
+                initForm(this, markerPhotos);
+                spyOn(window, 'confirm').and.returnValue(true);
+                var mediaContainer = fixture.find(".attached-media-container");
+                var photos = fixture.find(".photo-attached");
+                var detachMediaFixutre = fixture.find(".detach_media")
+                //
+                // Let's pick one of the photos to delete
+                //
+                expect(photos[0]).toContainElement(detachMediaFixutre[0]);
+                expect(photos[1]).toContainElement(detachMediaFixutre[1]);
+                expect(MediaEditor.prototype.detachModel).toHaveBeenCalledTimes(0);
+                fixture.find(".detach_media").trigger('click');
+                expect(MediaEditor.prototype.detachModel).toHaveBeenCalledTimes(2);
+
+            });
+
+            it("Executes attachMedia successfully", function(){
+
+                initForm(this, markerPlain);
+                expect(MediaEditor.prototype.render).toHaveBeenCalledTimes(1);
+                expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(0);
+                form.save([this.photos.at(0), this.photos.at(1)]);
+                expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(1);
+
+            });
+        });
+
+
 
     });

@@ -183,7 +183,6 @@ define([
         },
         onShow: function () {
             var that = this;
-            console.log('onShow');
             this.$el.find('#fileupload').fileupload({
                 dataType: 'json',
                 autoUpload: true,
@@ -203,11 +202,8 @@ define([
             });
 
             //section for uploading by dragging files from your desktop:
-            console.log(this.$el.find("#dropzone"));
             this.$el.find("#dropzone").bind({
                 dragover: function (e) {
-                    //browser debug
-                    console.log("drag detected");
                     e.stopPropagation();
                     e.preventDefault();
                     var dropZone = that.$el.find('#dropzone'),
@@ -258,11 +254,8 @@ define([
             });
 
             //section for uploading by dragging files from your desktop:
-            console.log(this.$el.find("#dropzone"));
             this.$el.find("#dropzone").bind({
                 dragover: function (e) {
-                    //browser debug
-                    console.log("drag detected");
                     e.stopPropagation();
                     e.preventDefault();
                     var dropZone = this.$el.find('#dropzone'),
@@ -286,8 +279,6 @@ define([
             });
         },
         dragover: function (e) {
-            //browser debug
-            console.log("drag detected");
             e.stopPropagation();
             e.preventDefault();
             var dropZone = this.$el.find('#dropzone'),
@@ -306,7 +297,6 @@ define([
         errorCount: 0,
         successCount: 0,
         stop: function () {
-            console.log(this.successCount, this.errorCount);
             if (this.successCount > 0) {
                 this.$el.find('.success-message').show();
             } else {
@@ -388,7 +378,6 @@ define([
         },
 
         onAdd: function (e, data) {
-            console.log('onAdd fired');
             var that = this,
                 model;
             this.$el.find('#nothing-here').hide();
@@ -430,12 +419,10 @@ define([
             model.urlRoot = sourceCollection.url;
             delete model.attributes.data;
             delete model.attributes.file;
-            console.log(model);
             sourceCollection.unshift(model); //add to top
         },
 
         addModels: function () {
-            console.log('create-media: addModels');
             var selectedModels = [];
             this.collection.each(function (model) {
                 // if (model.get("isSelected")) {

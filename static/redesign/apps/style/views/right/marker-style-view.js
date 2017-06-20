@@ -57,9 +57,6 @@ define(["jquery",
                 _.extend(this,opts);
                 this.dataType = this.model.get("layer_type");
                 this.data_source = this.model.get("data_source"); //e.g. "form_1"
-                console.log(this.model);
-                console.log(this.dataType);
-                console.log(this.data_source);
                 this.buildDropdown();
                 this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
@@ -115,9 +112,6 @@ define(["jquery",
             buildDropdown: function () {
                 var key = this.model.get('data_source'),
                     dataEntry = this.app.dataManager.getData(key);
-                    console.log(key);
-                    console.log(dataEntry.collection);
-                    console.log(dataEntry.fields);
             },
 
             getPropertiesCategorical: function () {
