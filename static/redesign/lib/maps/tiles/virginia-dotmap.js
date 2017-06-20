@@ -14,32 +14,6 @@ define(['jquery'], function ($) {
         this.colorDotsURL = 'http://demographics.virginia.edu/DotMap/tiles4/';
         this.bwDotsURL = 'http://demographics.virginia.edu/DotMap/tiles5/';
         this.blankURL = 'http://demographics.virginia.edu/DotMap/tiles4/blank.png';
-        this.xmax = function (level) {
-            switch (level) {
-            case 4:
-                return 5;
-            case 5:
-                return 10;
-            case 6:
-                return 20;
-            case 7:
-                return 40;
-            case 8:
-                return 80;
-            case 9:
-                return 160;
-            case 10:
-                return 321;
-            case 11:
-                return 643;
-            case 12:
-                return 1286;
-            case 13:
-                return 2572;
-            default:
-                return 0;
-            }
-        };
         this.ymin = function (level) {
             switch (level) {
             case 4:
@@ -151,7 +125,6 @@ define(['jquery'], function ($) {
             var dotURL = this.url + zoom + '/' + coord.x + '/' + coord.y + '.png',
                 blankURL = 'http://demographics.virginia.edu/DotMap/tiles4/blank.png',
                 url;
-            return dotURL;
             if (zoom == 4 && coord.x >= 0 && coord.x <= 5 && coord.y >= 3 && coord.y <= 7 && this.tileExists(coord, zoom)) {
                 url = dotURL;
             } else if (zoom == 5 && coord.x >= 0 && coord.x <= 10 && coord.y >= 6 && coord.y <= 14 && this.tileExists(coord, zoom)) {
@@ -177,14 +150,16 @@ define(['jquery'], function ($) {
             }
             return url;
         };
-        this.getTile = function (coord, zoom) {
-        var url = this.url + zoom + '/' + coord.x + '/' + coord.y + '.png';
-            console.log(zoom, url, coord.x, coord.y);
-            return $('<div></div>').css({
-                'width': '256px',
-                'height': '256px',
-                'backgroundImage': 'url(' + url + ')'
-            }).get(0);
+
+        this.getTile = function (coord, zoom, ownerDocument) {
+            var url = this.getTileUrl(coord, zoom),
+                div = ownerDocument.createElement('div');
+            div.style.width = this.tileSize.width + 'px';
+            div.style.height = this.tileSize.height + 'px';
+            div.style.backgroundColor = '#FFF';
+            div.style.backgroundImage = 'url(' + url + ')';
+            div.style.backgroundSize = '256px 256px';
+            return div;
         };
 
         this.tiles = function (level) {
