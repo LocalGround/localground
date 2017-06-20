@@ -34,6 +34,8 @@ define([
         initSpies = function (scope) {
             spyOn(MediaEditor.prototype, "initialize").and.callThrough();
             spyOn(MediaEditor.prototype, "render").and.callThrough();
+            spyOn(MediaEditor.prototype, "renderAudioPlayers").and.callThrough();
+            spyOn(MediaEditor.prototype, "enableMediaReordering").and.callThrough();
             spyOn(MediaEditor.prototype, "attachModels").and.callThrough();
             spyOn(MediaEditor.prototype, "showMediaBrowser").and.callThrough();
             spyOn(MediaEditor.prototype, "attachMedia").and.callThrough();
@@ -193,6 +195,29 @@ define([
                 expect(audioSource[1]).toHaveAttr("src", "http://localhost:7777/profile/audio/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvYXVkaW8vdG1waW80ZmxmXzE0OTcyOTc5MzMubXAzIzE0OTcyOTc5NDc=/");
             });
 
+            it("Render AudioPlayer gets executed", function () {
+                expect(MediaEditor.prototype.renderAudioPlayers).toHaveBeenCalledTimes(0);
+                initForm(this, markerAudio);
+                expect(MediaEditor.prototype.renderAudioPlayers).toHaveBeenCalledTimes(1);
+                var audioPlayCtrls = fixture.find(".play-ctrls");
+                var audioPlay = fixture.find(".play");
+                expect(audioPlayCtrls[0]).not.toContainElement("div.pause");
+                $(audioPlay[0]).trigger('click');
+                expect(audioPlayCtrls[0]).toContainElement("div.pause");
+            });
+
+            it("Enable Media Reordering gets executed", function(){
+                initForm(this, markerPhotos);
+                //
+                //
+                var mediaContainer = fixture.find(".attached-media-container");
+                var uiSortableHandles = fixture.find(".ui-sortable-handle");
+                expect(mediaContainer).toContainElement(uiSortableHandles);
+                expect(mediaContainer.children.length).toEqual(2);
+                expect(uiSortableHandles.children.length).toEqual(2);
+                expect(mediaContainer.children.length).toEqual(uiSortableHandles.children.length);
+            });
+
         });
 
         describe("Form: Add Media Field Test: Testing that All Interactions Work Properly", function(){
@@ -273,6 +298,7 @@ define([
                 */
                 initForm(this, markerPhotos);
                 spyOn(window, 'confirm').and.returnValue(true);
+                spyOn(markerPhotos, 'detach').and.callThrough();
                 var mediaContainer = fixture.find(".attached-media-container");
                 var photos = fixture.find(".photo-attached");
                 var detachMediaFixutre = fixture.find(".detach_media")
@@ -282,11 +308,15 @@ define([
                 expect(photos[0]).toContainElement(detachMediaFixutre[0]);
                 expect(photos[1]).toContainElement(detachMediaFixutre[1]);
                 expect(MediaEditor.prototype.detachModel).toHaveBeenCalledTimes(0);
-                fixture.find(".detach_media").trigger('click');
-                expect(MediaEditor.prototype.detachModel).toHaveBeenCalledTimes(2);
-
+                expect(window.confirm).toHaveBeenCalledTimes(0);
+                expect(markerPhotos.detach).toHaveBeenCalledTimes(0);
+                $(detachMediaFixutre[0]).trigger('click');
+                expect(MediaEditor.prototype.detachModel).toHaveBeenCalledTimes(1);
+                expect(window.confirm).toHaveBeenCalledTimes(1);
+                expect(markerPhotos.detach).toHaveBeenCalledTimes(1);
             });
 
+            /*
             it("Executes attachMedia successfully", function(){
 
                 initForm(this, markerPlain);
@@ -296,6 +326,7 @@ define([
                 expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(1);
 
             });
+            */
         });
 
 
