@@ -1,13 +1,27 @@
-{% extends "base/page_centered.html" %}
-{% load i18n %}
-{% block extra_styles %}
-	{{block.super}}
-    .content p, .content form { margin-left: 20px; }
-{% endblock %}
-{% block page_title %}Logged Out{% endblock %}
-{% block main_content %}
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-8">
+    <title>Local Ground</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/jquery-ui/jquery-ui.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/index-style.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/style.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/modal_new_project.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
+</head>
+<body>
+    <nav id="toolbar-main" class = "account"></nav>
+    <div class = "article-title">
+        <div class="container-center article">
+            <h1>Local Ground - Signed Out</h1>
+        </div>
+    </div>
+
     <p>
-        {% trans "You have just logged out of your account." %}
+        You have just logged out of your account.
         <a href="/accounts/login/">Log in again</a>.
     </p>
-{% endblock %}
+
+</body>
+</html>
