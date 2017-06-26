@@ -6,6 +6,12 @@ define(["models/base"], function (Base) {
      * @see <a href="//localground.org/api/0/map-images/">//localground.org/api/0/map-images/</a>
      */
     var MapImage = Base.extend({
+        schema: {
+            name: { type: 'TextArea', title: "Name" },
+            caption:  { type: 'TextArea', title: "Caption" },
+            attribution: { type: 'TextArea', title: "Attribution" },
+            tags: { type: 'List', itemType: 'Text' }
+        },
         hiddenFields: [
             "geometry",
             "overlay_type",
@@ -14,9 +20,6 @@ define(["models/base"], function (Base) {
 			"source_print",
             "status"
         ],
-        getNamePlural: function () {
-            return "map images";
-        },
         defaults: _.extend({}, Base.prototype.defaults, {
             checked: false
         })

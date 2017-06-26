@@ -8,9 +8,6 @@ define(["models/base"], function (Base) {
     var Print = Base.extend({
 
         url: '/api/0/prints/',
-        getNamePlural: function () {
-            return "prints";
-        },
         defaults: _.extend({}, Base.prototype.defaults, {
             checked: false
         }),

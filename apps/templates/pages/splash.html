@@ -2,63 +2,136 @@
     {% include "pages/home.html" %}
 {% else %}
     <!DOCTYPE html>
-    <html lang="en">
-        <head>
-            <meta charset="utf-8">
-            <title>Local Ground</title>
-            <link rel="stylesheet" href="/static/css/twitter/bootstrap.css" type="text/css" />
-            <style>
-                html, body {}
-                .lg {
-                    font: 50px/50px 'lg' !important;
-                    line-height: 70px !important;
-                    color: #222;
-                }
-                .container {
-                    width: 900px;
-                    background-color: #fff;
-                    padding: 20px;
-                }
-                .hero-unit {
-                    overflow:hidden;
-                    background-image: url('/static/images/houses_and_cars.png');
-                    background-repeat: no-repeat;
-                    background-position: right bottom;
-                    height: 250px;
-                }
-                .hero-unit p {
-                    line-height:40px;
-                    margin-top:-8px;
-                }
-            </style>
-        </head>
-    
-        <body>
-    
-            <div class="container">
-            
-                <!-- Main hero unit for a primary marketing message or call to action -->
-                <div class="hero-unit">
-                    <img src="/static/images/lg-logo-circle-100.png"
-                         style="float:left; margin-right: 10px;" />
-                    <h1 class="lg">Local Ground</h1>
-                    <div class="row"
-                         style="clear:both;margin-top:20px;margin-bottom: 20px;margin-left: 110px;">
-                        <p>
-                            ...is coming soon.  We're currently finishing up some
-                            new enhancements and testing the system.
-                            If you have questions, please contact
-                            info@localground.org.  If you are a beta-tester,
-                            please log in <a href="/accounts/login/">here</a>
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-8">
+        <title>Local Ground</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+        <link rel=stylesheet type="text/css" href="/static/redesign/css/static-pages.css" />
+        <style>
+            .btn-large {
+                display: inline-block;
+                background: #FFF;
+                margin-top: 30px;
+                padding: 10px 20px;
+                font-size: 20px;
+                text-transform: uppercase;
+                border-radius: 4px;
+                box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+            }
+            .wave-effects {
+                position: relative;
+                cursor: pointer;
+                display: inline-block;
+                overflow: hidden;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                -webkit-tap-highlight-color: transparent;
+                vertical-align: middle;
+                z-index: 1;
+                transition: .3s ease-out;
+            }
+            .ripple {
+                display: block;
+                position: absolute;
+                background: rgba(170, 170, 170, 0.3);
+                border-radius: 100%;
+                -webkit-transform: scale(0);
+                -moz-transform: scale(0);
+                -o-transform: scale(0);
+                transform: scale(0);
+                box-shadow: 0 10px 10px 0 rgba(170, 170, 170, 0.14), 0 1px 5px 0 rgba(170, 170, 170, 0.12), 0 3px 1px -2px rgba(170, 170, 170,0.2);
 
-                        </p>
-
-                    </div>
+            }
+           
+            .animate {
+                -webkit-animation: ripple 0.35s linear;
+                -moz-animation: ripple 0.35s linear;
+                -ms-animation: ripple 0.35s linear;
+                -o-animation: ripple 0.35s linear;
+                animation: ripple 0.35s linear;
+            }
+           
+            @-webkit-keyframes ripple {
+                100% {
+                     opacity: 0;
+                     -webkit-transform: scale(2.5);
+                }
+            }
+            @-moz-keyframes ripple {
+                100% {
+                     opacity: 0;
+                     -moz-transform: scale(2.5);
+                }
+            }
+            @-o-keyframes ripple {
+                100% {
+                     opacity: 0;
+                     -o-transform: scale(2.5);
+                }
+            }
+            @keyframes ripple {
+                100% {
+                     opacity: 0;
+                     transform: scale(2.5);
+                }
+            }
+        </style>
+    </head>
+    
+    <body style="background-color:#fafafc;">
+        <div style="background-image:url('/static/redesign/assets/splash-map-7.png');height:500px;width:100%;background-size:100%;text-align:center;margin-bottom:100px;">
+            <h1 style="font-family:'Montserrat';text-align:center;padding:160px 0 0;text-transform:uppercase;font-size:80px;color:white;font-weight:700;letter-spacing: .1em;">Local Ground</h1>
+            <span style="padding:0 0 200px;color:white;">Share your world!</span>
+            <div>
+                <a class="btn-large wave-effects" href="/accounts/login/">Login</a>
+            </div>
+        </div>
+        <div style="border-bottom: 1px solid #e4e5eb;margin-bottom:60px;">
+            <h2 style="text-align:center;margin-bottom: 20px;font-size: 30px;">Local Ground Features</h2>
+            <div style="text-align:center;margin-bottom:100px;display:flex;margin:10px 40px 40px;font-size: 14px;">
+                <div style="margin:20px;flex:1;">
+                    <img src="/static/redesign/assets/map-icon.png" style="width:100px;margin:20px auto;display:block;">
+                    <span style="font-weight:600;display:block;padding-bottom:4px;">Story Maps</span>
+                    <span>Create story maps that take your visitor on a journey through your data</span>
                 </div>
-    
-            </div> <!-- /container -->
-    
-        </body>
-    
-    </html>
+                <div style="margin:20px;flex:1;">
+                    <img src="/static/redesign/assets/pin-icon.png" style="width:100px;margin:20px auto;display:block;">
+                    <span style="font-weight:600;display:block;padding-bottom:4px;">Data Visualization</span>
+                    <span>Visualize your spatial data</span>
+                </div>
+                <div style="margin:20px;flex:1;">
+                    <img src="/static/redesign/assets//pen-icon.png" style="width:100px;margin:20px auto;display:block;">
+                    <span style="font-weight:600;display:block;padding-bottom:4px;">Hand Drawn Maps</span>
+                    <span>Print your map, draw on it with a colored pen, and upload it to automatically overlay your hand drawings on your map</span>
+                </div>
+            </div>
+        </div>
+        <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+        <script>
+            var addEffects = function(selector) {
+                var $ripple, d, $el;
+                $(selector).click(function(e) {
+                    $el = $(this);
+                    $ripple = $el.find(".ripple");
+                    if ($ripple.length === 0) {
+                        $ripple = $("<span class='ripple'></span>");
+                        $el.prepend($ripple);
+                    }
+                    $ripple.removeClass("animate");
+                    if (!$ripple.height() && !$ripple.width()) {
+                        d = Math.max($el.outerWidth(), $el.outerHeight());
+                        $ripple.css({ height: d, width: d });
+                    }
+                    $ripple.css({ top: -1 * $el.height(), left: 0 }).addClass("animate");
+                 });
+            };
+            addEffects('.wave-effects');
+
+        </script>
+    </body>
+</html>
 {% endif %}

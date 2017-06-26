@@ -25,6 +25,10 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         db_column='fk_provider',
         related_name='prints_print_tilesets')
     layout = models.ForeignKey('Layout')
+    northeast = models.PointField(null=True)		
+    southwest = models.PointField(null=True)		
+    center = models.PointField(null=True)		
+    zoom = models.IntegerField(null=True)
     map_width = models.IntegerField()
     map_height = models.IntegerField()
     map_image_path = models.CharField(max_length=255)

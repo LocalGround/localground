@@ -69,20 +69,34 @@ svg, .fa-question-circle {
 }
 
 .list-header .zoom-to-extents,
-.list-header .new-field-plus {
+.list-header .new-field-plus,
+.list-header .toggle-visibility,
+li .toggle-visibility {
     font-size: 12px;
     margin-right: 6px;
     float: right;
     margin-top: 3px;
 }
-.list-header .zoom-to-extents {
+li .toggle-visibility {
+    margin-right: 36px;
+}
+.highlight .toggle-visibility {
+    color: #FFF;
+}
+.list-header .zoom-to-extents,
+.list-header .fa-eye,
+li .zoom-to-extents,
+li .fa-eye {
     color: #AAA;
     display: none;
 }
 .list-header .new-field-plus {
     color: rgb(78,112,212);
 }
-.list-header:hover .zoom-to-extents {
+.list-header:hover .zoom-to-extents,
+.list-header:hover .toggle-visibility,
+li:hover .zoom-to-extents,
+li:hover .fa-eye  {
     cursor: pointer;
     display: block;
 }
@@ -116,15 +130,15 @@ svg, .fa-question-circle {
 }
 
 
-#add-marker-button, #delete-marker-button {
+#add-geometry, #add-rectangle, #delete-geometry {
     display: block;
     text-align: center;
     margin: 30px auto;
-    min-width: 160px;
+    min-width: 180px;
     width: auto;
 }
 
-#add-marker-button:focus, #delete-marker-button:focus {
+#add-geometry:focus, #add-rectangle:focus, #delete-geometry:focus {
     outline: none;
 }
 

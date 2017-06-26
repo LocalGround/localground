@@ -5,7 +5,7 @@ from localground.apps.site.tests import ViewMixin, ModelMixin
 from rest_framework import status
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import urllib, datetime, json
-from localground.apps.site.models import Field
+from localground.apps.site.models import DataType
 from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 class UpdateFormTest(test.TestCase, ViewMixin):
@@ -25,14 +25,14 @@ class UpdateFormTest(test.TestCase, ViewMixin):
         from localground.apps.site import models
         
         d = {
-            'text_field': { 'type': Field.DataTypes.TEXT, 'test_val': 'Column Value 1' },
-            'integer_field': { 'type': Field.DataTypes.INTEGER, 'test_val': 8 },
-            'datetime_field': { 'type': Field.DataTypes.DATETIME, 'test_val': datetime.datetime.now() },
-            'boolean_field': { 'type': Field.DataTypes.BOOLEAN, 'test_val': True },
-            'decimal_field': { 'type': Field.DataTypes.DECIMAL, 'test_val': 1.5 },
-            'rating_field': { 'type': Field.DataTypes.RATING, 'test_val': 1 },
-            'photo_field': { 'type': Field.DataTypes.PHOTO, 'test_val': models.Photo.objects.get(id=1) },
-            'audio_field': { 'type': Field.DataTypes.AUDIO, 'test_val': models.Audio.objects.get(id=1) }
+            'text_field': { 'type': DataType.DataTypes.TEXT, 'test_val': 'Column Value 1' },
+            'integer_field': { 'type': DataType.DataTypes.INTEGER, 'test_val': 8 },
+            'datetime_field': { 'type': DataType.DataTypes.DATETIME, 'test_val': datetime.datetime.now() },
+            'boolean_field': { 'type': DataType.DataTypes.BOOLEAN, 'test_val': True },
+            'decimal_field': { 'type': DataType.DataTypes.DECIMAL, 'test_val': 1.5 },
+            'rating_field': { 'type': DataType.DataTypes.RATING, 'test_val': 1 },
+            'photo_field': { 'type': DataType.DataTypes.PHOTO, 'test_val': models.Photo.objects.get(id=1) },
+            'audio_field': { 'type': DataType.DataTypes.AUDIO, 'test_val': models.Audio.objects.get(id=1) }
         }
         for key in d:
             f = models.Field(col_alias=key,
@@ -99,8 +99,6 @@ class UpdateFormTest(test.TestCase, ViewMixin):
         return data
 
     def test_add_fields_to_existing_form_using_view(self, **kwargs):
-        from localground.apps.site.models import Field
-
         name = 'new name'
         description = 'new d'
         tags = "a,b,c"
@@ -146,7 +144,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
                 (field.col_name_db, field.form.table_name))
 
     def test_add_new_form_using_view(self, **kwargs):
-        from localground.apps.site.models import Field, Form
+        from localground.apps.site.models import Form
 
         name = 'brand new form!'
         description = 'new d'

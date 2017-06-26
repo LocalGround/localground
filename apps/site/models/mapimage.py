@@ -111,6 +111,14 @@ class MapImage(BaseUploadedMedia):
 
 class ImageOpts(BaseExtents, BaseMedia):
     source_mapimage = models.ForeignKey(MapImage)
+    opacity = models.FloatField(default=1)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    
+    def can_view(self, user, access_key=None):
+        return self.source_mapimage.can_view(user, access_key)
+
+    def can_edit(self, user):
+        return self.source_mapimage.can_edit(user)
 
     class Meta:
         app_label = 'site'
@@ -136,29 +144,26 @@ class ImageOpts(BaseExtents, BaseMedia):
         return {
             'map_image_id': self.id,
             'overlay_path': self.processed_map_url_path(),
-            'north': self.northeast.y,
-            'south': self.southwest.y,
-            'east': self.northeast.x,
-            'west': self.southwest.x,
-            'zoomLevel': self.zoom
+            'extents': self.extents
         }
 
-    def save(self, user, *args, **kwargs):
+    def save(self, user=None, *args, **kwargs):
         from localground.apps.lib.helpers import generic
         is_new = self.pk is None
 
         # 1. ensure that user doesn't inadvertently change the data type of the
         # column
         if is_new:
-            if not hasattr(self, 'owner'):
+            if not hasattr(self, 'owner') and user is not None:
                 self.owner = user
             self.date_created = get_timestamp_no_milliseconds()
 
-        self.last_updated_by = user
+        if user is not None:
+            self.last_updated_by = user
         self.time_stamp = get_timestamp_no_milliseconds()
         super(ImageOpts, self).save(*args, **kwargs)
 
-    def delete():
+    def delete(self, *args, **kwargs):
         # don't want to inadvertently remove the parent mapimage, so adding this
         # workaround.  Todo:  update to Django >= 1.3, to configure "cascade
         # delete" settings
@@ -166,4 +171,4 @@ class ImageOpts(BaseExtents, BaseMedia):
         for s in mapimages:
             s.processed_image = None
             s.save()
-        self.delete()
+        super(ImageOpts, self).delete(*args, **kwargs)

@@ -68,12 +68,12 @@ class CSVMixin(mixins.MediaMixin):
         reader = csv.DictReader(data)
         for row in reader:
             fields = [
-                'field_7_detail.id',
-                'field_7_detail.file_name_medium',
-                'field_7_detail.file_name_medium_sm',
-                'field_7_detail.file_name_small',
                 'field_8_detail.id',
-                'field_8_detail.file_path'
+                'field_8_detail.file_name_medium',
+                'field_8_detail.file_name_medium_sm',
+                'field_8_detail.file_name_small',
+                'field_9_detail.id',
+                'field_9_detail.file_path'
             ]
             for key in fields:
                 self.assertTrue(row.get(key))

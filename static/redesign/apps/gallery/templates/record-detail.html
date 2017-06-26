@@ -62,58 +62,27 @@
 
     {{#ifequal screenType "map"}}
         {{#if geometry}}
-            <button class="button-secondary delete-marker-button" id="delete-marker-button">Remove Location Marker</button>
+            <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>
         {{else}}
             <div class="add-lat-lng">
-                <button class="button-secondary add-marker-button" id="add-marker-button">
+                <button class="button-secondary add-marker-button" id="add-geometry">
                     Add Location Marker
                 </button>
             </div>
         {{/if}}
-        {{#ifnotequal lat "undefined"}}
+        {{#if lat }}
             <div class="latlong-container">
             <p class="latlong" style="font-style: italic">
                 ({{lat}}, {{lng}})
             </p>
             </div>
-        {{/ifnotequal}}
+        {{/if}}
     {{/ifequal}}
     
 
     <div class="confirmation success-message">Saved Successfully &#10003</div>
 
-    <div id="model-form">
-        <!-- Form Inserted Here -->
-    </div>
-
-    <h2 style="margin:20px 20px 4px;">Add Media</h2>
-    <div class="attached-media-container">
-        <div class="upload-spot" id="left-panel-upload">
-            <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>
-        </div>
-        {{#each children.photos.data}}
-            <div class="attached-container">
-                <div class="attached-media" style="background: url('{{this.path_medium}}');"></div>
-                <div class="attached-media-overlay">
-                    <div class="hover-to-show">
-                        <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>
-                    </div>
-                </div>
-            </div>
-        {{/each}}
-        {{#each children.audio.data}}
-            <div class="attached-container">
-                <div class="player-container audio-basic" data-id="{{this.id}}">
-                    <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
-                </div>
-                <div class="attached-media-overlay">
-                    <div class="hover-to-show">
-                        <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="audio" media-name="{{this.name}}"></i>
-                    </div>
-                </div>
-            </div>
-        {{/each}}
-    </div>
+    <div id="model-form"></div>
 
     <div class = "save-options">
         <button class="save-model button-primary">Save</button>

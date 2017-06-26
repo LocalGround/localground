@@ -381,9 +381,15 @@ nav .selected{
     text-align: left;
 }
 
-.form-reorder {
+.form-reorder, {
     cursor: move;
 }
+
+/*
+.rating-row, .choice-row {
+    cursor: move;
+}
+*/
 
 #model-form fieldset label,
 .inline-form label {
@@ -419,8 +425,10 @@ nav .selected{
 }
 
 #model-form select {
-    height: 25px;
+    height: 30px;
     font-size: 14px;
+    border: solid #EEE 1px;
+    background: white;
 }
 
 #model-form fieldset>div>div,
@@ -439,6 +447,36 @@ fieldset > div, .inline-form {
 .inline-form > select {
     margin:6px 0;
 }
+
+/* Backbone Forms: Tags */
+button[data-action="remove"] {
+    right: 5px;
+    border: none;
+    background: none;
+    font-weight: bold;
+    font-size: 17px;
+    color: #999;
+    float: right;
+    margin-top: -27px;
+    position: relative;
+}
+button[data-action="add"] {
+    color: rgb(78,112,212);
+    font-weight: bold;
+    border: none;
+    background: none;
+    margin-top: 3px;
+    text-transform: uppercase;
+}
+button[data-action="add"]::before {
+    content: "+ ";
+    font-size: 18px;
+}
+button[data-action="add"]::after {
+    content: " tag";
+    text-transform: uppercase;
+}
+
 
 /****************************************************************************************/
 /*                                       CARD STYLES                                     */
@@ -832,7 +870,6 @@ tbody .failure-message, tbody .success-message {
     content: "\f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142";
     color: #DDD;
     font-size: 10px;
-    position: absolute;
     margin-left: 1px;
     cursor: move;
 }
@@ -1125,6 +1162,9 @@ tbody .failure-message, tbody .success-message {
 .side-panel .img-card {
     border: none;
 }
+.side-panel .map-image {
+    border: 1px solid #e4e5eb;
+}
 
 /*.side-panel img,
 #marker-detail-panel img{
@@ -1148,6 +1188,12 @@ tbody .failure-message, tbody .success-message {
 }
 .map-marker-panel .item {
     /**/
+}
+.marker-container a i.fa.fa-eye-slash {
+    float: right;
+    display: inline-block;
+    margin-right: 36px;
+    margin-top: 5px;
 }
 
 .detail-panel {
@@ -1187,6 +1233,7 @@ tbody .failure-message, tbody .success-message {
 }
 #left-panel, #right-panel {
     overflow-y: auto;
+    padding-bottom: 100px;
 }
 
 .left #right-panel, .none #right-panel{
@@ -1237,7 +1284,7 @@ tbody .failure-message, tbody .success-message {
     border-right: 1px solid #e4e5eb;
     box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
     width: 280px;
-    background-color: #fafafc;
+    /*background-color: #f2f2f2;*/
     z-index: 40;
     flex: none;
     overflow: scroll;
@@ -1590,6 +1637,9 @@ li.current .photo {
 /********************************/
 /*       SPREADSHEET STYLES     */
 /********************************/
+.handsontable td {
+    white-space: normal !important;
+}
 .spreadsheet .active-slide {
     position: relative;
     height: auto;
@@ -1795,15 +1845,6 @@ audio {
     padding: 0px !important;
     margin: 0px auto !important;
     /*border: solid 1px #000;*/
-}
-
-.spreadsheet .play-ctrls {
-    text-align: center;
-    margin: 0px auto;
-}
-
-.spreadsheet .play {
-    margin: 0px auto;
 }
 
 .play.pause {
@@ -2053,7 +2094,17 @@ span.plus {
 /**************************
 * FIELDS                  *
 **************************/
+#fieldList > tr > td {
+    padding: 15px 5px 15px 5px;
+}
 
+.fieldTable {
+    border-collapse: collapse;
+}
+
+.fieldTable > tbody > tr, .fieldTable > thead > tr {
+    border-bottom: solid 1px #F0F0F0 !important;
+}
 /*
   Ratings
 */
@@ -2062,4 +2113,18 @@ span.plus {
     background-color: #FFDDDD;
     color: #D22;
     font-weight: bold;
+}
+
+
+/*
+  Date / Time
+*/
+/* Map View */
+.hours, .minutes, .seconds{
+    width: 50px !important;
+}
+
+.time-table td{
+    font-size: 12px;
+    color: #888;
 }

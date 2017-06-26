@@ -88,7 +88,7 @@ define([
 
             it("Sets data sources as expected", function () {
                 expect(dataManager.getDataSources()).toEqual([
-                    { value: 'markers', name: 'Markers' },
+                    { value: 'markers', name: 'Sites' },
                     { value: 'form_1', name: 'Team Members' },
                     { value: 'photos', name: 'Photos' },
                     { value: 'audio', name: 'Audio' },
@@ -118,7 +118,7 @@ define([
             it("Sets fields property for custom data types in data entry", function () {
                 var entry = dataManager.getData('form_1');
                 expect(entry.fields).toEqual(jasmine.any(Fields));
-                expect(entry.fields.length).toEqual(4);
+                expect(entry.fields.length).toEqual(5);
                 expect(DataManager.prototype.attachFieldsToRecords).toHaveBeenCalledTimes(1);
                 //expect(entry.fields.fetch).toHaveBeenCalled();
                 expect(entry.isSite).toBeTruthy();

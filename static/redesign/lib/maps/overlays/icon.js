@@ -1,9 +1,9 @@
 define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionette, _, IconLookup) {
     "use strict";
     var Icon = Marionette.ItemView.extend({
-        fillColor: '#ed867d',
+        fillColor: '#ED867D',
         fillOpacity: 1,
-        strokeColor: '#fff',
+        strokeColor: '#FFFFFF',
         strokeWeight: 1,
         strokeOpacity: 1,
         initialize: function (opts) {
@@ -11,6 +11,9 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
                 _.extend(this, IconLookup.getIcon(opts.shape));
             }
             _.extend(this, opts);
+            /*if (!opts.fillColor) {
+                delete opts.fillColor;
+            }*/
             this.scale = this.getScale();
             this.viewBox = this.viewBox || this.getViewBox();
         },
@@ -26,7 +29,13 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
             return scale;
         },
         generateGoogleIcon: function () {
-            var opts = {
+            var opts = this.toJSON();
+            opts.anchor = new google.maps.Point(this.anchor[0], this.anchor[1]);
+            opts.origin =  this.origin || new google.maps.Point(0, 0);
+            return opts;
+        },
+        toJSON: function () {
+            return {
                 fillColor: this.fillColor,
                 fillOpacity: this.fillOpacity,
                 strokeColor: this.strokeColor,
@@ -35,15 +44,12 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
                 path: this.path,
                 markerSize: this.width,
                 scale: this.getScale(),
-                anchor: new google.maps.Point(this.anchor[0], this.anchor[1]),
                 url: this.url,
                 //size: new google.maps.Size(this.width, this.height),
-                origin: this.origin || new google.maps.Point(0, 0),
                 viewBox: this.getViewBox(),
                 width: this.width,
                 height: this.height
             };
-            return opts;
         }
     });
     return Icon;

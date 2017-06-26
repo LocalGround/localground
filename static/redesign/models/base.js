@@ -14,7 +14,15 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 caption: { type: 'TextArea'},
                 tags: 'Text'
             },
-            getNamePlural: function () {
+            getDataTypePlural: function () {
+                if (this.collection && this.collection.getDataType) {
+                    return this.collection.getDataType();
+                }
+                var type = this.get("overlay_type");
+                return (type == 'audio') ? 'audio' : type + "s";
+
+            },
+            getDataType: function () {
                 return this.get("overlay_type");
             },
             filterFields: [
@@ -242,6 +250,14 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                         lng: geoJSON.coordinates[0]
                     });
                 }
+            },
+            getFormSchema: function () {
+                return {
+                    name: { type: 'TextArea', title: "Name" },
+                    caption:  { type: 'TextArea', title: "Caption" },
+                    attribution: { type: 'TextArea', title: "Attribution" },
+                    tags: { type: 'List', itemType: 'Text' }
+                };
             }
         });
         return Base;

@@ -129,32 +129,14 @@ define(['underscore'], function (_) {
             }
             return icons;
         },
-        getIcon: function (key) {
-            var icon;
-            if (key == 'audio') {
+        getIcon: function (shape) {
+            var icon = IconLookup.icons[shape];
+            if (!icon) {
                 icon = IconLookup.icons.circle;
-                icon.width = 12;
-                icon.height = 12;
-                icon.fillColor = '#62929E';
-            } else if (key == 'photo' || key == 'photos') {
-                icon = IconLookup.icons.circle;
-                icon.width = 12;
-                icon.height = 12;
-                icon.fillColor = '#7084c2';
-            } else if (key == 'marker' || key == 'markers'
-                    || key == 'record' || /form_\d/.test(key)) {
-                icon = IconLookup.icons.circle;
-                icon.width = 23;
-                icon.height = 23;
-                icon.fillColor = '#ed867d';
-            } else {
-                icon = IconLookup.icons[key];
             }
-            if (icon) {
-                icon.baseWidth = icon.baseWidth || IconLookup.baseWidth;
-                icon.baseHeight = icon.baseHeight || IconLookup.baseHeight;
-                icon.anchor = icon.anchor || [icon.baseWidth / 2, icon.baseHeight / 2];
-            }
+            icon.baseWidth = icon.baseWidth || IconLookup.baseWidth;
+            icon.baseHeight = icon.baseHeight || IconLookup.baseHeight;
+            icon.anchor = icon.anchor || [icon.baseWidth / 2, icon.baseHeight / 2];
             return icon;
         }
     });

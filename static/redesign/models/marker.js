@@ -15,8 +15,10 @@ define(["models/base",
 		defaults: _.extend({}, Base.prototype.defaults, {
 			color: "CCCCCC" // rough draft color
 		}),
-        getNamePlural: function () {
-            return "markers";
+        schema: {
+            name: { type: 'TextArea', title: "Name" },
+            caption:  { type: 'TextArea', title: "Caption" },
+            tags: { type: 'List', itemType: 'Text' }
         },
 		excludeList: [
             "overlay_type",
@@ -103,9 +105,8 @@ define(["models/base",
 
         attach: function (model, order, callbackSuccess, callbackError) {
             var association = new Association({
-                overlay_type: this.get("overlay_type"),
-                model_type: model.getKey(),
-                source_id: this.id
+                model: this,
+                attachmentType: model.getDataTypePlural()
             });
 			association.save({ object_id: model.id, ordering: order }, {
 				success: callbackSuccess,
@@ -113,15 +114,19 @@ define(["models/base",
 			});
 		},
 
-		detach: function (model_id, key, callback) {
+		detach: function (attachmentType, attachmentID, callback) {
             var association = new Association({
-                overlay_type: this.get("overlay_type"),
-                object_id: model_id,
-                model_type: key,
-                source_id: this.id
+                model: this,
+                attachmentType: attachmentType,
+                attachmentID: attachmentID
             });
             association.destroy({success: callback});
-		}
+		},
+        getFormSchema: function () {
+            var schema = Base.prototype.getFormSchema.call(this);
+            schema.children = { type: 'MediaEditor', title: 'children' };
+            return schema;
+        }
     });
     return Marker;
 });

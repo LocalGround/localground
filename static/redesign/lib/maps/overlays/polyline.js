@@ -74,6 +74,14 @@ define(["jquery"], function ($) {
             return bounds;
         };
 
+        this.show = function () {
+            this._googleOverlay.setMap(this.map);
+        };
+
+        this.hide = function () {
+            this._googleOverlay.setMap(null);
+        };
+
         /**
          * Method that converts a google.maps.Polyline
          * into a GeoJSON Linestring object.

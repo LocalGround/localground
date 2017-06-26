@@ -4,7 +4,7 @@ define(["marionette",
         "jquery",
         "apps/map/views/marker-listing"
     ],
-    function (Marionette, _, Handlebars, $, OverlayListView) {
+    function (Marionette, _, Handlebars, $, MarkerListing) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -27,14 +27,17 @@ define(["marionette",
             addMarkerListingsToUI: function () {
                 var i = 0,
                     key,
+                    data,
                     selector,
                     overlayView,
                     dm = this.app.dataManager,
                     dataSources = dm.getDataSources();
                 for (i = 0; i < dataSources.length; i++) {
                     key = dataSources[i].value;
-                    overlayView = new OverlayListView({
-                        data: dm.getData(key),
+                    data =  dm.getData(key);
+                    overlayView = new MarkerListing({
+                        collection: data.collection,
+                        fields: data.fields,
                         app: this.app,
                         title: dataSources[i].name
                     });

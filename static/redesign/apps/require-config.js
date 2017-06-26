@@ -17,6 +17,7 @@ require.config({
         'color-picker-eyecon': 'external/colorpicker/js/colorpicker-forked',
         'core': 'external/mediator/core-jquery',
         'form': '//cdnjs.cloudflare.com/ajax/libs/backbone-forms/0.14.1/backbone-forms.min',
+        'form-list': '//cdnjs.cloudflare.com/ajax/libs/backbone-forms/0.14.1/editors/list',
         'list': 'external/list.min',
         'google-infobubble': 'external/infobubble',
         'handsontable': 'https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.31.0/handsontable.full.min',
@@ -41,6 +42,7 @@ require.config({
         'print_base': "./print_base",
         //'marionette': 'https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/3.1.0/backbone.marionette.min',
         'marionette': 'external/backbone.marionette',
+        //'moment': '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min',
         'sandbox': 'external/mediator/sandbox',
         'slick': 'external/slick.min',
         'text': 'external/text',
@@ -73,6 +75,10 @@ require.config({
         },
         'form': {
             deps: [ "backbone" ],
+            exports: "Backbone"
+        },
+        'form-list': {
+            deps: [ "form" ],
             exports: "Backbone"
         },
         'backbone.defered-view-loader': {

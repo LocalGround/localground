@@ -1,10 +1,7 @@
-define(["models/base", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"],
-    function (Base, MapBox, Stamen) {
+define(["models/base", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "lib/maps/tiles/virginia-dotmap"],
+    function (Base, MapBox, Stamen, VirginiaDotMap) {
         "use strict";
         var TileSet = Base.extend({
-            getNamePlural: function () {
-                return "tilesets";
-            },
             getClientStyles: function () {
                 return this.get("extras") ? this.get("extras").clientStyles : null;
             },
@@ -32,6 +29,13 @@ define(["models/base", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"],
                     return new MapBox({
                         url: this.get("base_tile_url"),
                         max: this.get("max_zoom"),
+                        name: this.getMapTypeID()
+                    });
+                case "cooper center":
+                    return new VirginiaDotMap({
+                        url: this.get("base_tile_url"),
+                        max: this.get("max_zoom"),
+                        min: this.get("min_zoom"),
                         name: this.getMapTypeID()
                     });
                 case "google":

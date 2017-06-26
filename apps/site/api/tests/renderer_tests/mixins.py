@@ -21,7 +21,7 @@ class MediaMixin():
         self.audio1 = self.create_audio_with_media(name="f1", tags=self.tags1, point=self.point)
         self.audio2 = self.create_audio_with_media(name="f2", tags=self.tags2, point=self.point)
 
-        self.form = self.create_form_with_fields(name="Class Form", num_fields=8)
+        self.form = self.create_form_with_fields(name="Class Form", num_fields=9)
         self.form = models.Form.objects.get(id=self.form.id) #requery
         self.records = self.create_records(self.form, 8, photo=self.photo1, audio=self.audio1)
         self.record1 = self.records[0]

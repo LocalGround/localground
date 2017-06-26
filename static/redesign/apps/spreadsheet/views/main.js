@@ -68,7 +68,7 @@ define(["jquery",
                         option = selectOptions[i];
                         optionElement = document.createElement('OPTION');
                         optionElement.value = option.value;
-                        optionElement.innerHTML = option.name;
+                        optionElement.innerHTML = option.value + ": " + option.name;
                         if (option.value == this.originalValue) {
                             optionElement.selected = true;
                         }
@@ -119,7 +119,7 @@ define(["jquery",
                     fieldIndex,
                     field;
                 if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index ||
-                    col_indexes_to_be_moved.indexOf(pre_field_index) != -1 || destination_index <= pre_field_index) {
+                        col_indexes_to_be_moved.indexOf(pre_field_index) != -1 || destination_index <= pre_field_index) {
                     return false;
                 }
 
@@ -396,13 +396,14 @@ define(["jquery",
                 var that = this,
                     model = this.getModelFromCell(instance, row),
                     idx = col - 3,
-                    extras = this.fields.at(idx).get("extras") || [],
+                    field = this.fields.getModelByAttribute('col_name', prop),
+                    extras = field.get("extras") || [],
                     intVal = model.get(prop),
                     textVal = null,
-                    i;                
+                    i;
                 for (i = 0; i < extras.length; i++){
                     if (extras[i].value == intVal){
-                        textVal = extras[i].name;
+                        textVal = extras[i].value + ": " + extras[i].name;
                         break;
                     }
                 }
@@ -581,6 +582,19 @@ define(["jquery",
                                     entry = {
                                         type:  "numeric",
                                         format: "0,0.000"
+                                    };
+                                    break;
+                                case "choice":
+                                    var choiceOpts = [],
+                                        j = 0,
+                                        extras = this.fields.at(i).get("extras");
+                                    for (j = 0; j < extras.length; j++) {
+                                        choiceOpts.push(extras[j].name);
+                                    }
+                                    entry = {
+                                        type:  "text",
+                                        editor: "select",
+                                        selectOptions: choiceOpts
                                     };
                                     break;
                                 case "date-time":

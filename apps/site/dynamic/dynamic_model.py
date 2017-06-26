@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
 from datetime import datetime
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-from localground.apps.site.models import Field
+from localground.apps.site.models import DataType
 # http://stackoverflow.com/questions/3712688/creation-of-dynamic-model-fields-in-django
 # https://code.djangoproject.com/wiki/DynamicModels
 '''
@@ -204,13 +204,13 @@ class ModelClassBuilder(object):
                 'verbose_name': n.col_alias,
                 'db_column': n.col_name_db
             }
-            if n.data_type.id == Field.DataTypes.TEXT:
+            if n.data_type.id in [DataType.DataTypes.TEXT, DataType.DataTypes.CHOICE]:
                 field = models.CharField(max_length=1000, **kwargs)
-            elif n.data_type.id in [Field.DataTypes.INTEGER, Field.DataTypes.RATING]:
+            elif n.data_type.id in [DataType.DataTypes.INTEGER, DataType.DataTypes.RATING]:
                 field = models.IntegerField(**kwargs)
-            elif n.data_type.id == Field.DataTypes.DATETIME:
+            elif n.data_type.id == DataType.DataTypes.DATETIME:
                 field = models.DateTimeField(**kwargs)
-            elif n.data_type.id == Field.DataTypes.BOOLEAN:
+            elif n.data_type.id == DataType.DataTypes.BOOLEAN:
                 field = models.BooleanField(
                     blank=False,
                     null=False,
@@ -218,9 +218,9 @@ class ModelClassBuilder(object):
                     db_column=n.col_name_db,
                     verbose_name=n.col_alias
                 )
-            elif n.data_type.id == Field.DataTypes.DECIMAL:
+            elif n.data_type.id == DataType.DataTypes.DECIMAL:
                 field = models.FloatField(**kwargs)
-            elif n.data_type.id == Field.DataTypes.PHOTO:
+            elif n.data_type.id == DataType.DataTypes.PHOTO:
                 field = models.ForeignKey(
                     'Photo',
                     null=True,
@@ -228,7 +228,7 @@ class ModelClassBuilder(object):
                     db_column=n.col_name_db
                 )
                 # raise Exception(field)
-            elif n.data_type.id == Field.DataTypes.AUDIO:
+            elif n.data_type.id == DataType.DataTypes.AUDIO:
                 field = models.ForeignKey(
                     'Audio',
                     null=True,

@@ -25,6 +25,14 @@ define([
             spyOn(FieldChildView.prototype, 'saveRatingsToModel').and.callThrough();
             spyOn(FieldChildView.prototype, 'validateRating').and.callThrough();
 
+            spyOn(FieldChildView.prototype, 'setChoicesFromModel').and.callThrough();
+            spyOn(FieldChildView.prototype, 'saveNewChoice').and.callThrough();
+            spyOn(FieldChildView.prototype, 'removeChoice').and.callThrough();
+            spyOn(FieldChildView.prototype, 'updateChoiceList').and.callThrough();
+            spyOn(FieldChildView.prototype, 'addNewChoice').and.callThrough();
+            spyOn(FieldChildView.prototype, 'saveChoicesToModel').and.callThrough();
+            spyOn(FieldChildView.prototype, 'validateChoice').and.callThrough();
+
             spyOn(Field.prototype, 'destroy');
 
         };
@@ -58,15 +66,15 @@ define([
                 initSpies();
             });
 
-            it("Three fields successfully created", function () {
+            it("Same number of fields successfully created", function () {
                 expect(FieldChildView.prototype.initialize).toHaveBeenCalledTimes(0);
                 expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(0);
                 formView = new CreateForm({
                     model: this.form
                 });
                 fixture = setFixtures('<div></div>').append(formView.$el);
-                expect(FieldChildView.prototype.initialize).toHaveBeenCalledTimes(4);
-                expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(4);
+                expect(FieldChildView.prototype.initialize).toHaveBeenCalledTimes(5);
+                expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(5);
             });
 
              it("Creates field and sets variables", function () {
@@ -355,6 +363,180 @@ define([
                     expect($(rating_rows[i]).find(".rating-name").val()).not.toEqual(original_extras[i].name);
                     expect($(rating_rows[i]).find(".rating-value").val()).not.toEqual(original_extras[i].value.toString());
                 }
+
+            });
+        });
+
+        // Modify the Copy pasted thing so that
+        // this works for choices test
+        describe("Choices Test", function(){
+            beforeEach(function(){
+                initSpies();
+                var opts = {}, field = this.form.fields.at(4);
+                _.extend(opts, this.form.toJSON(), {
+                    model: field,
+                    parent: new CreateForm({
+                        model: this.form
+                    })
+                });
+                fieldView = new FieldChildView(opts);
+                fieldView.render();
+                fixture = setFixtures('<div></div>').append(fieldView.$el);
+
+            });
+
+            it("Successfully loads the choices list onto the field", function(){
+
+                var field = this.form.fields.at(4);
+                expect(fieldView.model).toEqual(field);
+
+                expect(fieldView.model.get("extras")).toEqual(field.get("extras"));
+                expect(fixture.find(".choice-row").length).toEqual(field.get("extras").length);
+                expect(fixture.find(".choice-row").length).toEqual(3);
+
+
+                //expect(1).toEqual(0);
+
+            });
+
+            it("Shows the HTML elements of the choices", function(){
+
+                //*
+                var field = this.form.fields.at(4);
+
+                var choice_rows = fixture.find(".choice-row");
+                var extras = field.get("extras");
+                for (var i = 0; i < choice_rows.length; ++i){
+                    var choice_name = $(choice_rows[i]).find(".choice").val();
+                    expect(choice_name).toEqual(extras[i].name);
+                }
+                //*/
+                //expect(1).toEqual(0);
+            });
+
+            it ("Successfully adds a new choice to the list", function(){
+
+                //*
+
+                var field = this.form.fields.at(4);
+                fixture.find(".add-new-choice").trigger("click");
+                var extras = field.get("extras");
+                var choice_rows = fixture.find(".choice-row");
+
+
+                $(choice_rows[3]).find(".choice").val("Test");
+                fieldView.updateChoiceList();
+
+                extras = field.get("extras");
+                var lastIndexchoice = extras[extras.length - 1];
+                console.log(lastIndexchoice);
+                console.log(extras);
+                expect(field.get("extras").length).toEqual(4);
+                expect($(choice_rows[3]).find(".choice").val()).toEqual(lastIndexchoice.name);
+                //*/
+
+
+                //expect(1).toEqual(0);
+
+            });
+
+            it ("Successfully removes a choice from the list", function(){
+                //*
+                spyOn(window, 'confirm').and.returnValue(true);
+                var field = this.form.fields.at(4);
+                var choice_rows = fixture.find(".choice-row");
+
+                $(choice_rows[2]).find(".remove-choice").trigger("click");
+
+                var extras = field.get("extras");
+                expect(field.get("extras").length).toEqual(2);
+                //*/
+
+
+                //expect(1).toEqual(0);
+
+            });
+
+            it ("Edits Existing Choice", function(){
+
+                //*
+                var field = this.form.fields.at(4);
+                var choice_rows = fixture.find(".choice-row");
+
+
+                var original_name = $(choice_rows[2]).find(".choice").val();
+
+
+                $(choice_rows[2]).find(".choice").val("Hello World");
+
+                fieldView.updateChoiceList();
+
+                var extras = field.get("extras");
+                var lastIndexchoice = extras[extras.length - 1];
+
+                expect($(choice_rows[2]).find(".choice").val()).toEqual(lastIndexchoice.name);
+
+                expect($(choice_rows[2]).find(".choice").val()).not.toEqual(original_name);
+
+                //*/
+
+                //expect(1).toEqual(0);
+
+            });
+
+            it ("Detects user input error", function(){
+
+                //*
+                var field = this.form.fields.at(4);
+                fixture.find(".add-new-choice").trigger("click");
+                var extras = field.get("extras");
+                var choice_rows = fixture.find(".choice-row");
+
+
+                fieldView.updateChoiceList();
+                fieldView.validateChoice();
+
+                extras = field.get("extras");
+                var lastIndexchoice = extras[extras.length - 1];
+                console.log(lastIndexchoice);
+                console.log(extras);
+
+                expect(lastIndexchoice.errorRatingName).toBeTruthy();
+                //*/
+
+
+                //expect(1).toEqual(0);
+
+            });
+
+            it ("Successfully saves the choice list", function(){
+                //*
+                var field = this.form.fields.at(4);
+                var choice_rows = fixture.find(".choice-row");
+
+                var original_extras = _.clone(field.get("extras"));
+
+                $(choice_rows[0]).find(".choice").val("Javascript");
+
+                $(choice_rows[1]).find(".choice").val("Web Engineer");
+
+                $(choice_rows[2]).find(".choice").val("Hello World");
+
+                fieldView.updateChoiceList();
+                fieldView.saveField();
+
+                var extras = field.get("extras");
+
+                // Equals changes made
+
+                for (var i = 0; i < extras.length; ++i){
+                    expect($(choice_rows[i]).find(".choice").val()).toEqual(extras[i].name);
+
+                    expect($(choice_rows[i]).find(".choice").val()).not.toEqual(original_extras[i].name);
+                }
+
+                //*/
+                //expect(1).toEqual(0);
 
             });
         });

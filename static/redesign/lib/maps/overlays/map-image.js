@@ -6,8 +6,8 @@ define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], functi
     var MapImageOverlay = Base.extend({
 
         modelEvents: {
-            'show-overlay': 'show',
-            'hide-overlay': 'hide',
+            'show-marker': 'show',
+            'hide-marker': 'hide',
             'zoom-to-overlay': 'zoomTo'
         },
         initialize: function (opts) {

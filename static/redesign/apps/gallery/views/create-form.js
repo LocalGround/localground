@@ -71,12 +71,14 @@ define([
             sortableFields.sortable({
                 helper: this.fixHelper,
                 update: function (event, ui) {
-                    var $rows = that.$el.find("#fieldList tr"),
+                    var $rows = that.$el.find("#fieldList > tr"),
                         tempID,
                         model;
+                    console.log($rows);
                     $rows.each(function (i) {
                         tempID = $(this).attr("id");
                         model = that.collection.find(function (model) { return model.get('temp_id') === tempID; });
+                        console.log(model);
                         model.set("ordering", i + 1);
                     });
                     that.collection.sort("ordering");
@@ -149,12 +151,14 @@ define([
                 tempID = $(this).attr("id");
                 model = that.collection.getModelByAttribute('temp_id', tempID);
                 childView = that.children.findByModel(model);
+                console.log(childView);
                 childView.saveField(i + 1);
                 that.wait(100);
             });
         },
         addFieldButton: function () {
             this.initCollection();
+            console.log(this.collection);
             this.collection.add(new Field(
                 { ordering: this.collection.length + 1},
                 { form: this.model }

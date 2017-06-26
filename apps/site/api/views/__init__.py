@@ -1,5 +1,7 @@
 from localground.apps.site.api.views.audio_views import AudioList, AudioInstance
 from localground.apps.site.api.views.mapimage_views import MapImageList, MapImageInstance
+from localground.apps.site.api.views.mapimage_overlay_views import MapImageOverlayList, MapImageOverlayInstance
+
 from localground.apps.site.api.views.photo_views import (
     PhotoList, PhotoInstance, rotate_left, rotate_right
 )

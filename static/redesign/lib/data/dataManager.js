@@ -5,6 +5,8 @@ define(["underscore", "marionette", "models/project", "collections/photos",
         'use strict';
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
+            formColors: ['#60C7CC', '#CF2045', '#A3A737', '#F27CA5'],
+            colorCounter: 0,
             template: false,
             isEmpty: function () {
                 return Object.keys(this.dataDictionary).length === 0;
@@ -12,6 +14,10 @@ define(["underscore", "marionette", "models/project", "collections/photos",
             initialize: function (opts) {
                 //todo: remove app dependency and pass in projectID and vent
                 _.extend(this, opts);
+                if (typeof this.projectID === 'undefined') {
+                    window.location = '/';
+                    return false;
+                }
                 if (!this.model) {
                     this.model = new Project({ id: this.projectID });
                     this.model.fetch({ success: this.setCollections.bind(this) });
@@ -25,7 +31,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 var that = this,
                     extras;
                 _.each(this.model.get("children"), function (entry, key) {
-                    console.log(entry.fields);
                     that.dataDictionary[key] = entry;
                     extras = that.initCollection(key, entry.data, entry.fields);
                     _.extend(that.dataDictionary[key], extras);
@@ -35,7 +40,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
             },
             getDataSources: function () {
                 var dataSources = [
-                    { value: "markers", name: "Markers" }
+                    { value: "markers", name: "Sites" }
                 ];
                 _.each(this.dataDictionary, function (entry, key) {
                     if (key.indexOf("form_") != -1) {
@@ -65,7 +70,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     return entry.collection;
                 }
                 throw new Error("No entry found for " + key);
-                return null;
             },
             initCollection: function (key, data, fieldCollection) {
                 switch (key) {
@@ -92,6 +96,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                             }),
                             fields = fieldCollection || new Fields(null, {url: fieldsURL }),
                             that = this;
+                        records.fillColor = this.formColors[this.colorCounter++];
                         if (fields.length == 0) {
                             fields.fetch({ reset: true, success: function () {
                                 that.attachFieldsToRecords(records, fields);

@@ -13,15 +13,14 @@ define(["marionette",
             template: Handlebars.compile(AddMediaModalTemplate),
             activeRegion: null,
             initialize: function (opts) {
-                this.app = opts.app;
+                _.extend(this, opts);
                 this.render();
-               // this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
             },
             
             events: {
                 'click #upload-tab' : 'showUploader',
                 'click #database-tab' : 'showDatabase'  
-                },
+            },
             
             regions: {
                 uploaderRegion: "#uploader",
@@ -34,11 +33,17 @@ define(["marionette",
                /* var upld = new SelectMapView({ app: this.app });
                 this.menu.show(upld);
                 */
-                this.upld = new UploaderView({ app: this.app });
+                this.upld = new UploaderView({
+                    app: this.app,
+                    parentModel: this.parentModel
+                });
                 this.uploaderRegion.show(this.upld);
                 this.uploaderRegion.$el.hide();
 
-                this.mb = new MediaBrowserView({ app: this.app });
+                this.mb = new MediaBrowserView({
+                    app: this.app,
+                    parentModel: this.parentModel
+                });
                 this.mediaBrowserRegion.show(this.mb);
                 this.$el.find("#database-tab-li").addClass("active");
 

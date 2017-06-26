@@ -12,7 +12,7 @@ class ApiRelatedMediaListTest(
         ViewMixinAPI.setUp(self, load_fixtures=False)
         #self.marker = self.get_marker()
         self.marker = self.create_marker(self.user, self.project)
-        self.form = self.create_form_with_fields(name="Class Form", num_fields=6)
+        self.form = self.create_form_with_fields(name="Class Form", num_fields=7)
         #requery:
         self.form = models.Form.objects.get(id=self.form.id)
         self.record = self.insert_form_data_record(form=self.form, project=self.project)
@@ -127,7 +127,7 @@ class ApiRelatedMediaInstanceTest(
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=False)
         self.marker = self.create_marker(self.user, self.project)
-        self.form = self.create_form_with_fields(name="Class Form", num_fields=6)
+        self.form = self.create_form_with_fields(name="Class Form", num_fields=7)
         #requery:
         self.form = models.Form.objects.get(id=self.form.id)
         self.record = self.insert_form_data_record(form=self.form, project=self.project)

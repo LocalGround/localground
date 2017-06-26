@@ -44,6 +44,7 @@ define(["marionette",
             },
 
             updateModel: function () {
+                console.log('updateModel: sourceCode', this.$el.find(".source-code").val());
                 // if nothing has changed, exit this function
                 if (!this.hasChanged) {
                     return;

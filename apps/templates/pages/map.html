@@ -8,7 +8,7 @@
     <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
     <link rel=stylesheet type="text/css" href="/static/redesign/css/map.css" />
     <link rel=stylesheet type="text/css" href="/static/redesign/css/modal_new_project.css" />
-
+    <link rel=stylesheet type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/css/pikaday.min.css" />
 </head>
 <body>
     <div id="toolbar-main">
@@ -28,8 +28,9 @@
     </div>
 
     <script src="/static/redesign/external/require.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
     <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places,drawing">
     </script>
     <script>
         var MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';

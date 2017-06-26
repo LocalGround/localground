@@ -53,15 +53,23 @@ define(["marionette",
                 console.log("show styles");
             },
             showMarkerOverlays: function () {
-                var i,
+                var formColors = ['#60C7CC', '#CF2045', '#A3A737', '#F27CA5'],
+                    colorCounter = 0,
+                    i,
+                    fillColor,
                     overlays,
                     key,
                     entry,
                     dm = this.app.dataManager,
                     dataSources = dm.getDataSources();
                 for (i = 0; i < dataSources.length; i++) {
+                    fillColor = null;
                     key = dataSources[i].value;
                     entry = dm.getData(key);
+                    if (key.indexOf("form_") != -1) {
+                        fillColor = formColors[colorCounter];
+                        ++colorCounter;
+                    }
                     if (entry.collection.length === 0) { continue; }
                     overlays = new MarkerOverlays({
                         collection: entry.collection,
@@ -69,7 +77,13 @@ define(["marionette",
                         map: this.basemapView.map,
                         dataType: entry.collection.key,
                         isShowing: true,
-                        _icon: new Icon({ shape: entry.collection.key })
+                        _icon: new Icon({
+                            shape: entry.collection.key,
+                            //fillColor: fillColor,
+                            fillColor: entry.collection.fillColor,
+                            width: entry.collection.size,
+                            height: entry.collection.size
+                        })
                     });
                 }
                 console.log("show overlays");

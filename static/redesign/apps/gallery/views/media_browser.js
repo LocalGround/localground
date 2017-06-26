@@ -323,7 +323,7 @@ define ([
                         selectedModels.push(model);
                     }
                 });
-                this.app.vent.trigger('add-models-to-marker', selectedModels);
+                this.parentModel.trigger('add-models-to-marker', selectedModels);
             }
 
         });

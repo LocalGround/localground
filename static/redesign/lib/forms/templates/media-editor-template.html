@@ -1,0 +1,28 @@
+<h2 style="margin:20px 30px 0px 0px;">Add Media</h2>
+<div class="attached-media-container">
+    <div class="upload-spot" id="left-panel-upload">
+        <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>
+    </div>
+    {{#each children.photos.data}}
+        <div class="attached-container">
+            <div class="attached-media" style="background: url('{{this.path_medium}}');"></div>
+            <div class="attached-media-overlay">
+                <div class="hover-to-show">
+                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+    {{#each children.audio.data}}
+        <div class="attached-container">
+            <div class="player-container audio-basic" data-id="{{this.id}}">
+                <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
+            </div>
+            <div class="attached-media-overlay">
+                <div class="hover-to-show">
+                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="audio" media-name="{{this.name}}"></i>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+</div>

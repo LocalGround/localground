@@ -8,9 +8,11 @@ define([
     'use strict';
     var FieldChildView = Marionette.ItemView.extend({
         ratingsList: [],
+        choicesList: [],
         initialize: function (opts) {
             _.extend(this, opts);
             this.setRatingsFromModel();
+            this.setChoicesFromModel();
         },
         modelEvents: {
             'draw': 'render'
@@ -21,9 +23,12 @@ define([
             'blur input.fieldname': 'setAlias',
             'blur input.rating-value': 'saveNewRating',
             'blur input.rating-name': 'saveNewRating',
+            'blur input.choice': 'saveNewChoice',
             'change select.fieldType': 'setDataType',
             'click .add-new-rating': 'addNewRating',
-            'click .remove-rating': 'removeRating'
+            'click .remove-rating': 'removeRating',
+            'click .add-new-choice': 'addNewChoice',
+            'click .remove-choice': 'removeChoice'
         },
         templateHelpers: function () {
             var errorMessages = {
@@ -47,18 +52,38 @@ define([
 
         setRatingsFromModel: function () {
             if (this.model.get("data_type") != "rating") { return; }
+            console.log("Loading Ratings");
             this.ratingsList = this.model.get("extras") || [];
+        },
+
+        setChoicesFromModel: function () {
+            if (this.model.get("data_type") != "choice") { return; }
+            console.log("Loading Choices");
+            this.choicesList = this.model.get("extras") || [];
         },
 
         saveNewRating: function () {
             this.updateRatingList();
         },
+
+        saveNewChoice: function () {
+            this.updateChoiceList();
+        },
+
         removeRating: function (e) {
             e.preventDefault();
             if (window.confirm("Want to remove rating?")){
                 var rating_row = $(e.target).closest(".rating-row");
                 $(rating_row).remove();
                 this.updateRatingList();
+            }
+        },
+        removeChoice: function (e) {
+            e.preventDefault();
+            if (window.confirm("Want to remove choice?")){
+                var choice_row = $(e.target).closest(".choice-row");
+                $(choice_row).remove();
+                this.updateChoiceList();
             }
         },
 
@@ -90,10 +115,34 @@ define([
             this.saveRatingsToModel();
         },
 
+        updateChoiceList: function () {
+            //if (!this.ratingsList) return;
+            //AN attempt to solve the problem, but this.ratingsList is undefined
+            // despite that it is an empty array, therefore nothing can be pushed
+            //console.log("update ratings list called");
+            if (this.$el.find('.choice-row').length == 0) { return; }
+            this.choicesList = [];
+            var that = this,
+                $rows = this.$el.find('.choice-row'),
+                $row;
+            $rows.each(function () {
+                $row = $(this);
+
+                console.log($row);
+                console.log($row.find(".choice").val());
+
+                ///*
+                that.choicesList.push({
+                    name: $row.find(".choice").val()
+                });
+                //*/
+            });
+            console.log(this.choicesList);
+            this.saveChoicesToModel();
+        },
+
         addNewRating: function (e) {
-            //alert("add New Rating");
-            // Need to replace invisible area with append
-            // at the end of the extras html class
+
             this.ratingsList.push({
                 name: "",
                 value: ""
@@ -102,15 +151,33 @@ define([
             this.render();
             e.preventDefault();
         },
+
+        addNewChoice: function (e) {
+            this.choicesList.push({
+                name: ""
+            });
+            this.saveChoicesToModel();
+            this.render();
+            e.preventDefault();
+        },
+
         setDataType: function () {
             this.model.set("data_type", this.$el.find(".fieldType").val());
             if (this.model.get("data_type") == "rating") {
+                this.render();
+            } else if (this.model.get("data_type") == "choice") {
                 this.render();
             }
         },
         saveRatingsToModel: function () {
 
             this.model.set("extras", this.ratingsList);
+        },
+
+
+        saveChoicesToModel: function () {
+
+            this.model.set("extras", this.choicesList);
         },
         saveField: function () {
             var that = this,
@@ -123,14 +190,18 @@ define([
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
 
-            this.saveRatingsToModel();
-
             if (fieldType) {
                 this.model.set("data_type", fieldType);
             }
 
+            if (fieldType == "rating"){
+                this.saveRatingsToModel();
+            } else if (fieldType == "choice"){
+                this.saveChoicesToModel();
+            }
+
             if (!this.model.errorFieldName && !this.model.errorFieldType &&
-                this.validateRating()) {
+                this.validateRating() && this.validateChoice()){
                 console.log('saving...');
                 this.model.save(null, {
                     success: function () {
@@ -157,10 +228,11 @@ define([
             if (fieldType === "-1") {
                 this.model.errorFieldType = true;
             }
-            // Go through an array of rating rows to check for empty names and values
         },
 
         validateRating: function () {
+            // No need to check if incorrect type
+            if (this.model.get("data_type") != "rating") return true;
             var errors = false;
             for (var i = 0; i < this.ratingsList.length; ++i){
                 console.log(this.ratingsList[i]);
@@ -176,16 +248,26 @@ define([
             return !errors;
         },
 
+
+        validateChoice: function () {
+            // No need to check if incorrect type
+            if (this.model.get("data_type") != "choice") return true;
+            var errors = false;
+            for (var i = 0; i < this.choicesList.length; ++i){
+                console.log(this.choicesList[i]);
+                if (this.choicesList[i].name.trim() === ""){
+                    this.choicesList[i].errorRatingName = true;
+                    errors = true;
+                }
+            }
+            return !errors;
+        },
+
         onRender: function () {
             this.$el.removeClass("failure-message");
             if (this.model.errorFieldType || this.model.errorFieldName || this.model.serverErrorMessage) {
                 this.$el.addClass("failure-message show");
             }
-            // On ratings refresh, save the value for each stored rating
-            //this.updateRatingList();
-            // However, it is plagued from undefined errors at this.ratingsList
-
-            //*
             var that = this;
             if (this.ratingsList){
                 var ratingTextBoxes = this.$el.find('.rating');
@@ -193,7 +275,13 @@ define([
                     $(this).val(that.ratingsList[index]);
                 });
             }
-            //*/
+
+            else if (this.choicesList){
+                var choiceTextBoxes = this.$el.find('.choice');
+                choiceTextBoxes.each(function (index) {
+                    $(this).val(that.choicesList[index]);
+                });
+            }
 
         },
         removeModel: function () {

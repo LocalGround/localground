@@ -6,7 +6,7 @@ define(["models/mapimage", "collections/base", "collections/basePageable"], func
     var MapImages = BasePageable.extend({
         model: MapImage,
         name: 'Map Images',
-        key: 'map-images',
+        key: 'map_images',
         url: '/api/0/map-images/',
         // parse: function (response) {
         //     return response.results;
