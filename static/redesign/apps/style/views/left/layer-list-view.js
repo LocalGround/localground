@@ -44,7 +44,6 @@ define(["marionette",
                     PanelVisibilityExtensions.events
                 );
             },
-
             showDropDown: function () {
                 this.$el.find("#new-layer-options").toggle();
             },
@@ -53,7 +52,6 @@ define(["marionette",
                 this.$el.find('.layer-column').removeClass('selected-layer');
                 this.$el.find('#' + id).addClass('selected-layer');
             },
-
             //display layers when map is changed
             displayLayers: function (selectedMapModel) {
                 if(!selectedMapModel) {return;}

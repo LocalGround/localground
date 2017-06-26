@@ -17,6 +17,7 @@ html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, selec
 	padding:0;
 	margin:0;
 	font-family:"Open Sans",Arial,sans-serif;
+    font-weight: 400;
 	color:#3d3d3d;
 }
 
@@ -1122,13 +1123,6 @@ tbody .failure-message, tbody .success-message {
     font-size: 12px;
     text-align: right;
     word-wrap: break-word;
-}
-
-.side-panel h3{
-    font-size: 22px;
-    font-weight: 400;
-    padding-bottom: 4px;
-    margin-top: 20px;
 }
 
 .side-panel p{
