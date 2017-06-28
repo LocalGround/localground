@@ -235,6 +235,9 @@ define(["jquery",
                 if (this.dataType == "categorical") {
                     this.catData();
                 }
+                if (this.dataType == "basic") {
+                    this.simpleData();
+                }
             },
             contData: function() {
                 console.log("cont change registered");
@@ -323,6 +326,29 @@ define(["jquery",
                 this.collection = this.layerDraft.categorical;
                 console.log('categorical:', this.layerDraft.categorical.toJSON());
                 this.model.set("symbols", this.layerDraft.categorical.toJSON());
+                this.updateMap();
+                this.render();
+            },
+
+            simpleData: function () {
+                console.log("simpleData triggered", this.model); 
+                console.log(this.app.dataManager.getDataSources());
+                var that = this,
+                key = this.model.get('data_source'),
+                name = this.app.dataManager.getData(key).name;
+                this.categoricalData = this.app.dataManager.getData(key);
+                console.log(this.categoricalData);
+                var owner = this.categoricalData.collection.models[0].get("owner");
+                this.layerDraft.simple = new Symbols();
+                this.layerDraft.simple.add({
+                    "rule": "owner" + " = " + owner,
+                    "title": name,
+                    "shape": "circle",
+                    "fillColor": "#60c7cc"
+                });
+                this.collection = this.layerDraft.simple;
+                console.log('simple:', this.layerDraft.simple.toJSON());
+                this.model.set("symbols", this.layerDraft.simple.toJSON());
                 this.updateMap();
                 this.render();
             },

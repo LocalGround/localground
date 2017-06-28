@@ -81,9 +81,11 @@ define(["jquery",
                     dataSource = this.model.get("data_source"),
                     data = this.app.dataManager.getCollection(dataSource),
                     symbols = this.model.getSymbols();
+                    console.log(this.model.getSymbols());
                 symbols.each(function (symbol) {
                     matchedCollection = new data.constructor(null, { url: "dummy" });
                     data.each(function (model) {
+                        console.log("symbol looped once", symbol.checkModel(model));
                         if (symbol.checkModel(model)) {
                             matchedCollection.add(model);
                         }
