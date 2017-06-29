@@ -4,7 +4,7 @@
         <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>
     </div>
     {{#each children.photos.data}}
-        <div class="attached-container">
+        <div class="attached-container photo-attached">
             <div class="attached-media" style="background: url('{{this.path_medium}}');"></div>
             <div class="attached-media-overlay">
                 <div class="hover-to-show">
@@ -14,7 +14,7 @@
         </div>
     {{/each}}
     {{#each children.audio.data}}
-        <div class="attached-container">
+        <div class="attached-container audio-attached">
             <div class="player-container audio-basic" data-id="{{this.id}}">
                 <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
             </div>

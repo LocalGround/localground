@@ -83,6 +83,7 @@ define(["jquery",
                 console.log('initialize', this.collection);
                 this.dataType = this.model.get("layer_type");
                 this.data_source = this.model.get("data_source"); //e.g. "form_1"
+                this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
                 this.buildPalettes();
                 this.buildColumnList();
              //   this.displaySymbols();

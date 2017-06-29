@@ -87,7 +87,6 @@ define(["models/base",
                     extras,
                     j,
                     schema = {};
-                console.log(fields);
                 for (i = 0; i < this.get("fields").length; i++) {
                     field = this.get("fields")[i];
                     field.val = this.get(field.col_name);
@@ -132,7 +131,6 @@ define(["models/base",
                     }
                 }
                 schema.children = { type: 'MediaEditor', title: 'children' };
-                console.log(schema);
                 return schema;
             }
 

@@ -133,10 +133,7 @@ define([
                 seconds00 = "00";
             }
 
-            var allZeros = (hours00 == '00' && minutes00 == '00' && seconds00 == '00');
-            console.log(dateStr, allZeros);
-
-            if (dateStr === '' && allZeros){
+            if (dateStr === ''){
                 return null;
             }
 
@@ -157,16 +154,12 @@ define([
                 blurFieldOnSelect: false,
                 defaultDate: this.$el.find('.datepicker').val(),
                 onSelect: function (date, format) {
-                    console.log('onselect:', date);
-                    console.log(dateFns.format(date, that.format));
                 },
                 toString: function (date, format) {
-                    console.log('toString:', date);
                     var s = dateFns.format(date, format);
                     if (s === '1969-12-31') {
                         return "";
                     }
-                    console.log('toString:', s);
                     return s;
                 }
             });
@@ -294,7 +287,7 @@ define([
                     attachmentID = ui.item.find('.detach_media').attr("data-id");
                     association = new Association({
                         model: that.model,
-                        attachmentType: attachmentType, //TODO: detect
+                        attachmentType: attachmentType,
                         attachmentID: attachmentID
                     });
                     association.save({ ordering: newOrder}, {patch: true});

@@ -176,13 +176,9 @@ define([
                     expect(errors).toBeUndefined();
                 });
 
-                it("Saves date as null if date is blank and every time value is 0", function () {
+                it("Saves date as null if the date field is null", function () {
                     initRecord(this, timeAM);
-                    expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(0);
                     fixture.find('input.datepicker').val("");
-                    fixture.find('input.hours').val("0");
-                    fixture.find('input.minutes').val("0");
-                    fixture.find('input.seconds').val("0");
                     var errors = form.commit({ validate: true });
                     expect(DateTimePicker.prototype.dateTimeValidator).toHaveBeenCalledTimes(1);
                     expect(errors).toBeUndefined();
