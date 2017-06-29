@@ -237,7 +237,8 @@ define([
             this.model.save(null, {
                 success: function (model, response) {
                     //perhaps some sort of indication of success here?
-                    that.$el.find(".success-message").show().delay(3000).fadeOut(1500);
+                    that.app.vent.trigger('success-message', "The form was saved successfully");
+                    //that.$el.find(".success-message").show().delay(3000).fadeOut(1500);
                     if (!isNew) {
                         model.trigger('saved');
                     } else {

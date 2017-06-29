@@ -42,11 +42,21 @@ define([
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
             this.listenTo(this.vent, 'hide-detail', this.hideMediaDetail);
             this.listenTo(this.vent, 'show-list', this.showMediaList);
+            this.listenTo(this.vent, 'success-message', this.showSuccessMessage);
+            this.listenTo(this.vent, 'warning-message', this.showWarningMessage);
+            this.listenTo(this.vent, 'error-message', this.showWarningMessage);
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+        },
+
+        showSuccessMessage: function (message) {
+            if ($(".success-message").length == 0) {
+                $('body').append($('<div class="success-message"></div>'));
+            }
+            $(".success-message").html(message).fadeIn(200).delay(3000).fadeOut(1500);
         },
 
         loadRegions: function () {
