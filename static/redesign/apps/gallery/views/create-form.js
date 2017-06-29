@@ -65,7 +65,6 @@ define([
             this.model.set('caption', this.$el.find('.caption').val());
         },
         onRender: function () {
-            console.log("onRender");
             var sortableFields = this.$el.find("#fieldList"),
                 that  = this;
             sortableFields.sortable({
@@ -74,11 +73,9 @@ define([
                     var $rows = that.$el.find("#fieldList > tr"),
                         tempID,
                         model;
-                    console.log($rows);
                     $rows.each(function (i) {
                         tempID = $(this).attr("id");
                         model = that.collection.find(function (model) { return model.get('temp_id') === tempID; });
-                        console.log(model);
                         model.set("ordering", i + 1);
                     });
                     that.collection.sort("ordering");
@@ -158,7 +155,6 @@ define([
         },
         addFieldButton: function () {
             this.initCollection();
-            console.log(this.collection);
             this.collection.add(new Field(
                 { ordering: this.collection.length + 1},
                 { form: this.model }
