@@ -36,6 +36,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'change-map', this.displayLayers);
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
                 this.listenTo(this.app.vent, 'handle-selected-layer', this.handleSelectedLayer);
+                this.listenTo(this.app.vent, 'create-new-layer', this.createNewLayer);
             },
 
             events: function () {
@@ -76,7 +77,7 @@ define(["marionette",
                 var layer = new Layer({
                     map_id: this.app.selectedMapModel.id,
                     data_source: "photos", //default
-                    layer_type: "categorical",
+                    layer_type: "basic",
                     filters: {},
                     symbols: [{
                         "fillColor": "#7075FF",
@@ -84,13 +85,15 @@ define(["marionette",
                         "rule": "sculptures > 0",
                         "title": "At least 1 sculpture"
                     }],
-                    title: "untitled"
+                    title: "Layer 1"
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);
                 this.showSection();
+                /*
                 if (e) {
                     e.preventDefault();
                 }
+                */
             }
 
         }));

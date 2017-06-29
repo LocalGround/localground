@@ -114,7 +114,8 @@ define(["jquery",
                 this.setCenterZoom(this.map);
                 this.setMapTypeId(this.map);
                 this.app.vent.trigger("change-map", this.map);
-                this.app.vent.trigger("hide-right-panel");
+                this.app.vent.trigger('create-new-layer');
+               // this.app.vent.trigger("hide-right-panel");
 
             },
 

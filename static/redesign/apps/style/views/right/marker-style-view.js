@@ -25,7 +25,7 @@ define(["jquery",
             },
             template: Handlebars.compile(MarkerStyleTemplate),
             modelEvents: {
-               // 'change:symbols': 'reRender'//,
+                //'change:symbols': 'render'//,
                 //'change:metadata': 'contData'
             },
             
@@ -491,6 +491,7 @@ define(["jquery",
                 this.app.layerHasBeenSaved = false;
                 
                 console.log("c.", this.collection.length, this.model.getSymbols().length);
+               // this.model.trigger('rebuild-markers');
             }
 
         });
