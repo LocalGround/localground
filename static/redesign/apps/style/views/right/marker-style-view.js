@@ -180,7 +180,6 @@ define(["jquery",
 
             },
 
-
             displaySymbols: function () {
                 this.collection = new Backbone.Collection(this.model.get("symbols"));
                 this.render();

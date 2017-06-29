@@ -10,7 +10,7 @@ define(["marionette",
         PanelVisibilityExtensions, LayerListTemplate) {
         'use strict';
 
-        var SelectMapView = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
+        var LayerListView = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
             stateKey: 'layer_list',
             template: Handlebars.compile(LayerListTemplate),
             isShowing: true,
@@ -32,8 +32,8 @@ define(["marionette",
                 }
                 this.restoreState();
 
-                this.listenTo(this.app.vent, 'init-collection', this.displayLayers);
-                this.listenTo(this.app.vent, 'change-map', this.displayLayers);
+                //this.listenTo(this.app.vent, 'init-collection', this.displayLayers);
+                //this.listenTo(this.app.vent, 'change-map', this.displayLayers);
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
                 this.listenTo(this.app.vent, 'handle-selected-layer', this.handleSelectedLayer);
                 this.listenTo(this.app.vent, 'create-new-layer', this.createNewLayer);
@@ -97,5 +97,5 @@ define(["marionette",
             }
 
         }));
-        return SelectMapView;
+        return LayerListView;
     });

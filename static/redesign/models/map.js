@@ -35,9 +35,18 @@ define(["models/base", "collections/layers"], function (Base, Layers) {
                     subtitle: {type: "subtitle", font: "Lato", fw: "regular", color: "gray", size: "12"},
                     paragraph: {type: "paragraph", font: "Lato", fw: "regular", color: "black", size: "12"},
                     tags: {type: "tags", font: "Lato", fw: "regular", color: "black", size: "10"}
-                },
-                layers: []
+                }
             });
+        },
+
+        getLayers: function () {
+            if (this.get("layers")) {
+                if (!(this.get("layers") instanceof Layers)) {
+                    this.set("layers", new Layers(this.get("layers"), {mapID: this.id}));
+                }
+                return this.get("layers");
+            }
+            return new Layers([], {mapID: this.id});
         },
 
         getDefaultLocation: function () {
