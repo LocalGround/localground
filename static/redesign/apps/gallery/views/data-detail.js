@@ -238,7 +238,6 @@ define([
                 success: function (model, response) {
                     //perhaps some sort of indication of success here?
                     that.app.vent.trigger('success-message', "The form was saved successfully");
-                    //that.$el.find(".success-message").show().delay(3000).fadeOut(1500);
                     if (!isNew) {
                         model.trigger('saved');
                     } else {
@@ -246,6 +245,8 @@ define([
                     }
                 },
                 error: function (model, response) {
+
+                    that.app.vent.trigger('error-message', "The form has not saved");
                     that.$el.find("#model-form").append("error saving");
                 }
             });
