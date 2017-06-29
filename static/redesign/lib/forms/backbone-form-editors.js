@@ -194,16 +194,19 @@ define([
             }));
         },
         attachModels: function (models) {
-            var that = this;
-            if (this.model.get("id")) {
-                this.attachMedia(models);
-            } else {
-                this.model.save(null, {
-                    success: function () {
-                        that.attachMedia(models);
-                    }
-                });
+            var that  = this;
+            var errors = this.form.commit({ validate: true }),
+                that = this,
+                isNew = this.model.get("id") ? false : true;
+            if (errors) {
+                console.log("errors: ", errors);
+                return;
             }
+            this.model.save(null, {
+                success: function () {
+                    that.attachMedia(models);
+                }
+            });
             this.app.vent.trigger('hide-modal');
         },
         /*

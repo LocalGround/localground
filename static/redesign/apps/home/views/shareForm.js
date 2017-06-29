@@ -118,6 +118,7 @@ define(["jquery",
                         console.log(response);
                         that.projectSaveSuccess = "Project Saved!";
                         that.render();
+                        that.app.vent.trigger('hide-modal');
                     },
                     error: function (model, response){
                         var messages = JSON.parse(response.responseText);
