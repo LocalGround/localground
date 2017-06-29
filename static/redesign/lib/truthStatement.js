@@ -15,6 +15,10 @@ define(["jquery"], function ($) {
         this.validConjunctions = ['and', 'or'];
 
         this.parseStatement = function (statement, conjunction) {
+            if (statement === "*") {
+                this.operator = "*";
+                return;
+            }
             this.setTokens(statement);
             this.key = this.tokens[0].trim();
             this.setOperator(this.tokens[1].trim());
@@ -109,7 +113,9 @@ define(["jquery"], function ($) {
                 return false;
             }
             modelVal = this.convertType(modelVal);
-            if (this.operator == '=') {
+            if (this.operator == '*') {
+                returnVal = true;
+            } else if (this.operator == '=') {
                 returnVal = modelVal == this.val;
             } else if (this.operator == '>') {
                 returnVal = modelVal > this.val;

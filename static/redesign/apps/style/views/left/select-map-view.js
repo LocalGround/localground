@@ -27,7 +27,7 @@ define(["jquery",
             events: function () {
                 return _.extend(
                     {
-                        'change #map-select': 'changeMap',
+                        'change #map-select': 'setActiveMap',
                         'click .add-map': 'showAddMapModal'
                     },
                     PanelVisibilityExtensions.events
@@ -43,31 +43,17 @@ define(["jquery",
                     // /api/0/maps/ API Endpoint gets built:
                     this.collection = new Maps();
                     this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
-                    this.collection.fetch({
-                        reset: true,
-                        success: function (collection) {
-                            // setting the current model from 'success' due to asynchronicity
-                            that.setModel();
-                            that.app.vent.trigger("init-collection");
-                        }
-                    });
+                    this.collection.fetch({ reset: true });
                 } else {
-                    this.setModel();
                     this.drawOnce();
                 }
                 this.modal = new Modal();
 
                 this.listenTo(this.collection, 'reset', this.drawOnce);
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
-                this.listenTo(this.app.vent, 'update-map-list', this.updateMapList);
+                this.listenTo(this.app.vent, 'update-map-list', this.setActiveMap);
             },
 
-            setModel: function () {
-                if (this.collection.length > 0 ) {
-                    this.app.selectedMapModel = this.collection.at(0);
-                    //this.app.selectedMapModel = this.model;
-                }
-            },
 
             newMap: function (mapAttrs) {
                 var that = this,
@@ -105,89 +91,63 @@ define(["jquery",
                 var that = this;
                 this.collection.add(this.map);
                 var dataSources = this.app.dataManager.getDataSources();
-                console.log(dataSources);
-                this.modal.hide();
-                if (!this.app.selectedMapModel) {
-                    this.setModel();
-                }
-                this.app.selectedMapModel = this.map;
+                this.modal.hide();               
                 this.showSection();
                 this.render();
                 this.$el.find('#map-select').val(this.map.id);
                 
-                this.setCenterZoom(this.map);
-                this.setMapTypeId(this.map);
-                this.app.vent.trigger("change-map", this.map);
-               // this.app.vent.trigger('create-new-layer');
-                
-                //TODO:
-                // 1. create new default layers by looping through data manager for
-                // any non-media types.
-                // 2. Add each layer to the map's "layers" collection
-                // 3. Trigger this event...
-                //        this.app.vent.trigger("change-map", selectedMapModel);
-                //    ...which will create a brand new LayerListView with the new
-                //    layers.
-
-                this.app.selectedMapModel.collection = new Layers(null, {mapID: this.app.selectedMapModel.get("id")});
-                //this.app.selectedMapModel.collection.fetch({ reset: true});
+                var layers = new Layers(null, {mapID: this.app.selectedMapModel.get("id")});
+                this.map.set("layers", layers);
 
                 dataSources.forEach(function(dataSource) {
-                    console.log(dataSource);
                         if (dataSource.value === "markers") {
                             var layer = new Layer({
-                                map_id: that.app.selectedMapModel.id,
+                                map_id: that.map.id,
                                 data_source: dataSource.value, 
                                 layer_type: "basic",
                                 filters: {},
                                 symbols: [{
                                     "fillColor": "#ed867d",
                                     "width": 30,
-                                    "rule": "tbd",
+                                    "rule": "*",
                                     "title": dataSource.name
                                 }],
                                 title: "Sites"
                             });
-                            that.app.selectedMapModel.collection.add(layer);
+                            layers.add(layer);
+                            layer.save();
                         } else if (dataSource.value.includes("form_")){
                             var layer = new Layer({
-                                map_id: that.app.selectedMapModel.id,
+                                map_id: that.map.id,
                                 data_source: dataSource.value, 
                                 layer_type: "basic",
                                 filters: {},
                                 symbols: [{
                                     "fillColor": "#60C7CC",
                                     "width": 30,
-                                    "rule": "tbd",
+                                    "rule": "*",
                                     "title": dataSource.name
                                 }],
                                 title: dataSource.name
                             });
-                            that.app.selectedMapModel.collection.add(layer);
-                        }        
-                    });
-                    console.log(this.app.selectedMapModel);
-               // this.app.vent.trigger("change-map", this.app.selectedMapModel);
+                            layers.add(layer);
+                            layer.save();
+                        }});
+                this.app.vent.trigger("change-map", this.map);
             },
 
             drawOnce: function () {
                 this.render();
+                this.setActiveMap();
+            },
+
+            setActiveMap: function () {
                 if (this.collection.length == 0) {
                     return;
                 }
-                var $selected = this.$el.find("#map-select").val(),
-                    selectedMapModel = this.collection.get($selected);
-
-                this.setCenterZoom(selectedMapModel);
-                this.setMapTypeId(selectedMapModel);
-                this.app.vent.trigger("change-map", selectedMapModel);
-            },
-
-            changeMap: function (e) {
-                var id = $(e.target).val(),
+                var id = this.$el.find('#map-select').val(),
                     that = this,
                     selectedMapModel = this.collection.get(id);
-
                 //re-fetch map from server so that it also returns the layers:
                 selectedMapModel.fetch({ success: function () {
                     that.setCenterZoom(selectedMapModel);
@@ -195,15 +155,6 @@ define(["jquery",
                     that.app.vent.trigger("change-map", selectedMapModel);
                     that.app.vent.trigger("hide-right-panel");
                 }});
-            },
-
-            updateMapList: function () {
-                var id = this.$el.find('#map-select').val(),
-                    selectedMapModel = this.collection.get(id);
-
-                this.setCenterZoom(selectedMapModel);
-                this.setMapTypeId(selectedMapModel);
-                this.app.vent.trigger("change-map", selectedMapModel);
             },
 
             showAddMapModal: function () {

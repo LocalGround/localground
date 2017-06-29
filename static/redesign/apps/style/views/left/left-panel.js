@@ -37,7 +37,7 @@ define(["jquery",
             onRender: function () {
                 // only load views after the LayoutView has
                 // been rendered to the screen:
-                var sv, lv, skv, ps;
+                var sv, skv;
                 this.sv = new SelectMapView({ app: this.app });
                 this.menu.show(this.sv);
 
