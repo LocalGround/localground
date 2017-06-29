@@ -206,7 +206,12 @@ define([
             }
             this.app.vent.trigger('hide-modal');
         },
-
+        /*
+        * Attach Media and Detach Model calls the following that causes
+        * the current unsaved values of fields in HTML form to be reset to stored values:
+        *
+        * that.model.fetch({reset: true});
+        */
         attachMedia: function (models) {
             var that = this,
                 i,

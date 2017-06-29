@@ -243,6 +243,10 @@ define([
                     } else {
                         model.collection.add(model);
                     }
+                    //console.log($(that.$el).parent());
+                    //console.log($(that.$el).parent().find(".right-panel"));
+                    //that.$el.parent().find(".right-panel")[0].hide();
+                    //that.$el.parent().hide(); // Now it hides the panel without showing saved first
                 },
                 error: function (model, response) {
                     that.$el.find("#model-form").append("error saving");
