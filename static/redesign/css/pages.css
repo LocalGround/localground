@@ -1,5 +1,8 @@
 @import url(https://fonts.googleapis.com/css?family=Montserrat);
 
+.main-content {
+    background: #EEE;
+}
 h1 {
     font-family: 'Montserrat';
     text-align: center;

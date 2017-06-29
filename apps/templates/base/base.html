@@ -1,17 +1,21 @@
 <html>
 
 <head>
+    <title> {% block title %} Local Ground{% endblock %}</title>
     <link href="/static/redesign/css/pages.css" rel="stylesheet">
 
 </head>
 
 <body>
     {% block top_menu %} 
-    {% include "base/top_nav.html" %} 
-    {% endblock %} 
-    {% block content %} 
-    Hello!
+        {% include "base/top_nav.html" %} 
     {% endblock %}
+    
+    <div class="main-content">
+    {% block content %} 
+        Hello!
+    {% endblock %}
+    </div>
 </<body>
 
 </html>

@@ -1,5 +1,6 @@
 {% extends "base/base.html" %}
-     {% block content %}
+{% block title %}Login{% endblock %}
+{% block content %}
     <form method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
         {% csrf_token %} {% if form.errors %}
         <div class="alert-message error">
