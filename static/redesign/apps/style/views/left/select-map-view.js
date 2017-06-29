@@ -84,8 +84,7 @@ define(["jquery",
                     zoom: this.app.getZoom(),
                     project_id: this.app.getProjectID()
                 });
-              
-                
+
                 this.map.save(null, {
                     success: this.setMapAndRender.bind(this),
                     error: function (model, response){
@@ -96,7 +95,7 @@ define(["jquery",
                             console.log("should have error message", that.slugError);
                         }
                         that.app.vent.trigger("send-modal-error", that.slugError);
-                    } 
+                    }
                 });
             },
 
@@ -115,7 +114,15 @@ define(["jquery",
                 this.setMapTypeId(this.map);
                 this.app.vent.trigger("change-map", this.map);
                 this.app.vent.trigger('create-new-layer');
-               // this.app.vent.trigger("hide-right-panel");
+                
+                //TODO:
+                // 1. create new default layers by looping through data manager for
+                // any non-media types.
+                // 2. Add each layer to the map's "layers" collection
+                // 3. Trigger this event...
+                //        this.app.vent.trigger("change-map", selectedMapModel);
+                //    ...which will create a brand new LayerListView with the new
+                //    layers.
 
             },
 
@@ -134,17 +141,21 @@ define(["jquery",
 
             changeMap: function (e) {
                 var id = $(e.target).val(),
+                    that = this,
                     selectedMapModel = this.collection.get(id);
 
-                this.setCenterZoom(selectedMapModel);
-                this.setMapTypeId(selectedMapModel);
-                this.app.vent.trigger("change-map", selectedMapModel);
-                this.app.vent.trigger("hide-right-panel");
+                //re-fetch map from server so that it also returns the layers:
+                selectedMapModel.fetch({ success: function () {
+                    that.setCenterZoom(selectedMapModel);
+                    that.setMapTypeId(selectedMapModel);
+                    that.app.vent.trigger("change-map", selectedMapModel);
+                    that.app.vent.trigger("hide-right-panel");
+                }});
             },
 
             updateMapList: function () {
                 var id = this.$el.find('#map-select').val(),
-                selectedMapModel = this.collection.get(id);
+                    selectedMapModel = this.collection.get(id);
 
                 this.setCenterZoom(selectedMapModel);
                 this.setMapTypeId(selectedMapModel);

@@ -41,25 +41,39 @@ define(["jquery",
                 this.sv = new SelectMapView({ app: this.app });
                 this.menu.show(this.sv);
 
-                this.lv = new LayerListView({ app: this.app });
-                this.layers.show(this.lv);
+                //this.lv = new LayerListView({ app: this.app });
+                //this.layers.show(this.lv);
 
                 this.skv = new SkinView({ app: this.app });
                 this.skins.show(this.skv);
 
-                this.ps = new PanelStylesView({ app: this.app });
-                this.styles.show(this.ps);
+                //this.ps = new PanelStylesView({ app: this.app });
+                //this.styles.show(this.ps);
             },
             handleNewMap: function (model) {
                 // is 'this.app.model' necessary?
+                var ps, lv;
+                
+                //set active model:
                 this.app.selectedMapModel = model;
                 this.app.model = model;
                 this.model = model;
-                var ps = new PanelStylesView({
+
+                //replace the PanelStylesView
+                ps = new PanelStylesView({
                     app: this.app,
                     model: model
                 });
                 this.styles.show(ps);
+
+                //replace the LayerListView:
+                console.log( model.getLayers());
+                lv = new LayerListView({
+                    app: this.app,
+                    model: model,
+                    collection: model.getLayers()
+                });
+                this.layers.show(lv);
             },
             hidePanel: function (e) {
                 $(e.target).removeClass("hide").addClass("show");
