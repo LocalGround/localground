@@ -47,7 +47,7 @@ define([
                     ext = ext.toLowerCase();
                     var isAudio = this.options.audioTypes.indexOf(ext) != -1,
                         url = 'photos/';
-                    if (this.options.dataType == 'map-images') {
+                    if (this.options.dataType == 'map_images') {
                         url = 'map-images/';
                     } else if (isAudio) {
                         url =  'audio/';
@@ -227,11 +227,13 @@ define([
             });
         },
         initialize: function (opts) {
-            console.log(opts);
             _.extend(this, opts);
             this.collection = new Backbone.Collection();
             var that = this;
             this.options = this.getOptions();
+            if (opts.dataType) {
+                this.options.dataType = opts.dataType;
+            }
             $('#warning-message-text').empty();
             this.render();
             console.log(this.$el.find("#fileupload"));
@@ -429,7 +431,7 @@ define([
                     selectedModels.push(model);
                 // }
             });
-            this.app.vent.trigger('add-models-to-marker', selectedModels);
+            this.parentModel.trigger('add-models-to-marker', selectedModels);
         }
     });
     return CreateMediaView;

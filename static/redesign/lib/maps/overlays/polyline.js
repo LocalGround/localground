@@ -23,7 +23,7 @@ define(["jquery"], function ($) {
         this.createOverlay = function (isShowingOnMap) {
             this._googleOverlay = new google.maps.Polyline({
                 path: this.getGoogleGeometryFromModel(),
-                strokeColor: '#' + this.model.get("color"),
+                strokeColor: '#' + this.model.get("strokeColor"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
                 map: isShowingOnMap ? this.map : null
@@ -32,7 +32,7 @@ define(["jquery"], function ($) {
 
         this.redraw = function () {
             this._googleOverlay.setOptions({
-                strokeColor: '#' + this.model.get("color")
+                strokeColor: '#' + this.model.get("strokeColor")
             });
         };
 
@@ -72,6 +72,14 @@ define(["jquery"], function ($) {
                 bounds.extend(coords[i]);
             }
             return bounds;
+        };
+
+        this.show = function () {
+            this._googleOverlay.setMap(this.map);
+        };
+
+        this.hide = function () {
+            this._googleOverlay.setMap(null);
         };
 
         /**

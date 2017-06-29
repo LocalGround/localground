@@ -1,0 +1,67 @@
+<!-- VIEW MODE -->
+{{#ifequal mode "view"}}
+    <h4>Preview</h4>
+    <div class="section">
+        <h3>{{ name }}</h3>
+    </div>
+
+    <div class="img-card">
+        <div class="photo-single">
+            <img src="{{this.overlay_path}}" />
+        </div>
+        <p class="photo-caption">{{ caption }}</p>
+    </div>
+    {{#each tags}}
+        <a class="tag"> {{this}} </a>
+    {{/each}}
+    <br>
+    <div class="save-options">
+        <button class="edit-mode button-tertiary ">Edit</button>
+    </div>
+{{/ifequal}}
+
+
+<!-- EDIT MODE -->
+{{#ifequal mode "edit"}}
+    <h4>
+        {{#if id}}
+        Edit
+        {{else}}
+        Add New
+        {{/if}}
+    </h4>
+    {{#if geometry}}
+        <button class="button-secondary delete-marker-button" id="delete-geometry">Detach Overlay From Map</button>
+    {{else}}
+        <div class="add-bounding-box">
+            <button class="button-secondary add-marker-button" id="add-rectangle">
+                Place Overlay
+            </button>
+        </div>
+    {{/if}}
+    <div class="img-card map-image">
+    {{#if overlay_path}}
+        <img src="{{ overlay_path }}" />
+    {{else}}
+        <img src="{{ file_path }}" />
+    {{/if}}
+    </div>
+
+    <div id="model-form">
+        <!-- Form goes here. To modify the fields that are editable,
+             go to the redesign/models/photo.js and/or audio.js and modify
+             the form. Instructions re: how to use the Backbone Forms
+             library here:
+             https://github.com/powmedia/backbone-forms#custom-editors
+        -->
+    </div>
+    <div class="save-options">
+        <button class="save-model button-primary">Save</button>
+        <button class="view-mode button-tertiary">Preview</button>
+        <button class="button-tertiary button-warning delete-model">Delete</button>
+    </div>
+{{/ifequal}}
+
+{{#ifequal screenType "map"}}
+    <div class="show-hide hide"></div>
+{{/ifequal}}

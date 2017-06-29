@@ -110,15 +110,17 @@ define(["jquery"],
                 return null;
             },
             getProjectID: function () {
-                var id = this.getParameterByName('project_id');
+                var id = this.getParameterByName('project_id'),
+                    redirectURL = "/";
                 if (!id) {
                     id = this.restoreState('project_id');
                 } else {
                     this.setProjectID(id);
                 }
                 if (!id) {
-                    console.log("You're not logged in. Redirecting...");
-                    window.location = window.location.host + "/accounts/login/?next=" + window.location;
+                    console.log("You're not logged in. Redirecting to: " + redirectURL);
+                    window.location = redirectURL;
+                    return false;
                 }
                 return id;
             },

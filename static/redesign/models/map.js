@@ -1,9 +1,6 @@
 define(["models/base", "collections/layers"], function (Base, Layers) {
     "use strict";
     var Map = Base.extend({
-        getNamePlural: function () {
-            return "maps";
-        },
         getMapBySlug: function (opts) {
             this.urlRoot = "/api/0/maps/" + opts.slug + "/";
             this.fetch({
@@ -38,7 +35,8 @@ define(["models/base", "collections/layers"], function (Base, Layers) {
                     subtitle: {type: "subtitle", font: "Lato", fw: "regular", color: "gray", size: "12"},
                     paragraph: {type: "paragraph", font: "Lato", fw: "regular", color: "black", size: "12"},
                     tags: {type: "tags", font: "Lato", fw: "regular", color: "black", size: "10"}
-                }
+                },
+                layers: []
             });
         },
 

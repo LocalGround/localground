@@ -7,13 +7,10 @@ define(["models/base", "jquery"], function (Base, $) {
      */
     var Photo = Base.extend({
         schema: {
-            name: 'Text',
-            caption: { type: 'TextArea'},
-            tags: 'Text',
-            attribution: 'Text'
-        },
-        getNamePlural: function () {
-            return "photos";
+            name: { type: 'TextArea', title: "Name" },
+            caption:  { type: 'TextArea', title: "Caption" },
+            attribution: { type: 'TextArea', title: "Attribution" },
+            tags: { type: 'List', itemType: 'Text' }
         },
         rotate: function (direction) {
             $.ajax({

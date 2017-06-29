@@ -10,11 +10,20 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
         var Symbol = Backbone.Model.extend({
             isShowingOnMap: false,
             sqlParser: null,
+            defaults: {
+                fillOpacity: 1,
+                width: 20,
+                height: 20,
+                fillColor: "#4e70d4",
+                strokeColor: "#FFFFFF",
+                strokeWeight: 1,
+                strokeOpacity: 1,
+                shape: "circle"
+            },
             initialize: function (data, opts) {
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);
                 this.set("shape", this.get("shape") || "photo");
-                this.set("fillColor", this.get("color"));
                 this.set("icon", new Icon(this.toJSON()));
                 this.modelMap = {};
                 if (_.isUndefined(this.get("rule"))) {
@@ -24,6 +33,15 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
                     throw new Error("title must be defined");
                 }
                 this.sqlParser = new SqlParser(this.get("rule"));
+                this.on("change:width", this.setHeight);
+            },
+            setHeight: function () {
+                this.set("height", this.get("width"));
+            },
+            getSymbolJSON: function () {
+                var symbol = this.clone();
+                delete symbol.attributes.icon;
+                return symbol.toJSON();
             },
             checkModel: function (model) {
                 return this.sqlParser.checkModel(model);

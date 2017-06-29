@@ -19,25 +19,29 @@ define(["marionette",
         model: null,
         _overlay: null,
         template: false,
+        displayOverlay: false,
 
-        modelEvents: {
-            'change:geometry': 'render',
-            'change:active': 'render',
-            //'change': 'render',
-            'show-overlay': 'show',
-            'hide-overlay': 'hide',
-            'zoom-to-overlay': 'zoomTo',
-            'reset-overlay': 'restoreModelGeometry'
+        modelEvents: function () {
+            var events = {
+                'change:active': 'render',
+                'show-marker': 'show',
+                'hide-marker': 'hide',
+                'zoom-to-overlay': 'zoomTo',
+                'reset-overlay': 'restoreModelGeometry'
+            };
+            if (this.model.get('overlay_type') !== 'map-image') {
+                events['change:geometry'] = 'reRender';
+            }
+            return events;
         },
         /** called when object created */
         initialize: function (opts) {
-            this.app = opts.app;
+            _.extend(this, opts);
             this.id = this.model.get('overlay_type') + this.model.get('id');
             this.map = opts.app.getMap();
-            this.model = opts.model;
             this.initInfoBubble(opts);
             this.initOverlayType();
-            this.listenTo(this.app.vent, "mode-change", this.changeMode);
+            this.listenTo(this.app.vent, "mode-change", this.redraw);
         },
         initInfoBubble: function (opts) {
             this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
@@ -46,12 +50,15 @@ define(["marionette",
             if (!this._icon) {
                 var icon,
                     iconOpts = {
-                        fillColor: '#ed867d', //this.model.get("color")
+                        //fillColor: '#ed867d', //this.model.get("color")
                         fillOpacity: 1,
                         strokeColor: '#fff',
                         strokeWeight: 1,
                         strokeOpacity: 1,
-                        shape: 'circle'
+                        shape: 'circle',
+                        fillColor: this.model.collection.fillColor,
+                        width: this.model.collection.size,
+                        height: this.model.collection.size
                     };
                 _.extend(iconOpts, this.iconOpts);
                 icon = new Icon(iconOpts);
@@ -63,7 +70,7 @@ define(["marionette",
         updateOverlay: function () {
             this.getGoogleOverlay().setMap(null);
             this.initOverlayType();
-            this.changeMode();
+            //this.changeMode();
         },
 
         initOverlayType: function () {
@@ -92,7 +99,7 @@ define(["marionette",
         attachEventHandlers: function () {
             var that = this;
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.app.router.navigate("//" + that.model.getNamePlural() + "/" + that.model.get("id"));
+                that.app.router.navigate("//" + that.model.getDataTypePlural() + "/" + that.model.get("id"));
             });
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
                 that.infoBubble.showTip();
@@ -106,38 +113,39 @@ define(["marionette",
 
         /** determines whether the overlay is visible on the map. */
         isShowingOnMap: function () {
-            return this.getGoogleOverlay().getMap() != null && this.isShowing;
+            return this.getGoogleOverlay().getMap() != null && this.displayOverlay;
         },
-
-        /** shows the google.maps overlay on the map. */
-        show: function () {
-            var go = this.getGoogleOverlay();
-            go.setMap(this.map);
-            this.changeMode();
-            this.isShowing = true;
+        reRender: function () {
+            this.render();
         },
 
         render: function () {
             this.redraw();
-            if (this.isShowing) {
+            if (this.displayOverlay) {
                 this.show();
             }
         },
 
+        /** shows the google.maps overlay on the map. */
+        show: function () {
+            console.log('show!');
+            this.displayOverlay = true;
+            this._overlay.displayOverlay = true;
+            this._overlay.show();
+        },
 
         /** hides the google.maps overlay from the map. */
         hide: function () {
-            var go = this.getGoogleOverlay();
-            go.setMap(null);
+            this.displayOverlay = false;
+            this._overlay.displayOverlay = false;
+            this._overlay.hide();
             this.model.trigger("hide-bubble");
-            this.isShowing = false;
+            //this.displayOverlay = false;
         },
 
         onBeforeDestroy: function () {
-            var go = this.getGoogleOverlay();
-            go.setMap(null);
+            this.hide();
             this.infoBubble.remove();
-            //console.log("onBeforeDestroy", go, this.model.get("id"));
             Base.__super__.remove.apply(this);
         },
 
@@ -179,20 +187,23 @@ define(["marionette",
             return this._overlay.getBounds();
         },
 
-        changeMode: function () {
+        /*changeMode: function () {
+            console.log('changeMode', this.model.get("active"));
             if (this.app.getMode() === "view") {
                 this.makeViewable();
             } else {
                 this.makeEditable();
             }
-        },
+        },*/
 
         makeViewable: function () {
             this._overlay.makeViewable();
         },
 
         makeEditable: function () {
-            this._overlay.makeEditable(this.model);
+            if (this.model.get("active")) {
+                this._overlay.makeEditable(this.model);
+            }
         },
 
         redraw: function () {

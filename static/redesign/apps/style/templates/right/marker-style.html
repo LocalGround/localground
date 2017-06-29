@@ -17,7 +17,7 @@
                 <td>Data Type</td> 
                 <td>
                     <!-- Need a better term that "data type". this is how the legend is set up so items are organized based on certain properties..-->
-                    <select name="place-properties" id="data-type-select">
+                    <select name="place-properties" id="data-type-select" class="marker-style-select">
                         <option value="categorical" {{#ifequal dataType "categorical"}} SELECTED {{/ifequal}}>Category</option>
                         <option value="continuous" {{#ifequal dataType "continuous"}} SELECTED {{/ifequal}}>Continuous</option>
                         <option value="basic" {{#ifequal dataType "basic"}} SELECTED {{/ifequal}}>Simple</option>
@@ -25,19 +25,49 @@
                     </select>
                 </td>
             </tr>
-            
+        </tbody>
+    </table>    
 {{#ifequal dataType "categorical"}}
-
+    <table class="color-properties">
+        <tbody>
             <!-- Rows in this table update based on what "data type" is selected.-->
             <tr class="categorical-variable">
                 <td>Property</td> 
                 <td>
-                    <select>
-                        {{#each properties}}
-                            <option value="{{ this.value }}">{{ this.name }}</option>
+                    <select id="cat-prop" class="marker-style-select">
+                        {{#each categoricalList}}
+                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} value="{{ this.value }}">{{ this.text }}</option>
                         {{/each}}
                     </select>
                 </td>
+            </tr>
+            <tr>
+                <td>Symbol Shape</td>
+                <td>
+                    <select class="global-marker-shape marker-style-select">
+                    {{#each icons}}
+                        <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
+                    {{/each}}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Width</td>
+                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>
+            </tr>
+            <tr>
+                <td>Stroke Weight</td>
+                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>
+            </tr>
+            <tr>   
+                <td>Stroke Color</td>
+                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: #{{metadata.strokeColor}} " aria-hidden="true">
+                    </i>
+                    </td>
+            </tr>
+            <tr>
+                <td>Stroke Opacity</td>
+                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>
             </tr>
 
         </tbody>
@@ -60,19 +90,22 @@
 </div>
 {{/ifequal}}
 {{#ifequal dataType "continuous"}}
-    
+    <table class="color-properties">
+        <tbody>    
             <tr class="continuous-variable">
                 <td>Property</td> 
                 <td>
-                    <select>
-                        <option value="categorical-variable">Year</option>
+                    <select id="cont-prop" class="marker-style-select">
+                        {{#each continuousList}}
+                            <option value="{{ this.value }}">{{ this.text }}</option>
+                        {{/each}}
                     </select>
                 </td>
             </tr>
 
             <tr class="continuous-variable">
                 <td>Buckets:</td>
-                <td><input id="bucket" type="number" value="{{buckets}}"></td>
+                <td><input id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="9"></td>
             </tr>
             <tr class="continuous-variable">
                 <td>Color Ramp</td>
@@ -83,10 +116,10 @@
                             <div class="selected-palette-wrapper">
                                 <a>
                                     <ul class="selected-ul">
-                                        {{#with allColors.[1]}}
+                                        {{#with selectedColorPalette}}
                                         
                                             <li class="selected-palette-list">
-                                                <ul class="palette-container">
+                                                <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">
                                                     {{#each this}}
                                                     <li class="palette-item" style= "background-color: #{{this}}">
                                                           
@@ -105,10 +138,10 @@
                             <ul>
                                 {{#each allColors}}
                                 <a>
-                                    <li class="palette-list">
-                                        <ul class="palette-container">
+                                    <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">
+                                        <ul class="palette-container" value="{{@index}}">
                                             {{#each this}}
-                                            <li class="palette-item" style= "background-color: #{{this}}">
+                                            <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">
                                                 
                                             </li>
                                             {{/each}}
@@ -122,6 +155,40 @@
                 </td>
             </tr>
             <tr>
+                <td>Symbol Shape</td>
+                <td>
+                    <select class="global-marker-shape marker-style-select">
+                    {{#each icons}}
+                        <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
+                    {{/each}}
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="color-properties">
+        <tbody>
+            <tr>
+                <td>Opacity</td>
+                <td>
+                     <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">
+                </td>
+                <td>Width</td>
+                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>
+            </tr>
+            <tr>
+                <td>Stroke Weight</td>
+                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>
+            </tr>
+            <tr>   
+                <td>Stroke Color</td>
+                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: #{{metadata.strokeColor}} " aria-hidden="true">
+                    </i>
+                    </td>
+            </tr>
+            <tr>
+                <td>Stroke Opacity</td>
+                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>
             </tr>
         </tbody>
     </table>
@@ -131,9 +198,9 @@
     <table class="symbols-table">
         <thead>
             <tr>
-                <th>Value</th>
-                <th>Legend Label</th> 
-                <th>Shape</th> 
+                <th class="symbols-th">Value</th>
+                <th class="symbols-th">Legend Label</th> 
+                <th class="symbols-th">Shape</th> 
             </tr>
         </thead>
         <tbody id="symbols">

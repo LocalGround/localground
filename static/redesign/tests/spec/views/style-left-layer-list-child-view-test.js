@@ -96,20 +96,9 @@ define([
                 initView(this);
             });
 
-            it("should re-render overlays when style model updated", function () {
+            it("should re-render overlays when rebuild-markers model event triggered", function () {
                 expect(LayerListChildView.prototype.updateMapOverlays).toHaveBeenCalledTimes(0);
-                var s = new Symbol({
-                    "id": 1,
-                    "title": "1 - 5",
-                    "strokeWeight": 1,
-                    "rule": "worm_count > 0 and worm_count < 6",
-                    "height": 12,
-                    "width": 12,
-                    "shape": "circle",
-                    "strokeColor": "#FFF",
-                    "color": "#d7b5d8"
-                });
-                this.layer.setSymbol(s);
+                this.layer.trigger('rebuild-markers');
                 expect(LayerListChildView.prototype.updateMapOverlays).toHaveBeenCalledTimes(1);
             });
 

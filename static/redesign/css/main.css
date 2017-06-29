@@ -17,6 +17,7 @@ html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, selec
 	padding:0;
 	margin:0;
 	font-family:"Open Sans",Arial,sans-serif;
+    font-weight: 400;
 	color:#3d3d3d;
 }
 
@@ -424,8 +425,10 @@ nav .selected{
 }
 
 #model-form select {
-    height: 25px;
+    height: 30px;
     font-size: 14px;
+    border: solid #EEE 1px;
+    background: white;
 }
 
 #model-form fieldset>div>div,
@@ -1122,13 +1125,6 @@ tbody .failure-message, tbody .success-message {
     word-wrap: break-word;
 }
 
-.side-panel h3{
-    font-size: 22px;
-    font-weight: 400;
-    padding-bottom: 4px;
-    margin-top: 20px;
-}
-
 .side-panel p{
     font-size:12px;
     /*min-height: 30px;*/
@@ -1165,6 +1161,9 @@ tbody .failure-message, tbody .success-message {
 
 .side-panel .img-card {
     border: none;
+}
+.side-panel .map-image {
+    border: 1px solid #e4e5eb;
 }
 
 /*.side-panel img,
@@ -1234,6 +1233,7 @@ tbody .failure-message, tbody .success-message {
 }
 #left-panel, #right-panel {
     overflow-y: auto;
+    padding-bottom: 100px;
 }
 
 .left #right-panel, .none #right-panel{
@@ -1284,7 +1284,7 @@ tbody .failure-message, tbody .success-message {
     border-right: 1px solid #e4e5eb;
     box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
     width: 280px;
-    background-color: #fafafc;
+    /*background-color: #f2f2f2;*/
     z-index: 40;
     flex: none;
     overflow: scroll;
@@ -1637,6 +1637,9 @@ li.current .photo {
 /********************************/
 /*       SPREADSHEET STYLES     */
 /********************************/
+.handsontable td {
+    white-space: normal !important;
+}
 .spreadsheet .active-slide {
     position: relative;
     height: auto;
@@ -1842,15 +1845,6 @@ audio {
     padding: 0px !important;
     margin: 0px auto !important;
     /*border: solid 1px #000;*/
-}
-
-.spreadsheet .play-ctrls {
-    text-align: center;
-    margin: 0px auto;
-}
-
-.spreadsheet .play {
-    margin: 0px auto;
 }
 
 .play.pause {

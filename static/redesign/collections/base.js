@@ -10,6 +10,11 @@ define(["underscore", "backbone", "collections/baseMixin"],
          */
         var Base = Backbone.Collection.extend({
             key: null,
+            getDataType: function () {
+                return this.key;
+            },
+            fillColor: "#ed867d",
+            size: 23,
             defaults: {
                 isVisible: true
             },

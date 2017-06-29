@@ -2,10 +2,17 @@ define([
     "underscore",
     "backbone-pageable",
     "collections/baseMixin"
-], function (_, BackbonePageableCollection, BaseMixin) {
+], function (_, BackbonePageable, BaseMixin) {
     "use strict";
-    var PageableCollection = BackbonePageableCollection.extend({
-
+    var PageableCollection = BackbonePageable.extend({
+        getDataType: function () {
+            return this.key;
+        },
+        getTitle: function () {
+            return this.name || "Sites";
+        },
+        fillColor: "#ed867d",
+        size: 23,
         events: {
             'click #toolbar-search': 'doSearch',
             'click #toolbar-clear': 'clearSearch'
@@ -72,7 +79,7 @@ define([
                 options.data = options.data || {};
                 options.data = { query: this.query };
             }
-            return BackbonePageableCollection.prototype.fetch.call(this, options);
+            return BackbonePageable.prototype.fetch.call(this, options);
         }
     });
     return PageableCollection;

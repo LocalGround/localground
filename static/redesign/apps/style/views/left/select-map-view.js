@@ -15,6 +15,12 @@ define(["jquery",
             stateKey: 'select-map',
             isShowing: true,
             template: Handlebars.compile(MapTemplate),
+            templateHelpers: function() {
+                return {
+                    noItems: (this.collection.length === 0),
+                    isShowing: this.isShowing
+                }
+            },
 
             events: function () {
                 return _.extend(
@@ -39,18 +45,26 @@ define(["jquery",
                         reset: true,
                         success: function (collection) {
                             // setting the current model from 'success' due to asynchronicity
-                            that.setModel(collection);
+                            that.setModel();
+                            that.app.vent.trigger("init-collection");
                         }
                     });
+                } else {
+                    this.setModel();
+                    this.drawOnce();
                 }
                 this.modal = new Modal();
 
                 this.listenTo(this.collection, 'reset', this.drawOnce);
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
+                this.listenTo(this.app.vent, 'update-map-list', this.updateMapList);
             },
 
             setModel: function () {
-                this.app.currentMap = this.collection.at(0);
+                if (this.collection.length > 0 ) {
+                    this.app.selectedMapModel = this.collection.at(0);
+                    //this.app.selectedMapModel = this.model;
+                }
             },
 
             newMap: function (mapAttrs) {
@@ -71,10 +85,9 @@ define(["jquery",
                     project_id: this.app.getProjectID()
                 });
               
-                this.collection.add(this.map);
                 
                 this.map.save(null, {
-                    success: this.render,
+                    success: this.setMapAndRender.bind(this),
                     error: function (model, response){
                         var messages = JSON.parse(response.responseText);
                         console.log(messages);
@@ -83,13 +96,33 @@ define(["jquery",
                             console.log("should have error message", that.slugError);
                         }
                         that.app.vent.trigger("send-modal-error", that.slugError);
-                    }
-                    
+                    } 
                 });
+            },
+
+            setMapAndRender: function () {
+                this.collection.add(this.map);
+                this.modal.hide();
+                if (!this.app.selectedMapModel) {
+                    this.setModel();
+                }
+                this.app.selectedMapModel = this.map;
+                this.showSection();
+                this.render();
+                this.$el.find('#map-select').val(this.map.id);
+                
+                this.setCenterZoom(this.map);
+                this.setMapTypeId(this.map);
+                this.app.vent.trigger("change-map", this.map);
+                this.app.vent.trigger("hide-right-panel");
+
             },
 
             drawOnce: function () {
                 this.render();
+                if (this.collection.length == 0) {
+                    return;
+                }
                 var $selected = this.$el.find("#map-select").val(),
                     selectedMapModel = this.collection.get($selected);
 
@@ -108,6 +141,15 @@ define(["jquery",
                 this.app.vent.trigger("hide-right-panel");
             },
 
+            updateMapList: function () {
+                var id = this.$el.find('#map-select').val(),
+                selectedMapModel = this.collection.get(id);
+
+                this.setCenterZoom(selectedMapModel);
+                this.setMapTypeId(selectedMapModel);
+                this.app.vent.trigger("change-map", selectedMapModel);
+            },
+
             showAddMapModal: function () {
                 var createMapModel = new NewMap({
                     app: this.app
@@ -124,7 +166,6 @@ define(["jquery",
                     showDeleteButton: false
                 });
                 this.modal.show();
-                this.showSection();
             },
 
             setCenterZoom: function (selectedMapModel) {

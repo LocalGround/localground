@@ -35,6 +35,14 @@ define(["jquery", "underscore"], function ($, _) {
             this._googleOverlay.setPosition(this.getGoogleGeometryFromModel());
         };
 
+        this.hide = function () {
+            this._googleOverlay.setMap(null);
+        };
+
+        this.show = function () {
+            this._googleOverlay.setMap(this.map);
+        };
+
         this.getCenter = function () {
             return this.getGoogleGeometryFromModel();
         };
@@ -125,7 +133,7 @@ define(["jquery", "underscore"], function ($, _) {
             });
 
             google.maps.event.addListener(this._googleOverlay, "drag", function (mEvent) {
-                if (model.getKey() != "markers") {
+                if (model.getDataTypePlural() != "markers") {
                     that.app.vent.trigger("dragging", {
                         latLng: mEvent.latLng
                     });

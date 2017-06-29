@@ -14,7 +14,15 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 caption: { type: 'TextArea'},
                 tags: 'Text'
             },
-            getNamePlural: function () {
+            getDataTypePlural: function () {
+                if (this.collection && this.collection.getDataType) {
+                    return this.collection.getDataType();
+                }
+                var type = this.get("overlay_type");
+                return (type == 'audio') ? 'audio' : type + "s";
+
+            },
+            getDataType: function () {
                 return this.get("overlay_type");
             },
             filterFields: [

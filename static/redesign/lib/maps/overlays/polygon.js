@@ -14,11 +14,11 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
 
         this.createOverlay = function (isShowingOnMap) {
             this._googleOverlay = new google.maps.Polygon({
-                path: this.getGoogleLatLngFromModel(),
-                strokeColor: '#' + this.model.get("color"),
+                path: this.getGoogleGeometryFromModel(),
+                strokeColor: '#' + this.model.get("fillColor"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
-                fillColor: '#' + this.model.get("color"),
+                fillColor: '#' + this.model.get("fillColor"),
                 fillOpacity: 0.35,
                 map: isShowingOnMap ? this.map : null
             });
@@ -26,8 +26,8 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
 
         this.redraw = function () {
             this._googleOverlay.setOptions({
-                strokeColor: '#' + this.model.get("color"),
-                fillColor: '#' + this.model.get("color")
+                strokeColor: '#' + this.model.get("strokeColor"),
+                fillColor: '#' + this.model.get("fillColor")
             });
         };
         /**

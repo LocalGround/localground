@@ -43,7 +43,8 @@ define(
                 event: {
                     addListenerOnce: function () {},
                     addListener: function () {},
-                    trigger: function () {}
+                    trigger: function () {},
+                    clearListeners: function () {}
                 },
                 LatLngBounds: function () {},
                 LatLng: function (lat, lng) {
@@ -75,6 +76,15 @@ define(
                     this.getMapTypeId = function () {
                         return 5;
                     };
+                },
+                Marker: function () {
+                    return {
+                        setOptions: function () {},
+                        setMap: function () {}
+                    };
+                },
+                Point: function () {
+                    return;
                 }
             };
             var $map_container = $('<div id="map_canvas"></div>');
@@ -172,11 +182,22 @@ define(
                 "project_id": 3,
                 "layers": [
                     {
-                        "id": 3,
+                        "id": 1,
                         "title": "layer 1",
                         "data_source": "form_1",
                         "symbol_shape": "fa-circle",
-                        "layer_type": "categorical",
+                        "layer_type": "continuous",
+                        "metadata": {
+                            "fillColor": "#4e70d4",
+                            "strokeWeight": 1,
+                            "buckets": 5,
+                            "strokeOpacity": "0.7",
+                            "width": "30",
+                            "shape": "circle",
+                            "fillOpacity": 1,
+                            "strokeColor": "#ffffff",
+                            "paletteId": 2
+                        },
                         "filters": [
                             {
                                 "tag": "nothing"
@@ -187,33 +208,33 @@ define(
                             {
                                 "title": "1 - 5",
                                 "strokeWeight": 1,
-                                "rule": "worm_count > 0 and worm_count < 6",
+                                "rule": "test_integer > 0 and test_integer < 6",
                                 "height": 32,
                                 "width": 32,
                                 "shape": "worm",
-                                "strokeColor": "#FFF",
-                                "color": "#d7b5d8"
+                                "strokeColor": "#FFFFFF",
+                                "fillColor": "#d7b5d8"
                             },
                             {
                                 "title": "6 - 10",
                                 "strokeWeight": 1,
-                                "rule": "worm_count > 5 and worm_count < 11",
+                                "rule": "test_integer > 5 and test_integer < 11",
                                 "height": 32,
                                 "width": 32,
                                 "shape": "worm",
-                                "strokeColor": "#FFF",
-                                "color": "#df65b0",
+                                "strokeColor": "#FFFFFF",
+                                "fillColor": "#df65b0",
                                 "is_showing": true
                             },
                             {
                                 "title": "11 or more",
                                 "strokeWeight": 1,
-                                "rule": "worm_count >= 11",
+                                "rule": "test_integer >= 11",
                                 "height": 32,
                                 "width": 32,
                                 "shape": "worm",
-                                "strokeColor": "#FFF",
-                                "color": "#ce1256"
+                                "strokeColor": "#FFFFFF",
+                                "fillColor": "#ce1256"
                             }
                         ]
                     },
@@ -222,7 +243,7 @@ define(
                         "title": "Murals",
                         "data_source": "form_1",
                         "symbol_shape": "fa-circle",
-                        "layer_type": "categorical",
+                        "layer_type": "continuous",
                         "filters": [
                             {
                                 "tag": "nothing"
@@ -231,35 +252,53 @@ define(
                         "map_id": 1,
                         "symbols": [
                             {
-                                "color": "#7075FF",
+                                "fillColor": "#7075FF",
                                 "width": 30,
-                                "rule": "sculptures > 0",
+                                "rule": "test_integer > 0",
                                 "title": "At least 1 sculpture"
                             }
                         ]
                     },
                     {
-                        "id": 1,
+                        "id": 3,
                         "title": "Murals",
                         "data_source": "form_1",
                         "symbol_shape": "circle",
-                        "layer_type": "continuous",
+                        "layer_type": "categorical",
+                        "metadata": {
+                            "newKey": 6,
+                            "fillColor": "#4e70d4",
+                            "strokeWeight": 1,
+                            "buckets": 3,
+                            "strokeOpacity": "0.7",
+                            "width": "30",
+                            "shape": "circle",
+                            "fillOpacity": 1,
+                            "strokeColor": "#FFFFFF",
+                            "paletteId": 3
+                        },
                         "filters": {
                             "tags": "nothing"
                         },
                         "map_id": 1,
                         "symbols": [
                             {
-                                "color": "#7075FF",
+                                "fillColor": "#7075FF",
                                 "width": 30,
-                                "rule": "murals > 0",
-                                "title": "At least 1 mural"
+                                "rule": "test_text = 'Blue team'",
+                                "title": "Blue Team"
                             },
                             {
-                                "color": "#F011D9",
+                                "fillColor": "#F011D9",
                                 "width": 30,
-                                "rule": "murals = 0",
-                                "title": "No murals"
+                                "rule": "test_text = 'Green team'",
+                                "title": "Green Team"
+                            },
+                            {
+                                "fillColor": "#FF0000",
+                                "width": 30,
+                                "rule": "test_text = 'Red team'",
+                                "title": "Red Team"
                             }
                         ]
                     }
@@ -384,9 +423,9 @@ define(
                 new Marker({id: 3, name: "POI 3", tags: ['coffee shop', 'tag1'], project_id: 2, overlay_type: "marker" })
             ]);
             this.form_1 = new Records([
-                new Record({ id: 1, team_name: "Blue team", display_name: "Blue team", tags: ['my house'], worm_count: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, photo_count: 3, audio_count: 1 }),
-                new Record({id: 2, team_name: "Green team", tags: ['friend\'s house', 'tag1'], worm_count: 8, project_id: 1, overlay_type: "form_1", photo_count: 1, audio_count: 2 }),
-                new Record({id: 3, team_name: "Red team", tags: ['coffee shop'], worm_count: 12, project_id: 2, overlay_type: "form_1", photo_count: 2, audio_count: 3 })
+                new Record({ id: 1, test_text: "Blue team", display_name: "Blue team", tags: ['my house'], test_integer: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, photo_count: 3, audio_count: 1 }),
+                new Record({id: 2, test_text: "Green team", tags: ['friend\'s house', 'tag1'], test_integer: 8, project_id: 1, overlay_type: "form_1", photo_count: 1, audio_count: 2 }),
+                new Record({id: 3, test_text: "Red team", tags: ['coffee shop'], test_integer: 12, project_id: 2, overlay_type: "form_1", photo_count: 2, audio_count: 3 })
             ], { 'url': 'dummy/url' });
             this.form_2 = new Records([
                 new Record({ id: 2,
@@ -473,7 +512,8 @@ define(
                             name: "Team Members",
                             id: "form_1",
                             overlay_type: "form_1",
-                            data: this.form_1.toJSON()
+                            data: this.form_1.toJSON(),
+                            fields: this.fields
                         }
                     }}),
                 new Project({

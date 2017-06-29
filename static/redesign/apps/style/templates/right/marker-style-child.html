@@ -1,4 +1,6 @@
-<td>{{ color }}</td>
+{{#ifequal this.dataType "categorical"}}
+
+<td><i class="fa fa-circle marker-icon jscolor" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>
 <td>{{ title }}</td>
 <td>
     <select class="marker-shape">
@@ -7,11 +9,12 @@
     {{/each}}
     </select>    
 </td>
+{{/ifequal}}
 
 
-{{#ifequal dataType "continuous-variable"}}
+{{#ifequal this.dataType "continuous"}}
 
-<td>{{ color }}</td>
+<td><i class="fa fa-circle marker-icon jscolor" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>
 <td>{{ title }}</td>
 <td>
     <select class="marker-shape">

@@ -15,8 +15,10 @@ define(["models/base",
 		defaults: _.extend({}, Base.prototype.defaults, {
 			color: "CCCCCC" // rough draft color
 		}),
-        getNamePlural: function () {
-            return "markers";
+        schema: {
+            name: { type: 'TextArea', title: "Name" },
+            caption:  { type: 'TextArea', title: "Caption" },
+            tags: { type: 'List', itemType: 'Text' }
         },
 		excludeList: [
             "overlay_type",
@@ -104,7 +106,7 @@ define(["models/base",
         attach: function (model, order, callbackSuccess, callbackError) {
             var association = new Association({
                 model: this,
-                attachmentType: model.getKey()
+                attachmentType: model.getDataTypePlural()
             });
 			association.save({ object_id: model.id, ordering: order }, {
 				success: callbackSuccess,

@@ -148,7 +148,7 @@ define([
                 initSpies(this);
                 initMarkers();
             });
-
+/*
             it("Only renders a plus button if no children exist", function () {
                 initForm(this, markerPlain);
                 var mediaContainer = fixture.find(".attached-media-container");
@@ -328,7 +328,5 @@ define([
             });
             */
         });
-
-
 
     });

@@ -6,12 +6,13 @@ define([
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
     "text!../templates/record-detail.html",
+    "text!../templates/map-image-detail.html",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form"
 ], function ($, _, Handlebars, Marionette, PhotoTemplate, AudioTemplate, SiteTemplate,
-             AudioPlayer, Carousel, Icon, DataForm) {
+        MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -23,8 +24,9 @@ define([
             'click .show': 'showMapPanel',
             'click .rotate-left': 'rotatePhoto',
             'click .rotate-right': 'rotatePhoto',
-            "click .add-marker-button": "activateMarkerTrigger",
-            "click .delete-marker-button": "deleteMarkerTrigger"
+            "click #add-geometry": "activateMarkerTrigger",
+            "click #delete-geometry": "deleteMarkerTrigger",
+            "click #add-rectangle": "activateRectangleTrigger"
         },
         getTemplate: function () {
             if (this.dataType == "photos") {
@@ -32,6 +34,8 @@ define([
             }
             if (this.dataType == "audio") {
                 return Handlebars.compile(AudioTemplate);
+            } else if (this.dataType == "map_images") {
+                return Handlebars.compile(MapImageTemplate);
             }
             return Handlebars.compile(SiteTemplate);
         },
@@ -41,6 +45,11 @@ define([
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
+        },
+        activateRectangleTrigger: function () {
+            $('body').css({ cursor: 'crosshair' });
+            this.app.vent.trigger("add-new-marker", this.model);
+            this.app.vent.trigger("add-rectangle", this.model);
         },
 
         activateMarkerTrigger: function () {
@@ -66,7 +75,13 @@ define([
                     if (shape.indexOf("form_") != -1) {
                         shape = "marker";
                     }
-                    icon = new Icon({ shape: shape, strokeWeight: 6 }).generateGoogleIcon();
+                    icon = new Icon({
+                        shape: shape,
+                        strokeWeight: 6,
+                        fillColor: that.model.collection.fillColor,
+                        width: that.model.collection.size,
+                        height: that.model.collection.size
+                    }).generateGoogleIcon();
                     icon.width *= 1.5;
                     icon.height *= 1.5;
                     $follower.html(template(icon));
@@ -124,10 +139,12 @@ define([
         },
         switchToViewMode: function () {
             this.app.mode = "view";
+            this.app.vent.trigger('mode-change');
             this.render();
         },
         switchToEditMode: function () {
             this.app.mode = "edit";
+            this.app.vent.trigger('mode-change');
             this.render();
         },
         switchToAddMode: function () {
@@ -136,8 +153,7 @@ define([
         },
         templateHelpers: function () {
             var lat, lng;
-            //sets filler html string if a marker location has not been set
-            if (this.model.get("geometry")) {
+            if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
                 lat =  this.model.get("geometry").coordinates[1].toFixed(4);
                 lng =  this.model.get("geometry").coordinates[0].toFixed(4);
             }

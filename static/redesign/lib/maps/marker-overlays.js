@@ -14,6 +14,12 @@ define(['marionette',
             /** A google.maps.Map object */
             map: null,
             childView: MarkerOverlay,
+            collectionEvents: {
+                'zoom-to-extents': 'zoomToExtents',
+                'change:geometry': 'geometryUpdated',
+                'show-markers': 'showAll',
+                'hide-markers': 'hideAll'
+            },
 
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -21,12 +27,7 @@ define(['marionette',
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.childViewOptions = opts;
-
-                //listen for new data:
-                this.listenTo(this.collection, 'zoom-to-extents', this.zoomToExtents);
-                this.listenTo(this.collection, 'change:geometry', this.geometryUpdated);
-                this.listenTo(this.collection, 'show-markers', this.showAll);
-                this.listenTo(this.collection, 'hide-markers', this.hideAll);
+                this.childViewOptions.displayOverlay = opts.displayOverlays;
 
                 this.render();
 
@@ -40,14 +41,10 @@ define(['marionette',
             geometryUpdated: function (model) {
                 if (!this.children.findByModel(model)) {
                     this.addChild(model, this.childView);
-                    console.log("Adding child");
-                }
-                else if (!model.get("geometry")){
+                } else if (!model.get("geometry")) {
                     var view = this.children.findByModel(model);
                     this.removeChildView(view);
-                    console.log("Removing child");
                 }
-
             },
 
             // overriding the "addChild" method so that data elements w/o
@@ -60,6 +57,7 @@ define(['marionette',
             },
 
             showAll: function () {
+                console.log('showAll');
                 this.children.each(function (overlay) {
                     overlay.show();
                 });
@@ -70,6 +68,11 @@ define(['marionette',
                 this.children.each(function (overlay) {
                     overlay.hide();
                 });
+            },
+
+            remove: function () {
+                this.hideAll();
+                Marionette.CollectionView.prototype.remove.call(this);
             },
 
             getBounds: function () {

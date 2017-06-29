@@ -47,6 +47,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
                 //this.listenTo(this.app.vent, 'tiles-loaded', this.showMapTypesDropdown);
                 this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
+                this.listenTo(this.app.vent, 'add-rectangle', this.initDrawingManager);
             },
 
             point2LatLng: function (point) {
@@ -59,6 +60,49 @@ define(["marionette",
                 scale = Math.pow(2, this.map.getZoom());
                 worldPoint = new google.maps.Point(point.x / scale + bottomLeft.x, point.y / scale + topRight.y);
                 return this.map.getProjection().fromPointToLatLng(worldPoint);
+            },
+            initDrawingManager: function () {
+                var that = this;
+                this.drawingManager = new google.maps.drawing.DrawingManager({
+                    drawingMode: google.maps.drawing.OverlayType.RECTANGLE,
+                    drawingControl: false,
+                    markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
+                    rectangleOptions: {
+                        strokeColor: '#ed867d',
+                        fillColor: '#ed867d',
+                        fillOpacity: 0,
+                        strokeWeight: 4,
+                        clickable: false,
+                        editable: true,
+                        zIndex: 1
+                    }
+                });
+                google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', function (rect) {
+                    rect.setOptions({ editable: false });
+                    that.drawingManager.setDrawingMode(null);
+                    var getGeoJSONFromBounds = function (r) {
+                            var bounds = r.getBounds().toJSON(),
+                                north = bounds.north,
+                                south = bounds.south,
+                                east = bounds.east,
+                                west = bounds.west;
+                            return {
+                                "type": "Polygon",
+                                "coordinates": [[
+                                    [east, north], [east, south], [west, south], [west, north], [east, north]
+                                ]]
+                            };
+                        },
+                        r = getGeoJSONFromBounds(rect);
+                    rect.setMap(null);
+                    that.targetedModel.set("geometry", r);
+                    that.targetedModel.trigger('show-marker');
+                    that.addMarkerClicked = false;
+                    that.targetedModel = null;
+                    that.drawingManager.setMap(null);
+                    $('body').css({ cursor: 'auto' });
+                });
+                this.drawingManager.setMap(this.map);
             },
 
             doHighlight: function (model) {
@@ -131,6 +175,7 @@ define(["marionette",
             },
 
             deleteMarker: function (model) {
+                model.trigger('hide-marker');
                 model.set("geometry", null);
                 model.save();
             },

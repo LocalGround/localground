@@ -1,6 +1,6 @@
 
 <div class="bordered-section end-section">
-    <div class="style-section-header">
+    <div class="style-section-header-wrapper">
         <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>
         <h4>Panel Styles</h4>
     </div>
@@ -10,7 +10,7 @@
     <div id="type" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">
 
     <!--Choose the type category to style -->
-        <select id="text-type" name="title-list" style="width:100%; margin: 20px 0px 10px;">
+        <select id="text-type" class="style-wide-select" name="title-list" style="width:100%; margin: 20px 0px 10px;">
             <option value="title" {{#ifequal activeKey "title"}} SELECTED {{/ifequal}}>Title</option>
             <option value="subtitle" {{#ifequal activeKey "subtitle"}} SELECTED {{/ifequal}}>Subtitle</option>
             <option value="paragraph" {{#ifequal activeKey "paragraph"}} SELECTED {{/ifequal}}>Paragraph</option>
@@ -21,7 +21,7 @@
                 <tr>
                     <td>Font:</td>
                     <td>
-                        <select id="font" name="type-list" class="type-list">
+                        <select id="font" class="style-wide-select">
                             <option value="lato" {{#ifequal currentType.font "lato"}} SELECTED {{/ifequal}}>Lato</option>
                             <option value="bebas" {{#ifequal currentType.font "bebas"}} SELECTED {{/ifequal}}>Bebas</option>
                         </select>
@@ -30,7 +30,7 @@
                 <tr>
                     <td>Font weight:</td>
                     <td>
-                        <select id="fw" name="type-list" class="type-list">
+                        <select id="fw" class="style-wide-select">
                             <option value="regular" {{#ifequal currentType.fw "regular"}} SELECTED {{/ifequal}}>Regular</option>
                             <option value="bold" {{#ifequal currentType.fw "bold"}} SELECTED {{/ifequal}}>Bold</option>
                         </select>

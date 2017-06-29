@@ -5,6 +5,8 @@ define(["underscore", "marionette", "models/project", "collections/photos",
         'use strict';
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
+            formColors: ['#60C7CC', '#CF2045', '#A3A737', '#F27CA5'],
+            colorCounter: 0,
             template: false,
             isEmpty: function () {
                 return Object.keys(this.dataDictionary).length === 0;
@@ -12,6 +14,10 @@ define(["underscore", "marionette", "models/project", "collections/photos",
             initialize: function (opts) {
                 //todo: remove app dependency and pass in projectID and vent
                 _.extend(this, opts);
+                if (typeof this.projectID === 'undefined') {
+                    window.location = '/';
+                    return false;
+                }
                 if (!this.model) {
                     this.model = new Project({ id: this.projectID });
                     this.model.fetch({ success: this.setCollections.bind(this) });
@@ -26,7 +32,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     extras;
                 _.each(this.model.get("children"), function (entry, key) {
                     that.dataDictionary[key] = entry;
-                    extras = that.initCollection(key, entry.data);
+                    extras = that.initCollection(key, entry.data, entry.fields);
                     _.extend(that.dataDictionary[key], extras);
                     delete entry.data;
                 });
@@ -64,9 +70,8 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     return entry.collection;
                 }
                 throw new Error("No entry found for " + key);
-                return null;
             },
-            initCollection: function (key, data) {
+            initCollection: function (key, data, fieldCollection) {
                 switch (key) {
                 case "photos":
                     return { collection: new Photos(data) };
@@ -89,18 +94,16 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                                 url: recordsURL,
                                 key: 'form_' + formID
                             }),
-                            fields = new Fields(null, {url: fieldsURL });
-                        fields.fetch({ reset: true, success: function () {
-                            // some extra post-processing for custom datatypes so that
-                            // it's easier to loop through fields and output corresponding
-                            // values
-                            records.each(function (record) {
-                                fields.each(function (field) {
-                                    field.set("val", record.get(field.get("col_name")));
-                                });
-                                record.set('fields', fields.toJSON());
-                            });
-                        }});
+                            fields = fieldCollection || new Fields(null, {url: fieldsURL }),
+                            that = this;
+                        records.fillColor = this.formColors[this.colorCounter++];
+                        if (fields.length == 0) {
+                            fields.fetch({ reset: true, success: function () {
+                                that.attachFieldsToRecords(records, fields);
+                            }});
+                        } else {
+                            this.attachFieldsToRecords(records, fields);
+                        }
                         return {
                             collection: records,
                             fields: fields,
@@ -111,6 +114,17 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     throw new Error("case not handled");
                     return null;
                 }
+            },
+            attachFieldsToRecords: function (records, fields) {
+                // some extra post-processing for custom datatypes so that
+                // it's easier to loop through fields and output corresponding
+                // values
+                records.each(function (record) {
+                    fields.each(function (field) {
+                        field.set("val", record.get(field.get("col_name")));
+                    });
+                    record.set('fields', fields.toJSON());
+                });
             }
         });
         return DataManager;

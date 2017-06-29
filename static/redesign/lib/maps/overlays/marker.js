@@ -13,15 +13,7 @@ define([
 
         initialize: function (opts) {
             Base.prototype.initialize.apply(this, arguments);
-            _.extend(this, opts);
             this.redraw();
-        },
-
-        /** shows the google.maps overlay on the map. */
-        show: function () {
-            Base.prototype.show.apply(this);
-            this.redraw();
-            //this.highlight();
         },
 
         initInfoBubble: function (opts) {
@@ -35,9 +27,15 @@ define([
                     _.extend(icon, this.getGoogleIcon(), { strokeWeight: 10, strokeOpacity: 0.5 });
                     icon.strokeColor = icon.fillColor;
                     this.getGoogleOverlay().setIcon(icon);
+                    if (this.app.mode == 'view') {
+                        this._overlay.makeViewable(this.model);
+                    } else {
+                        this._overlay.makeEditable(this.model);
+                    }
                 } else {
                     if (this.getGoogleIcon()) {
                         this._overlay.setIcon(this.getGoogleIcon());
+                        this._overlay.makeViewable(this.model);
                     }
                 }
             } else {

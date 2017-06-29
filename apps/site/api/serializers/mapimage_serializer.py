@@ -5,7 +5,8 @@ from django.forms.fields import FileField
 from localground.apps.lib.helpers import upload_helpers, generic, get_timestamp_no_milliseconds
 from localground.apps.site import models
 from localground.apps.site.api import fields
-from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
+from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer, AuditSerializerMixin
+
 
 class MapImageSerializerCreate(BaseNamedSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
@@ -13,7 +14,12 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
-    status = serializers.PrimaryKeyRelatedField(read_only=True)
+    status = serializers.PrimaryKeyRelatedField(
+        read_only=False,
+        required=False,
+        default=1,
+        queryset=models.StatusCode.objects.all()
+    )
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
@@ -32,16 +38,29 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         style={'base_template': 'json.html'},
         source='processed_image.extents'
     )
-
-    north = serializers.SerializerMethodField()
-    south = serializers.SerializerMethodField()
-    east = serializers.SerializerMethodField()
-    west = serializers.SerializerMethodField()
-    zoom = serializers.SerializerMethodField()
     overlay_path = serializers.SerializerMethodField()
     file_path = serializers.SerializerMethodField()
     file_name = serializers.SerializerMethodField()
     
+    '''
+    Proposal: 
+    I think that when an image is inserted, a default ImageOpts
+    object should be created. This can be overwritten by the
+    image processor. Sample code:
+    -----------------------------------------------------------
+    map_image = models.ImageOpts(
+        source_mapimage=self.mapimage,
+        file_name_orig=file_name,
+        zoom=p.zoom,
+        host=self.mapimage.host,
+        virtual_path=self.mapimage.virtual_path
+    )
+
+    #pseudocode: 
+
+    map_image.center = p.center
+    map_image.save(user=self.user)
+    '''
     
     def get_fields(self, *args, **kwargs):
         fields = super(MapImageSerializerCreate, self).get_fields(*args, **kwargs)
@@ -52,11 +71,10 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     class Meta:
         model = models.MapImage
         fields = BaseNamedSerializer.Meta.fields + (
-            'overlay_type', 'source_print', 'project_id',
-            'north', 'south', 'east', 'west', 'geometry', 'zoom', 'overlay_path',
-            'media_file', 'file_path', 'file_name', 'uuid', 'status'
+            'overlay_type', 'source_print', 'project_id', 'geometry',
+            'overlay_path', 'media_file', 'file_path', 'file_name', 'uuid', 'status'
         )
-        read_only_fields = ('uuid', 'status', 'geometry')
+        read_only_fields = ('uuid',)
         
     def process_file(self, file, owner):
         #save to disk:
@@ -153,15 +171,17 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     
 class MapImageSerializerUpdate(MapImageSerializerCreate):
     media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
-    status = serializers.PrimaryKeyRelatedField(queryset=models.StatusCode.objects.all(), read_only=False)
+    status = serializers.PrimaryKeyRelatedField(
+        queryset=models.StatusCode.objects.all(),
+        read_only=False)
     class Meta:
         model = models.MapImage
         fields = BaseNamedSerializer.Meta.fields + (
             'overlay_type', 'source_print', 'project_id',
-            'north', 'south', 'east', 'west', 'geometry', 'zoom', 'overlay_path',
+            'geometry', 'overlay_path',
             'media_file', 'file_path', 'file_name', 'uuid', 'status'
         )
-        read_only_fields = ('uuid', 'geometry')
+        read_only_fields = ('uuid',)
 
     # overriding update 
     def update(self, instance, validated_data):
@@ -171,4 +191,3 @@ class MapImageSerializerUpdate(MapImageSerializerCreate):
         result = process_map.delay(self.instance)
 
         return instance
-

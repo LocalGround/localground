@@ -79,7 +79,10 @@ define(["marionette",
                         isShowing: true,
                         _icon: new Icon({
                             shape: entry.collection.key,
-                            fillColor: fillColor
+                            //fillColor: fillColor,
+                            fillColor: entry.collection.fillColor,
+                            width: entry.collection.size,
+                            height: entry.collection.size
                         })
                     });
                 }
