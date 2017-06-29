@@ -1,99 +1,33 @@
-<html>
+{% extends "base/base.html" %}
+     {% block content %}
+    <form method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
+        {% csrf_token %} {% if form.errors %}
+        <div class="alert-message error">
+            <p>Authentication error: Please enter a correct username and password. Note that both fields are case-sensitive.</p>
+        </div>
+        {% endif %} 
+        {% include "includes/forms/generic_form_renderer.html" %}
 
-<head>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-    <style>
-        h1 {
-            font-family: 'Montserrat';
-            text-align: center;
-            padding: 100px 0 0 0;
-            text-transform: uppercase;
-            font-size: 40px;
-            color: white;
-            letter-spacing: .1em;
-        }
-
-        h4 {
-            font-family: 'Montserrat';
-            font-family: "Open Sans", Arial, sans-serif;
-            text-align: center;
-            padding: 0 0 0 0;
-            font-size: 18px;
-        }
-
-        p {
-            font-family: "Open Sans", Arial, sans-serif;
-            color: #3d3d3d;
-        }
-
-        #outer {
-            background-image: url('/static/redesign/assets/splash-map-5.png');
-            height: 100%;
-            width: 100%;
-            background-size: cover;
-            text-align: center;
-        }
-
-        #inner {
-            width: 50%;
-            margin: 0 auto;
-            padding: 5px 20px 5px 20px;
-            background-color: white;
-        }
-
-        .btn {
-            display: inline-block;
-            background: #009999;
-            margin: 10px;
-            padding: 10px 20px;
-            font-size: 20px;
-            color: white;
-            text-transform: uppercase;
-            border-radius: 4px;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div id="outer">
-        <h1>Local Ground</h1>
-
-        <div id="inner">
-            <h4>Have an account?</h4>
-
-
-            <form method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
-                {% csrf_token %} {% if form.errors %}
-                <div class="alert-message error">
-                    <p>Authentication error: Please enter a correct username and password. Note that both fields are case-sensitive.</p>
-                </div>
-                {% endif %} {% include "includes/forms/generic_form_renderer.html" %}
-
-                <fieldset id="params">
-                    <!-- input type="hidden" name="next" value="{{ next }}" / -->
-                    <input type="hidden" name="next" value="/" />
-                    <!--div class="clearfix">
+        <fieldset id="params">
+            <!-- input type="hidden" name="next" value="{{ next }}" / -->
+            <input type="hidden" name="next" value="/" />
+            <!--div class="clearfix">
                         <label>&nbsp;</label-->
-                    <div class="input">
-                        <input type="submit" value="Sign in" class="btn primary" />
-                        <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
+            <div class="input">
+                <input type="submit" value="Sign in" class="btn primary" />
+                <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
                             <span id="google-button"></span>
                             </a>
-                    </div>
+            </div>
 
-                    <!--/div-->
-                </fieldset>
-            </form>
-            <p>
-                <a href="/accounts/password/reset/">Forgot your password?</a>
-            </p>
-            <p class="align">
-                {% if user.is_superuser or not ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE %} New to Local Ground? &nbsp <a href="/accounts/register/"> Create your Local Ground account</a>{% endif %}
-            </p>
-
-        </div>
-    </div>
-</body>
-
-</html>
+            <!--/div-->
+        </fieldset>
+    </form>
+    <p>
+        <a href="/accounts/password/reset/">Forgot your password?</a>
+    </p>
+    <p class="align">
+        {% if user.is_superuser or not ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE %} New to Local Ground? &nbsp <a href="/accounts/register/"> Create your Local Ground account</a>
+        {% endif %}
+    </p>
+{% endblock %}

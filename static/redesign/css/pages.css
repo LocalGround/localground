@@ -1,0 +1,50 @@
+@import url(https://fonts.googleapis.com/css?family=Montserrat);
+
+h1 {
+    font-family: 'Montserrat';
+    text-align: center;
+    padding: 100px 0 0 0;
+    text-transform: uppercase;
+    font-size: 40px;
+    color: white;
+    letter-spacing: .1em;
+}
+
+h4 {
+    font-family: 'Montserrat';
+    font-family: "Open Sans", Arial, sans-serif;
+    text-align: center;
+    padding: 0 0 0 0;
+    font-size: 18px;
+}
+
+p {
+    font-family: "Open Sans", Arial, sans-serif;
+    color: #3d3d3d;
+}
+
+#outer {
+    background-image: url('/static/redesign/assets/splash-map-5.png');
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    text-align: center;
+}
+
+#inner {
+    width: 50%;
+    margin: 0 auto;
+    padding: 5px 20px 5px 20px;
+    background-color: white;
+}
+
+.btn {
+    display: inline-block;
+    background: #009999;
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 20px;
+    color: white;
+    text-transform: uppercase;
+    border-radius: 4px;
+}
