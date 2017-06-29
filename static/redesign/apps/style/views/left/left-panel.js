@@ -68,12 +68,12 @@ define(["jquery",
 
                 //replace the LayerListView:
                 console.log( model.getLayers());
-                lv = new LayerListView({
+                this.lv = new LayerListView({
                     app: this.app,
                     model: model,
                     collection: model.getLayers()
                 });
-                this.layers.show(lv);
+                this.layers.show(this.lv);
             },
             hidePanel: function (e) {
                 $(e.target).removeClass("hide").addClass("show");

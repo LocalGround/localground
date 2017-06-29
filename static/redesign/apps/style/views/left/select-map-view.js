@@ -3,12 +3,14 @@ define(["jquery",
         "handlebars",
         "models/map",
         "collections/maps",
+        "models/layer",
+        "collections/layers",
         "apps/style/views/left/new-map-modal-view",
         "apps/style/visibility-mixin",
         "text!../../templates/left/select-map.html",
         "lib/modals/modal"
     ],
-    function ($, Marionette, Handlebars, Map, Maps, NewMap, PanelVisibilityExtensions, MapTemplate, Modal) {
+    function ($, Marionette, Handlebars, Map, Maps, Layer, Layers, NewMap, PanelVisibilityExtensions, MapTemplate, Modal) {
         'use strict';
 
         var SelectMapView = Marionette.ItemView.extend(_.extend({}, PanelVisibilityExtensions, {
@@ -100,7 +102,10 @@ define(["jquery",
             },
 
             setMapAndRender: function () {
+                var that = this;
                 this.collection.add(this.map);
+                var dataSources = this.app.dataManager.getDataSources();
+                console.log(dataSources);
                 this.modal.hide();
                 if (!this.app.selectedMapModel) {
                     this.setModel();
@@ -113,7 +118,7 @@ define(["jquery",
                 this.setCenterZoom(this.map);
                 this.setMapTypeId(this.map);
                 this.app.vent.trigger("change-map", this.map);
-                this.app.vent.trigger('create-new-layer');
+               // this.app.vent.trigger('create-new-layer');
                 
                 //TODO:
                 // 1. create new default layers by looping through data manager for
@@ -124,6 +129,45 @@ define(["jquery",
                 //    ...which will create a brand new LayerListView with the new
                 //    layers.
 
+                this.app.selectedMapModel.collection = new Layers(null, {mapID: this.app.selectedMapModel.get("id")});
+                //this.app.selectedMapModel.collection.fetch({ reset: true});
+
+                dataSources.forEach(function(dataSource) {
+                    console.log(dataSource);
+                        if (dataSource.value === "markers") {
+                            var layer = new Layer({
+                                map_id: that.app.selectedMapModel.id,
+                                data_source: dataSource.value, 
+                                layer_type: "basic",
+                                filters: {},
+                                symbols: [{
+                                    "fillColor": "#ed867d",
+                                    "width": 30,
+                                    "rule": "tbd",
+                                    "title": dataSource.name
+                                }],
+                                title: "Sites"
+                            });
+                            that.app.selectedMapModel.collection.add(layer);
+                        } else if (dataSource.value.includes("form_")){
+                            var layer = new Layer({
+                                map_id: that.app.selectedMapModel.id,
+                                data_source: dataSource.value, 
+                                layer_type: "basic",
+                                filters: {},
+                                symbols: [{
+                                    "fillColor": "#60C7CC",
+                                    "width": 30,
+                                    "rule": "tbd",
+                                    "title": dataSource.name
+                                }],
+                                title: dataSource.name
+                            });
+                            that.app.selectedMapModel.collection.add(layer);
+                        }        
+                    });
+                    console.log(this.app.selectedMapModel);
+               // this.app.vent.trigger("change-map", this.app.selectedMapModel);
             },
 
             drawOnce: function () {

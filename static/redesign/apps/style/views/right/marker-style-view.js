@@ -224,9 +224,7 @@ define(["jquery",
                                 value: log.get("col_name")
                             });
                         }
-                      
                     });
-
                 }
                 this.render();
                 if (this.dataType == "continuous") {
