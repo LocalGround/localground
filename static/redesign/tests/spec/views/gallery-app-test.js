@@ -5,10 +5,11 @@ define([
     rootDir + "apps/gallery/views/data-detail",
     rootDir + "views/toolbar-global",
     rootDir + "apps/gallery/views/toolbar-dataview",
+    rootDir + "lib/data/dataManager",
     rootDir + "collections/projects" //,
     //"tests/spec-helper"
 ],
-    function ($, GalleryApp, MediaDetail, ToolbarGlobal, ToolbarDataView, Projects) {
+    function ($, GalleryApp, MediaDetail, ToolbarGlobal, ToolbarDataView, DataManager, Projects) {
         'use strict';
         var galleryApp;
 
@@ -28,15 +29,15 @@ define([
             spyOn(GalleryApp.prototype, 'start').and.callThrough();
             spyOn(GalleryApp.prototype, 'initialize').and.callThrough();
             spyOn(GalleryApp.prototype, 'loadRegions').and.callThrough();
-            spyOn(GalleryApp.prototype, 'showGlobalToolbar').and.callThrough();
-            spyOn(GalleryApp.prototype, 'showDataToolbar').and.callThrough();
+            spyOn(GalleryApp.prototype, 'showGlobalToolbar');
+            spyOn(GalleryApp.prototype, 'showDataToolbar');
             spyOn(GalleryApp.prototype, 'showMediaList');
             spyOn(GalleryApp.prototype, 'showMediaDetail');
             spyOn(GalleryApp.prototype, 'showSuccessMessage');
             spyOn(GalleryApp.prototype, 'showWarningMessage');
             spyOn(GalleryApp.prototype, 'showFailureMessage');
 
-            spyOn(this.app.vent, 'trigger').and.callThrough();
+            spyOn(scope.app.vent, 'trigger').and.callThrough();
 
             spyOn(Projects.prototype, "fetch").and.callThrough();
 
@@ -60,35 +61,12 @@ define([
             it("Application calls methods successfully", function () {
                 expect(galleryApp).toEqual(jasmine.any(GalleryApp));
                 expect(galleryApp.initialize).toHaveBeenCalled();
-                expect(galleryApp.projects.fetch).toHaveBeenCalled();
-            });
-
-            it("Initializes subviews successfully and calls all the methods", function () {
-                galleryApp.projects.trigger('reset');
-                expect(galleryApp.loadRegions).toHaveBeenCalled();
-                expect(galleryApp.showGlobalToolbar).toHaveBeenCalled();
-                expect(galleryApp.showDataToolbar).toHaveBeenCalled();
-                expect(galleryApp.showMediaList).toHaveBeenCalled();
-                expect(galleryApp.toolbarView).toEqual(jasmine.any(ToolbarGlobal));
-                expect(galleryApp.toolbarDataView).toEqual(jasmine.any(ToolbarDataView));
-            });
-
-            it("Responds to media list trigger", function () {
-                expect(galleryApp.showMediaList).not.toHaveBeenCalled();
-                galleryApp.vent.trigger('show-detail', 3);
-                galleryApp.vent.trigger('show-list', 'audio');
-                expect(galleryApp.showMediaList).toHaveBeenCalledWith('audio');
-            });
-
-            it("Responds to media detail trigger", function () {
-                expect(galleryApp.showMediaDetail).not.toHaveBeenCalled();
-                galleryApp.vent.trigger('show-detail', 3);
-                expect(galleryApp.showMediaDetail).toHaveBeenCalledWith(3);
+                expect(galleryApp.dataManager).toEqual(jasmine.any(DataManager));
             });
 
         });
 
-        describe("App Utilities: Display the status messages", function(){
+        describe("GalleryApp: Display the status messages", function(){
             beforeEach(function(){
                 initApp(this);
             });
