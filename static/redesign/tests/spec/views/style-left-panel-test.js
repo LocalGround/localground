@@ -54,14 +54,10 @@ define([
 
             it("should initialize and render child views and regions", function () {
                 expect(Marionette.Region.prototype.show).toHaveBeenCalledWith(jasmine.any(SelectMapView));
-                expect(Marionette.Region.prototype.show).toHaveBeenCalledWith(jasmine.any(LayerListView));
                 expect(Marionette.Region.prototype.show).toHaveBeenCalledWith(jasmine.any(SkinView));
-                expect(Marionette.Region.prototype.show).toHaveBeenCalledWith(jasmine.any(PanelStylesView));
 
                 expect(SelectMapView.prototype.render).toHaveBeenCalledTimes(1);
-                expect(LayerListView.prototype.render).toHaveBeenCalledTimes(1);
                 expect(SkinView.prototype.render).toHaveBeenCalledTimes(1);
-                expect(PanelStylesView.prototype.render).toHaveBeenCalledTimes(1);
             });
         });
 
