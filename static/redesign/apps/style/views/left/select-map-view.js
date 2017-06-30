@@ -100,6 +100,7 @@ define(["jquery",
                 this.map.set("layers", layers);
 
                 dataSources.forEach(function(dataSource) {
+                    var collection = that.app.dataManager.getCollection(dataSource.value);
                         if (dataSource.value === "markers") {
                             var layer = new Layer({
                                 map_id: that.map.id,
@@ -107,7 +108,7 @@ define(["jquery",
                                 layer_type: "basic",
                                 filters: {},
                                 symbols: [{
-                                    "fillColor": "#ed867d",
+                                    "fillColor": collection.fillColor,
                                     "width": 30,
                                     "rule": "*",
                                     "title": dataSource.name
@@ -123,7 +124,7 @@ define(["jquery",
                                 layer_type: "basic",
                                 filters: {},
                                 symbols: [{
-                                    "fillColor": "#60C7CC",
+                                    "fillColor": collection.fillColor,
                                     "width": 30,
                                     "rule": "*",
                                     "title": dataSource.name
