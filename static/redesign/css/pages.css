@@ -1,15 +1,20 @@
+/* pages.css created by C Mah 6/29/2017 to use for login and registration pages.  
+*/
 @import url(https://fonts.googleapis.com/css?family=Montserrat);
+@import url(https://fonts.googleapis.com/css?family=Amatic+SC);
 
 .main-content {
     background: #EEE;
 }
+
 h1 {
     font-family: 'Montserrat';
     text-align: center;
-    padding: 100px 0 0 0;
+    padding: 60px 0 0 0;
     text-transform: uppercase;
-    font-size: 40px;
+    font-size: 80px;
     color: white;
+    font-weight: 700;
     letter-spacing: .1em;
 }
 
@@ -26,6 +31,10 @@ p {
     color: #3d3d3d;
 }
 
+#center_text {
+    text-align: center;
+}
+
 #outer {
     background-image: url('/static/redesign/assets/splash-map-5.png');
     height: 100%;
@@ -38,7 +47,7 @@ p {
     width: 50%;
     margin: 0 auto;
     padding: 5px 20px 5px 20px;
-    background-color: white;
+    background-color: #f2f2f2;
 }
 
 .btn {
@@ -50,4 +59,43 @@ p {
     color: white;
     text-transform: uppercase;
     border-radius: 4px;
+}
+
+a.logotype {
+    padding: 14px 20px 10px 0;
+    font-family: "Amatic SC";
+    letter-spacing: .1em;
+    font-size: 24px;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+.right-nav>li>a {
+    text-transform: uppercase;
+    . font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.right-nav {
+    float: right;
+    font-size: 14px;
+    list-style: none;
+    margin: 0;
+}
+
+#map-title-options nav,
+.right-nav {
+    float: right;
+    text-transform: uppercase;
+    line-height: 57px;
+    display: inline-block;
+}
+
+#map-title-options nav>div,
+.right-nav>li {
+    display: inline-block;
+    height: 57px;
+    margin: 0 10px;
+    vertical-align: top;
+    padding: 0 2px;
 }

@@ -1,3 +1,17 @@
-<p>Local Ground</p>
-<p>About</p>
-<p>Documentation</p>
+<a class="logotype" href="/">Local Ground</a>
+<ul class="right-nav">
+    <li>
+        <a href="/about">About</a>
+    </li>
+    <li>
+        <a href="/documentation">Documentation</a>
+    </li>
+    <li>
+        <a class="account" id="toggle-button"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ username }}</a>
+        <div class="dropdown-menu" style="display:none;" id="account-options">
+            <a>Your Profile</a>
+            <a>Settings</a>
+            <a href="/accounts/logout/">Logout</a>
+        </div>
+    </li>
+</ul>

@@ -1,34 +1,52 @@
-{% extends "base/base.html" %}
-{% block title %}Login{% endblock %}
-{% block content %}
-    <form method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
-        {% csrf_token %} {% if form.errors %}
-        <div class="alert-message error">
-            <p>Authentication error: Please enter a correct username and password. Note that both fields are case-sensitive.</p>
-        </div>
-        {% endif %} 
-        {% include "includes/forms/generic_form_renderer.html" %}
+<!--
+login.html - updated by C Mah 6/29/2017.  Designed to be used with top_nav.html
+login_footer.html
+-->
 
-        <fieldset id="params">
-            <!-- input type="hidden" name="next" value="{{ next }}" / -->
-            <input type="hidden" name="next" value="/" />
-            <!--div class="clearfix">
+{% extends "base/base.html" %} 
+{% block title %}Login{% endblock %} 
+
+{% block content %}
+
+<div id="outer">
+    <!--h1>Local Ground</h1-->
+
+    <div id="inner">
+        <h4>Have an account?</h4>
+
+        <form method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
+            {% csrf_token %} {% if form.errors %}
+            <div class="alert-message error">
+                <p>Authentication error: Please enter a correct username and password. Note that both fields are case-sensitive.</p>
+            </div>
+            {% endif %} {% include "includes/forms/generic_form_renderer.html" %}
+
+            <fieldset id="params">
+                <!-- input type="hidden" name="next" value="{{ next }}" / -->
+                <input type="hidden" name="next" value="/" />
+                <!--div class="clearfix">
                         <label>&nbsp;</label-->
-            <div class="input">
-                <input type="submit" value="Sign in" class="btn primary" />
-                <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
+                <div class="input">
+                    <input type="submit" value="Sign in" class="btn primary" />
+                    <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
                             <span id="google-button"></span>
                             </a>
-            </div>
+                </div>
 
-            <!--/div-->
-        </fieldset>
-    </form>
-    <p>
-        <a href="/accounts/password/reset/">Forgot your password?</a>
-    </p>
-    <p class="align">
-        {% if user.is_superuser or not ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE %} New to Local Ground? &nbsp <a href="/accounts/register/"> Create your Local Ground account</a>
-        {% endif %}
-    </p>
+                <!--/div-->
+            </fieldset>
+        </form>
+        <p>
+            <a href="/accounts/password/reset/">Forgot your password?</a>
+        </p>
+        <p class="align">
+            {% if user.is_superuser or not ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE %} New to Local Ground? &nbsp <a href="/accounts/register/"> Create your Local Ground account</a>            {% endif %}
+        </p>
+
+    </div>
+    <div>
+        <br>
+    </div>
+</div>
+
 {% endblock %}
