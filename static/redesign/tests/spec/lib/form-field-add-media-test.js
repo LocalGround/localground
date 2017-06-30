@@ -176,6 +176,7 @@ define([
                 expect($(mediaAttached[1]).attr("style")).toEqual(
                     'background: url(\'http://localhost:7777/profile/photos/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvcGhvdG9zL3NjcmVlbnNob3QyMDE3MDYxMWF0MzMxNTlwbV81MDAucG5nIzE0OTcyOTc3MzE=/\');'
                 );
+                
             });
 
             it("Renders 2 audio files if there are 2 child audio files", function () {
@@ -217,7 +218,7 @@ define([
                 expect(uiSortableHandles.children.length).toEqual(2);
                 expect(mediaContainer.children.length).toEqual(uiSortableHandles.children.length);
             });
-
+            */
         });
 
         describe("Form: Add Media Field Test: Testing that All Interactions Work Properly", function(){
@@ -259,8 +260,9 @@ define([
                     saveFunction: jasmine.any(Function)
                 });
             });
+            
         });
-
+    
         describe("Form: Attach and Detach media / models", function(){
             beforeEach(function(){
                 initSpies(this);
