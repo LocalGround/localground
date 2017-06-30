@@ -27,12 +27,16 @@ define([
             // 2) add spies for all relevant objects:
             spyOn(GalleryApp.prototype, 'start').and.callThrough();
             spyOn(GalleryApp.prototype, 'initialize').and.callThrough();
-            spyOn(GalleryApp.prototype, 'selectProjectLoadRegions').and.callThrough();
             spyOn(GalleryApp.prototype, 'loadRegions').and.callThrough();
             spyOn(GalleryApp.prototype, 'showGlobalToolbar').and.callThrough();
             spyOn(GalleryApp.prototype, 'showDataToolbar').and.callThrough();
             spyOn(GalleryApp.prototype, 'showMediaList');
             spyOn(GalleryApp.prototype, 'showMediaDetail');
+            spyOn(GalleryApp.prototype, 'showSuccessMessage');
+            spyOn(GalleryApp.prototype, 'showWarningMessage');
+            spyOn(GalleryApp.prototype, 'showFailureMessage');
+
+            spyOn(this.app.vent, 'trigger').and.callThrough();
 
             spyOn(Projects.prototype, "fetch").and.callThrough();
 
@@ -61,7 +65,6 @@ define([
 
             it("Initializes subviews successfully and calls all the methods", function () {
                 galleryApp.projects.trigger('reset');
-                expect(galleryApp.selectProjectLoadRegions).toHaveBeenCalled();
                 expect(galleryApp.loadRegions).toHaveBeenCalled();
                 expect(galleryApp.showGlobalToolbar).toHaveBeenCalled();
                 expect(galleryApp.showDataToolbar).toHaveBeenCalled();
@@ -83,5 +86,18 @@ define([
                 expect(galleryApp.showMediaDetail).toHaveBeenCalledWith(3);
             });
 
+        });
+
+        describe("App Utilities: Display the status messages", function(){
+            beforeEach(function(){
+                initApp(this);
+            });
+
+            it("Shows the Success message", function(){
+                expect(galleryApp.showSuccessMessage).toHaveBeenCalledTimes(0);
+                this.app.vent.trigger('success-message', "Success Message Called");
+                expect(galleryApp.showSuccessMessage).toHaveBeenCalledTimes(1);
+                expect(1).toEqual(-1);
+            });
         });
     });

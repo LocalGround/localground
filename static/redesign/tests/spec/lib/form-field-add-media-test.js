@@ -148,7 +148,6 @@ define([
                 initSpies(this);
                 initMarkers();
             });
-/*
             it("Only renders a plus button if no children exist", function () {
                 initForm(this, markerPlain);
                 var mediaContainer = fixture.find(".attached-media-container");
@@ -316,7 +315,7 @@ define([
                 expect(markerPhotos.detach).toHaveBeenCalledTimes(1);
             });
 
-            /*
+            ///*
             it("Executes attachMedia successfully", function(){
 
                 initForm(this, markerPlain);
@@ -326,7 +325,7 @@ define([
                 expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(1);
 
             });
-            */
+            //*/
         });
 
     });
