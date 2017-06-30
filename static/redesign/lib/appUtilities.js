@@ -166,6 +166,28 @@ define(["jquery"],
                     message: message
                 });
             },
+            
+            showSuccessMessage: function (message) {
+                if ($(".success-message").length == 0) {
+                    $('body').append($('<div class="success-message"></div>'));
+                }
+                $(".success-message").html(message).fadeIn(200).delay(3000).fadeOut(1500);
+            },
+
+            showFailureMessage: function (message) {
+                if ($(".failure-message").length == 0) {
+                    $('body').append($('<div class="failure-message"></div>'));
+                }
+                $(".failure-message").html(message).fadeIn(200).delay(3000).fadeOut(1500);
+            },
+
+            showWarningMessage: function (message) {
+                if ($(".warning-message").length == 0) {
+                    $('body').append($('<div class="warning-message"></div>'));
+                }
+                $(".warning-message").html(message).fadeIn(200).delay(3000).fadeOut(1500);
+            },
+
             initAJAX: function (options) {
                 // adding some global AJAX event handlers for showing messages and
                 // appending the Django authorization token:

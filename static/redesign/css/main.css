@@ -870,7 +870,7 @@ tbody .failure-message, tbody .success-message {
 .warning-message {
     color: #666622;
     background-color: #f2f2de;
-    border: solid 1px #dd6;
+    border: solid 1px #bb6;
     width: 500px;
     top: 100px;
     left: 30%;
