@@ -120,6 +120,7 @@ define([
                 model = new Model();
             model.collection = this.currentCollection;
             model.set("project_id", this.getProjectID());
+            model.set("overlay_type", this.currentCollection.overlay_type);
             return model;
         },
 

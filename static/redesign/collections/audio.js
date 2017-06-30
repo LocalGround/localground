@@ -5,6 +5,7 @@ define(["backbone", "models/audio", "collections/base", "collections/basePageabl
      */
     var AudioFiles = BasePageable.extend({
         model: Audio,
+        overlay_type: 'audio',
         fillColor: "#62929E",
         size: 12,
         key: 'audio',
