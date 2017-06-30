@@ -211,6 +211,36 @@
 {{/ifequal}}
 
 {{#ifequal dataType "basic"}}
+<table class="color-properties">
+        <tbody>            
+            <tr>
+                <td>Symbol Shape</td>
+                <td>
+                    <select class="global-marker-shape marker-style-select">
+                    {{#each icons}}
+                        <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
+                    {{/each}}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Width</td>
+                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>
+            </tr>
+            <tr>
+                <td>Stroke Weight</td>
+                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>
+            </tr>
+            <tr>   
+                <td>Stroke Color</td>
+                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: #{{metadata.strokeColor}} " aria-hidden="true">
+                    </i>
+                    </td>
+            </tr>
+            <tr>
+                <td>Stroke Opacity</td>
+                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>
+            </tr>
         </tbody>
     </table>
 </div>

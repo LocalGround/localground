@@ -30,6 +30,7 @@ define(["marionette",
             },
 
             trackChanges: function () {
+                console.log("source code has changed");
                 // for efficiency: will only apply "updatedModel" code if
                 // something has actually changed in the textbox:
                 this.hasChanged = true;

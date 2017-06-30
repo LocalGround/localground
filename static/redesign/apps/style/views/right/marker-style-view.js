@@ -344,7 +344,9 @@ define(["jquery",
                     "shape": "circle",
                     "fillColor": "#60c7cc"
                 });
+                console.log("before adding new symbols", this.collection);
                 this.collection = this.layerDraft.simple;
+                console.log("after adding new symbols",this.collection);
                 console.log('simple:', this.layerDraft.simple.toJSON());
                 this.model.set("symbols", this.layerDraft.simple.toJSON());
                 this.updateMap();
