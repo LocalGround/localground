@@ -33,9 +33,10 @@ define([
             spyOn(GalleryApp.prototype, 'showDataToolbar');
             spyOn(GalleryApp.prototype, 'showMediaList');
             spyOn(GalleryApp.prototype, 'showMediaDetail');
-            spyOn(GalleryApp.prototype, 'showSuccessMessage');
-            spyOn(GalleryApp.prototype, 'showWarningMessage');
-            spyOn(GalleryApp.prototype, 'showFailureMessage');
+            spyOn(GalleryApp.prototype, 'showSuccessMessage').and.callThrough();
+            spyOn(GalleryApp.prototype, 'showWarningMessage').and.callThrough();
+            spyOn(GalleryApp.prototype, 'showFailureMessage').and.callThrough();
+            spyOn(GalleryApp.prototype, 'addMessageListeners').and.callThrough();
 
             spyOn(scope.app.vent, 'trigger').and.callThrough();
 
@@ -62,6 +63,7 @@ define([
                 expect(galleryApp).toEqual(jasmine.any(GalleryApp));
                 expect(galleryApp.initialize).toHaveBeenCalled();
                 expect(galleryApp.dataManager).toEqual(jasmine.any(DataManager));
+                expect(galleryApp.addMessageListeners).toHaveBeenCalled();
             });
 
         });
@@ -71,11 +73,31 @@ define([
                 initApp(this);
             });
 
+            afterEach(function () {
+                //called after each "it" test
+                $("#sandbox").remove();
+                Backbone.history.stop();
+            });
+
             it("Shows the Success message", function(){
                 expect(galleryApp.showSuccessMessage).toHaveBeenCalledTimes(0);
-                this.app.vent.trigger('success-message', "Success Message Called");
+                galleryApp.vent.trigger('success-message', "Success Message Called");
                 expect(galleryApp.showSuccessMessage).toHaveBeenCalledTimes(1);
-                expect(1).toEqual(-1);
+                expect(galleryApp.showSuccessMessage).toHaveBeenCalledWith("Success Message Called");
+            });
+
+            it("Shows the Warning message", function(){
+                expect(galleryApp.showWarningMessage).toHaveBeenCalledTimes(0);
+                galleryApp.vent.trigger('warning-message', "Warning Message Called");
+                expect(galleryApp.showWarningMessage).toHaveBeenCalledTimes(1);
+                expect(galleryApp.showWarningMessage).toHaveBeenCalledWith("Warning Message Called");
+            });
+
+            it("Shows the Failure message", function(){
+                expect(galleryApp.showFailureMessage).toHaveBeenCalledTimes(0);
+                galleryApp.vent.trigger('error-message', "Failure Message Called");
+                expect(galleryApp.showFailureMessage).toHaveBeenCalledTimes(1);
+                expect(galleryApp.showFailureMessage).toHaveBeenCalledWith("Failure Message Called");
             });
         });
     });
