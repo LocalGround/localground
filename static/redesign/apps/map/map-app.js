@@ -39,6 +39,7 @@ define([
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
+            this.addMessageListeners();
             this.router = new Router({ app: this});
             Backbone.history.start();
         },

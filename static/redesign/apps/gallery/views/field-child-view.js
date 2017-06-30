@@ -205,6 +205,7 @@ define([
                 console.log('saving...');
                 this.model.save(null, {
                     success: function () {
+                    that.app.vent.trigger('success-message', "Child field has been saved.");
                         that.parent.renderWithSaveMessages();
 
                     },
@@ -212,6 +213,7 @@ define([
                         messages = JSON.parse(response.responseText);
                         that.model.serverErrorMessage = messages.detail;
                         that.parent.renderWithSaveMessages();
+                        that.app.vent.trigger('error-message', "Child field has not been saved.");
                     }
                 });
             } else {

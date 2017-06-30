@@ -15,15 +15,12 @@ define(["jquery",
             childViewContainer: "#userList",
             template: Handlebars.compile(ItemTemplate),
             events: {
-                //'click .delete_project': 'deleteProject',
-                //'click .save-project-settings': 'saveProjectSettings',
                 'click .new_user_button': 'addUserButton',
                 'click .delete-project-user': 'removeRow',
                 'blur #projectName': 'generateSlug'
             },
 
             slugError: null,
-            projectSaveSuccess: null,
 
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -87,7 +84,7 @@ define(["jquery",
                     helpers.projectUsers = this.model.projectUsers.toJSON();
                 }
                 helpers.slugError = this.slugError;
-                helpers.projectSaveSuccess = this.projectSaveSuccess;
+                //helpers.projectSaveSuccess = this.projectSaveSuccess;
                 return helpers;
             },
 
@@ -104,7 +101,6 @@ define(["jquery",
                 if (this.blankInputs()) {
                     return;
                 }
-                this.projectSaveSuccess = null;
                 this.model.set('name', projectName);
                 this.model.set('access_authority', shareType);
                 this.model.set('tags', tags);
@@ -116,8 +112,8 @@ define(["jquery",
                         that.createNewProjectUsers();
                         that.slugError = null;
                         console.log(response);
-                        that.projectSaveSuccess = "Project Saved!";
                         that.render();
+                        that.app.vent.trigger('success-message', "Project Saved.");
                     },
                     error: function (model, response){
                         var messages = JSON.parse(response.responseText);

@@ -812,6 +812,7 @@ span.action.tag:hover, a.action.tag:hover {
 .success-message, .failure-message, .warning-message {
     position: absolute;
     display: none;
+    z-index: 1000;
 }
 .create-form .failure-message, .create-form .success-message {
     display: block;
@@ -848,7 +849,6 @@ tbody .failure-message, tbody .success-message {
     width: 500px;
     top: 100px;
     left: 30%;
-    z-index: 100;
     padding: 20px;
     border-radius: 8px;
     border-width: 2px;
@@ -861,7 +861,6 @@ tbody .failure-message, tbody .success-message {
     width: 500px;
     top: 100px;
     left: 30%;
-    z-index: 100;
     padding: 20px;
     border-radius: 8px;
     border-width: 2px;
@@ -874,7 +873,6 @@ tbody .failure-message, tbody .success-message {
     width: 500px;
     top: 100px;
     left: 30%;
-    z-index: 100;
     padding: 20px;
     border-radius: 8px;
     border-width: 2px;

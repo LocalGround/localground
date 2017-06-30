@@ -42,9 +42,7 @@ define([
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
             this.listenTo(this.vent, 'hide-detail', this.hideMediaDetail);
             this.listenTo(this.vent, 'show-list', this.showMediaList);
-            this.listenTo(this.vent, 'success-message', this.showSuccessMessage);
-            this.listenTo(this.vent, 'warning-message', this.showWarningMessage);
-            this.listenTo(this.vent, 'error-message', this.showWarningMessage);
+            this.addMessageListeners();
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);

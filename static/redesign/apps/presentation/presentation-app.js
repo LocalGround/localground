@@ -44,6 +44,7 @@ define([
             this.listenTo(this.vent, 'fetch-map', this.fetchMap);
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
+            this.addMessageListeners();
         },
         fetchErrors: false,
         getMode: function () {

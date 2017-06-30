@@ -7,6 +7,13 @@ define(["jquery"],
     function ($) {
         "use strict";
         return {
+
+            addMessageListeners: function(){
+                this.listenTo(this.vent, 'success-message', this.showSuccessMessage);
+                this.listenTo(this.vent, 'warning-message', this.showWarningMessage);
+                this.listenTo(this.vent, 'error-message', this.showWarningMessage);
+            },
+
             saveState: function (key, obj, replace) {
                 this.saveToLocalStorage(key, obj, replace);
             },
@@ -166,7 +173,7 @@ define(["jquery"],
                     message: message
                 });
             },
-            
+
             showSuccessMessage: function (message) {
                 if ($(".success-message").length == 0) {
                     $('body').append($('<div class="success-message"></div>'));
