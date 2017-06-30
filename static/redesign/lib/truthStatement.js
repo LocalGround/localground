@@ -106,6 +106,9 @@ define(["jquery"], function ($) {
         };
 
         this.truthTest = function (model) {
+            if (this.operator == '*') {
+                return true;
+            }
             var returnVal = false,
                 modelVal = model.get(this.key),
                 idx = -1;
@@ -113,9 +116,7 @@ define(["jquery"], function ($) {
                 return false;
             }
             modelVal = this.convertType(modelVal);
-            if (this.operator == '*') {
-                returnVal = true;
-            } else if (this.operator == '=') {
+            if (this.operator == '=') {
                 returnVal = modelVal == this.val;
             } else if (this.operator == '>') {
                 returnVal = modelVal > this.val;
