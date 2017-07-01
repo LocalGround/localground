@@ -138,6 +138,7 @@ define(["jquery",
 */
             templateHelpers: function () {
                 var metadata = this.model.get("metadata");
+                console.log(metadata);
                 var helpers = {
                     metadata: metadata,
                     dataType: this.dataType,
@@ -337,13 +338,18 @@ define(["jquery",
                 this.categoricalData = this.app.dataManager.getData(key);
                 console.log(this.categoricalData);
                 var owner = this.categoricalData.collection.models[0].get("owner");
-                this.layerDraft.simple = new Symbols();
-                this.layerDraft.simple.add({
-                    "rule": "owner" + " = " + owner,
-                    "title": name,
-                    "shape": "circle",
-                    "fillColor": "#60c7cc"
-                });
+
+                if (this.model.getSymbols().length > 0) {
+                    this.layerDraft.simple = this.model.getSymbols();
+                } else {
+                    this.layerDraft.simple = new Symbols([{
+                        "rule": "*",
+                        "title": name,
+                        "shape": "circle",
+                        "fillColor": "#60c7cc",
+                        "id": 1
+                    }]);
+                }
                 console.log("before adding new symbols", this.collection);
                 this.collection = this.layerDraft.simple;
                 console.log("after adding new symbols",this.collection);

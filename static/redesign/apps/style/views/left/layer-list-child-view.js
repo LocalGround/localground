@@ -35,7 +35,7 @@ define(["jquery",
             sendCollection: function () {
                // this.$el.addClass('selected-layer');
                 this.$el.attr('id', this.model.id);
-                console.log(this.model.id);
+                console.log(this.model, this.model.id);
                 this.app.vent.trigger('handle-selected-layer', this.model.id);
                 this.app.vent.trigger("edit-layer", this.model, this.collection);
             },
