@@ -23,8 +23,9 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
             initialize: function (data, opts) {
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);
-                this.set("shape", this.get("shape") || "photo");
+                this.set("shape", this.get("shape") || "circle");
                 this.set("icon", new Icon(this.toJSON()));
+                this.set("shape", this.get("icon").key);
                 this.modelMap = {};
                 if (_.isUndefined(this.get("rule"))) {
                     throw new Error("rule must be defined");

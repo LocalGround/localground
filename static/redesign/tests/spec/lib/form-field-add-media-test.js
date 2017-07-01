@@ -137,7 +137,7 @@ define([
             it("Listens for 'add-models-to-marker' event", function () {
                 initForm(this, markerPlain);
                 expect(MediaEditor.prototype.attachModels).toHaveBeenCalledTimes(0);
-                form.app.vent.trigger('add-models-to-marker', [this.photos.at(0), this.photos.at(1)]);
+                markerPlain.trigger('add-models-to-marker', [this.photos.at(0), this.photos.at(1)]);
                 expect(MediaEditor.prototype.attachModels).toHaveBeenCalledTimes(1);
             });
         });
@@ -148,6 +148,7 @@ define([
                 initSpies(this);
                 initMarkers();
             });
+
             it("Only renders a plus button if no children exist", function () {
                 initForm(this, markerPlain);
                 var mediaContainer = fixture.find(".attached-media-container");
@@ -175,6 +176,7 @@ define([
                 expect($(mediaAttached[1]).attr("style")).toEqual(
                     'background: url(\'http://localhost:7777/profile/photos/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvcGhvdG9zL3NjcmVlbnNob3QyMDE3MDYxMWF0MzMxNTlwbV81MDAucG5nIzE0OTcyOTc3MzE=/\');'
                 );
+                
             });
 
             it("Renders 2 audio files if there are 2 child audio files", function () {
@@ -216,7 +218,6 @@ define([
                 expect(uiSortableHandles.children.length).toEqual(2);
                 expect(mediaContainer.children.length).toEqual(uiSortableHandles.children.length);
             });
-
         });
 
         describe("Form: Add Media Field Test: Testing that All Interactions Work Properly", function(){
@@ -258,8 +259,9 @@ define([
                     saveFunction: jasmine.any(Function)
                 });
             });
+            
         });
-
+    
         describe("Form: Attach and Detach media / models", function(){
             beforeEach(function(){
                 initSpies(this);
@@ -278,15 +280,10 @@ define([
                 */
                 initForm(this, markerPlain);
                 expect(MediaEditor.prototype.render).toHaveBeenCalledTimes(1);
-                expect(MediaEditor.prototype.attachModels).toHaveBeenCalledTimes(0);
-                expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(0);
-                expect(form.app.vent.trigger).not.toHaveBeenCalledWith('hide-modal');
-                form.app.vent.trigger('add-models-to-marker', [this.photos.at(0), this.photos.at(1)]);
-                expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(1);
-                expect(MediaEditor.prototype.attachModels).toHaveBeenCalledTimes(1);
-                expect(form.app.vent.trigger).toHaveBeenCalledWith('hide-modal');
+                expect(this.app.vent.trigger).not.toHaveBeenCalledWith('hide-modal');
+                markerPlain.trigger('add-models-to-marker', [this.photos.at(0), this.photos.at(1)]);
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('hide-modal');
                 expect(MediaEditor.prototype.render).toHaveBeenCalledTimes(1);
-
             });
 
             it("Executes detachModel successfully", function(){
@@ -315,17 +312,6 @@ define([
                 expect(markerPhotos.detach).toHaveBeenCalledTimes(1);
             });
 
-            ///*
-            it("Executes attachMedia successfully", function(){
-
-                initForm(this, markerPlain);
-                expect(MediaEditor.prototype.render).toHaveBeenCalledTimes(1);
-                expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(0);
-                form.save([this.photos.at(0), this.photos.at(1)]);
-                expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(1);
-
-            });
-            //*/
         });
 
     });

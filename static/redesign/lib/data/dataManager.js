@@ -43,7 +43,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     { value: "markers", name: "Sites" }
                 ];
                 _.each(this.dataDictionary, function (entry, key) {
-                    if (key.indexOf("form_") != -1) {
+                    if (key.includes("form_")) {
                         dataSources.push({
                             value: key,
                             name: entry.name

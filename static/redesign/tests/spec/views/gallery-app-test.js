@@ -73,9 +73,8 @@ define([
 
             it("Shows the Success message", function(){
                 expect(galleryApp.showSuccessMessage).toHaveBeenCalledTimes(0);
-                this.app.vent.trigger('success-message', "Success Message Called");
+                galleryApp.vent.trigger('success-message', "Success Message Called");
                 expect(galleryApp.showSuccessMessage).toHaveBeenCalledTimes(1);
-                expect(1).toEqual(-1);
             });
         });
     });

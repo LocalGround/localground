@@ -111,14 +111,12 @@ define(["jquery",
                     success:function(model, response){
                         that.createNewProjectUsers();
                         that.slugError = null;
-                        console.log(response);
                         that.render();
                         that.app.vent.trigger('success-message', "Project Saved.");
                         that.app.vent.trigger('hide-modal');
                     },
                     error: function (model, response){
                         var messages = JSON.parse(response.responseText);
-                        console.log(messages);
                         if (messages.slug && messages.slug.length > 0) {
                             that.slugError = messages.slug[0];
                         }

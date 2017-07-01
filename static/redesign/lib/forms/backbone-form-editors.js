@@ -188,8 +188,7 @@ define([
         },
         attachModels: function (models) {
             var errors = this.form.commit({ validate: true }),
-            that = this,
-            isNew = this.model.get("id") ? false : true;
+                that = this;
             if (errors) {
                 console.log("errors: ", errors);
                 return;
@@ -201,7 +200,12 @@ define([
             });
             this.app.vent.trigger('hide-modal');
         },
-
+        /*
+        * Attach Media and Detach Model calls the following that causes
+        * the current unsaved values of fields in HTML form to be reset to stored values:
+        *
+        * that.model.fetch({reset: true});
+        */
         attachMedia: function (models) {
             var that = this,
                 i,
@@ -226,8 +230,8 @@ define([
                 return;
             }
             var errors = this.form.commit({ validate: true }),
-            that = this,
-            isNew = this.model.get("id") ? false : true;
+                that = this,
+                isNew = this.model.get("id") ? false : true;
             if (errors) {
                 console.log("errors: ", errors);
                 return;

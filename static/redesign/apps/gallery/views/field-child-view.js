@@ -11,6 +11,9 @@ define([
         choicesList: [],
         initialize: function (opts) {
             _.extend(this, opts);
+            if (!this.app) {
+                this.app = this.parent.app;
+            }
             this.setRatingsFromModel();
             this.setChoicesFromModel();
         },
@@ -185,7 +188,6 @@ define([
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
                 messages;
-            console.log(fieldType);
             this.validate(fieldName, fieldType);
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);

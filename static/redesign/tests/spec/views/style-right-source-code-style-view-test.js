@@ -91,11 +91,14 @@ define([
                 expect(window.alert).toHaveBeenCalledWith("Invalid JSON. Please revert and try again.");
             });
 
-            it("throws error when invalid shape supplied by user", function () {
-                fixture.find("textarea.source-code").html('[{"shape": "dog"}]');
+            it("defaults to circle when invalid shape supplied by user", function () {
+                fixture.find("textarea.source-code").html('[{"title": "blah", "shape": "dog", "rule": "*"}]');
                 fixture.find("textarea.source-code").trigger('input');
                 fixture.find("textarea.source-code").trigger('blur');
-                expect(window.alert).toHaveBeenCalledWith("Invalid icon shape specified. Please revert and try again.");
+                this.layer.rebuildSymbolMap();
+                var symbol = this.layer.getSymbols().at(0);
+                expect(symbol.get("shape")).toEqual("circle");
+                //expect(window.alert).toHaveBeenCalledWith("Invalid icon shape specified. Please revert and try again.");
             });
 
             it("Updates symbol correctly when valid JSON supplied", function () {
@@ -120,6 +123,7 @@ define([
                 expect(SourceCodeStyleView.prototype.trackChanges).toHaveBeenCalledTimes(1);
                 expect(sourceCodeStyleView.hasChanged).toBeTruthy();
                 fixture.find("textarea.source-code").trigger('blur');
+                this.layer.rebuildSymbolMap();
 
                 //check that appropriate functions / triggers have been called:
                 expect(SourceCodeStyleView.prototype.updateModel).toHaveBeenCalledTimes(1);
