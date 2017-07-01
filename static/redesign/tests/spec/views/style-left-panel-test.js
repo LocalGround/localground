@@ -5,9 +5,10 @@ define([
     rootDir + "apps/style/views/left/select-map-view",
     rootDir + "apps/style/views/left/layer-list-view",
     rootDir + "apps/style/views/left/skin-view",
-    rootDir + "apps/style/views/left/panel-styles-view"
+    rootDir + "apps/style/views/left/panel-styles-view",
+    rootDir + "lib/maps/overlays/infobubbles/base"
 ],
-    function (Marionette, LeftPanelView, SelectMapView, LayerListView, SkinView, PanelStylesView) {
+    function (Marionette, LeftPanelView, SelectMapView, LayerListView, SkinView, PanelStylesView, InfoBubble) {
         'use strict';
         var leftPanel, fixture, initView;
 
@@ -25,6 +26,8 @@ define([
             spyOn(LeftPanelView.prototype, 'handleNewMap').and.callThrough();
             spyOn(LeftPanelView.prototype, 'showPanel').and.callThrough();
             spyOn(LeftPanelView.prototype, 'hidePanel').and.callThrough();
+            spyOn(InfoBubble.prototype, 'initialize'); //don't call through
+
 
 
             // 2) initialize rightPanel object:
@@ -75,7 +78,9 @@ define([
                 expect(leftPanel.model).toEqual(this.testMap);
 
                 //has correct child (region) templates
-                expect(fixture).toContainElement('#map-select');
+                console.log(fixture.html());
+                expect(fixture).not.toContainElement('#map-select');
+                expect(fixture).toContainText('Click the plus sign to create a new map');
                 expect(fixture).toContainElement('.bordered-section');
             });
 
