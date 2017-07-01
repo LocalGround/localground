@@ -10,7 +10,7 @@ define(["marionette",
         PanelVisibilityExtensions, LayerListTemplate) {
         'use strict';
 
-        var SelectMapView = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
+        var LayerListView = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
             stateKey: 'layer_list',
             template: Handlebars.compile(LayerListTemplate),
             isShowing: true,
@@ -27,15 +27,12 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.model = opts.model;
-                if (this.app.currentMap) {
-                    this.displayLayers(this.app.currentMap);
-                }
+    
                 this.restoreState();
 
-                this.listenTo(this.app.vent, 'init-collection', this.displayLayers);
-                this.listenTo(this.app.vent, 'change-map', this.displayLayers);
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
                 this.listenTo(this.app.vent, 'handle-selected-layer', this.handleSelectedLayer);
+                this.listenTo(this.app.vent, 'create-new-layer', this.createNewLayer);
             },
 
             events: function () {
@@ -52,14 +49,7 @@ define(["marionette",
                 this.$el.find('.layer-column').removeClass('selected-layer');
                 this.$el.find('#' + id).addClass('selected-layer');
             },
-            //display layers when map is changed
-            displayLayers: function (selectedMapModel) {
-                if(!selectedMapModel) {return;}
-                this.collection = new Layers(null, {mapID: selectedMapModel.get("id")});
-                this.collection.fetch({ reset: true});
-                this.listenTo(this.collection, 'reset', this.render);
-                this.listenTo(this.collection, 'add', this.render);
-            },
+            
             createNewLayer: function (e) {
                 console.log("Altered?: ", this.app.layerHasBeenAltered)
                 console.log("Saved?: ", this.app.layerHasBeenSaved)
@@ -76,7 +66,7 @@ define(["marionette",
                 var layer = new Layer({
                     map_id: this.app.selectedMapModel.id,
                     data_source: "photos", //default
-                    layer_type: "categorical",
+                    layer_type: "basic",
                     filters: {},
                     symbols: [{
                         "fillColor": "#7075FF",
@@ -84,15 +74,17 @@ define(["marionette",
                         "rule": "sculptures > 0",
                         "title": "At least 1 sculpture"
                     }],
-                    title: "untitled"
+                    title: "Layer 1"
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);
                 this.showSection();
+                /*
                 if (e) {
                     e.preventDefault();
                 }
+                */
             }
 
         }));
-        return SelectMapView;
+        return LayerListView;
     });

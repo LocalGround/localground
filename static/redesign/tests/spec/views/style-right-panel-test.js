@@ -46,7 +46,7 @@ define([
 
             it("should call createLayer()", function () {
                 expect(rightPanel.createLayer).toHaveBeenCalledTimes(0);
-                rightPanel.app.vent.trigger('edit-layer', this.layer);
+                rightPanel.app.vent.trigger('edit-layer', this.layer, rightPanel.collection);
                 expect(rightPanel.createLayer).toHaveBeenCalledTimes(1);
 
                 //has correct model

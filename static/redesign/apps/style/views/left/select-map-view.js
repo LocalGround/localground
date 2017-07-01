@@ -3,12 +3,14 @@ define(["jquery",
         "handlebars",
         "models/map",
         "collections/maps",
+        "models/layer",
+        "collections/layers",
         "apps/style/views/left/new-map-modal-view",
         "apps/style/visibility-mixin",
         "text!../../templates/left/select-map.html",
         "lib/modals/modal"
     ],
-    function ($, Marionette, Handlebars, Map, Maps, NewMap, PanelVisibilityExtensions, MapTemplate, Modal) {
+    function ($, Marionette, Handlebars, Map, Maps, Layer, Layers, NewMap, PanelVisibilityExtensions, MapTemplate, Modal) {
         'use strict';
 
         var SelectMapView = Marionette.ItemView.extend(_.extend({}, PanelVisibilityExtensions, {
@@ -25,7 +27,7 @@ define(["jquery",
             events: function () {
                 return _.extend(
                     {
-                        'change #map-select': 'changeMap',
+                        'change #map-select': 'setActiveMap',
                         'click .add-map': 'showAddMapModal'
                     },
                     PanelVisibilityExtensions.events
@@ -41,31 +43,17 @@ define(["jquery",
                     // /api/0/maps/ API Endpoint gets built:
                     this.collection = new Maps();
                     this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
-                    this.collection.fetch({
-                        reset: true,
-                        success: function (collection) {
-                            // setting the current model from 'success' due to asynchronicity
-                            that.setModel();
-                            that.app.vent.trigger("init-collection");
-                        }
-                    });
+                    this.collection.fetch({ reset: true });
                 } else {
-                    this.setModel();
                     this.drawOnce();
                 }
                 this.modal = new Modal();
 
                 this.listenTo(this.collection, 'reset', this.drawOnce);
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
-                this.listenTo(this.app.vent, 'update-map-list', this.updateMapList);
+                this.listenTo(this.app.vent, 'update-map-list', this.setActiveMap);
             },
 
-            setModel: function () {
-                if (this.collection.length > 0 ) {
-                    this.app.selectedMapModel = this.collection.at(0);
-                    //this.app.selectedMapModel = this.model;
-                }
-            },
 
             newMap: function (mapAttrs) {
                 var that = this,
@@ -84,8 +72,7 @@ define(["jquery",
                     zoom: this.app.getZoom(),
                     project_id: this.app.getProjectID()
                 });
-              
-                
+
                 this.map.save(null, {
                     success: this.setMapAndRender.bind(this),
                     error: function (model, response){
@@ -96,58 +83,79 @@ define(["jquery",
                             console.log("should have error message", that.slugError);
                         }
                         that.app.vent.trigger("send-modal-error", that.slugError);
-                    } 
+                    }
                 });
             },
 
             setMapAndRender: function () {
+                var that = this;
                 this.collection.add(this.map);
-                this.modal.hide();
-                if (!this.app.selectedMapModel) {
-                    this.setModel();
-                }
-                this.app.selectedMapModel = this.map;
+                var dataSources = this.app.dataManager.getDataSources();
+                this.modal.hide();               
                 this.showSection();
                 this.render();
                 this.$el.find('#map-select').val(this.map.id);
                 
-                this.setCenterZoom(this.map);
-                this.setMapTypeId(this.map);
-                this.app.vent.trigger("change-map", this.map);
-                this.app.vent.trigger("hide-right-panel");
+                var layers = new Layers(null, {mapID: this.app.selectedMapModel.get("id")});
+                this.map.set("layers", layers);
 
+                dataSources.forEach(function(dataSource) {
+                    var collection = that.app.dataManager.getCollection(dataSource.value);
+                        if (dataSource.value === "markers") {
+                            var layer = new Layer({
+                                map_id: that.map.id,
+                                data_source: dataSource.value, 
+                                layer_type: "basic",
+                                filters: {},
+                                symbols: [{
+                                    "fillColor": collection.fillColor,
+                                    "width": 30,
+                                    "rule": "*",
+                                    "title": dataSource.name
+                                }],
+                                title: "Sites"
+                            });
+                            layers.add(layer);
+                            layer.save();
+                        } else if (dataSource.value.includes("form_")){
+                            var layer = new Layer({
+                                map_id: that.map.id,
+                                data_source: dataSource.value, 
+                                layer_type: "basic",
+                                filters: {},
+                                symbols: [{
+                                    "fillColor": collection.fillColor,
+                                    "width": 30,
+                                    "rule": "*",
+                                    "title": dataSource.name
+                                }],
+                                title: dataSource.name
+                            });
+                            layers.add(layer);
+                            layer.save();
+                        }});
+                this.app.vent.trigger("change-map", this.map);
             },
 
             drawOnce: function () {
                 this.render();
+                this.setActiveMap();
+            },
+
+            setActiveMap: function () {
                 if (this.collection.length == 0) {
                     return;
                 }
-                var $selected = this.$el.find("#map-select").val(),
-                    selectedMapModel = this.collection.get($selected);
-
-                this.setCenterZoom(selectedMapModel);
-                this.setMapTypeId(selectedMapModel);
-                this.app.vent.trigger("change-map", selectedMapModel);
-            },
-
-            changeMap: function (e) {
-                var id = $(e.target).val(),
-                    selectedMapModel = this.collection.get(id);
-
-                this.setCenterZoom(selectedMapModel);
-                this.setMapTypeId(selectedMapModel);
-                this.app.vent.trigger("change-map", selectedMapModel);
-                this.app.vent.trigger("hide-right-panel");
-            },
-
-            updateMapList: function () {
                 var id = this.$el.find('#map-select').val(),
-                selectedMapModel = this.collection.get(id);
-
-                this.setCenterZoom(selectedMapModel);
-                this.setMapTypeId(selectedMapModel);
-                this.app.vent.trigger("change-map", selectedMapModel);
+                    that = this,
+                    selectedMapModel = this.collection.get(id);
+                //re-fetch map from server so that it also returns the layers:
+                selectedMapModel.fetch({ success: function () {
+                    that.setCenterZoom(selectedMapModel);
+                    that.setMapTypeId(selectedMapModel);
+                    that.app.vent.trigger("change-map", selectedMapModel);
+                    that.app.vent.trigger("hide-right-panel");
+                }});
             },
 
             showAddMapModal: function () {

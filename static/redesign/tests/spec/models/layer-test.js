@@ -123,6 +123,7 @@ define([
                     "title": "dog",
                     "rule": "b = 5"
                 }]);
+                layer.rebuildSymbolMap();
                 expect(Layer.prototype.buildSymbolMap).toHaveBeenCalledTimes(2);
                 expect(layer.getSymbols().length).toEqual(2);
                 expect(layer.getSymbols().length).toEqual(2);

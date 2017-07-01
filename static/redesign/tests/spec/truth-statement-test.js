@@ -163,7 +163,8 @@ define(["jquery", "lib/truthStatement", "tests/spec-helper"], function ($, Truth
                 "id <= 3": 3,
                 "id >= 4": 0,
                 "id > 2": 1,
-                "id = 2": 1
+                "id = 2": 1,
+                "*": 3
             },
             s = new TruthStatement(),
             key = null,
@@ -206,6 +207,7 @@ define(["jquery", "lib/truthStatement", "tests/spec-helper"], function ($, Truth
                         ++matches;
                     }
                 });
+                console.log(key, matches, match_dictionary[key]);
                 expect(matches).toEqual(match_dictionary[key]);
             });
         }

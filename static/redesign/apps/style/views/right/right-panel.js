@@ -64,6 +64,7 @@ define(["jquery",
                 this.filterRules.show(this.frv);
                 this.app.vent.trigger("re-render");
                 this.updateSourceCode();
+                this.saveLayer();
             },
 
             updateSourceCode: function () {

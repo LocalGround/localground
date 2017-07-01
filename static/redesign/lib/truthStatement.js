@@ -15,6 +15,10 @@ define(["jquery"], function ($) {
         this.validConjunctions = ['and', 'or'];
 
         this.parseStatement = function (statement, conjunction) {
+            if (statement === "*") {
+                this.operator = "*";
+                return;
+            }
             this.setTokens(statement);
             this.key = this.tokens[0].trim();
             this.setOperator(this.tokens[1].trim());
@@ -102,6 +106,9 @@ define(["jquery"], function ($) {
         };
 
         this.truthTest = function (model) {
+            if (this.operator == '*') {
+                return true;
+            }
             var returnVal = false,
                 modelVal = model.get(this.key),
                 idx = -1;

@@ -388,7 +388,7 @@ define([
                 newSpreadsheet.collection = this.form_1;
                 newSpreadsheet.renderSpreadsheet();
                 //these counts don't make sense. TODO: revisit.
-                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(4);
+                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(3);
             });
 
             it("Go through the Rating renderer", function () {

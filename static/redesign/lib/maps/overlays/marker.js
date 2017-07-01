@@ -17,6 +17,7 @@ define([
         },
 
         initInfoBubble: function (opts) {
+            //TO DO: make one infobubble for entire basemap, not at the marker-level.
             this.infoBubble = new MarkerBubble(_.extend({overlay: this}, opts));
         },
 
