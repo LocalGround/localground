@@ -152,8 +152,6 @@ define([
                 expect(categoricalMarkerStyleView.updateStrokeOpacity).toHaveBeenCalledTimes(3);
                 expect(categoricalMarkerStyleView.updateMetadata).toHaveBeenCalledTimes(3);
             });
-            
-
 
 
             it("should build the correct column list", function () {
@@ -161,10 +159,10 @@ define([
                 //(categorical or continuous is built, 
                 //when the data source is a form).
                 //Having trouble working with the spec-helper data
-                expect(categoricalMarkerStyleView.categoricalList).toEqual([{
-                    text: "Test Text",
-                    value: "test_text"
-                }]);
+                expect(categoricalMarkerStyleView.categoricalList).toEqual([
+                    { text: "Test Text", value: "test_text" },
+                    { text: 'Test Choice', value: 'test_choice' }
+                ]);
             });
 
         });

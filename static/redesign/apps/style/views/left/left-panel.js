@@ -37,42 +37,31 @@ define(["jquery",
             onRender: function () {
                 // only load views after the LayoutView has
                 // been rendered to the screen:
-                var sv, skv;
-                this.sv = new SelectMapView({ app: this.app });
+                var skv = new SkinView({ app: this.app });
+                this.sv = new SelectMapView({ app: this.app }),
                 this.menu.show(this.sv);
-
-                //this.lv = new LayerListView({ app: this.app });
-                //this.layers.show(this.lv);
-
-                this.skv = new SkinView({ app: this.app });
-                this.skins.show(this.skv);
-
-                //this.ps = new PanelStylesView({ app: this.app });
-                //this.styles.show(this.ps);
+                this.skins.show(skv);
             },
             handleNewMap: function (model) {
                 // is 'this.app.model' necessary?
-                var ps, lv;
-                
+                var ps = new PanelStylesView({
+                        app: this.app,
+                        model: model
+                    });
+                this.lv = new LayerListView({
+                    app: this.app,
+                    model: model,
+                    collection: model.getLayers()
+                });
                 //set active model:
                 this.app.selectedMapModel = model;
                 this.app.model = model;
                 this.model = model;
 
                 //replace the PanelStylesView
-                ps = new PanelStylesView({
-                    app: this.app,
-                    model: model
-                });
                 this.styles.show(ps);
 
                 //replace the LayerListView:
-                console.log( model.getLayers());
-                this.lv = new LayerListView({
-                    app: this.app,
-                    model: model,
-                    collection: model.getLayers()
-                });
                 this.layers.show(this.lv);
             },
             hidePanel: function (e) {
@@ -99,7 +88,7 @@ define(["jquery",
                         console.log('success');
                     }
                 });
-            }, 
+            },
 
             deleteMap: function () {
                 if (!confirm("Are you sure you want to delete this map?")) {

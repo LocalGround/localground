@@ -96,7 +96,7 @@ define(["jquery",
                 this.render();
                 this.$el.find('#map-select').val(this.map.id);
                 
-                var layers = new Layers(null, {mapID: this.app.selectedMapModel.get("id")});
+                var layers = new Layers(null, {mapID: this.map.get("id")});
                 this.map.set("layers", layers);
 
                 dataSources.forEach(function(dataSource) {

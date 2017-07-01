@@ -5,12 +5,13 @@ define([
     rootDir + "apps/gallery/views/data-detail",
     rootDir + "views/toolbar-global",
     rootDir + "apps/gallery/views/toolbar-dataview",
+    rootDir + "lib/data/dataManager",
     rootDir + "collections/projects" //,
     //"tests/spec-helper"
 ],
-    function ($, GalleryApp, MediaDetail, ToolbarGlobal, ToolbarDataView, Projects) {
+    function ($, GalleryApp, MediaDetail, ToolbarGlobal, ToolbarDataView, DataManager, Projects) {
         'use strict';
-        var galleryApp;
+        var galleryApp, fixture;
 
         function initApp(scope) {
             // 1) add dummy HTML elements:
@@ -20,19 +21,25 @@ define([
                 $r3 = $('<div id="map-panel"</div>'),
                 $r4 = $('<div id="left-panel"</div>');
 
+            fixture = setFixtures('<div></div>').append($sandbox);
 
             $(document.body).append($sandbox);
             $sandbox.append($r1).append($r2).append($r3).append($r4);
 
             // 2) add spies for all relevant objects:
             spyOn(GalleryApp.prototype, 'start').and.callThrough();
-            spyOn(GalleryApp.prototype, 'initialize').and.callThrough();
-            spyOn(GalleryApp.prototype, 'selectProjectLoadRegions').and.callThrough();
+            spyOn(GalleryApp.prototype, 'initialize');
             spyOn(GalleryApp.prototype, 'loadRegions').and.callThrough();
-            spyOn(GalleryApp.prototype, 'showGlobalToolbar').and.callThrough();
-            spyOn(GalleryApp.prototype, 'showDataToolbar').and.callThrough();
+            spyOn(GalleryApp.prototype, 'showGlobalToolbar');
+            spyOn(GalleryApp.prototype, 'showDataToolbar');
             spyOn(GalleryApp.prototype, 'showMediaList');
             spyOn(GalleryApp.prototype, 'showMediaDetail');
+            spyOn(GalleryApp.prototype, 'showSuccessMessage').and.callThrough();
+            spyOn(GalleryApp.prototype, 'showWarningMessage').and.callThrough();
+            spyOn(GalleryApp.prototype, 'showFailureMessage').and.callThrough();
+            spyOn(GalleryApp.prototype, 'addMessageListeners').and.callThrough();
+
+            spyOn(scope.app.vent, 'trigger').and.callThrough();
 
             spyOn(Projects.prototype, "fetch").and.callThrough();
 
@@ -56,32 +63,41 @@ define([
             it("Application calls methods successfully", function () {
                 expect(galleryApp).toEqual(jasmine.any(GalleryApp));
                 expect(galleryApp.initialize).toHaveBeenCalled();
-                expect(galleryApp.projects.fetch).toHaveBeenCalled();
+                expect(galleryApp.addMessageListeners).toHaveBeenCalled();
             });
 
-            it("Initializes subviews successfully and calls all the methods", function () {
-                galleryApp.projects.trigger('reset');
-                expect(galleryApp.selectProjectLoadRegions).toHaveBeenCalled();
-                expect(galleryApp.loadRegions).toHaveBeenCalled();
-                expect(galleryApp.showGlobalToolbar).toHaveBeenCalled();
-                expect(galleryApp.showDataToolbar).toHaveBeenCalled();
-                expect(galleryApp.showMediaList).toHaveBeenCalled();
-                expect(galleryApp.toolbarView).toEqual(jasmine.any(ToolbarGlobal));
-                expect(galleryApp.toolbarDataView).toEqual(jasmine.any(ToolbarDataView));
+        });
+
+        describe("GalleryApp: Display the status messages", function(){
+            beforeEach(function(){
+                initApp(this);
             });
 
-            it("Responds to media list trigger", function () {
-                expect(galleryApp.showMediaList).not.toHaveBeenCalled();
-                galleryApp.vent.trigger('show-detail', 3);
-                galleryApp.vent.trigger('show-list', 'audio');
-                expect(galleryApp.showMediaList).toHaveBeenCalledWith('audio');
+            afterEach(function () {
+                //called after each "it" test
+                $("#sandbox").remove();
+                Backbone.history.stop();
             });
 
-            it("Responds to media detail trigger", function () {
-                expect(galleryApp.showMediaDetail).not.toHaveBeenCalled();
-                galleryApp.vent.trigger('show-detail', 3);
-                expect(galleryApp.showMediaDetail).toHaveBeenCalledWith(3);
+            it("Shows the Success message", function(){
+                expect(galleryApp.showSuccessMessage).toHaveBeenCalledTimes(0);
+                galleryApp.vent.trigger('success-message', "Success Message Called");
+                expect(galleryApp.showSuccessMessage).toHaveBeenCalledTimes(1);
+                expect(galleryApp.showSuccessMessage).toHaveBeenCalledWith("Success Message Called");
             });
 
+            it("Shows the Warning message", function(){
+                expect(galleryApp.showWarningMessage).toHaveBeenCalledTimes(0);
+                galleryApp.vent.trigger('warning-message', "Warning Message Called");
+                expect(galleryApp.showWarningMessage).toHaveBeenCalledTimes(1);
+                expect(galleryApp.showWarningMessage).toHaveBeenCalledWith("Warning Message Called");
+            });
+
+            it("Shows the Failure message", function(){
+                expect(galleryApp.showFailureMessage).toHaveBeenCalledTimes(0);
+                galleryApp.vent.trigger('error-message', "Failure Message Called");
+                expect(galleryApp.showFailureMessage).toHaveBeenCalledTimes(1);
+                expect(galleryApp.showFailureMessage).toHaveBeenCalledWith("Failure Message Called");
+            });
         });
     });

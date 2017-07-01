@@ -58,6 +58,7 @@ define([
                     success: function(){
                         // Successfully add a new field
                         that.fields.add(that.model);
+                        that.app.vent.trigger('success-message', "New Field added");
                         that.app.vent.trigger("render-spreadsheet");
                         that.app.vent.trigger("hide-modal");
                     }

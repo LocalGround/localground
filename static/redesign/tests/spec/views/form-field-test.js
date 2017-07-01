@@ -38,13 +38,16 @@ define([
         };
 
         createExistingFieldView = function (scope) {
+            console.log('createExistingFieldView');
             var opts = {};
             _.extend(opts, scope.form.toJSON(), {
                 model: scope.form.fields.at(0),
                 parent: new CreateForm({
-                    model: scope.form
+                    model: scope.form,
+                    app: scope.app
                 })
             });
+            console.log(opts);
             fieldView = new FieldChildView(opts);
             fieldView.render();
         };
@@ -54,7 +57,8 @@ define([
             _.extend(opts, scope.form.toJSON(), {
                 model: new Field({}, {id: scope.form.id }),
                 parent: new CreateForm({
-                    model: scope.form
+                    model: scope.form,
+                    app: scope.app
                 })
             });
             fieldView = new FieldChildView(opts);
@@ -70,7 +74,8 @@ define([
                 expect(FieldChildView.prototype.initialize).toHaveBeenCalledTimes(0);
                 expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(0);
                 formView = new CreateForm({
-                    model: this.form
+                    model: this.form,
+                    app: this.app
                 });
                 fixture = setFixtures('<div></div>').append(formView.$el);
                 expect(FieldChildView.prototype.initialize).toHaveBeenCalledTimes(5);
@@ -80,11 +85,15 @@ define([
              it("Creates field and sets variables", function () {
                 var opts = {};
                 _.extend(opts, this.form.toJSON(), {
-                    model: this.form.fields.at(0)
+                    model: this.form.fields.at(0),
+                    parent: new CreateForm({
+                        model: this.form,
+                        app: this.app
+                    })
                 });
-                expect(FieldChildView.prototype.initialize).toHaveBeenCalledTimes(0);
+                expect(FieldChildView.prototype.initialize).toHaveBeenCalledTimes(5);
                 fieldView = new FieldChildView(opts);
-                expect(FieldChildView.prototype.initialize).toHaveBeenCalledTimes(1);
+                expect(FieldChildView.prototype.initialize).toHaveBeenCalledTimes(6);
                 expect(fieldView.model).toBe(this.form.fields.at(0));
             });
         });
@@ -96,12 +105,16 @@ define([
             it("Renders child HTML", function () {
                 var opts = {}, field = this.form.fields.at(0);
                 _.extend(opts, this.form.toJSON(), {
-                    model: field
+                    model: field,
+                    parent: new CreateForm({
+                        model: this.form,
+                        app: this.app
+                    })
                 });
-                expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(0);
+                expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(5);
                 fieldView = new FieldChildView(opts);
                 fieldView.render();
-                expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(1);
+                expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(6);
 
                 //check HTML in DOM:
                 console.log(fieldView.$el.html());
@@ -124,7 +137,11 @@ define([
             it("If isn't a display field, don't check box", function () {
                 var opts = {}, field = this.form.fields.at(1);
                 _.extend(opts, this.form.toJSON(), {
-                    model: field
+                    model: field,
+                    parent: new CreateForm({
+                        model: this.form,
+                        app: this.app
+                    })
                 });
                 fieldView = new FieldChildView(opts);
                 fieldView.render();
@@ -136,7 +153,11 @@ define([
             it("Don't delete when user cancels confirm dialog", function () {
                 var opts = {}, field = this.form.fields.at(0);
                 _.extend(opts, this.form.toJSON(), {
-                    model: field
+                    model: field,
+                    parent: new CreateForm({
+                        model: this.form,
+                        app: this.app
+                    })
                 });
                 spyOn(window, 'confirm').and.returnValue(false);
                 expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(0);
@@ -152,7 +173,11 @@ define([
             it("Delete when user cancels confirm dialog", function () {
                 var opts = {}, field = this.form.fields.at(0);
                 _.extend(opts, this.form.toJSON(), {
-                    model: field
+                    model: field,
+                    parent: new CreateForm({
+                        model: this.form,
+                        app: this.app
+                    })
                 });
                 spyOn(window, 'confirm').and.returnValue(true);
                 expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(0);
@@ -198,7 +223,8 @@ define([
                 _.extend(opts, this.form.toJSON(), {
                     model: field,
                     parent: new CreateForm({
-                        model: this.form
+                        model: this.form,
+                        app: this.app
                     })
                 });
                 fieldView = new FieldChildView(opts);
@@ -219,7 +245,8 @@ define([
                 _.extend(opts, this.form.toJSON(), {
                     model: field,
                     parent: new CreateForm({
-                        model: this.form
+                        model: this.form,
+                        app: this.app
                     })
                 });
                 fieldView = new FieldChildView(opts);
@@ -376,7 +403,8 @@ define([
                 _.extend(opts, this.form.toJSON(), {
                     model: field,
                     parent: new CreateForm({
-                        model: this.form
+                        model: this.form,
+                        app: this.app
                     })
                 });
                 fieldView = new FieldChildView(opts);

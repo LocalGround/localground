@@ -36,6 +36,7 @@ define([
             this.modal = new Modal();
             this.listenTo(this.vent, 'share-project', this.showShareForm);
             this.listenTo(this.vent, 'hide-modal', this.hideShareForm);
+            this.addMessageListeners();
         },
 
         loadRegions: function () {

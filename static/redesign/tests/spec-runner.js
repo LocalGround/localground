@@ -58,6 +58,7 @@ require(['boot'], function () {
         'spec/views/create-form-test.js',
         'spec/views/form-field-test.js',
         'spec/views/spreadsheet-test.js',
+        'spec/views/gallery-app-test.js',
 
         //MAP Editor
         'spec/views/map-editor/marker-listing-manager-test.js',

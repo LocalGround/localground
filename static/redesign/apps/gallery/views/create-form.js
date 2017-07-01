@@ -117,6 +117,8 @@ define([
             this.model.save(null, {
                 success: function () {
                     that.saveFields();
+                    that.app.vent.trigger('success-message', "The form was saved successfully");
+                    that.app.vent.trigger('hide-modal');
                 },
                 error: function () {
                     console.error("The form could not be saved");

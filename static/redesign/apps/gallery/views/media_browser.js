@@ -41,7 +41,7 @@ define ([
                         }
                     },
                     modelEvents: {
-                        'saved': 'render'
+                        'saved': 'render' // Maybe the render causes reload of previously stored values
                     },
                     events: {
                         'click .card-img-preview' : 'selectedClass',

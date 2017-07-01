@@ -157,11 +157,8 @@ define(["marionette",
                 });
             },
 
-            // The commneted code caused an undefined error
-            // it has to be solve with some way to get the trigger
-            // to be sent to toolbar-dataview.js under addNewMap function.
-
-            //*
+            // This might also be the candidate for adding a new cell in the exisitng form
+            // without putting having the overlay_type assigned
             triggerAddNewMap: function (e) {
                 var target = this.$el.find('.add-new');
                 this.app.vent.trigger('add-new-item-to-map', {

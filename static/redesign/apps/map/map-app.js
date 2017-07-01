@@ -39,6 +39,7 @@ define([
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
+            this.addMessageListeners();
             this.router = new Router({ app: this});
             Backbone.history.start();
         },
@@ -119,6 +120,7 @@ define([
                 model = new Model();
             model.collection = this.currentCollection;
             model.set("project_id", this.getProjectID());
+            model.set("overlay_type", this.currentCollection.overlay_type);
             return model;
         },
 
