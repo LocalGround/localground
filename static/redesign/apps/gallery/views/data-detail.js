@@ -72,8 +72,17 @@ define([
                         '    <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
                         '</svg>');
                     shape = that.model.get("overlay_type");
+                    // If clicking an add new and click on marker, there is no overlay_type found
+                    //*
+                    // If outside, then save the model
+                    // and add it to the end of the list so the marker
+                    // so that new markers can be added seamlessly
                     if (shape.indexOf("form_") != -1) {
                         shape = "marker";
+                    }
+                    //*/
+                    else {
+                        console.log("The current form of adding marker on empty form is buggy");
                     }
                     icon = new Icon({
                         shape: shape,
@@ -237,7 +246,7 @@ define([
             this.model.save(null, {
                 success: function (model, response) {
                     //perhaps some sort of indication of success here?
-                    that.$el.find(".success-message").show().delay(3000).fadeOut(1500);
+                    that.app.vent.trigger('success-message', "The form was saved successfully");
                     if (!isNew) {
                         model.trigger('saved');
                     } else {
@@ -245,6 +254,8 @@ define([
                     }
                 },
                 error: function (model, response) {
+
+                    that.app.vent.trigger('error-message', "The form has not saved");
                     that.$el.find("#model-form").append("error saving");
                 }
             });

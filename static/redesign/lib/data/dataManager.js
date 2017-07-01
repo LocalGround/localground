@@ -32,7 +32,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     extras;
                 _.each(this.model.get("children"), function (entry, key) {
                     that.dataDictionary[key] = entry;
-                    extras = that.initCollection(key, entry.data, entry.fields);
+                    extras = that.initCollection(key, entry.data, entry.fields, entry.overlay_type);
                     _.extend(that.dataDictionary[key], extras);
                     delete entry.data;
                 });
@@ -71,7 +71,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 }
                 throw new Error("No entry found for " + key);
             },
-            initCollection: function (key, data, fieldCollection) {
+            initCollection: function (key, data, fieldCollection, overlay_type) {
                 switch (key) {
                 case "photos":
                     return { collection: new Photos(data) };
@@ -92,7 +92,8 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                             fieldsURL = '/api/0/forms/' + formID + '/fields/',
                             records = new Records(data, {
                                 url: recordsURL,
-                                key: 'form_' + formID
+                                key: 'form_' + formID,
+                                overlay_type: overlay_type
                             }),
                             fields = fieldCollection || new Fields(null, {url: fieldsURL }),
                             that = this;

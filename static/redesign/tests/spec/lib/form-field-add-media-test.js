@@ -312,17 +312,6 @@ define([
                 expect(markerPhotos.detach).toHaveBeenCalledTimes(1);
             });
 
-            /*
-            it("Executes attachMedia successfully", function(){
-
-                initForm(this, markerPlain);
-                expect(MediaEditor.prototype.render).toHaveBeenCalledTimes(1);
-                expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(0);
-                form.save([this.photos.at(0), this.photos.at(1)]);
-                expect(MediaEditor.prototype.attachMedia).toHaveBeenCalledTimes(1);
-
-            });
-            */
         });
 
     });

@@ -187,10 +187,8 @@ define([
             }));
         },
         attachModels: function (models) {
-            var that  = this;
             var errors = this.form.commit({ validate: true }),
-                that = this,
-                isNew = this.model.get("id") ? false : true;
+                that = this;
             if (errors) {
                 console.log("errors: ", errors);
                 return;
@@ -223,8 +221,7 @@ define([
             if (models.length > 0) { setTimeout(fetch, 800); }
         },
         detachModel: function (e) {
-            var that = this,
-                $elem = $(e.target),
+            var $elem = $(e.target),
                 attachmentType = $elem.attr("data-type"),
                 attachmentID = $elem.attr("data-id"),
                 name = $elem.attr("media-name");
@@ -232,8 +229,19 @@ define([
                     name + " from this site? Note that this will not delete the media file -- it just detaches it.")) {
                 return;
             }
-            this.model.detach(attachmentType, attachmentID, function () {
-                that.model.fetch({reset: true});
+            var errors = this.form.commit({ validate: true }),
+                that = this,
+                isNew = this.model.get("id") ? false : true;
+            if (errors) {
+                console.log("errors: ", errors);
+                return;
+            }
+            this.model.save(null, {
+                success: function () {
+                    that.model.detach(attachmentType, attachmentID, function () {
+                        that.model.fetch({reset: true});
+                    });
+                }
             });
         },
         showMediaBrowser: function (e) {

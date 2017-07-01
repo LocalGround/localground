@@ -7,7 +7,7 @@ from django.conf import settings
 from rest_framework.serializers import raise_errors_on_nested_writes, model_meta
 
 class BaseRecordSerializer(serializers.ModelSerializer):
-    
+
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         required=False,
@@ -36,7 +36,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
         else:
             fields['project_id'].queryset = models.Form.objects.all()
         return fields
-    
+
     def get_children(self, obj):
         children = {}
         self.photos = self.get_photos(obj) or []
@@ -46,7 +46,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
         if self.audio:
             children['audio'] = self.audio
         return children
-    
+
     def get_photo_count(self, obj):
         try:
             return obj.photo_count
@@ -55,7 +55,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
                 return len(obj.photos)
             except:
                 return 0
-    
+
     def get_audio_count(self, obj):
         try:
             return obj.audio_count
@@ -64,7 +64,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
                 return len(obj.audio)
             except:
                 return 0
-        
+
     def get_photos(self, obj):
         from localground.apps.site.api.serializers import PhotoSerializer
 
@@ -72,7 +72,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
             obj.photos,
             many=True, context={ 'request': {} }).data
         return self.serialize_list(obj, models.Photo, data)
-    
+
     def get_audio(self, obj):
         from localground.apps.site.api.serializers import AudioSerializer
 
@@ -80,7 +80,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
             obj.audio,
             many=True, context={ 'request': {} }).data
         return self.serialize_list(obj, models.Audio, data)
-    
+
     def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
                        model_name_plural=None):
         if data is None or len(data) == 0:
@@ -101,7 +101,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
              obj.form.id,
              obj.id,
              model_name_plural)}
-    
+
     class Meta:
         fields = (
             'id',
@@ -114,21 +114,21 @@ class BaseRecordSerializer(serializers.ModelSerializer):
     def get_overlay_type(self, obj):
         #raise Exception(obj)
         return obj._meta.verbose_name
-    
+
     def get_owner(self, obj):
         return obj.owner.username
 
     def get_detail_url(self, obj):
         return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
                                                obj.form.id, obj.id)
-    
+
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save(self.context.get('request').user)
         return instance
-    
+
     def create(self, validated_data):
         #raise Exception(validated_data)
         serializers.raise_errors_on_nested_writes('create', self, validated_data)
@@ -169,7 +169,7 @@ def create_record_serializer(form, **kwargs):
     """
     field_names, photo_fields, photo_details, audio_fields, audio_details = [], [], [], [], []
     display_field = None
-    
+
     for f in form.fields:
         if f.is_display_field:
             display_field = f
@@ -178,23 +178,23 @@ def create_record_serializer(form, **kwargs):
             photo_fields.extend([f.col_name, f.col_name + "_detail"])
         elif f.data_type.id == DataType.DataTypes.AUDIO:
             audio_fields.extend([f.col_name, f.col_name + "_detail"])
-    
+
     #append display name:
     field_names.extend(['photo_count', 'audio_count'])
     if display_field is not None:
-        field_names.append('display_name') 
+        field_names.append('display_name')
     if kwargs.get('show_detail'):
         field_names.append('children')
     #else:
     #    field_names.extend(['photo_count', 'audio_count'])
-    
+
     TableModel = form.TableModel
     class Meta:
         model = TableModel
         fields = BaseRecordSerializer.Meta.fields + tuple(field_names) + \
-            tuple(photo_fields) + tuple(audio_fields) 
+            tuple(photo_fields) + tuple(audio_fields)
         read_only_fields = ('display_name', 'children', 'photo_count', 'audio_count')
-    
+
     attrs = {
         '__module__': 'localground.apps.site.api.serializers.FormDataSerializer',
         'Meta': Meta
@@ -219,7 +219,7 @@ def create_record_serializer(form, **kwargs):
                     model_field=model_field
                 )
             })
-    
+
     for f in audio_fields:
         if f.find("_detail") != -1:
             source = f.replace("_detail", "")
@@ -234,8 +234,8 @@ def create_record_serializer(form, **kwargs):
                     model_field=model_field
                 )
             })
-    
-    
+
+
     return type('record_serializer_default', (BaseRecordSerializer, ), attrs)
 
 def create_compact_record_serializer(form):
@@ -276,6 +276,6 @@ def create_compact_record_serializer(form):
             return obj.project.id
 
         def get_overlay_type(self, obj):
-            return 'record'
+            return 'form_' + form.id
 
     return FormDataSerializer

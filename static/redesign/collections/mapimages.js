@@ -5,6 +5,7 @@ define(["models/mapimage", "collections/base", "collections/basePageable"], func
      */
     var MapImages = BasePageable.extend({
         model: MapImage,
+        overlay_type: 'map_image',
         name: 'Map Images',
         key: 'map_images',
         url: '/api/0/map-images/',

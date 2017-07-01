@@ -6,6 +6,7 @@ function (Marker, BasePageable) {
      */
     var Markers = BasePageable.extend({
         model: Marker,
+        overlay_type: 'marker',
         name: 'Sites',
         key: 'markers',
         url: '/api/0/markers/',

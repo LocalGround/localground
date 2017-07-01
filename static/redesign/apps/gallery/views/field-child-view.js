@@ -11,6 +11,9 @@ define([
         choicesList: [],
         initialize: function (opts) {
             _.extend(this, opts);
+            if (!this.app) {
+                this.app = this.parent.app;
+            }
             this.setRatingsFromModel();
             this.setChoicesFromModel();
         },
@@ -185,7 +188,6 @@ define([
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
                 messages;
-            console.log(fieldType);
             this.validate(fieldName, fieldType);
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
@@ -205,6 +207,7 @@ define([
                 console.log('saving...');
                 this.model.save(null, {
                     success: function () {
+                    that.app.vent.trigger('success-message', "Child field has been saved.");
                         that.parent.renderWithSaveMessages();
 
                     },
@@ -212,6 +215,7 @@ define([
                         messages = JSON.parse(response.responseText);
                         that.model.serverErrorMessage = messages.detail;
                         that.parent.renderWithSaveMessages();
+                        that.app.vent.trigger('error-message', "Child field has not been saved.");
                     }
                 });
             } else {

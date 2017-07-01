@@ -33,6 +33,7 @@ define([
 
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'show-list', this.showSpreadsheet);
+            this.addMessageListeners();
         },
 
         initialize: function (options) {
