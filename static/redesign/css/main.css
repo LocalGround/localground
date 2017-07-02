@@ -1552,7 +1552,7 @@ li.current .photo {
     width: 100%;
     background-repeat: no-repeat !important;
     background-size: contain !important;
-    background-position: center bottom !important;
+    background-position: center center !important;
     margin-bottom: 6px;
     cursor: pointer;
 }
