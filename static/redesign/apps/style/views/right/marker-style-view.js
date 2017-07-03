@@ -3,13 +3,13 @@ define(["jquery",
         "marionette",
         "handlebars",
         "lib/maps/icon-lookup",
+        "apps/style/views/right/marker-style-view-child",
         "text!../../templates/right/marker-style.html",
-        "text!../../templates/right/marker-style-child.html",
         "collections/symbols",
         'color-picker-eyecon',
         "palette"
     ],
-    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleTemplate, MarkerStyleChildTemplate, Symbols, ColorPicker, Palette) {
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, MarkerStyleTemplate, Symbols) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
@@ -20,7 +20,7 @@ define(["jquery",
             layerDraft: {
                 continuous: null,
                 categorical: null,
-                simple: null, 
+                simple: null,
                 individual: null
             },
             catDataHasBeenBuilt: false,
@@ -29,81 +29,9 @@ define(["jquery",
                 //'change:symbols': 'render'//,
                 //'change:metadata': 'contData'
             },
-            
 
             //each of these childViews is a symbol. this view renders the value-rules box
-            getChildView: function () {
-                return Marionette.ItemView.extend({
-                    initialize: function (opts) {
-                        _.extend(this, opts);
-                        this.listenTo(this.app.vent, "update-opacity", this.updateSymbolOpacity);
-                    },
-                    template: Handlebars.compile(MarkerStyleChildTemplate),
-                    events: {
-                        'change .marker-shape': 'setSymbol'
-                    },
-                    modelEvents: {
-                        'change': 'updateLayerSymbols'
-                        
-                    },
-                    tagName: "tr",
-                    className: "table-row",
-                    templateHelpers: function () {
-                        return {
-                            dataType: this.dataType,
-                            icons: IconLookup.getIcons(),
-                            fillOpacity: this.fillOpacity, 
-                            id: "cp" + this.model.get('id')
-                        };
-                    },
-                    onRender: function () {
-                        var that = this;
-                        var newHex,
-                        color = this.model.get('fillColor');
-    
-                        
-                        //new color picker is added to the dom each time the icon is clicked, 
-                        //so we remove the previous color picker with each additional click.
-                        //for this reason, each marker's picker needs to be uniquely identified
-                        var id = this.model.get('id');
-                        $(".marker-child-color-picker" + id).remove();
-                        this.$el.find('.jscolor').ColorPicker({
-                            color: color,
-                        
-                            onShow: function (colpkr) {
-                                $(colpkr).fadeIn(500);
-                                return false;
-                            },
-                            onHide: function (colpkr) {
-                                that.updateFillColor(color);
-                                $(colpkr).fadeOut(500);
-                                return false;
-                            },
-                            onChange: function (hsb, hex, rgb) {
-                                color = "#" + hex;
-                            },
-                        });
-                        $(".colorpicker:last-child").addClass('marker-child-color-picker' + id);
-                    },
-                    updateFillColor: function(newHex) {
-                        this.model.set("fillColor", newHex);
-                        this.render();
-                        this.app.vent.trigger('update-map');
-                    },
-                    setSymbol: function (e) {
-                        this.model.set("shape", $(e.target).val());
-                    },
-                    updateLayerSymbols: function () {
-                        this.layer.setSymbol(this.model);
-                    }, 
-                    updateSymbolOpacity: function (opacity) {
-                        this.model.set("fillOpacity", opacity);
-                        this.render();
-                       this.templateHelpers();
-                    },
-
-                });
-            },
+            childView: MarkerStyleChildView,
             childViewContainer: "#symbols",
 
             childViewOptions: function () {
@@ -129,12 +57,11 @@ define(["jquery",
             },
 
             onRender: function () {
-                var that = this;
-                var newHex,
-                color = this.model.get('fillColor');
+                var that = this,
+                    color = this.model.get('fillColor');
                 $(".marker-style-color-picker").remove();
                 this.$el.find('#stroke-color-picker').ColorPicker({
-            
+
                     onShow: function (colpkr) {
                         console.log("colorPicker show");
                         $(colpkr).fadeIn(500);
@@ -149,7 +76,7 @@ define(["jquery",
                     onChange: function (hsb, hex, rgb) {
                         console.log("colorPicker changed");
                         color = "#" + hex;
-                    },
+                    }
                 });
                 $(".colorpicker:last-child").addClass('marker-style-color-picker');
             },
@@ -175,15 +102,16 @@ define(["jquery",
             },
 */
             templateHelpers: function () {
-                var metadata = this.model.get("metadata");
+                var metadata = this.model.get("metadata"),
+                    helpers;
                 console.log(metadata);
-                var helpers = {
+                helpers = {
                     metadata: metadata,
                     dataType: this.dataType,
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
                     categoricalList: this.categoricalList,
-                    continuousList: this.continuousList, 
+                    continuousList: this.continuousList,
                     icons: IconLookup.getIcons(),
                     selectedProp: this.selectedProp
                 };
