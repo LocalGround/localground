@@ -19,7 +19,7 @@ define(["jquery",
             selectedColorPalette: null,
             layerDraft: {
                 continuous: null,
-                categorical: {},
+                categorical: null,
                 simple: null, 
                 individual: null
             },
