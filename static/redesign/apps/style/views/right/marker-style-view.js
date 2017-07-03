@@ -9,7 +9,7 @@ define(["jquery",
         'color-picker-eyecon',
         "palette"
     ],
-    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleTemplate, MarkerStyleChildTemplate, Symbols, ColorPicker) {
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleTemplate, MarkerStyleChildTemplate, Symbols, ColorPicker, Palette) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
@@ -19,10 +19,11 @@ define(["jquery",
             selectedColorPalette: null,
             layerDraft: {
                 continuous: null,
-                categorical: null,
+                categorical: {},
                 simple: null, 
                 individual: null
             },
+            catDataHasBeenBuilt: false,
             template: Handlebars.compile(MarkerStyleTemplate),
             modelEvents: {
                 //'change:symbols': 'render'//,
@@ -51,8 +52,43 @@ define(["jquery",
                         return {
                             dataType: this.dataType,
                             icons: IconLookup.getIcons(),
-                            fillOpacity: this.fillOpacity
+                            fillOpacity: this.fillOpacity, 
+                            id: "cp" + this.model.get('id')
                         };
+                    },
+                    onRender: function () {
+                        var that = this;
+                        var newHex,
+                        color = this.model.get('fillColor');
+    
+                        
+                        //new color picker is added to the dom each time the icon is clicked, 
+                        //so we remove the previous color picker with each additional click.
+                        //for this reason, each marker's picker needs to be uniquely identified
+                        var id = this.model.get('id');
+                        $(".marker-child-color-picker" + id).remove();
+                        this.$el.find('.jscolor').ColorPicker({
+                            color: color,
+                        
+                            onShow: function (colpkr) {
+                                $(colpkr).fadeIn(500);
+                                return false;
+                            },
+                            onHide: function (colpkr) {
+                                that.updateFillColor(color);
+                                $(colpkr).fadeOut(500);
+                                return false;
+                            },
+                            onChange: function (hsb, hex, rgb) {
+                                color = "#" + hex;
+                            },
+                        });
+                        $(".colorpicker:last-child").addClass('marker-child-color-picker' + id);
+                    },
+                    updateFillColor: function(newHex) {
+                        this.model.set("fillColor", newHex);
+                        this.render();
+                        this.app.vent.trigger('update-map');
                     },
                     setSymbol: function (e) {
                         this.model.set("shape", $(e.target).val());
@@ -89,11 +125,13 @@ define(["jquery",
              //   this.displaySymbols();
                 $('body').click(this.hideColorRamp);
                 this.listenTo(this.app.vent, 'update-data-source', this.buildColumnList);
+                this.listenTo(this.app.vent, 'update-map', this.updateMap);
             },
 
             onRender: function () {
                 var that = this;
-                var newHex;
+                var newHex,
+                color = this.model.get('fillColor');
                 $(".marker-style-color-picker").remove();
                 this.$el.find('#stroke-color-picker').ColorPicker({
             
@@ -104,13 +142,13 @@ define(["jquery",
                     },
                     onHide: function (colpkr) {
                         console.log("colorPicker hide");
-                        that.updateStrokeColor(newHex);
+                        that.updateStrokeColor(color);
                         $(colpkr).fadeOut(500);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
                         console.log("colorPicker changed");
-                        newHex = hex;
+                        color = "#" + hex;
                     },
                 });
                 $(".colorpicker:last-child").addClass('marker-style-color-picker');
@@ -232,7 +270,15 @@ define(["jquery",
                     this.contData();
                 }
                 if (this.dataType == "categorical") {
-                    this.catData();
+                    console.log(this.model);
+                    if (!this.model.get("metadata").catBuilt) {
+                        console.log("building catData", this.collection);
+                        this.catData();
+                    } else {
+                        console.log("catData already exists");
+                        this.collection = new Backbone.Collection(this.model.get("symbols"));
+                        return;
+                    }
                 }
                 if (this.dataType == "basic") {
                     this.simpleData();
@@ -322,6 +368,7 @@ define(["jquery",
                     });
                     counter++;
                 });
+                that.model.get("metadata").catBuilt = true;
                 this.collection = this.layerDraft.categorical;
                 console.log('categorical:', this.layerDraft.categorical.toJSON());
                 this.model.set("symbols", this.layerDraft.categorical.toJSON());
@@ -405,7 +452,9 @@ define(["jquery",
                 seq6 = palette('tol-dv', buckets);
                 this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6];
                 this.selectedColorPalette = this.allColors[paletteId];
-                this.contData();
+                if (this.dataType == "continuous") {
+                    this.contData();
+                }
             },
 
             updateMap: function () {
@@ -460,8 +509,8 @@ define(["jquery",
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
                 console.log("update stroke color triggered");
-                this.updateMetadata("strokeColor", '#' + hex);
-                $('#stroke-color-picker').css('color', '#' + hex);
+                this.updateMetadata("strokeColor", hex);
+                $('#stroke-color-picker').css('color', hex);
                 this.updateMap();
             },
 
