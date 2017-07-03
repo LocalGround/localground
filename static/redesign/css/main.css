@@ -476,6 +476,16 @@ button[data-action="add"]::after {
     content: " tag";
     text-transform: uppercase;
 }
+div[name=tags] > div > div {
+    width: 120px;
+    display: inline-block;
+    margin-right: 2px;
+}
+
+div[name=tags] input[type=text] {
+    font-size: 12px !important;
+    border-radius: 8px !important;
+}
 
 
 /****************************************************************************************/
