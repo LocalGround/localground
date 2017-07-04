@@ -15,7 +15,7 @@ define([
                 spyOn(MarkerStyleChildView.prototype, 'render').and.callThrough();
                 spyOn(MarkerStyleChildView.prototype, 'onRender').and.callThrough();
                 spyOn(MarkerStyleChildView.prototype, 'updateSymbolOpacity').and.callThrough();
-                spyOn(MarkerStyleChildView.prototype, 'setSymbol').and.callThrough();
+                spyOn(MarkerStyleChildView.prototype, 'updateShape').and.callThrough();
                 spyOn(MarkerStyleChildView.prototype, 'updateLayerSymbols').and.callThrough();
 
                 //color picker spies:
@@ -110,20 +110,23 @@ define([
             });
 
             it("Listens for a shape update and sets the model", function () {
-                expect(MarkerStyleChildView.prototype.setSymbol).toHaveBeenCalledTimes(0);
+                expect(MarkerStyleChildView.prototype.updateShape).toHaveBeenCalledTimes(0);
                 expect(MarkerStyleChildView.prototype.updateLayerSymbols).toHaveBeenCalledTimes(0);
                 fixture.find('.marker-shape').val('worm');
                 fixture.find('.marker-shape').trigger('change');
-                expect(MarkerStyleChildView.prototype.setSymbol).toHaveBeenCalledTimes(1);
+                expect(MarkerStyleChildView.prototype.updateShape).toHaveBeenCalledTimes(1);
                 expect(symbol.get("shape")).toEqual('worm');
+                expect(markerStyleChildView.app.vent.trigger).toHaveBeenCalledWith('update-map');
             });
 
             it("updates parent layer when symbol changes", function () {
                 spyOn(parentLayer, "setSymbol");
                 expect(MarkerStyleChildView.prototype.updateLayerSymbols).toHaveBeenCalledTimes(0);
+                expect(MarkerStyleChildView.prototype.render).toHaveBeenCalledTimes(1);
                 expect(parentLayer.setSymbol).toHaveBeenCalledTimes(0);
                 symbol.set("shape", "square");
                 expect(MarkerStyleChildView.prototype.updateLayerSymbols).toHaveBeenCalledTimes(1);
+                expect(MarkerStyleChildView.prototype.render).toHaveBeenCalledTimes(2);
                 expect(parentLayer.setSymbol).toHaveBeenCalledTimes(1);
                 expect(parentLayer.setSymbol).toHaveBeenCalledWith(symbol);
             });
