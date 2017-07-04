@@ -15,18 +15,20 @@ define(["jquery",
             },
             template: Handlebars.compile(MarkerStyleChildTemplate),
             events: {
-                'change .marker-shape': 'setSymbol'
+                'change .marker-shape': 'updateShape'
             },
             modelEvents: {
                 'change': 'updateLayerSymbols'
             },
+                
             tagName: "tr",
             className: "table-row",
             templateHelpers: function () {
+                console.log("child helpers", this);
                 return {
                     dataType: this.dataType,
                     icons: IconLookup.getIcons(),
-                    fillOpacity: this.fillOpacity,
+                    fillOpacity: this.model.get("fillOpacity"),
                     id: "cp" + this.model.get('id')
                 };
             },
@@ -58,18 +60,18 @@ define(["jquery",
             },
             updateFillColor: function (newHex) {
                 this.model.set("fillColor", newHex);
-                this.render();
                 this.app.vent.trigger('update-map');
             },
-            setSymbol: function () {
+            updateShape: function () {
                 this.model.set("shape", this.$el.find('.marker-shape').val());
+                this.app.vent.trigger('update-map'); //added
             },
             updateLayerSymbols: function () {
                 this.layer.setSymbol(this.model);
+                this.render(); 
             },
             updateSymbolOpacity: function (opacity) {
                 this.model.set("fillOpacity", opacity);
-                this.render();
             }
 
         });
