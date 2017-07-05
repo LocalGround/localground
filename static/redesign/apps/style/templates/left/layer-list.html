@@ -8,4 +8,8 @@
 
     <h4>Layers</h4>
 </div>
-<div id="layers" class="layers" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}"></div>
+    {{#if noLayers}}
+    <p class="layer-none-message">Click the plus sign to create a new layer</p>
+    {{/if}}
+<div id="layers" class="layers" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">
+</div>

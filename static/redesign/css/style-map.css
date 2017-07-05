@@ -109,6 +109,13 @@
     margin-left: 4px;
 }
 
+.layer-none-message {
+    margin-left: 15px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #666;
+}
+
 /*
 .skin-select {
     display: block;

@@ -13,6 +13,13 @@ define(["marionette",
         var LayerListView = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
             stateKey: 'layer_list',
             template: Handlebars.compile(LayerListTemplate),
+           // templateHelpers: function() {},
+            templateHelpers: function () {
+                return {
+                    noLayers: (this.collection.length === 0),
+                    isShowing: this.isShowing
+                };
+            },
             isShowing: true,
             childView: LayerListChild,
             childViewContainer: "#layers",
