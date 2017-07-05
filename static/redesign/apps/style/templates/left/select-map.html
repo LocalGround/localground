@@ -1,5 +1,4 @@
 <div class="style-section-header-wrapper">
-    <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>
     <div class="plus-container" style="position:relative;float:right;">
         <a class="add-map"><i class="fa fa-plus add" aria-hidden="true"></i></a>
     </div>
@@ -9,7 +8,7 @@
 {{#if noItems}}
     <p>Click the plus sign to create a new map</p>
 {{else}}
-<select class="style-wide-select" id="map-select" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">
+<select class="style-wide-select" id="map-select">
     {{#each items}}
     <option class="map-select-option" value="{{ this.id }}">{{ this.name }}</option>
     {{/each}}

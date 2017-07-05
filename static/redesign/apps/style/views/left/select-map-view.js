@@ -6,21 +6,19 @@ define(["jquery",
         "models/layer",
         "collections/layers",
         "apps/style/views/left/new-map-modal-view",
-        "apps/style/visibility-mixin",
         "text!../../templates/left/select-map.html",
         "lib/modals/modal"
     ],
-    function ($, Marionette, Handlebars, Map, Maps, Layer, Layers, NewMap, PanelVisibilityExtensions, MapTemplate, Modal) {
+    function ($, Marionette, Handlebars, Map, Maps, Layer, Layers, NewMap, MapTemplate, Modal) {
         'use strict';
 
-        var SelectMapView = Marionette.ItemView.extend(_.extend({}, PanelVisibilityExtensions, {
+        var SelectMapView = Marionette.ItemView.extend(_.extend({}, {
             stateKey: 'select-map',
             isShowing: true,
             template: Handlebars.compile(MapTemplate),
             templateHelpers: function() {
                 return {
-                    noItems: (this.collection.length === 0),
-                    isShowing: this.isShowing
+                    noItems: (this.collection.length === 0)
                 }
             },
 
@@ -29,8 +27,7 @@ define(["jquery",
                     {
                         'change #map-select': 'setActiveMap',
                         'click .add-map': 'showAddMapModal'
-                    },
-                    PanelVisibilityExtensions.events
+                    }
                 );
             },
             modal: null,
@@ -38,7 +35,6 @@ define(["jquery",
             initialize: function (opts) {
                 var that = this;
                 _.extend(this, opts);
-                this.restoreState();
                 if (!this.collection) {
                     // /api/0/maps/ API Endpoint gets built:
                     this.collection = new Maps();

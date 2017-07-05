@@ -1,8 +1,7 @@
 <div class="style-section-header-wrapper">
-     <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>
     <h4 class="skin-header">Map Skin Style</h4>
 </div>
-<select id="skin-select" class="style-wide-select" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">
+<select id="skin-select" class="style-wide-select">
 {{#each items}}
     <option value={{ this.id }}>{{ this.name }}</option>
 {{/each}}

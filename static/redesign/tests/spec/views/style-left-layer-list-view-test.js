@@ -54,11 +54,4 @@ define([
             });
 
         });
-
-        describe("Panel Show / Hide Tests", function () {
-            Helper.genericChecks({
-                ClassType: LayerListView,
-                name: "LayerListView"
-            });
-        });
     });

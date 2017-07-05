@@ -19,11 +19,4 @@ define([
                 initView(this);
             });
         });
-
-        describe("Panel Show / Hide Tests", function () {
-            Helper.genericChecks({
-                ClassType: SkinView,
-                name: "SkinView"
-            });
-        });
     });
