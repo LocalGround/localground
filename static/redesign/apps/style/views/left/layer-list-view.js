@@ -3,7 +3,6 @@ define(["marionette",
         "collections/layers",
         "models/layer",
         "apps/style/views/left/layer-list-child-view",
-//        "apps/style/visibility-mixin",
         "text!../../templates/left/layer-list.html"
     ],
     function (Marionette, Handlebars, Layers, Layer, LayerListChild,
@@ -13,7 +12,6 @@ define(["marionette",
         var LayerListView = Marionette.CompositeView.extend(_.extend({}, {
             stateKey: 'layer_list',
             template: Handlebars.compile(LayerListTemplate),
-           // templateHelpers: function() {},
             templateHelpers: function () {
                 return {
                     noLayers: (this.collection.length === 0)
