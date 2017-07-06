@@ -1,7 +1,11 @@
-dasdsadsadasda
 <input class="cb-symbol" type="checkbox" {{#if is_showing}}checked{{/if}} />
 <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ height }}">
     <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
           stroke-width="{{ strokeWeight }}" stroke="{{ icon.strokeColor }}" d="{{ icon.path }}"></path>
 </svg>
+<!-- If there is more than one unique item inside the group, give a title
+     Otherwise If there's only 1 symbol, then don't show this section
+-->
+{{#compare count 1 operator=">"}}
 <p>{{ title }}</p>
+{{/compare}}

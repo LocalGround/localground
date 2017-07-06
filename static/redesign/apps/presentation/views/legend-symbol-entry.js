@@ -30,7 +30,8 @@ define(['marionette',
                 return {
                     width: width,
                     height: this.model.get("height") * scale,
-                    strokeWeight: this.model.get("strokeWeight")
+                    strokeWeight: this.model.get("strokeWeight"),
+                    count: this.model.collection.length
                 };
             },
 
@@ -53,6 +54,7 @@ define(['marionette',
                     iconOpts: this.model.toJSON(),
                     isShowing: this.model.get("is_showing") || false
                 });
+                console.log(this.model.collection);
             }
         });
         return LegendSymbolEntry;
