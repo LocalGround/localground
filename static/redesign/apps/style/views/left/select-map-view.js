@@ -88,7 +88,6 @@ define(["jquery",
                 this.collection.add(this.map);
                 var dataSources = this.app.dataManager.getDataSources();
                 this.modal.hide();               
-                this.showSection();
                 this.render();
                 this.$el.find('#map-select').val(this.map.id);
                 

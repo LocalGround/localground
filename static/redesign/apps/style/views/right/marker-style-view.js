@@ -48,7 +48,10 @@ define(["jquery",
                 this.dataType = this.model.get("layer_type");
                 this.data_source = this.model.get("data_source"); //e.g. "form_1"
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
-                this.buildPalettes();
+             //   this.buildPalettes();
+                var cat = this.getCategoricalInfo();
+                console.log(cat);
+                this.buildPalettes(cat.list.length);
                 this.buildColumnList();
              //   this.displaySymbols();
                 $('body').click(this.hideColorRamp);
@@ -205,6 +208,7 @@ define(["jquery",
                     } else {
                         console.log("catData already exists");
                         this.collection = new Backbone.Collection(this.model.get("symbols"));
+                        this.buildPalettes();
                         return;
                     }
                 }
@@ -214,6 +218,7 @@ define(["jquery",
             },
             contData: function() {
                 console.log("cont change registered");
+                this.buildPalettes();
                 var buckets = this.model.get("metadata").buckets;
                 var key = this.model.get('data_source'); 
                 this.continuousData = [];
@@ -258,29 +263,24 @@ define(["jquery",
                 this.render();
             },
 
+
             catData: function() { 
                 console.log("catData triggered"); 
                 var that = this,
-                list = [],
-                instanceCount = {},
-                key = this.model.get('data_source'),
-                $selected = this.$el.find("#cat-prop").val(),
+              
                 counter = 0,
                 fillColorList = ["446e91", "449169", "e81502", "e88401", "6c00e8"];
-                this.categoricalData = this.app.dataManager.getData(key);
-                this.selectedProp = $selected
+
+                //this.selectedProp is global so it can be used in template helper
+                this.selectedProp = this.$el.find("#cat-prop").val();
+
                 console.log("updated selected property", this.selectedProp);
                 that.layerDraft.categorical = new Symbols();
-                that.categoricalData.collection.models.forEach(function(d) {
-                    if (!list.includes(d.get($selected)) && d.get($selected)) {
-                        list.push(d.get($selected));
-                        instanceCount[d.get($selected)] = 1;
-                    } else {
-                        instanceCount[d.get($selected)]++;
-                    }                    
-                });
-                console.log(list);
-                list.forEach(function(item){
+              
+                var cat = this.getCategoricalInfo();
+                console.log(cat);
+                this.buildPalettes(cat.list.length);
+                cat.list.forEach(function(item){
                     that.layerDraft.categorical.add({
                         "rule": that.selectedProp + " = " + item,
                         "title": item,
@@ -289,10 +289,10 @@ define(["jquery",
                         "strokeOpacity": parseFloat(that.$el.find("#stroke-opacity").val()),
                         "width": parseFloat(that.$el.find("#marker-width").val()) || 20,
                         "shape": that.$el.find(".global-marker-shape").val(),
-                        "fillColor": "#" + fillColorList[counter],
+                        "fillColor": "#" + that.selectedColorPalette[counter],
                         "strokeColor": that.model.get("metadata").strokeColor,
                         "id": (counter + 1), 
-                        "instanceCount": instanceCount[item]
+                        "instanceCount": cat.instanceCount[item]
                     });
                     counter++;
                 });
@@ -302,6 +302,31 @@ define(["jquery",
                 this.model.set("symbols", this.layerDraft.categorical.toJSON());
                 this.updateMap();
                 this.render();
+            },
+
+            /* returns a list of the unique entries or categories
+             * for a layer's selected property/field. Also returns
+             * how many instances there are of each unique
+             * category
+            */
+            getCategoricalInfo: function () {
+                var key = this.model.get('data_source'),
+                cat = {
+                   list: [], 
+                   instanceCount: {},
+                },
+                $selected = this.$el.find("#cat-prop").val(),
+                categoricalData = this.app.dataManager.getData(key);
+
+                categoricalData.collection.models.forEach(function(d) {
+                    if (!cat.list.includes(d.get($selected)) && d.get($selected)) {
+                        cat.list.push(d.get($selected));
+                        cat.instanceCount[d.get($selected)] = 1;
+                    } else {
+                        cat.instanceCount[d.get($selected)]++;
+                    }                  
+                });
+                return cat; 
             },
 
             simpleData: function () {
@@ -367,22 +392,35 @@ define(["jquery",
                 );
             },
 
-            buildPalettes: function () {
-                var seq1, seq2, seq3, seq4, seq5, seq6;
-                var buckets = this.model.get("metadata").buckets; 
+            buildPalettes: function (count) {
+                var count = count;
+                if (count > 8) { count = 8; }
+                var seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8;
+                var catPalettes = ['cb-Accent', 'cb-Dark2', 'cb-Paired', 'cb-Pastel1', 'cb-Set1', 'cb-Set2', 'cb-Set3'];
+                var contPalettes = ['cb-Blues', 'cb-Oranges', 'cb-Greys', 'cb-YlGn', 'cb-RdYlBu', 'tol-dv', 'cb-Purples'];
                 var paletteId = this.model.get("metadata").paletteId || 0;
-                
-                seq1 = palette('cb-Blues', buckets);
-                seq2 = palette('cb-Oranges', buckets);
-                seq3 = palette('cb-Greys', buckets);
-                seq4 = palette('cb-YlGn', buckets);
-                seq5 = palette('cb-RdYlBu', buckets);
-                seq6 = palette('tol-dv', buckets);
-                this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6];
-                this.selectedColorPalette = this.allColors[paletteId];
-                if (this.dataType == "continuous") {
-                    this.contData();
+
+                if (this.dataType == "categorical") {
+                    var buckets = count;
+                    var paletteList = catPalettes;
+                } else if (this.dataType == "continuous") {
+                    var buckets = this.model.get("metadata").buckets;
+                    var paletteList = contPalettes;
+                } else if (this.dataType == "basic") {
+                    var buckets = count;
+                    var paletteList = catPalettes;
                 }
+
+                seq1 = palette(paletteList[0], buckets);
+                seq2 = palette(paletteList[1], buckets);
+                seq3 = palette(paletteList[2], buckets);
+                seq4 = palette(paletteList[3], buckets);
+                seq5 = palette(paletteList[4], buckets);
+                seq6 = palette(paletteList[5], buckets);
+                seq7 = palette(paletteList[6], buckets);
+                this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8];
+                this.selectedColorPalette = this.allColors[paletteId];
+                return this.selectedColorPalette;
             },
 
             updateMap: function () {
@@ -447,7 +485,11 @@ define(["jquery",
                 var paletteId = $(e.target).val();
                 this.updateMetadata("paletteId", paletteId);
                 this.selectedColorPalette = this.allColors[paletteId];
-                this.contData();
+                if (this.dataType == "categorical") {
+                    this.catData();
+                } else if (this.dataType == "continuous") {
+                    this.contData();
+                }
             }, 
 
             showPalettes: function () {

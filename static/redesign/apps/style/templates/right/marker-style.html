@@ -41,6 +41,53 @@
                     </select>
                 </td>
             </tr>
+            <tr class="categorical-variable">
+                <td>Color Ramp</td>
+                <td>
+                    <div>
+                        <a>
+                            
+                            <div class="selected-palette-wrapper">
+                                <a>
+                                    <ul class="selected-ul">
+                                        {{#with selectedColorPalette}}
+                                        
+                                            <li class="selected-palette-list">
+                                                <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">
+                                                    {{#each this}}
+                                                    <li class="palette-item" style= "background-color: #{{this}}">
+                                                          
+                                                    </li>
+                                                    {{/each}}
+                                                </ul>
+                                            </li>
+                                       
+                                        {{/with}}
+                                    </ul>
+                                <i class="fa fa-angle-down palette-icon"></i>
+                                </a>
+                            </div>
+                        </a>
+                        <div class="palette-wrapper">
+                            <ul>
+                                {{#each allColors}}
+                                <a>
+                                    <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">
+                                        <ul class="palette-container" value="{{@index}}">
+                                            {{#each this}}
+                                            <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">
+                                                
+                                            </li>
+                                            {{/each}}
+                                        </ul>
+                                    </li>
+                                </a>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </div>
+                </td>
+            </tr>
             <tr>
                 <td>Symbol Shape</td>
                 <td>
