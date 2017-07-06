@@ -252,8 +252,9 @@ define([
                 view: addMediaLayoutView,
                 saveButtonText: "Add",
                 showSaveButton: true,
-                saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
+                saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView),
             });
+            addMediaLayoutView.showUploader();
             e.preventDefault();
         },
         getValue: function () {

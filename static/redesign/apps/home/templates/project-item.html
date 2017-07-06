@@ -1,16 +1,19 @@
 <div class="project-overview" >
     <a href="/map/?project_id={{ id }}">
         <h2 class="map-title" >{{ name }}</h2>
-        <span class = "owner">Owner: {{ owner }}</span>
+        <span class = "owner">Owner: {{ owner }} -
+            {{#ifequal access_authority 1}}
+                Private
+            {{ else }}
+                Public
+            {{/ifequal}}
+        </span>
+
         <p>{{ caption }}</p>
     </a>
     <div class = "project-detail">
         <a class="tag action">
-        {{#ifequal access_authority 1}}
-            Private
-        {{ else }}
-            Public
-        {{/ifequal}}
+            Settings
         </a>
         <span class="time-stamp"><i class="fa fa-clock-o" aria-hidden="true"></i> {{timeAgo}}</span>
     </div>

@@ -101,6 +101,7 @@ define(["jquery",
                 if (this.blankInputs()) {
                     return;
                 }
+                console.log(this.model.collection);
                 this.model.set('name', projectName);
                 this.model.set('access_authority', shareType);
                 this.model.set('tags', tags);
@@ -117,8 +118,10 @@ define(["jquery",
                         that.app.vent.trigger('hide-modal');
                     },
                     error: function (model, response){
+                        that.app.vent.trigger('error-message', "Project Not Saved. Errors detected.");
                         var messages = JSON.parse(response.responseText);
                         console.log(messages);
+                        console.log(response);
                         if (messages.slug && messages.slug.length > 0) {
                             that.slugError = messages.slug[0];
                         }
