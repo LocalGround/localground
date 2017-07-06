@@ -20,6 +20,8 @@ define(['marionette',
             },
             initialize: function (opts) {
                 _.extend(this, opts);
+                // if this collection only has 1 symbol, then don't show
+                // the header:
                 this.collection = new Symbols(this.model.get("symbols"));
                 this.template = Handlebars.compile(LayerTemplate);
             }
