@@ -16,12 +16,12 @@ define(["marionette",
                 _.extend(this, opts);
                 this.render();
             },
-            
+
             events: {
                 'click #upload-tab' : 'showUploader',
-                'click #database-tab' : 'showDatabase'  
+                'click #database-tab' : 'showDatabase'
             },
-            
+
             regions: {
                 uploaderRegion: "#uploader",
                 mediaBrowserRegion: "#media_browser"
@@ -29,7 +29,7 @@ define(["marionette",
             onRender: function () {
                 // only load views after the LayoutView has
                 // been rendered to the screen:
-                
+
                /* var upld = new SelectMapView({ app: this.app });
                 this.menu.show(upld);
                 */
@@ -47,7 +47,7 @@ define(["marionette",
                 this.mediaBrowserRegion.show(this.mb);
                 this.$el.find("#database-tab-li").addClass("active");
 
-                //sets proper region from which to call addModel() 
+                //sets proper region from which to call addModel()
                 this.activeRegion = "mediaBrowser";
 
 
