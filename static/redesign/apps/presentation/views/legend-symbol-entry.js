@@ -37,6 +37,7 @@ define(['marionette',
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log("Legend Symbol Called: ");
                 var that = this, matchedCollection;
                 this.template = Handlebars.compile(SymbolTemplate);
                 this.data = this.app.dataManager.getCollection(this.data_source);
@@ -54,6 +55,9 @@ define(['marionette',
                     iconOpts: this.model.toJSON(),
                     isShowing: this.model.get("is_showing") || false
                 });
+
+                this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll);
+
                 console.log(this.model.collection);
             }
         });
