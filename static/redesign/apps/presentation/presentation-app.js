@@ -121,7 +121,7 @@ define([
             this.titleRegion.show(this.mapHeaderView);
         },
 
-        instantiateLegendView: function(){
+        instantiateLegendView: function () {
             this.legendView = new LegendView({
                 app: this,
                 collection: new Layers(
@@ -130,19 +130,18 @@ define([
                 ),
                 model: this.model
             });
+            this.legendRegion.show(this.legendView);
         },
 
         hideLegend: function () {
             this.instantiateLegendView();
-            this.legendRegion.$el.hide(this.legendView);
-            console.log("Legends Hidden: ", this.legendView);
+            this.legendRegion.$el.hide();
+            this.legendRegion.show(this.legendView);
             this.vent.trigger('show-all-markers');
         },
         showLegend: function () {
             this.instantiateLegendView();
-            this.legendRegion.show(this.legendView);
-            console.log("Legends Shown: ", this.legendView);
-            this.vent.trigger('show-all-markers');
+            this.legendRegion.$el.show();
         },
 
         updateDisplay: function () {
