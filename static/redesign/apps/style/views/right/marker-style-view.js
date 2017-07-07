@@ -44,18 +44,18 @@ define(["jquery",
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log('initialize', this.collection);
-                this.dataType = this.model.get("layer_type");
-                this.data_source = this.model.get("data_source"); //e.g. "form_1"
-                this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
-             //   this.buildPalettes();
-                var cat = this.getCategoricalInfo();
-                console.log(cat);
-                this.buildPalettes(cat.list.length);
-                this.buildColumnList();
-             //   this.displaySymbols();
+                console.log('initialize', this.model.get('symbols'), this.collection);
+                this.dataType = this.model.get('layer_type');
+                this.data_source = this.model.get('data_source'); //e.g. "form_1"
+                this.collection = new Symbols(this.model.get("symbols"));
+
+                // builds correct palette on-load
+                this.buildPalettes(this.getCategoricalInfo().list.length);
+             
                 $('body').click(this.hideColorRamp);
-                this.listenTo(this.app.vent, 'update-data-source', this.buildColumnList);
+
+                this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
+                this.listenTo(this.app.vent, 'update-data-source', this.render);
                 this.listenTo(this.app.vent, 'update-map', this.updateMap);
             },
 
@@ -113,8 +113,8 @@ define(["jquery",
                     dataType: this.dataType,
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
-                    categoricalList: this.categoricalList,
-                    continuousList: this.continuousList,
+                    categoricalList: this.buildColumnList()[0],
+                    continuousList: this.buildColumnList()[1],
                     icons: IconLookup.getIcons(),
                     selectedProp: this.selectedProp
                 };
@@ -141,26 +141,22 @@ define(["jquery",
             },
 
             selectDataType: function (e) {
-                console.log(this.dataType);
-                console.log($(e.target).val());
-                //this.dataType = this.$el.find("#data-type-select").val();
                 this.dataType = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
-                console.log(this.dataType);
+                this.model.set("layer_type", this.dataType);
                 this.render();
-                this.buildColumnList();
-
+                this.createCorrectSymbols();
             },
 
             displaySymbols: function () {
-                this.collection = new Backbone.Collection(this.model.get("symbols"));
+                this.collection = new Symbols(this.model.get("symbols"));
                 this.render();
             },
             buildColumnList: function () {
+                //clearing out the lists
                 this.categoricalList = [];
                 this.continuousList = [];
                 var key = this.model.get('data_source'),
                     dataEntry = this.app.dataManager.getData(key);
-                console.log("TESTING THIS",dataEntry, key);
                 //still need to account for map-images below...
                 if (key == "photos" || key == "audio") {
                     var list = ["id", "name", "caption", "tags", "owner", "attribution"];
@@ -172,7 +168,7 @@ define(["jquery",
                     }
                 } else if (key == "markers") {
                     //this.categoricalList = ["id", "name", "caption", "tags", "owner"];
-                    var list = ["id", "name", "caption", "tags", "owner"];
+                    var list = ["name", "caption", "tags", "owner"];
                     for (var i=0;i<list.length;i++) {
                         this.categoricalList.push({
                             text: list[i], 
@@ -196,51 +192,54 @@ define(["jquery",
                         }
                     });
                 }
-                this.render();
+                return [this.categoricalList, this.continuousList];
+            },
+
+            createCorrectSymbols: function () {
                 if (this.dataType == "continuous") {
                     this.contData();
-                }
-                if (this.dataType == "categorical") {
-                    console.log(this.model);
+                } else if (this.dataType == "categorical") {
                     if (!this.model.get("metadata").catBuilt) {
                         console.log("building catData", this.collection);
                         this.catData();
                     } else {
                         console.log("catData already exists");
-                        this.collection = new Backbone.Collection(this.model.get("symbols"));
+                        this.collection = new Symbols(this.model.get("symbols"));
                         this.buildPalettes();
                         return;
                     }
-                }
-                if (this.dataType == "basic") {
+                } else if (this.dataType == "basic") {
                     this.simpleData();
                 }
             },
+
             contData: function() {
                 console.log("cont change registered");
                 this.buildPalettes();
-                var buckets = this.model.get("metadata").buckets;
-                var key = this.model.get('data_source'); 
-                this.continuousData = [];
-                var dataEntry = this.app.dataManager.getData(key);
+                var cssId = "#cont-prop";
+                this.setSelectedProp(cssId);
                 var $selected = this.$el.find("#cont-prop").val();
-                this.selectedProp = $selected;
-                var that = this;
-                dataEntry.collection.models.forEach(function(d) {
-                    that.continuousData.push(d.get($selected));
-                });
-                var min = Math.min(...this.continuousData),
-                    max = Math.max(...this.continuousData), 
-                    range = max - min,
-                    segmentSize = range / buckets,
-                    currentFloor = min,
-                    counter = 0;
+                this.setSymbols(this.buildContinuousSymbols(this.getContInfo($selected), $selected));
+            },
+
+            catData: function() { 
+                console.log("catData triggered"); 
+                var cssId = "#cat-prop";
+                this.setSelectedProp(cssId);
+
+                this.buildPalettes(this.getCategoricalInfo().list.length);
+             
+                this.setSymbols(this.buildCategoricalSymbols(this.getCategoricalInfo()));
+                this.model.get("metadata").catBuilt = true;
+            },
+
+            buildContinuousSymbols: function (cont, $selected) {
+                var counter = 0;
                 this.layerDraft.continuous = new Symbols();
-                
-                while (currentFloor < max) {
+                while (cont.currentFloor < cont.max) {
                     this.layerDraft.continuous.add({
-                        "rule": $selected + " >= " + currentFloor.toFixed(0) + " and " + $selected + " <= " + (currentFloor + segmentSize).toFixed(0),
-                        "title": "between " + currentFloor.toFixed(0) + " and " + (currentFloor + segmentSize).toFixed(0),
+                        "rule": $selected + " >= " + cont.currentFloor.toFixed(0) + " and " + $selected + " <= " + (cont.currentFloor + cont.segmentSize).toFixed(0),
+                        "title": "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
                         "fillOpacity": parseFloat(this.$el.find("#palette-opacity").val()),
                         "strokeWeight": parseFloat(this.$el.find("#stroke-weight").val()),
                         "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()),
@@ -252,34 +251,17 @@ define(["jquery",
                         //"color": "#" + this.selectedColorPalette[counter],
                         "id": (counter + 1)
                     });
-                    console.log(that.layerDraft.continuous);
+                    console.log(this.layerDraft.continuous);
                     counter++;
-                    currentFloor += segmentSize;
+                    cont.currentFloor += cont.segmentSize;
                 }
-                this.collection = this.layerDraft.continuous;
-                console.log('continuous:', this.layerDraft.continuous.toJSON());
-                this.model.set("symbols", this.layerDraft.continuous.toJSON());
-                this.updateMap();
-                this.render();
+                return this.layerDraft.continuous;
             },
 
-
-            catData: function() { 
-                console.log("catData triggered"); 
+            buildCategoricalSymbols: function (cat) {
                 var that = this,
-              
-                counter = 0,
-                fillColorList = ["446e91", "449169", "e81502", "e88401", "6c00e8"];
-
-                //this.selectedProp is global so it can be used in template helper
-                this.selectedProp = this.$el.find("#cat-prop").val();
-
-                console.log("updated selected property", this.selectedProp);
-                that.layerDraft.categorical = new Symbols();
-              
-                var cat = this.getCategoricalInfo();
-                console.log(cat);
-                this.buildPalettes(cat.list.length);
+                counter = 0;
+                this.layerDraft.categorical = new Symbols();
                 cat.list.forEach(function(item){
                     that.layerDraft.categorical.add({
                         "rule": that.selectedProp + " = " + item,
@@ -296,18 +278,35 @@ define(["jquery",
                     });
                     counter++;
                 });
-                that.model.get("metadata").catBuilt = true;
-                this.collection = this.layerDraft.categorical;
-                console.log('categorical:', this.layerDraft.categorical.toJSON());
-                this.model.set("symbols", this.layerDraft.categorical.toJSON());
-                this.updateMap();
-                this.render();
+                return that.layerDraft.categorical;
             },
 
-            /* returns a list of the unique entries or categories
+            /* returns an object containing information
+             * for defining a layer's continuous 'buckets'
+            */
+            getContInfo: function ($selected) {
+                var that = this;
+                var buckets = this.model.get("metadata").buckets;
+                this.continuousData = [];
+                var key = this.model.get('data_source'); 
+                var dataEntry = this.app.dataManager.getData(key);
+
+                dataEntry.collection.models.forEach(function(d) {
+                    that.continuousData.push(d.get($selected));
+                });
+                var cont = {};
+                cont.min = Math.min(...this.continuousData);
+                cont.max = Math.max(...this.continuousData);
+                cont.range = cont.max - cont.min;
+                cont.segmentSize = cont.range / buckets;
+                cont.currentFloor = cont.min;
+                return cont;
+            },
+
+            /* returns a list of the unique categories/entries
              * for a layer's selected property/field. Also returns
              * how many instances there are of each unique
-             * category
+             * category/entry
             */
             getCategoricalInfo: function () {
                 var key = this.model.get('data_source'),
@@ -317,7 +316,6 @@ define(["jquery",
                 },
                 $selected = this.$el.find("#cat-prop").val(),
                 categoricalData = this.app.dataManager.getData(key);
-
                 categoricalData.collection.models.forEach(function(d) {
                     if (!cat.list.includes(d.get($selected)) && d.get($selected)) {
                         cat.list.push(d.get($selected));
@@ -329,14 +327,14 @@ define(["jquery",
                 return cat; 
             },
 
+
+
             simpleData: function () {
                 console.log("simpleData triggered", this.model); 
-                console.log(this.app.dataManager.getDataSources());
                 var that = this,
                 key = this.model.get('data_source'),
                 name = this.app.dataManager.getData(key).name;
                 this.categoricalData = this.app.dataManager.getData(key);
-                console.log(this.categoricalData);
                 var owner = this.categoricalData.collection.models[0].get("owner");
 
                 if (this.model.getSymbols().length > 0) {
@@ -350,14 +348,29 @@ define(["jquery",
                         "id": 1
                     }]);
                 }
-                console.log("before adding new symbols", this.collection);
                 this.collection = this.layerDraft.simple;
-                console.log("after adding new symbols",this.collection);
-                console.log('simple:', this.layerDraft.simple.toJSON());
                 this.model.set("symbols", this.layerDraft.simple.toJSON());
+                this.updateMapAndRender();
+            },
+
+            // gets and sets user-selected property from the dom
+            //this.selectedProp is global so it can be used in template helper
+            setSelectedProp: function (cssId) {
+               this.selectedProp = this.$el.find(cssId).val(); 
+            },
+
+            setSymbols: function (symbs) {
+                this.collection = symbs;
+                this.model.set("symbols", symbs.toJSON());
+                this.updateMapAndRender();
+            },
+
+            updateMapAndRender: function () {
+                console.log(this.model.get("layer_type"));
                 this.updateMap();
                 this.render();
             },
+            
 
             delayExecution: function (timeoutVar, func, millisecs) {
                 /*
@@ -386,6 +399,8 @@ define(["jquery",
                         console.log("the bucket #: ",buckets);
                         that.updateMetadata("buckets", buckets);
                         that.buildPalettes();
+                        that.contData();
+                       // that.render();
                         that.$el.find("#bucket").focus();
                     },
                     500 //experiment with how many milliseconds to delay
@@ -499,6 +514,7 @@ define(["jquery",
 
             //convenience function
             updateMetadata: function(newKey, newValue) {
+                console.log(this.collection);
                 var that = this;
                 console.log("a.", this.collection.length, this.model.getSymbols().length);
                 var localMeta = this.model.get("metadata") || {},
@@ -516,7 +532,6 @@ define(["jquery",
                 this.app.layerHasBeenSaved = false;
                 
                 console.log("c.", this.collection.length, this.model.getSymbols().length);
-               // this.model.trigger('rebuild-markers');
             }
 
         });
