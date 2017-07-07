@@ -24,6 +24,14 @@ define(['marionette',
                 }
             },
 
+            show: function () {
+                this.markerOverlays.showAll();
+            },
+
+            hide: function () {
+                this.markerOverlays.hideAll();
+            },
+
             templateHelpers: function () {
                 var width = 25,
                     scale = width / this.model.get("width");

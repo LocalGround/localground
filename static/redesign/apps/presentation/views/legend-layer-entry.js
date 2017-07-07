@@ -26,6 +26,18 @@ define(['marionette',
                 this.collection = new Symbols(this.model.get("symbols"));
                 this.template = Handlebars.compile(LayerTemplate);
                 console.log(this);
+            },
+
+            showAllChildren: function(){
+                this.children.each(function(symbolView){
+                    symbolView.show();
+                });
+            },
+
+            hideAllChildren: function(){
+                this.children.each(function(symbolView){
+                    symbolView.hide();
+                });
             }
 
         });
