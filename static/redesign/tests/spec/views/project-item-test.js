@@ -112,7 +112,7 @@ define([
                 fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
                 expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(0);
                 newProjectItemView.$el.find('.action').trigger('click');
-                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(1);
+                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(2);
             });
 
             it("shareModal function opens a new modal window with the right form inside", function(){
@@ -128,7 +128,7 @@ define([
                 fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
                 expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(0);
                 newProjectItemView.$el.find('.action').trigger('click');
-                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(1);
+                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(2);
                 expect(ProjectItemView.prototype.deleteProjectView).toHaveBeenCalledTimes(0);
                 newProjectItemView.deleteProjectView();
                 expect(ProjectItemView.prototype.deleteProjectView).toHaveBeenCalledTimes(1);
