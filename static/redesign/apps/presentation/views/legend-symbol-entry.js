@@ -43,7 +43,7 @@ define(['marionette',
                         width: width,
                         height: this.model.get("height") * scale,
                         strokeWeight: this.model.get("strokeWeight"),
-                        count: this.model.collection.length,
+                        count: this.symbolCount,
                         is_showing: this.isShowing()
                     };
                 return template_items;
