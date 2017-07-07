@@ -9,90 +9,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
         <link rel=stylesheet type="text/css" href="/static/redesign/css/static-pages.css" />
-        <style>
-            .btn-large {
-                display: inline-block;
-                background: #FFF;
-                margin-top: 30px;
-                padding: 10px 20px;
-                font-size: 20px;
-                text-transform: uppercase;
-                border-radius: 4px;
-                box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
-            }
-            .wave-effects {
-                position: relative;
-                cursor: pointer;
-                display: inline-block;
-                overflow: hidden;
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
-                -webkit-tap-highlight-color: transparent;
-                vertical-align: middle;
-                z-index: 1;
-                transition: .3s ease-out;
-            }
-            .ripple {
-                display: block;
-                position: absolute;
-                background: rgba(170, 170, 170, 0.3);
-                border-radius: 100%;
-                -webkit-transform: scale(0);
-                -moz-transform: scale(0);
-                -o-transform: scale(0);
-                transform: scale(0);
-                box-shadow: 0 10px 10px 0 rgba(170, 170, 170, 0.14), 0 1px 5px 0 rgba(170, 170, 170, 0.12), 0 3px 1px -2px rgba(170, 170, 170,0.2);
-
-            }
-           
-            .animate {
-                -webkit-animation: ripple 0.35s linear;
-                -moz-animation: ripple 0.35s linear;
-                -ms-animation: ripple 0.35s linear;
-                -o-animation: ripple 0.35s linear;
-                animation: ripple 0.35s linear;
-            }
-           
-            @-webkit-keyframes ripple {
-                100% {
-                     opacity: 0;
-                     -webkit-transform: scale(2.5);
-                }
-            }
-            @-moz-keyframes ripple {
-                100% {
-                     opacity: 0;
-                     -moz-transform: scale(2.5);
-                }
-            }
-            @-o-keyframes ripple {
-                100% {
-                     opacity: 0;
-                     -o-transform: scale(2.5);
-                }
-            }
-            @keyframes ripple {
-                100% {
-                     opacity: 0;
-                     transform: scale(2.5);
-                }
-            }
-        </style>
     </head>
     
-    <body style="background-color:#fafafc;">
-        <div style="background-image:url('/static/redesign/assets/splash-map-5.png');height:500px;width:100%;background-size:cover;text-align:center;margin-bottom:100px;">
-            <h1 style="font-family:'Montserrat';text-align:center;padding:160px 0 0;text-transform:uppercase;font-size:80px;color:white;font-weight:700;letter-spacing: .1em;">Local Ground</h1>
-            <span style="padding:0 0 200px;color:white;">Share your world!</span>
-            <div>
-                <a class="btn-large wave-effects" href="/accounts/login/">Login</a>
-            </div>
-        </div>
-        <div style="border-bottom: 1px solid #e4e5eb;margin-bottom:60px;">
-            <h2 style="text-align:center;margin-bottom: 20px;font-size: 30px;">Local Ground Features</h2>
-            <div style="text-align:center;margin-bottom:100px;display:flex;margin:10px 40px 40px;font-size: 14px;">
+    <body>
+
+        {% include "base/top_nav.html" %}
+        {% include "base/graphic_bar.html" %}
+<div class="container-center article flex">
+
+        <div class="welcome-box">
+            <h2 style="font-family: Amatica SC; font-weight:700; text-align:center;margin-top: 40px; margin-bottom: 20px;font-size: 36px;">Local Ground Helps You Tell The Story of Your World</h2>
+            <div style="/*text-align:center;margin-bottom:100px;display:flex;margin:10px 40px 40px;font-size: 14px;*/">
                 <div style="margin:20px;flex:1;">
                     <img src="/static/redesign/assets/map-icon.png" style="width:100px;margin:20px auto;display:block;">
                     <span style="font-weight:600;display:block;padding-bottom:4px;">Story Maps</span>
@@ -132,6 +59,8 @@
             addEffects('.wave-effects');
 
         </script>
+</div>
+     {% include "base/login_footer.html" %}
     </body>
 </html>
 {% endif %}

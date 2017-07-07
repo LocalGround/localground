@@ -1,6 +1,7 @@
 /* pages.css created by C Mah 6/29/2017 to use for login and registration pages.  
 */
 @import url(https://fonts.googleapis.com/css?family=Montserrat);
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
 @import url(https://fonts.googleapis.com/css?family=Amatic+SC);
 
 .main-content {
@@ -8,7 +9,8 @@
 }
 
 h1 {
-    font-family: 'Montserrat';
+    /*font-family: 'Montserrat';*/
+    font-family: "Open Sans", Arial, sans-serif;
     text-align: center;
     padding: 60px 0 0 0;
     text-transform: uppercase;
@@ -19,7 +21,7 @@ h1 {
 }
 
 h4 {
-    font-family: 'Montserrat';
+    /*font-family: 'Montserrat';*/
     font-family: "Open Sans", Arial, sans-serif;
     text-align: center;
     padding: 0 0 0 0;
@@ -36,7 +38,7 @@ p {
 }
 
 #outer {
-    background-image: url('/static/redesign/assets/splash-map-5.png');
+    background-image: url('/static/redesign/assets/home-header.png');
     height: 100%;
     width: 100%;
     background-size: cover;
@@ -98,4 +100,10 @@ a.logotype {
     margin: 0 10px;
     vertical-align: top;
     padding: 0 2px;
+}
+
+.welcome-box {
+        border-bottom: 1px solid #e4e5eb;
+        margin-bottom:60px;
+
 }

@@ -1,17 +1,24 @@
-<a class="logotype" href="/">Local Ground</a>
-<ul class="right-nav">
-    <li>
-        <a href="/about">About</a>
-    </li>
-    <li>
-        <a href="/documentation">Documentation</a>
-    </li>
-    <li>
-        <a class="account" id="toggle-button"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ username }}</a>
-        <div class="dropdown-menu" style="display:none;" id="account-options">
-            <a>Your Profile</a>
-            <a>Settings</a>
-            <a href="/accounts/logout/">Logout</a>
-        </div>
-    </li>
-</ul>
+<nav class="account">
+    <div>
+        <a class="logotype" href="/">Local Ground</a>
+        <ul class="right-nav">
+            <li>
+                <a href="/about">About</a>
+            </li>
+            <li>
+                <a href="/documentation">How it Works</a>
+            </li>
+            <li>
+                <a class="button-primary button-main-action button-wide" href="/accounts/login/">Sign in</a>
+            </li>
+            <li>
+                <a class="account" id="toggle-button"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ username }}</a>
+                <div class="dropdown-menu" style="display:none;" id="account-options">
+                    <a>Your Profile</a>
+                    <a>Settings</a>
+                    <a href="/accounts/logout/">Logout</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>

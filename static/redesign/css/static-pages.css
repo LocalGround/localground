@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Amatic+SC);
+@import url(https://fonts.googleapis.com/css?family=Amatica+SC);
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,800,300italic,400italic);
 @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
 @import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
@@ -1873,9 +1873,10 @@ button , a{
 
 a.logotype{
 	padding: 14px 20px 10px 0;
-	font-family: "Amatic SC";
-	letter-spacing: .1em;
-	font-size: 24px;
+	font-family: "Amatica SC";
+	/*letter-spacing: .2em;*/
+	font-weight: 700;
+	font-size: 30px;
 	display: inline-block;
 	text-transform: uppercase;
 }
