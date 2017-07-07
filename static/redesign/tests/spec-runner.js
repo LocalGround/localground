@@ -29,6 +29,9 @@ require(['boot'], function () {
         'spec/views/audio-player-new-test.js',
         'spec/views/audio-player-test.js',
 
+        //presentation app:
+        'spec/views/presentation-app-test.js',
+
         //style app left panel
         'spec/views/style-left-panel-test.js',
         'spec/views/style-left-map-skin-test.js',
