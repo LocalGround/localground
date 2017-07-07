@@ -25,12 +25,13 @@ require(['boot'], function () {
         //'spec/views/spreadsheet-app-test.js',
         'spec/views/global-toolbar-test.js',
         'spec/views/data-manager-test.js',
-        'spec/views/legend-layer-entry-test.js',
         'spec/views/audio-player-new-test.js',
         'spec/views/audio-player-test.js',
 
         //presentation app:
         'spec/views/presentation-app-test.js',
+        'spec/views/presentation-legend-symbol-test.js',
+        'spec/views/presentation-legend-layer-entry-test.js',
 
         //style app left panel
         'spec/views/style-left-panel-test.js',

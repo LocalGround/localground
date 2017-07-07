@@ -50,6 +50,7 @@ define(['marionette',
             },
 
             initialize: function (opts) {
+                console.log(SymbolTemplate);
                 _.extend(this, opts);
                 var that = this, matchedCollection;
                 this.template = Handlebars.compile(SymbolTemplate);
