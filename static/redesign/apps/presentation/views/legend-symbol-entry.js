@@ -32,6 +32,10 @@ define(['marionette',
                 this.markerOverlays.hideAll();
             },
 
+            isShowing: function(){
+                return this.model.get("is_showing") || this.is_showing || false;
+            },
+
             templateHelpers: function () {
                 var width = 25,
                     scale = width / this.model.get("width"),
@@ -40,7 +44,7 @@ define(['marionette',
                         height: this.model.get("height") * scale,
                         strokeWeight: this.model.get("strokeWeight"),
                         count: this.model.collection.length,
-                        is_showing: this.model.get("is_showing") || this.is_showing || false
+                        is_showing: this.isShowing()
                     };
                 return template_items;
             },
@@ -62,10 +66,14 @@ define(['marionette',
                     collection: matchedCollection,
                     app: this.app,
                     iconOpts: this.model.toJSON(),
-                    isShowing: this.model.get("is_showing") || this.is_showing || false
+                    isShowing: this.isShowing()
                 });
 
                 this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
+            },
+
+            onRender: function(){
+                if (this.isShowing()) this.show();
             }
         });
         return LegendSymbolEntry;
