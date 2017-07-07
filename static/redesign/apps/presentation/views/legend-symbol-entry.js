@@ -24,23 +24,25 @@ define(['marionette',
                 }
             },
 
-            show: function () {
+            show: function (e) {
                 this.markerOverlays.showAll();
             },
 
-            hide: function () {
+            hide: function (e) {
                 this.markerOverlays.hideAll();
             },
 
             templateHelpers: function () {
                 var width = 25,
-                    scale = width / this.model.get("width");
-                return {
-                    width: width,
-                    height: this.model.get("height") * scale,
-                    strokeWeight: this.model.get("strokeWeight"),
-                    count: this.model.collection.length
-                };
+                    scale = width / this.model.get("width"),
+                    template_items = {
+                        width: width,
+                        height: this.model.get("height") * scale,
+                        strokeWeight: this.model.get("strokeWeight"),
+                        count: this.model.collection.length,
+                        is_showing: this.model.get("is_showing") || this.is_showing || false
+                    };
+                return template_items;
             },
 
             initialize: function (opts) {
@@ -60,7 +62,7 @@ define(['marionette',
                     collection: matchedCollection,
                     app: this.app,
                     iconOpts: this.model.toJSON(),
-                    isShowing: this.model.get("is_showing") || false
+                    isShowing: this.model.get("is_showing") || this.is_showing || false
                 });
 
                 this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));

@@ -15,16 +15,20 @@ define(['marionette',
             childViewOptions: function () {
                 return {
                     app: this.app,
-                    data_source: this.model.get("data_source")
+                    data_source: this.model.get("data_source"),
+                    is_showing: this.model.get("metadata").is_showing
                 };
             },
             initialize: function (opts) {
                 _.extend(this, opts);
-                // if this collection only has 1 symbol, then don't show
-                // the header:
                 this.collection = new Symbols(this.model.get("symbols"));
                 this.template = Handlebars.compile(LayerTemplate);
-                console.log(this);
+            },
+
+            onRender: function(){
+                if (this.model.get("metadata").is_showing === true){
+                    this.showAllChildren();
+                }
             },
 
             showAllChildren: function(){
