@@ -121,10 +121,7 @@ define([
             this.titleRegion.show(this.mapHeaderView);
         },
 
-        hideLegend: function () {
-            console.log("hide legend!!!!");
-        },
-        showLegend: function () {
+        instantiateLegendView: function(){
             this.legendView = new LegendView({
                 app: this,
                 collection: new Layers(
@@ -133,7 +130,19 @@ define([
                 ),
                 model: this.model
             });
+        },
+
+        hideLegend: function () {
+            this.instantiateLegendView();
+            this.legendRegion.$el.hide(this.legendView);
+            console.log("Legends Hidden: ", this.legendView);
+            this.vent.trigger('show-all-markers');
+        },
+        showLegend: function () {
+            this.instantiateLegendView();
             this.legendRegion.show(this.legendView);
+            console.log("Legends Shown: ", this.legendView);
+            this.vent.trigger('show-all-markers');
         },
 
         updateDisplay: function () {
