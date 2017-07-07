@@ -22,10 +22,8 @@ define(['marionette',
                 _.extend(this, opts);
                 // if this collection only has 1 symbol, then don't show
                 // the header:
-                console.log("Legend Layer Entry: ");
                 this.collection = new Symbols(this.model.get("symbols"));
                 this.template = Handlebars.compile(LayerTemplate);
-                console.log(this);
             }
 
         });
