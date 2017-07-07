@@ -96,7 +96,7 @@ define(["jquery",
                 this.render();
                 this.$el.find('#map-select').val(this.map.id);
                 
-                var layers = new Layers(null, {mapID: this.app.selectedMapModel.get("id")});
+                var layers = new Layers(null, {mapID: this.map.get("id")});
                 this.map.set("layers", layers);
 
                 dataSources.forEach(function(dataSource) {
@@ -109,10 +109,21 @@ define(["jquery",
                                 filters: {},
                                 symbols: [{
                                     "fillColor": collection.fillColor,
-                                    "width": 30,
+                                    "width": 20,
                                     "rule": "*",
                                     "title": dataSource.name
                                 }],
+                                metadata: {
+                                    buckets: 4,
+                                    paletteId: 0,
+                                    fillOpacity: 1,
+                                    width: 20,
+                                    fillColor: collection.fillColor,
+                                    strokeColor: "#ffffff",
+                                    strokeWeight: 1,
+                                    strokeOpacity: 1,
+                                    shape: "circle"
+                                },
                                 title: "Sites"
                             });
                             layers.add(layer);
@@ -125,10 +136,21 @@ define(["jquery",
                                 filters: {},
                                 symbols: [{
                                     "fillColor": collection.fillColor,
-                                    "width": 30,
+                                    "width": 20,
                                     "rule": "*",
                                     "title": dataSource.name
                                 }],
+                                metadata: {
+                                    buckets: 4,
+                                    paletteId: 0,
+                                    fillOpacity: 1,
+                                    width: 20,
+                                    fillColor: collection.fillColor,
+                                    strokeColor: "#ffffff",
+                                    strokeWeight: 1,
+                                    strokeOpacity: 1,
+                                    shape: "circle"
+                                },
                                 title: dataSource.name
                             });
                             layers.add(layer);

@@ -3,13 +3,13 @@ define(["jquery",
         "marionette",
         "handlebars",
         "lib/maps/icon-lookup",
+        "apps/style/views/right/marker-style-view-child",
         "text!../../templates/right/marker-style.html",
-        "text!../../templates/right/marker-style-child.html",
         "collections/symbols",
         'color-picker-eyecon',
         "palette"
     ],
-    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleTemplate, MarkerStyleChildTemplate, Symbols, ColorPicker) {
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, MarkerStyleTemplate, Symbols) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
@@ -20,54 +20,18 @@ define(["jquery",
             layerDraft: {
                 continuous: null,
                 categorical: null,
-                simple: null, 
+                simple: null,
                 individual: null
             },
+            catDataHasBeenBuilt: false,
             template: Handlebars.compile(MarkerStyleTemplate),
             modelEvents: {
                 //'change:symbols': 'render'//,
                 //'change:metadata': 'contData'
             },
-            
 
             //each of these childViews is a symbol. this view renders the value-rules box
-            getChildView: function () {
-                return Marionette.ItemView.extend({
-                    initialize: function (opts) {
-                        _.extend(this, opts);
-                        this.listenTo(this.app.vent, "update-opacity", this.updateSymbolOpacity);
-                    },
-                    template: Handlebars.compile(MarkerStyleChildTemplate),
-                    events: {
-                        'change .marker-shape': 'setSymbol'
-                    },
-                    modelEvents: {
-                        'change': 'updateLayerSymbols'
-                        
-                    },
-                    tagName: "tr",
-                    className: "table-row",
-                    templateHelpers: function () {
-                        return {
-                            dataType: this.dataType,
-                            icons: IconLookup.getIcons(),
-                            fillOpacity: this.fillOpacity
-                        };
-                    },
-                    setSymbol: function (e) {
-                        this.model.set("shape", $(e.target).val());
-                    },
-                    updateLayerSymbols: function () {
-                        this.layer.setSymbol(this.model);
-                    }, 
-                    updateSymbolOpacity: function (opacity) {
-                        this.model.set("fillOpacity", opacity);
-                        this.render();
-                       this.templateHelpers();
-                    },
-
-                });
-            },
+            childView: MarkerStyleChildView,
             childViewContainer: "#symbols",
 
             childViewOptions: function () {
@@ -89,14 +53,15 @@ define(["jquery",
              //   this.displaySymbols();
                 $('body').click(this.hideColorRamp);
                 this.listenTo(this.app.vent, 'update-data-source', this.buildColumnList);
+                this.listenTo(this.app.vent, 'update-map', this.updateMap);
             },
 
             onRender: function () {
-                var that = this;
-                var newHex;
+                var that = this,
+                    color = this.model.get('fillColor');
                 $(".marker-style-color-picker").remove();
                 this.$el.find('#stroke-color-picker').ColorPicker({
-            
+
                     onShow: function (colpkr) {
                         console.log("colorPicker show");
                         $(colpkr).fadeIn(500);
@@ -104,14 +69,14 @@ define(["jquery",
                     },
                     onHide: function (colpkr) {
                         console.log("colorPicker hide");
-                        that.updateStrokeColor(newHex);
+                        that.updateStrokeColor(color);
                         $(colpkr).fadeOut(500);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
                         console.log("colorPicker changed");
-                        newHex = hex;
-                    },
+                        color = "#" + hex;
+                    }
                 });
                 $(".colorpicker:last-child").addClass('marker-style-color-picker');
             },
@@ -137,14 +102,16 @@ define(["jquery",
             },
 */
             templateHelpers: function () {
-                var metadata = this.model.get("metadata");
-                var helpers = {
+                var metadata = this.model.get("metadata"),
+                    helpers;
+                console.log(metadata);
+                helpers = {
                     metadata: metadata,
                     dataType: this.dataType,
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
                     categoricalList: this.categoricalList,
-                    continuousList: this.continuousList, 
+                    continuousList: this.continuousList,
                     icons: IconLookup.getIcons(),
                     selectedProp: this.selectedProp
                 };
@@ -231,7 +198,15 @@ define(["jquery",
                     this.contData();
                 }
                 if (this.dataType == "categorical") {
-                    this.catData();
+                    console.log(this.model);
+                    if (!this.model.get("metadata").catBuilt) {
+                        console.log("building catData", this.collection);
+                        this.catData();
+                    } else {
+                        console.log("catData already exists");
+                        this.collection = new Backbone.Collection(this.model.get("symbols"));
+                        return;
+                    }
                 }
                 if (this.dataType == "basic") {
                     this.simpleData();
@@ -321,6 +296,7 @@ define(["jquery",
                     });
                     counter++;
                 });
+                that.model.get("metadata").catBuilt = true;
                 this.collection = this.layerDraft.categorical;
                 console.log('categorical:', this.layerDraft.categorical.toJSON());
                 this.model.set("symbols", this.layerDraft.categorical.toJSON());
@@ -337,13 +313,18 @@ define(["jquery",
                 this.categoricalData = this.app.dataManager.getData(key);
                 console.log(this.categoricalData);
                 var owner = this.categoricalData.collection.models[0].get("owner");
-                this.layerDraft.simple = new Symbols();
-                this.layerDraft.simple.add({
-                    "rule": "owner" + " = " + owner,
-                    "title": name,
-                    "shape": "circle",
-                    "fillColor": "#60c7cc"
-                });
+
+                if (this.model.getSymbols().length > 0) {
+                    this.layerDraft.simple = this.model.getSymbols();
+                } else {
+                    this.layerDraft.simple = new Symbols([{
+                        "rule": "*",
+                        "title": name,
+                        "shape": "circle",
+                        "fillColor": "#60c7cc",
+                        "id": 1
+                    }]);
+                }
                 console.log("before adding new symbols", this.collection);
                 this.collection = this.layerDraft.simple;
                 console.log("after adding new symbols",this.collection);
@@ -399,7 +380,9 @@ define(["jquery",
                 seq6 = palette('tol-dv', buckets);
                 this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6];
                 this.selectedColorPalette = this.allColors[paletteId];
-                this.contData();
+                if (this.dataType == "continuous") {
+                    this.contData();
+                }
             },
 
             updateMap: function () {
@@ -454,8 +437,8 @@ define(["jquery",
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
                 console.log("update stroke color triggered");
-                this.updateMetadata("strokeColor", '#' + hex);
-                $('#stroke-color-picker').css('color', '#' + hex);
+                this.updateMetadata("strokeColor", hex);
+                $('#stroke-color-picker').css('color', hex);
                 this.updateMap();
             },
 

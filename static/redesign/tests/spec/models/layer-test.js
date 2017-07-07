@@ -44,8 +44,8 @@ define([
                         fillOpacity: 1,
                         width: 20,
                         fillColor: "#4e70d4",
-                        strokeColor: "#4e70d4",
-                        strokeWeight: 3,
+                        strokeColor: "#ffffff",
+                        strokeWeight: 1,
                         strokeOpacity: 1,
                         shape: "circle"
                     },
@@ -61,8 +61,8 @@ define([
                     fillOpacity: 1,
                     width: 20,
                     fillColor: "#4e70d4",
-                    strokeColor: "#4e70d4",
-                    strokeWeight: 3,
+                    strokeColor: "#ffffff",
+                    strokeWeight: 1,
                     strokeOpacity: 1,
                     shape: "circle"
                 });
