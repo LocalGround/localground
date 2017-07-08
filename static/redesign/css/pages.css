@@ -65,7 +65,14 @@ p {
 #center_text {
     text-align: center;
 }
-
+#footer-text {
+    text-align: center;
+    background-color: #e4e5eb;
+    margin-top: 50px;
+    padding: 5px 0px 5px 0px;
+    width: 100%;
+    }
+}
 #outer {
     margin: 20px;
     height: 100%;
@@ -79,8 +86,9 @@ p {
     width: 50%;
     max-width: 500px;
     margin: auto;
+    margin-top: 50px;
     padding: 20px;
-    background-color: #f4f4f4;
+    background-color: #e4e5eb;
     border: 1px dotted darkgray;
 }
 
@@ -188,27 +196,7 @@ nav.account>div {
 .navbar {
     margin-bottom: 0px
 }
-/**Graphic Bar**/
 
-.graphic-bar {
-    background-color: #fafafc;
-    border-bottom: 1px solid #e4e5eb;
-    background-image: url('../assets/home-header.png');
-    background-size: 100%;
-    min-height: 75px;
-    /*
-	background: #4e70d4;
-	background: -moz-linear-gradient(left, #4e70d4 0%, #5777d9 100%);
-	background: -webkit-linear-gradient(left, #4e70d4 0%,#5777d9 100%);
-	background: linear-gradient(to right, #4e70d4 0%,#5777d9 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4e70d4', endColorstr='#5777d9',GradientType=1 ); */
-}
-
-.container-center {
-    max-width: 960px;
-    margin: auto;
-    display: flex;
-}
 
 /**Login Screen*/
 .login-questions>a,
