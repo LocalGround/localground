@@ -4,9 +4,8 @@
 <head>
     <title> {% block title %} Local Ground{% endblock %}</title>
 
-    <!--link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"-->
-    <!--link rel=stylesheet type="text/css" href="/static/redesign/css/static-pages.css" /-->
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/static-pages.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link href="/static/redesign/css/pages.css" rel="stylesheet">
 </head>
 
@@ -19,9 +18,9 @@
     {% endblock %}
     
     <div class="main-content">
-    {% block content %} 
-        Hello Cynthia!
-    {% endblock %}
+        {% block content %} 
+            Hello Cynthia!
+        {% endblock %}
     </div>
 
     {% block login_footer %}

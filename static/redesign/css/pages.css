@@ -1,19 +1,47 @@
 /* pages.css created by C Mah 6/29/2017 to use for login and registration pages.  
 */
+
 @import url(https://fonts.googleapis.com/css?family=Montserrat);
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
 @import url(https://fonts.googleapis.com/css?family=Amatic+SC);
-
+@import url(https://fonts.googleapis.com/css?family=Amatica+SC);
 .main-content {
     background: #EEE;
 }
+
+html,
+div,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+button,
+table,
+input,
+span,
+a,
+select,
+form {
+    padding: 0;
+    margin: 0;
+    font-family: "Open Sans", Arial, sans-serif;
+    color: #3d3d3d;
+}
+
+a {
+    text-decoration: none;
+}
+
 
 h1 {
     /*font-family: 'Montserrat';*/
     font-family: "Open Sans", Arial, sans-serif;
     text-align: center;
-    padding: 60px 0 0 0;
-    text-transform: uppercase;
+    padding: 100px 0 0 0;
     font-size: 80px;
     color: white;
     font-weight: 700;
@@ -38,44 +66,43 @@ p {
 }
 
 #outer {
-    background-image: url('/static/redesign/assets/home-header.png');
+    margin: 20px;
     height: 100%;
     width: 100%;
+    background-color: white;
     background-size: cover;
     text-align: center;
 }
 
 #inner {
     width: 50%;
-    margin: 0 auto;
-    padding: 5px 20px 5px 20px;
-    background-color: #f2f2f2;
+    max-width: 500px;
+    margin: auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border: 1px dotted darkgray;
 }
 
 .btn {
     display: inline-block;
-    background: #009999;
+    background: #008580;
     margin: 10px;
-    padding: 10px 20px;
-    font-size: 20px;
+    padding: 5px 20px;
+    font-size: 14px;
     color: white;
-    text-transform: uppercase;
     border-radius: 4px;
 }
 
-a.logotype {
-    padding: 14px 20px 10px 0;
-    font-family: "Amatic SC";
-    letter-spacing: .1em;
-    font-size: 24px;
-    display: inline-block;
-    text-transform: uppercase;
-}
 
-.right-nav>li>a {
-    text-transform: uppercase;
-    . font-size: 12px;
-    letter-spacing: 1px;
+/*******This area is for the top nav***/
+
+a.logotype {
+    /*padding: 14px 20px 10px 0;*/
+    font-family: "Amatica SC";
+    /*letter-spacing: .1em;*/
+    font-size: 36px;
+    font-weight: bold;
+    /*display: inline-block;*/
 }
 
 .right-nav {
@@ -85,25 +112,108 @@ a.logotype {
     margin: 0;
 }
 
-#map-title-options nav,
+#nav,
 .right-nav {
     float: right;
-    text-transform: uppercase;
-    line-height: 57px;
     display: inline-block;
+    padding: 20px 0 10px 0;
+   
 }
 
-#map-title-options nav>div,
+#nav>div,
 .right-nav>li {
     display: inline-block;
-    height: 57px;
-    margin: 0 10px;
-    vertical-align: top;
+    height: 36px;
+    margin: 0px 10px;
+    vertical-align: text-bottom;
     padding: 0 2px;
 }
 
 .welcome-box {
-        border-bottom: 1px solid #e4e5eb;
-        margin-bottom:60px;
+    border-bottom: 1px solid #e4e5eb;
+    margin-bottom: 60px;
+}
 
+nav.account {
+    background-color: white;
+    font-size: 14px;
+    /*box-shadow: 0 1px 4px 1px rgba(53, 76, 122, 0.1);*/
+    position: relative;
+    z-index: 40;
+}
+
+nav.account>div {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.button-primary {
+    /*background-color:rgb(53, 76, 122)*/
+    background-color: #4e70d4;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    float: right;
+    letter-spacing: .05em;
+    min-width: 80px;
+    text-align: center;
+    padding: 5px;
+    margin-right: 10px;
+    -webkit-animation: fadeEffect 0.5s;
+    animation: fadeEffect 0.5s;
+        /* Fading effect takes 1 second */
+}
+
+.button-main-action {
+    background-color: #008580;
+    -webkit-transition: background 0.3s linear;
+    -moz-transition: background 0.3s linear;
+    -ms-transition: background 0.3s linear;
+    -o-transition: background 0.3s linear;
+    transition: background 0.3s linear;
+}
+
+.nav-color {
+    background-color: #008580;
+    color: white;
+}
+
+.white,
+.white a {
+    color: #fff;
+}
+
+.navbar {
+    margin-bottom: 0px
+}
+/**Graphic Bar**/
+
+.graphic-bar {
+    background-color: #fafafc;
+    border-bottom: 1px solid #e4e5eb;
+    background-image: url('../assets/home-header.png');
+    background-size: 100%;
+    min-height: 75px;
+    /*
+	background: #4e70d4;
+	background: -moz-linear-gradient(left, #4e70d4 0%, #5777d9 100%);
+	background: -webkit-linear-gradient(left, #4e70d4 0%,#5777d9 100%);
+	background: linear-gradient(to right, #4e70d4 0%,#5777d9 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4e70d4', endColorstr='#5777d9',GradientType=1 ); */
+}
+
+.container-center {
+    max-width: 960px;
+    margin: auto;
+    display: flex;
+}
+
+/**Login Screen*/
+.login-questions>a,
+.login-questions>p>a
+{
+    color:#4e70d4;
+    text-decoration: underline;
+    text-decoration-color: #4e70d4;
 }

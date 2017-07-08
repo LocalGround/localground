@@ -1,4 +1,43 @@
-<nav class="account">
+<!--nav class="navbar account">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand logotype" href="/">Local Ground</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <a href="/about">About</a>
+            </li>
+            <li>
+                <a href="/documentation">How it Works</a>
+            </li>
+            <li><a class=" nav-color" href="/accounts/login"><span class="glyphicon glyphicon-user white"></span> Create an account</a></li>
+            <li>&nbsp</li>
+            <li><a class=" nav-color" href="/accounts/login/"><span class="glyphicon glyphicon-log-in white"></span>&nbsp&nbspSign In</a></li>
+
+        </ul>
+    </div>
+</nav-->
+
+<nav class="navbar account">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand logotype" href="/">Local Ground</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <a href="/about">About</a>
+            </li>
+            <li>
+                <a href="/documentation">How it Works</a>
+            </li>
+                <a class="navbar-btn button-primary button-main-action" href="/accounts/login"><span class="glyphicon glyphicon-log-in white"></span>&nbsp&nbspSign In</a>
+                <a class="navbar-btn button-primary button-main-action" href="/accounts/register"><span class="glyphicon glyphicon-user white"></span>&nbsp&nbspCreate an account</a>
+        </ul>
+
+
+    </div>
+</nav>
+<!--nav class="account">
     <div>
         <a class="logotype" href="/">Local Ground</a>
         <ul class="right-nav">
@@ -8,17 +47,21 @@
             <li>
                 <a href="/documentation">How it Works</a>
             </li>
+
             <li>
-                <a class="button-primary button-main-action button-wide" href="/accounts/login/">Sign in</a>
-            </li>
-            <li>
-                <a class="account" id="toggle-button"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ username }}</a>
+                <a class="account" id="toggle-buttons"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ username }}</a>
                 <div class="dropdown-menu" style="display:none;" id="account-options">
                     <a>Your Profile</a>
                     <a>Settings</a>
                     <a href="/accounts/logout/">Logout</a>
                 </div>
             </li>
+            <a class="button-primary button-main-action" href="/accounts/login">Create an Account</a>
+            <a class="button-primary button-main-action" href="/accounts/login/">Sign in</a>
         </ul>
+
+
+
+
     </div>
-</nav>
+</nav-->
