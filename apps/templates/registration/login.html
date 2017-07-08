@@ -6,7 +6,11 @@ login_footer.html
 {% extends "base/base.html" %} {% block title %}Login{% endblock %} 
 
 {% block content %}
-
+<div class="article-title">
+    <div class="container-center article ">
+        <h1>Login</h1>
+    </div>
+</div>
 <div id="outer">
     <!--h1>Local Ground</h1-->
 
@@ -38,7 +42,7 @@ login_footer.html
             <a href="/accounts/password/reset/">Forgot your password?</a>
              <hr>
             <p class="align">
-                  {% if user.is_superuser or not ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE %} New to Local Ground? &nbsp <a href="/accounts/register/"> Create your Local Ground account</a>        {% endif %}
+                  {% if user.is_superuser or not ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE %} New to Local Ground?<br> <a href="/accounts/register/"> Create your Local Ground account</a>        {% endif %}
              </p>
         </div>
         <div>

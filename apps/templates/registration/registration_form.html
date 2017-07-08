@@ -3,10 +3,16 @@ registration_form.html - updated by C Mah 7/7/2017.  Designed to be used with to
 login_footer.html
 -->
 
-{% extends "base/base.html" %} {% block title %}Registration{% endblock %} 
+{% extends "base/base.html" %} 
+{% block title %}Registration{% endblock %} 
+{% block extra_styles %} {{block.super}} .content p, .content form { margin-left: 20px; } {% endblock %}
 
 {% block content %}
-
+<div class="article-title">
+	<div class="container-center article ">
+		<h1>Create account</h1>
+	</div>
+</div>
 <div id="outer">
 	<!--h1>Local Ground</h1-->
 
@@ -20,7 +26,7 @@ login_footer.html
 						<div class="clearfix">
 							<label>&nbsp;</label>
 							<div class="input">
-								<input type="submit" value="Submit" class="btn primary" />
+								<input type="submit" value="Create account" class="btn primary" />
 							</div>
 						</div>
 					</fieldset>
