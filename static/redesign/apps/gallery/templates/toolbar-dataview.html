@@ -1,6 +1,12 @@
 <div class = "project-detail">
-    <!-- Temporary placement for implementation purposes -->
-   
+
+    <!-- Testing for universal format for add data -->
+
+    <!-- Those two things have to be integrated with the universal add data menu
+         since clicking on those titles should jump to the form without adding
+         or editing existing data.
+    -->
+
     {{#ifequal activeTab "data"}}
         {{#ifequal screenType "spreadsheet"}}
             <select class="media-type">
@@ -12,7 +18,7 @@
             {{/each}}
             </select>
         {{/ifequal}}
-        
+
         {{#ifequal screenType "gallery"}}
             <select class="media-type">
                 <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>
@@ -25,8 +31,15 @@
         {{/ifequal}}
     {{/ifequal}}
 
+
+    <!-- This format is the most suitable for the Add Data update.
+         However, there has to be a lot of tweakings to suit existing functions on the gallery ann spreadsheet
+
+         The edit text should be its own button and when clicked, it should jump to the ecisting form
+         and then create a new row or something in line of editing data
+    -->
     {{#ifequal screenType "map"}}
-    <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</button>
+    <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Data</button>
     <div class="dropdown-menu" id="add-data-type" style="display: none;">
         <a href="#" class="add-map-image">Map Image</a>
         <hr>
@@ -49,6 +62,7 @@
             <a id="add-new" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</a>
         {{/ifequal}}
 	{{/ifequal}}
+
 </div>
 <div class="main-search">
 	<form class="search-form" value="Search Media">
