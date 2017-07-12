@@ -41,7 +41,7 @@ define([
 
         });
 
-        describe("LegendSymbolEntry: Show Hide Cases", function(){
+        describe("LegendSymbolEntry: Render Tests", function(){
             beforeEach(function () {
                 initSpies();
                 initChildView(this);
@@ -67,5 +67,19 @@ define([
 
             });
 
+            it("Shape draws correctly", function() {
+                /*
+                <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ height }}">
+                    <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
+                          stroke-width="{{ strokeWeight }}" stroke="{{ icon.strokeColor }}" d="{{ icon.path }}"></path>
+                </svg>
+                */
+                console.log(fixture.html());
+                expect(fixture.find("svg")[0].getAttribute("viewBox")).toEqual(symbolModel.get("icon").viewBox);
+                expect(fixture.find("svg")[0].getAttribute("height")).toEqual(symbolModel.get("height"));
+                expect(fixture.find("svg")[0].getAttribute("width")).toEqual(symbolModel.get("width"));
+            });
+
         });
+
     });
