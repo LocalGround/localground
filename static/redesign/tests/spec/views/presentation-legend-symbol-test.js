@@ -4,10 +4,9 @@ define([
     rootDir + 'models/symbol',
     rootDir + "lib/maps/overlays/infobubbles/base",
     rootDir + 'lib/maps/marker-overlays',
-    rootDir + 'lib/maps/overlays/marker',
     "tests/spec-helper"
 ],
-    function (LegendSymbolEntry, Symbol, InfoBubble) {
+    function (LegendSymbolEntry, Symbol, InfoBubble, OverlayListView) {
         'use strict';
         var symbolView,
             fixture,
@@ -25,14 +24,16 @@ define([
                 symbolView.render();
                 fixture.append(symbolView.$el);
             },
-            initSpies = function () {
+            initSpies = function (scope) {
                 spyOn(LegendSymbolEntry.prototype, "initialize").and.callThrough();
                 spyOn(InfoBubble.prototype, 'initialize');
+                spyOn(scope.app.vent, 'trigger').and.callThrough();
+                spyOn(OverlayListView.prototype, "showAll").and.callThrough();
             };
 
         describe("LegendSymbolEntry: Initialization Tests", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
                 initChildView(this);
             });
             it("Initializes symbols collection successfully", function () {
@@ -43,7 +44,7 @@ define([
 
         describe("LegendSymbolEntry: Render Tests", function(){
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
                 initChildView(this);
             });
             it("Checkbox Settings for Layer (Layer should override Symbol settings)", function () {
@@ -78,6 +79,10 @@ define([
                 expect(fixture.find("svg")[0].getAttribute("viewBox")).toEqual(symbolModel.get("icon").viewBox);
                 expect(fixture.find("svg")[0].getAttribute("height")).toEqual(templateHelpers.height.toString());
                 expect(fixture.find("svg")[0].getAttribute("width")).toEqual(templateHelpers.width.toString());
+                expect(fixture.find("path")[0].getAttribute("stroke-width")).toEqual(templateHelpers.strokeWeight.toString());
+                expect(fixture.find("path")[0].getAttribute("fill")).toEqual(symbolModel.get("icon").fillColor);
+                expect(fixture.find("path")[0].getAttribute("stroke")).toEqual(symbolModel.get("icon").strokeColor);
+                expect(fixture.find("path")[0].getAttribute("d")).toEqual(symbolModel.get("icon").path);
                 //TODO: finish the SVG tests (check other attributes)
             });
 
@@ -94,6 +99,41 @@ define([
                 expect(fixture.find("p").html()).toEqual(symbolModel.get("title"));
             });
 
+        });
+
+        describe("LegendSymbolEntry: Global events", function(){
+
+            beforeEach(function () {
+                initSpies(this);
+                initChildView(this);
+            });
+            //
+            it("Shows all markers has been triggered", function(){
+                expect(OverlayListView.prototype.showAll).toHaveBeenCalledTimes(0);
+                symbolView.app.vent.trigger("show-all-markers");
+                expect(OverlayListView.prototype.showAll).toHaveBeenCalledTimes(1);
+                //expect(1).toEqual(-1);
+
+                //this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
+            });
+        });
+
+        describe("LegendSymbolEntry: HTML triggers", function(){
+
+            beforeEach(function () {
+                initSpies(this);
+            });
+            //
+            it("Shows symbols being toggled between show and hide when clicked on the checkboxes", function(){
+                initChildView(this);
+                expect(fixture.find(".cb-symbol").prop("checked")).toBeFalsy();
+                fixture.find(".cb-symbol").trigger("click")
+                //initChildView(this);
+                expect(fixture.find(".cb-symbol").prop("checked")).toBeTruthy();
+                fixture.find(".cb-symbol").trigger("click")
+                //initChildView(this);
+                expect(fixture.find(".cb-symbol").prop("checked")).toBeFalsy();
+            });
         });
 
     });
