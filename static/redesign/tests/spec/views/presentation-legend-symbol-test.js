@@ -74,10 +74,24 @@ define([
                           stroke-width="{{ strokeWeight }}" stroke="{{ icon.strokeColor }}" d="{{ icon.path }}"></path>
                 </svg>
                 */
-                console.log(fixture.html());
+                var templateHelpers = symbolView.templateHelpers();
                 expect(fixture.find("svg")[0].getAttribute("viewBox")).toEqual(symbolModel.get("icon").viewBox);
-                expect(fixture.find("svg")[0].getAttribute("height")).toEqual(symbolModel.get("height"));
-                expect(fixture.find("svg")[0].getAttribute("width")).toEqual(symbolModel.get("width"));
+                expect(fixture.find("svg")[0].getAttribute("height")).toEqual(templateHelpers.height.toString());
+                expect(fixture.find("svg")[0].getAttribute("width")).toEqual(templateHelpers.width.toString());
+                //TODO: finish the SVG tests (check other attributes)
+            });
+
+            it("Make sure that text doesn't show if only 1 symbol specified.", function() {
+                //don't show title if only 1 symbol:
+                symbolView.symbolCount = 1;
+                symbolView.render();
+                expect(fixture).not.toContainElement("p");
+
+                //show title if more than one symbole
+                symbolView.symbolCount = 2;
+                symbolView.render();
+                expect(fixture).toContainElement("p");
+                expect(fixture.find("p").html()).toEqual(symbolModel.get("title"));
             });
 
         });
