@@ -6,11 +6,10 @@ define([
     "collections/forms",
     "apps/gallery/views/create-form",
     "apps/gallery/views/create-media",
-    "apps/gallery/views/form-list",
     "lib/modals/modal",
     "text!../templates/toolbar-dataview.html"
 ], function (_, $, Handlebars, Marionette, Forms, CreateForm, CreateMedia,
-             FormList, Modal, ToolbarTemplate) {
+             Modal, ToolbarTemplate) {
     "use strict";
     var ToolbarDataView = Marionette.ItemView.extend({
         /*
@@ -58,7 +57,6 @@ define([
             this.listenTo(this.app.vent, 'show-media-type', this.showMediaTypeForm);
             this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
             this.listenTo(this.app.vent, 'show-form', this.showCreateForm);
-            this.listenTo(this.app.vent, 'show-form-list', this.showFormList);
             this.listenTo(this.app.vent, 'show-modal', this.showModal);
             this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
             this.listenTo(this.app.vent, 'show-list', this.updateNewObejctRoute);
@@ -168,24 +166,6 @@ define([
         changeDisplay: function (e) {
             var dataType =  $(e.currentTarget).val();
             this.app.router.navigate('//' + dataType, { trigger: true });
-        },
-
-        showFormList: function (e) {
-            var formList = new FormList({
-                app: this.app
-            });
-            this.modal.update({
-                view: formList,
-                title: 'List of Forms',
-                width: 800,
-                showSaveButton: false,
-                showDeleteButton: false
-            });
-            this.modal.show();
-            if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
         },
 
         createMediaUploadModal: function () {
