@@ -18,8 +18,11 @@
                 <td>
                     <!-- Need a better term that "data type". this is how the legend is set up so items are organized based on certain properties..-->
                     <select name="place-properties" id="data-type-select" class="marker-style-select">
-                        <option value="categorical" {{#ifequal dataType "categorical"}} SELECTED {{/ifequal}}>Category</option>
-                        <option value="continuous" {{#ifequal dataType "continuous"}} SELECTED {{/ifequal}}>Continuous</option>
+                        <option value="categorical" {{#ifequal dataType "categorical"}} SELECTED {{/ifequal}} {{#unless hasCategoricalFields}}disabled="disabled"{{/unless}}>Category</option>
+
+                        <option value="continuous" {{#ifequal dataType "continuous"}} SELECTED {{/ifequal}} {{#unless hasContinuousFields}}disabled="disabled"{{/unless}} >
+                            Continuous
+                        </option>
                         <option value="basic" {{#ifequal dataType "basic"}} SELECTED {{/ifequal}}>Simple</option>
                         <option value="individual" {{#ifequal dataType "individual"}} SELECTED {{/ifequal}}>Individual Sites</option>
                     </select>
@@ -36,7 +39,9 @@
                 <td>
                     <select id="cat-prop" class="marker-style-select">
                         {{#each categoricalList}}
-                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} value="{{ this.value }}">{{ this.text }}</option>
+                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}} value="{{ this.value }}">
+                            {{ this.text }} {{#unless this.hasData}} (no data){{/unless}} 
+                            </option>
                         {{/each}}
                     </select>
                 </td>
@@ -144,7 +149,9 @@
                 <td>
                     <select id="cont-prop" class="marker-style-select">
                         {{#each continuousList}}
-                            <option value="{{ this.value }}">{{ this.text }}</option>
+                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}} value="{{ this.value }}">
+                                {{ this.text }}{{#unless this.hasData}} (no data){{/unless}}
+                            </option>
                         {{/each}}
                     </select>
                 </td>

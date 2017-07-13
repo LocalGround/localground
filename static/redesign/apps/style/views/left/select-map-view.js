@@ -96,6 +96,7 @@ define(["jquery",
 
                 dataSources.forEach(function(dataSource) {
                     var collection = that.app.dataManager.getCollection(dataSource.value);
+                    if (collection.length < 1) {return;}
                         if (dataSource.value === "markers") {
                             var layer = new Layer({
                                 map_id: that.map.id,

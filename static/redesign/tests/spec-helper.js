@@ -275,7 +275,8 @@ define(
                             "shape": "circle",
                             "fillOpacity": 1,
                             "strokeColor": "#FFFFFF",
-                            "paletteId": 3
+                            "paletteId": 3,
+                            "currentProp": "test_text"
                         },
                         "filters": {
                             "tags": "nothing"

@@ -27,6 +27,18 @@ define([
                 spyOn(MarkerStyleView.prototype, 'updateStrokeWeight').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'updateStrokeOpacity').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'updateStrokeColor').and.callThrough();
+                spyOn(MarkerStyleView.prototype, 'createCorrectSymbols').and.callThrough();
+                spyOn(MarkerStyleView.prototype, 'render').and.callThrough();
+                spyOn(MarkerStyleView.prototype, 'setSelectedProp').and.callThrough();
+                spyOn(MarkerStyleView.prototype, 'getContInfo').and.callThrough();
+                spyOn(MarkerStyleView.prototype, 'buildContinuousSymbols').and.callThrough();
+                spyOn(MarkerStyleView.prototype, 'setSymbols').and.callThrough();
+                spyOn(MarkerStyleView.prototype, 'updateMapAndRender').and.callThrough();
+
+                spyOn(MarkerStyleView.prototype, 'catData').and.callThrough();
+                spyOn(MarkerStyleView.prototype, 'getCatInfo').and.callThrough();
+                spyOn(MarkerStyleView.prototype, 'buildCategoricalSymbols').and.callThrough();
+
 
             },
             
@@ -42,6 +54,8 @@ define([
                 continuousFixture = setFixtures('<div></div>');
                 continuousFixture.append(continuousMarkerStyleView.$el);
 
+                //global property
+                continuousMarkerStyleView.selectedProp = "test_integer";
               
             },
 
@@ -56,6 +70,9 @@ define([
                 //set fixture:
                 categoricalFixture = setFixtures('<div></div>');
                 categoricalFixture.append(categoricalMarkerStyleView.$el);
+
+                //global property
+                categoricalMarkerStyleView.selectedProp = "test_text";
 
                 //spies
                 spyOn(categoricalMarkerStyleView, 'updateMetadata').and.callThrough(); 
@@ -73,7 +90,7 @@ define([
                 expect(categoricalMarkerStyleView).toEqual(jasmine.any(MarkerStyleView));
                 expect(MarkerStyleView.prototype.initialize).toHaveBeenCalledTimes(1);
                 expect(MarkerStyleView.prototype.buildPalettes).toHaveBeenCalledTimes(1);
-                expect(MarkerStyleView.prototype.buildColumnList).toHaveBeenCalledTimes(1);
+                expect(MarkerStyleView.prototype.createCorrectSymbols).toHaveBeenCalledTimes(1);
 
                 //sets properties:
                 expect(categoricalMarkerStyleView.model).toEqual(this.testMap.get("layers").at(2));
@@ -84,10 +101,10 @@ define([
             it("should listen for events", function () {
                 expect(MarkerStyleView.prototype.selectDataType).toHaveBeenCalledTimes(0);
                 expect(MarkerStyleView.prototype.hideColorRamp).toHaveBeenCalledTimes(0);
-                expect(MarkerStyleView.prototype.buildColumnList).toHaveBeenCalledTimes(1);
+                expect(MarkerStyleView.prototype.render).toHaveBeenCalledTimes(2);
 
                 categoricalMarkerStyleView.app.vent.trigger("update-data-source");
-                expect(MarkerStyleView.prototype.buildColumnList).toHaveBeenCalledTimes(2);
+                expect(MarkerStyleView.prototype.render).toHaveBeenCalledTimes(3);
 
                 $('body').trigger("click");
                 expect(MarkerStyleView.prototype.hideColorRamp).toHaveBeenCalledTimes(1);
@@ -153,19 +170,102 @@ define([
                 expect(categoricalMarkerStyleView.updateMetadata).toHaveBeenCalledTimes(3);
             });
 
+        });
+
+        describe("Tests specific to a categorical layer: ", function () {
+            beforeEach(function () {
+                initSpies(this);
+                initCategoricalView(this);
+            });
 
             it("should build the correct column list", function () {
-                //Trying to test that the appropriate list of fields
-                //(categorical or continuous is built, 
-                //when the data source is a form).
-                //Having trouble working with the spec-helper data
+                categoricalMarkerStyleView.buildColumnList();
                 expect(categoricalMarkerStyleView.categoricalList).toEqual([
-                    { text: "Test Text", value: "test_text" },
-                    { text: 'Test Choice', value: 'test_choice' }
+                    { text: "Test Text", value: "test_text", hasData: true },
+                    { text: 'Test Choice', value: 'test_choice', hasData: false }
                 ]);
+
+                expect(categoricalFixture.find("#cat-prop").find("option:eq(0)").val()).toEqual("test_text");
+                expect(categoricalFixture.find("#cat-prop").find("option:eq(1)").val()).toEqual("test_choice");
+            });
+
+            it("should select correct color palette", function () {
+                $(categoricalFixture.find('#palette_3').click());
+                expect(categoricalMarkerStyleView.model.get("metadata").paletteId).toEqual(3);      
+            });
+
+            it("should execute catData", function () {
+                expect(categoricalMarkerStyleView.catData).toHaveBeenCalledTimes(1);
+                expect(categoricalMarkerStyleView.getCatInfo).toHaveBeenCalledTimes(1);
+                expect(categoricalMarkerStyleView.buildCategoricalSymbols).toHaveBeenCalledTimes(1);
+                expect(categoricalMarkerStyleView.setSymbols).toHaveBeenCalledTimes(1);
+
+                $(categoricalFixture.find('#cat-prop').change().val("test_text"));
+
+                expect(categoricalMarkerStyleView.catData).toHaveBeenCalledTimes(2);
+                expect(categoricalMarkerStyleView.getCatInfo).toHaveBeenCalledTimes(2);
+                expect(categoricalMarkerStyleView.buildCategoricalSymbols).toHaveBeenCalledTimes(2);
+                expect(categoricalMarkerStyleView.setSymbols).toHaveBeenCalledTimes(2);
+                expect(categoricalMarkerStyleView.setSelectedProp).toHaveBeenCalledWith("#cat-prop");
+            });
+
+            it("getCatInfo() should return correct information", function () {
+                var info = categoricalMarkerStyleView.getCatInfo();
+                expect(info.list[0]).toEqual("Blue team");
+                expect(info.list[1]).toEqual("Green team");
+                expect(info.list[2]).toEqual("Red team");
+
+                expect(info.instanceCount["Blue team"]).toEqual(1);
+                expect(info.instanceCount["Green team"]).toEqual(1);
+                expect(info.instanceCount["Red team"]).toEqual(1);
+            });
+
+            it("buildCategoricalSymbols() should return list of symbols", function() {
+                console.log(this.testMap.get("layers").at(2), categoricalMarkerStyleView.model);
+                var info = categoricalMarkerStyleView.getCatInfo();
+                var symbolsList = categoricalMarkerStyleView.buildCategoricalSymbols(info);
+                console.log(info, symbolsList, symbolsList.length);
+                console.log(this.testMap.get("layers").at(2));
+                expect(1).toEqual(2);
+                //$$$ leaving this fialing test in until that i can configure the appropriate test data
+                //expect(symbolsList).toEqual("nothing");
+            });
+
+
+            it("sets newly created symbols to the view's collection and model", function () {
+                var info = categoricalMarkerStyleView.getCatInfo(),
+                symbolsList = categoricalMarkerStyleView.buildCategoricalSymbols(info);
+
+                expect(categoricalMarkerStyleView.updateMapAndRender).toHaveBeenCalledTimes(1);
+                categoricalMarkerStyleView.setSymbols(symbolsList);
+
+                expect(categoricalMarkerStyleView.collection).toEqual(symbolsList);
+                expect(categoricalMarkerStyleView.model.get("symbols")).toEqual(symbolsList.toJSON());
+                expect(categoricalMarkerStyleView.updateMapAndRender).toHaveBeenCalledTimes(2);
+            });
+
+            it("should build correct palette list", function () {
+                categoricalMarkerStyleView.buildPalettes();
+                expect(categoricalMarkerStyleView.model.get("metadata").paletteId).toEqual(2); 
+                expect(categoricalMarkerStyleView.model.get("metadata").buckets).toEqual(5);  
+                expect(categoricalMarkerStyleView.selectedColorPalette).toEqual(["f7f7f7", "cccccc", "969696", "636363", "252525"]);
+            });
+
+            it("showPalettes function should display and hide list of palettes", function() {
+            
+                $(categoricalFixture.find('.palette-wrapper')).css('display', 'none');
+                expect(categoricalFixture.find(".palette-wrapper").css('display')).toEqual('none');
+
+                $(categoricalFixture.find('.selected-palette-wrapper').click());
+                expect(categoricalFixture.find(".palette-wrapper").css('display')).toEqual('block');
+
+                $('body').click();
+                expect($(categoricalFixture.find('.palette-wrapper')).css('display')).toEqual('none');
             });
 
         });
+
+
 
          describe("Test timed functions", function () {
             beforeEach(function () {
@@ -204,10 +304,22 @@ define([
 
         });
 
-        describe("Tests specific to a continuous layer", function () {
+        describe("Tests specific to a continuous layer: ", function () {
             beforeEach(function () {
                 initSpies(this);
                 initContinuousView(this);
+            });
+
+            it("should build the correct column list", function () {
+                continuousMarkerStyleView.buildColumnList();
+                expect(continuousMarkerStyleView.continuousList).toEqual([
+                    { text: "Test Integer", value: "test_integer", hasData: true },
+                    { text: "Test Rating", value: "test_rating", hasData: false }
+                ]);
+
+                
+                expect(continuousFixture.find("#cont-prop").find("option:eq(0)").val()).toEqual("test_integer");
+                expect(continuousFixture.find("#cont-prop").find("option:eq(1)").val()).toEqual("test_rating");
             });
 
             it("should select correct color palette", function () {
@@ -215,11 +327,48 @@ define([
                 expect(continuousMarkerStyleView.model.get("metadata").paletteId).toEqual(3);      
             });
 
-            it("should execute contData and build continuous list", function () {
-                $(continuousFixture.find('#cont-prop').change());
-                expect(continuousMarkerStyleView.contData).toHaveBeenCalled();
-                // need more tests here. having trouble again with the dataManager
-                console.log(continuousMarkerStyleView.layerDraft.continuous);
+            it("should execute contData", function () {
+                expect(continuousMarkerStyleView.contData).toHaveBeenCalledTimes(1);
+                $(continuousFixture.find('#cont-prop').change().val("test_integer"));
+                expect(continuousMarkerStyleView.contData).toHaveBeenCalledTimes(2);
+            
+                expect(continuousMarkerStyleView.setSelectedProp).toHaveBeenCalledWith("#cont-prop");
+                
+                expect(continuousMarkerStyleView.getContInfo).toHaveBeenCalledTimes(2);
+                expect(continuousMarkerStyleView.buildContinuousSymbols).toHaveBeenCalledTimes(2);
+                expect(continuousMarkerStyleView.setSymbols).toHaveBeenCalledTimes(2);
+            });
+
+            it("getContInfo() should return correct information", function () {
+                var info = continuousMarkerStyleView.getContInfo();
+                var buckets = continuousMarkerStyleView.model.get("metadata").buckets;
+                expect(info.min).toEqual(4);
+                expect(info.max).toEqual(12);
+                expect(info.range).toEqual(8);
+                expect(info.segmentSize).toEqual(8/buckets);
+                expect(info.currentFloor).toEqual(4);
+            });
+
+            it("buildContinuousSymbols() should return list of symbols", function() {
+                var info = continuousMarkerStyleView.getContInfo();
+                var symbolsList = continuousMarkerStyleView.buildContinuousSymbols(info);
+                console.log(info, symbolsList, symbolsList.length,  continuousMarkerStyleView.model.get("metadata").buckets);
+
+                //$$$ leaving this fialing test in until that i can configure the appropriate test data
+                expect(symbolsList).toEqual("nothing");
+            });
+
+
+            it("sets newly created symbols to the view's collection and model", function () {
+                var info = continuousMarkerStyleView.getContInfo(),
+                symbolsList = continuousMarkerStyleView.buildContinuousSymbols(info);
+
+                expect(continuousMarkerStyleView.updateMapAndRender).toHaveBeenCalledTimes(1);
+                continuousMarkerStyleView.setSymbols(symbolsList);
+
+                expect(continuousMarkerStyleView.collection).toEqual(symbolsList);
+                expect(continuousMarkerStyleView.model.get("symbols")).toEqual(symbolsList.toJSON());
+                expect(continuousMarkerStyleView.updateMapAndRender).toHaveBeenCalledTimes(2);
             });
 
             it("should build correct palette list", function () {
@@ -231,8 +380,8 @@ define([
 
             it("showPalettes function should display and hide list of palettes", function() {
             
-               $(continuousFixture.find('.palette-wrapper')).css('display', 'none');
-               expect(continuousFixture.find(".palette-wrapper").css('display')).toEqual('none');
+                $(continuousFixture.find('.palette-wrapper')).css('display', 'none');
+                expect(continuousFixture.find(".palette-wrapper").css('display')).toEqual('none');
 
                 $(continuousFixture.find('.selected-palette-wrapper').click());
                 expect(continuousFixture.find(".palette-wrapper").css('display')).toEqual('block');
