@@ -30,9 +30,15 @@
             <li>
                 <a href="/documentation">How it works</a>
             </li>
+            {% if user.is_authenticated %}
+                <li>
+                    <a href="/accounts/logout/">Signout as {{ user }}</a>
+                </li>
+            {% else %}
                 <a class="navbar-btn button-primary button-main-action" href="/accounts/login"><span class="glyphicon glyphicon-log-in white"></span>&nbsp&nbspSign In</a>
                 <a class="navbar-btn button-primary button-main-action" href="/accounts/register"><span class="glyphicon glyphicon-user white"></span>&nbsp&nbspCreate account</a>
-        </ul>
+            {% endif %}
+          </ul>
 
 
     </div>
