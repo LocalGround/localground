@@ -279,7 +279,7 @@ nav .selected{
 /*                                          DROPDOWN MENUS                                       */
 /****************************************************************************************/
 .dropdown-menu {
-    width: 140px;
+    width: 200px;
     position: absolute;
     background-color: white;
     padding: 6px 0;
@@ -292,9 +292,14 @@ nav .selected{
 
 .dropdown-menu > a {
     display:block;
-    padding:6px 10px;
+    padding: 6px 0px 6px 10px;
     line-height:100%;
     text-transform:none;
+}
+.dropdown-menu > a > i.edit-type {
+    float: right;
+    font-size: 12px;
+    color: rgb(123, 155, 225);
 }
 
 .dropdown-menu > h5 {
@@ -312,6 +317,9 @@ nav .selected{
 .dropdown-menu > a:hover, .dropdown-menu tr:hover {
     background-color: rgb(123, 155, 225);
     color:white;
+}
+.dropdown-menu > a:hover i {
+    color: #FFF;
 }
 
 .dropdown-menu tr:hover a, .dropdown-menu tr:hover .fa {

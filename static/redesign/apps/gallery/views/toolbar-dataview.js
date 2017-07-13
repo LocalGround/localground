@@ -21,7 +21,8 @@ define([
             'click #toolbar-search': 'doSearch',
             'click #toolbar-clear': 'clearSearch',
             'change .media-type': 'changeDisplay',
-            'click .add-data' : 'showFormList',
+            'click .add-type' : 'showCreateForm',
+            'click .edit-type' : 'showFormList',
             'click #show-media-type' : 'showMediaTypeForm',
             'click #add-row' : 'triggerAddRow',
             'click .add-media': 'createMediaUploadModal',
@@ -113,6 +114,7 @@ define([
             This is where it might begin the creation of a new
             field with the add marker
             */
+            console.log('triggerAddNewMap');
             var mediaType = $(e.target).attr('data-value'),
                 url = "//" + mediaType + "/new";
             if (mediaType === 'photos' || mediaType === 'audio') {
@@ -168,7 +170,7 @@ define([
             this.app.router.navigate('//' + dataType, { trigger: true });
         },
 
-        showFormList: function () {
+        showFormList: function (e) {
             var formList = new FormList({
                 app: this.app
             });
@@ -182,6 +184,10 @@ define([
                 //saveFunction: createForm.saveFormSettings.bind(createForm)
             });
             this.modal.show();
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
         },
 
         createMediaUploadModal: function () {
