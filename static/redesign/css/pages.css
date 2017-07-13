@@ -351,7 +351,7 @@ nav.account>div {
 
 .article h1 {
     font-weight: 300;
-    padding: 40px 40px 40px;
+    padding: 30px 40px;
     font-size: 40px;
     letter-spacing: 2px;
     color: #3d3d3d;
@@ -376,3 +376,21 @@ nav.account>div {
     list-style: none;
 }
 
+/************************************ Articles ************************************/
+#google-button {
+    height: 40px;
+    width: 200px;
+    background-image: url('../assets/White-signin_Long_base_32dp.png');
+    background-size: 200px 40px;
+    display: inline-block;
+    margin-bottom: -15px;
+    margin-left: 30px;
+}
+
+#google-button:hover {
+    background-image: url('../assets/White-signin_Long_hover_32dp.png');
+}
+
+#google-button:active {
+    background-image: url('../assets/White-signin_Long_press_32dp.png');
+}
