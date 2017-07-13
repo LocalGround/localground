@@ -5,6 +5,9 @@
     <!-- Those two things have to be integrated with the universal add data menu
          since clicking on those titles should jump to the form without adding
          or editing existing data.
+
+         If this stuff before the "map" dropdown is commented out, that is ideal for all
+         view modes, but funconality is buggy for non-map view mode such as adding rows to current selection
     -->
 
     {{#ifequal activeTab "data"}}
@@ -48,7 +51,9 @@
         <a href="#" class="add-new" data-value="form_{{ this.id }}">{{ this.name }}</a>
         {{/each}}
         <hr>
-        <a href="#" class="add-data">Edit Site Types</a>
+        <a href="#" class="add-data">Edit Site Types</a> <!-- Maybe this would be put at bottom -->
+        <hr>
+        <a href="#" >Add Site Type</a> <!-- A Possible alternative for gallery and map -->
     </div>
     {{/ifequal}}
 
