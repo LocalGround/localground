@@ -243,14 +243,17 @@ define([
             this.modal.hide();
         },
 
-        editTargetForm(e){
+        editTargetForm: function(e){
             var targetName = e.target.parentElement.innerText;
 
             var targetModel = this.forms.findWhere({name: targetName});
             this.app.vent.trigger('show-form', {
                 model: targetModel
             });
-            e.preventDefault();
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
         },
 
         showCreateForm: function (opts) {
