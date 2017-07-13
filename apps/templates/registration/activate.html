@@ -1,23 +1,2 @@
-{% extends "base/base.html" %}
-{% block title %}Activate Account{% endblock %} 
 
-{% block content %}
-<div class="article-title">
-    <div class="container-center article ">
-        <h1>&nbsp</h1>
-    </div>
-</div>
-<div id="outer">
-
-    <div id="inner">
-        {% if account %}
-            <p>{% trans "Account successfully activated" %}</p>
-            
-            <p><a href="{% url " auth_login " %}">{% trans "Log in" %}</a></p>
-        {% else %}
-            <p>{% trans "Account activation failed" %}</p>
-        {% endif %}
-    </div>
-</div>
-{% endblock %}
 
