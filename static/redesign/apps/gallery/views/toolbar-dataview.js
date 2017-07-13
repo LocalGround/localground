@@ -22,7 +22,7 @@ define([
             'click #toolbar-clear': 'clearSearch',
             'change .media-type': 'changeDisplay',
             'click .add-type' : 'showCreateForm',
-            'click .edit-type' : 'showFormList',
+            'click .edit-type' : 'editTargetForm', // Maybe this one works similar to the add-type
             'click #show-media-type' : 'showMediaTypeForm',
             'click #add-row' : 'triggerAddRow',
             'click .add-media': 'createMediaUploadModal',
@@ -180,8 +180,6 @@ define([
                 width: 800,
                 showSaveButton: false,
                 showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
             });
             this.modal.show();
             if (e) {
@@ -202,8 +200,6 @@ define([
                 closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
             });
             this.modal.show();
         },
@@ -221,8 +217,6 @@ define([
                 closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
             });
             this.modal.show();
         },
@@ -249,6 +243,16 @@ define([
             this.modal.hide();
         },
 
+        editTargetForm(e){
+            var targetName = e.target.parentElement.innerText;
+
+            var targetModel = this.forms.findWhere({name: targetName});
+            this.app.vent.trigger('show-form', {
+                model: targetModel
+            });
+            e.preventDefault();
+        },
+
         showCreateForm: function (opts) {
             opts = opts || {};
             var createForm = new CreateForm({
@@ -265,7 +269,6 @@ define([
                 width: 800,
                 showSaveButton: true,
                 showDeleteButton: opts.model,
-                // bind the scope of the save function to the source view:
                 saveFunction: createForm.saveFormSettings.bind(createForm),
                 deleteFunction: createForm.deleteForm.bind(createForm)
             });
