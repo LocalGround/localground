@@ -1,2 +1,35 @@
 
 
+{% extends "base/base.html" %} 
+{% load i18n %} {% block extra_styles %} 
+{{block.super}} 
+.content p, .content form
+{ margin-left: 20px; } 
+{% endblock %} 
+
+{% block page_title %}Activate Account{% endblock %} 
+
+{% block content %} 
+<div class="article-title">
+    <div class="container-center article ">
+        <h1>&nbsp</h1>
+    </div>
+</div>
+<div id="outer">
+
+    <div id="inner">
+{% if account %}
+
+
+<p>{% trans "Account successfully activated" %}</p>
+<p><a href="{% url " auth_login " %}">{% trans "Log in" %}</a></p>
+
+{% else %}
+
+<p>{% trans "Account activation failed" %}</p>
+
+{% endif %} 
+    </div>
+</div>
+
+{% endblock %}
