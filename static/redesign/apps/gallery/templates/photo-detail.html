@@ -11,7 +11,7 @@
         <div class="photo-single">
             <img src="{{this.path_medium}}" />
         </div>
-        <p class="photo-caption">{{ caption }}</p>
+        <p class="photo-caption">{{ breaklines caption }}</p>
     </div>
 
     <div class="section-card">
@@ -32,13 +32,13 @@
 {{#ifequal mode "presentation"}}
     <div class="section">
         <h3>{{ name }}</h3>
-        <p style="font-style: italic">{{ caption }}</p>
+        <p style="font-style: italic">{{ breaklines caption }}</p>
     </div>
     <div class="img-card">
         <div class="photo-single">
             <img src="{{this.path_medium}}" />
         </div>
-        <p class="photo-caption">{{ caption }}</p>
+        <p class="photo-caption">{{ breaklines caption }}</p>
     </div>
     <div class="section-card">
         <p>Tags:
