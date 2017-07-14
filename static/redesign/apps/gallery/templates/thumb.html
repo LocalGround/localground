@@ -29,6 +29,40 @@
 </a>
 {{/ifequal}}
 
+
+{{#ifequal dataType "videos"}}
+<a href="#/{{ dataType }}/{{id}}" id="video-card">
+    <div>
+        {{video_id}}
+        {{provider}}
+
+        {{#ifequal provider "vimeo"}}
+            <iframe src="https://player.vimeo.com/video/120083269"
+            width="240" height="150"
+            frameborder="0"
+            webkitallowfullscreen mozallowfullscreen allowfullscreen>
+            </iframe>
+        {{/ifequal}}
+
+
+        {{#ifequal provider "youtube"}}
+            <iframe src="https://www.youtube.com/embed/3n8B79bOJUc?ecver=1"
+            width="240" height="150"
+            frameborder="0" allowfullscreen>
+            </iframe>
+        {{/ifequal}}
+    </div>
+
+    <h1>
+        {{ name }}
+    </h1>
+    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}
+    <h2>
+        {{owner}}
+    </h2>
+</a>
+{{/ifequal}}
+
 {{#ifcontains dataType "markers"}}
     <div class="card-site-field">
 
