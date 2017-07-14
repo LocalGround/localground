@@ -221,14 +221,14 @@ define([
             });
 
             it("buildCategoricalSymbols() should return list of symbols", function() {
-                console.log(this.testMap.get("layers").at(2), categoricalMarkerStyleView.model);
                 var info = categoricalMarkerStyleView.getCatInfo();
                 var symbolsList = categoricalMarkerStyleView.buildCategoricalSymbols(info);
-                console.log(info, symbolsList, symbolsList.length);
-                console.log(this.testMap.get("layers").at(2));
-                expect(1).toEqual(2);
-                //$$$ leaving this fialing test in until that i can configure the appropriate test data
-                //expect(symbolsList).toEqual("nothing");
+                var json = symbolsList.toJSON();
+                json.forEach(function (symbol) {
+                    delete symbol.icon;
+                });
+                expect(json).toEqual(this.categoricalSymbols);
+
             });
 
 
@@ -245,10 +245,10 @@ define([
             });
 
             it("should build correct palette list", function () {
-                categoricalMarkerStyleView.buildPalettes();
-                expect(categoricalMarkerStyleView.model.get("metadata").paletteId).toEqual(2); 
-                expect(categoricalMarkerStyleView.model.get("metadata").buckets).toEqual(5);  
-                expect(categoricalMarkerStyleView.selectedColorPalette).toEqual(["f7f7f7", "cccccc", "969696", "636363", "252525"]);
+                categoricalMarkerStyleView.buildPalettes(3);
+                expect(categoricalMarkerStyleView.model.get("metadata").paletteId).toEqual(3); 
+                expect(categoricalMarkerStyleView.model.get("metadata").buckets).toEqual(3);  
+                expect(categoricalMarkerStyleView.selectedColorPalette).toEqual(["fbb4ae", "b3cde3", "ccebc5"]);
             });
 
             it("showPalettes function should display and hide list of palettes", function() {
@@ -353,9 +353,20 @@ define([
                 var info = continuousMarkerStyleView.getContInfo();
                 var symbolsList = continuousMarkerStyleView.buildContinuousSymbols(info);
                 console.log(info, symbolsList, symbolsList.length,  continuousMarkerStyleView.model.get("metadata").buckets);
-
+                console.log(symbolsList);
+                var json = symbolsList.toJSON();
+                json.forEach(function (symbol) {
+                    delete symbol.icon;
+                });
+                var b = this.testMap.get("layers").at(0).get("symbols");
+                b.forEach(function (symbol) {
+                    delete symbol.icon;
+                });
+                console.log(json);
+                console.log( this.continuousSymbols);
+                //console.log(this.testMap.get("layers").at(0).get("symbols"));
                 //$$$ leaving this fialing test in until that i can configure the appropriate test data
-                expect(symbolsList).toEqual("nothing");
+                expect(json).toEqual(this.continuousSymbols);
             });
 
 
@@ -374,8 +385,8 @@ define([
             it("should build correct palette list", function () {
                 continuousMarkerStyleView.buildPalettes();
                 expect(continuousMarkerStyleView.model.get("metadata").paletteId).toEqual(2); 
-                expect(continuousMarkerStyleView.model.get("metadata").buckets).toEqual(5);  
-                expect(continuousMarkerStyleView.selectedColorPalette).toEqual(["f7f7f7", "cccccc", "969696", "636363", "252525"]);
+                expect(continuousMarkerStyleView.model.get("metadata").buckets).toEqual(3);  
+                expect(continuousMarkerStyleView.selectedColorPalette).toEqual(["f0f0f0", "bdbdbd", "636363"]);
             });
 
             it("showPalettes function should display and hide list of palettes", function() {

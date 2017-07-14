@@ -273,9 +273,9 @@ define(["jquery",
                     this.layerDraft.continuous.add({
                         "rule": selected + " >= " + cont.currentFloor.toFixed(0) + " and " + selected + " <= " + (cont.currentFloor + cont.segmentSize).toFixed(0),
                         "title": "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
-                        "fillOpacity": parseFloat(this.$el.find("#palette-opacity").val()),
-                        "strokeWeight": parseFloat(this.$el.find("#stroke-weight").val()),
-                        "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()),
+                        "fillOpacity": parseFloat(this.$el.find("#palette-opacity").val()) || 1,
+                        "strokeWeight": parseFloat(this.$el.find("#stroke-weight").val()) || 1,
+                        "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()) || 1,
                         "width": parseFloat(this.$el.find("#marker-width").val()) || 20,
                         "shape": this.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + this.selectedColorPalette[counter],
@@ -288,7 +288,19 @@ define(["jquery",
                 }
                 return this.layerDraft.continuous;
             },
-
+/*
+            manageDefault: function (input) {
+                console.log(input);
+                var output;
+                if (input == undefined || NaN) { 
+                    output = 1;
+                } else {
+                    output = parseFloat(input);
+                }
+                console.log(output);
+                return output;
+            },
+*/
             buildCategoricalSymbols: function (cat) {
                 console.log(cat);
                 var that = this,
@@ -299,9 +311,9 @@ define(["jquery",
                     that.layerDraft.categorical.add({
                         "rule": that.selectedProp + " = " + item,
                         "title": item,
-                        "fillOpacity": 1,
-                        "strokeWeight": parseFloat(that.$el.find("#stroke-weight").val()),
-                        "strokeOpacity": parseFloat(that.$el.find("#stroke-opacity").val()),
+                        "fillOpacity": parseFloat(that.$el.find("#palette-opacity").val()) || 1,
+                        "strokeWeight": parseFloat(that.$el.find("#stroke-weight").val()) || 1,
+                        "strokeOpacity": parseFloat(that.$el.find("#stroke-opacity").val()) || 1,
                         "width": parseFloat(that.$el.find("#marker-width").val()) || 20,
                         "shape": that.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + that.selectedColorPalette[paletteCounter > 7 ? paletteCounter = 0 : paletteCounter],

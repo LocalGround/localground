@@ -147,9 +147,9 @@ define([
                 expect(fixture.find('input')).toHaveLength(3);
                 expect(fixture.find('svg')).toHaveLength(3);
                 expect(fixture.find('p')).toHaveLength(3);
-                expect(fixture.find('p').eq(0)).toHaveText('1 - 5');
-                expect(fixture.find('p').eq(1)).toHaveText('6 - 10');
-                expect(fixture.find('p').eq(2)).toHaveText('11 or more');
+                expect(fixture.find('p').eq(0)).toHaveText('between 4 and 7');
+                expect(fixture.find('p').eq(1)).toHaveText('between 7 and 9');
+                expect(fixture.find('p').eq(2)).toHaveText('between 9 and 12');
             });
 
             it("Gets styled as expected", function () {
