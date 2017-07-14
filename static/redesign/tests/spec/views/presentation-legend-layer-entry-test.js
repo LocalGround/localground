@@ -29,7 +29,6 @@ define([
                     data_source: 'form_1',
                     model: new Symbol(opts)
                 });
-            childView.render();
             return childView;
         }
 
@@ -102,21 +101,22 @@ define([
 
             it("Calls the correct OverlayListView toggle function", function () {
                 var childView = initChildView(this);
+                childView.render();
                 fixture = setFixtures('<div></div>').append(childView.$el);
                 expect(childView.showHide).toHaveBeenCalledTimes(0);
-                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(0);
+                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(2);
                 expect(childView.markerOverlays.hideAll).toHaveBeenCalledTimes(0);
 
                 //turn on checkbox:
                 fixture.find('input').trigger('click');
                 expect(childView.showHide).toHaveBeenCalledTimes(1);
-                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(0);
+                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(2);
                 expect(childView.markerOverlays.hideAll).toHaveBeenCalledTimes(1);
 
                 //turn off checkbox:
                 fixture.find('input').trigger('click');
                 expect(childView.showHide).toHaveBeenCalledTimes(2);
-                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(1);
+                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(3);
                 expect(childView.markerOverlays.hideAll).toHaveBeenCalledTimes(1);
             });
 
@@ -132,7 +132,7 @@ define([
                 initLegendLayerEntry(this);
                 /*
                  * Documentation: https://github.com/velesin/jasmine-jquery
-                 * NOTE: this setTimeout + done function is needed to give the 
+                 * NOTE: this setTimeout + done function is needed to give the
                  * CSS a little extra time to load, since it's asynchronous
                  */
                 loadStyleFixtures('../../../../css/style.css');

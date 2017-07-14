@@ -42,6 +42,7 @@ define(['marionette',
                 //listen for new data:
                 this.listenTo(this.collection, 'zoom-to-extents', this.zoomToExtents);
                 this.listenTo(this.app.vent, "drag-ended", this.saveDragChange);
+                this.listenTo(this.app.vent, "show-all-markers", this.showAll);
 
                 this.render();
                 //this.zoomToExtent();
@@ -79,6 +80,7 @@ define(['marionette',
             },
 
             showAll: function () {
+                console.log("Show All Being Called...")
                 this.children.each(function (overlay) {
                     overlay.show();
                 });

@@ -126,7 +126,7 @@ define(["jquery"],
                 }
                 if (!id) {
                     console.log("You're not logged in. Redirecting to: " + redirectURL);
-                    window.location = redirectURL;
+                    //window.location = redirectURL;
                     return false;
                 }
                 return id;
