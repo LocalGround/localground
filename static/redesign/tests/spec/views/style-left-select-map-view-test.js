@@ -86,14 +86,6 @@ define([
             });
         });
 
-        describe("Panel Show / Hide Tests", function () {
-            // runs mixing tests
-            Helper.genericChecks({
-                ClassType: SelectMapView,
-                name: "SelectMapView"
-            });
-        });
-
         describe("Ensure that class methods work:", function () {
             beforeEach(function () {
                 initSpies();

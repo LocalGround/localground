@@ -3,16 +3,20 @@ define(["marionette",
         "collections/layers",
         "models/layer",
         "apps/style/views/left/layer-list-child-view",
-        "apps/style/visibility-mixin",
         "text!../../templates/left/layer-list.html"
     ],
     function (Marionette, Handlebars, Layers, Layer, LayerListChild,
-        PanelVisibilityExtensions, LayerListTemplate) {
+        LayerListTemplate) {
         'use strict';
 
-        var LayerListView = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
+        var LayerListView = Marionette.CompositeView.extend(_.extend({}, {
             stateKey: 'layer_list',
             template: Handlebars.compile(LayerListTemplate),
+            templateHelpers: function () {
+                return {
+                    noLayers: (this.collection.length === 0)
+                };
+            },
             isShowing: true,
             childView: LayerListChild,
             childViewContainer: "#layers",
@@ -27,8 +31,6 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.model = opts.model;
-    
-                this.restoreState();
 
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
                 this.listenTo(this.app.vent, 'handle-selected-layer', this.handleSelectedLayer);
@@ -37,9 +39,7 @@ define(["marionette",
 
             events: function () {
                 return _.extend(
-                    { 'click .add-layer' : 'createNewLayer' },
-                    PanelVisibilityExtensions.events
-                );
+                    { 'click .add-layer' : 'createNewLayer' }                );
             },
             showDropDown: function () {
                 this.$el.find("#new-layer-options").toggle();
