@@ -23,7 +23,6 @@ define([
             'click .add-type' : 'showCreateForm',
             'click .edit-type' : 'editTargetForm', // Maybe this one works similar to the add-type
             'click #show-media-type' : 'showMediaTypeForm',
-            'click #add-row' : 'triggerAddRow',
             'click .add-media': 'createMediaUploadModal',
             'click .add-map-image': 'createMapImageUploadModal',
             'click .add': 'toggleMenu',
@@ -54,7 +53,6 @@ define([
             this.listenTo(this.app.vent, 'add-map-image', this.createMapImageUploadModal);
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
             this.listenTo(this.app.vent, 'show-media-type', this.showMediaTypeForm);
-            this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
             this.listenTo(this.app.vent, 'show-form', this.showCreateForm);
             this.listenTo(this.app.vent, 'show-modal', this.showModal);
             this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
@@ -86,10 +84,6 @@ define([
             });
         },
 
-        triggerAddRow: function (e) {
-            this.app.vent.trigger('add-row');
-            e.preventDefault();
-        },
         triggerAddNew: function (e) {
             var mediaType = this.$el.find('.media-type').val(),
                 url = "//" + mediaType + "/new";
@@ -125,9 +119,6 @@ define([
                 });
             }
             e.preventDefault();
-        },
-        changeMode: function () {
-            this.renderAndRoute();
         },
         updateNewObejctRoute: function () {
             this.$el.find("#add-site").attr("href", '#/' + this.app.dataType + '/new');

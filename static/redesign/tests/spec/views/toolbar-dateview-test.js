@@ -13,10 +13,8 @@ define([
             spyOn(ToolbarDataView.prototype, "initialize").and.callThrough();
             spyOn(ToolbarDataView.prototype, "hideMenus").and.callThrough();
             spyOn(ToolbarDataView.prototype, "toggleMenu").and.callThrough();
-            spyOn(ToolbarDataView.prototype, "triggerAddRow").and.callThrough();
             spyOn(ToolbarDataView.prototype, "triggerAddNew").and.callThrough();
             spyOn(ToolbarDataView.prototype, "triggerAddNewMap").and.callThrough();
-            spyOn(ToolbarDataView.prototype, "changeMode").and.callThrough();
             spyOn(ToolbarDataView.prototype, "updateNewObejctRoute").and.callThrough();
             spyOn(ToolbarDataView.prototype, "renderAndRoute").and.callThrough();
             spyOn(ToolbarDataView.prototype, "doSearch").and.callThrough();
@@ -79,16 +77,15 @@ define([
                 //expect(1).toEqual(-1)
             });
 
+            /*
+            // This only works for gallery and spreadsheet mode
             it ("Calls the Change Display", function(){
                 expect(ToolbarDataView.prototype.changeDisplay).toHaveBeenCalledTimes(0);
                 console.log(fixture[0].innerHTML);
                 fixture.find(".media-type").trigger("change");
                 expect(ToolbarDataView.prototype.changeDisplay).toHaveBeenCalledTimes(1);
             });
-
-            it ("Calls the Change Mode", function(){
-                expect(1).toEqual(-1)
-            });
+            */
         });
 
         describe("Toolbar Dataview: Trigger Add Functions", function(){
@@ -97,17 +94,18 @@ define([
                 initSpies(this);
                 initToolbarDataview(this);
             });
-
-            it ("Calls the Trigger Add Row", function(){
-                expect(1).toEqual(-1)
-            });
-
+            /*
+            // Only available for spreadsheet and gallery
             it ("Calls the Trigger Add New", function(){
                 expect(1).toEqual(-1)
             });
+            */
 
-            it ("Calls the Trigger New Map", function(){
-                expect(1).toEqual(-1)
+            it ("Calls the Trigger Add New Map", function(){
+                expect(ToolbarDataView.prototype.triggerAddNewMap).toHaveBeenCalledTimes(0);
+                fixture.find(".add-new").trigger("click");
+                expect(ToolbarDataView.prototype.triggerAddNewMap).toHaveBeenCalledTimes(1);
+                //expect(1).toEqual(-1)
             });
         });
 
@@ -118,12 +116,18 @@ define([
                 initToolbarDataview(this);
             });
 
-            it ("Calls the Create Media Upload", function(){
-                expect(1).toEqual(-1)
+            it ("Calls the Create Media Upload Modal", function(){
+                expect(ToolbarDataView.prototype.createMediaUploadModal).toHaveBeenCalledTimes(0);
+                fixture.find(".add-media").trigger("click");
+                expect(ToolbarDataView.prototype.createMediaUploadModal).toHaveBeenCalledTimes(1);
+                //expect(1).toEqual(-1)
             });
 
             it ("Calls the Create Map Image Upload Modal", function(){
-                expect(1).toEqual(-1)
+                expect(ToolbarDataView.prototype.createMapImageUploadModal).toHaveBeenCalledTimes(0);
+                fixture.find(".add-map-image").trigger("click");
+                expect(ToolbarDataView.prototype.createMapImageUploadModal).toHaveBeenCalledTimes(1);
+                //expect(1).toEqual(-1)
             });
         });
 
@@ -135,11 +139,17 @@ define([
             });
 
             it ("Calls the Show Modal", function(){
-                expect(1).toEqual(-1)
+                expect(ToolbarDataView.prototype.showModal).toHaveBeenCalledTimes(0);
+                newToolbarDataview.app.vent.trigger("show-modal");
+                expect(ToolbarDataView.prototype.showModal).toHaveBeenCalledTimes(1);
+                //expect(1).toEqual(-1)
             });
 
             it ("Calls the Hide Modal", function(){
-                expect(1).toEqual(-1)
+                expect(ToolbarDataView.prototype.hideModal).toHaveBeenCalledTimes(0);
+                newToolbarDataview.app.vent.trigger("hide-modal");
+                expect(ToolbarDataView.prototype.hideModal).toHaveBeenCalledTimes(1);
+                //expect(1).toEqual(-1)
             });
         });
 
@@ -151,11 +161,18 @@ define([
             });
 
             it ("Calls the Show Create Form", function(){
-                expect(1).toEqual(-1)
+                expect(ToolbarDataView.prototype.showCreateForm).toHaveBeenCalledTimes(0);
+                fixture.find(".add-type").trigger("click");
+                expect(ToolbarDataView.prototype.showCreateForm).toHaveBeenCalledTimes(1);
+                //expect(1).toEqual(-1)
             });
 
             it ("Calls the Edit Target Form", function(){
-                expect(1).toEqual(-1)
+                // This one has 'e' as parameter. It has to be spoofed
+                expect(ToolbarDataView.prototype.editTargetForm).toHaveBeenCalledTimes(0);
+                fixture.find(".edit-type").trigger("click");
+                expect(ToolbarDataView.prototype.editTargetForm).toHaveBeenCalledTimes(1);
+                //expect(1).toEqual(-1)
             });
         });
 
