@@ -39,7 +39,8 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 this.dataDictionary.videos = {
                     value: "videos",
                     name: "Videos",
-                    collection: new Videos([{
+                    collection: new Videos([
+                        {
                         id: 1,
                         video_id: "21419634",
                         provider: "vimeo",
@@ -53,7 +54,50 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                         overlay_type: "video",
                         name: "Northern Lights",
                         caption: "blah"
-                    }])
+                    }, {
+                        id: 3,
+                        video_id: "Atneh7B61k",
+                        provider: "youtube",
+                        overlay_type: "video",
+                        name: "Rainbow sky",
+                        caption: "blah"
+                    }, {
+                        id: 4,
+                        video_id: "154697834",
+                        provider: "vimeo",
+                        overlay_type: "video",
+                        name: "Len Lye, Rainbow Dance 1936",
+                        caption: "blah"
+                    }, {
+                        id: 5,
+                        video_id: "111263519",
+                        provider: "vimeo",
+                        overlay_type: "video",
+                        name: "Rare Iridescent 'rainbow' clouds ",
+                        caption: "blah"
+                    }, {
+                        id: 6,
+                        video_id: "IX3qmQYo7_g",
+                        provider: "youtube",
+                        overlay_type: "video",
+                        name: "Top 10 Dangerous Super Powers of Water",
+                        caption: "blah"
+                    }, {
+                        id: 7,
+                        video_id: "3n8B79bOJUc",
+                        provider: "youtube",
+                        overlay_type: "video",
+                        name: "Girl uses PVC Pipe Compound Bow to Hunt Fish",
+                        caption: "blah"
+                    }, {
+                        id: 8,
+                        video_id: "120083269",
+                        provider: "vimeo",
+                        overlay_type: "video",
+                        name: "The Flaming Lips: Look ... The Sun is Rising",
+                        caption: "blah"
+                    }
+                ])
                 };
                 this.vent.trigger('data-loaded');
             },

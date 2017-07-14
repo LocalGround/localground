@@ -10,7 +10,12 @@ define(["models/base"], function (Base) {
             name: { type: 'TextArea', title: "Name" },
             caption:  { type: 'TextArea', title: "Caption" },
             attribution: { type: 'TextArea', title: "Attribution" },
+            video_id: {type: 'TextArea'},
+            provider: {type: 'Select', options: ['vimeo', 'youtube']},
             tags: { type: 'List', itemType: 'Text' }
+        },
+        getFormSchema: function(){
+            return this.schema;
         }
     });
     return Video;
