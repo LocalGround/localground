@@ -60,11 +60,15 @@ define([
             this.listenTo(this.app.vent, 'add-new-item-to-map', this.triggerAddNewMap);
             $('body').click(this.hideMenus);
             this.modal = new Modal();
-            this.forms = new Forms();
-            this.listenTo(this.forms, "reset", this.render);
-            this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
-            this.listenTo(this.forms, 'reset', this.renderAndRoute);
-            this.forms.fetch({ reset: true });
+            if (!this.forms){
+                this.forms = new Forms();
+                this.listenTo(this.forms, "reset", this.render);
+                this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
+                this.listenTo(this.forms, 'reset', this.renderAndRoute);
+                this.forms.fetch({ reset: true });
+            } else {
+                this.renderAndRoute();
+            }
         },
 
         hideMenus: function (e) {

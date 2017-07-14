@@ -14,14 +14,14 @@ define([
             spyOn(ToolbarDataView.prototype, "hideMenus").and.callThrough();
             spyOn(ToolbarDataView.prototype, "toggleMenu").and.callThrough();
             spyOn(ToolbarDataView.prototype, "triggerAddNew").and.callThrough();
-            spyOn(ToolbarDataView.prototype, "triggerAddNewMap").and.callThrough();
+            spyOn(ToolbarDataView.prototype, "triggerAddNewMap");
             spyOn(ToolbarDataView.prototype, "updateNewObejctRoute").and.callThrough();
             spyOn(ToolbarDataView.prototype, "renderAndRoute").and.callThrough();
             spyOn(ToolbarDataView.prototype, "doSearch").and.callThrough();
             spyOn(ToolbarDataView.prototype, "changeDisplay").and.callThrough();
             spyOn(ToolbarDataView.prototype, "createMediaUploadModal").and.callThrough();
             spyOn(ToolbarDataView.prototype, "createMapImageUploadModal").and.callThrough();
-            spyOn(ToolbarDataView.prototype, "showModal").and.callThrough();
+            spyOn(ToolbarDataView.prototype, "showModal");
             spyOn(ToolbarDataView.prototype, "hideModal").and.callThrough();
             spyOn(ToolbarDataView.prototype, "editTargetForm").and.callThrough();
             spyOn(ToolbarDataView.prototype, "showCreateForm").and.callThrough();
@@ -31,7 +31,8 @@ define([
             scope.app.screenType = "map";
             scope.app.activeTab = "data";
             newToolbarDataview = new ToolbarDataView({
-                app: scope.app
+                app: scope.app,
+                forms: scope.forms
                 // Tinking about setting up the default screentype to map, but how?
             });
             fixture = setFixtures("<div></div>");
@@ -170,7 +171,12 @@ define([
             it ("Calls the Edit Target Form", function(){
                 // This one has 'e' as parameter. It has to be spoofed
                 expect(ToolbarDataView.prototype.editTargetForm).toHaveBeenCalledTimes(0);
-                fixture.find(".edit-type").trigger("click");
+                console.log(fixture[0].innerHTML);
+                fixture.find(".edit-type").trigger("click", {
+                    target: {
+                            parentElement: {innerText: "HELLO"}
+                        }
+                    });
                 expect(ToolbarDataView.prototype.editTargetForm).toHaveBeenCalledTimes(1);
                 //expect(1).toEqual(-1)
             });
