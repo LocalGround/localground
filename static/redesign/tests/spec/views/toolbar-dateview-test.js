@@ -6,11 +6,12 @@ define([
 ],
     function ($, ToolbarDataView) {
         'use strict';
-        var fixture;
+        var fixture,
+            newToolbarDataview;
 
         function initSpies(scope) {
-            spyOn(ToolbarDataView.prototype, "initalize").and.callThrough();
-            spyOn(ToolbarDataView.prototype, "hideMenu").and.callThrough();
+            spyOn(ToolbarDataView.prototype, "initialize").and.callThrough();
+            spyOn(ToolbarDataView.prototype, "hideMenus").and.callThrough();
             spyOn(ToolbarDataView.prototype, "toggleMenu").and.callThrough();
             spyOn(ToolbarDataView.prototype, "triggerAddRow").and.callThrough();
             spyOn(ToolbarDataView.prototype, "triggerAddNew").and.callThrough();
@@ -28,7 +29,13 @@ define([
             spyOn(ToolbarDataView.prototype, "showCreateForm").and.callThrough();
         }
 
-        describe("GalleryApp: Application-Level Tests", function () {
+        function initToolbarDataview(scope){
+            newToolbarDataview = new ToolbarDataView({
+                app: scope.app
+            });
+        }
+
+        describe("Toolbar Dataview: Start-up tests", function () {
             beforeEach(function () {
                 //called before each "it" test
                 initSpies(this);
@@ -36,11 +43,107 @@ define([
 
 
 
-            it("Placehilder Fail Test", function () {
-                expect(1).toEqual(-1);
+            it("Successfully calls initialize", function () {
+                expect(ToolbarDataView.prototype.initialize).toHaveBeenCalledTimes(0);
+                initToolbarDataview(this);
+                expect(ToolbarDataView.prototype.initialize).toHaveBeenCalledTimes(1);
             });
 
         });
+
+        describe("Toolbar Dataview: Menu Functions", function(){
+
+            beforeEach(function(){
+                initSpies(this);
+                initToolbarDataview(this);
+            });
+
+            it ("Calls the Hide Menu", function(){
+                expect(1).toEqual(-1)
+            });
+
+            it ("Calls the Toggle Menu", function(){
+                expect(1).toEqual(-1)
+            });
+
+            it ("Calls the Change Mode", function(){
+                expect(1).toEqual(-1)
+            });
+
+            it ("Calls the Change Display", function(){
+                expect(1).toEqual(-1)
+            });
+        });
+
+        describe("Toolbar Dataview: Trigger Add Functions", function(){
+
+            beforeEach(function(){
+                initSpies(this);
+                initToolbarDataview(this);
+            });
+
+            it ("Calls the Trigger Add Row", function(){
+                expect(1).toEqual(-1)
+            });
+
+            it ("Calls the Trigger Add New", function(){
+                expect(1).toEqual(-1)
+            });
+
+            it ("Calls the Trigger New Map", function(){
+                expect(1).toEqual(-1)
+            });
+        });
+
+        describe("Toolbar Dataview: Create Media Functions", function(){
+
+            beforeEach(function(){
+                initSpies(this);
+                initToolbarDataview(this);
+            });
+
+            it ("Calls the Create Media Upload", function(){
+                expect(1).toEqual(-1)
+            });
+
+            it ("Calls the Create Map Image Upload Modal", function(){
+                expect(1).toEqual(-1)
+            });
+        });
+
+        describe("Toolbar Dataview: Modal Functions", function(){
+
+            beforeEach(function(){
+                initSpies(this);
+                initToolbarDataview(this);
+            });
+
+            it ("Calls the Show Modal", function(){
+                expect(1).toEqual(-1)
+            });
+
+            it ("Calls the Hide Modal", function(){
+                expect(1).toEqual(-1)
+            });
+        });
+
+        describe("Toolbar Dataview: Form Functions", function(){
+
+            beforeEach(function(){
+                initSpies(this);
+                initToolbarDataview(this);
+            });
+
+            it ("Calls the Show Create Form", function(){
+                expect(1).toEqual(-1)
+            });
+
+            it ("Calls the Edit Target Form", function(){
+                expect(1).toEqual(-1)
+            });
+        });
+
+
 
 
     });
