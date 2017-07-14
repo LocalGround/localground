@@ -25,8 +25,8 @@ class Video(ProjectMixin, BaseAudit, BasePointMixin, models.Model):
         return self.name
 
     def can_view(self, user, access_key=None):
-        '''raise Exception(user)'''
-        raise Exception(self.project.id)
+        '''raise Exception(user)
+        raise Exception(self.project.id)'''
         return self.project.can_view(user=user, access_key=access_key)
 
     def can_edit(self, user):
