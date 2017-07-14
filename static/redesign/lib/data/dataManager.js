@@ -1,7 +1,7 @@
 define(["underscore", "marionette", "models/project", "collections/photos",
-        "collections/audio", "collections/mapimages", "collections/markers",
+        "collections/audio", "collections/videos", "collections/mapimages", "collections/markers",
         "collections/records", "collections/fields", "collections/tilesets"],
-    function (_, Marionette, Project, Photos, Audio, MapImages, Markers, Records, Fields, TileSets) {
+    function (_, Marionette, Project, Photos, Audio, Videos, MapImages, Markers, Records, Fields, TileSets) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
@@ -36,6 +36,25 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     _.extend(that.dataDictionary[key], extras);
                     delete entry.data;
                 });
+                this.dataDictionary.videos = {
+                    value: "videos",
+                    name: "Videos",
+                    collection: new Videos([{
+                        id: 1,
+                        video_id: "21419634",
+                        provider: "vimeo",
+                        overlay_type: "video",
+                        name: "Northern Lights",
+                        caption: "blah"
+                    }, {
+                        id: 2,
+                        video_id: "fVsONlc3OUY",
+                        provider: "youtube",
+                        overlay_type: "video",
+                        name: "Northern Lights",
+                        caption: "blah"
+                    }])
+                };
                 this.vent.trigger('data-loaded');
             },
             getDataSources: function () {
@@ -53,6 +72,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 dataSources = dataSources.concat([
                     { value: "photos", name: "Photos" },
                     { value: "audio", name: "Audio" },
+                    { value: "videos", name: "Videos" },
                     { value: "map_images", name: "Map Images" }
                 ]);
                 return dataSources;
@@ -73,7 +93,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 throw new Error("No entry found for " + key);
             },
             initCollection: function (key, data, fieldCollection, overlay_type) {
-                console.log(key);
                 switch (key) {
                 case "photos":
                     return { collection: new Photos(data) };
