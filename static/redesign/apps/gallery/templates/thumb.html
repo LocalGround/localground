@@ -37,7 +37,7 @@
         {{provider}}
 
         {{#ifequal provider "vimeo"}}
-            <iframe src="https://player.vimeo.com/video/120083269"
+            <iframe src="https://player.vimeo.com/video/{{video_id}}"
             width="240" height="150"
             frameborder="0"
             webkitallowfullscreen mozallowfullscreen allowfullscreen>
@@ -46,7 +46,7 @@
 
 
         {{#ifequal provider "youtube"}}
-            <iframe src="https://www.youtube.com/embed/3n8B79bOJUc?ecver=1"
+            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
             width="240" height="150"
             frameborder="0" allowfullscreen>
             </iframe>

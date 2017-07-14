@@ -2,11 +2,25 @@
 {{#ifequal mode "view"}}
     <h4>Preview</h4>
     <div>
-        <!-- Will replace placeholder with actual data-->
-            <iframe src="https://www.youtube.com/embed/3n8B79bOJUc?ecver=1"
-            width="240" height="150"
+        {{name}}
+        <br>
+        {{caption}}
+        <br>
+        {{#ifequal provider "vimeo"}}
+            <iframe src="https://player.vimeo.com/video/{{video_id}}"
+            width="350" height="200"
+            frameborder="0"
+            webkitallowfullscreen mozallowfullscreen allowfullscreen>
+            </iframe>
+        {{/ifequal}}
+
+
+        {{#ifequal provider "youtube"}}
+            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
+            width="350" height="200"
             frameborder="0" allowfullscreen>
             </iframe>
+        {{/ifequal}}
     </div>
     <br>
     {{tags}}
@@ -46,12 +60,21 @@
         {{/if}}
     {{/ifequal}}
     <div>
-        <!-- Will replace placeholder with actual data-->
-            <iframe src="https://player.vimeo.com/video/120083269"
-            width="240" height="150"
-            frameborder="0"
-            webkitallowfullscreen mozallowfullscreen allowfullscreen>
-            </iframe>
+            {{#ifequal provider "vimeo"}}
+                <iframe src="https://player.vimeo.com/video/{{video_id}}"
+                width="350" height="200"
+                frameborder="0"
+                webkitallowfullscreen mozallowfullscreen allowfullscreen>
+                </iframe>
+            {{/ifequal}}
+
+
+            {{#ifequal provider "youtube"}}
+                <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
+                width="350" height="200"
+                frameborder="0" allowfullscreen>
+                </iframe>
+            {{/ifequal}}
     </div>
 
     <div id="model-form">
