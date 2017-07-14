@@ -37,7 +37,6 @@ define([
 
         templateHelpers: function () {
             return {
-                mode: this.app.mode,
                 dataType: this.app.dataType,
                 screenType: this.app.screenType,
                 activeTab: this.app.activeTab,

@@ -30,9 +30,14 @@ define([
         }
 
         function initToolbarDataview(scope){
+            scope.app.screenType = "map";
+            scope.app.activeTab = "data";
             newToolbarDataview = new ToolbarDataView({
                 app: scope.app
+                // Tinking about setting up the default screentype to map, but how?
             });
+            fixture = setFixtures("<div></div>");
+            fixture.append(newToolbarDataview.$el);
         }
 
         describe("Toolbar Dataview: Start-up tests", function () {
@@ -59,18 +64,29 @@ define([
             });
 
             it ("Calls the Hide Menu", function(){
-                expect(1).toEqual(-1)
+                // When the user clicks on the body, the menu should hide
+                expect(ToolbarDataView.prototype.hideMenus).toHaveBeenCalledTimes(0);
+                $("body").trigger("click");
+                expect(ToolbarDataView.prototype.hideMenus).toHaveBeenCalledTimes(1);
+                //expect(1).toEqual(-1)
             });
 
             it ("Calls the Toggle Menu", function(){
-                expect(1).toEqual(-1)
-            });
-
-            it ("Calls the Change Mode", function(){
-                expect(1).toEqual(-1)
+                // When user clicks on the "add", toggle the menu
+                expect(ToolbarDataView.prototype.toggleMenu).toHaveBeenCalledTimes(0);
+                fixture.find(".add").trigger("click");
+                expect(ToolbarDataView.prototype.toggleMenu).toHaveBeenCalledTimes(1);
+                //expect(1).toEqual(-1)
             });
 
             it ("Calls the Change Display", function(){
+                expect(ToolbarDataView.prototype.changeDisplay).toHaveBeenCalledTimes(0);
+                console.log(fixture[0].innerHTML);
+                fixture.find(".media-type").trigger("change");
+                expect(ToolbarDataView.prototype.changeDisplay).toHaveBeenCalledTimes(1);
+            });
+
+            it ("Calls the Change Mode", function(){
                 expect(1).toEqual(-1)
             });
         });
