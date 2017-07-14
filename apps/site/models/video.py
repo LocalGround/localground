@@ -16,6 +16,8 @@ class Video(ProjectMixin, BaseAudit, BasePointMixin, models.Model):
     video_id = models.CharField(null=False, blank=False, max_length=255)
     provider = models.CharField(max_length=63, null=False, blank=False, choices=VIDEO_PROVIDERS, verbose_name="video provider")
 
+    objects = VideoManager()
+
     def __str__(self):
         return self.name
 
@@ -23,7 +25,15 @@ class Video(ProjectMixin, BaseAudit, BasePointMixin, models.Model):
         return self.name
 
     def can_view(self, user, access_key=None):
+        '''raise Exception(user)'''
+        raise Exception(self.project.id)
         return self.project.can_view(user=user, access_key=access_key)
 
     def can_edit(self, user):
         return self.project.can_edit(user)
+
+    class Meta:
+        app_label = 'site'
+        ordering = ['id']
+        verbose_name = 'video'
+        verbose_name_plural = 'videos'
