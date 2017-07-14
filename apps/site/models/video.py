@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from localground.apps.site.managers import VideoManager
+from django.contrib.postgres.fields import ArrayField
 from localground.apps.site.models import BasePointMixin, BaseAudit, ProjectMixin
 import os
 
