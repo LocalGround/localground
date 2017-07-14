@@ -16,3 +16,8 @@ class Video(ProjectMixin, BaseAudit, BasePointMixin, models.Model):
     video_id = models.CharField(null=False, blank=False, max_length=255)
     provider = models.CharField(max_length=63, null=False, blank=False, choices=VIDEO_PROVIDERS, verbose_name="video provider")
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
