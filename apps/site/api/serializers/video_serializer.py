@@ -4,7 +4,7 @@ from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 
 
-class VideoSerializer(serializers.Serializer):
+class VideoSerializer(serializers.HyperlinkedModelSerializer):
     VIDEO_PROVIDERS = (
         ('vimeo', 'Vimeo'),
         ('youtube', 'YouTube')
@@ -32,7 +32,7 @@ class VideoSerializer(serializers.Serializer):
 '''
     class Meta:
         model = models.Video
-        fields = ('id', 'name', 'description', 'tags', 'video_id', 'provider')
+        fields = ('id', 'url', 'name', 'description', 'tags', 'video_id', 'provider')
 
 
     def create(self, validated_data):
