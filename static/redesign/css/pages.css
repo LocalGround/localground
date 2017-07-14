@@ -2,9 +2,9 @@
 */
 
 
-@import url('https://fonts.googleapis.com/css?family=Open+Sans');
-@import url(https://fonts.googleapis.com/css?family=Amatic+SC);
-@import url(https://fonts.googleapis.com/css?family=Amatica+SC);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,800,300italic,400italic);
+@import url(https://fonts.googleapis.com/css?family=Amatic+SC:400,700);
+@import url(https://fonts.googleapis.com/css?family=Amatica+SC:400,700);
 
 .main-content {
     background: #ffffff;
@@ -110,7 +110,7 @@ a.logotype {
     font-family: "Amatica SC";
     /*letter-spacing: .1em;*/
     font-size: 36px;
-    font-weight: bold;
+    font-weight: 700;
     /*display: inline-block;*/
 }
 
@@ -146,6 +146,7 @@ a.logotype {
 nav.account {
     background-color: white;
     font-size: 14px;
+    letter-spacing: 0.05em;
     /*box-shadow: 0 1px 4px 1px rgba(53, 76, 122, 0.1);*/
     position: relative;
     z-index: 40;
@@ -202,6 +203,7 @@ nav.account>div {
 .login-questions>a,
 .login-questions>p>a
 {
+    letter-spacing: 0.03em;
     color:#4e70d4;
     text-decoration: underline;
     text-decoration-color: #4e70d4;

@@ -14,19 +14,18 @@
             </li>
             
             {% if user.is_authenticated %}
-                <li>
+                <!--li>
                     <a href="/accounts/logout/">{{ user }}: sign out</a>
+                </li-->
+                <li>
+                    <a class="account" id="toggle-button"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ user }}</a>
+                    <div class="dropdown-menu" style="display:none;" id="account-options">
+
+                        <a href="/accounts/logout/">Sign out</a>
+                    </div>
                 </li>
-                    <li>
-                        <a class="account" id="toggle-button"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ user }}</a>
-                        <div class="dropdown-menu" style="display:none;" id="account-options">
-                            <a>Your Profile</a>
-                                    <a>Settings</a>
-                            <a href="/accounts/logout/">Sign out</a>
-                        </div>
-                    </li>
             {% else %}
-                <a class="navbar-btn button-primary button-main-action" href="/accounts/login"><span class="glyphicon glyphicon-log-in white"></span>&nbsp&nbspSign In</a>
+                <a class="navbar-btn button-primary button-main-action" href="/accounts/login"><span class="glyphicon glyphicon-log-in white"></span>&nbsp&nbspSign in</a>
                 <a class="navbar-btn button-primary button-main-action" href="/accounts/register"><span class="glyphicon glyphicon-user white"></span>&nbsp&nbspCreate account</a>
             {% endif %}
           </ul>
