@@ -34,9 +34,9 @@
 <a href="#/{{ dataType }}/{{id}}" id="video-card">
     <div>
         {{video_id}}
-        {{provider}}
+        {{video_provider}}
 
-        {{#ifequal provider "vimeo"}}
+        {{#ifequal video_provider "vimeo"}}
             <iframe src="https://player.vimeo.com/video/{{video_id}}"
             width="240" height="150"
             frameborder="0"
@@ -45,7 +45,7 @@
         {{/ifequal}}
 
 
-        {{#ifequal provider "youtube"}}
+        {{#ifequal video_provider "youtube"}}
             <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
             width="240" height="150"
             frameborder="0" allowfullscreen>
