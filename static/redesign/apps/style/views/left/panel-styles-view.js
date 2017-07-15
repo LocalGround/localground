@@ -18,9 +18,10 @@ define(["marionette",
                 return _.extend(
                     {
                         'change #text-type': 'updateType',
-                        'change #font': 'updateFont',
+                     //   'change #font': 'updateFont',
                         'change #fw': 'updateFontWeight',
-                        'change #font-size': 'updateFontSize'
+                        'change #font-size': 'updateFontSize',
+                        'click #font': 'showFonts'
                     },
                     PanelVisibilityExtensions.events
                 );
@@ -29,6 +30,7 @@ define(["marionette",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.restoreState();
+                $('body').click(this.hideFonts);
             },
             
             onRender: function () {
@@ -52,9 +54,23 @@ define(["marionette",
                 });
                 $(".colorpicker:last-child").addClass('panel-styles-color-picker');
             },
-            
 
-            
+            showFonts: function () {
+               // this.$el.find('#font').hide();
+                this.$el.find('#font-div').show();
+            },
+
+            hideFonts: function (e) {
+                var $el = $(e.target);
+
+                console.log("body click", $el.hasClass('font-options'));
+                
+                if (!$el.hasClass('font-options') && !$el.hasClass('font-dropdown-display') && !$el.hasClass('font-display')) {
+                    console.log("should hide");
+                    $(".font-options").hide();
+                }
+            },
+
             templateHelpers: function () {
                 var opts = PanelVisibilityExtensions.templateHelpers();
                 if (!this.model) {
