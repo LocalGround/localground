@@ -8,7 +8,7 @@ define(["models/video", "collections/basePageable"], function (Video, BasePageab
         overlay_type: 'video',
         fillColor: "hotpink",
         size: 12,
-        key: 'video',
+        key: 'videos',
         name: 'Video Files',
         url: '/api/0/videos/'
     });
