@@ -288,8 +288,10 @@ th {
     width: 36px;
     padding: 4px 10px 4px 20px;
 }
-
-#media-photos, #media-audio {
+.pull-right {
+    float: right;
+}
+#media-photos, #media-audio, #media-videos {
     float: right;
 }
 
