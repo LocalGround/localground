@@ -7,11 +7,19 @@ define(["models/base"], function (Base) {
      */
     var Video = Base.extend({
         schema: {
-            name: { type: 'TextArea', title: "Name" },
+            name: { type: 'Text', title: "Name" },
             caption:  { type: 'TextArea', title: "Caption" },
-            attribution: { type: 'TextArea', title: "Attribution" },
-            video_id: {type: 'TextArea'},
-            video_provider: {type: 'Select', options: {vimeo: 'Vimeo', youtube: 'YouTube'}},
+            attribution: { type: 'Text', title: "Attribution" },
+            video_id: {type: 'Text', validators: ['required'] },
+            video_provider: {
+                type: 'Select',
+                validators: ['required'],
+                options: {
+                    '': '--Select Provider--',
+                    vimeo: 'Vimeo',
+                    youtube: 'YouTube'
+                }
+            },
             tags: { type: 'List', itemType: 'Text' }
         },
         getFormSchema: function () {

@@ -6,7 +6,7 @@ define(["models/video", "collections/basePageable"], function (Video, BasePageab
     var Videos = BasePageable.extend({
         model: Video,
         overlay_type: 'video',
-        fillColor: "hotpink",
+        fillColor: "#92374D",
         size: 12,
         key: 'videos',
         name: 'Video Files',
