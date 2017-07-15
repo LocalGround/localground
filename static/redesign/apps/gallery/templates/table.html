@@ -8,7 +8,7 @@
 {{/ifequal}}
 
 {{#ifequal dataType "audio"}}
-    <td><i class="fa fa-volume-up" aria-hidden="true"></i></td>
+    <td><i class="fa fa-2x fa-volume-up" aria-hidden="true"></i></td>
     <td>{{name}}</td>
     <td>{{caption}}</td>
     <td>{{tags}}</td>
@@ -17,7 +17,13 @@
 {{/ifequal}}
 
 {{#ifequal dataType "videos"}}
-    <td><i class="fa fa-volume-up" aria-hidden="true"></i></td>
+    <td>
+        {{#ifequal video_provider "vimeo"}}
+            <i class="fa fa-2x fa-vimeo" aria-hidden="true"></i>
+        {{ else }}
+            <i class="fa fa-2x fa-youtube" aria-hidden="true"></i>
+        {{/ifequal}}
+    </td>
     <td>{{name}}</td>
     <td>{{caption}}</td>
     <td>{{tags}}</td>
