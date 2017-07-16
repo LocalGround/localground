@@ -365,7 +365,8 @@ nav .selected{
 .login-questions {
     margin-left: 130px;
 }
-.login-questions a {
+.block-centered a {
+    font-size: 12px;
     color: #4e70d4;
 }
 .login-questions p {
@@ -497,6 +498,9 @@ nav .selected{
 #model-form .help-block {
     font-size: 10px;
     line-height: 12px;
+}
+#model-form .errorlist {
+    list-style: none;
 }
 
 .inline-form input[type="radio"] {
@@ -931,7 +935,7 @@ tbody .failure-message, tbody .success-message {
     background-color: rgb(185, 74, 72);
 }
 
-.error *[data-error] {
+.error *[data-error], .errorlist li {
     font-size: 11px;
     color: #c7254e;
 }
