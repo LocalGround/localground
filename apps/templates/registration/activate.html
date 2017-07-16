@@ -1,16 +1,14 @@
-{% extends "base/page_centered.html" %}
-{% load i18n %}
-{% block extra_styles %}
-	{{block.super}}
-    .content p, .content form { margin-left: 20px; }
-	
-{% endblock %}
-{% block page_title %}Activate Account{% endblock %}
-{% block main_content %}
-    {% if account %}
-        <p>{% trans "Account successfully activated" %}</p>
-        <p><a href="{% url "auth_login" %}">{% trans "Log in" %}</a></p> 
-    {% else %}
-        <p>{% trans "Account activation failed" %}</p>
-    {% endif %}
+{% extends "base/base.html" %}
+{% block title %}Account Activation{% endblock %} 
+{% block h1 %} Account Activation {% endblock %}
+
+{% block content %} 
+    <div class="block-centered">
+        {% if account %}
+            <p>Account successfully activated</p>
+            <p><a href="/accounts/login">Log in</a></p>  
+        {% else %}
+            <p>Account activation failed</p>
+        {% endif %} 
+    </div>
 {% endblock %}
