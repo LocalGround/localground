@@ -1,12 +1,38 @@
-{% extends "base/base.html" %} 
-{% block extra_css_links %}
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/pages.css" />
-{% endblock %}
 
-{% block title %}How it Works{% endblock %} 
-{% block h1 %}How it Works{% endblock %} 
-{% block content %}
+<!-- saved from url=(0059)http://ellenvanwyk.github.io/lg-redesign/documentation.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Local Ground</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/static-pages.css" />
+        
+</head>
+<body>
 
+<nav class="account">
+    <div>
+        <a class="logotype" href="/">Local Ground</a>
+        <ul class="right-nav">
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            <li class="selected">
+                <a href="/documentation/">Documentation</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li>
+                <a class="account"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ user }}</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<div class="article-title">
+    <div class="container-center article">
+        <h1>Documentation</h1>
+    </div>
+</div>
 <div class="container-center article flex">
     <div class="one-third-column table-of-contents">
         <ul>
@@ -119,4 +145,4 @@
 </div>
 
 
-{% endblock %}
+</body></html>

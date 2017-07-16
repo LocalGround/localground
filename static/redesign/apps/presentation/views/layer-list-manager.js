@@ -10,6 +10,7 @@ define(["marionette",
             template: Handlebars.compile(''),
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log("Layer List Manager Called");
             },
             childViewOptions: function () {
                 return {
