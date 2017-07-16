@@ -51,7 +51,7 @@ a.logotype{
     text-transform: uppercase;
 }
 
-input[type="text"], input[type="password"], textarea{
+input[type="text"], input[type="password"], input[type="email"], textarea{
     border-style:solid;
     border-width:1px;
     border-color:#ebecf2; /*Slightly lighter for dark background*/
@@ -346,6 +346,10 @@ nav .selected{
 /****************************************************************************************/
 /*                                       STATIC PAGES                                   */
 /****************************************************************************************/
+.main-content {
+    margin-bottom: 50px;
+}
+
 .reg-button-panel {
     float: right;
     margin-top: 14px;
@@ -367,9 +371,22 @@ nav .selected{
 .login-questions p {
     font-size: 12px;
 }
+.footer {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    background: white;
+    padding: 20px 0px 5px 0px;
+    height: 30px;
+}
+.footer-text {
+    text-align: center;
+    font-size: 12px;
+}
 
 .block-centered {
-    max-width: 440px;
+    max-width: 470px;
     min-width: 300px;
     margin-right: auto;
     margin-left: auto;
@@ -465,6 +482,7 @@ nav .selected{
 #model-form fieldset input[type="text"],
 #model-form fieldset input[type="number"],
 #model-form fieldset input[type="password"],
+#model-form fieldset input[type="email"],
 .inline-form textarea,
 .inline-form input {
     padding: 4px 6px;
@@ -475,6 +493,10 @@ nav .selected{
     box-sizing: border-box;
     margin: 1px;
     width:100%;
+}
+#model-form .help-block {
+    font-size: 10px;
+    line-height: 12px;
 }
 
 .inline-form input[type="radio"] {
