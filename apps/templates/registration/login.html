@@ -5,8 +5,6 @@
 
 {% block content %}
     <div class="block-centered">
-        <h4>Have a Local Ground account?</h4>
-        <hr>
         <form id="model-form" method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
             {% csrf_token %} {% if form.errors %}
             <div class="alert-message error">
@@ -20,19 +18,20 @@
                     <div class="input">
                         <input type="hidden" name="next" value="/" />
                         <button type="submit" class="button-primary">Sign In</button>
-                        <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
-                            <span id="google-button"></span>
-                        </a>    
+                        <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"><span id="google-button"></span></a>    
                     </div>
                 </div>
             </fieldset>
         </form>
+        <hr class="break">
         <div class="login-questions">
             <a href="/accounts/password/reset/">Forgot your password?</a>
-            <hr>
-            <p class="align">
-                {% if user.is_superuser or not ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE %} New to Local Ground?<br> <a href="/accounts/register/"> Create your Local Ground account</a>        {% endif %}
-            </p>
+            {% if user.is_superuser or not ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE %}
+                <p>
+                    New to Local Ground?
+                    <a href="/accounts/register/">Create an account</a>
+                </p>
+            {% endif %}
         </div>
     </div>
 </div>

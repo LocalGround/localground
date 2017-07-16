@@ -350,17 +350,50 @@ nav .selected{
     float: right;
     margin-top: 14px;
 }
+.centered {
+    text-align: center;
+}
+.break {
+    margin: 15px 0px 15px 0px;
+    border-bottom: solid 1px #DDD;
+}
+
+.login-questions {
+    margin-left: 130px;
+}
+.login-questions a {
+    color: #4e70d4;
+}
+.login-questions p {
+    font-size: 12px;
+}
 
 .block-centered {
-    width: 40%;
-    min-width: 500px;
+    max-width: 440px;
+    min-width: 300px;
     margin-right: auto;
     margin-left: auto;
     background: #F0F0F0;
-    margin-top: 20px;
+    margin-top: 40px;
     padding: 40px;
 }
 
+#google-button {
+    height: 40px;
+    width: 200px;
+    background-image: url('../assets/White-signin_Long_base_32dp.png');
+    background-size: 200px 40px;
+    display: inline-block;
+    margin-bottom: -15px;
+}
+
+#google-button:hover {
+    background-image: url('../assets/White-signin_Long_hover_32dp.png');
+}
+
+#google-button:active {
+    background-image: url('../assets/White-signin_Long_press_32dp.png');
+}
 
 /****************************************************************************************/
 /*                                          FORMS                                       */
