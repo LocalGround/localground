@@ -69,6 +69,7 @@ class BaseGenericRelationMixin(models.Model):
     _audio = None
     _map_images = None
     _markers = None
+    _videos = None
 
     entities = fields.GenericRelation(
         'GenericAssociation',

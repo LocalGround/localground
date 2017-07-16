@@ -53,20 +53,26 @@ define(["marionette",
 
             },
 
-            showUploader: function() {
+            showUploader: function (e) {
                 this.mediaBrowserRegion.$el.hide();
                 this.uploaderRegion.$el.show();
                 this.$el.find("#database-tab-li").removeClass("active");
                 this.$el.find("#upload-tab-li").addClass("active");
                 this.activeRegion = "uploader";
+                if (e) {
+                    e.preventDefault();
+                }
             },
 
-            showDatabase: function() {
+            showDatabase: function (e) {
                 this.uploaderRegion.$el.hide();
                 this.mediaBrowserRegion.$el.show();
                 this.$el.find("#upload-tab-li").removeClass("active");
                 this.$el.find("#database-tab-li").addClass("active");
                 this.activeRegion = "mediaBrowser";
+                if (e) {
+                    e.preventDefault();
+                }
             },
             addModels: function () {
                 if (this.activeRegion == "mediaBrowser") {

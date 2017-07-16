@@ -2202,7 +2202,8 @@ span.plus {
     border: dashed 1px #CCC;
     margin-right: 10px;
     margin-left: 10px;
-    min-height: 350px;
+    height: 300px;
+    margin-top: 20px;
 }
 
 #dropzone.hover {

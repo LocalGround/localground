@@ -1,0 +1,97 @@
+<!-- VIEW MODE -->
+{{#ifequal mode "view"}}
+    <h4>Preview</h4>
+    <div>
+        {{name}}
+        <br>
+        {{caption}}
+        <br>
+        {{#ifequal video_provider "vimeo"}}
+            <iframe src="https://player.vimeo.com/video/{{video_id}}"
+            width="350" height="200"
+            frameborder="0"
+            webkitallowfullscreen mozallowfullscreen allowfullscreen>
+            </iframe>
+        {{/ifequal}}
+
+
+        {{#ifequal video_provider "youtube"}}
+            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
+            width="350" height="200"
+            frameborder="0" allowfullscreen>
+            </iframe>
+        {{/ifequal}}
+    </div>
+    <br>
+    {{tags}}
+    <br>
+    <div class="save-options">
+        <button class="edit-mode button-tertiary ">Edit</button>
+    </div>
+{{/ifequal}}
+
+
+<!-- EDIT MODE -->
+{{#ifequal mode "edit"}}
+    <h4>
+        {{#if id}}
+        Edit
+        {{else}}
+        Add New
+        {{/if}}
+    </h4>
+    {{#ifequal screenType "map"}}
+        {{#if geometry}}
+        <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>
+        {{else}}
+        <div class="add-lat-lng">
+            <button class="button-secondary add-marker-button" id="add-geometry">
+                Add Location Marker
+            </button>
+        </div>
+        {{/if}}
+
+        {{#if lat}}
+            <div class="latlong-container">
+            <p class="latlong" style="font-style: italic">
+                ({{lat}}, {{lng}})
+            </p>
+            </div>
+        {{/if}}
+    {{/ifequal}}
+    <div>
+            {{#ifequal video_provider "vimeo"}}
+                <iframe src="https://player.vimeo.com/video/{{video_id}}"
+                style="width: 100%" height="250"
+                frameborder="0"
+                webkitallowfullscreen mozallowfullscreen allowfullscreen>
+                </iframe>
+            {{/ifequal}}
+
+
+            {{#ifequal video_provider "youtube"}}
+                <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
+                style="width: 100%" height="250"
+                frameborder="0" allowfullscreen>
+                </iframe>
+            {{/ifequal}}
+    </div>
+
+    <div id="model-form">
+        <!-- Form goes here. To modify the fields that are editable,
+            go to the redesign/models/photo.js and/or audio.js and modify
+            the form. Instructions re: how to use the Backbone Forms
+            library here:
+            https://github.com/powmedia/backbone-forms#custom-editors
+        -->
+    </div>
+    <div class = "save-options">
+        <button class="save-model button-primary">Save</button>
+        <button class="view-mode button-tertiary">Preview</button>
+        <button class="button-tertiary button-warning delete-model">Delete</button>
+    </div>
+{{/ifequal}}
+
+{{#ifequal screenType "map"}}
+    <div class="show-hide hide"></div>
+{{/ifequal}}

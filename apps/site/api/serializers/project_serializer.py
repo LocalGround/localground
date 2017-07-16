@@ -1,5 +1,6 @@
 from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
+from localground.apps.site.api.serializers.video_serializer import VideoSerializer
 from localground.apps.site.api.serializers.mapimage_serializer import MapImageSerializerUpdate
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.record_serializer import create_record_serializer, \
@@ -73,6 +74,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
         ContentType.objects.get_for_models(*candidates, concrete_model=False)
         children = {
             'photos': self.get_photos(obj),
+            'videos': self.get_videos(obj),
             'audio': self.get_audio(obj),
             'map_images': self.get_mapimages(obj),
             'markers': self.get_markers(obj, forms)
@@ -103,6 +105,16 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             models.Photo,
             PhotoSerializer,
             models.Photo.objects.get_objects(
+                obj.owner,
+                project=obj
+            )
+        )
+    
+    def get_videos(self, obj):
+        return self.serialize_list(
+            models.Video,
+            VideoSerializer,
+            models.Video.objects.get_objects(
                 obj.owner,
                 project=obj
             )

@@ -21,6 +21,7 @@ from localground.apps.site.api.serializers.user_profile_serializer import UserPr
 from localground.apps.site.api.serializers.layer_serializer import LayerSerializer, LayerDetailSerializer
 from localground.apps.site.api.serializers.map_serializer import MapSerializer, MapDetailSerializer, MapDetailSerializerSlug
 from localground.apps.site.api.serializers.tileset_serializer import TileSetSerializer
+from localground.apps.site.api.serializers.video_serializer import VideoSerializer
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

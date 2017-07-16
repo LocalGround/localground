@@ -71,11 +71,14 @@ class MarkerSerializer(MarkerSerializerMixin):
         children = {}
         self.audio = self.get_audio(obj) or []
         self.photos = self.get_photos(obj) or []
+        self.videos = self.get_videos(obj) or []
         self.map_images = self.get_map_images(obj) or []
         if self.audio:
             children['audio'] = self.audio
         if self.photos:
             children['photos'] = self.photos
+        if self.videos:
+            children['videos'] = self.videos
         if self.map_images:
             children['map_images'] = self.map_images
 
@@ -106,6 +109,14 @@ class MarkerSerializer(MarkerSerializerMixin):
             obj.photos,
             many=True, context={ 'request': {} }).data
         return self.serialize_list(obj, models.Photo, data)
+    
+    def get_videos(self, obj):
+        from localground.apps.site.api.serializers import VideoSerializer
+
+        data = VideoSerializer(
+            obj.videos,
+            many=True, context={ 'request': {} }).data
+        return self.serialize_list(obj, models.Video, data)
 
     def get_audio(self, obj):
         from localground.apps.site.api.serializers import AudioSerializer

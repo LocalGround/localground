@@ -8,6 +8,7 @@ define(
         "collections/projects",
         "collections/photos",
         "collections/audio",
+        "collections/videos",
         "collections/maps",
         "collections/mapimages",
         "collections/markers",
@@ -19,6 +20,7 @@ define(
         "models/photo",
         "models/marker",
         "models/audio",
+        "models/video",
         "models/record",
         "models/map",
         "models/mapimage",
@@ -29,9 +31,9 @@ define(
         "lib/data/dataManager"
     ],
 
-    function (Backbone, Marionette, $, appUtilities, Projects, Photos, AudioFiles, Maps,
+    function (Backbone, Marionette, $, appUtilities, Projects, Photos, AudioFiles, Videos, Maps,
               MapImages, Markers, Records, Prints, Fields, Project, ProjectUser, Photo, Marker,
-              Audio, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
+              Audio, Video, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker').remove();
@@ -417,6 +419,11 @@ define(
                 new Audio({id: 2, name: "Duran Duran", tags: ['80s', 'amazing', 'tag1'], project_id: 1, overlay_type: "audio", caption: "caption 2", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3" }),
                 new Audio({id: 3, name: "Flo Rida", tags: ['florida', 'hip hop'], project_id: 2, overlay_type: "audio", caption: "caption 3", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3" })
             ]);
+            this.videos = new Videos([
+                {id: 10, name: "Rihanna Gibbons", caption: "caption 1", tags: [], video_id: "DVrTf5yOW5s", video_provider: "youtube", geometry: { type: "Point", coordinates: [-122.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"},
+                {id: 10, name: "Silver Lining", caption: "caption 2", tags: [], video_id: "DKL4X0PZz7M", video_provider: "youtube", geometry: { type: "Point", coordinates: [-121.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"},
+                {id: 10, name: "How to recount your dreams", caption: "caption 1", tags: [], video_id: "225222634", video_provider: "vimeo", geometry: { type: "Point", coordinates: [-120.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"}
+            ]);
             this.map_images = new MapImages([
                 new MapImage({ id: 1, name: "Map 1", tags: ['parks', 'oakland'], project_id: 1, caption: "Caption1", overlay_type: "map-image", geometry: { type: "Polygon", coordinates: [[[ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ]]]} }),
                 new MapImage({id: 2, name: "Map 2", tags: ['parks', 'berkeley', 'tag1'], project_id: 1, overlay_type: "map-image" }),
@@ -468,6 +475,7 @@ define(
 
             this.dataDictionary = {
                 photos: this.photos,
+                videos: this.videos,
                 audio: this.audioFiles,
                 map_images: this.map_images,
                 markers: this.markers,

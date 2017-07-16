@@ -1,7 +1,7 @@
 define(["underscore", "marionette", "models/project", "collections/photos",
-        "collections/audio", "collections/mapimages", "collections/markers",
+        "collections/audio", "collections/videos", "collections/mapimages", "collections/markers",
         "collections/records", "collections/fields", "collections/tilesets"],
-    function (_, Marionette, Project, Photos, Audio, MapImages, Markers, Records, Fields, TileSets) {
+    function (_, Marionette, Project, Photos, Audio, Videos, MapImages, Markers, Records, Fields, TileSets) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
@@ -53,11 +53,13 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 dataSources = dataSources.concat([
                     { value: "photos", name: "Photos" },
                     { value: "audio", name: "Audio" },
+                    { value: "videos", name: "Videos" },
                     { value: "map_images", name: "Map Images" }
                 ]);
                 return dataSources;
             },
             getData: function (key) {
+                console.log(key);
                 var entry = this.dataDictionary[key];
                 if (entry) {
                     return entry;
@@ -73,12 +75,13 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 throw new Error("No entry found for " + key);
             },
             initCollection: function (key, data, fieldCollection, overlay_type) {
-                console.log(key);
                 switch (key) {
                 case "photos":
                     return { collection: new Photos(data) };
                 case "audio":
                     return { collection: new Audio(data) };
+                case "videos":
+                    return { collection: new Videos(data) };
                 case "markers":
                     return {
                         collection: new Markers(data),
@@ -87,7 +90,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 case "map_images":
                     return { collection: new MapImages(data) };
                 default:
-                    console.log("Inside Default Settings: " + key);
                     // in addition to defining the collection, also define the fields:
                     if (key.indexOf("form_") != -1) {
                         var formID = key.split("_")[1],
