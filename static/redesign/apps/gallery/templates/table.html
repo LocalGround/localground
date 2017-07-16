@@ -1,19 +1,9 @@
 {{#ifequal dataType "photos"}}  
     <td><img src="{{ path_medium }}" class="thumbnail-img"></td>
-    <td>{{name}}</td>
-    <td>{{caption}}</td>
-    <td>{{tags}}</td>
-    <td>{{dataType}}</td>
-    <td>{{owner}}</td>
 {{/ifequal}}
 
 {{#ifequal dataType "audio"}}
     <td><i class="fa fa-2x fa-volume-up" aria-hidden="true"></i></td>
-    <td>{{name}}</td>
-    <td>{{caption}}</td>
-    <td>{{tags}}</td>
-    <td>{{dataType}}</td>
-    <td>{{owner}}</td>
 {{/ifequal}}
 
 {{#ifequal dataType "videos"}}
@@ -24,10 +14,11 @@
             <i class="fa fa-2x fa-youtube" aria-hidden="true"></i>
         {{/ifequal}}
     </td>
-    <td>{{name}}</td>
-    <td>{{caption}}</td>
-    <td>{{tags}}</td>
-    <td>{{dataType}}</td>
-    <td>{{owner}}</td>
 {{/ifequal}}
+
+<td>{{ name }}</td>
+<td>{{ caption }}</td>
+<td>{{ tags }}</td>
+<td>{{ overlay_type }}</td>
+<td>{{ owner }}</td>
 

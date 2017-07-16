@@ -165,6 +165,9 @@
 .hover-to-show:hover{
 	opacity:1;
 }
+.attached-media-overlay.video-hover {
+    height: 20px;
+}
 .edit-img-overlay .close {
     position: absolute;
     right: 6px;

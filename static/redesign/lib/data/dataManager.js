@@ -90,7 +90,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 case "map_images":
                     return { collection: new MapImages(data) };
                 default:
-                    console.log("Inside Default Settings: " + key);
                     // in addition to defining the collection, also define the fields:
                     if (key.indexOf("form_") != -1) {
                         var formID = key.split("_")[1],

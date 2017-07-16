@@ -92,6 +92,7 @@ define([
                     { value: 'form_1', name: 'Team Members' },
                     { value: 'photos', name: 'Photos' },
                     { value: 'audio', name: 'Audio' },
+                    { value: 'videos', name: 'Videos' },
                     { value: 'map_images', name: 'Map Images' }
                 ]);
             });
