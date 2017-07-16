@@ -391,7 +391,7 @@ nav .selected{
     min-width: 300px;
     margin-right: auto;
     margin-left: auto;
-    background: #F0F0F0;
+    background: rgb(246, 246, 249);
     margin-top: 40px;
     padding: 40px;
 }
@@ -775,6 +775,7 @@ p.coords {
     -ms-transition: background 0.3s linear;
     -o-transition: background 0.3s linear;
     transition: background 0.3s linear;
+    float: right;
 }
 
 .button-main-action:hover{

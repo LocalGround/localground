@@ -1,22 +1,9 @@
 {% extends "base/base.html" %} 
-{% block title %}Account Activation Complete{% endblock %} 
+{% block title %}Account Activation Complete {% endblock %} 
+{% block h1 %} Activation Complete {% endblock %}
 {% block content %}
-<div class="article-title">
-    <div class="container-center article ">
-        <h1>&nbsp</h1>
-    </div>
-</div>
-<div id="outer">
-
-    <div id="inner">
-        <h4>Account email confirmation</h4>
-        <hr>
-        <p>Your email has been confirmed.</p>
-        <p>Your account is now active. </p>
-        <br>
-        <div class="login-questions">
-            <a href="/accounts/login/">Sign in</a>
-        </div>
-    </div>
+<div class="block-centered">
+    <p>Your email has been confirmed Your account is now active.</p>
+    <a href="/accounts/login/">Sign in</a>
 </div>
 {% endblock %}
