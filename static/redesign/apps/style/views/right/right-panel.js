@@ -127,7 +127,7 @@ define(["jquery",
                         }
                     },
                     success: function () {
-                        console.log('success');
+                        console.log('success', that.model.get("metadata"));
                         that.collection.add(that.model);
                         that.app.layerHasBeenSaved = true;
                         that.app.layerHasBeenAltered = false;

@@ -88,7 +88,6 @@ define(["jquery",
                 this.collection.add(this.map);
                 var dataSources = this.app.dataManager.getDataSources();
                 this.modal.hide();               
-                this.showSection();
                 this.render();
                 this.$el.find('#map-select').val(this.map.id);
                 
@@ -97,6 +96,7 @@ define(["jquery",
 
                 dataSources.forEach(function(dataSource) {
                     var collection = that.app.dataManager.getCollection(dataSource.value);
+                    if (collection.length < 1) {return;}
                         if (dataSource.value === "markers") {
                             var layer = new Layer({
                                 map_id: that.map.id,
