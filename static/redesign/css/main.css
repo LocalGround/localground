@@ -413,6 +413,25 @@ nav .selected{
     background-image: url('../assets/White-signin_Long_press_32dp.png');
 }
 
+.table-of-contents {
+    flex: 1;
+    padding-top: 50px;
+}
+
+.table-of-contents li {
+    padding-bottom: 10px;
+}
+
+.table-of-contents li:first-child {
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: .05em;
+}
+
+.table-of-contents ul {
+    list-style: none;
+}
+
 /****************************************************************************************/
 /*                                          FORMS                                       */
 /****************************************************************************************/
