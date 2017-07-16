@@ -51,7 +51,7 @@ a.logotype{
     text-transform: uppercase;
 }
 
-input[type="text"], textarea{
+input[type="text"], input[type="password"], textarea{
     border-style:solid;
     border-width:1px;
     border-color:#ebecf2; /*Slightly lighter for dark background*/
@@ -69,6 +69,10 @@ input[type="checkbox"]{
 
 input.fieldname {
     margin-left: 4px;
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
 }
 
 hr {
@@ -340,6 +344,25 @@ nav .selected{
 }
 
 /****************************************************************************************/
+/*                                       STATIC PAGES                                   */
+/****************************************************************************************/
+.reg-button-panel {
+    float: right;
+    margin-top: 14px;
+}
+
+.block-centered {
+    width: 40%;
+    min-width: 500px;
+    margin-right: auto;
+    margin-left: auto;
+    background: #F0F0F0;
+    margin-top: 20px;
+    padding: 40px;
+}
+
+
+/****************************************************************************************/
 /*                                          FORMS                                       */
 /****************************************************************************************/
 .form {}
@@ -406,7 +429,9 @@ nav .selected{
 }
 
 #model-form fieldset textarea,
-#model-form fieldset input,
+#model-form fieldset input[type="text"],
+#model-form fieldset input[type="number"],
+#model-form fieldset input[type="password"],
 .inline-form textarea,
 .inline-form input {
     padding: 4px 6px;
@@ -619,44 +644,39 @@ p.coords {
 .button-view-mode .card {}
 .button-view-mode .list {}
 
-.button-primary{
-    /*background-color:rgb(53, 76, 122)*/
-    background-color:#4e70d4;
-    color:white;
+.button, .button-primary, .button-secondary, .button-tertiary {
     border:none;
     border-radius:3px;
-    font-size:12px;
-    margin-left: 6px;
-    float:right;
-    -webkit-animation: fadeEffect 0.5s;
-    animation: fadeEffect 0.5s; /* Fading effect takes 1 second */
-    padding: 0 11px;
-    text-transform: uppercase;
-    line-height:26px;
-    height:29px;
-    vertical-align: bottom;
+    line-height: 26px;
+    height: 29px;
+    vertical-align: middle;
     letter-spacing: 0.7px;
-    width:80px;
-}
-
-.button-secondary{
-    background-color: #fafafc;
-    border:none;
-    border-radius:3px;
-    padding: 0 12px;
+    text-align: center;
     text-transform: uppercase;
     font-size:12px;
     margin:0 2px;
+    padding: 0 12px;
+}
+
+.button-primary {
+    background-color:#4e70d4;
+    color:white;
+    -webkit-animation: fadeEffect 0.5s;
+    animation: fadeEffect 0.5s; /* Fading effect takes 1 second */
+    padding: 0 11px;
+    width:80px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+
+.button-secondary {
+    background-color: #fafafc;
     border: 1px solid #e4e5eb;
     -webkit-transition: background 0.3s linear;
     -moz-transition: background 0.3s linear;
     -ms-transition: background 0.3s linear;
     -o-transition: background 0.3s linear;
     transition: background 0.3s linear;
-    line-height: 26px;
-    height: 29px;
-    vertical-align: bottom;
-    letter-spacing: 0.7px;
     width:80px;
 }
 
@@ -665,17 +685,13 @@ p.coords {
     border-width:1px;
     border-color:#DDDDDD;
     border-radius:3px;
-    padding: 4px 8px;
-    font-size:12px;
     background-color:#f1f1f1;
 }
 
-
 .button-secondary:hover{
     background-color:#f1f3fb;
-    border-color:##4e70d4;
+    border-color: #4e70d4;
 }
-
 
 .button-tertiary{
     text-transform: uppercase;
@@ -758,7 +774,7 @@ p.coords {
 }
 
 /****************************************************************************************/
-/*                                     BADGES                                 */
+/*                                     BADGES                                           */
 /****************************************************************************************/
 
 

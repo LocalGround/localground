@@ -5,9 +5,10 @@
     <title> {% block title %} Local Ground{% endblock %}</title>
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <!--link href="/static/redesign/css/static-pages.css" rel="stylesheet"-->
-    <link href="/static/redesign/css/pages.css" rel="stylesheet">
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/index-style.css" />
+    <!-- link href="/static/redesign/css/pages.css" rel="stylesheet" / -->
     <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
 </head>
 
@@ -15,9 +16,13 @@
     {% block top_menu %} 
         {% include "base/top_nav.html" %} 
     {% endblock %}
-    <!--link{% block graphic_bar %} 
-        {% include "base/graphic_bar.html" %} 
-    {% endblock %}-->
+    {% block graphic_bar %} 
+        <div class="article-title">
+            <div class="container-center article ">
+                <h1>{% block h1 %}{% endblock %} </h1>
+            </div>
+        </div>
+    {% endblock %}
     
     <div class="main-content">
         {% block content %} 

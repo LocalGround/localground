@@ -1,38 +1,31 @@
-
-
-<nav class="navbar account">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand logotype" href="/">Local Ground</a>
-        </div>
-        <ul class="nav navbar-nav navbar-right">
+<nav id="toolbar-main" class="account">
+    <div>
+        <a class="logotype" href="/">Local Ground</a>
+        {% if not user.is_authenticated %}
+            <div class="reg-button-panel">
+                <a href="/accounts/register" class="button-primary button-main-action button-wide pull-right">Create Account</a>
+                <a href="/accounts/login" class="button-secondary pull-right">Sign In</a>
+            </div>
+        {% endif %}
+        <ul class="right-nav">
             <li>
                 <a href="/about">About</a>
             </li>
             <li>
-                <a href="/documentation">How it works</a>
+                <a href="/documentation">Documentation</a>
             </li>
-            
             {% if user.is_authenticated %}
-                <!--li>
-                    <a href="/accounts/logout/">{{ user }}: sign out</a>
-                </li-->
-                <li>
-                    <a class="account" id="toggle-button"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ user }}</a>
-                    <div class="dropdown-menu" style="display:none;" id="account-options">
-
-                        <a href="/accounts/logout/">Sign out</a>
-                    </div>
-                </li>
-            {% else %}
-                <a class="navbar-btn button-primary button-main-action" href="/accounts/login"><span class="glyphicon glyphicon-log-in white"></span>&nbsp&nbspSign in</a>
-                <a class="navbar-btn button-primary button-main-action" href="/accounts/register"><span class="glyphicon glyphicon-user white"></span>&nbsp&nbspCreate account</a>
+            <li>
+                <a class="account" id="toggle-button"><i class="fa fa-caret-down" aria-hidden="true"></i> vanwars</a>
+                <div class="dropdown-menu" style="display:none;" id="account-options">
+                    <a href="/accounts/logout/">Logout</a>
+                </div>
+            </li>
             {% endif %}
-          </ul>
-
-
+        </ul>
     </div>
 </nav>
+
 <script>
     $('#toggle-button').click(function () {
         $('.dropdown-menu').toggle();
