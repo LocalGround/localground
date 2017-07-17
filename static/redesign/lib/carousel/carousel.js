@@ -1,9 +1,10 @@
 define(["jquery", "underscore", "marionette", "handlebars",
-        "collections/photos", "collections/audio", "lib/audio/audio-player",
+        "collections/photos", "collections/audio", "collections/videos", "lib/audio/audio-player",
         "text!../carousel/carousel-photo.html", "text!../carousel/carousel-audio.html",
+        "text!../carousel/carousel-video.html",
         "text!../carousel/carousel-photo-item.html"],
-    function ($, _, Marionette, Handlebars, Photos, Audio, AudioPlayer,
-              CarouselPhotoTemplate, CarouselAudioTemplate, PhotoItemTemplate) {
+    function ($, _, Marionette, Handlebars, Photos, Audio, Videos, AudioPlayer,
+              CarouselPhotoTemplate, CarouselAudioTemplate, CarouselVideoTemplate, PhotoItemTemplate) {
         'use strict';
         var Carousel = Marionette.CompositeView.extend({
             events: {
@@ -19,6 +20,9 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 if (this.mode == "photos") {
                     this.template = Handlebars.compile(CarouselPhotoTemplate);
                     this.collection = new Photos(this.model.get("children").photos.data);
+                } else if (this.mode == "videos") {
+                    this.template = Handlebars.compile(CarouselVideoTemplate);
+                    this.collection = new Videos(this.model.get("children").videos.data);
                 } else {
                     this.template = Handlebars.compile(CarouselAudioTemplate);
                     this.collection = new Audio(this.model.get("children").audio.data);
