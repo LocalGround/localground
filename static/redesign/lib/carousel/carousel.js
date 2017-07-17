@@ -121,11 +121,13 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
 
             next: function () {
+                this.children.findByIndex(this.counter).render();
                 this.counter += 1;
                 this.navigate();
             },
 
             prev: function () {
+                this.children.findByIndex(this.counter).render();
                 this.counter -= 1;
                 this.navigate();
             },
