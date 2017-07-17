@@ -1,10 +1,10 @@
 define(["jquery", "underscore", "marionette", "handlebars",
         "collections/photos", "collections/audio", "collections/videos", "lib/audio/audio-player",
-        "text!../carousel/carousel-photo.html", "text!../carousel/carousel-audio.html",
-        "text!../carousel/carousel-video.html",
+        "text!../carousel/carousel-container.html", "text!../carousel/carousel-container-audio.html",
+        "text!../carousel/carousel-video-item.html",
         "text!../carousel/carousel-photo-item.html"],
     function ($, _, Marionette, Handlebars, Photos, Audio, Videos, AudioPlayer,
-              CarouselPhotoTemplate, CarouselAudioTemplate, CarouselVideoTemplate, PhotoItemTemplate) {
+              CarouselContainerTemplate, CarouselContainerAudioTemplate, VideoItemTemplate, PhotoItemTemplate) {
         'use strict';
         var Carousel = Marionette.CompositeView.extend({
             events: {
@@ -18,13 +18,13 @@ define(["jquery", "underscore", "marionette", "handlebars",
             initialize: function (opts) {
                 _.extend(this, opts);
                 if (this.mode == "photos") {
-                    this.template = Handlebars.compile(CarouselPhotoTemplate);
+                    this.template = Handlebars.compile(CarouselContainerTemplate);
                     this.collection = new Photos(this.model.get("children").photos.data);
                 } else if (this.mode == "videos") {
-                    this.template = Handlebars.compile(CarouselVideoTemplate);
+                    this.template = Handlebars.compile(CarouselContainerTemplate);
                     this.collection = new Videos(this.model.get("children").videos.data);
                 } else {
-                    this.template = Handlebars.compile(CarouselAudioTemplate);
+                    this.template = Handlebars.compile(CarouselContainerAudioTemplate);
                     this.collection = new Audio(this.model.get("children").audio.data);
                 }
                 this.render();
@@ -46,6 +46,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                         _.extend(this, opts);
                         if (this.mode == "photos") {
                             this.template = Handlebars.compile(PhotoItemTemplate);
+                        } else if (this.mode == "videos") {
+                            this.template = Handlebars.compile(VideoItemTemplate);
                         } else {
                             this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
                         }
@@ -53,7 +55,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     templateHelpers: function () {
                         console.log(this.num_children);
                         return {
-                            num_children: this.num_children
+                            num_children: this.num_children,
+                            mode: this.mode
                         };
                     },
                     tagName: "li",
@@ -83,7 +86,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 }
                 var $items = this.$el.find('.carousel-content li'),
                     amount = this.collection.length;
-                $items.removeClass('current');
+                $items.removeClass('current').hide();
                 if (this.counter < 0) {
                     this.counter = amount - 1;
                 }
@@ -91,7 +94,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     this.counter = 0;
                 }
                 this.updateCircles();
-                $($items[this.counter]).addClass('current');
+                $($items[this.counter]).addClass('current').show();
             },
 
             next: function () {
