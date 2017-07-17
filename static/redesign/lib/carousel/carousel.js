@@ -36,12 +36,25 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 this.navigate(0);
             },
             showArrows: function () {
-                console.log('showArrows');
-                this.$el.find('.hover-to-show').show();
+                if (this.mode === "audio") {
+                    return;
+                }
+                var $leftArrow, $rightArrow;
+                if (this.timeout) {
+                    clearTimeout(this.timeout);
+                    this.timeout = null;
+                } else {
+                    $leftArrow = $('<i class="fa fa-chevron-left prev"></i>');
+                    $rightArrow = $('<i class="fa fa-chevron-right next"></i>');
+                    this.$el.find('.carouselbox').append($leftArrow).append($rightArrow);
+                }
             },
             hideArrows: function () {
-                console.log('hideArrows');
-                this.$el.find('.hover-to-show').hide();
+                var that = this;
+                this.timeout = setTimeout(function () {
+                    that.$el.find('.fa-chevron-left, .fa-chevron-right').remove();
+                    that.timeout = null;
+                }, 100);
             },
             childViewOptions: function () {
                 return {
