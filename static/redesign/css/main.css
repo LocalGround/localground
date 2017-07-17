@@ -1630,7 +1630,7 @@ tbody .failure-message, tbody .success-message {
 
 .carousel-buttons, .circle-buttons {
     display: block;
-    padding: 0px 0px 10px 0px;
+    padding: 30px 0px 0px 0px;
     text-align: center;
     z-index: 10;
     position: relative;
