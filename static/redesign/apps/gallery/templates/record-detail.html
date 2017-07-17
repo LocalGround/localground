@@ -13,6 +13,11 @@
         <div class="carousel carousel-photo"></div>
 
         <div class="carousel carousel-audio"></div>
+        
+        {{#each children.videos.data}}
+            <!-- Turn this into an iframe -->
+            {{ this.video_provider }} - {{ this.video_id }}
+        {{/each}}
     </div>
 
     {{#if fields }}
