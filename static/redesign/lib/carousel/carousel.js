@@ -10,7 +10,9 @@ define(["jquery", "underscore", "marionette", "handlebars",
             events: {
                 "click .next": "next",
                 "click .prev": "prev",
-                "click .show-slide": "jump"
+                "click .show-slide": "jump",
+                'mouseover .carouselbox': 'showArrows',
+                'mouseout .carouselbox': 'hideArrows'
             },
             counter: 0,
             mode: "photos",
@@ -32,6 +34,25 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     this.$el.addClass('active-slide');
                 }
                 this.navigate(0);
+            },
+            showArrows: function () {
+                console.log('showArrows');
+                var $leftArrow = $('<i class="fa fa-chevron-left prev"></i>')
+                    .css({
+                        marginTop: "0px",
+                        position: "relative",
+                        top: "120px",
+                        zIndex: 100,
+                        left: "8px",
+                        color: "white",
+                        fontSize: "48px"
+                    });
+                this.$el.find('.carouselbox').append($leftArrow);
+                /**/
+            },
+            hideArrows: function () {
+                console.log('hideArrows');
+                this.$el.find('.carouselbox').remove('.fa-chevron-left');
             },
             childViewOptions: function () {
                 return {
