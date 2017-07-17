@@ -37,22 +37,11 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
             showArrows: function () {
                 console.log('showArrows');
-                var $leftArrow = $('<i class="fa fa-chevron-left prev"></i>')
-                    .css({
-                        marginTop: "0px",
-                        position: "relative",
-                        top: "120px",
-                        zIndex: 100,
-                        left: "8px",
-                        color: "white",
-                        fontSize: "48px"
-                    });
-                this.$el.find('.carouselbox').append($leftArrow);
-                /**/
+                this.$el.find('.hover-to-show').show();
             },
             hideArrows: function () {
                 console.log('hideArrows');
-                this.$el.find('.carouselbox').remove('.fa-chevron-left');
+                this.$el.find('.hover-to-show').hide();
             },
             childViewOptions: function () {
                 return {

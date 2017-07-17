@@ -1538,6 +1538,8 @@ tbody .failure-message, tbody .success-message {
     position: relative;
     box-sizing: border-box;
 }
+
+
 .carousel .fa {
     color: #999;
 }
@@ -1682,6 +1684,26 @@ li.current .photo {
 }
 .carousel-modal.spreadsheet .img-card {
     border: none;
+}
+
+hover-to-show{
+    display: none;
+    marginTop: 0px;
+    position: relative;
+    top: 120px;
+    zIndex: 100;
+    color: #ddd;
+    fontSize: 48px;
+
+}
+
+.carouselbox.prev{
+    left: 8px;
+}
+
+
+.carouselbox.next{
+    left: 408px;
 }
 
 #rotate-icon {
