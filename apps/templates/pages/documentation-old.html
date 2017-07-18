@@ -1,0 +1,148 @@
+
+<!-- saved from url=(0059)http://ellenvanwyk.github.io/lg-redesign/documentation.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Local Ground</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/static-pages.css" />
+        
+</head>
+<body>
+
+<nav class="account">
+    <div>
+        <a class="logotype" href="/">Local Ground</a>
+        <ul class="right-nav">
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            <li class="selected">
+                <a href="/documentation/">Documentation</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li>
+                <a class="account"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ user }}</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<div class="article-title">
+    <div class="container-center article">
+        <h1>Documentation</h1>
+    </div>
+</div>
+<div class="container-center article flex">
+    <div class="one-third-column table-of-contents">
+        <ul>
+            <li>Contents</li>
+            <li><a>Print a Paper Map</a></li>
+            <li><a>Draw Your Places</a></li>
+            <li><a>Upload Maps, Pictures, and Audio</a></li>
+            <li><a>Organize Your Project</a></li>
+            <li><a>Add or Import Data</a></li>
+            <li><a>Share with your Friends</a></li>
+        </ul>
+    </div>
+    <div class="two-thirds-column" style="flex: 2.5;">
+        <h3>Print a Paper Map</h3>
+        <ol>
+            <li>Log in to Local Ground. Request an account if you don't have one already.</li>
+            <li>Click on the <a href="http://ellenvanwyk.github.io/maps/edit/new/">Edit Map</a> link
+            (top, left-hand side of screen)</li>
+            <li>Pan / zoom the map as desired and click the "Print" button.</li>
+            <li>Create a new Project if you haven't already.</li>
+            <li>Download the PDF. Print as many copies as you need.</li>
+        </ol>
+
+        <h3>
+            Draw Your Places
+        </h3>
+        <ol>
+            <li>Draw / write on the maps with one or more colored pens.  Make sure not
+            to write on the bar code. Everywhere else is fine!</li>
+            <li>MapImage your map or take a picture of it. MapImagening works best, but camera
+            pictures are OK too. Make sure to include the entire map and barcode.</li>
+        </ol>
+
+        <h3>
+            Upload Maps, Pictures, &amp; Audio
+        </h3>
+        <ol>
+            <li>
+                Click the <a href="http://ellenvanwyk.github.io/upload/">Upload</a> button / link, and select
+                the kind of media you would like to upload.  You may upload:
+                <ul>
+                    <li><a href="http://ellenvanwyk.github.io/upload/photos/">photos</a></li>
+                    <li><a href="http://ellenvanwyk.github.io/upload/audio/">audio files</a></li>
+                    <li><a href="http://ellenvanwyk.github.io/upload/map-images/"> paper maps / forms</a></li>
+                </ul>
+            </li>
+            <li>You can either drag your map images onto the gray box or click
+                the green button and browse to your map images.</li>
+            <li>We will try to detect the kind of media you’ve dragged onto the page, but
+            if it's a map of a form, be sure that the "file type" selection is "Map / Form", and then press the
+                blue "Start Upload" button.</li>
+        </ol>
+
+        <h3>
+            Organize Your Project
+        </h3>
+        <ol>
+            <li>Navigate to the <a href="http://ellenvanwyk.github.io/maps/edit/new/">Map Editor</a></li>
+            <li>Click on the "Projects" menu, and click on the check box next to the
+                project you'd like to view.  Your data should appear in the panel on the
+                right-hand side of your screen.</li>
+            <li>Click on the arrows to expand your view, and click on the checkboxes to turn stuff on &amp; off.</li>
+            <li>Map your photos, audio and video by:
+                <ol>
+                    <li>Clicking on the "Edit" button (this puts the map into "edit mode")</li>
+                    <li>Dragging the icon next to the media file onto the map.</li>
+                    <li>After you've dragged, you should see the new icon directly on the map.</li>
+                    <li>If you want to add additional metadata to your media file, you
+                        can click on its icon again and fill out the form.</li>
+                    <li>Remember to click "Done" after you are finished.</li>
+                </ol>
+            </li>
+        </ol>
+
+        <h3>
+            Add or Import Data
+        </h3>
+        <p>Coming Soon!</p>
+
+        <h3>
+            Share with Your Friends!
+        </h3>
+        <p>You can share a link to your map by pressing the "Share" button on the
+        <a href="http://ellenvanwyk.github.io/profile/projects/">Projects</a> page.
+        The visibility of your maps will depend on the option you select:</p>
+        <ol>
+            <li>
+                If you select Public, Local Ground will provide a simple web address for
+                you to host your map, like http://localground.org/maps/YourProject.
+                Other people will also be able to search for and see your map from the
+                Local Ground home page.
+            </li>
+            <li>
+                If you select Private w/ Link, Local Ground will provide a complicated
+                web address like http://localground.org/maps/SecretNumber so that only
+                those people you send the address will be able to view the map.
+                The map will also not show up on the Local Ground home page.
+            </li>
+            <li>
+                Finally, if you select Private w/ Login, people will need a Local Ground
+                login and explicitly be provided access to the map to view it.
+            </li>
+        </ol>
+
+
+        <p>We are working on new tools to present and visualize your data. Stay tuned
+        for the next release of Local Ground!</p>
+    </div>
+
+</div>
+
+
+</body></html>

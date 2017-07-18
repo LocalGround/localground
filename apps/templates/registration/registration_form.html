@@ -1,28 +1,23 @@
-{% extends "base/page_centered.html" %}
-{% load i18n %}
-{% block extra_styles %}
-	{{block.super}}
-    .content p, .content form { margin-left: 20px; }	
-{% endblock %}
-{% block page_title %}Register for an Account{% endblock %}
-{% block main_content %}
-    <p>
-		To register for an account, please create a username and password below,
-		and enter a valid email address.  After submitting the form, you will receive
-		a verification email confirmation, with instructions telling you what to do
-		next.
-    </p>
-    <form method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
-		{% csrf_token %}
-		{% include "includes/forms/generic_form_renderer.html" %}
-		<fieldset id="params">
-			<input type="hidden" name="next" value="{{ next }}" />
-			<div class="clearfix">
-				<label>&nbsp;</label>
-				<div class="input">
-					<input type="submit" value="Submit" class="btn primary" />
-				</div>
-			</div>
-		</fieldset>
+{% extends "base/base.html" %} 
+{% block title %}Create Account{% endblock %} 
+{% block h1 %} Create Account {% endblock %}
+{% block content %}
+
+<div class="block-centered">
+    <p class="centered">Create a Local Ground Account</p>
+    <hr class="break">
+    <form id="model-form" method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
+        {% csrf_token %} {% include "includes/forms/generic_form_renderer.html" %}
+        <fieldset id="params">
+            <input type="hidden" name="next" value="{{ next }}" />
+            <div class="clearfix">
+                <label>&nbsp;</label>
+                <div class="input">
+                    <button type="submit" class="button-primary" style="width:150px;">Create account</button>
+                </div>
+            </div>
+        </fieldset>
     </form>
+</div>
+
 {% endblock %}

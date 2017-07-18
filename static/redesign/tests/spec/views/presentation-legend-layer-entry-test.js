@@ -104,19 +104,19 @@ define([
                 childView.render();
                 fixture = setFixtures('<div></div>').append(childView.$el);
                 expect(childView.showHide).toHaveBeenCalledTimes(0);
-                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(2);
+                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(1);
                 expect(childView.markerOverlays.hideAll).toHaveBeenCalledTimes(0);
 
                 //turn on checkbox:
                 fixture.find('input').trigger('click');
                 expect(childView.showHide).toHaveBeenCalledTimes(1);
-                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(2);
+                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(1);
                 expect(childView.markerOverlays.hideAll).toHaveBeenCalledTimes(1);
 
                 //turn off checkbox:
                 fixture.find('input').trigger('click');
                 expect(childView.showHide).toHaveBeenCalledTimes(2);
-                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(3);
+                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(2);
                 expect(childView.markerOverlays.hideAll).toHaveBeenCalledTimes(1);
             });
 
@@ -147,9 +147,9 @@ define([
                 expect(fixture.find('input')).toHaveLength(3);
                 expect(fixture.find('svg')).toHaveLength(3);
                 expect(fixture.find('p')).toHaveLength(3);
-                expect(fixture.find('p').eq(0)).toHaveText('1 - 5');
-                expect(fixture.find('p').eq(1)).toHaveText('6 - 10');
-                expect(fixture.find('p').eq(2)).toHaveText('11 or more');
+                expect(fixture.find('p').eq(0)).toHaveText('between 4 and 7');
+                expect(fixture.find('p').eq(1)).toHaveText('between 7 and 9');
+                expect(fixture.find('p').eq(2)).toHaveText('between 9 and 12');
             });
 
             it("Gets styled as expected", function () {

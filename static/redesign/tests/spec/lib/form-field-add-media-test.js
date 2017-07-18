@@ -293,7 +293,6 @@ define([
                 *
                 */
                 initForm(this, markerPhotos);
-                spyOn(window, 'confirm').and.returnValue(true);
                 spyOn(markerPhotos, 'detach').and.callThrough();
                 var mediaContainer = fixture.find(".attached-media-container");
                 var photos = fixture.find(".photo-attached");
@@ -304,11 +303,9 @@ define([
                 expect(photos[0]).toContainElement(detachMediaFixutre[0]);
                 expect(photos[1]).toContainElement(detachMediaFixutre[1]);
                 expect(MediaEditor.prototype.detachModel).toHaveBeenCalledTimes(0);
-                expect(window.confirm).toHaveBeenCalledTimes(0);
                 expect(markerPhotos.detach).toHaveBeenCalledTimes(0);
                 $(detachMediaFixutre[0]).trigger('click');
                 expect(MediaEditor.prototype.detachModel).toHaveBeenCalledTimes(1);
-                expect(window.confirm).toHaveBeenCalledTimes(1);
                 expect(markerPhotos.detach).toHaveBeenCalledTimes(1);
             });
 

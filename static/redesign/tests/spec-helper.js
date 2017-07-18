@@ -8,6 +8,7 @@ define(
         "collections/projects",
         "collections/photos",
         "collections/audio",
+        "collections/videos",
         "collections/maps",
         "collections/mapimages",
         "collections/markers",
@@ -19,6 +20,7 @@ define(
         "models/photo",
         "models/marker",
         "models/audio",
+        "models/video",
         "models/record",
         "models/map",
         "models/mapimage",
@@ -29,9 +31,9 @@ define(
         "lib/data/dataManager"
     ],
 
-    function (Backbone, Marionette, $, appUtilities, Projects, Photos, AudioFiles, Maps,
+    function (Backbone, Marionette, $, appUtilities, Projects, Photos, AudioFiles, Videos, Maps,
               MapImages, Markers, Records, Prints, Fields, Project, ProjectUser, Photo, Marker,
-              Audio, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
+              Audio, Video, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker').remove();
@@ -190,13 +192,14 @@ define(
                         "metadata": {
                             "fillColor": "#4e70d4",
                             "strokeWeight": 1,
-                            "buckets": 5,
-                            "strokeOpacity": "0.7",
-                            "width": "30",
+                            "buckets": 3,
+                            "strokeOpacity": 1,
+                            "width": "20",
                             "shape": "circle",
                             "fillOpacity": 1,
                             "strokeColor": "#ffffff",
-                            "paletteId": 2
+                            "paletteId": 2,
+                            "currentProp": "test_integer"
                         },
                         "filters": [
                             {
@@ -204,37 +207,45 @@ define(
                             }
                         ],
                         "map_id": 1,
-                        "symbols": [
-                            {
-                                "title": "1 - 5",
-                                "strokeWeight": 1,
-                                "rule": "test_integer > 0 and test_integer < 6",
-                                "height": 32,
-                                "width": 32,
-                                "shape": "worm",
-                                "strokeColor": "#FFFFFF",
-                                "fillColor": "#d7b5d8"
+                        "symbols": [  
+                            {  
+                                "rule": "test_integer >= 4 and test_integer <= 7",
+                                "title":"between 4 and 7",
+                                "fillOpacity":1,
+                                "strokeWeight":1,
+                                "strokeOpacity":1,
+                                "width":20,
+                                "shape":"circle",
+                                "fillColor":"#f0f0f0",
+                                "strokeColor":"#ffffff",
+                                "id":1,
+                                "height":20
                             },
-                            {
-                                "title": "6 - 10",
-                                "strokeWeight": 1,
-                                "rule": "test_integer > 5 and test_integer < 11",
-                                "height": 32,
-                                "width": 32,
-                                "shape": "worm",
-                                "strokeColor": "#FFFFFF",
-                                "fillColor": "#df65b0",
-                                "is_showing": true
+                            {  
+                                "rule": "test_integer >= 7 and test_integer <= 9",
+                                "title":"between 7 and 9",
+                                "fillOpacity":1,
+                                "strokeWeight":1,
+                                "strokeOpacity":1,
+                                "width":20,
+                                "shape":"circle",
+                                "fillColor":"#bdbdbd",
+                                "strokeColor":"#ffffff",
+                                "id":2,
+                                "height":20
                             },
-                            {
-                                "title": "11 or more",
-                                "strokeWeight": 1,
-                                "rule": "test_integer >= 11",
-                                "height": 32,
-                                "width": 32,
-                                "shape": "worm",
-                                "strokeColor": "#FFFFFF",
-                                "fillColor": "#ce1256"
+                            {  
+                                "rule": "test_integer >= 9 and test_integer <= 12",
+                                "title":"between 9 and 12",
+                                "fillOpacity":1,
+                                "strokeWeight":1,
+                                "strokeOpacity":1,
+                                "width":20,
+                                "shape":"circle",
+                                "fillColor":"#636363",
+                                "strokeColor":"#ffffff",
+                                "id":3,
+                                "height":20
                             }
                         ]
                     },
@@ -270,12 +281,13 @@ define(
                             "fillColor": "#4e70d4",
                             "strokeWeight": 1,
                             "buckets": 3,
-                            "strokeOpacity": "0.7",
+                            "strokeOpacity": "1",
                             "width": "30",
                             "shape": "circle",
                             "fillOpacity": 1,
                             "strokeColor": "#FFFFFF",
-                            "paletteId": 3
+                            "paletteId": 3,
+                            "currentProp": "test_text"
                         },
                         "filters": {
                             "tags": "nothing"
@@ -407,6 +419,11 @@ define(
                 new Audio({id: 2, name: "Duran Duran", tags: ['80s', 'amazing', 'tag1'], project_id: 1, overlay_type: "audio", caption: "caption 2", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3" }),
                 new Audio({id: 3, name: "Flo Rida", tags: ['florida', 'hip hop'], project_id: 2, overlay_type: "audio", caption: "caption 3", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3" })
             ]);
+            this.videos = new Videos([
+                {id: 10, name: "Rihanna Gibbons", caption: "caption 1", tags: [], video_id: "DVrTf5yOW5s", video_provider: "youtube", geometry: { type: "Point", coordinates: [-122.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"},
+                {id: 10, name: "Silver Lining", caption: "caption 2", tags: [], video_id: "DKL4X0PZz7M", video_provider: "youtube", geometry: { type: "Point", coordinates: [-121.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"},
+                {id: 10, name: "How to recount your dreams", caption: "caption 1", tags: [], video_id: "225222634", video_provider: "vimeo", geometry: { type: "Point", coordinates: [-120.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"}
+            ]);
             this.map_images = new MapImages([
                 new MapImage({ id: 1, name: "Map 1", tags: ['parks', 'oakland'], project_id: 1, caption: "Caption1", overlay_type: "map-image", geometry: { type: "Polygon", coordinates: [[[ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ]]]} }),
                 new MapImage({id: 2, name: "Map 2", tags: ['parks', 'berkeley', 'tag1'], project_id: 1, overlay_type: "map-image" }),
@@ -458,6 +475,7 @@ define(
 
             this.dataDictionary = {
                 photos: this.photos,
+                videos: this.videos,
                 audio: this.audioFiles,
                 map_images: this.map_images,
                 markers: this.markers,
@@ -621,6 +639,92 @@ define(
                 }
             });
 
+            this.continuousSymbols = [  
+                {  
+                    "rule": "test_integer >= 4 and test_integer <= 7",
+                    "title":"between 4 and 7",
+                    "fillOpacity":1,
+                    "strokeWeight":1,
+                    "strokeOpacity":1,
+                    "width":20,
+                    "shape":"circle",
+                    "fillColor":"#f0f0f0",
+                    "strokeColor":"#ffffff",
+                    "id":1,
+                    "height":20
+                },
+                {  
+                    "rule": "test_integer >= 7 and test_integer <= 9",
+                    "title":"between 7 and 9",
+                    "fillOpacity":1,
+                    "strokeWeight":1,
+                    "strokeOpacity":1,
+                    "width":20,
+                    "shape":"circle",
+                    "fillColor":"#bdbdbd",
+                    "strokeColor":"#ffffff",
+                    "id":2,
+                    "height":20
+                },
+                {  
+                    "rule": "test_integer >= 9 and test_integer <= 12",
+                    "title":"between 9 and 12",
+                    "fillOpacity":1,
+                    "strokeWeight":1,
+                    "strokeOpacity":1,
+                    "width":20,
+                    "shape":"circle",
+                    "fillColor":"#636363",
+                    "strokeColor":"#ffffff",
+                    "id":3,
+                    "height":20
+                }
+            ],
+
+            this.categoricalSymbols = [
+                {
+                    "fillColor": "#fbb4ae",
+                    "fillOpacity": 1,
+                    "height": 20,
+                    "id": 1,
+                    "instanceCount": 1,
+                    "rule": "test_text = Blue team",
+                    "shape": "circle",
+                    "strokeColor": "#FFFFFF",
+                    "strokeOpacity": 1,
+                    "strokeWeight": 1,
+                    "title": "Blue team",
+                    "width": 30
+                },
+                {
+                    "fillColor": "#b3cde3",
+                    "fillOpacity": 1,
+                    "height": 20,
+                    "id": 2,
+                    "instanceCount": 1,
+                    "rule": "test_text = Green team",
+                    "shape": "circle",
+                    "strokeColor": "#FFFFFF",
+                    "strokeOpacity": 1,
+                    "strokeWeight": 1,
+                    "title": "Green team",
+                    "width": 30
+                },
+                {
+                    "fillColor": "#ccebc5",
+                    "fillOpacity": 1,
+                    "height": 20,
+                    "id": 3,
+                    "instanceCount": 1,
+                    "rule": "test_text = Red team",
+                    "shape": "circle",
+                    "strokeColor": "#FFFFFF",
+                    "strokeOpacity": 1,
+                    "strokeWeight": 1,
+                    "title": "Red team",
+                    "width": 30
+                }
+            ]
         });
     }
 );

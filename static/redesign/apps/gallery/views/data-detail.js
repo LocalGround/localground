@@ -5,13 +5,14 @@ define([
     "marionette",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
+    "text!../templates/video-detail.html",
     "text!../templates/record-detail.html",
     "text!../templates/map-image-detail.html",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form"
-], function ($, _, Handlebars, Marionette, PhotoTemplate, AudioTemplate, SiteTemplate,
+], function ($, _, Handlebars, Marionette, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
         MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
@@ -34,7 +35,11 @@ define([
             }
             if (this.dataType == "audio") {
                 return Handlebars.compile(AudioTemplate);
-            } else if (this.dataType == "map_images") {
+            }
+            if (this.dataType == "videos") {
+                return Handlebars.compile(VideoTemplate);
+            }
+            if (this.dataType == "map_images") {
                 return Handlebars.compile(MapImageTemplate);
             }
             return Handlebars.compile(SiteTemplate);
@@ -186,6 +191,14 @@ define([
                     mode: "photos"
                 });
                 this.$el.find(".carousel-photo").append(c.$el);
+            }
+            if (this.model.get("children") && this.model.get("children").videos) {
+                c = new Carousel({
+                    model: this.model,
+                    app: this.app,
+                    mode: "videos"
+                });
+                this.$el.find(".carousel-video").append(c.$el);
             }
             if (this.model.get("children") && this.model.get("children").audio) {
                 c = new Carousel({

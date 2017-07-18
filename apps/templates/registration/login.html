@@ -1,60 +1,39 @@
-{% extends "base/page_centered.html" %}
-{% load i18n %}
-{% block extra_styles %}
-	{{block.super}}
-    .content p, .content form { margin-left: 20px; }
-    .align { margin-left: 170px !important; }
+{% extends "base/base.html" %} 
 
-    #google-button {
-        height:40px;
-        width: 200px;
-        background-image: url('/static/images/White-signin_Long_base_32dp.png');
-        background-size: 200px 40px;
-        display: inline-block;
-        margin-bottom: -15px;
-        margin-left:  30px;
-    }
-    #google-button:hover{
-        background-image: url('/static/images/White-signin_Long_hover_32dp.png');
-    }
-    #google-button:active {
-        background-image: url('/static/images/White-signin_Long_press_32dp.png');
-    }
+{% block title %} Sign In {% endblock %} 
+{% block h1 %} Sign In {% endblock %}
+
+{% block content %}
+    <div class="block-centered">
+        <form id="model-form" method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
+            {% csrf_token %} {% if form.errors %}
+            <div class="alert-message error">
+                <p>Authentication error: Please enter a correct username and password. Note that both fields are case-sensitive.</p>
+            </div>
+            {% endif %}
+            {% include "includes/forms/generic_form_renderer.html" %}
+            <fieldset>
+                <div class="clearfix">
+                    <label></label>
+                    <div class="input">
+                        <input type="hidden" name="next" value="/" />
+                        <button type="submit" class="button-primary">Sign In</button>
+                        <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"><span id="google-button"></span></a>    
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+        <hr class="break">
+        <div class="login-questions">
+            <a href="/accounts/password/reset/">Forgot your password?</a>
+            {% if user.is_superuser or not ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE %}
+                <p>
+                    New to Local Ground?
+                    <a href="/accounts/register/">Create an account</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
 {% endblock %}
-{% block page_title %}Login{% endblock %}
-{% block main_content %}
-
-    <form method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
-      {% csrf_token %}
-	  {% if form.errors %}
-		  <div class="alert-message error">
-			  <p>Authentication error: Please enter a correct username
-			  and password. Note that both fields are case-sensitive.</p>
-		  </div>
-	  {% endif %}
-	  <p>To access your prints, mapimages, and maps, login here.</p>
-	  
-      {% include "includes/forms/generic_form_renderer.html" %}
-      <fieldset id="params">
-          <!-- input type="hidden" name="next" value="{{ next }}" / -->
-          <input type="hidden" name="next" value="/" />
-          <div class="clearfix">
-              <label>&nbsp;</label>
-              <div class="input">
-                  <input type="submit" value="Login" class="btn primary" />
-                   <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
-                    <span id="google-button"></span>
-                    </a>
-              </div>
-
-          </div>
-      </fieldset>
-    </form>
-    <p class="align">
-		{% if user.is_superuser or not ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE %}
-			<a href="/accounts/register/">Register</a> for an account |
-		{% endif %}
-        <a href="/accounts/password/reset/">Reset Password</a>
-    </p>
-{% endblock %}
-

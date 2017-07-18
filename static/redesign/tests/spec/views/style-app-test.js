@@ -23,7 +23,14 @@ define([
             spyOn(BaseMapView.prototype, 'redraw');
 
             // 3) add dummy HTML elements:
-            fixture = setFixtures('<div id="toolbar-main"></div><div class="main-panel"><div id="left-panel"></div><div id="map-panel"><div id="map"></div></div><div id="right-panel" class="side-panel"></div></div>');
+            fixture = setFixtures('<div id="toolbar-main"></div> \
+                <div class="main-panel">\
+                    <div id="left-panel"></div>\
+                    <div id="map-panel">\
+                        <div id="map"></div>\
+                    </div>\
+                    <div id="right-panel" class="side-panel"></div>\
+                </div>');
             // 2) initialize ProfileApp object:
             styleApp = new StyleApp({
                 dataManager: scope.dataManager

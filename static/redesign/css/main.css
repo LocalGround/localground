@@ -4,7 +4,7 @@
 @import url(https://fonts.googleapis.com/css?family=Amatic+SC);
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,800,300italic,400italic);
 @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
-@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700|Slabo+27px);
+@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700|Slabo+27px|Amatic+SC:400,700|Amatica+SC:400,700);
 
 @font-face {
   font-family: ProximaNova;
@@ -52,7 +52,7 @@ a.logotype{
     text-transform: uppercase;
 }
 
-input[type="text"], textarea{
+input[type="text"], input[type="password"], input[type="email"], textarea{
     border-style:solid;
     border-width:1px;
     border-color:#ebecf2; /*Slightly lighter for dark background*/
@@ -70,6 +70,10 @@ input[type="checkbox"]{
 
 input.fieldname {
     margin-left: 4px;
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
 }
 
 hr {
@@ -349,6 +353,95 @@ nav .selected{
 }
 
 /****************************************************************************************/
+/*                                       STATIC PAGES                                   */
+/****************************************************************************************/
+.main-content {
+    margin-bottom: 50px;
+}
+
+.reg-button-panel {
+    float: right;
+    margin-top: 14px;
+}
+.centered {
+    text-align: center;
+}
+.break {
+    margin: 15px 0px 15px 0px;
+    border-bottom: solid 1px #DDD;
+}
+
+.login-questions {
+    margin-left: 130px;
+}
+.block-centered a {
+    font-size: 12px;
+    color: #4e70d4;
+}
+.login-questions p {
+    font-size: 12px;
+}
+.footer {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    background: white;
+    padding: 20px 0px 5px 0px;
+    height: 30px;
+}
+.footer-text {
+    text-align: center;
+    font-size: 12px;
+}
+
+.block-centered {
+    max-width: 470px;
+    min-width: 300px;
+    margin-right: auto;
+    margin-left: auto;
+    background: rgb(246, 246, 249);
+    margin-top: 40px;
+    padding: 40px;
+}
+
+#google-button {
+    height: 40px;
+    width: 200px;
+    background-image: url('../assets/White-signin_Long_base_32dp.png');
+    background-size: 200px 40px;
+    display: inline-block;
+    margin-bottom: -15px;
+}
+
+#google-button:hover {
+    background-image: url('../assets/White-signin_Long_hover_32dp.png');
+}
+
+#google-button:active {
+    background-image: url('../assets/White-signin_Long_press_32dp.png');
+}
+
+.table-of-contents {
+    flex: 1;
+    padding-top: 50px;
+}
+
+.table-of-contents li {
+    padding-bottom: 10px;
+}
+
+.table-of-contents li:first-child {
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: .05em;
+}
+
+.table-of-contents ul {
+    list-style: none;
+}
+
+/****************************************************************************************/
 /*                                          FORMS                                       */
 /****************************************************************************************/
 .form {}
@@ -415,7 +508,10 @@ nav .selected{
 }
 
 #model-form fieldset textarea,
-#model-form fieldset input,
+#model-form fieldset input[type="text"],
+#model-form fieldset input[type="number"],
+#model-form fieldset input[type="password"],
+#model-form fieldset input[type="email"],
 .inline-form textarea,
 .inline-form input {
     padding: 4px 6px;
@@ -426,6 +522,13 @@ nav .selected{
     box-sizing: border-box;
     margin: 1px;
     width:100%;
+}
+#model-form .help-block {
+    font-size: 10px;
+    line-height: 12px;
+}
+#model-form .errorlist {
+    list-style: none;
 }
 
 .inline-form input[type="radio"] {
@@ -638,44 +741,39 @@ p.coords {
 .button-view-mode .card {}
 .button-view-mode .list {}
 
-.button-primary{
-    /*background-color:rgb(53, 76, 122)*/
-    background-color:#4e70d4;
-    color:white;
+.button, .button-primary, .button-secondary, .button-tertiary {
     border:none;
     border-radius:3px;
-    font-size:12px;
-    margin-left: 6px;
-    float:right;
-    -webkit-animation: fadeEffect 0.5s;
-    animation: fadeEffect 0.5s; /* Fading effect takes 1 second */
-    padding: 0 11px;
-    text-transform: uppercase;
-    line-height:26px;
-    height:29px;
-    vertical-align: bottom;
+    line-height: 26px;
+    height: 29px;
+    vertical-align: middle;
     letter-spacing: 0.7px;
-    width:80px;
-}
-
-.button-secondary{
-    background-color: #fafafc;
-    border:none;
-    border-radius:3px;
-    padding: 0 12px;
+    text-align: center;
     text-transform: uppercase;
     font-size:12px;
     margin:0 2px;
+    padding: 0 12px;
+}
+
+.button-primary {
+    background-color:#4e70d4;
+    color:white;
+    -webkit-animation: fadeEffect 0.5s;
+    animation: fadeEffect 0.5s; /* Fading effect takes 1 second */
+    padding: 0 11px;
+    width:80px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+
+.button-secondary {
+    background-color: #fafafc;
     border: 1px solid #e4e5eb;
     -webkit-transition: background 0.3s linear;
     -moz-transition: background 0.3s linear;
     -ms-transition: background 0.3s linear;
     -o-transition: background 0.3s linear;
     transition: background 0.3s linear;
-    line-height: 26px;
-    height: 29px;
-    vertical-align: bottom;
-    letter-spacing: 0.7px;
     width:80px;
 }
 
@@ -684,17 +782,13 @@ p.coords {
     border-width:1px;
     border-color:#DDDDDD;
     border-radius:3px;
-    padding: 4px 8px;
-    font-size:12px;
     background-color:#f1f1f1;
 }
 
-
 .button-secondary:hover{
     background-color:#f1f3fb;
-    border-color:##4e70d4;
+    border-color: #4e70d4;
 }
-
 
 .button-tertiary{
     text-transform: uppercase;
@@ -719,6 +813,7 @@ p.coords {
     -ms-transition: background 0.3s linear;
     -o-transition: background 0.3s linear;
     transition: background 0.3s linear;
+    float: right;
 }
 
 .button-main-action:hover{
@@ -777,7 +872,7 @@ p.coords {
 }
 
 /****************************************************************************************/
-/*                                     BADGES                                 */
+/*                                     BADGES                                           */
 /****************************************************************************************/
 
 
@@ -904,7 +999,7 @@ tbody .failure-message, tbody .success-message {
     background-color: rgb(185, 74, 72);
 }
 
-.error *[data-error] {
+.error *[data-error], .errorlist li {
     font-size: 11px;
     color: #c7254e;
 }
@@ -1451,6 +1546,8 @@ tbody .failure-message, tbody .success-message {
     position: relative;
     box-sizing: border-box;
 }
+
+
 .carousel .fa {
     color: #999;
 }
@@ -1500,11 +1597,14 @@ tbody .failure-message, tbody .success-message {
     border-bottom: solid 1px #CCC;
 }
 
-
-.carousel-photo .active-slide {
-    min-height: 350px;
+.carousel-photo .active-slide, .carousel-video .active-slide {
+    min-height: 370px;
     border: solid 1px #CCC;
     background: white;
+}
+
+.active-slide.short {
+    min-height: 340px !important;
 }
 
 .active-slide li {
@@ -1541,7 +1641,7 @@ tbody .failure-message, tbody .success-message {
 
 .carousel-buttons, .circle-buttons {
     display: block;
-    padding: 0px 0px 10px 0px;
+    padding: 30px 0px 0px 0px;
     text-align: center;
     z-index: 10;
     position: relative;
@@ -1595,6 +1695,26 @@ li.current .photo {
 }
 .carousel-modal.spreadsheet .img-card {
     border: none;
+}
+
+hover-to-show{
+    display: none;
+    marginTop: 0px;
+    position: relative;
+    top: 120px;
+    zIndex: 100;
+    color: #ddd;
+    fontSize: 48px;
+
+}
+
+.carouselbox.prev{
+    left: 8px;
+}
+
+
+.carouselbox.next{
+    left: 408px;
 }
 
 #rotate-icon {
@@ -2115,7 +2235,8 @@ span.plus {
     border: dashed 1px #CCC;
     margin-right: 10px;
     margin-left: 10px;
-    min-height: 350px;
+    height: 300px;
+    margin-top: 20px;
 }
 
 #dropzone.hover {

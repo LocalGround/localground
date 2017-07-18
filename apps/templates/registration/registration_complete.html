@@ -1,10 +1,14 @@
-{% extends "base/page_centered.html" %}
-{% block extra_styles %}
-	{{block.super}}
-    .content p, .content form { margin-left: 20px; }	
-{% endblock %}
-{% block page_title %}Registration: Email Confirmation Needed{% endblock %}
-{% block main_content %}
-    <p>An activation email has been sent to the email address you provided.  To
-    complete your registration, please follow the instructions in the email.</p>
+{% extends "base/base.html" %} 
+
+{% block title %}Create Account{% endblock %} 
+{% block h1 %} Create Account{% endblock %}
+
+{% block content %}
+<div class="block-centered">
+    <p>
+        An activation email has been sent to the email address you provided.
+        To complete your registration, please follow the instructions in the email.
+    </p>
+    </div>
+</div>
 {% endblock %}

@@ -74,7 +74,7 @@ define([
         hideMenus: function (e) {
             var $el = $(e.target);
             if (!$el.hasClass('add') &&
-                    !$el.parent().hasClass('add') &&ß
+                    !$el.parent().hasClass('add') &&
                     !$el.parent().hasClass('media-type')) {
                 $("#add-data-type").hide();
             }

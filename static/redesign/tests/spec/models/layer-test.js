@@ -149,44 +149,48 @@ define([
             });
 
             it("getSymbolsJSON returns the correct JSON (removing the unserializable icon)", function () {
-                expect(layer.getSymbolsJSON()).toEqual([{
-                    "id": 1,
-                    "title": "1 - 5",
-                    "strokeWeight": 1,
-                    "rule": "test_integer > 0 and test_integer < 6",
-                    "height": 32,
-                    "width": 32,
-                    "shape": "worm",
-                    "strokeColor": "#FFFFFF",
-                    "fillColor": "#d7b5d8",
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                }, {
-                    "id": 2,
-                    "title": "6 - 10",
-                    "strokeWeight": 1,
-                    "rule": "test_integer > 5 and test_integer < 11",
-                    "height": 32,
-                    "width": 32,
-                    "shape": "worm",
-                    "strokeColor": "#FFFFFF",
-                    "fillColor": "#df65b0",
-                    "is_showing": true,
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                }, {
-                    "id": 3,
-                    "title": "11 or more",
-                    "strokeWeight": 1,
-                    "rule": "test_integer >= 11",
-                    "height": 32,
-                    "width": 32,
-                    "shape": "worm",
-                    "strokeColor": "#FFFFFF",
-                    "fillColor": "#ce1256",
-                    "fillOpacity": 1,
-                    "strokeOpacity": 1
-                }]);
+                console.log(layer);
+                expect(layer.getSymbolsJSON()).toEqual([  
+                {  
+                    "rule": "test_integer >= 4 and test_integer <= 7",
+                    "title":"between 4 and 7",
+                    "fillOpacity":1,
+                    "strokeWeight":1,
+                    "strokeOpacity":1,
+                    "width":20,
+                    "shape":"circle",
+                    "fillColor":"#f0f0f0",
+                    "strokeColor":"#ffffff",
+                    "id":1,
+                    "height":20
+                },
+                {  
+                    "rule": "test_integer >= 7 and test_integer <= 9",
+                    "title":"between 7 and 9",
+                    "fillOpacity":1,
+                    "strokeWeight":1,
+                    "strokeOpacity":1,
+                    "width":20,
+                    "shape":"circle",
+                    "fillColor":"#bdbdbd",
+                    "strokeColor":"#ffffff",
+                    "id":2,
+                    "height":20
+                },
+                {  
+                    "rule": "test_integer >= 9 and test_integer <= 12",
+                    "title":"between 9 and 12",
+                    "fillOpacity":1,
+                    "strokeWeight":1,
+                    "strokeOpacity":1,
+                    "width":20,
+                    "shape":"circle",
+                    "fillColor":"#636363",
+                    "strokeColor":"#ffffff",
+                    "id":3,
+                    "height":20
+                }
+            ]);
             });
 
             it("getSymbol() returns the correct symbol", function () {
