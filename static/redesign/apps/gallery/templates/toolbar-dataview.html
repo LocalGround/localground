@@ -1,22 +1,24 @@
 <div class = "project-detail">
     <!-- Temporary placement for implementation purposes -->
-   
+
     {{#ifequal activeTab "data"}}
         {{#ifequal screenType "spreadsheet"}}
             <select class="media-type">
                 <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>
                 <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
+                <option value="videos" {{#ifequal dataType "videos"}}SELECTED{{/ifequal}}>Videos</option>
                 <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>
             {{#each forms}}
                 <option value="form_{{ this.id }}" {{#ifequal ../dataType this.overlay_type}}SELECTED{{/ifequal}}>{{ this.name }}</option>
             {{/each}}
             </select>
         {{/ifequal}}
-        
+
         {{#ifequal screenType "gallery"}}
             <select class="media-type">
                 <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>
                 <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
+                <option value="videos" {{#ifequal dataType "videos"}}SELECTED{{/ifequal}}>Videos</option>
                 <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>
             {{#each forms}}
                 <option value="form_{{ this.id }}" {{#ifequal ../dataType this.overlay_type}}SELECTED{{/ifequal}}>{{ this.name }}</option>

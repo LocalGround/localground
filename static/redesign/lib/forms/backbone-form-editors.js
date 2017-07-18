@@ -224,24 +224,9 @@ define([
             var $elem = $(e.target),
                 attachmentType = $elem.attr("data-type"),
                 attachmentID = $elem.attr("data-id"),
-                name = $elem.attr("media-name");
-            if (!confirm("Are you sure you want to detach " +
-                    name + " from this site? Note that this will not delete the media file -- it just detaches it.")) {
-                return;
-            }
-            var errors = this.form.commit({ validate: true }),
-                that = this,
-                isNew = this.model.get("id") ? false : true;
-            if (errors) {
-                console.log("errors: ", errors);
-                return;
-            }
-            this.model.save(null, {
-                success: function () {
-                    that.model.detach(attachmentType, attachmentID, function () {
-                        that.model.fetch({reset: true});
-                    });
-                }
+                that = this;
+            this.model.detach(attachmentType, attachmentID, function () {
+                that.model.fetch({reset: true});
             });
         },
         showMediaBrowser: function (e) {
@@ -256,8 +241,9 @@ define([
                 view: addMediaLayoutView,
                 saveButtonText: "Add",
                 showSaveButton: true,
-                saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
+                saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView),
             });
+            addMediaLayoutView.showUploader();
             e.preventDefault();
         },
         getValue: function () {

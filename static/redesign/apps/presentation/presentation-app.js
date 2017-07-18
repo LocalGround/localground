@@ -65,6 +65,7 @@ define([
             this.saveState("presentation", {slug: this.slug });
             this.setProjectID(this.model.get("project_id"));
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+            console.log(this.model.get("panel_styles").display_legend);
         },
 
         getSlugFromLocalStorage: function () {
@@ -83,7 +84,11 @@ define([
         loadRegions: function () {
             this.showMapTitle();
             this.showBasemap();
-            this.showLegend();
+            if (this.model.get("panel_styles").display_legend === false) {
+                this.hideLegend();
+            } else {
+                this.showLegend();
+            }
         },
 
         showBasemap: function () {
@@ -116,7 +121,7 @@ define([
             this.titleRegion.show(this.mapHeaderView);
         },
 
-        showLegend: function () {
+        instantiateLegendView: function () {
             this.legendView = new LegendView({
                 app: this,
                 collection: new Layers(
@@ -126,6 +131,17 @@ define([
                 model: this.model
             });
             this.legendRegion.show(this.legendView);
+        },
+
+        hideLegend: function () {
+            this.instantiateLegendView();
+            this.legendRegion.$el.hide();
+            this.legendRegion.show(this.legendView);
+            this.vent.trigger('show-all-markers');
+        },
+        showLegend: function () {
+            this.instantiateLegendView();
+            this.legendRegion.$el.show();
         },
 
         updateDisplay: function () {

@@ -1,6 +1,6 @@
 {{#ifequal dataType "photos"}}
     <a href="#/{{ dataType }}/{{id}}">
-        <div class = "card-img-preview" style="background-image: url('{{ path_medium }}');" />
+        <div class="card-img-preview" style="background-image: url('{{ path_medium }}');" />
     </a>
     <h1>
         {{ name }}
@@ -17,6 +17,36 @@
 <a href="#/{{ dataType }}/{{id}}" id="audio-card">
     <div class="player-container audio-simple">
 
+    </div>
+
+    <h1>
+        {{ name }}
+    </h1>
+    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}
+    <h2>
+        {{owner}}
+    </h2>
+</a>
+{{/ifequal}}
+
+
+{{#ifequal dataType "videos"}}
+<a href="#/{{ dataType }}/{{id}}" class="video-simple">
+    <div class="video-simple">
+        {{#ifequal video_provider "vimeo"}}
+            <iframe src="https://player.vimeo.com/video/{{video_id}}"
+            style="width:100%" height="200"
+            frameborder="0"
+            webkitallowfullscreen mozallowfullscreen allowfullscreen>
+            </iframe>
+        {{/ifequal}}
+
+        {{#ifequal video_provider "youtube"}}
+            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
+            style="width:100%" height="200"
+            frameborder="0" allowfullscreen>
+            </iframe>
+        {{/ifequal}}
     </div>
 
     <h1>

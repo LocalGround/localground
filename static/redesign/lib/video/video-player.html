@@ -1,0 +1,20 @@
+<!-- This is intended to keep all embedev videos kept in one place
+     Unkown if going to be implemed by storing different video players from websites through iframes
+-->
+<div class="video-player">
+    <!-- Rough Draft layout of storing all of those provided players-->
+        {{#ifequal video_provider "vimeo"}}
+            <iframe src="https://player.vimeo.com/video/{{video_id}}"
+            style="width:100%" height="200"
+            frameborder="0"
+            webkitallowfullscreen mozallowfullscreen allowfullscreen>
+            </iframe>
+        {{/ifequal}}
+
+        {{#ifequal video_provider "youtube"}}
+            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
+            style="width:100%" height="200"
+            frameborder="0" allowfullscreen>
+            </iframe>
+        {{/ifequal}}
+</div>

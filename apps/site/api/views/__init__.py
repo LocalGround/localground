@@ -1,4 +1,5 @@
 from localground.apps.site.api.views.audio_views import AudioList, AudioInstance
+from localground.apps.site.api.views.video_views import VideoList, VideoInstance
 from localground.apps.site.api.views.mapimage_views import MapImageList, MapImageInstance
 from localground.apps.site.api.views.mapimage_overlay_views import MapImageOverlayList, MapImageOverlayInstance
 
@@ -38,7 +39,7 @@ from rest_framework.reverse import reverse
 
 @api_view(('GET',))
 def api_root(request, format=None, **kwargs):
-    d = OrderedDict()
+    d = {}
     d['audio'] = reverse('audio-list', request=request, format=format)
     d['forms'] = reverse('form-list', request=request, format=format)
     d['groups'] = reverse('group-list', request=request, format=format)
@@ -50,6 +51,7 @@ def api_root(request, format=None, **kwargs):
                                    request=request,
                                    format=format)
     d['photos'] = reverse('photo-list', request=request, format=format)
+    d['videos'] = reverse('video-list', request=request, format=format)
     d['presentations'] = reverse(
         'presentation-list',
         request=request,
@@ -64,4 +66,4 @@ def api_root(request, format=None, **kwargs):
     d['userprofiles'] = reverse('userprofile-list',
                                     request=request,
                                     format=format)
-    return Response(d)
+    return Response(OrderedDict(sorted(d.items())))

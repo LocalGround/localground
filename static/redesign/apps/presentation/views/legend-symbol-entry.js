@@ -24,14 +24,34 @@ define(['marionette',
                 }
             },
 
+            show: function (e) {
+                this.markerOverlays.showAll();
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+
+            hide: function (e) {
+                this.markerOverlays.hideAll();
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+
             templateHelpers: function () {
                 var width = 25,
-                    scale = width / this.model.get("width");
-                return {
-                    width: width,
-                    height: this.model.get("height") * scale,
-                    strokeWeight: this.model.get("strokeWeight")
-                };
+                    scale = width / this.model.get("width"),
+                    template_items = {
+                        width: width,
+                        height: this.model.get("height") * scale,
+                        strokeWeight: this.model.get("strokeWeight"),
+                        count: this.symbolCount,
+                        isShowing: this.getIsShowing()
+                    };
+                return template_items;
+            },
+            getIsShowing: function () {
+                return this.model.get('isShowing') || this.isShowing || false;
             },
 
             initialize: function (opts) {
@@ -51,8 +71,16 @@ define(['marionette',
                     collection: matchedCollection,
                     app: this.app,
                     iconOpts: this.model.toJSON(),
-                    isShowing: this.model.get("is_showing") || false
+                    isShowing: this.getIsShowing()
                 });
+
+                this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
+            },
+
+            onRender: function(){
+                if (this.getIsShowing()) {
+                    this.show();
+                }
             }
         });
         return LegendSymbolEntry;

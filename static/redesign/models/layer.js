@@ -18,7 +18,8 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
                 strokeColor: "#ffffff",
                 strokeWeight: 1,
                 strokeOpacity: 1,
-                shape: "circle"
+                shape: "circle",
+                isShowing: false
             },
             symbols: []
         }),

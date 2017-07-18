@@ -197,4 +197,8 @@ urlpatterns += format_suffix_patterns(patterns('',
     url(r'^forms/84/data/tracks/$',
         views.TrackList.as_view(),
         name='air-quality-tracks'),
+    url(r'^videos/$', views.VideoList.as_view(),
+        name='video-list'),
+    url(r'^videos/(?P<pk>[0-9]+)/$', views.VideoInstance.as_view(),
+        name='video-detail'),
     ))

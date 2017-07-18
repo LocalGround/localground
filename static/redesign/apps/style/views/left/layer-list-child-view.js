@@ -18,7 +18,7 @@ define(["jquery",
             className: "layer-column",
             templateHelpers: function () {
                 return {
-                    isChecked: this.isChecked
+                    isChecked: this.model.get("metadata").isShowing
                 };
             },
             markerOverlayList: null,
@@ -30,6 +30,9 @@ define(["jquery",
                 'click .edit' : 'sendCollection',
                 'click .layer-delete' : 'deleteLayer',
                 'change input': 'showHideOverlays'
+            },
+            onRender: function () {
+                this.showHideOverlays();
             },
 
             sendCollection: function () {
@@ -66,7 +69,7 @@ define(["jquery",
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
                 this.initMapOverlays();
-                if (this.isChecked) {
+                if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
                 }
             },
@@ -122,9 +125,9 @@ define(["jquery",
                 });
             },
 
-            showHideOverlays: function (e) {
-                this.isChecked = $(e.target).prop('checked');
-                if (this.isChecked) {
+            showHideOverlays: function () {
+                this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
+                if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
                 } else {
                     this.hideOverlays();

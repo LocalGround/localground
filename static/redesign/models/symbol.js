@@ -18,7 +18,8 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
                 strokeColor: "#FFFFFF",
                 strokeWeight: 1,
                 strokeOpacity: 1,
-                shape: "circle"
+                shape: "circle",
+                isShowing: false
             },
             initialize: function (data, opts) {
                 _.extend(this, opts);

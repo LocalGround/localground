@@ -104,13 +104,13 @@ define(["marionette",
                     currentType: this.model.get("panel_styles")[this.activeKey],
                     activeKey: this.activeKey,
                     isShowing: this.isShowing,
-                    displayLegend: this.model.get("display_legend")
+                    displayLegend: this.model.get("panel_styles").display_legend
                 };
             },
 
             updateLegend: function (event) {
                 console.log(this.model);
-                this.model.get("display_legend") = $(event.target).is(':checked');
+                this.model.get("panel_styles").display_legend = $(event.target).is(':checked');
             },
            
             updateType: function () {
