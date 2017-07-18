@@ -120,14 +120,19 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 $($items[this.counter]).addClass('current').show();
             },
 
-            next: function () {
+            resetCurrentFrame: function () {
+                //needed to stop playing iFrame videos:
                 this.children.findByIndex(this.counter).render();
+            },
+
+            next: function () {
+                this.resetCurrentFrame();
                 this.counter += 1;
                 this.navigate();
             },
 
             prev: function () {
-                this.children.findByIndex(this.counter).render();
+                this.resetCurrentFrame();
                 this.counter -= 1;
                 this.navigate();
             },
@@ -141,6 +146,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
 
             jump: function (e) {
+                this.resetCurrentFrame();
                 this.counter = parseInt($(e.target).attr("data-index"), 10);
                 this.navigate();
             }
