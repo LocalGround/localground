@@ -15,6 +15,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 'mouseout .carouselbox': 'hideArrows'
             },
             counter: 0,
+            className: "active-slide",
             mode: "photos",
             childViewContainer: ".carousel-content",
             initialize: function (opts) {
@@ -30,13 +31,14 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     this.collection = new Audio(this.model.get("children").audio.data);
                 }
                 this.render();
-                if (this.collection.length > 1) {
-                    this.$el.addClass('active-slide');
+                //this.$el.addClass('active-slide');
+                if (this.collection.length == 1) {
+                    this.$el.addClass('short');
                 }
                 this.navigate(0);
             },
             showArrows: function () {
-                if (this.mode === "audio") {
+                if (this.mode === "audio" || this.collection.length === 1) {
                     return;
                 }
                 var $leftArrow, $rightArrow;
@@ -50,6 +52,9 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 }
             },
             hideArrows: function () {
+                if (this.mode === "audio" || this.collection.length === 1) {
+                    return;
+                }
                 var that = this;
                 this.timeout = setTimeout(function () {
                     that.$el.find('.fa-chevron-left, .fa-chevron-right').remove();

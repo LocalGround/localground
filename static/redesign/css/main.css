@@ -1595,6 +1595,10 @@ tbody .failure-message, tbody .success-message {
     background: white;
 }
 
+.active-slide.short {
+    min-height: 340px !important;
+}
+
 .active-slide li {
     position: absolute;
     top: 350px;

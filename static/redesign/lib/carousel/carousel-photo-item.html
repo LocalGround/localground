@@ -1,8 +1,2 @@
-{{#ifequal num_children 1 }}
-    <div class="photo-single">
-        <img src="{{this.path_medium}}" />
-    </div>
-{{else}}
-    <div class="photo" style="background: url('{{this.path_medium}}');"></div>
-{{/ifequal}}
+<div class="photo" style="background: url('{{this.path_medium}}');"></div>
 <p class="carousel-caption">{{this.caption }}</p>

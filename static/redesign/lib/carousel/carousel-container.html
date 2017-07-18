@@ -16,20 +16,17 @@
     {{/compare}}
 {{else}}
 
-    {{#compare num_children 1 operator="=="}}
-        <div class="carousel-content img-card"></div>
-    {{/compare}}
-
+    <div class="carouselbox">
+        <ol class="carousel-content"></ol>
+    </div>
+    
     {{#compare num_children 1 operator=">"}}
-        <div class="carouselbox">
-            <ol class="carousel-content"></ol>
-        </div>
-        <div class="circle-buttons">
-            <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
-            {{#times 1 num_children}}
-                <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}"></i>
-            {{/times}}
-        </div>
+    <div class="circle-buttons">
+        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
+        {{#times 1 num_children}}
+            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}"></i>
+        {{/times}}
+    </div>
     {{/compare}}
 
 {{/if}}
