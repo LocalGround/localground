@@ -8,7 +8,10 @@
     
     
     <div id="type" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">
-
+    <div class="legend-prompt-wrapper">
+        <p class="legend-prompt">Show Legend on Presentation Map:</p>
+        <input class="legend-checkbox" type="checkbox" {{#if displayLegend}}checked{{/if}}></input>
+    </div>
     <!--Choose the type category to style -->
         <select id="text-type" class="style-wide-select" name="title-list" style="width:100%; margin: 20px 0px 10px;">
             <option value="title" {{#ifequal activeKey "title"}} SELECTED {{/ifequal}}>Title</option>
@@ -21,22 +24,23 @@
                 <tr>
                     <td>Font:</td>
                     <td>
-                        <div id="font" class="font-dropdown-display">
-                            <div class="font-display" value="lato" {{#ifequal currentType.font "lato"}} SELECTED {{/ifequal}}>Lato</div>
+                        <div id="font" class="font-dropdown-display" style="background-color: #{{currentType.backgroundColor}}">
+                            <div class="font-display" style="font-family: {{currentType.font}}; color: #{{currentType.color}}; background-color: #{{currentType.backgroundColor}}; font-weight: {{currentType.fw}}" >{{currentType.font}}</div>
                         </div>
                         <div id="font-div" class="font-options">
                             <div class="font-wrapper">
-                                <div value="lato" style = "font-family: lato" {{#ifequal currentType.font "lato"}} SELECTED {{/ifequal}}>Lato</div>
-                                <div value="open sans" style = "font-family: open sans"  {{#ifequal currentType.font "open sans"}} SELECTED {{/ifequal}}>Open Sans</div>
-                                <div value="slabo" style = "font-family: slabo"  {{#ifequal currentType.font "slabo"}} SELECTED {{/ifequal}}>Slabo</div>
-                                <div value="Pt Serif" style = "font-family: Pt Serif"  {{#ifequal currentType.font "Pt Serif"}} SELECTED {{/ifequal}}>Pt Serif</div>
-                                <div value="Lemonada" style = "font-family: Lemonada"  {{#ifequal currentType.font "Lemonada"}} SELECTED {{/ifequal}}>Lemonada</div>
-                                <div value="Comfortaa" style = "font-family: Comfortaa"  {{#ifequal currentType.font "Comfortaa"}} SELECTED {{/ifequal}}>Comfortaa</div>
-                                <div value="Amatic SC" style = "font-family: Amatic SC"  {{#ifequal currentType.font "Amatic SC"}} SELECTED {{/ifequal}}>Amatic SC</div>
-                                <div value="Pacifico" style = "font-family: Pacifico"  {{#ifequal currentType.font "ComforPacificotaa"}} SELECTED {{/ifequal}}>Pacifico</div>
+                                <div value="lato" style = "font-family: lato" >Lato</div>
+                                <div value="open sans" style = "font-family: open sans" >Open Sans</div>
+                                <div value="slabo" style = "font-family: slabo" >Slabo</div>
+                                <div value="Pt Serif" style = "font-family: Pt Serif" >Pt Serif</div>
+                                <div value="Lemonada" style = "font-family: Lemonada" >Lemonada</div>
+                                <div value="Comfortaa" style = "font-family: Comfortaa" >Comfortaa</div>
+                                <div value="Amatic SC" style = "font-family: Amatic SC" >Amatic SC</div>
+                                <div value="Pacifico" style = "font-family: Pacifico" >Pacifico</div>
+                                <div value="Permanent Marker" style = "font-family: Permanent Marker" >Permanent Marker</div>
                             </div>
                             <div class="arrow-wrapper">
-                                <i class="fa fa-arrows-v font-arrow" aria-hidden="true"></i>
+                                <i class="fa fa-angle-down font-arrow" aria-hidden="true"></i>
                             </div>
                         </div>
                     </td>
@@ -51,6 +55,18 @@
                     -->
                 </tr>
                 <tr>
+                    <td>Font color:</td>
+                    <td>
+                        <i id="font-color-picker" class="fa fa-circle marker-icon jscolor" style="color: #{{currentType.color}} " aria-hidden="true">
+                    </i></td>
+                </tr>
+                <tr>
+                    <td>Background color:</td>
+                    <td>
+                        <i id="background-color-picker" class="fa fa-circle marker-icon jscolor" style="color: #{{currentType.backgroundColor}} " aria-hidden="true">
+                    </i></td>
+                </tr>
+                <tr>
                     <td>Font weight:</td>
                     <td>
                         <select id="fw" class="style-wide-select">
@@ -60,13 +76,6 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Color:</td>
-                    <td>
-
-                        <i id="color-picker" class="fa fa-circle marker-icon jscolor" style="padding:0; color: #{{currentType.color}} " aria-hidden="true">
-                    </i></td>
-                </tr>
-                <tr>
                     <td>Size:</td>
                     <td><input id="font-size" type="number" value="{{currentType.size}}">px</td>
                 </tr>
@@ -74,8 +83,3 @@
         </table>
     </div>
 </div>
-<!--
-<br>
-<br>
-<pre>{{json}}</pre>
--->

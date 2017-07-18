@@ -21,7 +21,9 @@ define(["marionette",
                      //   'change #font': 'updateFont',
                         'change #fw': 'updateFontWeight',
                         'change #font-size': 'updateFontSize',
-                        'click #font': 'showFonts'
+                        'click #font': 'showFonts',
+                        'click .font-wrapper div': 'updateFont',
+                        'click .legend-checkbox': 'updateLegend'
                     },
                     PanelVisibilityExtensions.events
                 );
@@ -35,38 +37,57 @@ define(["marionette",
             
             onRender: function () {
                 var that = this;
-                var newHex;
-                $(".panel-styles-color-picker").remove();
-                this.$el.find('#color-picker').ColorPicker({
-            
+                var newHex,
+                fontColor = this.model.get('panel_styles')[this.activeKey].color,
+                backgroundColor = this.model.get('panel_styles')[this.activeKey].backgroundColor;
+        
+                $('panel-styles-color-picker-font').remove();
+                that.$el.find('#font-color-picker').ColorPicker({
+                    color: fontColor,
                     onShow: function (colpkr) {
                         $(colpkr).fadeIn(500);
                         return false;
                     },
                     onHide: function (colpkr) {
-                        that.updateFontColor(newHex);
+                        that.updateFontColor(fontColor);                 
                         $(colpkr).fadeOut(500);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
-                        newHex = hex;
+                        fontColor = hex;
                     }
                 });
-                $(".colorpicker:last-child").addClass('panel-styles-color-picker');
+                $(".colorpicker:last-child").addClass('panel-styles-color-picker-font');
+
+                $('panel-styles-color-picker-background').remove();
+                that.$el.find('#background-color-picker').ColorPicker({
+                    color: backgroundColor,
+                    onShow: function (colpkr) {
+                        $(colpkr).fadeIn(500);
+                        return false;
+                    },
+                    onHide: function (colpkr) {
+                        that.updateBackgroundColor(backgroundColor);
+                        $(colpkr).fadeOut(500);
+                        return false;
+                    },
+                    onChange: function (hsb, hex, rgb) {
+                        backgroundColor = hex;
+                    }
+                });
+                $(".colorpicker:last-child").addClass('panel-styles-color-picker-font');
+            
+                
             },
 
             showFonts: function () {
-               // this.$el.find('#font').hide();
+                console.log(this.model);
                 this.$el.find('#font-div').show();
             },
 
             hideFonts: function (e) {
-                var $el = $(e.target);
-
-                console.log("body click", $el.hasClass('font-options'));
-                
+                var $el = $(e.target);                
                 if (!$el.hasClass('font-options') && !$el.hasClass('font-dropdown-display') && !$el.hasClass('font-display')) {
-                    console.log("should hide");
                     $(".font-options").hide();
                 }
             },
@@ -82,16 +103,23 @@ define(["marionette",
                     json: JSON.stringify(this.model.toJSON(), null, 2),
                     currentType: this.model.get("panel_styles")[this.activeKey],
                     activeKey: this.activeKey,
-                    isShowing: this.isShowing
+                    isShowing: this.isShowing,
+                    displayLegend: this.model.get("display_legend")
                 };
+            },
+
+            updateLegend: function (event) {
+                console.log(this.model);
+                this.model.get("display_legend") = $(event.target).is(':checked');
             },
            
             updateType: function () {
                 this.activeKey = this.$el.find("#text-type").val();
                 this.render();
             },
-            updateFont: function () {
-                this.model.get("panel_styles")[this.activeKey].font = this.$el.find("#font").val();
+            updateFont: function (event) {
+                console.log($(event.target).text());
+                this.model.get("panel_styles")[this.activeKey].font = $(event.target).text();
                 this.render();
             },
             updateFontWeight: function () {
@@ -100,10 +128,20 @@ define(["marionette",
             },
             // triggered from colorPicker
             updateFontColor: function (hex) {
+                console.log("update font color");
                 this.model.get("panel_styles")[this.activeKey].color = hex;
-                $('#color-picker').css('color', '#' + hex);
+                $('#font-color-picker').css('color', '#' + hex);
                 this.render();
-            },  
+            }, 
+
+            // triggered from colorPicker
+            updateBackgroundColor: function (hex) {
+                console.log("update background color");
+                this.model.get("panel_styles")[this.activeKey].backgroundColor = hex;
+                $('#background-color-picker').css('color', '#' + hex);
+                this.render();
+            },
+
             updateFontSize: function () {
                 this.model.get("panel_styles")[this.activeKey].size = +this.$el.find("#font-size").val();
                 this.render();
