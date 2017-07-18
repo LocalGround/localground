@@ -16,7 +16,7 @@ define(['marionette',
                 return {
                     app: this.app,
                     data_source: this.model.get("data_source"),
-                    is_showing: this.model.get("metadata").is_showing,
+                    isShowing: this.model.get("metadata").isShowing,
                     symbolCount: this.collection.length
                 };
             },

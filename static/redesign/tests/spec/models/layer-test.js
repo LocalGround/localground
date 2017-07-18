@@ -47,7 +47,8 @@ define([
                         strokeColor: "#ffffff",
                         strokeWeight: 1,
                         strokeOpacity: 1,
-                        shape: "circle"
+                        shape: "circle",
+                        isShowing: false
                     },
                     symbols: []
                 });
@@ -64,7 +65,8 @@ define([
                     strokeColor: "#ffffff",
                     strokeWeight: 1,
                     strokeOpacity: 1,
-                    shape: "circle"
+                    shape: "circle",
+                    isShowing: false
                 });
                 expect(newLayer.get("symbols").length).toEqual(0);
             });
@@ -162,7 +164,8 @@ define([
                     "fillColor":"#f0f0f0",
                     "strokeColor":"#ffffff",
                     "id":1,
-                    "height":20
+                    "height":20,
+                    "isShowing": false
                 },
                 {  
                     "rule": "test_integer >= 7 and test_integer <= 9",
@@ -175,7 +178,8 @@ define([
                     "fillColor":"#bdbdbd",
                     "strokeColor":"#ffffff",
                     "id":2,
-                    "height":20
+                    "height":20,
+                    "isShowing": false
                 },
                 {  
                     "rule": "test_integer >= 9 and test_integer <= 12",
@@ -188,7 +192,8 @@ define([
                     "fillColor":"#636363",
                     "strokeColor":"#ffffff",
                     "id":3,
-                    "height":20
+                    "height":20,
+                    "isShowing": false
                 }
             ]);
             });

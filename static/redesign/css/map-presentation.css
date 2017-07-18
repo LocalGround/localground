@@ -268,7 +268,7 @@ svg, .fa-question-circle {
 }
 
 #presentation-title {
-    background-color: #354c7a;
+    /*background-color: #354c7a;*/
     position: fixed;
     width: 401px;
     box-shadow: 0 3px 0 0 rgba(53, 76, 122, 0.08);
@@ -276,13 +276,13 @@ svg, .fa-question-circle {
 }
 
 #presentation-title h1 {
-    padding: 16px 20px 0px;
-    font-size: 12px;
-    text-transform: uppercase;
+    padding: 10px 20px 0px 20px;
+    letter-spacing: 0.6px;
     color: white;
     font-weight: 400;
-    letter-spacing: 0.6px;
     font-family: Montserrat;
+    /*font-size: 12px;
+    text-transform: uppercase;*/
 }
 
 #presentation-title h2 {

@@ -17,7 +17,7 @@ define([
                 symbolView = new LegendSymbolEntry({
                     app: scope.app,
                     data_source: scope.layer.get("data_source"),
-                    is_showing: scope.layer.get("metadata").is_showing,
+                    isShowing: scope.layer.get("metadata").isShowing,
                     symbolCount: scope.layer.collection.length,
                     model: symbolModel
                 });
@@ -48,10 +48,10 @@ define([
                 initChildView(this);
             });
             it("Checkbox Settings for Layer (Layer should override Symbol settings)", function () {
-                this.layer.get("metadata").is_showing = true;
+                this.layer.get("metadata").isShowing = true;
                 initChildView(this);
                 expect(fixture.find(".cb-symbol").prop("checked")).toBeTruthy();
-                this.layer.get("metadata").is_showing = false;
+                this.layer.get("metadata").isShowing = false;
                 initChildView(this);
                 expect(fixture.find(".cb-symbol").prop("checked")).toBeFalsy();
 
@@ -59,10 +59,10 @@ define([
 
 
             it("Checkbox Settings for Symbol", function () {
-                symbolModel.set("is_showing", true);
+                symbolModel.set("isShowing", true);
                 initChildView(this);
                 expect(fixture.find(".cb-symbol").prop("checked")).toBeTruthy();
-                symbolModel.set("is_showing", false);
+                symbolModel.set("isShowing", false);
                 initChildView(this);
                 expect(fixture.find(".cb-symbol").prop("checked")).toBeFalsy();
 

@@ -65,7 +65,7 @@ define([
             this.saveState("presentation", {slug: this.slug });
             this.setProjectID(this.model.get("project_id"));
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
-            console.log(this.model.get("panel_styles").showLegend);
+            console.log(this.model.get("panel_styles").display_legend);
         },
 
         getSlugFromLocalStorage: function () {
@@ -84,7 +84,7 @@ define([
         loadRegions: function () {
             this.showMapTitle();
             this.showBasemap();
-            if (this.model.get("panel_styles").showLegend === false) {
+            if (this.model.get("panel_styles").display_legend === false) {
                 this.hideLegend();
             } else {
                 this.showLegend();

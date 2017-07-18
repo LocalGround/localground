@@ -31,10 +31,11 @@ define(["models/base", "collections/layers"], function (Base, Layers) {
             return _.extend({}, Base.prototype.defaults, {
                 checked: false,
                 panel_styles: {
-                    title: {type: "title", font: "Lato", fw: "bold", color: "33ff52", size: "15"},
-                    subtitle: {type: "subtitle", font: "Lato", fw: "regular", color: "gray", size: "12"},
-                    paragraph: {type: "paragraph", font: "Lato", fw: "regular", color: "black", size: "12"},
-                    tags: {type: "tags", font: "Lato", fw: "regular", color: "black", size: "10"}
+                    display_legend: true,
+                    title: {type: "title", font: "Lato", fw: "bold", color: "ffffff", backgroundColor: "4e70d4", size: "15"},
+                    subtitle: {type: "subtitle", font: "Lato", fw: "regular", color: "666", backgroundColor: "f7f7f7", size: "12"},
+                    paragraph: {type: "paragraph", font: "Lato", fw: "regular", color: "3d3d3d", backgroundColor: "f7f7f7", size: "12"},
+                    tags: {type: "tags", font: "Lato", fw: "regular", color: "3d3d3d", backgroundColor: "f7f7f7", size: "10"}
                 }
             });
         },

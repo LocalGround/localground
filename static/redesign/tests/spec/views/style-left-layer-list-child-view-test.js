@@ -108,16 +108,16 @@ define([
                 expect(LayerListChildView.prototype.hideOverlays).toHaveBeenCalledTimes(0);
 
                 //toggle overlay checkbox to "checked":
-                expect(layerListChildView.isChecked).toBeFalsy();
+                expect(layerListChildView.model.get("metadata").isShowing).toBeFalsy();
                 console.log(fixture);
                 fixture.find('input').trigger('click');
-                expect(layerListChildView.isChecked).toBeTruthy();
+                expect(layerListChildView.model.get("metadata").isShowing).toBeTruthy();
                 expect(LayerListChildView.prototype.showHideOverlays).toHaveBeenCalledTimes(1);
                 expect(LayerListChildView.prototype.showOverlays).toHaveBeenCalledTimes(1);
 
                 //toggle overlay checkbox to "un-checked":
                 fixture.find('input').trigger('click');
-                expect(layerListChildView.isChecked).toBeFalsy();
+                expect(layerListChildView.model.get("metadata").isShowing).toBeFalsy();
                 expect(LayerListChildView.prototype.showHideOverlays).toHaveBeenCalledTimes(2);
                 expect(LayerListChildView.prototype.hideOverlays).toHaveBeenCalledTimes(1);
             });

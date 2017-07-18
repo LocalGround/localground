@@ -87,7 +87,6 @@ define(["jquery",
 
             hideColorRamp: function (e) {
                 var $el = $(e.target);
-
                 if (!$el.hasClass('palette-wrapper') &&
                         !$el.hasClass('selected-palette-list') &&
                         !$el.hasClass('selected-palette-wrapper') &&

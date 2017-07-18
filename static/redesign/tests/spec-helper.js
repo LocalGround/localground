@@ -152,6 +152,7 @@ define(
                 "basemap": 5,
                 "zoom": 8,
                 "panel_styles": {
+                    "display_legend": false,
                     "title": {
                         "color": "33ff52",
                         "font": "Lato",
@@ -199,7 +200,8 @@ define(
                             "fillOpacity": 1,
                             "strokeColor": "#ffffff",
                             "paletteId": 2,
-                            "currentProp": "test_integer"
+                            "currentProp": "test_integer",
+                            "isShowing": false
                         },
                         "filters": [
                             {
@@ -219,7 +221,8 @@ define(
                                 "fillColor":"#f0f0f0",
                                 "strokeColor":"#ffffff",
                                 "id":1,
-                                "height":20
+                                "height":20,
+                                "isShowing": false
                             },
                             {  
                                 "rule": "test_integer >= 7 and test_integer <= 9",
@@ -232,7 +235,8 @@ define(
                                 "fillColor":"#bdbdbd",
                                 "strokeColor":"#ffffff",
                                 "id":2,
-                                "height":20
+                                "height":20,
+                                "isShowing": false
                             },
                             {  
                                 "rule": "test_integer >= 9 and test_integer <= 12",
@@ -245,7 +249,8 @@ define(
                                 "fillColor":"#636363",
                                 "strokeColor":"#ffffff",
                                 "id":3,
-                                "height":20
+                                "height":20,
+                                "isShowing": false
                             }
                         ]
                     },
@@ -266,7 +271,8 @@ define(
                                 "fillColor": "#7075FF",
                                 "width": 30,
                                 "rule": "test_integer > 0",
-                                "title": "At least 1 sculpture"
+                                "title": "At least 1 sculpture",
+                                "isShowing": false
                             }
                         ]
                     },
@@ -287,7 +293,8 @@ define(
                             "fillOpacity": 1,
                             "strokeColor": "#FFFFFF",
                             "paletteId": 3,
-                            "currentProp": "test_text"
+                            "currentProp": "test_text",
+                            "isShowing": false
                         },
                         "filters": {
                             "tags": "nothing"
@@ -298,19 +305,22 @@ define(
                                 "fillColor": "#7075FF",
                                 "width": 30,
                                 "rule": "test_text = 'Blue team'",
-                                "title": "Blue Team"
+                                "title": "Blue Team",
+                                "isShowing": false
                             },
                             {
                                 "fillColor": "#F011D9",
                                 "width": 30,
                                 "rule": "test_text = 'Green team'",
-                                "title": "Green Team"
+                                "title": "Green Team",
+                                "isShowing": false
                             },
                             {
                                 "fillColor": "#FF0000",
                                 "width": 30,
                                 "rule": "test_text = 'Red team'",
-                                "title": "Red Team"
+                                "title": "Red Team",
+                                "isShowing": false
                             }
                         ]
                     }
@@ -651,7 +661,8 @@ define(
                     "fillColor":"#f0f0f0",
                     "strokeColor":"#ffffff",
                     "id":1,
-                    "height":20
+                    "height":20,
+                    "isShowing": false
                 },
                 {  
                     "rule": "test_integer >= 7 and test_integer <= 9",
@@ -664,7 +675,8 @@ define(
                     "fillColor":"#bdbdbd",
                     "strokeColor":"#ffffff",
                     "id":2,
-                    "height":20
+                    "height":20,
+                    "isShowing": false
                 },
                 {  
                     "rule": "test_integer >= 9 and test_integer <= 12",
@@ -677,7 +689,8 @@ define(
                     "fillColor":"#636363",
                     "strokeColor":"#ffffff",
                     "id":3,
-                    "height":20
+                    "height":20,
+                    "isShowing": false
                 }
             ],
 
@@ -694,7 +707,8 @@ define(
                     "strokeOpacity": 1,
                     "strokeWeight": 1,
                     "title": "Blue team",
-                    "width": 30
+                    "width": 30,
+                    "isShowing": false
                 },
                 {
                     "fillColor": "#b3cde3",
@@ -708,7 +722,8 @@ define(
                     "strokeOpacity": 1,
                     "strokeWeight": 1,
                     "title": "Green team",
-                    "width": 30
+                    "width": 30,
+                    "isShowing": false
                 },
                 {
                     "fillColor": "#ccebc5",
@@ -722,7 +737,8 @@ define(
                     "strokeOpacity": 1,
                     "strokeWeight": 1,
                     "title": "Red team",
-                    "width": 30
+                    "width": 30,
+                    "isShowing": false
                 }
             ]
         });

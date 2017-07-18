@@ -22,7 +22,7 @@ define([
                     "shape": "worm",
                     "strokeColor": "#FFF",
                     "color": "#df65b0",
-                    "is_showing": true
+                    "isShowing": true
                 },
                 childView = new LegendSymbolEntry({
                     app: scope.app,
@@ -77,10 +77,10 @@ define([
                 });
             });
 
-            it("Initializes checkboxes according to is_showing flag", function () {
+            it("Initializes checkboxes according to isShowing flag", function () {
                 lle.children.each(function (childView) {
                     fixture = setFixtures('<div></div>').append(childView.$el);
-                    if (childView.model.get("is_showing")) {
+                    if (childView.model.get("isShowing")) {
                         expect(fixture.find('input').get(0).outerHTML).toBeChecked();
                     } else {
                         expect(fixture.find('input').get(0).outerHTML).not.toBeChecked();
