@@ -1538,6 +1538,8 @@ tbody .failure-message, tbody .success-message {
     position: relative;
     box-sizing: border-box;
 }
+
+
 .carousel .fa {
     color: #999;
 }
@@ -1587,9 +1589,8 @@ tbody .failure-message, tbody .success-message {
     border-bottom: solid 1px #CCC;
 }
 
-
-.carousel-photo .active-slide {
-    min-height: 350px;
+.carousel-photo .active-slide, .carousel-video .active-slide {
+    min-height: 370px;
     border: solid 1px #CCC;
     background: white;
 }
@@ -1628,7 +1629,7 @@ tbody .failure-message, tbody .success-message {
 
 .carousel-buttons, .circle-buttons {
     display: block;
-    padding: 0px 0px 10px 0px;
+    padding: 30px 0px 0px 0px;
     text-align: center;
     z-index: 10;
     position: relative;
@@ -1682,6 +1683,26 @@ li.current .photo {
 }
 .carousel-modal.spreadsheet .img-card {
     border: none;
+}
+
+hover-to-show{
+    display: none;
+    marginTop: 0px;
+    position: relative;
+    top: 120px;
+    zIndex: 100;
+    color: #ddd;
+    fontSize: 48px;
+
+}
+
+.carouselbox.prev{
+    left: 8px;
+}
+
+
+.carouselbox.next{
+    left: 408px;
 }
 
 #rotate-icon {

@@ -1,15 +1,18 @@
 define(["jquery", "underscore", "marionette", "handlebars",
-        "collections/photos", "collections/audio", "lib/audio/audio-player",
-        "text!../carousel/carousel-photo.html", "text!../carousel/carousel-audio.html",
+        "collections/photos", "collections/audio", "collections/videos", "lib/audio/audio-player",
+        "text!../carousel/carousel-container.html", "text!../carousel/carousel-container-audio.html",
+        "text!../carousel/carousel-video-item.html",
         "text!../carousel/carousel-photo-item.html"],
-    function ($, _, Marionette, Handlebars, Photos, Audio, AudioPlayer,
-              CarouselPhotoTemplate, CarouselAudioTemplate, PhotoItemTemplate) {
+    function ($, _, Marionette, Handlebars, Photos, Audio, Videos, AudioPlayer,
+              CarouselContainerTemplate, CarouselContainerAudioTemplate, VideoItemTemplate, PhotoItemTemplate) {
         'use strict';
         var Carousel = Marionette.CompositeView.extend({
             events: {
                 "click .next": "next",
                 "click .prev": "prev",
-                "click .show-slide": "jump"
+                "click .show-slide": "jump",
+                'mouseover .carouselbox': 'showArrows',
+                'mouseout .carouselbox': 'hideArrows'
             },
             counter: 0,
             mode: "photos",
@@ -17,10 +20,13 @@ define(["jquery", "underscore", "marionette", "handlebars",
             initialize: function (opts) {
                 _.extend(this, opts);
                 if (this.mode == "photos") {
-                    this.template = Handlebars.compile(CarouselPhotoTemplate);
+                    this.template = Handlebars.compile(CarouselContainerTemplate);
                     this.collection = new Photos(this.model.get("children").photos.data);
+                } else if (this.mode == "videos") {
+                    this.template = Handlebars.compile(CarouselContainerTemplate);
+                    this.collection = new Videos(this.model.get("children").videos.data);
                 } else {
-                    this.template = Handlebars.compile(CarouselAudioTemplate);
+                    this.template = Handlebars.compile(CarouselContainerAudioTemplate);
                     this.collection = new Audio(this.model.get("children").audio.data);
                 }
                 this.render();
@@ -28,6 +34,27 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     this.$el.addClass('active-slide');
                 }
                 this.navigate(0);
+            },
+            showArrows: function () {
+                if (this.mode === "audio") {
+                    return;
+                }
+                var $leftArrow, $rightArrow;
+                if (this.timeout) {
+                    clearTimeout(this.timeout);
+                    this.timeout = null;
+                } else {
+                    $leftArrow = $('<i class="fa fa-chevron-left prev"></i>');
+                    $rightArrow = $('<i class="fa fa-chevron-right next"></i>');
+                    this.$el.find('.carouselbox').append($leftArrow).append($rightArrow);
+                }
+            },
+            hideArrows: function () {
+                var that = this;
+                this.timeout = setTimeout(function () {
+                    that.$el.find('.fa-chevron-left, .fa-chevron-right').remove();
+                    that.timeout = null;
+                }, 100);
             },
             childViewOptions: function () {
                 return {
@@ -42,6 +69,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                         _.extend(this, opts);
                         if (this.mode == "photos") {
                             this.template = Handlebars.compile(PhotoItemTemplate);
+                        } else if (this.mode == "videos") {
+                            this.template = Handlebars.compile(VideoItemTemplate);
                         } else {
                             this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
                         }
@@ -49,7 +78,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     templateHelpers: function () {
                         console.log(this.num_children);
                         return {
-                            num_children: this.num_children
+                            num_children: this.num_children,
+                            mode: this.mode
                         };
                     },
                     tagName: "li",
@@ -79,7 +109,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 }
                 var $items = this.$el.find('.carousel-content li'),
                     amount = this.collection.length;
-                $items.removeClass('current');
+                $items.removeClass('current').hide();
                 if (this.counter < 0) {
                     this.counter = amount - 1;
                 }
@@ -87,15 +117,22 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     this.counter = 0;
                 }
                 this.updateCircles();
-                $($items[this.counter]).addClass('current');
+                $($items[this.counter]).addClass('current').show();
+            },
+
+            resetCurrentFrame: function () {
+                //needed to stop playing iFrame videos:
+                this.children.findByIndex(this.counter).render();
             },
 
             next: function () {
+                this.resetCurrentFrame();
                 this.counter += 1;
                 this.navigate();
             },
 
             prev: function () {
+                this.resetCurrentFrame();
                 this.counter -= 1;
                 this.navigate();
             },
@@ -109,6 +146,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
 
             jump: function (e) {
+                this.resetCurrentFrame();
                 this.counter = parseInt($(e.target).attr("data-index"), 10);
                 this.navigate();
             }

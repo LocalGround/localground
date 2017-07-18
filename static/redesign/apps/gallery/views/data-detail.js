@@ -192,6 +192,14 @@ define([
                 });
                 this.$el.find(".carousel-photo").append(c.$el);
             }
+            if (this.model.get("children") && this.model.get("children").videos) {
+                c = new Carousel({
+                    model: this.model,
+                    app: this.app,
+                    mode: "videos"
+                });
+                this.$el.find(".carousel-video").append(c.$el);
+            }
             if (this.model.get("children") && this.model.get("children").audio) {
                 c = new Carousel({
                     model: this.model,
