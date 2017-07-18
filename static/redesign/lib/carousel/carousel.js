@@ -32,7 +32,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 }
                 this.render();
                 //this.$el.addClass('active-slide');
-                if (this.collection.length == 1) {
+                if (this.collection.length == 1 && this.mode !== "audio") {
                     this.$el.addClass('short');
                 }
                 this.navigate(0);
