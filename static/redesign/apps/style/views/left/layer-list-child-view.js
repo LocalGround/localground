@@ -12,6 +12,9 @@ define(["jquery",
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
                 this.initMapOverlays();
+                if (this.model.get("metadata").isShowing) {
+                    this.showOverlays();
+                }
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
@@ -30,9 +33,6 @@ define(["jquery",
                 'click .edit' : 'sendCollection',
                 'click .layer-delete' : 'deleteLayer',
                 'change input': 'showHideOverlays'
-            },
-            onRender: function () {
-                this.showHideOverlays();
             },
 
             sendCollection: function () {
