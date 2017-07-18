@@ -1589,9 +1589,8 @@ tbody .failure-message, tbody .success-message {
     border-bottom: solid 1px #CCC;
 }
 
-
-.carousel-photo .active-slide {
-    min-height: 350px;
+.carousel-photo .active-slide, .carousel-video .active-slide {
+    min-height: 370px;
     border: solid 1px #CCC;
     background: white;
 }
