@@ -135,20 +135,22 @@ define(["jquery",
                 });
             },
             triggerShowPanel: function () {
-                this.app.vent.trigger('unhide-detail');
+                this.showPanel();
                 this.$el.find('.right-panel-btn').show();
             },
             hidePanel: function (e) {
-                $(".right-panel-button").removeClass("hide").addClass("show");
+                $('#right-panel .show-hide').removeClass("hide").addClass("show");
                 this.app.vent.trigger('hide-detail');
-                if(e) {
+                if (e) {
                     e.preventDefault();
                 }
             },
             showPanel: function (e) {
-                $(e.target).removeClass("show").addClass("hide");
+                $('#right-panel .show-hide').removeClass("show").addClass("hide");
                 this.app.vent.trigger('unhide-detail');
-                e.preventDefault();
+                if (e) {
+                    e.preventDefault();
+                }
             }
         });
         return RightPanelLayout;
