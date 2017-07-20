@@ -120,6 +120,7 @@ define(["jquery", "underscore"], function ($, _) {
             });
 
             google.maps.event.addListener(this._googleOverlay, "dragend", function (mEvent) {
+                model.trigger('commit-data-no-save');
                 model.setGeometryFromOverlay(mEvent.latLng);
                 model.save();
                 /*if (model.getKey() != "markers") {

@@ -121,7 +121,6 @@ define(["marionette",
             // after the marker is placed, disable adding marker and hide the "add marker" div
             placeMarkerOnMap: function (location) {
                 if (!this.addMarkerClicked) {
-                    console.log('returning!');
                     return;
                 }
                 this.targetedModel.trigger('commit-data-no-save');
@@ -130,7 +129,7 @@ define(["marionette",
                 }
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
                 this.targetedModel.trigger('show-marker');
-                //this.targetedModel.save();
+                this.targetedModel.save();
                 this.addMarkerClicked = false;
                 this.targetedModel = null;
             },
