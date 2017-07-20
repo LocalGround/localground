@@ -285,7 +285,7 @@ svg, .fa-question-circle {
     background-color: white;
     border: 1px solid #e4e5eb;
     box-shadow: 3px 3px 1px 1px rgba(53, 76, 122, 0.06);
-    border-radius: 4px;
+    border-radius: 6px;
     width: 180px;
     padding: 10px 20px; 
     transition: 0.5s;
@@ -341,6 +341,12 @@ svg, .fa-question-circle {
 /************************************ Media Queries ************************************/
 
 @media (max-width: 700px) {
+
+    #legend {
+        height: 20px;
+        width: 90px;
+    }
+
     #presentation-title {
         width: 100%;
     }
@@ -363,5 +369,12 @@ svg, .fa-question-circle {
         padding: 0px 10px;
     }
 
+}
+
+@media (min-width: 701px) {
+    #legend {
+        height: auto;
+        width: auto;
+    }
 }
 
