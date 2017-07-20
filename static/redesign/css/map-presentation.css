@@ -294,6 +294,19 @@ svg, .fa-question-circle {
    /* min-height: 200px;*/
 }
 
+.legend-top {
+    margin-bottom: 22px;
+}
+
+.legend-top-text {
+    display: inline;
+}
+
+.legend-toggle {
+    margin-top: 4px; 
+    float: right;
+}
+
 #presentation-title {
     /*background-color: #354c7a;*/
     position: fixed;

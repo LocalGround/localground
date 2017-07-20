@@ -1596,17 +1596,18 @@ tbody .failure-message, tbody .success-message {
     background: none;
 }
 .carousel-photo .carouselbox {
-    border-bottom: solid 1px #CCC;
+   /* border-bottom: solid 1px #CCC;*/
 }
 
 .carousel-photo .active-slide, .carousel-video .active-slide {
     min-height: 370px;
-    border: solid 1px #CCC;
-    background: white;
+ /*   border: solid 1px #CCC;  */
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .active-slide.short {
     min-height: 340px !important;
+    background: rgba(255, 255, 255, 0.5)
 }
 
 .active-slide li {
@@ -1900,8 +1901,8 @@ td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o, .fa-plus-square-o {
 /********************************/
 .carouselbox.audio {
     height: 180px;
-    background: white;
-    border: solid 1px #EEE;
+    background: rgba(255, 255, 255, 0.5);
+ /*   border: solid 1px #EEE; */
 }
 
 .carouselbox .audio-detail {
@@ -2150,7 +2151,7 @@ audio {
 }
 
 .audio-detail .audio-container {
-    background: #FFFFFF;
+ /*   background: #FFFFFF; */
 }
 
 /*************************** UPLOAD MEDIA  **************************/

@@ -177,12 +177,13 @@ define([
                 panelStyles: this.model.get('panel_styles')
             });
 
-/*
+
             var paragraph = this.model.get('panel_styles').paragraph;
             if (paragraph) {
+                console.log(paragraph.color);
                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
             }
-        */
+        
             this.sideRegion.show(this.detailView);
             this.unhideDetail();
         },
