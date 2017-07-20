@@ -124,9 +124,8 @@ define(["marionette",
                     console.log('returning!');
                     return;
                 }
-                console.log(this.targetedModel);
+                this.targetedModel.trigger('commit-data-no-save');
                 if (!this.targetedModel.get("id")) {
-                    //this.app.vent.trigger('save-model');
                     this.targetedModel.collection.add(this.targetedModel);
                 }
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());

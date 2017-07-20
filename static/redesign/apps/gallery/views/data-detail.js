@@ -131,6 +131,7 @@ define([
         },
 
         deleteMarkerTrigger: function () {
+            this.commitForm();
             this.app.vent.trigger("delete-marker", this.model);
         },
 
@@ -149,7 +150,8 @@ define([
         },
 
         modelEvents: {
-            change: "render"
+            change: "render",
+            "commit-data-no-save": "commitForm"
         },
         switchToViewMode: function () {
             this.app.mode = "view";
@@ -248,15 +250,18 @@ define([
             });
             this.model.rotate(rotation);
         },
-
-        saveModel: function () {
-            var errors = this.form.commit({ validate: true }),
-                that = this,
-                isNew = this.model.get("id") ? false : true;
+        commitForm: function () {
+            var errors = this.form.commit({ validate: true });
             if (errors) {
                 console.log("errors: ", errors);
                 return;
             }
+        },
+
+        saveModel: function () {
+            var that = this,
+                isNew = this.model.get("id") ? false : true;
+            this.commitForm();
             this.model.save(null, {
                 success: function (model, response) {
                     //perhaps some sort of indication of success here?
