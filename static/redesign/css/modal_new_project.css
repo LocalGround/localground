@@ -41,7 +41,6 @@
 }
 
 .modal-content.spreadsheet {
-    position: absolute;
     vertical-align: middle;
     border-radius: 6px;
     background-color: #fefefe;
@@ -49,7 +48,7 @@
     width: 800px;
     height: auto;
     transform-origin: center;
-    transform: translate(25%, 25%);
+    transform: translate(20%, 40%);
 }
 
 .modal-body {
