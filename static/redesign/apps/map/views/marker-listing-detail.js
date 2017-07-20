@@ -19,7 +19,8 @@ define(["jquery",
                  * 4. displayOverlay (optional; defaults to false)
                 */
                 _.extend(this, opts);
-                this.stateKey += this.model.get("overlay_type") + "-" + this.model.id;
+                this.stateKey = this.app.selectedProjectID + '-marker-listing-' +
+                    this.model.get("overlay_type") + "-" + this.model.id;
                 this.restoreState();
 
                 //add event listeners:

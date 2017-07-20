@@ -9,7 +9,6 @@ define(["marionette",
     function (Marionette, _, Handlebars, Icon, MarkerOverlays, PanelVisibilityExtensions, MarkerListingDetail, ListTemplate) {
         'use strict';
         var MarkerListing = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
-            stateKey: 'marker-listing-',
             isShowing: true,
             displayOverlays: true, // initialize all overlays as hidden. ChildView will override.
             overlays: null,
@@ -21,6 +20,7 @@ define(["marionette",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.stateKey = this.app.selectedProjectID + '-marker-listing-';
                 this.title = this.title || this.collection.getTitle();
                 this.typePlural = this.collection.getDataType();
                 this.initDisplayFlags();
