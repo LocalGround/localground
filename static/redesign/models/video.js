@@ -1,9 +1,9 @@
 define(["models/base"], function (Base) {
     "use strict";
     /**
-     * A Backbone Model class for the Audio datatype.
-     * @class Audio
-     * @see <a href="//localground.org/api/0/audio/">//localground.org/api/0/audio/</a>
+     * A Backbone Model class for the Video datatype.
+     * @class Video
+     * @see <a href="//localground.org/api/0/video/">//localground.org/api/0/video/</a>
      */
     var Video = Base.extend({
         schema: {
