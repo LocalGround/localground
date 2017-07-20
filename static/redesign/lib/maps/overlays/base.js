@@ -128,7 +128,6 @@ define(["marionette",
 
         /** shows the google.maps overlay on the map. */
         show: function () {
-            console.log('show!');
             this.displayOverlay = true;
             this._overlay.displayOverlay = true;
             this._overlay.show();

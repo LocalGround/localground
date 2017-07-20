@@ -38,6 +38,7 @@ define(["jquery",
             },
             modelEvents: {
                 'saved': 'render',
+                'change:id': 'saveStateAndRender',
                 'do-hover': 'hoverHighlight',
                 'clear-hover': 'clearHoverHighlight',
                 'change:active': 'render',
@@ -46,6 +47,12 @@ define(["jquery",
                 'hide-marker': 'redrawHidden'
             },
             tagName: "li",
+            saveStateAndRender: function () {
+                //reset state key:
+                this.stateKey = 'marker-listing-' + this.model.get("overlay_type") + "-" + this.model.id;
+                this.saveState();
+                this.render();
+            },
             templateHelpers: function () {
                 var opts = {
                     dataType: this.model.getDataTypePlural(),
@@ -95,6 +102,7 @@ define(["jquery",
                 this.render();
             },
             saveState: function () {
+                console.log("saving: ", this.model.get("name"), this.displayOverlay);
                 this.app.saveState(this.stateKey, {
                     displayOverlay: this.displayOverlay
                 });
@@ -109,7 +117,9 @@ define(["jquery",
                 } else {
                     this.model.trigger('hide-marker');
                 }
-                this.saveState();
+                console.log("restoring: ", this.model.get("name"), this.displayOverlay);
+                console.log("restoring: ", state);
+                //this.saveState();
             }
         });
         return MarkerListingDetail;
