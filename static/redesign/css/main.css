@@ -1390,7 +1390,7 @@ tbody .failure-message, tbody .success-message {
     width: calc(100% - 280px);
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
     .left #map-panel {
         width: 100%;
     }
