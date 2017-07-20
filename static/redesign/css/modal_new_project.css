@@ -26,6 +26,22 @@
 /* Modal Content */
 .modal-content {
     position: absolute;
+    top: 45%;
+    transform: translateY(-50%);
+    margin: 20px auto 0;
+    width: 80%;
+    vertical-align: middle;
+    border-radius:6px;
+    background-color: #fefefe;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
+    margin: 20px auto 0;
+    width:800px;
+    height: auto;
+    position: relative;
+}
+
+.modal-content.spreadsheet {
+    position: absolute;
     vertical-align: middle;
     border-radius: 6px;
     background-color: #fefefe;
@@ -35,8 +51,6 @@
     transform-origin: center;
     transform: translate(25%, 25%);
 }
-
-
 
 .modal-body {
     background-color: #fafafc;
