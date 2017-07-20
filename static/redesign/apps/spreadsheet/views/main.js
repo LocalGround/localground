@@ -287,17 +287,40 @@ define(["jquery",
 
 
             videoRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-
-
-                var video_model = this.getModelFromCell(instance, rowIndex);
-
-                /*
-                  Unsure on how to get the video to show up on spreadsheet
-
-                  However, there is a video player HTML template complete with basic mode
-                  but what pieces of jquery + HTML will be needed to get the video to show up
-                */
-                $(td).html(player.$el.addClass("spreadsheet"));
+                var that = this,
+                    i = document.createElement('i'),
+                    model = this.getModelFromCell(instance, rowIndex),
+                    modalImg,
+                    captionText,
+                    modal,
+                    span;
+                if (model.get('video_provider') === "vimeo") {
+                    i.className = "fa fa-3x fa-vimeo";
+                } else {
+                    i.className = "fa fa-3x fa-youtube";
+                }
+                i.onclick = function () {
+                    alert('show iframe');
+                    /*TODO: modal w/IFRAME:
+                        1. make modal visible
+                        2. set iframe src
+                    */
+                    /*
+                    
+                    <div id="videoModal" class="modal">
+                        <!--Close Button-->
+                        <span class="close big" onclick="document.getElementById('myModal').style.display='none'">
+                          &times;
+                        </span>
+                        <!--Modal Content (Image)-->
+                        <iframe class="modal-content" id="video-iframe"></iframe>
+                        <!--Modal Caption (Image Text)-->
+                        <div id="caption"></div>
+                      </div>
+                    */
+                };
+                Handsontable.Dom.empty(td);
+                td.appendChild(i);
                 return td;
             },
 
@@ -604,8 +627,9 @@ define(["jquery",
                            { data: "name", renderer: "html"},
                            { data: "caption", renderer: "html"},
                            // As for this, will need to replace with video and videoRenderer
-                           { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                           //
+                           { data: "video_provider", renderer: this.videoRenderer.bind(this), readOnly: true, disableVisualSelection: true},
+                           //{ data: "video_provider", type: "text"},
+                           //{ data: "video_id", type: "text"},
                            { data: "tags", renderer: "html" },
                            { data: "attribution", renderer: "html"},
                            { data: "owner", readOnly: true},
