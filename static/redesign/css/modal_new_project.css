@@ -26,18 +26,15 @@
 /* Modal Content */
 .modal-content {
     position: absolute;
-    top: 45%;
-    transform: translateY(-50%);
-    margin: 20px auto 0;
-    width: 80%;
     vertical-align: middle;
-    border-radius:6px;
+    border-radius: 6px;
     background-color: #fefefe;
     box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
-    margin: 20px auto 0;
-    width:800px;
+    width: 800px;
     height: auto;
-    position: relative;
+    transform-origin: center;
+    transform: translate(25%, 25%);
+}
 
 }
 

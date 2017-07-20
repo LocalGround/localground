@@ -293,6 +293,7 @@ define(["jquery",
                     modalImg,
                     captionText,
                     modal,
+                    videoFrame,
                     span;
                 if (model.get('video_provider') === "vimeo") {
                     i.className = "fa fa-3x fa-vimeo";
@@ -300,13 +301,31 @@ define(["jquery",
                     i.className = "fa fa-3x fa-youtube";
                 }
                 i.onclick = function () {
-                    alert('show iframe');
+                    //alert('show iframe');
+
+                    modal = document.getElementById("videoModal");
+                    captionText = document.getElementById("caption");
+                    videoFrame = document.getElementById("video-iframe");
+                    videoFrame.src = ""
+                    if (model.get("video_provider") == "vimeo"){
+                        // Vimeo
+                        videoFrame.src = "https://player.vimeo.com/video/" + model.get("video_id");
+                    } else {
+                        // Youtube
+                        videoFrame.src = "https://www.youtube.com/embed/" +
+                        model.get("video_id") + "?ecver=1";
+                    }
+
+                    modal.style.display = "block";
+                    console.log(model);
+
+
                     /*TODO: modal w/IFRAME:
                         1. make modal visible
                         2. set iframe src
                     */
                     /*
-                    
+
                     <div id="videoModal" class="modal">
                         <!--Close Button-->
                         <span class="close big" onclick="document.getElementById('myModal').style.display='none'">
