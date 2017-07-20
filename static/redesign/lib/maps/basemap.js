@@ -131,7 +131,7 @@ define(["marionette",
                 }
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
                 this.targetedModel.trigger('show-marker');
-                this.targetedModel.save();
+                //this.targetedModel.save();
                 this.addMarkerClicked = false;
                 this.targetedModel = null;
             },
