@@ -171,6 +171,7 @@ define([
                 lat =  this.model.get("geometry").coordinates[1].toFixed(4);
                 lng =  this.model.get("geometry").coordinates[0].toFixed(4);
             }
+        
             return {
                 mode: this.app.mode,
                 dataType: this.dataType,

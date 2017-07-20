@@ -82,6 +82,30 @@ ul{
     border: none !important;
 }
 
+@media (max-width: 700px) {
+    .left #marker-detail-panel {
+        border-right: 1px solid #e4e5eb;
+        box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
+        width: 400px;
+        background-color: #fafafc;
+        z-index: 40;
+        flex: none;
+        overflow: scroll;
+        height:100%;
+        transition: 0.5s;
+        padding-top: 0px; 
+        border: none !important;
+        bottom: 0px;
+        max-height: 200px;
+        position: fixed;
+        float: right;
+        width: 100%;
+    }
+}
+
+    
+
+
 .none #map-panel {
     width: 100%;
 }
@@ -263,8 +287,11 @@ svg, .fa-question-circle {
     box-shadow: 3px 3px 1px 1px rgba(53, 76, 122, 0.06);
     border-radius: 4px;
     width: 180px;
-    padding: 20px;
-    min-height: 200px;
+    padding: 10px 20px; 
+    transition: 0.5s;
+    overflow-y: hidden;
+
+   /* min-height: 200px;*/
 }
 
 #presentation-title {
@@ -309,3 +336,32 @@ svg, .fa-question-circle {
 .layer-entry {
     margin-bottom: 15px;
 }
+
+
+/************************************ Media Queries ************************************/
+
+@media (max-width: 700px) {
+    #presentation-title {
+        width: 100%;
+    }
+    .carousel {
+        margin-top: 5px;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    #marker-detail-panel .section {
+        margin: 0 auto;
+        max-width: 400px;
+        padding: 0px 10px;
+    }
+
+    table.preview-properties {
+        margin-top: 5px;
+        max-width: 400px;
+        margin: 10 auto;
+        padding: 0px 10px;
+    }
+
+}
+
