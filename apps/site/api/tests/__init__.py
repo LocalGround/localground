@@ -18,3 +18,4 @@ from localground.apps.site.api.tests.sql_parse_tests import *
 from localground.apps.site.api.tests.tags_tests import *
 from localground.apps.site.api.tests.sharing_tests import *
 from localground.apps.site.api.tests.user_profile_tests import *
+from localground.apps.site.api.tests.video_tests import *
