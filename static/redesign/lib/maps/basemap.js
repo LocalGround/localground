@@ -121,13 +121,16 @@ define(["marionette",
             // after the marker is placed, disable adding marker and hide the "add marker" div
             placeMarkerOnMap: function (location) {
                 if (!this.addMarkerClicked) {
+                    console.log('returning!');
                     return;
                 }
+                console.log(this.targetedModel);
                 if (!this.targetedModel.get("id")) {
                     this.app.vent.trigger('save-model');
                     this.targetedModel.collection.add(this.targetedModel);
                 }
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
+                this.targetedModel.trigger('show-marker');
                 this.targetedModel.save();
                 this.addMarkerClicked = false;
                 this.targetedModel = null;
@@ -175,7 +178,7 @@ define(["marionette",
             },
 
             deleteMarker: function (model) {
-                model.trigger('hide-marker');
+                //model.trigger('hide-marker');
                 model.set("geometry", null);
                 model.save();
             },
