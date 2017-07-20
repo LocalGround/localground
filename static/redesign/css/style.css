@@ -219,6 +219,16 @@ table.preview-properties {
     margin-bottom: 40px;
     width: calc(100% - 40px);
 }
+/*
+@media (max-width: 700px) {
+    table.preview-properties {
+        margin-top: 5px;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+}
+*/
+
 table.preview-properties td:first-child {
     text-align: right;
     width: 33%;

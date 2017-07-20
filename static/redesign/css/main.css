@@ -1390,6 +1390,12 @@ tbody .failure-message, tbody .success-message {
     width: calc(100% - 280px);
 }
 
+@media (max-width: 900px) {
+    .left #map-panel {
+        width: 100%;
+    }
+}
+
 .none #map-panel {
     width: 100%;
 }
@@ -1533,6 +1539,7 @@ tbody .failure-message, tbody .success-message {
     margin: 20px 0px 0px 0px;
     border: solid 1px transparent;
 }
+
 .carouselbox {
     font-family: helvetica,sans-serif;
     font-size: 14px;

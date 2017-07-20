@@ -169,11 +169,20 @@ define([
             }
             model.set("active", true);
             this.vent.trigger('highlight-marker', model);
+            console.log(opts, opts.dataType, dataEntry, this.model);
             this.detailView = new DataDetail({
                 model: model,
                 app: this,
-                dataType: opts.dataType
+                dataType: opts.dataType,
+                panelStyles: this.model.get('panel_styles')
             });
+
+/*
+            var paragraph = this.model.get('panel_styles').paragraph;
+            if (paragraph) {
+               $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
+            }
+        */
             this.sideRegion.show(this.detailView);
             this.unhideDetail();
         },
