@@ -15,7 +15,7 @@ def get_metadata():
         "caption": {"type": "memo", "required": False, "read_only": False},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'video_id': {'read_only': False, 'required': True, 'type': 'string'},
-        'video_provider': {'read_only': False, 'required': True, 'type': 'string'},
+        'video_provider': {'read_only': False, 'required': True, 'type': 'choice'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
