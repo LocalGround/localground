@@ -420,9 +420,9 @@ define(
                 new Audio({id: 3, name: "Flo Rida", tags: ['florida', 'hip hop'], project_id: 2, overlay_type: "audio", caption: "caption 3", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3" })
             ]);
             this.videos = new Videos([
-                new Video({id: 10, name: "Rihanna Gibbons", caption: "caption 1", tags: [], video_id: "DVrTf5yOW5s", video_provider: "youtube", geometry: { type: "Point", coordinates: [-122.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"}),
-                new Video({id: 10, name: "Silver Lining", caption: "caption 2", tags: [], video_id: "DKL4X0PZz7M", video_provider: "youtube", geometry: { type: "Point", coordinates: [-121.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"}),
-                new Video({id: 10, name: "How to recount your dreams", caption: "caption 1", tags: [], video_id: "225222634", video_provider: "vimeo", geometry: { type: "Point", coordinates: [-120.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"})
+                new Video({id: 11, name: "Rihanna Gibbons", caption: "caption 1", tags: [], video_id: "DVrTf5yOW5s", video_provider: "youtube", geometry: { type: "Point", coordinates: [-122.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"}),
+                new Video({id: 12, name: "Silver Lining", caption: "caption 2", tags: [], video_id: "DKL4X0PZz7M", video_provider: "youtube", geometry: { type: "Point", coordinates: [-121.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"}),
+                new Video({id: 13, name: "How to recount your dreams", caption: "caption 1", tags: [], video_id: "225222634", video_provider: "vimeo", geometry: { type: "Point", coordinates: [-120.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"})
             ]);
             this.map_images = new MapImages([
                 new MapImage({ id: 1, name: "Map 1", tags: ['parks', 'oakland'], project_id: 1, caption: "Caption1", overlay_type: "map-image", geometry: { type: "Polygon", coordinates: [[[ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ]]]} }),
