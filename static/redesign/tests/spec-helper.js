@@ -449,6 +449,13 @@ define(
                 new Marker({id: 2, name: "POI 2", tags: ['friend\'s house', 'tag1'], project_id: 1, overlay_type: "marker" }),
                 new Marker({id: 3, name: "POI 3", tags: ['coffee shop', 'tag1'], project_id: 2, overlay_type: "marker" })
             ]);
+            
+            this.marker = this.markers.at(0)
+            var children = _.clone(this.project.get("children"));
+            delete children.form_1;
+            delete children.markers;
+            delete children.map_images;
+            this.marker.set("children", children);
             this.form_1 = new Records([
                 new Record({ id: 1, test_text: "Blue team", display_name: "Blue team", tags: ['my house'], test_integer: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, photo_count: 3, audio_count: 1 }),
                 new Record({id: 2, test_text: "Green team", tags: ['friend\'s house', 'tag1'], test_integer: 8, project_id: 1, overlay_type: "form_1", photo_count: 1, audio_count: 2 }),
@@ -535,6 +542,12 @@ define(
                             id: "markers",
                             overlay_type: "marker",
                             data: this.markers.toJSON()
+                        },
+                        videos: {
+                            name: "Videos",
+                            id: "videos",
+                            overlay_type: "video",
+                            data: this.videos.toJSON()
                         },
                         form_1: {
                             name: "Team Members",
