@@ -75,4 +75,12 @@ define([
             });
         });
 
+        describe("Data Detail: Featured Image", function(){
+            it("stub test", function(){
+                expect(1).toEqual(1);
+            });
+        }){
+
+        }
+
     });
