@@ -22,7 +22,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 _.extend(this, opts);
                 if (this.mode == "photos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
-                    this.collection = new Photos(this.model.get("children").photos.data);
+                    var photos = this.model.get("children").photos.data;
+                    this.collection = new Photos(this.filterFeaturedImage(photos));
                 } else if (this.mode == "videos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
                     this.collection = new Videos(this.model.get("children").videos.data);
@@ -37,6 +38,18 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 }
                 this.navigate(0);
             },
+            filterFeaturedImage: function(photos){
+                var photosClone = _.clone(photos)
+                var featuredImageID = this.featuredImage.id;
+                for (var i = 0 ; i < photosClone.length; ++i){
+                    if (featuredImageID == photosClone[i].id){
+                        console.log("take out featured image");
+                        photosClone.splice(i,1);
+                    }
+                }
+                return photosClone;
+            },
+
             showArrows: function () {
                 if (this.mode === "audio" || this.collection.length === 1) {
                     return;
@@ -65,7 +78,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 return {
                     mode: this.mode,
                     app: this.app,
-                    num_children: this.collection.length
+                    num_children: this.collection.length,
+                    parent: this
                 };
             },
             getChildView: function () {

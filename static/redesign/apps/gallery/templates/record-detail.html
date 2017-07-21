@@ -6,12 +6,17 @@
 
     <div class="section">
         <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
+
+        {{#ifnotequal featuredImageID undefined}}
+            <img class="photo featured-photo" src='{{featuredImagePath}}'>
+        {{/ifnotequal}}
         {{#if caption }}
             <p style="font-style: italic">{{ caption }}</p>
         {{/if}}
 
         <div class="carousel carousel-video" style="background-color: #{{paragraph.backgroundColor}}"></div>
 
+        <!-- This is where we need to make changes inside to ensure that featured image is not part of the carousel -->
         <div class="carousel carousel-photo" style="background-color: #{{paragraph.backgroundColor}}"></div>
 
         <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}"></div>

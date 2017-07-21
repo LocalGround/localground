@@ -44,6 +44,7 @@ define([
             }
             return Handlebars.compile(SiteTemplate);
         },
+        featuredImageID: null,
         initialize: function (opts) {
             _.extend(this, opts);
             this.bindFields();
@@ -168,12 +169,12 @@ define([
             this.render();
         },
         templateHelpers: function () {
-            var lat, lng, paragraph;
+            var lat, lng, paragraph, featuredImage;
             if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
                 lat =  this.model.get("geometry").coordinates[1].toFixed(4);
                 lng =  this.model.get("geometry").coordinates[0].toFixed(4);
             }
-    
+
             if (this.panelStyles) {
                 console.log(this.panelStyles);
                 paragraph = this.panelStyles.paragraph;
@@ -181,6 +182,11 @@ define([
                 this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'rgba(255, 255, 255, 0.5)')
             }
+
+
+
+            featuredImage = this.getFeaturedImage();
+
             return {
                 mode: this.app.mode,
                 dataType: this.dataType,
@@ -189,9 +195,32 @@ define([
                 screenType: this.app.screenType,
                 lat: lat,
                 lng: lng,
-                paragraph: paragraph
+                paragraph: paragraph,
+                featuredImageID: this.featuredImageID,
+                featuredImagePath: featuredImage ? featuredImage.path_medium: null
             };
         },
+
+        getFeaturedImage: function(){
+
+            if (this.model.get("children") == undefined){
+                return "null";
+            }
+            this.featuredImageID = this.model.get("extras").featured_image;
+            var featureID = this.featuredImageID;
+
+            var featuredImage = null;
+            var photoData = this.model.get("children").photos.data;
+            for (var i = 0; i < photoData.length; ++i){
+                if (photoData[i].id == featureID){
+                    featuredImage = photoData[i];
+                    break
+                }
+            }
+            return featuredImage;
+
+        },
+
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
             var c;
@@ -199,6 +228,7 @@ define([
                 c = new Carousel({
                     model: this.model,
                     app: this.app,
+                    featuredImage: this.getFeaturedImage() != undefined ? this.getFeaturedImage(): null,
                     mode: "photos"
                 });
                 this.$el.find(".carousel-photo").append(c.$el);
