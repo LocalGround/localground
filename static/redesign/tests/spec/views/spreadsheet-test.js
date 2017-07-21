@@ -25,6 +25,13 @@ define([
                         &times;\
                       </span>\
                     </div>\
+                    <div id="videoModal" class="modal">\
+                      <span class="close big" onclick="document.getElementById(\'myModal\').style.display=\'none\'">\
+                        &times;\
+                      </span>\
+                      <iframe class="modal-content spreadsheet" id="video-iframe" style="width: 70%; height: 480px;"></iframe>\
+                      <div id="caption"></div>\
+                    </div>\
                     ');
             spyOn(scope.app.vent, 'trigger').and.callThrough();
 
@@ -47,6 +54,7 @@ define([
             spyOn(Spreadsheet.prototype, "buttonRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "mediaCountRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "ratingRenderer").and.callThrough();
+            spyOn(Spreadsheet.prototype, "showVideoModal").and.callThrough();
 
             // column functions
             spyOn(Spreadsheet.prototype, "getColumns").and.callThrough();
@@ -412,6 +420,21 @@ define([
                 newSpreadsheet.collection = this.videos;
                 newSpreadsheet.renderSpreadsheet();
                 expect(Spreadsheet.prototype.videoRenderer).toHaveBeenCalledTimes(6);
+            });
+
+            it("Successfully displays the video from clicking on icon", function(){
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                newSpreadsheet.collection = this.videos;
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.showVideoModal).toHaveBeenCalledTimes(0);
+                console.log(fixture.find("i.fa-vimeo, i.fa-youtube"));
+                var $testTumbnailYT = $(fixture.find("i.fa-vimeo, i.fa-youtube").get(0));
+                //console.log(fixture.find("i.fa-vimeo, i.fa-youtube").get(0));
+                console.log($testTumbnailYT);
+                $testTumbnailYT.trigger('click');
+                expect(Spreadsheet.prototype.showVideoModal).toHaveBeenCalledTimes(1);
+
+                //expect(1).toEqual(-1);
             });
 
             it("Go through the Media Count renderer", function () {
