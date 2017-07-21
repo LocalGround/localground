@@ -103,7 +103,6 @@ define(["jquery",
                 this.render();
             },
             saveState: function () {
-                console.log("saving: ", this.model.get("name"), this.displayOverlay);
                 this.app.saveState(this.stateKey, {
                     displayOverlay: this.displayOverlay
                 });
@@ -116,10 +115,10 @@ define(["jquery",
                 if (this.displayOverlay) {
                     this.model.trigger('show-marker');
                 } else {
-                    this.model.trigger('hide-marker');
+                   this.model.trigger('hide-marker');
                 }
-                console.log("restoring: ", this.model.get("name"), this.displayOverlay);
-                console.log("restoring: ", state);
+                //console.log("restoring: ", this.model.get("name"), this.displayOverlay);
+                //console.log("restoring: ", state);
                 //this.saveState();
             }
         });

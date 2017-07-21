@@ -293,14 +293,14 @@ define([
                 expect(BaseModel.prototype.trigger).toHaveBeenCalledTimes(1);
                 expect(BaseModel.prototype.trigger).toHaveBeenCalledWith('show-marker');
                 expect(MarkerView.prototype.render).toHaveBeenCalledTimes(1);
-                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(1);
+                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(0);
                 markerView.hideMarker();
                 expect(markerView.displayOverlay).toBeFalsy();
                 expect(BaseModel.prototype.trigger).toHaveBeenCalledWith('hide-marker');
                 expect(MarkerView.prototype.redrawHidden).toHaveBeenCalledTimes(1);
                 expect(BaseModel.prototype.trigger).toHaveBeenCalledTimes(2);
                 expect(MarkerView.prototype.render).toHaveBeenCalledTimes(2);
-                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(2);
+                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(1);
             });
 
             it("shows marker when showMarker called", function () {
@@ -308,7 +308,7 @@ define([
                 expect(BaseModel.prototype.trigger).toHaveBeenCalledTimes(1);
                 expect(BaseModel.prototype.trigger).toHaveBeenCalledWith('show-marker');
                 expect(MarkerView.prototype.render).toHaveBeenCalledTimes(1);
-                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(1);
+                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(0);
                 markerView.displayOverlay = false;
                 markerView.showMarker();
                 expect(markerView.displayOverlay).toBeTruthy();
@@ -316,7 +316,7 @@ define([
                 expect(MarkerView.prototype.redrawVisible).toHaveBeenCalledTimes(1);
                 expect(BaseModel.prototype.trigger).toHaveBeenCalledTimes(2);
                 expect(MarkerView.prototype.render).toHaveBeenCalledTimes(2);
-                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(2);
+                expect(MarkerView.prototype.saveState).toHaveBeenCalledTimes(1);
             });
 
             it("gives a visual cue that the overlay is visible", function () {

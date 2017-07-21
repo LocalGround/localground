@@ -154,8 +154,8 @@ define([
 
             it("Gets styled as expected", function () {
                 fixture = setFixtures('<div id="legend"></div>').append(lle.$el);
-                expect(fixture.find('#legend').width()).toBe(180);
-                expect(fixture.find('#legend').css('border-radius')).toBe('4px');
+                expect(fixture.find('#legend').width()).toBe(120);
+                expect(fixture.find('#legend').css('border-radius')).toBe('6px');
                 expect(fixture.find('#legend').css('position')).toBe('absolute');
             });
 

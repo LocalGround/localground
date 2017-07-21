@@ -350,7 +350,6 @@ svg, .fa-question-circle {
     margin-bottom: 15px;
 }
 
-
 /************************************ Media Queries ************************************/
 
 @media (max-width: 900px) {
@@ -388,6 +387,7 @@ svg, .fa-question-circle {
     #legend {
         height: auto;
         width: auto;
+        min-width: 120px;
     }
 }
 
