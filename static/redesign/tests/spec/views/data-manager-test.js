@@ -77,7 +77,7 @@ define([
 
             it("Sets data dictionary as expected", function () {
                 var keys = Object.keys(dataManager.dataDictionary);
-                expect(keys).toEqual(['photos', 'audio', 'map_images', 'markers', 'form_1']);
+                expect(keys).toEqual(['photos', 'audio', 'map_images', 'markers', 'videos', 'form_1']);
             });
 
             it("isEmpty() Method works", function () {

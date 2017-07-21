@@ -59,7 +59,9 @@ define([
 
             it("Data Detail successfully created", function(){
                 newDataDetail = new DataDetail({
-                    app: this.app
+                    app: this.app,
+                    model: this.marker,
+                    mode: "view"
                 });
                 expect(newDataDetail).toEqual(jasmine.any(DataDetail));
             });
@@ -76,11 +78,19 @@ define([
         });
 
         describe("Data Detail: Featured Image", function(){
-            it("stub test", function(){
-                expect(1).toEqual(1);
+            beforeEach(function(){
+                initSpies(this);
             });
-        }){
 
-        }
+            it("Stub test", function(){
+                newDataDetail = new DataDetail({
+                    app: this.app,
+                    model: this.marker,
+                    mode: "view"
+                });
+                console.log(this.marker);
+                expect(1).toEqual(-1);
+            });
+        });
 
     });
