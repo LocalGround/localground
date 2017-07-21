@@ -42,7 +42,6 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.urls = [self.url]
         self.view = views.VideoInstance.as_view()
         self.metadata = get_metadata()
-        self.metadata.update({"media_file": { "type": "string", "required": False, "read_only": True }})
 
     def test_update_video_using_put(self, **kwargs):
         name, caption = 'New Video Name', 'Test description'
@@ -57,12 +56,11 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
                                 'caption': caption,
                                 'tags' : "",
                                 'video_id': '344533',
-                                'provider': 'vimeo'
+                                'video_provider': 'vimeo'
                             }),
                             HTTP_X_CSRFTOKEN=self.csrf_token,
                             content_type="application/x-www-form-urlencoded"
                         )
-        #print response
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_video = models.Video.objects.get(id=self.video.id)
         self.assertEqual(updated_video.name, name)
