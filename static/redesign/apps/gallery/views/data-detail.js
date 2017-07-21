@@ -168,12 +168,19 @@ define([
             this.render();
         },
         templateHelpers: function () {
-            var lat, lng;
+            var lat, lng, paragraph;
             if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
                 lat =  this.model.get("geometry").coordinates[1].toFixed(4);
                 lng =  this.model.get("geometry").coordinates[0].toFixed(4);
             }
-        
+    
+            if (this.panelStyles) {
+                console.log(this.panelStyles);
+                paragraph = this.panelStyles.paragraph;
+                console.log(paragraph.backgroundColor);
+                this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
+                this.$el.find('.active-slide').css('background', 'rgba(255, 255, 255, 0.5)')
+            }
             return {
                 mode: this.app.mode,
                 dataType: this.dataType,
@@ -181,7 +188,8 @@ define([
                 name: this.model.get("name") || this.model.get("display_name"),
                 screenType: this.app.screenType,
                 lat: lat,
-                lng: lng
+                lng: lng,
+                paragraph: paragraph
             };
         },
         viewRender: function () {

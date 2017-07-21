@@ -1,16 +1,14 @@
 define(["marionette",
         "underscore",
         "handlebars",
-        "apps/presentation/views/legend-layer-entry"
+        "apps/presentation/views/legend-layer-entry",
+        "text!../templates/legend-container.html"
     ],
-    function (Marionette, _, Handlebars, LayerEntryView) {
+    function (Marionette, _, Handlebars, LayerEntryView, LegendTemplate) {
         'use strict';
         var LayerListManager = Marionette.CompositeView.extend({
             tagName: 'div',
-            template: Handlebars.compile(
-                '<div style="margin-bottom: 22px"><p style="display: inline;">Legend</p><i class="fa fa-angle-down legend-toggle" aria-hidden="true" style="margin-top: 4px; float: right"></i></div>'
-                
-                ),
+            template: Handlebars.compile(LegendTemplate),
             initialize: function (opts) {
                 _.extend(this, opts);
                 console.log("Layer List Manager Called");
