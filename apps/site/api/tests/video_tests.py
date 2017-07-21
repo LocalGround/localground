@@ -37,7 +37,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=True)
-        self.video = models.Video.objects.get(id=1)
+        self.video = self.create_video(self.user, self.project)
         self.url = '/api/0/videos/%s/' % self.video.id
         self.urls = [self.url]
         self.view = views.VideoInstance.as_view()
@@ -55,20 +55,24 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
                                 'geometry': point,
                                 'name': name,
                                 'caption': caption,
-                                'extras': ExtrasGood,
-                                'tags' : ""
+                                'tags' : "",
+                                'video_id': '344533',
+                                'provider': 'vimeo'
                             }),
                             HTTP_X_CSRFTOKEN=self.csrf_token,
                             content_type="application/x-www-form-urlencoded"
                         )
+        #print response
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_video = models.Video.objects.get(id=self.video.id)
         self.assertEqual(updated_video.name, name)
         self.assertEqual(updated_video.description, caption)
         self.assertEqual(response.data.get("caption"), caption)
-        self.assertEqual(json.loads(ExtrasGood), updated_video.extras)
         self.assertEqual(updated_video.geometry.y, point['coordinates'][1])
         self.assertEqual(updated_video.geometry.x, point['coordinates'][0])
+        self.assertEqual(updated_video.video_id, '344533')
+        self.assertEqual(updated_video.provider, 'vimeo')
+
 
     def test_update_video_using_patch(self, **kwargs):
         import json
@@ -89,7 +93,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         video_id = self.video.id
 
         # ensure video exists:
-        models.video.objects.get(id=video_id)
+        models.Video.objects.get(id=video_id)
 
         # delete video:
         response = self.client_user.delete(self.url,
@@ -106,3 +110,5 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         except models.Video.DoesNotExist:
             # trigger assertion success if video is removed
             self.assertEqual(1, 1)
+
+#handle crazy data "This video does not exist", "Video ID is in the incorrect format"

@@ -86,6 +86,8 @@ class ViewMixinAPI(ModelMixin):
             #ensure that dictionary is not empty:
             self.assertFalse(not fields)
             
+            print fields, self.metadata
+
             #ensure that the two dictionaries are the same length:
             self.assertEqual(len(fields.keys()), len(self.metadata.keys()))
             
