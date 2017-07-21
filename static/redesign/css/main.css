@@ -1702,13 +1702,18 @@ li.current .photo {
 
 hover-to-show{
     display: none;
-    marginTop: 0px;
+    margin-top: 0px;
     position: relative;
     top: 120px;
     zIndex: 100;
     color: #ddd;
-    fontSize: 48px;
+    font-size: 48px;
+}
 
+i.fa.fa-star-o.featured, i.fa.fa-star.featured {
+    margin: 80px 0px 0px 5px;
+    color: white;
+    cursor: pointer;
 }
 
 .carouselbox.prev{

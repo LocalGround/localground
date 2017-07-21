@@ -172,7 +172,9 @@ define([
 
         events: {
             'click #add-media-button': 'showMediaBrowser',
-            'click .detach_media': 'detachModel'
+            'click .detach_media': 'detachModel',
+            'click .fa-star-o': 'addStar',
+            'click .fa-star': 'removeStar'
         },
 
         tagName: "div",
@@ -181,10 +183,7 @@ define([
             Backbone.Form.editors.Base.prototype.initialize.call(this, options);
             this.app = this.form.app;
             this.listenTo(this.model, 'add-models-to-marker', this.attachModels);
-            var template = Handlebars.compile(MediaTemplate);
-            this.$el.append(template({
-                children: this.value
-            }));
+            this.template = Handlebars.compile(MediaTemplate);
         },
         attachModels: function (models) {
             var errors = this.form.commit({ validate: true }),
@@ -250,10 +249,19 @@ define([
             return null;
         },
         render: function () {
+            //re-render the child template:
+            this.$el.empty().append(this.template({
+                children: this.model.get("children"),
+                featured_image: this.getFeaturedImage()
+            }));
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
             this.renderAudioPlayers();
             this.enableMediaReordering();
             return this;
+        },
+        getFeaturedImage: function () {
+            var extras = this.model.get("extras") || {};
+            return extras.featured_image;
         },
         renderAudioPlayers: function () {
             var audio_attachments = [],
@@ -303,6 +311,19 @@ define([
                 $(this).width($(this).width());
             });
             return ui;
+        },
+        addStar: function (e) {
+            var $elem = $(e.target),
+                extras = this.model.get("extras") || {};
+            extras.featured_image = parseInt($elem.attr("data-id"), 10);
+            this.model.set("extras", extras);
+            this.model.save();
+        },
+        removeStar: function () {
+            var extras = this.model.get("extras") || {};
+            delete extras.featured_image;
+            this.model.set("extras", extras);
+            this.model.save();
         }
     });
 });
