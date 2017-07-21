@@ -226,9 +226,6 @@ define(["jquery",
                                 model.set(key, newVal);
                                 model.save(model.changedAttributes(), { patch: true, wait: true});
                             }
-                        } else {
-                            console.log("[" + source + "], but no value change. Ignored.");
-                            console.log("old value:", oldVal, "new value:", newVal);
                         }
                     }
                 }
@@ -310,7 +307,6 @@ define(["jquery",
                 var modal = document.getElementById("videoModal");
                 var captionText = document.getElementById("caption");
                 var videoFrame = document.getElementById("video-iframe");
-                console.log(modal, captionText, videoFrame);
                 videoFrame.src = ""
                 if (model.get("video_provider") == "vimeo"){
                     // Vimeo

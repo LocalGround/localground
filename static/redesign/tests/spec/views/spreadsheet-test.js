@@ -288,7 +288,6 @@ define([
             describe("Spreadsheet Create Field Form Tests", function(){
                 it ("Opens the Modal Window", function(){
                     expect(this.app.vent.trigger).toHaveBeenCalledTimes(0);
-                    //console.log($(".modal").is(":visible"));
                     triggerAddField();
                     expect(this.app.vent.trigger).toHaveBeenCalledTimes(1);
 
@@ -302,7 +301,6 @@ define([
             describe("Spreadsheet Show Media Browser Tests", function(){
                 it ("Opens the Modal Window", function(){
                     expect(this.app.vent.trigger).toHaveBeenCalledTimes(0);
-                    //console.log($(".modal").is(":visible"));
                     triggerMediaBrowser();
                     expect(this.app.vent.trigger).toHaveBeenCalledTimes(newSpreadsheet.collection.length);
 
@@ -315,8 +313,6 @@ define([
                     spyOn(window, 'confirm').and.returnValue(false);
                     triggerDeleteField();
                     expect(Spreadsheet.prototype.deleteField).toHaveBeenCalledTimes(newSpreadsheet.fields.length * 2);
-                    // We discovered that there are two of those delete column items per header, but one is on top
-                    // of the other, hence we had to multiply by two for number of available fields
                 });
                 it("Does delete field", function(){
                     spyOn(window, 'confirm').and.returnValue(true);
@@ -344,7 +340,6 @@ define([
             var triggerCarouselAudio = function(){
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 newSpreadsheet.renderSpreadsheet();
-                console.log($('.carousel-audio'));
                 expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(0);
                 newSpreadsheet.$el.find('.carousel-audio').trigger('click');
                 expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(6);
@@ -353,7 +348,6 @@ define([
             var triggerCarouselPhoto = function(){
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 newSpreadsheet.renderSpreadsheet();
-                console.log($('.carousel-photo'));
                 expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(0);
                 newSpreadsheet.$el.find('.carousel-photo').trigger('click');
                 expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(6);
@@ -362,7 +356,6 @@ define([
             var triggerCarouselVideo = function(){
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 newSpreadsheet.renderSpreadsheet();
-                console.log($('.carousel-video'));
                 expect(Spreadsheet.prototype.carouselVideo).toHaveBeenCalledTimes(0);
                 newSpreadsheet.$el.find('.carousel-video').trigger('click');
                 expect(Spreadsheet.prototype.carouselVideo).toHaveBeenCalledTimes(6);
@@ -427,10 +420,7 @@ define([
                 newSpreadsheet.collection = this.videos;
                 newSpreadsheet.renderSpreadsheet();
                 expect(Spreadsheet.prototype.showVideoModal).toHaveBeenCalledTimes(0);
-                console.log(fixture.find("i.fa-vimeo, i.fa-youtube"));
                 var $testTumbnailYT = $(fixture.find("i.fa-vimeo, i.fa-youtube").get(0));
-                //console.log(fixture.find("i.fa-vimeo, i.fa-youtube").get(0));
-                console.log($testTumbnailYT);
                 $testTumbnailYT.trigger('click');
                 expect(Spreadsheet.prototype.showVideoModal).toHaveBeenCalledTimes(1);
 
@@ -448,7 +438,6 @@ define([
             });
 
             it("Go through the Rating renderer", function () {
-                console.log("Testing the Ratings Renderer");
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 expect(Spreadsheet.prototype.ratingRenderer).toHaveBeenCalledTimes(0);
                 newSpreadsheet.fields = this.fields;
