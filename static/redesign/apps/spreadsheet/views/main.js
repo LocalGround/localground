@@ -319,24 +319,6 @@ define(["jquery",
                     modal.style.display = "block";
                     console.log(model);
 
-
-                    /*TODO: modal w/IFRAME:
-                        1. make modal visible
-                        2. set iframe src
-                    */
-                    /*
-
-                    <div id="videoModal" class="modal">
-                        <!--Close Button-->
-                        <span class="close big" onclick="document.getElementById('myModal').style.display='none'">
-                          &times;
-                        </span>
-                        <!--Modal Content (Image)-->
-                        <iframe class="modal-content" id="video-iframe"></iframe>
-                        <!--Modal Caption (Image Text)-->
-                        <div id="caption"></div>
-                      </div>
-                    */
                 };
                 Handsontable.Dom.empty(td);
                 td.appendChild(i);
