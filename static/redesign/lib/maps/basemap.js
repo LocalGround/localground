@@ -38,6 +38,11 @@ define(["marionette",
                 $.extend(this, opts);
                 this.mapID = this.mapID || 'map';
                 this.restoreState();
+                // allow initialization parameter to override
+                // restore state parameter for basemap
+                if (opts.activeMapTypeID) {
+                    this.activeMapTypeID = opts.activeMapTypeID;
+                }
                 this.tilesets = this.app.dataManager.tilesets;
                 this.listenTo(this.tilesets, 'reset', this.onShow);
                 Marionette.View.prototype.initialize.call(this);
@@ -323,7 +328,7 @@ define(["marionette",
                 if (this.tilesets.length == 0) {
                     return;
                 }
-                this.restoreState();
+                //this.restoreState();
                 this.renderMap();
                 this.addControls();
                 this.addEventHandlers();

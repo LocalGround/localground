@@ -98,8 +98,8 @@ define([
             };
             this.basemapView = new Basemap({
                 app: this,
+                activeMapTypeID: this.model.get("basemap"),
                 showSearchControl: false,
-                minZoom: 13,
                 zoomControlOptions: {
                     style: google.maps.ZoomControlStyle.SMALL,
                     position: google.maps.ControlPosition.LEFT_BOTTOM
@@ -114,6 +114,7 @@ define([
             this.mapRegion.show(this.basemapView);
             this.basemapView.setCenter(center);
             this.basemapView.setZoom(this.model.get("zoom"));
+            //this.basemapView.setActiveMapType(this.model.get("basemap"));
         },
 
         showMapTitle: function () {
