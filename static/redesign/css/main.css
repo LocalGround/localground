@@ -1668,6 +1668,13 @@ tbody .failure-message, tbody .success-message {
     display: inline;
 }
 
+img.photo.featured-photo {
+    max-width: 300px;
+    max-height: 250px;
+    display: block;
+    margin: 10px auto;
+}
+
 li.current .photo {
     height: 100%;
     width: 100%;

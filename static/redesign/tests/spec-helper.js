@@ -603,15 +603,27 @@ define(
 
             this.project = this.projects.at(0);
 
-
             this.marker = this.markers.at(0);
-            var children = _.clone(this.project.get("children"));
-            delete children.form_1;
-            delete children.markers;
-            delete children.map_images;
-            this.marker.set("children", children);
-            console.log(this.marker);
-
+            this.marker.set("children", {
+                photos: {
+                    name: "Photos",
+                    id: "photos",
+                    overlay_type: "photo",
+                    data: this.photos.toJSON()
+                },
+                audio: {
+                    name: "Audio",
+                    id: "audio",
+                    overlay_type: "audio",
+                    data: this.audioFiles.toJSON()
+                },
+                videos: {
+                    name: "Videos",
+                    id: "videos",
+                    overlay_type: "video",
+                    data: this.videos.toJSON()
+                }
+            });
 
             this.print = this.prints.at(0);
 
