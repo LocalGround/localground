@@ -5,12 +5,13 @@ define([
     rootDir + "models/form",
     rootDir + "collections/photos",
     rootDir + "collections/audio",
+    rootDir + "collections/videos",
     rootDir + "collections/markers",
     rootDir + "collections/records",
     rootDir + "lib/carousel/carousel",
     "tests/spec-helper"
 ],
-    function (Handlebars, Spreadsheet, Form, Photos, Audio, Markers, Records, Carousel) {
+    function (Handlebars, Spreadsheet, Form, Photos, Audio, Videos, Markers, Records, Carousel) {
         'use strict';
         var fixture;
         var newSpreadsheet;
@@ -42,6 +43,7 @@ define([
             // functions involving renderers
             spyOn(Spreadsheet.prototype, "thumbnailRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "audioRenderer").and.callThrough();
+            spyOn(Spreadsheet.prototype, "videoRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "buttonRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "mediaCountRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "ratingRenderer").and.callThrough();
@@ -58,6 +60,7 @@ define([
             spyOn(Spreadsheet.prototype, "deleteField").and.callThrough();
             spyOn(Spreadsheet.prototype, "carouselAudio").and.callThrough();
             spyOn(Spreadsheet.prototype, "carouselPhoto").and.callThrough();
+            spyOn(Spreadsheet.prototype, "carouselVideo").and.callThrough();
 
             // Carousel to catch initalize
             spyOn(Carousel.prototype, "initialize");
@@ -95,6 +98,15 @@ define([
                     });
                     expect(newSpreadsheet.collection.length).toBe(this.audioFiles.length);
                     expect(newSpreadsheet.collection).toEqual(jasmine.any(Audio));
+                });
+
+                it("Successfully set video collection", function () {
+                    newSpreadsheet = new Spreadsheet({
+                        app: this.app,
+                        collection: this.videos
+                    });
+                    expect(newSpreadsheet.collection.length).toBe(this.videos.length);
+                    expect(newSpreadsheet.collection).toEqual(jasmine.any(Videos));
                 });
 
                 it("Successfully set markers collection", function () {
@@ -339,12 +351,25 @@ define([
                 expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(6);
             };
 
+            var triggerCarouselVideo = function(){
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                newSpreadsheet.renderSpreadsheet();
+                console.log($('.carousel-video'));
+                expect(Spreadsheet.prototype.carouselVideo).toHaveBeenCalledTimes(0);
+                newSpreadsheet.$el.find('.carousel-video').trigger('click');
+                expect(Spreadsheet.prototype.carouselVideo).toHaveBeenCalledTimes(6);
+            };
+
             it("Shows the Carousel Audio", function(){
                 triggerCarouselAudio();
             });
 
             it("Shows the Carousel Photo", function(){
                 triggerCarouselPhoto();
+            });
+
+            it("Shows the Carousel Video", function(){
+                triggerCarouselVideo();
             });
         });
 
@@ -379,6 +404,14 @@ define([
                 newSpreadsheet.collection = this.audioFiles;
                 newSpreadsheet.renderSpreadsheet();
                 expect(Spreadsheet.prototype.audioRenderer).toHaveBeenCalledTimes(6);
+            });
+
+            it("Go through the Video renderer", function () {
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(0);
+                newSpreadsheet.collection = this.videos;
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.videoRenderer).toHaveBeenCalledTimes(6);
             });
 
             it("Go through the Media Count renderer", function () {
