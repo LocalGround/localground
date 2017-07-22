@@ -19,6 +19,7 @@ define(["marionette",
             activeMapTypeID: 1,
             minZoom: 1,
             maxZoom: 22,
+            mapID: 'map',
             disableStateMemory: false,
             activeModel: null,
             addMarkerClicked: false,
@@ -34,25 +35,22 @@ define(["marionette",
             template: false,
 
             initialize: function (opts) {
-                this.opts = opts;
-                $.extend(this, opts);
-                this.mapID = this.mapID || 'map';
-                this.restoreState();
-                // allow initialization parameter to override
-                // restore state parameter for basemap
-                if (opts.activeMapTypeID) {
-                    this.activeMapTypeID = opts.activeMapTypeID;
-                }
+                // set initial properties (init params override state params):
+                this.app = opts.app;
                 this.tilesets = this.app.dataManager.tilesets;
+                this.restoreState();
+                $.extend(this, opts);
+
+                //add event listeners:
                 this.listenTo(this.tilesets, 'reset', this.onShow);
-                Marionette.View.prototype.initialize.call(this);
-                this.render();
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
                 this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
-                //this.listenTo(this.app.vent, 'tiles-loaded', this.showMapTypesDropdown);
                 this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
                 this.listenTo(this.app.vent, 'add-rectangle', this.initDrawingManager);
+
+                // call parent:
+                Marionette.View.prototype.initialize.call(this);
             },
 
             point2LatLng: function (point) {
@@ -200,8 +198,8 @@ define(["marionette",
                     //mapTypeId: this.activeMapTypeID,
                     rotateControlOptions: this.rotateControlOptions,
                     streetViewControlOptions: this.streetViewControlOptions,
-                    zoom: this.defaultLocation.zoom,
-                    center: this.defaultLocation.center
+                    zoom: this.zoom || this.defaultLocation.zoom,
+                    center: this.center || this.defaultLocation.center
                 };
 
                 if (!this.$el.find("#" + this.mapID).get(0)) {
