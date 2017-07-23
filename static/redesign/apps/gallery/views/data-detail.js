@@ -372,7 +372,7 @@ define([
             e.preventDefault();
         },
         updateStreetViewButton: function () {
-            this.$el.find('.streetview').html('Show Street');
+            this.$el.find('.streetview').html('Show Street View');
         }
     });
     return MediaEditor;
