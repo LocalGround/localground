@@ -28,7 +28,8 @@ define([
             'click .rotate-right': 'rotatePhoto',
             "click #add-geometry": "activateMarkerTrigger",
             "click #delete-geometry": "deleteMarkerTrigger",
-            "click #add-rectangle": "activateRectangleTrigger"
+            "click #add-rectangle": "activateRectangleTrigger",
+            "click .streetview": 'showStreetView'
         },
         getTemplate: function () {
             if (this.dataType == "photos") {
@@ -52,6 +53,7 @@ define([
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
+            this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
         },
         activateRectangleTrigger: function () {
             $('body').css({ cursor: 'crosshair' });
@@ -357,6 +359,20 @@ define([
             $(e.target).removeClass("show").addClass("hide");
             this.app.vent.trigger('unhide-detail');
             e.preventDefault();
+        },
+        showStreetView: function (e) {
+            var $elem = $(e.target);
+            if ($elem.html() === "Show Street") {
+                this.app.vent.trigger('show-streetview', this.model);
+                $elem.html('Show Map');
+            } else {
+                $elem.html('Show Street');
+                this.app.vent.trigger('hide-streetview');
+            }
+            e.preventDefault();
+        },
+        updateStreetViewButton: function () {
+            this.$el.find('.streetview').html('Show Street');
         }
     });
     return MediaEditor;

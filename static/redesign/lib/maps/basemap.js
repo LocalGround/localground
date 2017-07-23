@@ -26,6 +26,7 @@ define(["marionette",
             targetedModel: null,
             tileManager: null,
             userProfile: null,
+            panorama: null,
             //todo: populate this from user prefs:
             defaultLocation: {
                 zoom: 15,
@@ -48,6 +49,8 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
                 this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
                 this.listenTo(this.app.vent, 'add-rectangle', this.initDrawingManager);
+                this.listenTo(this.app.vent, 'show-streetview', this.showStreetView);
+                this.listenTo(this.app.vent, 'hide-streetview', this.hideStreetView);
 
                 // call parent:
                 Marionette.View.prototype.initialize.call(this);
@@ -209,6 +212,36 @@ define(["marionette",
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.mapID),
                     mapOptions);
                 this.initTileManager();
+            },
+            showStreetView: function (model) {
+                var that = this;
+                this.panorama = new google.maps.StreetViewPanorama(
+                    document.getElementById('map'),
+                    {
+                        position: {
+                            lat: model.get("geometry").coordinates[1],
+                            lng: model.get("geometry").coordinates[0]
+                        },
+                        addressControlOptions: {
+                            position: google.maps.ControlPosition.BOTTOM_CENTER
+                        },
+                        linksControl: false,
+                        panControl: true,
+                        addressControl: false,
+                        enableCloseButton: true
+                    }
+                );
+                google.maps.event.addListener(this.panorama, 'visible_changed', function () {
+                    if (!this.getVisible()) {
+                        that.app.vent.trigger('streetview-hidden');
+                    }
+                });
+                this.map.setStreetView(this.panorama);
+            },
+            hideStreetView: function () {
+                if (this.panorama) {
+                    this.panorama.setVisible(false);
+                }
             },
             initTileManager: function () {
                 if (this.tilesets.length == 0 || !this.map) {
