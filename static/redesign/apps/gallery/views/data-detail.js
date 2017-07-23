@@ -362,11 +362,11 @@ define([
         },
         showStreetView: function (e) {
             var $elem = $(e.target);
-            if ($elem.html() === "Show Street") {
+            if ($elem.html() === "Show Street View") {
                 this.app.vent.trigger('show-streetview', this.model);
                 $elem.html('Show Map');
             } else {
-                $elem.html('Show Street');
+                $elem.html('Show Street View');
                 this.app.vent.trigger('hide-streetview');
             }
             e.preventDefault();
