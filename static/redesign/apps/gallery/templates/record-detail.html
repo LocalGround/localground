@@ -24,8 +24,6 @@
         {{#if audio_count }}
             <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}"></div>
         {{/if}}
-        
-        <button class="button button-tertiary streetview">Show Street View</button>
     </div>
 
     {{#if fields }}
@@ -54,6 +52,7 @@
         {{/each}}
         </div>
     {{/if}}
+    <button class="button button-tertiary streetview">Show Street View</button>
 
     {{#compare screenType "presentation" operator="!="}}
         <div class="save-options">
@@ -93,6 +92,8 @@
     {{/ifequal}}
 
     <div id="model-form"></div>
+    
+    <button class="button button-tertiary streetview">Show Street View</button>
 
     <div class = "save-options">
         <button class="save-model button-primary pull-right">Save</button>

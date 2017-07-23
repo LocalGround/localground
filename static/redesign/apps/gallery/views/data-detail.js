@@ -201,7 +201,7 @@ define([
         },
 
         getFeaturedImage: function () {
-            if (!this.model.get("children") || !this.model.get("extras")) {
+            if (!this.model.get("children") || !this.model.get("extras") || !this.model.get("children").photos) {
                 return null;
             }
             var featuredID = this.model.get("extras").featured_image,

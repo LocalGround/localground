@@ -214,7 +214,10 @@ define(["marionette",
                 this.initTileManager();
             },
             showStreetView: function (model) {
-                var that = this;
+                this.activeModel = model;
+                var that = this,
+                    extras = model.get("extras") || {},
+                    pov = extras.pov || { heading: 180, pitch: -10 };
                 this.panorama = new google.maps.StreetViewPanorama(
                     document.getElementById('map'),
                     {
@@ -225,6 +228,7 @@ define(["marionette",
                         addressControlOptions: {
                             position: google.maps.ControlPosition.BOTTOM_CENTER
                         },
+                        pov: pov,
                         linksControl: false,
                         panControl: true,
                         addressControl: false,
@@ -236,6 +240,26 @@ define(["marionette",
                         that.app.vent.trigger('streetview-hidden');
                     }
                 });
+                if (this.app.screenType === "map") {
+                    google.maps.event.addListener(this.panorama, 'pov_changed', function () {
+                        if (that.app.mode !== "edit" || that.activeModel.get("overlay_type") !== "marker") {
+                            return;
+                        }
+                        if (that.povTimer) {
+                            clearTimeout(that.povTimer);
+                        }
+                        that.povTimer = setTimeout(function () {
+                            var pov = {
+                                    heading: that.panorama.getPov().heading,
+                                    pitch: that.panorama.getPov().pitch
+                                },
+                                extras = that.activeModel.get("extras") || {};
+                            extras.pov = pov;
+                            that.activeModel.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
+                            that.activeModel.set("extras", extras);
+                        }, 500);
+                    });
+                }
                 this.map.setStreetView(this.panorama);
             },
             hideStreetView: function () {
