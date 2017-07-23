@@ -152,7 +152,7 @@ define([
         },
 
         modelEvents: {
-            change: "render",
+            "change:children": "render",
             "commit-data-no-save": "commitForm"
         },
         switchToViewMode: function () {

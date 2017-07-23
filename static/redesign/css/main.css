@@ -1707,16 +1707,6 @@ li.current .photo {
     border: none;
 }
 
-hover-to-show{
-    display: none;
-    margin-top: 0px;
-    position: relative;
-    top: 120px;
-    zIndex: 100;
-    color: #ddd;
-    font-size: 48px;
-}
-
 i.fa.fa-star-o.featured, i.fa.fa-star.featured {
     margin: 80px 0px 0px 5px;
     color: white;
