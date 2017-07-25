@@ -27,7 +27,8 @@ define(["jquery",
                 'click .addMedia': 'showMediaBrowser',
                 'click .delete_column' : 'deleteField',
                 'click .carousel-photo': 'carouselPhoto',
-                'click .carousel-audio': 'carouselAudio'
+                'click .carousel-audio': 'carouselAudio',
+                'click .carousel-video': 'carouselVideo'
             },
             foo: "bar",
             initialize: function (opts) {
@@ -284,10 +285,51 @@ define(["jquery",
                 return td;
             },
 
+
+            videoRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
+                var that = this,
+                    i = document.createElement('i'),
+                    model = this.getModelFromCell(instance, rowIndex),
+                    modalImg,
+                    captionText,
+                    modal,
+                    videoFrame,
+                    span;
+                if (model.get('video_provider') === "vimeo") {
+                    i.className = "fa fa-3x fa-vimeo";
+                } else {
+                    i.className = "fa fa-3x fa-youtube";
+                }
+                i.onclick = function () {
+                    //alert('show iframe');
+
+                    modal = document.getElementById("videoModal");
+                    captionText = document.getElementById("caption");
+                    videoFrame = document.getElementById("video-iframe");
+                    videoFrame.src = ""
+                    if (model.get("video_provider") == "vimeo"){
+                        // Vimeo
+                        videoFrame.src = "https://player.vimeo.com/video/" + model.get("video_id");
+                    } else {
+                        // Youtube
+                        videoFrame.src = "https://www.youtube.com/embed/" +
+                        model.get("video_id") + "?ecver=1";
+                    }
+
+                    modal.style.display = "block";
+                    console.log(model);
+
+                };
+                Handsontable.Dom.empty(td);
+                td.appendChild(i);
+                return td;
+            },
+
             mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
                 var model = this.getModelFromCell(instance, row),
                     photoCount = model.get("photo_count") || 0,
                     audioCount = model.get("audio_count") || 0,
+                    videoCount = model.get("video_count") || 0,
                     i;
                 td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
                 for (i = 0; i < photoCount; ++i) {
@@ -297,6 +339,10 @@ define(["jquery",
                 for (i = 0; i < audioCount; ++i) {
                     td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
                     <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
+                }
+                for (i = 0; i < videoCount; ++i) {
+                    td.innerHTML += "<a class = 'carousel-video' row-index = '"+row+"' col-index = '"+col+"'>\
+                    <i class='fa fa-file-video-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
 
             },
@@ -342,6 +388,39 @@ define(["jquery",
                     var c = new Carousel({
                         model: that.currentModel,
                         mode: "audio",
+                        app: that.app
+                    });
+                    //that.$el.find(".carousel").append(c.$el);
+
+                    $("#carouselModal").empty();
+                    $("#carouselModal").append(c.$el);
+                    var $span = $("<span class='close big'>&times;</span>");
+                    $span.click(function () {
+                        $("#carouselModal").hide();
+                        //document.getElementById("carouselModal").style.display='none';
+                    })
+                    $("#carouselModal").append($span);
+
+                    // Get the modal
+                    var modal = document.getElementById('carouselModal');
+
+                    modal.style.display = "block";
+                }});
+            },
+
+
+
+            carouselVideo: function(e){
+
+                var that = this;
+
+                var row_idx = $(e.target).attr("row-index");
+                this.currentModel = this.collection.at(parseInt(row_idx));
+                //any extra view logic. Carousel functionality goes here
+                this.currentModel.fetch({success: function(){
+                    var c = new Carousel({
+                        model: that.currentModel,
+                        mode: "videos",
                         app: that.app
                     });
                     //that.$el.find(".carousel").append(c.$el);
@@ -453,6 +532,8 @@ define(["jquery",
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"];
                     case "photos":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
+                    case "videos":
+                        return ["ID", "Lat", "Lng", "Title", "Caption", "Video", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
                         cols = ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Media", "Delete"];
                         return cols;
@@ -478,6 +559,8 @@ define(["jquery",
                     case "audio":
                         return [30, 80, 80, 200, 400, 300, 200, 100, 80, 100];
                     case "photos":
+                        return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
+                    case "videos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
                         return [30, 80, 80, 200, 400, 200, 120, 100, 100];
@@ -537,6 +620,22 @@ define(["jquery",
                             { data: "owner", readOnly: true},
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                        ];
+                   case "videos":
+                      return [
+                           { data: "id", readOnly: true},
+                           { data: "lat", type: "numeric", format: '0.00000' },
+                           { data: "lng", type: "numeric", format: '0.00000' },
+                           { data: "name", renderer: "html"},
+                           { data: "caption", renderer: "html"},
+                           // As for this, will need to replace with video and videoRenderer
+                           { data: "video_provider", renderer: this.videoRenderer.bind(this), readOnly: true, disableVisualSelection: true},
+                           //{ data: "video_provider", type: "text"},
+                           //{ data: "video_id", type: "text"},
+                           { data: "tags", renderer: "html" },
+                           { data: "attribution", renderer: "html"},
+                           { data: "owner", readOnly: true},
+                           { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
+                      ];
                     case "markers":
                        return [
                             { data: "id", readOnly: true},

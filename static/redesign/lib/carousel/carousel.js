@@ -1,9 +1,10 @@
 define(["jquery", "underscore", "marionette", "handlebars",
-        "collections/photos", "collections/audio", "collections/videos", "lib/audio/audio-player",
-        "text!../carousel/carousel-container.html", "text!../carousel/carousel-container-audio.html",
+        "lib/audio/audio-player",
+        "text!../carousel/carousel-container.html",
+        "text!../carousel/carousel-container-audio.html",
         "text!../carousel/carousel-video-item.html",
         "text!../carousel/carousel-photo-item.html"],
-    function ($, _, Marionette, Handlebars, Photos, Audio, Videos, AudioPlayer,
+    function ($, _, Marionette, Handlebars, AudioPlayer,
               CarouselContainerTemplate, CarouselContainerAudioTemplate, VideoItemTemplate, PhotoItemTemplate) {
         'use strict';
         var Carousel = Marionette.CompositeView.extend({
@@ -22,14 +23,10 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 _.extend(this, opts);
                 if (this.mode == "photos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
-                    var photos = this.model.get("children").photos.data;
-                    this.collection = new Photos(this.filterFeaturedImage(photos));
                 } else if (this.mode == "videos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
-                    this.collection = new Videos(this.model.get("children").videos.data);
                 } else {
                     this.template = Handlebars.compile(CarouselContainerAudioTemplate);
-                    this.collection = new Audio(this.model.get("children").audio.data);
                 }
                 this.render();
                 //this.$el.addClass('active-slide');
@@ -37,17 +34,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     this.$el.addClass('short');
                 }
                 this.navigate(0);
-            },
-            filterFeaturedImage: function(photos){
-                var photosClone = _.clone(photos)
-                var featuredImageID = this.featuredImage.id;
-                for (var i = 0 ; i < photosClone.length; ++i){
-                    if (featuredImageID == photosClone[i].id){
-                        console.log("take out featured image");
-                        photosClone.splice(i,1);
-                    }
-                }
-                return photosClone;
             },
 
             showArrows: function () {

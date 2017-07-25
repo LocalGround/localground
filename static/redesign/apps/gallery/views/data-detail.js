@@ -3,6 +3,7 @@ define([
     "underscore",
     "handlebars",
     "marionette",
+    "collections/photos", "collections/audio", "collections/videos",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
     "text!../templates/video-detail.html",
@@ -12,7 +13,7 @@ define([
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form"
-], function ($, _, Handlebars, Marionette, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
+], function ($, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
         MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
@@ -27,7 +28,8 @@ define([
             'click .rotate-right': 'rotatePhoto',
             "click #add-geometry": "activateMarkerTrigger",
             "click #delete-geometry": "deleteMarkerTrigger",
-            "click #add-rectangle": "activateRectangleTrigger"
+            "click #add-rectangle": "activateRectangleTrigger",
+            "click .streetview": 'showStreetView'
         },
         getTemplate: function () {
             if (this.dataType == "photos") {
@@ -51,6 +53,7 @@ define([
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
+            this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
         },
         activateRectangleTrigger: function () {
             $('body').css({ cursor: 'crosshair' });
@@ -151,7 +154,7 @@ define([
         },
 
         modelEvents: {
-            change: "render",
+            "change:children": "render",
             "commit-data-no-save": "commitForm"
         },
         switchToViewMode: function () {
@@ -169,23 +172,17 @@ define([
             this.render();
         },
         templateHelpers: function () {
-            var lat, lng, paragraph, featuredImage;
+            var lat, lng, paragraph;
             if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
                 lat =  this.model.get("geometry").coordinates[1].toFixed(4);
                 lng =  this.model.get("geometry").coordinates[0].toFixed(4);
             }
 
             if (this.panelStyles) {
-                console.log(this.panelStyles);
                 paragraph = this.panelStyles.paragraph;
-                console.log(paragraph.backgroundColor);
                 this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
-                this.$el.find('.active-slide').css('background', 'rgba(255, 255, 255, 0.5)')
+                this.$el.find('.active-slide').css('background', 'rgba(255, 255, 255, 0.5)');
             }
-
-
-
-            featuredImage = this.getFeaturedImage();
 
             return {
                 mode: this.app.mode,
@@ -196,56 +193,76 @@ define([
                 lat: lat,
                 lng: lng,
                 paragraph: paragraph,
-                featuredImageID: this.featuredImageID,
-                featuredImagePath: featuredImage ? featuredImage.path_medium: null
+                featuredImage: this.getFeaturedImage(),
+                photo_count: this.getPhotos().length,
+                audio_count: this.getAudio().length,
+                video_count: this.getVideos().length,
             };
         },
 
-        getFeaturedImage: function(){
-
-            if (this.model.get("children") == undefined){
-                return "null";
+        getFeaturedImage: function () {
+            if (!this.model.get("children") || !this.model.get("extras") || !this.model.get("children").photos) {
+                return null;
             }
-            this.featuredImageID = this.model.get("extras").featured_image;
-            var featureID = this.featuredImageID;
-
-            var featuredImage = null;
-            var photoData = this.model.get("children").photos.data;
-            for (var i = 0; i < photoData.length; ++i){
-                if (photoData[i].id == featureID){
-                    featuredImage = photoData[i];
-                    break
+            var featuredID = this.model.get("extras").featured_image,
+                photoData = this.model.get("children").photos.data,
+                i;
+            for (i = 0; i < photoData.length; ++i) {
+                if (photoData[i].id === featuredID) {
+                    return photoData[i];
                 }
             }
-            return featuredImage;
-
+            return null;
         },
-
+        getPhotos: function () {
+            var children = this.model.get("children") || {},
+                featuredImage = this.getFeaturedImage(),
+                photos = children.photos ? new Photos(children.photos.data) : new Photos([]);
+            if (featuredImage) {
+                photos.remove(photos.get(featuredImage.id));
+            }
+            return photos;
+        },
+        getAudio: function () {
+            var children = this.model.get("children") || {};
+            return children.audio ? new Audio(children.audio.data) : new Audio([]);
+        },
+        getVideos: function () {
+            var children = this.model.get("children") || {};
+            return children.videos ? new Videos(children.videos.data) : new Videos([]);
+        },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
-            var c;
-            if (this.model.get("children") && this.model.get("children").photos) {
+            var c,
+                photos = this.getPhotos(),
+                videos = this.getVideos(),
+                audio = this.getAudio();
+
+            if (photos.length > 0) {
                 c = new Carousel({
                     model: this.model,
                     app: this.app,
-                    featuredImage: this.getFeaturedImage() != undefined ? this.getFeaturedImage(): null,
-                    mode: "photos"
+                    featuredImage: this.getFeaturedImage(),
+                    mode: "photos",
+                    collection: photos
                 });
                 this.$el.find(".carousel-photo").append(c.$el);
             }
-            if (this.model.get("children") && this.model.get("children").videos) {
+            if (videos.length > 0) {
                 c = new Carousel({
                     model: this.model,
                     app: this.app,
-                    mode: "videos"
+                    mode: "videos",
+                    collection: videos
                 });
                 this.$el.find(".carousel-video").append(c.$el);
             }
-            if (this.model.get("children") && this.model.get("children").audio) {
+            if (audio.length > 0) {
                 c = new Carousel({
                     model: this.model,
                     app: this.app,
-                    mode: "audio"
+                    mode: "audio",
+                    collection: audio
                 });
                 this.$el.find(".carousel-audio").append(c.$el);
             }
@@ -342,6 +359,20 @@ define([
             $(e.target).removeClass("show").addClass("hide");
             this.app.vent.trigger('unhide-detail');
             e.preventDefault();
+        },
+        showStreetView: function (e) {
+            var $elem = $(e.target);
+            if ($elem.html() === "Show Street View") {
+                this.app.vent.trigger('show-streetview', this.model);
+                $elem.html('Show Map');
+            } else {
+                $elem.html('Show Street View');
+                this.app.vent.trigger('hide-streetview');
+            }
+            e.preventDefault();
+        },
+        updateStreetViewButton: function () {
+            this.$el.find('.streetview').html('Show Street View');
         }
     });
     return MediaEditor;

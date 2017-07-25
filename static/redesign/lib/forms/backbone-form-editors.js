@@ -312,18 +312,26 @@ define([
             });
             return ui;
         },
+        removeStars: function () {
+            this.$el.find(".hover-to-show.featured").removeClass("featured");
+            this.$el.find("i.fa-star").removeClass("fa-star").addClass("fa-star-o");
+        },
         addStar: function (e) {
+            this.removeStars();
             var $elem = $(e.target),
                 extras = this.model.get("extras") || {};
+            $elem.removeClass("fa-star-o").addClass("fa-star");
+            $elem.parent().addClass("featured");
             extras.featured_image = parseInt($elem.attr("data-id"), 10);
+            this.model.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
             this.model.set("extras", extras);
-            this.model.save();
         },
         removeStar: function () {
+            this.removeStars();
             var extras = this.model.get("extras") || {};
             delete extras.featured_image;
+            this.model.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
             this.model.set("extras", extras);
-            this.model.save();
         }
     });
 });

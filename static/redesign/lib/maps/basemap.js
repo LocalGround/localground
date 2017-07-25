@@ -16,15 +16,17 @@ define(["marionette",
             map: null,
             showSearchControl: true,
             showDropdownControl: true,
-            activeMapTypeID: 1,
+            activeMapTypeID: 7,
             minZoom: 1,
             maxZoom: 22,
+            mapID: 'map',
             disableStateMemory: false,
             activeModel: null,
             addMarkerClicked: false,
             targetedModel: null,
             tileManager: null,
             userProfile: null,
+            panorama: null,
             //todo: populate this from user prefs:
             defaultLocation: {
                 zoom: 15,
@@ -34,20 +36,24 @@ define(["marionette",
             template: false,
 
             initialize: function (opts) {
-                this.opts = opts;
-                $.extend(this, opts);
-                this.mapID = this.mapID || 'map';
-                this.restoreState();
+                // set initial properties (init params override state params):
+                this.app = opts.app;
                 this.tilesets = this.app.dataManager.tilesets;
+                this.restoreState();
+                $.extend(this, opts);
+
+                //add event listeners:
                 this.listenTo(this.tilesets, 'reset', this.onShow);
-                Marionette.View.prototype.initialize.call(this);
-                this.render();
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
                 this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
-                //this.listenTo(this.app.vent, 'tiles-loaded', this.showMapTypesDropdown);
                 this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
                 this.listenTo(this.app.vent, 'add-rectangle', this.initDrawingManager);
+                this.listenTo(this.app.vent, 'show-streetview', this.showStreetView);
+                this.listenTo(this.app.vent, 'hide-streetview', this.hideStreetView);
+
+                // call parent:
+                Marionette.View.prototype.initialize.call(this);
             },
 
             point2LatLng: function (point) {
@@ -195,8 +201,8 @@ define(["marionette",
                     //mapTypeId: this.activeMapTypeID,
                     rotateControlOptions: this.rotateControlOptions,
                     streetViewControlOptions: this.streetViewControlOptions,
-                    zoom: this.defaultLocation.zoom,
-                    center: this.defaultLocation.center
+                    zoom: this.zoom || this.defaultLocation.zoom,
+                    center: this.center || this.defaultLocation.center
                 };
 
                 if (!this.$el.find("#" + this.mapID).get(0)) {
@@ -206,6 +212,60 @@ define(["marionette",
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.mapID),
                     mapOptions);
                 this.initTileManager();
+            },
+            showStreetView: function (model) {
+                this.activeModel = model;
+                var that = this,
+                    extras = model.get("extras") || {},
+                    pov = extras.pov || { heading: 180, pitch: -10 };
+                this.panorama = new google.maps.StreetViewPanorama(
+                    document.getElementById('map'),
+                    {
+                        position: {
+                            lat: model.get("geometry").coordinates[1],
+                            lng: model.get("geometry").coordinates[0]
+                        },
+                        addressControlOptions: {
+                            position: google.maps.ControlPosition.BOTTOM_CENTER
+                        },
+                        pov: pov,
+                        linksControl: false,
+                        panControl: true,
+                        addressControl: false,
+                        enableCloseButton: true
+                    }
+                );
+                google.maps.event.addListener(this.panorama, 'visible_changed', function () {
+                    if (!this.getVisible()) {
+                        that.app.vent.trigger('streetview-hidden');
+                    }
+                });
+                if (this.app.screenType === "map") {
+                    google.maps.event.addListener(this.panorama, 'pov_changed', function () {
+                        if (that.app.mode !== "edit" || that.activeModel.get("overlay_type") !== "marker") {
+                            return;
+                        }
+                        if (that.povTimer) {
+                            clearTimeout(that.povTimer);
+                        }
+                        that.povTimer = setTimeout(function () {
+                            var pov = {
+                                    heading: that.panorama.getPov().heading,
+                                    pitch: that.panorama.getPov().pitch
+                                },
+                                extras = that.activeModel.get("extras") || {};
+                            extras.pov = pov;
+                            that.activeModel.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
+                            that.activeModel.set("extras", extras);
+                        }, 500);
+                    });
+                }
+                this.map.setStreetView(this.panorama);
+            },
+            hideStreetView: function () {
+                if (this.panorama) {
+                    this.panorama.setVisible(false);
+                }
             },
             initTileManager: function () {
                 if (this.tilesets.length == 0 || !this.map) {
@@ -323,7 +383,7 @@ define(["marionette",
                 if (this.tilesets.length == 0) {
                     return;
                 }
-                this.restoreState();
+                //this.restoreState();
                 this.renderMap();
                 this.addControls();
                 this.addEventHandlers();

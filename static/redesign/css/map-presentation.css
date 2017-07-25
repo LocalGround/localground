@@ -64,7 +64,7 @@ ul{
 
 .left #map-panel {
     width: calc(100% - 400px);
-    transition: 0.5s;
+    transition: 0s;
 }
 
 .left #marker-detail-panel {
@@ -77,7 +77,7 @@ ul{
     flex: none;
     overflow: scroll;
     height:100%;
-    transition: 0.5s;
+    transition: 0s;
     padding-top: 80px;
     border: none !important;
 }
@@ -92,7 +92,7 @@ ul{
         flex: none;
         overflow: scroll;
         height:100%;
-        transition: 0.5s;
+        transition: 0s;
         padding-top: 0px; 
         border: none !important;
         bottom: 0px;
@@ -102,9 +102,6 @@ ul{
         width: 100%;
     }
 }
-
-    
-
 
 .none #map-panel {
     width: 100%;

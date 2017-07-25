@@ -26,7 +26,8 @@ define(["jquery",
                     events: {
                         "click .card-img-preview" : "selectedClass",
                         "click .card-site-field" : "selectedClass",
-                        "click #audio-card" : "selectedClass"
+                        "click #audio-card" : "selectedClass",
+                        "click .video-simple" : "selectedClass"
                     },
                     selectedClass : function () {
                         $(".column").removeClass("selected-card");
@@ -34,7 +35,6 @@ define(["jquery",
                     },
 
                     selectedClassMod : function () {
-                        console.log("should trugger");
                         $(".column").addClass("selected-card");
                     },
                     onRender: function () {
@@ -91,7 +91,6 @@ define(["jquery",
 
 
             getEmptyView: function () {
-                console.log("empty", this.title);
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);

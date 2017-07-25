@@ -1238,6 +1238,13 @@ tbody .failure-message, tbody .success-message {
     height: 100%;
 }
 
+.button.button-tertiary.streetview {
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
 /*Add some padding below the content to compensate for the overlap*/
 .side-panel > div{
     padding-bottom: 80px;
@@ -1668,6 +1675,13 @@ tbody .failure-message, tbody .success-message {
     display: inline;
 }
 
+img.photo.featured-photo {
+    max-width: 300px;
+    max-height: 250px;
+    display: block;
+    margin: 10px auto;
+}
+
 li.current .photo {
     height: 100%;
     width: 100%;
@@ -1698,16 +1712,6 @@ li.current .photo {
 }
 .carousel-modal.spreadsheet .img-card {
     border: none;
-}
-
-hover-to-show{
-    display: none;
-    margin-top: 0px;
-    position: relative;
-    top: 120px;
-    zIndex: 100;
-    color: #ddd;
-    font-size: 48px;
 }
 
 i.fa.fa-star-o.featured, i.fa.fa-star.featured {

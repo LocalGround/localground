@@ -92,14 +92,15 @@ define([
         },
 
         showBasemap: function () {
-            var center = {
-                lat: this.model.get("center").coordinates[1],
-                lng: this.model.get("center").coordinates[0]
-            };
             this.basemapView = new Basemap({
                 app: this,
+                activeMapTypeID: this.model.get("basemap"),
+                zoom: this.model.get("zoom"),
+                center: {
+                    lat: this.model.get("center").coordinates[1],
+                    lng: this.model.get("center").coordinates[0]
+                },
                 showSearchControl: false,
-                minZoom: 13,
                 zoomControlOptions: {
                     style: google.maps.ZoomControlStyle.SMALL,
                     position: google.maps.ControlPosition.LEFT_BOTTOM
@@ -112,8 +113,6 @@ define([
                 }
             });
             this.mapRegion.show(this.basemapView);
-            this.basemapView.setCenter(center);
-            this.basemapView.setZoom(this.model.get("zoom"));
         },
 
         showMapTitle: function () {

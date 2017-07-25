@@ -1,7 +1,7 @@
 define(["models/video", "collections/basePageable"], function (Video, BasePageable) {
     "use strict";
     /**
-     * @class localground.collections.AudioFiles
+     * @class localground.collections.VideoFiles
      */
     var Videos = BasePageable.extend({
         model: Video,

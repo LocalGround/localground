@@ -68,6 +68,12 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 'memo': 'TextArea',
                 'json': 'TextArea'
             },
+            parse: function (resp, options) {
+                if (options && !options.parse) {
+                    return null;
+                }
+                return resp;
+            },
             initialize: function (data, opts) {
                 opts = opts || {};
                 this.generateUpdateSchema(opts.updateMetadata);
