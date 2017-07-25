@@ -46,7 +46,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         response = self.client_user.put(self.url,
                         data=urllib.urlencode({
                             'video_id': '344533',
-                            'video_provider': 'vimeo',
+                            'video_provider': 'youtube',
                             'project_id': self.project.id
                         }),
                         HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -55,7 +55,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_video = models.Video.objects.get(id=self.video.id)
         self.assertEqual(updated_video.video_id, '344533')
-        self.assertEqual(updated_video.provider, 'vimeo')
+        self.assertEqual(updated_video.provider, 'youtube')
         self.assertEqual(updated_video.project, self.project)
         self.assertEqual(updated_video.owner, self.user)
         self.assertEqual(updated_video.last_updated_by, self.user)
@@ -63,7 +63,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
     def test_throws_friendly_error_if_no_video_id_put(self, **kwargs):
         response = self.client_user.put(self.url,
                         data=urllib.urlencode({
-                            'video_id': '344533',
+                            'video_provider': 'youtube',
                             'project_id': self.project.id
                         }),
                         HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -71,14 +71,82 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
                     )
         # print response.data
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data.get('video_provider')[0], u'This field is required.')
+        self.assertEqual(response.data.get('video_id')[0], u'This field is required.')
         
     def test_throws_friendly_error_if_no_video_provider_put(self, **kwargs):
-        self.assertEqual(1, -1)
+        response = self.client_user.put(self.url,
+                                        data=urllib.urlencode({
+                                            'video_id': '344533',
+                                            'project_id': self.project.id
+                                        }),
+                                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                                        content_type="application/x-www-form-urlencoded"
+                                        )
+        # print response.data
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('video_provider')
+                         [0], u'This field is required.')
+
+
+    def test_throws_friendly_error_if_video_provider_invalid_put(self, **kwargs):
+        response = self.client_user.put(self.url,
+                                        data=urllib.urlencode({
+                                            'video_provider': 'samsclub',
+                                            'project_id': self.project.id,
+                                            'video_id': '35234'
+                                        }),
+                                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                                        content_type="application/x-www-form-urlencoded"
+                                        )
+        #print response.data
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('video_provider')[
+                         0], u'"samsclub" is not a valid choice.')
 
     def test_throws_friendly_error_if_no_project_put(self, **kwargs):
-        self.assertEqual(1, -1)
+        response = self.client_user.put(self.url,
+                                        data=urllib.urlencode({
+                                            'video_id': '344533',
+                                            'video_provider': 'youtube'
+                                        }),
+                                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                                        content_type="application/x-www-form-urlencoded"
+                                        )
+        # print response.data
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('project_id')
+                         [0], u'This field is required.')
         
+
+    def test_throws_friendly_error_if_project_id_invalid_type_put(self, **kwargs):
+        response = self.client_user.put(self.url,
+                                        data=urllib.urlencode({
+                                            'video_id': '344533',
+                                            'video_provider': 'youtube',
+                                            'project_id': 'happydays'
+                                        }),
+                                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                                        content_type="application/x-www-form-urlencoded"
+                                        )
+        #print response.data
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('project_id')
+                         [0], u'Incorrect type. Expected pk value, received unicode.')
+
+    def test_throws_friendly_error_if_project_id_invalid_put(self, **kwargs):
+        response = self.client_user.put(self.url,
+                                        data=urllib.urlencode({
+                                            'video_id': '344533',
+                                            'video_provider': 'youtube',
+                                            'project_id': 10000
+                                        }),
+                                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                                        content_type="application/x-www-form-urlencoded"
+                                        )
+        print response.data
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('project_id')
+                         [0], u'Invalid pk "10000" - object does not exist.')
 
     def test_update_video_using_put(self, **kwargs):
         name, caption = 'New Video Name', 'Test description'
