@@ -20,7 +20,7 @@ class VideoSerializer(BaseSerializer):
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
-        required=False
+        required=True
     )
 
 

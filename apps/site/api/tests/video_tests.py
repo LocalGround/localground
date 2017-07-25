@@ -17,12 +17,11 @@ def get_metadata():
         'video_id': {'read_only': False, 'required': True, 'type': 'string'},
         'video_provider': {'read_only': False, 'required': True, 'type': 'choice'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
-        'project_id': {'read_only': False, 'required': False, 'type': 'field'},
+        'project_id': {'read_only': False, 'required': True, 'type': 'field'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         "attribution": {"type": "string", "required": False, "read_only": False}
     }
-
 
 class ApiVideoListTest(test.TestCase, ViewMixinAPI):
 
@@ -42,6 +41,44 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.urls = [self.url]
         self.view = views.VideoInstance.as_view()
         self.metadata = get_metadata()
+    
+    def test_required_params_using_put(self, **kwargs):
+        response = self.client_user.put(self.url,
+                        data=urllib.urlencode({
+                            'video_id': '344533',
+                            'video_provider': 'vimeo',
+                            'project_id': self.project.id
+                        }),
+                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                        content_type="application/x-www-form-urlencoded"
+                    )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_video = models.Video.objects.get(id=self.video.id)
+        self.assertEqual(updated_video.video_id, '344533')
+        self.assertEqual(updated_video.provider, 'vimeo')
+        self.assertEqual(updated_video.project, self.project)
+        self.assertEqual(updated_video.owner, self.user)
+        self.assertEqual(updated_video.last_updated_by, self.user)
+        
+    def test_throws_friendly_error_if_no_video_id_put(self, **kwargs):
+        response = self.client_user.put(self.url,
+                        data=urllib.urlencode({
+                            'video_id': '344533',
+                            'project_id': self.project.id
+                        }),
+                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                        content_type="application/x-www-form-urlencoded"
+                    )
+        # print response.data
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('video_provider')[0], u'This field is required.')
+        
+    def test_throws_friendly_error_if_no_video_provider_put(self, **kwargs):
+        self.assertEqual(1, -1)
+
+    def test_throws_friendly_error_if_no_project_put(self, **kwargs):
+        self.assertEqual(1, -1)
+        
 
     def test_update_video_using_put(self, **kwargs):
         name, caption = 'New Video Name', 'Test description'
@@ -56,7 +93,8 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
                                 'caption': caption,
                                 'tags' : "",
                                 'video_id': '344533',
-                                'video_provider': 'vimeo'
+                                'video_provider': 'vimeo',
+                                'project_id': self.project.id
                             }),
                             HTTP_X_CSRFTOKEN=self.csrf_token,
                             content_type="application/x-www-form-urlencoded"
@@ -70,6 +108,8 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_video.geometry.x, point['coordinates'][0])
         self.assertEqual(updated_video.video_id, '344533')
         self.assertEqual(updated_video.provider, 'vimeo')
+        self.assertEqual(updated_video.owner, self.user)
+        self.assertEqual(updated_video.last_updated_by, self.user)
 
 
     def test_update_video_using_patch(self, **kwargs):
@@ -79,9 +119,10 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
             "coordinates": [12.492324113849, 41.890307434153]
         }
         response = self.client_user.patch(self.url,
-                                          data=urllib.urlencode({'geometry': point}),
-                                          HTTP_X_CSRFTOKEN=self.csrf_token,
-                                          content_type="application/x-www-form-urlencoded")
+                        data=urllib.urlencode({'geometry': point}),
+                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                        content_type="application/x-www-form-urlencoded"
+                    )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_video = models.Video.objects.get(id=self.video.id)
         self.assertEqual(updated_video.geometry.y, point['coordinates'][1])
