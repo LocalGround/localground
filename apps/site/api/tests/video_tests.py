@@ -28,11 +28,37 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.urls = ['/api/0/videos/']
+        self.url =self.urls[0]
+        self.create_video(self.user, self.project, name='YT', provider='youtube', video_id='4232534',)
+        self.create_video(self.user, self.project, name='Vim', provider='vimeo', video_id='dasdsadas',)
         self.view = views.VideoList.as_view()
         self.metadata = get_metadata()
+    
+    '''
+    Todo:
+        * ensure that POST only creates new videos when required parameters are included
+        * ensure that POST updates all DB fields when all params are specified
+    '''
+    
+    def test_video_list_returns_all_videos(self, **kwargs):
+        response = self.client_user.get(self.url)
+        results = response.data.get("results")
+        r1 = results[0]
+        r2 = results[1]
+        self.assertEqual(r1.get("name"), 'Vim')
+        self.assertEqual(r2.get("name"), 'YT')
+        self.assertEqual(len(results), 2)
+        
 
     
 class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
+      '''
+    Todo:
+        * ensure that DELETE works
+           - issues a delete request,
+           - then do a get and make sure it's gone
+        * PATCH: ensure that only the field you patch gets changed (nothing gets nulled out inadvertently)
+    '''
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=True)
@@ -143,7 +169,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        print response.data
+        #print response.data
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data.get('project_id')
                          [0], u'Invalid pk "10000" - object does not exist.')
