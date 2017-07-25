@@ -21,12 +21,19 @@ define([
         //
         //
         'use strict';
-        var fixture;
-        var newDataDetail;
+        var fixture, newDataDetail, setupDataDetail, initSpies;
 
-        var setupDataDetail;
+        setupDataDetail = function (scope, opts) {
+            var model = opts.model || scope.marker;
+            scope.app.mode = opts.mode || "edit";
+            newDataDetail = new DataDetail({
+                app: scope.app,
+                model: model
+            });
+            fixture = setFixtures('<div></div>');
+        };
 
-        var initSpies = function(scope){
+        initSpies = function (scope) {
             spyOn(DataDetail.prototype, "initialize").and.callThrough();
             spyOn(DataDetail.prototype, "render").and.callThrough();
             //
@@ -146,27 +153,53 @@ define([
                 initSpies(this);
             });
 
-            it("Successfully calls viewRender", function(){
+            it("Successfully calls viewRender", function() {
                 expect(1).toEqual(-1);
             });
 
-            it("Successfully renders video", function(){
+            it("Successfully renders video", function () {
+                // 1. initialize the dataDetail view with a video model:
+                setupDataDetail(this, {
+                    model: this.video,
+                    mode: "view"
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure that the required elements have been rendered:
+                expect(fixture.find("h4").html()).toEqual("Preview");
                 expect(1).toEqual(-1);
             });
 
-            it("Successfully renders photo", function(){
+            it("Successfully renders photo", function () {
+                setupDataDetail(this, {
+                    model: this.photo,
+                    mode: "view"
+                });
                 expect(1).toEqual(-1);
             });
 
-            it("Successfully renders audio", function(){
+            it("Successfully renders audio", function () {
+                setupDataDetail(this, {
+                    model: this.audio,
+                    mode: "view"
+                });expect(1).toEqual(-1);
+            });
+
+            it("Successfully renders record", function () {
+                setupDataDetail(this, {
+                    model: this.record,
+                    mode: "view"
+                });
                 expect(1).toEqual(-1);
             });
 
-            it("Successfully renders record", function(){
-                expect(1).toEqual(-1);
-            });
-
-            it("Successfully renders marker", function(){
+            it("Successfully renders marker", function () {
+                setupDataDetail(this, {
+                    model: this.marker,
+                    mode: "view"
+                });
                 expect(1).toEqual(-1);
             });
         });
