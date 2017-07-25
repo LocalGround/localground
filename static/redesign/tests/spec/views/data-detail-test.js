@@ -252,7 +252,7 @@ define([
             it("Successfully renders record", function () {
                 // 1. initialize the dataDetail view with a record model:
                 this.record_test = this.form_1.at(0);
-                this.record_test.set("fields", this.fields);
+                
                 console.log(this.fields);
                 setupDataDetail(this, {
                     model: this.record_test,
