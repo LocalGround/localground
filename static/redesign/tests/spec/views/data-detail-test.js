@@ -24,7 +24,7 @@ define([
         var fixture, newDataDetail, setupDataDetail, initSpies;
 
         setupDataDetail = function (scope, opts) {
-            console.log(opts.model);
+            //console.log(opts.model);
             var model = opts.model || scope.marker,
                 dataType = opts.dataType || "markers";
             scope.app.mode = opts.mode || "edit";
@@ -251,9 +251,34 @@ define([
 
             it("Successfully renders record", function () {
                 // 1. initialize the dataDetail view with a record model:
+                /*
+                Let's first test with all media types present
+                */
                 this.record_test = this.form_1.at(0);
-                
-                console.log(this.fields);
+                this.record_test.set("children", {
+                    photos: {
+                        name: "Photos",
+                        id: "photos",
+                        overlay_type: "photo",
+                        data: this.photos.toJSON()
+                    },
+                    audio: {
+                        name: "Audio",
+                        id: "audio",
+                        overlay_type: "audio",
+                        data: this.audioFiles.toJSON()
+                    },
+                    videos: {
+                        name: "Videos",
+                        id: "videos",
+                        overlay_type: "video",
+                        data: this.videos.toJSON()
+                    }
+                });
+                this.record_test.set("video_count",1);
+                this.record_test.set("photo_count",1);
+                this.record_test.set("audio_count",1);
+
                 setupDataDetail(this, {
                     model: this.record_test,
                     mode: "view"
@@ -262,6 +287,8 @@ define([
                 newDataDetail.render();
                 // 2. append the element to the fixture:
                 fixture.append(newDataDetail.$el);
+                console.log(fixture.html());
+                console.log(this.record_test);
 
                 // 3. ensure photo render correctly:
                 expect(fixture.find("h4").html()).toEqual("Preview");
@@ -271,7 +298,7 @@ define([
                 expect(fixture.html()).toContain("carousel-audio");
                 expect(fixture.find("h3").html()).toEqual(this.record_test.get("name"));
                 expect(fixture.find("p").html()).toEqual(this.record_test.get("caption"));
-                expect(1).toEqual(-1);
+                //expect(1).toEqual(-1);
             });
 
             it("Successfully renders marker", function () {
