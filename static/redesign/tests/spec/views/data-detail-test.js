@@ -141,6 +141,26 @@ define([
             });
         });
 
+        describe("Data Detail: View Render", function(){
+            beforeEach(function(){
+                initSpies(this);
+            });
+
+            it("Successfully calls viewRender", function(){
+                expect(1).toEqual(-1);
+            });
+        });
+
+        describe("Data Detail: Edit Render", function(){
+            beforeEach(function(){
+                initSpies(this);
+            });
+
+            it("Successfully calls editRender", function(){
+                expect(1).toEqual(-1);
+            });
+        });
+
         describe("Data Detail: Switching View Modes", function(){
             beforeEach(function(){
                 initSpies(this);
