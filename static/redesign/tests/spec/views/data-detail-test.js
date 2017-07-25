@@ -254,7 +254,7 @@ define([
 
             });
 
-            it("Successfully renders record", function () {
+            it("Successfully renders record with all media count", function () {
                 // 1. initialize the dataDetail view with a record model:
                 /*
                 Let's first test with all media types present
@@ -292,8 +292,6 @@ define([
                 newDataDetail.render();
                 // 2. append the element to the fixture:
                 fixture.append(newDataDetail.$el);
-                console.log(fixture.html());
-                console.log(this.record_test);
 
                 // 3. ensure photo render correctly:
                 expect(fixture.find("h4").html()).toEqual("Preview");
@@ -303,15 +301,54 @@ define([
                 expect(fixture.html()).toContain("carousel-audio");
                 expect(fixture.find("h3").html()).toEqual(this.record_test.get("name"));
                 expect(fixture.find("p").html()).toEqual(this.record_test.get("caption"));
-                //expect(1).toEqual(-1);
             });
 
-            it("Successfully renders marker", function () {
+            it("Successfully renders record without media count", function () {
+                // 1. initialize the dataDetail view with a record model:
+                this.record_test = this.form_1.at(0);
+
+                setupDataDetail(this, {
+                    model: this.record_test,
+                    mode: "view"
+
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure photo render correctly:
+                expect(fixture.find("h4").html()).toEqual("Preview");
+                expect(fixture.html()).toContain("section");
+                expect(fixture.html()).not.toContain("carousel-video");
+                expect(fixture.html()).not.toContain("carousel-photo");
+                expect(fixture.html()).not.toContain("carousel-audio");
+                expect(fixture.find("h3").html()).toEqual(this.record_test.get("name"));
+                expect(fixture.find("p").html()).toEqual(this.record_test.get("caption"));
+            });
+
+            it("Successfully renders marker with all media count", function () {
+                // 1. initialize the dataDetail view with a record model:
+                /*
+                Let's first test with all media types present
+                */
+
                 setupDataDetail(this, {
                     model: this.marker,
                     mode: "view"
+
                 });
-                expect(1).toEqual(-1);
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure photo render correctly:
+                expect(fixture.find("h4").html()).toEqual("Preview");
+                expect(fixture.html()).toContain("section");
+                expect(fixture.html()).toContain("carousel-video");
+                expect(fixture.html()).toContain("carousel-photo");
+                expect(fixture.html()).toContain("carousel-audio");
+                expect(fixture.find("h3").html()).toEqual(this.marker.get("name"));
+                expect(fixture.find("p").html()).toEqual(this.marker.get("caption"));
             });
         });
 
