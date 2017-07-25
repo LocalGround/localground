@@ -127,6 +127,20 @@ define([
             });
         });
 
+        describe("Data Detail: Model Functions", function(){
+            beforeEach(function(){
+                initSpies(this);
+            });
+
+            it("Successfully calls saveModel", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully calls deleteModel", function(){
+                expect(1).toEqual(-1);
+            });
+        });
+
         describe("Data Detail: Switching View Modes", function(){
             beforeEach(function(){
                 initSpies(this);
