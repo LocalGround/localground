@@ -93,4 +93,70 @@ define([
             });
         });
 
+        describe("Data Detail: Other Functions", function(){
+            beforeEach(function(){
+                initSpies(this);
+            });
+
+            it("Successfully calls activateRectangleTrigger", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully calls activateMarkerTrigger", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully calls deleteMarkerTrigger", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully calls bindFields", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully calls rotatePhoto", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully calls commitForm", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully calls doNotDisplay", function(){
+                expect(1).toEqual(-1);
+            });
+        });
+
+        describe("Data Detail: Switching View Modes", function(){
+            beforeEach(function(){
+                initSpies(this);
+            });
+
+            it("Successfully calls switchToViewMode", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully calls switchToEditMode", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully calls switchToAddMode", function(){
+                expect(1).toEqual(-1);
+            });
+        });
+
+        describe("Data Detail: Map Functions", function(){
+            beforeEach(function(){
+                initSpies(this);
+            });
+
+            it("Successfully calls hideMapPanel", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully calls showMapPanel", function(){
+                expect(1).toEqual(-1);
+            });
+        });
+
     });
