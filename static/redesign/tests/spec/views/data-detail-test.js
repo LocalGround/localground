@@ -24,11 +24,14 @@ define([
         var fixture, newDataDetail, setupDataDetail, initSpies;
 
         setupDataDetail = function (scope, opts) {
-            var model = opts.model || scope.marker;
+            console.log(opts.model);
+            var model = opts.model || scope.marker,
+                dataType = opts.dataType || "markers";
             scope.app.mode = opts.mode || "edit";
             newDataDetail = new DataDetail({
                 app: scope.app,
-                model: model
+                model: model,
+                dataType: dataType
             });
             fixture = setFixtures('<div></div>');
         };
@@ -157,11 +160,13 @@ define([
                 expect(1).toEqual(-1);
             });
 
-            it("Successfully renders video", function () {
+            it("Successfully renders video YouTube", function () {
                 // 1. initialize the dataDetail view with a video model:
+                this.videoYouTube = this.videos.at(0);
                 setupDataDetail(this, {
-                    model: this.video,
-                    mode: "view"
+                    model: this.videoYouTube,
+                    mode: "view",
+                    dataType: "videos"
                 });
                 newDataDetail.render();
                 // 2. append the element to the fixture:
@@ -169,6 +174,26 @@ define([
 
                 // 3. ensure that the required elements have been rendered:
                 expect(fixture.find("h4").html()).toEqual("Preview");
+                expect(fixture.html()).toContainText(this.videoYouTube.get("name"));
+                expect(fixture.html()).toContainText(this.videoYouTube.get("caption"));
+                expect(fixture).toContainElement("iframe");
+                expect(fixture.find("iframe").attr("src")).toEqual("https://www.youtube.com/embed/" + this.videoYouTube.get("video_id") + "?ecver=1");
+                expect(fixture.find("iframe").attr("height")).toEqual("200");
+                expect(fixture.find("iframe").attr("width")).toEqual("350");
+            });
+
+            it("Successfully renders video Vimeo", function () {
+                // 1. initialize the dataDetail view with a video model:
+                this.videoVimeo = this.videos.get(2);
+                setupDataDetail(this, {
+                    model: this.videoVime,
+                    mode: "view"
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure iframe render correctly:
                 expect(1).toEqual(-1);
             });
 
