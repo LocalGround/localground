@@ -334,7 +334,7 @@ define(
                 "url": "http://localhost:7777/api/0/forms/1/",
                 "id": 1,
                 "name": "Test Form",
-                "caption": "",
+                "caption": "Test Caption",
                 "overlay_type": "form",
                 "tags": [],
                 "owner": "MrJBRPG",

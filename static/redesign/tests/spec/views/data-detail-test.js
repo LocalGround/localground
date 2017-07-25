@@ -243,17 +243,34 @@ define([
                 expect(fixture.find("h4").html()).toEqual("Preview");
                 //expect(fixture.html()).toContainText(this.photo.get("name"));
                 //expect(fixture.html()).toContainText(this.photo.get("caption"));
-                //expect(fixture.html()).toContain("player-container");
-                //expect(fixture.html()).toContain("audio-detail");
+                expect(fixture.html()).toContain("player-container");
+                expect(fixture.html()).toContain("audio-detail");
                 expect(fixture).toContainElement("audio");
                 expect(1).toEqual(-1);
             });
 
             it("Successfully renders record", function () {
+                // 1. initialize the dataDetail view with a record model:
+                this.record_test = this.form_1.at(0);
+                this.record_test.set("fields", this.fields);
+                console.log(this.fields);
                 setupDataDetail(this, {
-                    model: this.record,
+                    model: this.record_test,
                     mode: "view"
+
                 });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure photo render correctly:
+                expect(fixture.find("h4").html()).toEqual("Preview");
+                expect(fixture.html()).toContain("section");
+                expect(fixture.html()).toContain("carousel-video");
+                expect(fixture.html()).toContain("carousel-photo");
+                expect(fixture.html()).toContain("carousel-audio");
+                expect(fixture.find("h3").html()).toEqual(this.record_test.get("name"));
+                expect(fixture.find("p").html()).toEqual(this.record_test.get("caption"));
                 expect(1).toEqual(-1);
             });
 
