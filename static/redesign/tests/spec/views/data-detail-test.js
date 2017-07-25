@@ -149,6 +149,26 @@ define([
             it("Successfully calls viewRender", function(){
                 expect(1).toEqual(-1);
             });
+
+            it("Successfully renders video", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully renders photo", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully renders audio", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully renders record", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully renders marker", function(){
+                expect(1).toEqual(-1);
+            });
         });
 
         describe("Data Detail: Edit Render", function(){
@@ -157,6 +177,26 @@ define([
             });
 
             it("Successfully calls editRender", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully renders video", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully renders photo", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully renders audio", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully renders record", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully renders marker", function(){
                 expect(1).toEqual(-1);
             });
         });
