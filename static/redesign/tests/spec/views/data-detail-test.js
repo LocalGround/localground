@@ -205,18 +205,48 @@ define([
             });
 
             it("Successfully renders photo", function () {
+                // 1. initialize the dataDetail view with a photo model:
+                this.photo = this.photos.at(0);
                 setupDataDetail(this, {
                     model: this.photo,
-                    mode: "view"
+                    mode: "view",
+                    dataType: "photos"
                 });
-                expect(1).toEqual(-1);
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure photo render correctly:
+                expect(fixture.find("h4").html()).toEqual("Preview");
+                expect(fixture.html()).toContainText(this.photo.get("name"));
+                expect(fixture.html()).toContainText(this.photo.get("caption"));
+                expect(fixture).toContainElement("img");
+                expect(fixture.find("img").attr("src")).toEqual(this.photo.get("path_medium"));
             });
 
             it("Successfully renders audio", function () {
+                // 1. initialize the dataDetail view with an audio model:
+                this.audio_file = this.audioFiles.at(0)
                 setupDataDetail(this, {
-                    model: this.audio,
-                    mode: "view"
-                });expect(1).toEqual(-1);
+                    model: this.audio_file,
+                    mode: "view",
+                    dataType: "audio"
+                    //audioMode: "detailed"
+                });
+                console.log(this.audio_file);
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+                console.log(fixture.html());
+
+                // 3. ensure photo render correctly:
+                expect(fixture.find("h4").html()).toEqual("Preview");
+                //expect(fixture.html()).toContainText(this.photo.get("name"));
+                //expect(fixture.html()).toContainText(this.photo.get("caption"));
+                //expect(fixture.html()).toContain("player-container");
+                //expect(fixture.html()).toContain("audio-detail");
+                expect(fixture).toContainElement("audio");
+                expect(1).toEqual(-1);
             });
 
             it("Successfully renders record", function () {

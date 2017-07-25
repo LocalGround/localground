@@ -280,12 +280,14 @@ define([
         },
 
         onRender: function () {
+            console.log(this.dataType, "On Render");
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {
                 this.editRender();
             }
             if (this.dataType == "audio") {
+                console.log("Audio player initialized")
                 var player = new AudioPlayer({
                     model: this.model,
                     audioMode: "detail",
