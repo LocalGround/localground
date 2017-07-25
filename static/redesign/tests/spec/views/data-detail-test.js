@@ -184,17 +184,24 @@ define([
 
             it("Successfully renders video Vimeo", function () {
                 // 1. initialize the dataDetail view with a video model:
-                this.videoVimeo = this.videos.get(2);
+                this.videoVimeo = this.videos.at(2);
                 setupDataDetail(this, {
-                    model: this.videoVime,
-                    mode: "view"
+                    model: this.videoVimeo,
+                    mode: "view",
+                    dataType: "videos"
                 });
                 newDataDetail.render();
                 // 2. append the element to the fixture:
                 fixture.append(newDataDetail.$el);
 
                 // 3. ensure iframe render correctly:
-                expect(1).toEqual(-1);
+                expect(fixture.find("h4").html()).toEqual("Preview");
+                expect(fixture.html()).toContainText(this.videoVimeo.get("name"));
+                expect(fixture.html()).toContainText(this.videoVimeo.get("caption"));
+                expect(fixture).toContainElement("iframe");
+                expect(fixture.find("iframe").attr("src")).toEqual("https://player.vimeo.com/video/" + this.videoVimeo.get("video_id"));
+                expect(fixture.find("iframe").attr("height")).toEqual("200");
+                expect(fixture.find("iframe").attr("width")).toEqual("350");
             });
 
             it("Successfully renders photo", function () {
