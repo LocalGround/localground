@@ -335,7 +335,6 @@ define([
                 setupDataDetail(this, {
                     model: this.marker,
                     mode: "view"
-
                 });
                 newDataDetail.render();
                 // 2. append the element to the fixture:
@@ -382,22 +381,49 @@ define([
             });
         });
 
-        describe("Data Detail: Switching View Modes", function(){
+        describe("Data Detail: Switching Modes", function(){
             beforeEach(function(){
                 initSpies(this);
             });
 
-            it("Successfully calls switchToViewMode", function(){
-                expect(1).toEqual(-1);
+            it("Successfully Switches from Edit to View Mode", function(){
+                // 1. Set up the data detail to edit mode
+                setupDataDetail(this, {
+                    model: this.marker,
+                    mode: "edit"
+                });
+
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // Now Test by clicking on view mode button
+                expect(DataDetail.prototype.switchToViewMode).toHaveBeenCalledTimes(0);
+                fixture.find(".view-mode").trigger('click');
+                expect(DataDetail.prototype.switchToViewMode).toHaveBeenCalledTimes(1);
             });
 
-            it("Successfully calls switchToEditMode", function(){
-                expect(1).toEqual(-1);
-            });
+            it("Successfully Switches from View to Edit Mode", function(){
+                // 1. Set up the data detail to view mode
+                setupDataDetail(this, {
+                    model: this.marker,
+                    mode: "view"
+                });
 
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // Now Test by clicking on edit mode button
+                expect(DataDetail.prototype.switchToEditMode).toHaveBeenCalledTimes(0);
+                fixture.find(".edit-mode").trigger('click');
+                expect(DataDetail.prototype.switchToEditMode).toHaveBeenCalledTimes(1);
+            });
+            /*
             it("Successfully calls switchToAddMode", function(){
                 expect(1).toEqual(-1);
             });
+            */
         });
 
         describe("Data Detail: Map Functions", function(){
