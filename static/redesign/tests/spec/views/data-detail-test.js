@@ -13,10 +13,11 @@ define([
     rootDir + "collections/records",
     rootDir + "lib/carousel/carousel",
     rootDir + "apps/gallery/views/data-detail",
+    rootDir + "lib/audio/audio-player",
     "tests/spec-helper"
 ],
     function (Handlebars, Spreadsheet, Form, Photos, Audio,
-              Markers, Records, Carousel, DataDetail) {
+              Markers, Records, Carousel, DataDetail, AudioPlayer) {
         //
         //
         //
@@ -42,7 +43,7 @@ define([
             //
             spyOn(DataDetail.prototype, "viewRender").and.callThrough();
             spyOn(DataDetail.prototype, "editRender").and.callThrough();
-            spyOn(DataDetail.prototype, "onRender");
+            spyOn(DataDetail.prototype, "onRender").and.callThrough();
             //
             spyOn(DataDetail.prototype, "saveModel").and.callThrough();
             spyOn(DataDetail.prototype, "deleteModel").and.callThrough();
@@ -59,6 +60,8 @@ define([
             spyOn(DataDetail.prototype, "switchToEditMode").and.callThrough();
             spyOn(DataDetail.prototype, "switchToViewMode").and.callThrough();
             spyOn(DataDetail.prototype, "switchToAddMode").and.callThrough();
+
+            spyOn(AudioPlayer.prototype, "initialize").and.callThrough();
 
         };
 
@@ -246,7 +249,9 @@ define([
                 expect(fixture.html()).toContain("player-container");
                 expect(fixture.html()).toContain("audio-detail");
                 expect(fixture).toContainElement("audio");
-                expect(1).toEqual(-1);
+                expect(fixture).toContainElement("source");
+                expect(fixture.find("source").attr("src")).toEqual(this.audio_file.get("file_path"));
+
             });
 
             it("Successfully renders record", function () {
