@@ -236,16 +236,12 @@ define([
                     dataType: "audio"
                     //audioMode: "detailed"
                 });
-                console.log(this.audio_file);
                 newDataDetail.render();
                 // 2. append the element to the fixture:
                 fixture.append(newDataDetail.$el);
-                console.log(fixture.html());
 
                 // 3. ensure photo render correctly:
                 expect(fixture.find("h4").html()).toEqual("Preview");
-                //expect(fixture.html()).toContainText(this.photo.get("name"));
-                //expect(fixture.html()).toContainText(this.photo.get("caption"));
                 expect(fixture.html()).toContain("player-container");
                 expect(fixture.html()).toContain("audio-detail");
                 expect(fixture).toContainElement("audio");
@@ -351,6 +347,9 @@ define([
             });
         });
 
+        /*
+          Edit mode does contain marker editor when map is slected as screen type
+        */
         describe("Data Detail: Edit Render", function(){
             beforeEach(function(){
                 initSpies(this);
@@ -360,24 +359,164 @@ define([
                 expect(1).toEqual(-1);
             });
 
-            it("Successfully renders video", function(){
-                expect(1).toEqual(-1);
+            it("Successfully renders video YouTube", function () {
+                // 1. initialize the dataDetail view with a video model:
+                this.videoYouTube = this.videos.at(0);
+                setupDataDetail(this, {
+                    model: this.videoYouTube,
+                    mode: "edit",
+                    dataType: "videos",
+                    screenType: "map"
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure that the required elements have been rendered:
+                expect(fixture.find("h4").html()).toEqual("Edit");
+                expect(fixture).toContainElement("iframe");
+                expect(fixture).toContain("add-lat-lng");
+                expect(fixture).toContain("latlong-container");
+                expect(fixture.find("iframe").attr("src")).toEqual("https://www.youtube.com/embed/" + this.videoYouTube.get("video_id") + "?ecver=1");
+                expect(fixture.find("iframe").attr("height")).toEqual("250");
             });
 
-            it("Successfully renders photo", function(){
-                expect(1).toEqual(-1);
+            it("Successfully renders video Vimeo", function () {
+                // 1. initialize the dataDetail view with a video model:
+                this.videoVimeo = this.videos.at(2);
+                setupDataDetail(this, {
+                    model: this.videoVimeo,
+                    mode: "edit",
+                    dataType: "videos",
+                    screenType: "map"
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure iframe render correctly:
+                expect(fixture.find("h4").html()).toEqual("Edit");
+                expect(fixture).toContainElement("iframe");
+                expect(fixture).toContain("add-lat-lng");
+                expect(fixture).toContain("latlong-container");
+                expect(fixture.find("iframe").attr("src")).toEqual("https://player.vimeo.com/video/" + this.videoVimeo.get("video_id"));
+                expect(fixture.find("iframe").attr("height")).toEqual("250");
             });
 
-            it("Successfully renders audio", function(){
-                expect(1).toEqual(-1);
+            it("Successfully renders photo", function () {
+                // 1. initialize the dataDetail view with a photo model:
+                this.photo = this.photos.at(0);
+                setupDataDetail(this, {
+                    model: this.photo,
+                    mode: "edit",
+                    dataType: "photos",
+                    screenType: "map"
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure photo render correctly:
+                expect(fixture.find("h4").html()).toEqual("Edit Media Details");
+                expect(fixture).toContainElement("img");
+                expect(fixture).toContain("add-lat-lng");
+                expect(fixture).toContain("latlong-container");
+                expect(fixture.find("img").attr("src")).toEqual(this.photo.get("path_medium"));
             });
 
-            it("Successfully renders record", function(){
-                expect(1).toEqual(-1);
+            it("Successfully renders audio", function () {
+                // 1. initialize the dataDetail view with an audio model:
+                this.audio_file = this.audioFiles.at(0)
+                setupDataDetail(this, {
+                    model: this.audio_file,
+                    mode: "edit",
+                    dataType: "audio",
+                    screenType: "map"
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure photo render correctly:
+                expect(fixture.find("h4").html()).toEqual("Edit");
+                expect(fixture.html()).toContain("player-container");
+                expect(fixture.html()).toContain("audio-detail");
+                expect(fixture).toContain("add-lat-lng");
+                expect(fixture).toContain("latlong-container");
+                expect(fixture).toContainElement("audio");
+                expect(fixture).toContainElement("source");
+                expect(fixture.find("source").attr("src")).toEqual(this.audio_file.get("file_path"));
+
             });
 
-            it("Successfully renders marker", function(){
-                expect(1).toEqual(-1);
+            it("Successfully renders record", function () {
+                // 1. initialize the dataDetail view with a record model:
+                /*
+                Let's first test with all media types present
+                */
+                this.record_test = this.form_1.at(0);
+                this.record_test.set("children", {
+                    photos: {
+                        name: "Photos",
+                        id: "photos",
+                        overlay_type: "photo",
+                        data: this.photos.toJSON()
+                    },
+                    audio: {
+                        name: "Audio",
+                        id: "audio",
+                        overlay_type: "audio",
+                        data: this.audioFiles.toJSON()
+                    },
+                    videos: {
+                        name: "Videos",
+                        id: "videos",
+                        overlay_type: "video",
+                        data: this.videos.toJSON()
+                    }
+                });
+                this.record_test.set("video_count",1);
+                this.record_test.set("photo_count",1);
+                this.record_test.set("audio_count",1);
+
+                setupDataDetail(this, {
+                    model: this.record_test,
+                    mode: "edit",
+                    screenType: "map"
+
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure photo render correctly:
+                expect(fixture.find("h4").html()).toEqual("Edit");
+                expect(fixture).toContain("add-lat-lng");
+                expect(fixture).toContain("latlong-container");
+                // I do not know how to find that target ID through fixture
+                expect(fixture).toHaveId("modal-form");
+            });
+
+            it("Successfully renders marker", function () {
+                // 1. initialize the dataDetail view with a record model:
+                /*
+                Let's first test with all media types present
+                */
+
+                setupDataDetail(this, {
+                    model: this.marker,
+                    mode: "edit",
+                    screenType: "map"
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. ensure photo render correctly:
+                expect(fixture.find("h4").html()).toEqual("Edit");
+                expect(fixture).toContain("add-lat-lng");
+                expect(fixture).toContain("latlong-container");
+                expect(fixture).toHaveId("modal-form");
             });
         });
 

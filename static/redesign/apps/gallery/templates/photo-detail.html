@@ -55,14 +55,7 @@
 
 <!-- EDIT MODE -->
 {{#ifequal mode "edit"}}
-    <h4>
-        {{#if id}}
-        Edit
-        {{else}}
-        Add New
-        {{/if}}
-        Media Details
-    </h4>
+    <h4>{{#if id}}Edit{{else}}Add New{{/if}} Media Details</h4>
     {{#ifequal screenType "map"}}
         {{#if geometry}}
             <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>

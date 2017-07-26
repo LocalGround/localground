@@ -63,13 +63,7 @@
 
 <!-- EDIT MODE -->
 {{#ifequal mode "edit"}}
-    <h4>
-        {{#if id}}
-        Edit
-        {{else}}
-        Add New
-        {{/if}}
-    </h4>
+    <h4>{{#if id}}Edit{{else}}Add New{{/if}}</h4>
 
     {{#ifequal screenType "map"}}
         {{#if geometry}}
