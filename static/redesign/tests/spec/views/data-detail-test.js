@@ -523,7 +523,30 @@ define([
                 /*
 
                 */
-                console.log(this.record_test.get("fields"));
+                var fields = this.record_test.get("fields"),
+                    col_name,
+                    data_type,
+                    isOn,
+                    i = 0;
+                for (i = 0; i < fields.length; i++) {
+                    col_name = fields[i].col_name;
+                    data_type = fields[i].data_type;
+                    switch (data_type) {
+                        case "integer":
+                            expect(fixture.find("input[name='" + col_name + "']").val()).toEqual(this.record_test.get(col_name).toString());
+                            break;
+                        case "boolean":
+                            isOn = this.record_test.get(col_name) ? 'on' : 'off';
+                            expect(fixture.find("input[name='" + col_name + "']").val()).toEqual(isOn);
+                            break;
+                        case "rating":
+                        case "choice":
+                            expect(fixture.find("select[name='" + col_name + "']").val()).toEqual(this.record_test.get(col_name).toString());
+                            break;
+                        default:
+                            expect(fixture.find("textarea[name='" + col_name + "']").val()).toEqual(this.record_test.get(col_name).toString());
+                    }
+                }
                 expect(1).toEqual(-1);
             });
 
