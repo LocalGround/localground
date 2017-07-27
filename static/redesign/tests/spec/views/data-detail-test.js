@@ -517,8 +517,9 @@ define([
                 expect(fixture.find("h4").html()).toEqual("Edit");
                 expect(fixture.find("button.delete-marker-button").html()).toEqual("Remove Location Marker");
                 expect(fixture.find(".latlong").html()).toContain("(" + lat + ", " + lng + ")");
-                // I do not know how to find that target ID through fixture
-                expect(fixture).toHaveId("modal-form");
+
+                // Since the schema has to be extracted,
+                // How can that can be done since records have custom schemas?
             });
 
             it("Successfully renders marker", function () {
