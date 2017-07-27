@@ -520,6 +520,11 @@ define([
 
                 // Since the schema has to be extracted,
                 // How can that can be done since records have custom schemas?
+                /*
+
+                */
+                console.log(this.record_test.get("fields"));
+                expect(1).toEqual(-1);
             });
 
             it("Successfully renders marker", function () {
