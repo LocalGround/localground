@@ -67,6 +67,7 @@ define([
             spyOn(DataDetail.prototype, "switchToAddMode").and.callThrough();
 
             spyOn(AudioPlayer.prototype, "initialize").and.callThrough();
+            spyOn(Carousel.prototype, "initialize").and.callThrough();
 
         };
 
@@ -165,7 +166,16 @@ define([
             });
 
             it("Successfully calls viewRender", function() {
-                expect(1).toEqual(-1);
+                setupDataDetail(this, {
+                    model: this.markers.at(0),
+                    mode: "view",
+                    dataType: "markers"
+                });
+                expect(Carousel.prototype.initialize).toHaveBeenCalledTimes(0);
+                expect(DataDetail.prototype.viewRender).toHaveBeenCalledTimes(0);
+                newDataDetail.render();
+                expect(DataDetail.prototype.viewRender).toHaveBeenCalledTimes(1);
+                expect(Carousel.prototype.initialize).toHaveBeenCalledTimes(3);
             });
 
             it("Successfully renders video YouTube", function () {
@@ -547,7 +557,6 @@ define([
                             expect(fixture.find("textarea[name='" + col_name + "']").val()).toEqual(this.record_test.get(col_name).toString());
                     }
                 }
-                expect(1).toEqual(-1);
             });
 
             it("Successfully renders marker", function () {
