@@ -380,7 +380,6 @@ define([
                 // 3. ensure that the required elements have been rendered:
                 expect(fixture.find("h4").html()).toEqual("Edit");
                 expect(fixture).toContainElement("iframe");
-                console.log(fixture.html());
                 expect(fixture.find("button.delete-marker-button").html()).toEqual("Remove Location Marker");
                 expect(fixture.find(".latlong").html()).toContain("(" + lat + ", " + lng + ")");
                 expect(fixture.find("iframe").attr("src")).toEqual("https://www.youtube.com/embed/" + this.videoYouTube.get("video_id") + "?ecver=1");
@@ -434,9 +433,14 @@ define([
                 // 3. ensure photo render correctly:
                 expect(fixture.find("h4").html()).toEqual("Edit Media Details");
                 expect(fixture).toContainElement("img");
-                expect(fixture).toContain("add-lat-lng");
-                expect(fixture).toContain("latlong-container");
+                expect(fixture.find("button.delete-marker-button").html()).toEqual("Remove Location Marker");
+                expect(fixture.find(".latlong").html()).toContain("(" + lat + ", " + lng + ")");
                 expect(fixture.find("img").attr("src")).toEqual(this.photo.get("path_medium"));
+
+                // ensure that form is rendering correctly:
+                expect(fixture.find("textarea[name='name']").val()).toEqual(this.photo.get("name") || '');
+                expect(fixture.find("textarea[name='caption']").val()).toEqual(this.photo.get("caption") || '');
+                expect(fixture.find("textarea[name='attribution']").val()).toEqual(this.photo.get("attribution") || '');
             });
 
             it("Successfully renders audio", function () {
@@ -456,11 +460,16 @@ define([
                 expect(fixture.find("h4").html()).toEqual("Edit");
                 expect(fixture.html()).toContain("player-container");
                 expect(fixture.html()).toContain("audio-detail");
-                expect(fixture).toContain("add-lat-lng");
-                expect(fixture).toContain("latlong-container");
+                expect(fixture.find("button.delete-marker-button").html()).toEqual("Remove Location Marker");
+                expect(fixture.find(".latlong").html()).toContain("(" + lat + ", " + lng + ")");
                 expect(fixture).toContainElement("audio");
                 expect(fixture).toContainElement("source");
                 expect(fixture.find("source").attr("src")).toEqual(this.audio_file.get("file_path"));
+
+                // ensure that form is rendering correctly:
+                expect(fixture.find("textarea[name='name']").val()).toEqual(this.audio_file.get("name") || '');
+                expect(fixture.find("textarea[name='caption']").val()).toEqual(this.audio_file.get("caption") || '');
+                expect(fixture.find("textarea[name='attribution']").val()).toEqual(this.audio_file.get("attribution") || '');
 
             });
 
@@ -506,8 +515,8 @@ define([
 
                 // 3. ensure photo render correctly:
                 expect(fixture.find("h4").html()).toEqual("Edit");
-                expect(fixture).toContain("add-lat-lng");
-                expect(fixture).toContain("latlong-container");
+                expect(fixture.find("button.delete-marker-button").html()).toEqual("Remove Location Marker");
+                expect(fixture.find(".latlong").html()).toContain("(" + lat + ", " + lng + ")");
                 // I do not know how to find that target ID through fixture
                 expect(fixture).toHaveId("modal-form");
             });
@@ -529,9 +538,13 @@ define([
 
                 // 3. ensure photo render correctly:
                 expect(fixture.find("h4").html()).toEqual("Edit");
-                expect(fixture).toContain("add-lat-lng");
-                expect(fixture).toContain("latlong-container");
-                expect(fixture).toHaveId("modal-form");
+                expect(fixture.find("button.delete-marker-button").html()).toEqual("Remove Location Marker");
+                expect(fixture.find(".latlong").html()).toContain("(" + lat + ", " + lng + ")");
+
+                // ensure that form is rendering correctly:
+                expect(fixture.find("textarea[name='name']").val()).toEqual(this.marker.get("name") || '');
+                expect(fixture.find("textarea[name='caption']").val()).toEqual(this.marker.get("caption") || '');
+                expect(fixture.find("textarea[name='attribution']").val()).toEqual(this.marker.get("attribution") || '');
             });
         });
 
