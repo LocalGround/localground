@@ -43,6 +43,8 @@ define([
         };
 
         initSpies = function (scope) {
+            spyOn(scope.app.vent, "trigger").and.callThrough();
+
             spyOn(DataDetail.prototype, "initialize").and.callThrough();
             spyOn(DataDetail.prototype, "render").and.callThrough();
             //
@@ -371,7 +373,14 @@ define([
             });
 
             it("Successfully calls editRender", function(){
-                expect(1).toEqual(-1);
+                setupDataDetail(this, {
+                    model: this.markers.at(0),
+                    mode: "edit",
+                    dataType: "markers"
+                });
+                expect(DataDetail.prototype.editRender).toHaveBeenCalledTimes(0);
+                newDataDetail.render();
+                expect(DataDetail.prototype.editRender).toHaveBeenCalledTimes(1);
             });
 
             it("Successfully renders video with Geometry", function () {
@@ -636,13 +645,43 @@ define([
                 initSpies(this);
             });
 
-            it("Successfully calls hideMapPanel", function(){
-                expect(1).toEqual(-1);
+            it("Successfully calls hideMapPanel and showPanel", function(){
+                // 1. initialize the dataDetail view with a record model:
+                /*
+                Let's first test with all media types present
+                */
+
+                setupDataDetail(this, {
+                    model: this.marker,
+                    mode: "view",
+                    screenType: "map"
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+                // 3. First click on the show-hide and it should hide the map panel
+                expect(DataDetail.prototype.hideMapPanel).toHaveBeenCalledTimes(0);
+                fixture.find(".show-hide").trigger('click');
+                expect(this.app.vent.trigger).toHaveBeenCalledWith("hide-detail");
+                expect(DataDetail.prototype.hideMapPanel).toHaveBeenCalledTimes(1);
+
+                // 4. Then click on show-hide again to show the map panel
+                expect(DataDetail.prototype.showMapPanel).toHaveBeenCalledTimes(0);
+                fixture.find(".show-hide").trigger('click');
+                expect(this.app.vent.trigger).toHaveBeenCalledWith("unhide-detail");
+                expect(DataDetail.prototype.showMapPanel).toHaveBeenCalledTimes(1);
+                //console.log(fixture.html());
+
+                //expect(1).toEqual(-1);
+            });
+        });
+
+        describe("Data Detail: Other Trigger Events", function(){
+            beforeEach(function(){
+                initSpies();
             });
 
-            it("Successfully calls showMapPanel", function(){
-                expect(1).toEqual(-1);
-            });
+
         });
 
     });
