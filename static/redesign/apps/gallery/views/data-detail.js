@@ -305,7 +305,7 @@ define([
             this.$el.find(".edit-photo").css({
                 filter: "brightness(0.4)"
             });
-            this.model.rotate(rotation);
+            this.model.rotate(rotation, this.render);
         },
         commitForm: function () {
             var errors = this.form.commit({ validate: true });

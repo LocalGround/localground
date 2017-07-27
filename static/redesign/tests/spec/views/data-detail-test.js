@@ -646,11 +646,7 @@ define([
             });
 
             it("Successfully calls hideMapPanel and showPanel", function(){
-                // 1. initialize the dataDetail view with a record model:
-                /*
-                Let's first test with all media types present
-                */
-
+                // 1. initialize the dataDetail view:
                 setupDataDetail(this, {
                     model: this.marker,
                     mode: "view",
@@ -670,15 +666,37 @@ define([
                 fixture.find(".show-hide").trigger('click');
                 expect(this.app.vent.trigger).toHaveBeenCalledWith("unhide-detail");
                 expect(DataDetail.prototype.showMapPanel).toHaveBeenCalledTimes(1);
-                //console.log(fixture.html());
 
-                //expect(1).toEqual(-1);
             });
         });
 
         describe("Data Detail: Other Trigger Events", function(){
             beforeEach(function(){
-                initSpies();
+                initSpies(this);
+            });
+
+            it("successfully rotates photo both ways", function(){
+                // 1. initialize the dataDetail view
+                setupDataDetail(this, {
+                    model: this.photos.at(0),
+                    mode: "edit",
+                    screenType: "map",
+                    dataType: "photos"
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+                // 3. First click on the rotate photo on the right
+                console.log(fixture.html());
+                expect(DataDetail.prototype.rotatePhoto).toHaveBeenCalledTimes(0);
+                expect(DataDetail.prototype.render).toHaveBeenCalledTimes(1);
+                fixture.find(".rotate-right").trigger('click');
+                expect(DataDetail.prototype.rotatePhoto).toHaveBeenCalledTimes(1);
+                expect(DataDetail.prototype.render).toHaveBeenCalledTimes(2);
+                // 4. First click on the rotate photo on the left
+                fixture.find(".rotate-left").trigger('click');
+                expect(DataDetail.prototype.rotatePhoto).toHaveBeenCalledTimes(2);
+                expect(DataDetail.prototype.render).toHaveBeenCalledTimes(3);
             });
 
 

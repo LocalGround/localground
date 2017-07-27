@@ -12,12 +12,13 @@ define(["models/base", "jquery"], function (Base, $) {
             attribution: { type: 'TextArea', title: "Attribution" },
             tags: { type: 'List', itemType: 'Text' }
         },
-        rotate: function (direction) {
+        rotate: function (direction, callback) {
             $.ajax({
                 url: '/api/0/photos/' + this.id + '/rotate-' + direction + '/.json',
                 type: 'PUT',
                 success: function(data) {
                     this.set(data);
+                    callback();
                 }.bind(this),
                 notmodified: function(data) { console.error('Photo Not modified'); },
                 error: function(data) { console.error('Error: Rotation failed'); }
