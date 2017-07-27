@@ -22,18 +22,23 @@ define([
         //
         //
         'use strict';
-        var fixture, newDataDetail, setupDataDetail, initSpies;
+        var fixture, newDataDetail, setupDataDetail, initSpies, lat, lng;
 
         setupDataDetail = function (scope, opts) {
             //console.log(opts.model);
             var model = opts.model || scope.marker,
                 dataType = opts.dataType || "markers";
             scope.app.mode = opts.mode || "edit";
+            scope.app.screenType = opts.screenType || "map";
             newDataDetail = new DataDetail({
                 app: scope.app,
                 model: model,
                 dataType: dataType
             });
+            if (model.get("geometry") != null){
+                lat =  model.get("geometry").coordinates[1].toFixed(4);
+                lng =  model.get("geometry").coordinates[0].toFixed(4);
+            }
             fixture = setFixtures('<div></div>');
         };
 
@@ -359,7 +364,7 @@ define([
                 expect(1).toEqual(-1);
             });
 
-            it("Successfully renders video YouTube", function () {
+            it("Successfully renders video with Geometry", function () {
                 // 1. initialize the dataDetail view with a video model:
                 this.videoYouTube = this.videos.at(0);
                 setupDataDetail(this, {
@@ -375,15 +380,17 @@ define([
                 // 3. ensure that the required elements have been rendered:
                 expect(fixture.find("h4").html()).toEqual("Edit");
                 expect(fixture).toContainElement("iframe");
-                expect(fixture).toContain("add-lat-lng");
-                expect(fixture).toContain("latlong-container");
+                console.log(fixture.html());
+                expect(fixture.find("button.delete-marker-button").html()).toEqual("Remove Location Marker");
+                expect(fixture.find(".latlong").html()).toContain("(" + lat + ", " + lng + ")");
                 expect(fixture.find("iframe").attr("src")).toEqual("https://www.youtube.com/embed/" + this.videoYouTube.get("video_id") + "?ecver=1");
                 expect(fixture.find("iframe").attr("height")).toEqual("250");
             });
 
-            it("Successfully renders video Vimeo", function () {
+            it("Successfully renders video without Geometry", function () {
                 // 1. initialize the dataDetail view with a video model:
                 this.videoVimeo = this.videos.at(2);
+                this.videoVimeo.set("geometry", null);
                 setupDataDetail(this, {
                     model: this.videoVimeo,
                     mode: "edit",
@@ -397,8 +404,7 @@ define([
                 // 3. ensure iframe render correctly:
                 expect(fixture.find("h4").html()).toEqual("Edit");
                 expect(fixture).toContainElement("iframe");
-                expect(fixture).toContain("add-lat-lng");
-                expect(fixture).toContain("latlong-container");
+                expect(fixture.find("button.add-marker-button").html()).toEqual("Add Location Marker");
                 expect(fixture.find("iframe").attr("src")).toEqual("https://player.vimeo.com/video/" + this.videoVimeo.get("video_id"));
                 expect(fixture.find("iframe").attr("height")).toEqual("250");
             });
