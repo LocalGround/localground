@@ -385,6 +385,15 @@ define([
                 expect(fixture.find(".latlong").html()).toContain("(" + lat + ", " + lng + ")");
                 expect(fixture.find("iframe").attr("src")).toEqual("https://www.youtube.com/embed/" + this.videoYouTube.get("video_id") + "?ecver=1");
                 expect(fixture.find("iframe").attr("height")).toEqual("250");
+
+                // ensure that form is rendering correctly:
+                expect(fixture.find("input[name='name']").val()).toEqual(this.videoYouTube.get("name") || '');
+                expect(fixture.find("textarea[name='caption']").val()).toEqual(this.videoYouTube.get("caption") || '');
+                expect(fixture.find("input[name='attribution']").val()).toEqual(this.videoYouTube.get("attribution") || '');
+                expect(fixture.find("input[name='video_id']").val()).toEqual(this.videoYouTube.get("video_id") || '');
+                expect(fixture.find("select[name='video_provider']").val()).toEqual(this.videoYouTube.get("video_provider") || '');
+                expect(fixture.find("select[name='video_provider']").html()).toContain("vimeo");
+                expect(fixture.find("select[name='video_provider']").html()).toContain("youtube");
             });
 
             it("Successfully renders video without Geometry", function () {
