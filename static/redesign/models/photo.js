@@ -16,7 +16,8 @@ define(["models/base", "jquery"], function (Base, $) {
             $.ajax({
                 url: '/api/0/photos/' + this.id + '/rotate-' + direction + '/.json',
                 type: 'PUT',
-                success: function(data) {
+                success: function (data) {
+                    console.log('callback!!!!');
                     this.set(data);
                     callback();
                 }.bind(this),

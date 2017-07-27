@@ -94,14 +94,12 @@ define(
 
             // SAFETY MEASURES: makes sure that nothing interacts w/database.
             spyOn(Backbone, 'sync').and.callFake(function (method, model, opts, error) {
-                console.log("Backbone sync intercepted");
+                console.log("Backbone sync intercepted")
+                console.log(method, model, opts, error);
                 if (opts && opts.success) {
                     opts.success({ foo: 'fake' });
                 }
             });
-            /*spyOn($, 'ajax').and.callFake(function () {
-                console.log("AJAX call intercepted");
-            });*/
             // END SAFETY MEASURES
 
             this.getModelByOverlayType = function (overlay_type) {

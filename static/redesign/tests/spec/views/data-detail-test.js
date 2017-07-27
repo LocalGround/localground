@@ -71,6 +71,12 @@ define([
             spyOn(AudioPlayer.prototype, "initialize").and.callThrough();
             spyOn(Carousel.prototype, "initialize").and.callThrough();
 
+            spyOn($, 'ajax').and.callFake(function (response) {
+                if (response.success) {
+                    response.success({ foo: 'bar' });
+                }
+            });
+
         };
 
         describe("Data Detail: Initialization Test", function(){
