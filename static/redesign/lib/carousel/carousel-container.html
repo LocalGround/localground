@@ -22,11 +22,12 @@
     
     {{#compare num_children 1 operator=">"}}
     <div class="circle-buttons">
-        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
+        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0" style="color: #{{paragraph.color}}"></i>
         {{#times 1 num_children}}
-            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}"></i>
+            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}" style="color: #{{../paragraph.color}}"></i>
         {{/times}}
     </div>
+    <p class="carousel-caption">{{this.caption }}</p>
     {{/compare}}
 
 {{/if}}

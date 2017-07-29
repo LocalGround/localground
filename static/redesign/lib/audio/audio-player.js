@@ -52,8 +52,13 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 });
             },
             templateHelpers: function () {
+                var paragraph;
+                if (this.panelStyles) {
+                    paragraph = this.panelStyles.paragraph;
+                }
                 return {
-                    audioMode: this.audioMode
+                    audioMode: this.audioMode,
+                    paragraph: paragraph
                 };
             },
             stop: function () {
@@ -61,12 +66,13 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 this.audio.pause();
             },
             showPauseButton: function () {
-                this.$el.find(".play").addClass("pause");
+                this.$el.find(".play").addClass("fa-pause");
             },
             showPlayButton: function () {
-                this.$el.find(".play").removeClass("pause");
+                this.$el.find(".play").removeClass("fa-pause");
             },
             togglePlay: function () {
+                console.log("play toggle");
                 if (this.audio.paused) {
                     this.audio.play();
                     this.showPauseButton();

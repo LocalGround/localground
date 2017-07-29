@@ -32,6 +32,7 @@ define([
             "click .streetview": 'showStreetView'
         },
         getTemplate: function () {
+            console.log(this.dataType);
             if (this.dataType == "photos") {
                 return Handlebars.compile(PhotoTemplate);
             }
@@ -181,7 +182,7 @@ define([
             if (this.panelStyles) {
                 paragraph = this.panelStyles.paragraph;
                 this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
-                this.$el.find('.active-slide').css('background', 'rgba(255, 255, 255, 0.5)');
+                this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
 
             return {
@@ -236,7 +237,12 @@ define([
             var c,
                 photos = this.getPhotos(),
                 videos = this.getVideos(),
-                audio = this.getAudio();
+                audio = this.getAudio(), 
+                that = this;
+                console.log(audio);
+            if (this.panelStyles) {
+                var panelStyles = this.panelStyles;
+            }
 
             if (photos.length > 0) {
                 c = new Carousel({
@@ -244,7 +250,8 @@ define([
                     app: this.app,
                     featuredImage: this.getFeaturedImage(),
                     mode: "photos",
-                    collection: photos
+                    collection: photos,
+                    panelStyles: panelStyles
                 });
                 this.$el.find(".carousel-photo").append(c.$el);
             }
@@ -253,18 +260,31 @@ define([
                     model: this.model,
                     app: this.app,
                     mode: "videos",
-                    collection: videos
+                    collection: videos,
+                    panelStyles: panelStyles
                 });
                 this.$el.find(".carousel-video").append(c.$el);
             }
             if (audio.length > 0) {
+                /*
                 c = new Carousel({
                     model: this.model,
                     app: this.app,
                     mode: "audio",
-                    collection: audio
+                    collection: audio,
+                    panelStyles: panelStyles
                 });
-                this.$el.find(".carousel-audio").append(c.$el);
+                */
+                audio.forEach(function (audioTrack) {
+                    c = new AudioPlayer({
+                        model: audioTrack,
+                        app: that.app,
+                        panelStyles: panelStyles,
+                        audioMode: "detail",
+                        className: "audio-detail"
+                    });
+                    that.$el.find(".carousel-audio").append(c.$el);
+                });                
             }
         },
         editRender: function () {

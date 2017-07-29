@@ -21,6 +21,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
             childViewContainer: ".carousel-content",
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this);
                 if (this.mode == "photos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
                 } else if (this.mode == "videos") {
@@ -65,7 +66,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     mode: this.mode,
                     app: this.app,
                     num_children: this.collection.length,
-                    parent: this
+                    parent: this,
+                    panelStyles: this.panelStyles
                 };
             },
             getChildView: function () {
@@ -81,10 +83,15 @@ define(["jquery", "underscore", "marionette", "handlebars",
                         }
                     },
                     templateHelpers: function () {
-                        console.log(this.num_children);
+                        console.log(this);
+                        var paragraph;
+                        if (this.panelStyles) {
+                            paragraph = this.panelStyles.paragraph;
+                        }
                         return {
                             num_children: this.num_children,
-                            mode: this.mode
+                            mode: this.mode, 
+                            paragraph: paragraph
                         };
                     },
                     tagName: "li",
@@ -93,7 +100,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                             var player = new AudioPlayer({
                                 model: this.model,
                                 audioMode: "detail",
-                                app: this.app
+                                app: this.app,
+                                panelStyles: this.panelStyles
                             });
                             this.$el.find('.player-container').append(player.$el);
                         }
@@ -102,9 +110,15 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
 
             templateHelpers: function () {
+                console.log(this);
+                var paragraph;
+                if (this.panelStyles) {
+                    paragraph = this.panelStyles.paragraph;
+                }
                 return {
                     num_children: this.collection.length,
-                    isSpreadsheet: this.app.screenType === "spreadsheet"
+                    isSpreadsheet: this.app.screenType === "spreadsheet",
+                    paragraph: paragraph
                 };
             },
 
