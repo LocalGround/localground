@@ -697,8 +697,10 @@ define([
                     screenType: "map"
                 });
                 newDataDetail.render();
+
                 // 2. append the element to the fixture:
                 fixture.append(newDataDetail.$el);
+
                 // 3. Check that delete button is present
                 expect(DataDetail.prototype.deleteMarker).toHaveBeenCalledTimes(0);
                 expect(DataDetail.prototype.commitForm).toHaveBeenCalledTimes(0);
@@ -716,16 +718,19 @@ define([
                 
             });
 
-            it("Successfully calls activateRectangleTrigger", function(){
+            /*it("Successfully calls activateRectangleTrigger", function(){
                 expect(1).toEqual(-1);
-            });
+            });*/
 
             it("Successfully calls activateMarkerTrigger", function(){
                 expect(1).toEqual(-1);
+                //1. Trigger the activateMarkerTrigger through DOM click:
+                
+                //2. Make sure taht $('body').find('#follower') contains an SVG element
+                //   that has <svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
+                //                <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
+                //            </svg>
             });
-
-
-
 
         });
 
