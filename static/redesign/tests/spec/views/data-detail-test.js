@@ -55,7 +55,7 @@ define([
             spyOn(DataDetail.prototype, "saveModel").and.callThrough();
             spyOn(DataDetail.prototype, "deleteModel").and.callThrough();
             spyOn(DataDetail.prototype, "activateMarkerTrigger").and.callThrough();
-            spyOn(DataDetail.prototype, "deleteMarkerTrigger").and.callThrough();
+            spyOn(DataDetail.prototype, "deleteMarker").and.callThrough();
             spyOn(DataDetail.prototype, "commitForm").and.callThrough();
             //
             spyOn(DataDetail.prototype, "showMapPanel").and.callThrough();
@@ -689,7 +689,7 @@ define([
                 expect(DataDetail.prototype.render).toHaveBeenCalledTimes(3);
             });
 
-            it("Successfully deletes existing marker through deleteMarkerTrigger", function(){
+            it("Successfully deletes existing marker through deleteMarker", function(){
                 // 1. initialize the dataDetail view:
                 setupDataDetail(this, {
                     model: this.marker,
@@ -700,20 +700,20 @@ define([
                 // 2. append the element to the fixture:
                 fixture.append(newDataDetail.$el);
                 // 3. Check that delete button is present
-                expect(DataDetail.prototype.deleteMarkerTrigger).toHaveBeenCalledTimes(0);
+                expect(DataDetail.prototype.deleteMarker).toHaveBeenCalledTimes(0);
                 expect(DataDetail.prototype.commitForm).toHaveBeenCalledTimes(0);
                 expect(fixture.find("h4").html()).toEqual("Edit");
                 expect(fixture.find("button.button-secondary").html()).toEqual("Remove Location Marker");
                 expect(fixture.find(".latlong").html()).toContain("(" + lat + ", " + lng + ")");
+                
+                // 4. Trigger click delete button:
                 fixture.find("#delete-geometry").trigger("click");
 
-                // Strange, this does not actually trigger the change in the button
-                // despite that delete button has been triggered
-                expect(DataDetail.prototype.deleteMarkerTrigger).toHaveBeenCalledTimes(1);
+                // 5. Check that geometry no longer exists:
+                expect(DataDetail.prototype.deleteMarker).toHaveBeenCalledTimes(1);
                 expect(DataDetail.prototype.commitForm).toHaveBeenCalledTimes(1);
-                expect(this.app.vent.trigger).toHaveBeenCalledWith("delete-marker", this.marker);
                 expect(fixture.find("button.button-secondary").html()).not.toEqual("Remove Location Marker");
-                console.log(fixture.find("button.button-secondary"));
+                
             });
 
             it("Successfully calls activateRectangleTrigger", function(){

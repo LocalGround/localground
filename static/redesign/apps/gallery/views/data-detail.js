@@ -27,7 +27,7 @@ define([
             'click .rotate-left': 'rotatePhoto',
             'click .rotate-right': 'rotatePhoto',
             "click #add-geometry": "activateMarkerTrigger",
-            "click #delete-geometry": "deleteMarkerTrigger",
+            "click #delete-geometry": "deleteMarker",
             "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView'
         },
@@ -134,9 +134,10 @@ define([
             this.app.vent.trigger("add-new-marker", this.model);
         },
 
-        deleteMarkerTrigger: function () {
+        deleteMarker: function () {
+            this.model.set("geometry", null);
             this.commitForm();
-            this.app.vent.trigger("delete-marker", this.model);
+            this.model.save();
         },
 
         bindFields: function () {
