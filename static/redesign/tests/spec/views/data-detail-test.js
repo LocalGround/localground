@@ -752,7 +752,7 @@ define([
                 expect(fixture.find("button.button-secondary").html()).not.toEqual("Remove Location Marker");
                 expect(DataDetail.prototype.activateMarkerTrigger).toHaveBeenCalledTimes(1);
                 expect(fixture.find("p#drop-marker-message").html()).toEqual("click on the map to add location");
-                expect($('body').find('#follower')).toContainElement('svg');
+                expect($('body').find('#follower')).toContainElement('svg'); // This is the current thing I am having trouble at
 
                 //expect(1).toEqual(-1);
                 //1. Trigger the activateMarkerTrigger through DOM click:
