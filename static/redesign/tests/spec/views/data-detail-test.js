@@ -56,6 +56,7 @@ define([
             spyOn(DataDetail.prototype, "deleteModel").and.callThrough();
             spyOn(DataDetail.prototype, "activateMarkerTrigger").and.callThrough();
             spyOn(DataDetail.prototype, "deleteMarkerTrigger").and.callThrough();
+            spyOn(DataDetail.prototype, "commitForm").and.callThrough();
             //
             spyOn(DataDetail.prototype, "showMapPanel").and.callThrough();
             spyOn(DataDetail.prototype, "hideMapPanel").and.callThrough();
@@ -125,23 +126,7 @@ define([
                 initSpies(this);
             });
 
-            it("Successfully calls activateRectangleTrigger", function(){
-                expect(1).toEqual(-1);
-            });
-
-            it("Successfully calls activateMarkerTrigger", function(){
-                expect(1).toEqual(-1);
-            });
-
-            it("Successfully calls deleteMarkerTrigger", function(){
-                expect(1).toEqual(-1);
-            });
-
             it("Successfully calls bindFields", function(){
-                expect(1).toEqual(-1);
-            });
-
-            it("Successfully calls rotatePhoto", function(){
                 expect(1).toEqual(-1);
             });
 
@@ -693,7 +678,6 @@ define([
                 // 2. append the element to the fixture:
                 fixture.append(newDataDetail.$el);
                 // 3. First click on the rotate photo on the right
-                console.log(fixture.html());
                 expect(DataDetail.prototype.rotatePhoto).toHaveBeenCalledTimes(0);
                 expect(DataDetail.prototype.render).toHaveBeenCalledTimes(1);
                 fixture.find(".rotate-right").trigger('click');
@@ -704,6 +688,43 @@ define([
                 expect(DataDetail.prototype.rotatePhoto).toHaveBeenCalledTimes(2);
                 expect(DataDetail.prototype.render).toHaveBeenCalledTimes(3);
             });
+
+            it("Successfully deletes existing marker through deleteMarkerTrigger", function(){
+                // 1. initialize the dataDetail view:
+                setupDataDetail(this, {
+                    model: this.marker,
+                    mode: "edit",
+                    screenType: "map"
+                });
+                newDataDetail.render();
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+                // 3. Check that delete button is present
+                expect(DataDetail.prototype.deleteMarkerTrigger).toHaveBeenCalledTimes(0);
+                expect(DataDetail.prototype.commitForm).toHaveBeenCalledTimes(0);
+                expect(fixture.find("h4").html()).toEqual("Edit");
+                expect(fixture.find("button.button-secondary").html()).toEqual("Remove Location Marker");
+                expect(fixture.find(".latlong").html()).toContain("(" + lat + ", " + lng + ")");
+                fixture.find("#delete-geometry").trigger("click");
+
+                // Strange, this does not actually trigger the change in the button
+                // despite that delete button has been triggered
+                expect(DataDetail.prototype.deleteMarkerTrigger).toHaveBeenCalledTimes(1);
+                expect(DataDetail.prototype.commitForm).toHaveBeenCalledTimes(1);
+                expect(this.app.vent.trigger).toHaveBeenCalledWith("delete-marker", this.marker);
+                expect(fixture.find("button.button-secondary").html()).not.toEqual("Remove Location Marker");
+                console.log(fixture.find("button.button-secondary"));
+            });
+
+            it("Successfully calls activateRectangleTrigger", function(){
+                expect(1).toEqual(-1);
+            });
+
+            it("Successfully calls activateMarkerTrigger", function(){
+                expect(1).toEqual(-1);
+            });
+
+
 
 
         });
