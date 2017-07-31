@@ -707,7 +707,7 @@ define([
                 expect(fixture.find("h4").html()).toEqual("Edit");
                 expect(fixture.find("button.button-secondary").html()).toEqual("Remove Location Marker");
                 expect(fixture.find(".latlong").html()).toContain("(" + lat + ", " + lng + ")");
-                
+
                 // 4. Trigger click delete button:
                 fixture.find("#delete-geometry").trigger("click");
 
@@ -715,7 +715,7 @@ define([
                 expect(DataDetail.prototype.deleteMarker).toHaveBeenCalledTimes(1);
                 expect(DataDetail.prototype.commitForm).toHaveBeenCalledTimes(1);
                 expect(fixture.find("button.button-secondary").html()).not.toEqual("Remove Location Marker");
-                
+
             });
 
             /*it("Successfully calls activateRectangleTrigger", function(){
@@ -723,9 +723,40 @@ define([
             });*/
 
             it("Successfully calls activateMarkerTrigger", function(){
-                expect(1).toEqual(-1);
+                // 1. initialize the dataDetail view:
+                setupDataDetail(this, {
+                    model: this.marker,
+                    mode: "edit",
+                    screenType: "map"
+                });
+                newDataDetail.render();
+
+                // 2. append the element to the fixture:
+                fixture.append(newDataDetail.$el);
+
+                // 3. Check that delete button is present
+                expect(DataDetail.prototype.activateMarkerTrigger).toHaveBeenCalledTimes(0);
+                expect(fixture.find("h4").html()).toEqual("Edit");
+                expect(fixture.find("button.button-secondary").html()).toEqual("Remove Location Marker");
+                expect(fixture.find("button.button-secondary").html()).not.toEqual("Add Location Marker");
+                expect(fixture.find(".add-lat-lng").html()).not.toEqual("click on the map to add location");
+
+
+                // 4. Trigger click delete button:
+                fixture.find("#delete-geometry").trigger("click");
+
+                // 5. Trigger click add geometry button:
+                fixture.find("#add-geometry").trigger("click");
+
+                expect(fixture.find("button.button-secondary").html()).toEqual("Add Location Marker");
+                expect(fixture.find("button.button-secondary").html()).not.toEqual("Remove Location Marker");
+                expect(DataDetail.prototype.activateMarkerTrigger).toHaveBeenCalledTimes(1);
+                expect(fixture.find("p#drop-marker-message").html()).toEqual("click on the map to add location");
+                expect($('body').find('#follower')).toContainElement('svg');
+
+                //expect(1).toEqual(-1);
                 //1. Trigger the activateMarkerTrigger through DOM click:
-                
+
                 //2. Make sure taht $('body').find('#follower') contains an SVG element
                 //   that has <svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
                 //                <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
