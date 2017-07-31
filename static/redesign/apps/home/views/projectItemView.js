@@ -79,6 +79,9 @@ define(["marionette",
                 //console.log(diffYears);
                 //console.log(diffMonths);
                 //console.log(diffDays);
+                if (diffDays > 29){
+                    diffMonths = 1;
+                }
                 if (diffYears > 0){
                     addPlural = diffYears > 1 ? "s" : "";
                     lastEditString = diffYears + " Year" + addPlural + " ago";
