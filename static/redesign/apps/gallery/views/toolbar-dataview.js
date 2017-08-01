@@ -6,11 +6,10 @@ define([
     "collections/forms",
     "apps/gallery/views/create-form",
     "apps/gallery/views/create-media",
-    "apps/gallery/views/form-list",
     "lib/modals/modal",
     "text!../templates/toolbar-dataview.html"
 ], function (_, $, Handlebars, Marionette, Forms, CreateForm, CreateMedia,
-             FormList, Modal, ToolbarTemplate) {
+             Modal, ToolbarTemplate) {
     "use strict";
     var ToolbarDataView = Marionette.ItemView.extend({
         /*
@@ -21,9 +20,9 @@ define([
             'click #toolbar-search': 'doSearch',
             'click #toolbar-clear': 'clearSearch',
             'change .media-type': 'changeDisplay',
-            'click .add-data' : 'showFormList',
+            'click .add-type' : 'showCreateForm',
+            'click .edit-type' : 'editTargetForm', // Maybe this one works similar to the add-type
             'click #show-media-type' : 'showMediaTypeForm',
-            'click #add-row' : 'triggerAddRow',
             'click .add-media': 'createMediaUploadModal',
             'click .add-map-image': 'createMapImageUploadModal',
             'click .add': 'toggleMenu',
@@ -37,7 +36,6 @@ define([
 
         templateHelpers: function () {
             return {
-                mode: this.app.mode,
                 dataType: this.app.dataType,
                 screenType: this.app.screenType,
                 activeTab: this.app.activeTab,
@@ -55,20 +53,22 @@ define([
             this.listenTo(this.app.vent, 'add-map-image', this.createMapImageUploadModal);
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
             this.listenTo(this.app.vent, 'show-media-type', this.showMediaTypeForm);
-            this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
             this.listenTo(this.app.vent, 'show-form', this.showCreateForm);
-            this.listenTo(this.app.vent, 'show-form-list', this.showFormList);
             this.listenTo(this.app.vent, 'show-modal', this.showModal);
             this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
             this.listenTo(this.app.vent, 'show-list', this.updateNewObejctRoute);
             this.listenTo(this.app.vent, 'add-new-item-to-map', this.triggerAddNewMap);
             $('body').click(this.hideMenus);
             this.modal = new Modal();
-            this.forms = new Forms();
-            this.listenTo(this.forms, "reset", this.render);
-            this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
-            this.listenTo(this.forms, 'reset', this.renderAndRoute);
-            this.forms.fetch({ reset: true });
+            if (!this.forms){
+                this.forms = new Forms();
+                this.listenTo(this.forms, "reset", this.render);
+                this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
+                this.listenTo(this.forms, 'reset', this.renderAndRoute);
+                this.forms.fetch({ reset: true });
+            } else {
+                this.renderAndRoute();
+            }
         },
 
         hideMenus: function (e) {
@@ -88,10 +88,6 @@ define([
             });
         },
 
-        triggerAddRow: function (e) {
-            this.app.vent.trigger('add-row');
-            e.preventDefault();
-        },
         triggerAddNew: function (e) {
             var mediaType = this.$el.find('.media-type').val(),
                 url = "//" + mediaType + "/new";
@@ -113,6 +109,7 @@ define([
             This is where it might begin the creation of a new
             field with the add marker
             */
+            console.log('triggerAddNewMap');
             var mediaType = $(e.target).attr('data-value'),
                 url = "//" + mediaType + "/new";
             if (mediaType === 'photos' || mediaType === 'audio') {
@@ -126,9 +123,6 @@ define([
                 });
             }
             e.preventDefault();
-        },
-        changeMode: function () {
-            this.renderAndRoute();
         },
         updateNewObejctRoute: function () {
             this.$el.find("#add-site").attr("href", '#/' + this.app.dataType + '/new');
@@ -168,22 +162,6 @@ define([
             this.app.router.navigate('//' + dataType, { trigger: true });
         },
 
-        showFormList: function () {
-            var formList = new FormList({
-                app: this.app
-            });
-            this.modal.update({
-                view: formList,
-                title: 'List of Forms',
-                width: 800,
-                showSaveButton: false,
-                showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
-            });
-            this.modal.show();
-        },
-
         createMediaUploadModal: function () {
             var uploadMediaForm = new CreateMedia({
                 app: this.app
@@ -196,8 +174,6 @@ define([
                 closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
             });
             this.modal.show();
         },
@@ -215,8 +191,6 @@ define([
                 closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
             });
             this.modal.show();
         },
@@ -243,6 +217,19 @@ define([
             this.modal.hide();
         },
 
+        editTargetForm: function(e){
+            var targetName = e.target.parentElement.innerText;
+
+            var targetModel = this.forms.findWhere({name: targetName});
+            this.app.vent.trigger('show-form', {
+                model: targetModel
+            });
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        },
+
         showCreateForm: function (opts) {
             opts = opts || {};
             var createForm = new CreateForm({
@@ -259,7 +246,6 @@ define([
                 width: 800,
                 showSaveButton: true,
                 showDeleteButton: opts.model,
-                // bind the scope of the save function to the source view:
                 saveFunction: createForm.saveFormSettings.bind(createForm),
                 deleteFunction: createForm.deleteForm.bind(createForm)
             });

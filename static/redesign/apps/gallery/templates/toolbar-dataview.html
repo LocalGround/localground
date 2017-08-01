@@ -1,6 +1,4 @@
 <div class = "project-detail">
-    <!-- Temporary placement for implementation purposes -->
-
     {{#ifequal activeTab "data"}}
         {{#ifequal screenType "spreadsheet"}}
             <select class="media-type">
@@ -27,17 +25,29 @@
         {{/ifequal}}
     {{/ifequal}}
 
+
+    <!-- This format is the most suitable for the Add Data update.
+         However, there has to be a lot of tweakings to suit existing functions on the gallery ann spreadsheet
+
+         The edit text should be its own button and when clicked, it should jump to the ecisting form
+         and then create a new row or something in line of editing data
+    -->
     {{#ifequal screenType "map"}}
-    <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</button>
+    <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Data</button>
     <div class="dropdown-menu" id="add-data-type" style="display: none;">
         <a href="#" class="add-map-image">Map Image</a>
+        <a href="#" class="add-media">Photos or Audio Files</a>
+        <a href="/gallery/#/videos" class="add-video">Video</a>
         <hr>
         <a href="#" class="add-new" data-value="markers">Site</a>
         {{#each forms}}
-        <a href="#" class="add-new" data-value="form_{{ this.id }}">{{ this.name }}</a>
+            <a href="#" class="add-new" data-value="form_{{ this.id }}">
+                {{ this.name }}
+                <i class="fa fa-edit edit-type"></i>
+            </a>
         {{/each}}
         <hr>
-        <a href="#" class="add-data">Edit Site Types</a>
+        <a href="#" class="add-type">Add Site Type</a> <!-- A Possible alternative for gallery and map -->
     </div>
     {{/ifequal}}
 
@@ -51,6 +61,7 @@
             <a id="add-new" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</a>
         {{/ifequal}}
 	{{/ifequal}}
+
 </div>
 <div class="main-search">
 	<form class="search-form" value="Search Media">

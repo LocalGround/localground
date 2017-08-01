@@ -7,6 +7,11 @@ define(["handlebars"],
             }
             return false;
         });
+        Handlebars.registerHelper('breaklines', function (text) {
+            text = Handlebars.Utils.escapeExpression(text);
+            text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
+            return new Handlebars.SafeString(text);
+        });
         Handlebars.registerHelper('ifequal', function (lvalue, rvalue, options) {
             if (arguments.length < 3) {
                 throw new Error("Handlebars Helper equal needs 2 parameters");
