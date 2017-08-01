@@ -2062,7 +2062,8 @@ audio {
 }
 
 .audio-basic .play {
-    margin-top: 35px;
+    margin-top: 15px;
+    margin-left: -2px;
     position: relative;
     z-index: 10;
 }
