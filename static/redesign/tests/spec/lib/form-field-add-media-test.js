@@ -204,7 +204,7 @@ define([
                 var audioPlay = fixture.find(".play");
                 expect(audioPlayCtrls[0]).not.toContainElement("div.pause");
                 $(audioPlay[0]).trigger('click');
-                expect(audioPlayCtrls[0]).toContainElement("div.pause");
+                expect(audioPlayCtrls[0]).toContainElement("div.fa-pause");
             });
 
             it("Enable Media Reordering gets executed", function(){

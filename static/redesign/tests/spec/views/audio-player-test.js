@@ -82,8 +82,7 @@ define([
                 expect(fixture).toContainElement(".play-ctrls");
                 expect(fixture).toContainElement(".play");
                 expect(fixture.find('source')).toHaveAttr('src', audioPlayer.model.get("file_path"));
-                expect(fixture.find('.play').css('border-width')).toBe('15px 0px 15px 30px');
-                expect(fixture.find('.play').css('border-color')).toBe('rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgb(104, 104, 104)');
+                expect(fixture.find('.play').class().toHaveClass('class', 'fa-play');
             });
 
             it("Listens for play / pause click events", genericTests.listensForPlayPauseClickEvents);

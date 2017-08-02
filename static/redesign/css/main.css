@@ -2093,7 +2093,7 @@ audio {
 .audio-simple .audio-labels, .audio-detail .audio-labels {
     font-size: 12px;
     color: #7a7a7a;
-    display: inline;
+    display: inline-block;
   /*  position: absolute; */
     top: 4px;
 }
@@ -2135,6 +2135,10 @@ audio {
     margin-top: -9px;
     margin-left: -8px;
     position: relative;
+}
+
+.audio-simple .progress-container {
+    width: 100%;
 }
 
 .info-container {

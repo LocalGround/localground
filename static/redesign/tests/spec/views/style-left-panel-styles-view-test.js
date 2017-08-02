@@ -82,12 +82,6 @@ define([
                 expect(panelStyleView.updateFontWeight).toHaveBeenCalledTimes(1);
             });
 
-            it(": updateFontSize event", function () {
-                expect(panelStyleView.updateFontSize).toHaveBeenCalledTimes(0);
-                $(fixture.find("#font-size")).val("7").change();
-                expect(panelStyleView.updateFontSize).toHaveBeenCalledTimes(1);
-            });
-
         });
 
         describe("Panel Show / Hide Tests", function () {

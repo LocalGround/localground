@@ -16,16 +16,16 @@
     <div>
         <div class="play-ctrls">
             <!-- i class="fa fa-play play" aria-hidden="true" style="font-size:2em;"></i -->
-            <div class="play fa fa-play" aria-hidden="true"></div>
+            <div class="play fa fa-play fa-3x" aria-hidden="true"></div>
         </div>
         <div class="audio-progress">
-            <span class="audio-labels time-current" style="left: 10px;"></span>
             <div class="progress-container">
                 <div class="audio-progress-bar"></div>
                 <div class="audio-progress-duration"></div>
                 <div class="audio-progress-circle"></div>
             </div>
-            <span class="audio-labels time-duration" style="right: 10px;"></span>
+            <div class="audio-labels time-current"></div>
+           <!-- <span class="audio-labels time-duration" style="right: 10px;"></span> -->
         </div>
     </div>
 {{/ifequal}}
@@ -53,8 +53,8 @@
          <!--   <span class="audio-labels time-duration" style="right: 10px; color: #{{paragraph.color}};"></span> -->
         </div>
         <div class="info-container">
-            <p class="audio-info" style="color: #{{paragraph.color}};">{{ name }}{{#if caption}}: {{ caption }} {{/if}}</p>
-            <span class="audio-labels time-current" style="float: right; color: #{{paragraph.color}};"></span>
+            <p class="audio-info" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}{{#if caption}}: {{ caption }} {{/if}}</p>
+            <span class="audio-labels time-current" style="float: right; color: #{{paragraph.color}}; font-family: {{paragraph.font}}"></span>
         </div>
         
 
