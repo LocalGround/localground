@@ -2066,6 +2066,7 @@ audio {
     margin-left: -2px;
     position: relative;
     z-index: 10;
+    color: #686868;
 }
 
 .audio-basic {
@@ -2098,7 +2099,8 @@ audio {
 }
 
 .audio-progress-bar {
-    background-color: #c4c4c4;
+    color: #999999;
+    background-color: #f6f6f9;
     height: 2px;
     border-radius: 10px;
     display: inline-block;
@@ -2114,7 +2116,8 @@ audio {
 }
 
 .audio-simple .audio-progress-duration, .audio-detail .audio-progress-duration {
-    background-color: #686868;
+    background-color: #999999;
+    color: #999999;
     width: 0px;
         height: 2px;
     border-radius: 10px;
@@ -2127,8 +2130,8 @@ audio {
     height: 12px;
     width: 12px;
     border-radius: 40px;
-    border: 1px solid #7a7a7a;
-    background-color: white;
+    border: 1px solid #999999;
+    background-color: #f6f6f9;
     margin-top: -9px;
     margin-left: -8px;
     position: relative;
