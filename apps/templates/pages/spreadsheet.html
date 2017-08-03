@@ -66,22 +66,14 @@
     </div>
     {% comment %}
         {% if DEBUG %}
-           <!-- use un-minified, un-concatenated code -->
-           <script data-main="/static/backbone/js/api/embedded-mapplication.js" src="/static/backbone/js/external/require.js"></script>
+            <script data-main="/static/redesign/build/spreadsheet.js" src="/static/redesign/external/require.js"></script>
         {% else %}
            <!-- Use minified, concatenated code -->
-           <script data-main="/static/backbone/js/api-build/embedded-mapplication.min.js" src="/static/backbone/js/external/require.js"></script>
+            <script data-main="/static/redesign/build/spreadsheet.min.js" src="/static/redesign/external/require.js"></script>
         {% endif %}
     {% endcomment %}
-    
-    <!-- script src="/static/redesign/external/require.js"></script>
-    <script>
-        require(['/static/redesign/apps/require-config.js'], function(){
-            require(['apps/spreadsheet/kickoff']);  //or adminApp for the admin area, etc.
-        });
-    </script-->
-    <script data-main="/static/redesign/build/spreadsheet.js" src="/static/redesign/external/require.js"></script>
-
+    <script data-main="/static/redesign/build/spreadsheet.min.js" src="/static/redesign/external/require.js"></script>
+    <!-- script data-main="/static/redesign/apps/spreadsheet/kickoff.js" src="/static/redesign/external/require.js"></script>
 
 </body>
 </html>

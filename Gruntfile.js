@@ -7,7 +7,19 @@ module.exports = function (grunt) {
                     out: './static/redesign/build/spreadsheet.js',
                     baseUrl: "./static/redesign/",
                     mainConfigFile: "./static/redesign/apps/require-config.js",
-                    name: 'apps/spreadsheet/spreadsheet-app',
+                    name: 'apps/spreadsheet/kickoff',
+                    removeCombined: 'true',
+                    findNestedDependencies: 'true',
+                    wrapShim: 'true',
+                    optimize: 'none'
+                }
+	        },
+            presentation: {
+                options: {
+                    out: './static/redesign/build/presentation.js',
+                    baseUrl: "./static/redesign/",
+                    mainConfigFile: "./static/redesign/apps/require-config.js",
+                    name: 'apps/presentation/kickoff',
                     removeCombined: 'true',
                     findNestedDependencies: 'true',
                     wrapShim: 'true',
@@ -22,6 +34,12 @@ module.exports = function (grunt) {
                     './static/redesign/build/spreadsheet.min.js':
 						['./static/redesign/build/spreadsheet.js']
 				}
+			},
+			presentation: {
+				files: {
+                    './static/redesign/build/presentation.min.js':
+						['./static/redesign/build/presentation.js']
+				}
 			}
 		}
 
@@ -34,7 +52,7 @@ module.exports = function (grunt) {
 
 /*
  *
- * 1814  grunt
+ 1814  grunt
  1815  history
  1816  grunt
  1817  locate grunt
@@ -69,4 +87,6 @@ module.exports = function (grunt) {
  1846  npm install grunt-contrib-requirejs
  1847  npm install grunt-contrib-uglify
  1848  sudo npm install grunt-contrib-uglify
- 1849  grunt*/
+ 1849  cd /localground
+ 1850  grunt
+*/
