@@ -20,7 +20,7 @@ class VideoSerializer(BaseSerializer):
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
-        required=False
+        required=True
     )
 
 
@@ -52,4 +52,4 @@ class VideoSerializer(BaseSerializer):
 
     class Meta:
         model = models.Video
-        fields = ('id', 'url', 'name', 'caption', 'tags', 'video_id', 'video_provider', 'geometry', 'project_id', 'owner', 'overlay_type')
+        fields = ('id', 'url', 'name', 'caption', 'tags', 'video_id', 'video_provider', 'geometry', 'project_id', 'owner', 'overlay_type', 'attribution')

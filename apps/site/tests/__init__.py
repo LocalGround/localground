@@ -443,6 +443,24 @@ class ModelMixin(object):
         photo.save()
         return photo
 
+    def create_video(self, user, project, name='Video Name',
+                 provider='youtube', video_id='4232534',
+                 point=None, tags=[]):
+        from localground.apps.site import models
+        video = models.Video(
+            project=project,
+            owner=user,
+            last_updated_by=user,
+            name=name,
+            description='Video Description',
+            provider=provider,
+            video_id=video_id,
+            point=point,
+            tags=tags
+        )
+        video.save()
+        return video
+
     def create_audio(self, user, project, name='Audio Name',
                      file_name='my_audio.jpg', tags=[], point=None):
         audio = models.Audio(

@@ -16,12 +16,10 @@ class Video(ProjectMixin, BaseAudit, BasePointMixin, models.Model):
     video_id = models.CharField(null=False, blank=False, max_length=255)
     provider = models.CharField(max_length=63, null=False, blank=False,
                     choices=VIDEO_PROVIDERS, verbose_name="video provider")
-    '''
-    # TODO: We forgot to add attribution:
+    
     attribution = models.CharField(max_length=500, blank=True,
                                    null=True, verbose_name="Author / Creator",
                                    help_text="Name of the person / group who created the media file (text)")
-    '''
     
     filter_fields = filter_fields = ('id', 'project', 'date_created', 'name', 'description', 'tags', 'point')
     objects = VideoManager()
