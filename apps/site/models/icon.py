@@ -1,9 +1,9 @@
 from django.contrib.gis.db import models
 from django.conf import settings
-from localground.apps.site.models import ProjectMixin, BaseMediaSimple
+from localground.apps.site.models import ProjectMixin, BaseAudit, BaseMediaMixin
 import os
 
-class Icon(ProjectMixin, BaseMediaSimple):
+class Icon(ProjectMixin, BaseMediaMixin, BaseAudit):
     FILE_TYPES = (
         ('svg', 'svg'),
         ('jpeg', 'jpeg'),
@@ -14,7 +14,9 @@ class Icon(ProjectMixin, BaseMediaSimple):
                                 choices=FILE_TYPES, verbose_name="file type")
     width = models.FloatField(null=False, blank=False)
     height = models.FloatField(null=False, blank=False)
-    
+    host = models.CharField(max_length=255)
+    virtual_path = models.CharField(max_length=255)
+    file_name_orig = models.CharField(max_length=255)
     file_name_new = models.CharField(max_length=255)
     x_position = models.FloatField(null=False, blank=False)
     y_position = models.FloatField(null=False, blank=False)
