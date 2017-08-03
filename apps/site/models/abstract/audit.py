@@ -2,7 +2,6 @@ from django.contrib.gis.db import models
 from localground.apps.site.models.abstract.base import Base
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
-
 class BaseAudit(Base):
     owner = models.ForeignKey('auth.User',)
     last_updated_by = models.ForeignKey(

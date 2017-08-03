@@ -10,31 +10,11 @@ import os
 import stat
 from rest_framework import exceptions
 
-class BaseMedia(BaseAudit):
-
-    '''
-    Important:  the "groups" generic relation is needed to ensure cascading
-    deletes.  For example, if a photo gets deleted, you also want to ensure
-    that its associations w/any markers / views also get deleted.  The reverse
-    relationship needs to be defined here in order for this to occur:
-    http://stackoverflow.com/questions/6803018/why-wont-my-genericforeignkey-cascade-when-deleting
-    '''
+class BaseMediaSimple(BaseAudit):
     host = models.CharField(max_length=255)
     virtual_path = models.CharField(max_length=255)
     file_name_orig = models.CharField(max_length=255)
-    content_type = models.CharField(max_length=50)
-    groups = GenericRelation(
-        'GenericAssociation',
-        content_type_field='entity_type',
-        object_id_field='entity_id',
-        related_query_name="%(app_label)s_%(class)s_related"
-    )
     filter_fields = ('id', 'project', 'date_created', 'file_name_orig',)
-
-    @classmethod
-    def inline_form(cls, user):
-        from localground.apps.site.forms import get_inline_form
-        return get_inline_form(cls, user)
 
     class Meta:
         abstract = True
@@ -42,6 +22,9 @@ class BaseMedia(BaseAudit):
 
     def get_absolute_path(self):
         return upload_helpers.get_absolute_path(self.virtual_path)
+    
+    def save_file_to_disk(self, file):
+        return upload_helpers.save_file_to_disk(self.owner, self.model_name_plural, file)
 
     def absolute_virtual_path(self):
         return upload_helpers.encrypt_media_path(
@@ -81,6 +64,28 @@ class BaseMedia(BaseAudit):
         return self.project.can_edit(user)
 
 
+class BaseMedia(BaseMediaSimple):
+    '''
+    Important:  the "groups" generic relation is needed to ensure cascading
+    deletes.  For example, if a photo gets deleted, you also want to ensure
+    that its associations w/any markers / views also get deleted.  The reverse
+    relationship needs to be defined here in order for this to occur:
+    http://stackoverflow.com/questions/6803018/why-wont-my-genericforeignkey-cascade-when-deleting
+    '''
+    
+    content_type = models.CharField(max_length=50)
+    groups = GenericRelation(
+        'GenericAssociation',
+        content_type_field='entity_type',
+        object_id_field='entity_id',
+        related_query_name="%(app_label)s_%(class)s_related"
+    )
+        
+    @classmethod
+    def inline_form(cls, user):
+        from localground.apps.site.forms import get_inline_form
+        return get_inline_form(cls, user)
+    
 class BaseNamedMedia(BaseMedia, ProjectMixin):
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True, verbose_name="caption")
