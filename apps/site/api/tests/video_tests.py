@@ -48,11 +48,60 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(r1.get("name"), 'Vim')
         self.assertEqual(r2.get("name"), 'YT')
         self.assertEqual(len(results), 2)
-        
 
-    
+    def test_post_creates_videos_only_when_required_params_included(self, **kwargs):
+        response = self.client_user.post(self.url,
+                                         data=urllib.urlencode({
+                                             'owner': self.user,
+                                             'project_id': self.project.id,
+                                             'video_provider': 'youtube',
+                                             #'video_id': '344533'
+                                         }),
+                                         HTTP_X_CSRFTOKEN=self.csrf_token,
+                                         content_type="application/x-www-form-urlencoded"
+                                         )
+        #print response.data
+        #self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_post_updates_all_fields_when_all_params_included(self, **kwargs):
+        import json
+        name, caption = 'New Video Name for POST', 'POST test description'
+        point = {
+            "type": "Point",
+            "coordinates": [12.492324113849, 41.890307434153]
+        }
+        response = self.client_user.post(self.url,
+                                        data=urllib.urlencode({
+                                            'geometry': point,
+                                            'name': name,
+                                            'caption': caption,
+                                            'tags': 'cats dogs',
+                                            'video_id': '111111',
+                                            'video_provider': 'vimeo',
+                                            'project_id': self.project.id,
+                                            'owner': 'tester',
+                                            'attribution': 'van gogh'
+                                        }),
+                                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                                        content_type="application/x-www-form-urlencoded"
+                                        )
+        #print response.data
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.get("name"), name)
+        self.assertEqual(response.data.get("caption"), caption)
+        self.assertEqual(response.data.get("tags"), ['cats dogs'])
+        #self.assertEqual(response.data.get("geometry.coordinates")[1], point['coordinates'][1])
+        # self.assertEqual(response.data.get("geometry.coordinates")[0], point['coordinates'][0])
+        self.assertEqual(response.data.get("video_id"), '111111')
+        self.assertEqual(response.data.get("video_provider"), 'vimeo')
+        self.assertEqual(response.data.get("project_id"), self.project.id)
+        self.assertEqual(response.data.get("owner"), 'tester')
+        self.assertEqual(response.data.get("attribution"), 'van gogh')
+
+
 class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
-      '''
+    '''
     Todo:
         * ensure that DELETE works
            - issues a delete request,
@@ -63,7 +112,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=True)
         self.video = self.create_video(self.user, self.project)
-        self.url = '/api/0/videos/%s/' % self.video.id
+        self.url = '/api/0/videos/%s/.json' % self.video.id
         self.urls = [self.url]
         self.view = views.VideoInstance.as_view()
         self.metadata = get_metadata()
@@ -222,6 +271,34 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_video.geometry.y, point['coordinates'][1])
         self.assertEqual(updated_video.geometry.x, point['coordinates'][0])
 
+    def test_update_video_using_patch_only_changes_patched_fields(self, **kwargs):
+        import json
+        point = {
+            "type": "Point",
+            "coordinates": [12.492324113849, 41.890307434153]
+        }
+        response = self.client_user.patch(self.url,
+                        data=urllib.urlencode({
+                            'geometry': point,
+                            'name': 'New Name',
+                            'caption': 'New Caption'
+                        }),
+                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                        content_type="application/x-www-form-urlencoded"
+                    )
+        #print response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_video = models.Video.objects.get(id=self.video.id)
+        self.assertEqual(updated_video.geometry.y, point['coordinates'][1])
+        self.assertEqual(updated_video.geometry.x, point['coordinates'][0])
+        self.assertEqual(updated_video.name, 'New Name')
+        self.assertEqual(updated_video.description, 'New Caption')
+        self.assertEqual(updated_video.video_id, '4232534')
+        self.assertEqual(updated_video.provider, 'youtube')
+        self.assertEqual(updated_video.owner, self.user)
+        self.assertEqual(updated_video.last_updated_by, self.user)
+
+  
     def test_delete_video(self, **kwargs):
         video_id = self.video.id
 
@@ -232,7 +309,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         response = self.client_user.delete(self.url,
                                            HTTP_X_CSRFTOKEN=self.csrf_token
                                            )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # check to make sure it's gone:
         try:
