@@ -1,4 +1,4 @@
-require(['/static/redesign/apps/require-config.js'], function () {
+require(['../require-config'], function () {
     'use strict';
     require(["jquery", "apps/spreadsheet/spreadsheet-app"], function ($, SpreadsheetApp) {
         $(function () {
