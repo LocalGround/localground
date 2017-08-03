@@ -34,6 +34,7 @@ define([
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'show-list', this.showSpreadsheet);
             this.addMessageListeners();
+            console.log('starting!!');
         },
 
         initialize: function (options) {
@@ -101,5 +102,8 @@ define([
             //console.log('restored', this.dataType);
         }
     }));
-    return SpreadsheetApp;
+    console.log("hi!");
+    window.location.hash = '';
+    (new SpreadsheetApp()).start();
+    //return SpreadsheetApp;
 });
