@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from django.conf import settings
 from localground.apps.site.models import ProjectMixin, BaseAudit, BaseMediaMixin
+from localground.apps.site.managers import IconManager
 import os
 
 class Icon(ProjectMixin, BaseMediaMixin, BaseAudit):
@@ -20,6 +21,7 @@ class Icon(ProjectMixin, BaseMediaMixin, BaseAudit):
     file_name_new = models.CharField(max_length=255)
     x_position = models.FloatField(null=False, blank=False)
     y_position = models.FloatField(null=False, blank=False)
+    objects = IconManager()
 
     def delete(self, *args, **kwargs):
         # remove images from file system:

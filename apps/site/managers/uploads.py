@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
-from localground.apps.site.managers.base import ObjectMixin
+from localground.apps.site.managers.base import ObjectMixin, BaseMixin
 from localground.apps.site.managers.overlays import MarkerMixin
 from localground.apps.lib.errors import GenericLocalGroundError
 
@@ -106,6 +106,21 @@ class VideoManager(models.GeoManager, VideoMixin):
     #def get_queryset(self):
     #    return VideoQuerySet(self.model, using=self._db)
     pass
+
+
+class IconManager(models.GeoManager, BaseMixin):
+     def get_objects_public(self, request=None, ordering_field='name', **kwargs):
+        '''
+        This returns all generic icons that are owned by the system
+        '''
+        q = self.model.objects.filter(owner__id=1)
+        if request is not None:
+            q = self._apply_sql_filter(q, request, context)
+        if ordering_field:
+            q = q.order_by(ordering_field)
+        return q
+
+
 
 class RecordMixin(UploadMixin, MarkerMixin):
 
