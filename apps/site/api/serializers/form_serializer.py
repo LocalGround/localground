@@ -6,12 +6,6 @@ from localground.apps.site import models
 
 class FormSerializerList(BaseNamedSerializer):
     
-    def get_fields(self, *args, **kwargs):
-        fields = super(FormSerializerList, self).get_fields(*args, **kwargs)
-        #restrict project list at runtime:
-        fields['project_ids'].child_relation.queryset = self.get_projects()
-        return fields
-    
     project_ids = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=models.Project.objects.all(), #note: queryset restricted at runtime (above)

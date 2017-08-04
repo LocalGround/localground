@@ -13,19 +13,19 @@ https://www.ianlewis.org/en/mixins-and-python
 In Python the class hierarchy is defined right to left,
 so in the example...
 
-class MyClass(BaseClass, Mixin1, Mixin2):
+class MyClass(Mixin2, Mixin1, BaseClass):
     pass
 
-...the Mixin2 class is the base class,
-extended by Mixin1 and finally by BaseClass.
+...the BaseClass class is the base class,
+extended by Mixin1 and finally by Mixin2.
 '''
 
-class ProjectSerializerMixin(serializers.HyperlinkedModelSerializer):
+class ProjectSerializerMixin(serializers.ModelSerializer):
     
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
-        required=False
+        required=True
     )
     
     def get_projects(self):
@@ -103,20 +103,6 @@ class BaseNamedSerializer(BaseSerializer):
     )
     overlay_type = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
-    
-    def get_projects(self):
-        if self.context.get('view'):
-            view = self.context['view']
-            if view.request.user.is_authenticated():
-                return models.Project.objects.get_objects(view.request.user)
-            else:
-                return models.Project.objects.get_objects_public(
-                    access_key=view.request.GET.get('access_key')
-                )
-        elif getattr(self, 'user', None) is not None:
-            return models.Project.objects.get_objects(self.user)
-        else:
-            return models.Project.objects.all()
 
     class Meta:
         #model = BaseNamed
@@ -129,7 +115,7 @@ class BaseNamedSerializer(BaseSerializer):
         return obj.owner.username
 
 
-class GeometrySerializer(BaseNamedSerializer):
+class GeometrySerializer(ProjectSerializerMixin, BaseNamedSerializer):
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         allow_null=True,
@@ -142,18 +128,6 @@ class GeometrySerializer(BaseNamedSerializer):
         allow_null=True,
         required=False,
         style={'base_template': 'json.html', 'rows': 5})
-    
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=False
-    )
-    
-    def get_fields(self, *args, **kwargs):
-        fields = super(GeometrySerializer, self).get_fields(*args, **kwargs)
-        #restrict project list at runtime:
-        fields['project_id'].queryset = self.get_projects()
-        return fields
 
     class Meta:
         fields = BaseNamedSerializer.Meta.fields + \
@@ -178,19 +152,13 @@ class MediaGeometrySerializer(GeometrySerializer):
         # (spaces, etc. removed)
         return obj.encrypt_url(obj.file_name_new)
 
+class ExtentsSerializer(ProjectSerializerMixin, BaseNamedSerializer):
 
-
-class ExtentsSerializer(BaseNamedSerializer):
-    project_id = fields.ProjectField(
-        label='project_id',
-        source='project',
-        required=False)
     center = fields.GeometryField(
-                        help_text='Assign a GeoJSON string',
-                        required=False,
-                        style={'base_template': 'json.html', 'rows': 5}
-                    )
-
+                help_text='Assign a GeoJSON string',
+                required=False,
+                style={'base_template': 'json.html', 'rows': 5}
+            )
 
 class Meta:
     fields = BaseNamedSerializer.Meta.fields + ('project_id', 'center')

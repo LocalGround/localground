@@ -5,10 +5,10 @@ from django.forms.fields import FileField
 from localground.apps.lib.helpers import upload_helpers, generic, get_timestamp_no_milliseconds
 from localground.apps.site import models
 from localground.apps.site.api import fields
-from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer, AuditSerializerMixin
+from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer, AuditSerializerMixin, ProjectSerializerMixin
 
 
-class MapImageSerializerCreate(BaseNamedSerializer):
+class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     media_file = serializers.CharField(
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
@@ -19,11 +19,6 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         required=False,
         default=1,
         queryset=models.StatusCode.objects.all()
-    )
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=False
     )
     source_print = serializers.PrimaryKeyRelatedField(
         queryset=models.Print.objects.all(),
@@ -61,12 +56,6 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     map_image.center = p.center
     map_image.save(user=self.user)
     '''
-    
-    def get_fields(self, *args, **kwargs):
-        fields = super(MapImageSerializerCreate, self).get_fields(*args, **kwargs)
-        #restrict project list at runtime:
-        fields['project_id'].queryset = self.get_projects()
-        return fields
 
     class Meta:
         model = models.MapImage

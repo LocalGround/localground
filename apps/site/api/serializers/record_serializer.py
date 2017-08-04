@@ -5,8 +5,9 @@ from localground.apps.site.api import fields
 import datetime
 from django.conf import settings
 from rest_framework.serializers import raise_errors_on_nested_writes, model_meta
+from localground.apps.site.api.serializers.base_serializer import ProjectSerializerMixin
 
-class BaseRecordSerializer(serializers.ModelSerializer):
+class BaseRecordSerializer(ProjectSerializerMixin, serializers.ModelSerializer):
 
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
@@ -15,11 +16,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
         style={'base_template': 'json.html', 'rows': 5},
         source='point'
     )
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=False
-    )
+
     owner = serializers.SerializerMethodField()
     overlay_type = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField('get_detail_url')
@@ -27,16 +24,6 @@ class BaseRecordSerializer(serializers.ModelSerializer):
     photo_count = serializers.SerializerMethodField()
     video_count = serializers.SerializerMethodField()
     audio_count = serializers.SerializerMethodField()
-
-    def get_fields(self, *args, **kwargs):
-        fields = super(BaseRecordSerializer, self).get_fields(*args, **kwargs)
-        if self.context.get('view'):
-            view = self.context['view']
-            form = models.Form.objects.get(id=view.kwargs.get('form_id'))
-            fields['project_id'].queryset = form.projects.all()
-        else:
-            fields['project_id'].queryset = models.Form.objects.all()
-        return fields
 
     def get_children(self, obj):
         children = {}

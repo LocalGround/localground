@@ -13,7 +13,6 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         return fields
     
     uuid = serializers.SerializerMethodField()
-    project_id = serializers.PrimaryKeyRelatedField(queryset=models.Project.objects.all(), source='project')
     layout_url = serializers.HyperlinkedRelatedField(
         view_name='layout-detail',
         source='layout',
@@ -113,10 +112,6 @@ class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17, read_only=True)
     layout = serializers.SerializerMethodField()
     map_provider = serializers.SerializerMethodField()
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=False)
     
     class Meta:
         model = models.Print
