@@ -15,7 +15,10 @@ class IconSerializer(BaseSerializer):
     )
 
     file_path = serializers.SerializerMethodField('get_file_path_new')
-    project_id = fields.ProjectField(label='project_id', source='project', required=False)
+    project_id = fields.ProjectField(
+        label='project_id', 
+        source='project', 
+        required=False)
     owner = serializers.SerializerMethodField()
 
 
