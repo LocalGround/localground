@@ -3,17 +3,28 @@ from django.conf import settings
 from localground.apps.site.api.serializers.base_serializer import BaseSerializer
 from rest_framework import serializers
 from localground.apps.site import models
-from localground.apps.site.api.fields import FileField
 from localground.apps.lib.helpers import upload_helpers, generic
+from localground.apps.site.api import fields
+
 
 class IconSerializer(BaseSerializer):
-    
-    #help_text='Valid file types are: ' + ', '.join(ext_whitelist)
+    ext_whitelist = ['jpg', 'jpeg', 'png', 'svg']
+    icon = serializers.CharField(
+        source='file_name_orig', required=True, style={'base_template': 'file.html'},
+        help_text='Valid file types are: ' + ', '.join(ext_whitelist)
+    )
+    file_path = serializers.SerializerMethodField('get_file_path_new')
+    project_id = fields.ProjectField(label='project_id', source='project', required=False)
 
     class Meta:
         model = models.Icon
-        fields = BaseSerializer.Meta.fields 
+        fields = BaseSerializer.Meta.fields + \
+                    ('name', 'icon', 'file_path', 'project_id', 'x_position', 'y_position')
         depth = 0
+        
+    
+    def get_file_path_new(self, obj):
+        return obj.encrypt_url(obj.file_name_new)
 
     def process_file(self, file, owner):
         from PIL import Image, ImageOps
@@ -21,38 +32,23 @@ class IconSerializer(BaseSerializer):
         model_name_plural = models.Icon.model_name_plural
         file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file)
         file_name, ext = os.path.splitext(file_name_new)
-
-        # create thumbnails:
-        media_path = upload_helpers.generate_absolute_path(owner, model_name_plural)
-        im = Image.open(media_path + '/' + file_name_new)
-        exif = models.Icon.read_exif_data(im)
-        sizes = [1000, 500, 250, 128, 50, 20]
-        icon_paths = [file_name_new]
-        for s in sizes:
-            if s in [50, 25]:
-                # ensure that perfect squares:
-                im.thumbnail((s * 2, s * 2), Image.ANTIALIAS)
-                im = im.crop([0, 0, s - 2, s - 2])
-                # for some reason, ImageOps.expand throws an error for some files:
-                im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
-            else:
-                im.thumbnail((s, s), Image.ANTIALIAS)
-            abs_path = '%s/%s_%s%s' % (media_path, file_name, s, ext)
-            im.save(abs_path)
-            icon_paths.append('%s_%s%s' % (file_name, s, ext))
-        
+        file_type = ext.replace('.', '').lower()
+        if file_type == 'jpg':
+            file_type = 'jpeg'
         return {
             'file_name_orig': file.name,
             'name': self.initial_data.get('name') or file.name,
             'file_name_new': file_name_new,
-            'content_type': ext.replace('.', ''),
-            'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural)
+            'file_type': file_type,
+            'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural),
+            'width': 100,
+            'height': 100
         }
         
     def create(self, validated_data):
         # Overriding the create method to handle file processing
         owner = self.context.get('request').user
-        f = self.initial_data.get('media_file')
+        f = self.initial_data.get('icon')
         
         # ensure filetype is valid:
         upload_helpers.validate_file(f, self.ext_whitelist)
@@ -67,5 +63,6 @@ class IconSerializer(BaseSerializer):
         self.instance = self.Meta.model.objects.create(**data)
         return self.instance
     
+    
 class IconSerializerUpdate(IconSerializer):
-    media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
+    icon = serializers.CharField(source='file_name_orig', required=False, read_only=True)

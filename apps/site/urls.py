@@ -24,7 +24,7 @@ urlpatterns = patterns('',
 
     # media server
     (
-        r'^profile/(?P<object_type>photos|audio|videos|map-images|prints|tables)/(?P<hash>[=\w]+)/$',
+        r'^profile/(?P<object_type>icons|photos|audio|videos|map-images|prints|tables)/(?P<hash>[=\w]+)/$',
         'localground.apps.site.views.mediaserver.serve_media'),
 
     # data API

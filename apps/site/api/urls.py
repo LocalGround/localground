@@ -113,10 +113,10 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.AudioList.as_view(),
         name='audio-list'),
     url(
-        r'^icon/(?P<pk>[0-9]+)/$',
+        r'^icons/(?P<pk>[0-9]+)/$',
         views.IconInstance.as_view(),
         name='icon-detail'),
-    url(r'^icon/$',
+    url(r'^icons/$',
         views.IconList.as_view(),
         name='icon-list'), 
     url(
