@@ -20,5 +20,10 @@
   },
   "devDependencies": {
     "grunt": "~1.0.1"
+  },
+  "dependencies": {
+    "grunt": "~1.0.1",
+    "grunt-contrib-requirejs": "~1.0.0",
+    "grunt-contrib-uglify": "~3.0.1"
   }
 }
