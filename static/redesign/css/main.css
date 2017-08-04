@@ -1212,12 +1212,20 @@ tbody .failure-message, tbody .success-message {
 }
 
 .spreadsheet-main-panel {
-    background-color: #ecedf2;
     display: flex;
     height: calc(100vh - 111px);
     top: 111px;
     padding:0;
     z-index: 0;
+    margin-bottom: 180px;
+}
+
+.spreadsheet-tab-panel {
+    background-color: #CCC;
+    height: 50px;
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
 }
 
 .gallery-panel {
