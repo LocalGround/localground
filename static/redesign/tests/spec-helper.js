@@ -443,8 +443,8 @@ define(
                 new Print({id: 3, name: "Print 3", tags: ['emeryville'], project_id: 2, overlay_type: "print" })
             ]);
             this.markers = new Markers([
-                new Marker({ id: 1, name: "POI 1", tags: ['my house'], project_id: 1, overlay_type: "marker", caption: "Caption1", color: "FF0000", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
-                new Marker({id: 2, name: "POI 2", tags: ['friend\'s house', 'tag1'], project_id: 1, overlay_type: "marker" }),
+                new Marker({ id: 1, name: "POI 1", tags: ['my house'], project_id: 1, overlay_type: "marker", caption: "Caption1", color: "FF0000", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, extras: {featured_image: 1} }),
+                new Marker({id: 2, name: "POI 2", tags: ['friend\'s house', 'tag1'], project_id: 1, overlay_type: "marker", extras: {featured_image: 20}}),
                 new Marker({id: 3, name: "POI 3", tags: ['coffee shop', 'tag1'], project_id: 2, overlay_type: "marker" })
             ]);
 
@@ -602,7 +602,28 @@ define(
             this.project = this.projects.at(0);
 
             this.marker = this.markers.at(0);
+            this.marker_1 = this.markers.at(1);
             this.marker.set("children", {
+                photos: {
+                    name: "Photos",
+                    id: "photos",
+                    overlay_type: "photo",
+                    data: this.photos.toJSON()
+                },
+                audio: {
+                    name: "Audio",
+                    id: "audio",
+                    overlay_type: "audio",
+                    data: this.audioFiles.toJSON()
+                },
+                videos: {
+                    name: "Videos",
+                    id: "videos",
+                    overlay_type: "video",
+                    data: this.videos.toJSON()
+                }
+            });
+            this.marker_1.set("children", {
                 photos: {
                     name: "Photos",
                     id: "photos",

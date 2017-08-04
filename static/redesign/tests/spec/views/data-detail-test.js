@@ -26,7 +26,6 @@ define([
         var fixture, newDataDetail, setupDataDetail, initSpies, lat, lng;
 
         setupDataDetail = function (scope, opts) {
-            //console.log(opts.model);
             var model = opts.model || scope.marker,
                 dataType = opts.dataType || "markers";
             scope.app.mode = opts.mode || "edit";
@@ -64,6 +63,7 @@ define([
             spyOn(DataDetail.prototype, "doNotDisplay").and.callThrough();
             //
             spyOn(DataDetail.prototype, "rotatePhoto").and.callThrough();
+            spyOn(DataDetail.prototype, "getFeaturedImage").and.callThrough();
             spyOn(DataDetail.prototype, "templateHelpers").and.callThrough();
             //
             spyOn(DataDetail.prototype, "switchToEditMode").and.callThrough();
@@ -101,15 +101,38 @@ define([
                 initSpies(this);
             });
 
-            it("Stub test", function(){
+            it("Successfully calls Get Featured Image", function(){
                 newDataDetail = new DataDetail({
                     app: this.app,
                     model: this.marker,
                     mode: "view"
                 });
-                console.log(this.marker);
-                expect(1).toEqual(-1);
+                expect(DataDetail.prototype.getFeaturedImage).toHaveBeenCalledTimes(0);
+                newDataDetail.render();
+                expect(DataDetail.prototype.getFeaturedImage).toHaveBeenCalledTimes(2);
+
             });
+
+            it("Calls Get Featured Image with Wrong ID and returns null", function(){
+                newDataDetail = new DataDetail({
+                    app: this.app,
+                    model: this.marker_1,
+                    mode: "view"
+                });
+                expect(newDataDetail.getFeaturedImage()).toEqual(null);
+            });
+
+
+            it("Calls Get Featured Image without extras and returns null", function(){
+                newDataDetail = new DataDetail({
+                    app: this.app,
+                    model: this.markers.at(2),
+                    mode: "view"
+                });
+                expect(newDataDetail.getFeaturedImage()).toEqual(null);
+            });
+
+
         });
 
         describe("Data Detail: Other Functions", function(){
@@ -745,15 +768,13 @@ define([
                 expect(fixture.find("button.button-secondary").html()).not.toEqual("Remove Location Marker");
                 expect(DataDetail.prototype.activateMarkerTrigger).toHaveBeenCalledTimes(1);
                 expect(fixture.find("p#drop-marker-message").html()).toEqual("click on the map to add location");
-                console.log($('body').find('#follower')[0]);
-                console.log($('body').find('#follower').html());
+
                 expect($('body').find('#follower')).toContainElement('svg');
 
                 var $svg = $('body').find('svg');
                 var $path = $svg.find('path');
                 var testIcon = newDataDetail.icon;
 
-                console.log(testIcon);
 
 
                 expect($svg[0].getAttribute("viewBox")).toEqual(testIcon.viewBox);
