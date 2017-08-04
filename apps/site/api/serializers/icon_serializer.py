@@ -1,13 +1,13 @@
 import os, sys
 from django.conf import settings
-from localground.apps.site.api.serializers.base_serializer import BaseSerializer
+from localground.apps.site.api.serializers.base_serializer import BaseSerializer, ProjectSerializerMixin
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.lib.helpers import upload_helpers, generic
 from localground.apps.site.api import fields
 
 
-class IconSerializer(BaseSerializer):
+class IconSerializer(ProjectSerializerMixin, BaseSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'png', 'svg']
     icon = serializers.CharField(
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
@@ -15,13 +15,8 @@ class IconSerializer(BaseSerializer):
     )
 
     file_path = serializers.SerializerMethodField('get_file_path_new')
-    project_id = fields.ProjectField(
-        label='project_id', 
-        source='project', 
-        required=False)
     owner = serializers.SerializerMethodField()
-
-
+    
     class Meta:
         model = models.Icon
         read_only_fields = ('width', 'height', 'file_type')

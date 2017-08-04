@@ -19,6 +19,36 @@ class MyClass(BaseClass, Mixin1, Mixin2):
 ...the Mixin2 class is the base class,
 extended by Mixin1 and finally by BaseClass.
 '''
+
+class ProjectSerializerMixin(serializers.HyperlinkedModelSerializer):
+    
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(),
+        source='project',
+        required=False
+    )
+    
+    def get_projects(self):
+        if self.context.get('view'):
+            view = self.context['view']
+            if view.request.user.is_authenticated():
+                return models.Project.objects.get_objects(view.request.user)
+            else:
+                return models.Project.objects.get_objects_public(
+                    access_key=view.request.GET.get('access_key')
+                )
+        elif getattr(self, 'user', None) is not None:
+            return models.Project.objects.get_objects(self.user)
+        else:
+            return models.Project.objects.all()
+    
+    def get_fields(self, *args, **kwargs):
+        fields = super(ProjectSerializerMixin, self).get_fields(*args, **kwargs)
+        #restrict project list at runtime:
+        fields['project_id'].queryset = self.get_projects()
+        return fields
+    
+    
 class AuditSerializerMixin(object):
     def get_presave_create_dictionary(self):
         return {

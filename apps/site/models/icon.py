@@ -7,7 +7,7 @@ import os
 class Icon(ProjectMixin, BaseMediaMixin, BaseAudit):
     FILE_TYPES = (
         ('svg', 'svg'),
-        ('jpg', 'jpg'),
+        ('jpeg', 'jpeg'),
         ('png', 'png')
     )
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -19,9 +19,11 @@ class Icon(ProjectMixin, BaseMediaMixin, BaseAudit):
     virtual_path = models.CharField(max_length=255)
     file_name_orig = models.CharField(max_length=255)
     file_name_new = models.CharField(max_length=255)
-    anchor_x = models.FloatField(null=False, blank=False,  help_text='Icon anchor point - x coordinate')
-    anchor_y = models.FloatField(null=False, blank=False, help_text='Icon anchor point - y coordinate')
+    anchor_x = models.FloatField(null=False, blank=False)
+    anchor_y = models.FloatField(null=False, blank=False)
     objects = IconManager()
+    
+    
 
     def delete(self, *args, **kwargs):
         # remove images from file system:
