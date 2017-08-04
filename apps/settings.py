@@ -252,7 +252,7 @@ DRAGON_URL='http://sd.localground.org:7777/' #remove port for prod
 SWAMP_DRAGON = {'um': 'okay'}
 '''
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'localground.org', 'dev.localground.org', 'staging.localground.org']
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_HEADERS = (
