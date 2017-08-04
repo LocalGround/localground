@@ -47,6 +47,7 @@ define([
 
             spyOn(DataDetail.prototype, "initialize").and.callThrough();
             spyOn(DataDetail.prototype, "render").and.callThrough();
+            spyOn(DataDetail.prototype, "bindFields").and.callThrough();
             //
             spyOn(DataDetail.prototype, "viewRender").and.callThrough();
             spyOn(DataDetail.prototype, "editRender").and.callThrough();
@@ -94,6 +95,16 @@ define([
                 });
                 expect(newDataDetail).toEqual(jasmine.any(DataDetail));
             });
+
+            it("Successfully calls bindFields", function(){
+                //expect(1).toEqual(-1);
+                newDataDetail = new DataDetail({
+                    app: this.app,
+                    model: this.marker,
+                    mode: "view"
+                });
+                expect(DataDetail.prototype.bindFields).toHaveBeenCalledTimes(1);
+            });
         });
 
         describe("Data Detail: Featured Image", function(){
@@ -140,16 +151,10 @@ define([
                 initSpies(this);
             });
 
-            it("Successfully calls bindFields", function(){
-                expect(1).toEqual(-1);
-            });
-
-            it("Successfully calls commitForm", function(){
-                expect(1).toEqual(-1);
-            });
-
             it("Successfully calls doNotDisplay", function(){
                 expect(1).toEqual(-1);
+                // This one is only called from gallery.app,
+                // do not display has never been called anywhere else inside data-detail
             });
         });
 
@@ -158,12 +163,36 @@ define([
                 initSpies(this);
             });
 
+            /*
+              // As of now, there are no stored models that
+            */
+
             it("Successfully calls saveModel", function(){
-                expect(1).toEqual(-1);
+                setupDataDetail(this, {
+                    model: this.marker,
+                    mode: "edit",
+                    dataType: "markers"
+                });
+                newDataDetail.render();
+                fixture.append(newDataDetail.$el);
+                console.log(fixture.html());
+                fixture.find(".save-model").trigger('click');
+                expect(DataDetail.prototype.saveModel).toHaveBeenCalledTimes(1);
             });
 
             it("Successfully calls deleteModel", function(){
-                expect(1).toEqual(-1);
+                setupDataDetail(this, {
+                    model: this.marker,
+                    mode: "edit",
+                    dataType: "markers"
+                });
+                newDataDetail.render();
+                fixture.append(newDataDetail.$el);
+                console.log(fixture.html());
+                spyOn(window, "confirm").and.returnValue(true);
+                fixture.find(".delete-model").trigger('click');
+                expect(DataDetail.prototype.deleteModel).toHaveBeenCalledTimes(1);
+                expect(DataDetail.prototype.doNotDisplay).toHaveBeenCalledTimes(1);
             });
         });
 
