@@ -146,15 +146,22 @@ define([
 
         });
 
-        describe("Data Detail: Other Functions", function(){
+        describe("Data Detail: Do Not Display", function(){
             beforeEach(function(){
                 initSpies(this);
             });
 
-            it("Successfully calls doNotDisplay", function(){
-                expect(1).toEqual(-1);
-                // This one is only called from gallery.app,
-                // do not display has never been called anywhere else inside data-detail
+            it("Makes sure the fixture.$el is empty when called", function(){
+                setupDataDetail(this, {
+                    model: this.marker,
+                    mode: "edit",
+                    dataType: "markers"
+                });
+                newDataDetail.render();
+                fixture.append(newDataDetail.$el);
+                newDataDetail.doNotDisplay();
+                console.log(newDataDetail.$el.html());
+                expect(newDataDetail.$el.html()).toEqual("");
             });
         });
 
@@ -162,10 +169,6 @@ define([
             beforeEach(function(){
                 initSpies(this);
             });
-
-            /*
-              // As of now, there are no stored models that
-            */
 
             it("Successfully calls saveModel", function(){
                 setupDataDetail(this, {
@@ -175,12 +178,16 @@ define([
                 });
                 newDataDetail.render();
                 fixture.append(newDataDetail.$el);
-                console.log(fixture.html());
                 fixture.find(".save-model").trigger('click');
                 expect(DataDetail.prototype.saveModel).toHaveBeenCalledTimes(1);
             });
 
             it("Successfully calls deleteModel", function(){
+                spyOn(this.marker, 'destroy').and.callFake(function(opts){
+                    if (opts.success){
+                        opts.success();
+                    }
+                });
                 setupDataDetail(this, {
                     model: this.marker,
                     mode: "edit",
@@ -188,11 +195,12 @@ define([
                 });
                 newDataDetail.render();
                 fixture.append(newDataDetail.$el);
-                console.log(fixture.html());
+                expect(this.marker.destroy).toHaveBeenCalledTimes(0);
                 spyOn(window, "confirm").and.returnValue(true);
                 fixture.find(".delete-model").trigger('click');
                 expect(DataDetail.prototype.deleteModel).toHaveBeenCalledTimes(1);
-                expect(DataDetail.prototype.doNotDisplay).toHaveBeenCalledTimes(1);
+                expect(this.marker.destroy).toHaveBeenCalledTimes(1);
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('hide-detail');
             });
         });
 
