@@ -7,10 +7,11 @@ define([
     "apps/gallery/views/toolbar-dataview",
     "lib/data/dataManager",
     "apps/spreadsheet/views/main",
+    "apps/spreadsheet/views/tabs",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (_, Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
-             DataManager, SpreadsheetView, appUtilities) {
+             DataManager, SpreadsheetView, TabView, appUtilities) {
     "use strict";
     var SpreadsheetApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -41,9 +42,11 @@ define([
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+            console.log("initialize");
         },
         loadRegions: function () {
             //initialize toobar view
+            console.log("Loading Regions");
             this.restoreAppState();
             var data;
             try {
@@ -63,11 +66,15 @@ define([
                 collection: data.collection,
                 fields: data.fields
             });
+            this.tabView = new TabView({
+                app: this
+            });
 
             //load views into regions:
             this.toolbarMainRegion.show(this.toolbarView);
             this.toolbarDataViewRegion.show(this.toolbarDataView);
             this.spreadsheetRegion.show(this.spreadsheetView);
+            this.tabViewRegion.show(this.tabView);
         },
 
         showSpreadsheet: function (dataType) {
@@ -86,6 +93,7 @@ define([
                 fields: data.fields
             });
             this.spreadsheetRegion.show(this.spreadsheetView);
+
         },
         saveAppState: function () {
             this.saveState("dataView", {

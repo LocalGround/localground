@@ -1,1 +1,15 @@
-<div id="tab-view"></div>
+<div id="tab-view">
+    <select class="media-type">
+        <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>
+        <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
+        <option value="videos" {{#ifequal dataType "videos"}}SELECTED{{/ifequal}}>Videos</option>
+        <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>
+    {{#each forms}}
+        <option value="form_{{ this.id }}" {{#ifequal ../dataType this.overlay_type}}SELECTED{{/ifequal}}>{{ this.name }}</option>
+    {{/each}}
+    </select>
+</div>
+
+<!--Inside the tab view, should only of small sized div elements with class "data-group"
+or something appropriately named to load data gropups
+-->

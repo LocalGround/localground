@@ -3,6 +3,7 @@
 
     {{#ifequal activeTab "data"}}
         {{#ifequal screenType "spreadsheet"}}
+            <!--Looks like it will be key to building the tabs-->
             <select class="media-type">
                 <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>
                 <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
