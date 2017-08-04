@@ -13,18 +13,23 @@ class IconSerializer(BaseSerializer):
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
+
     file_path = serializers.SerializerMethodField('get_file_path_new')
     project_id = fields.ProjectField(label='project_id', source='project', required=False)
+    owner = serializers.SerializerMethodField()
+
 
     class Meta:
         model = models.Icon
-        fields = BaseSerializer.Meta.fields + \
-                    ('name', 'icon', 'file_path', 'project_id', 'x_position', 'y_position')
+        read_only_fields = ('width', 'height', 'file_type')
+        fields = ('url', 'id', 'name', 'icon', 'file_type', 'file_path', 'owner', 'project_id', 'width', 'height', 'anchor_x', 'anchor_y')
         depth = 0
-        
     
     def get_file_path_new(self, obj):
         return obj.encrypt_url(obj.file_name_new)
+
+    def get_owner(self, obj):
+        return obj.owner.username
 
     def process_file(self, file, owner):
         from PIL import Image, ImageOps
@@ -33,8 +38,8 @@ class IconSerializer(BaseSerializer):
         file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file)
         file_name, ext = os.path.splitext(file_name_new)
         file_type = ext.replace('.', '').lower()
-        if file_type == 'jpg':
-            file_type = 'jpeg'
+        if file_type == 'jpeg':
+            file_type = 'jpg'
         return {
             'file_name_orig': file.name,
             'name': self.initial_data.get('name') or file.name,
