@@ -74,7 +74,7 @@ define([
             //Define Class:
             var that = this, MouseMover, $follower, mm;
             MouseMover = function ($follower) {
-                var icon;
+
                 this.generateIcon = function () {
                     var template, shape;
                     template = Handlebars.compile('<svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
@@ -93,16 +93,16 @@ define([
                     else {
                         console.log("The current form of adding marker on empty form is buggy");
                     }
-                    icon = new Icon({
+                    that.icon = new Icon({
                         shape: shape,
                         strokeWeight: 6,
                         fillColor: that.model.collection.fillColor,
                         width: that.model.collection.size,
                         height: that.model.collection.size
                     }).generateGoogleIcon();
-                    icon.width *= 1.5;
-                    icon.height *= 1.5;
-                    $follower.html(template(icon));
+                    that.icon.width *= 1.5;
+                    that.icon.height *= 1.5;
+                    $follower.html(template(that.icon));
                     $follower.show();
                 };
                 this.start = function () {
@@ -119,8 +119,8 @@ define([
                 };
                 this.mouseListener = function (event) {
                     $follower.css({
-                        top: event.clientY - icon.height * 3 / 4 + 4,
-                        left: event.clientX - icon.width * 3 / 4
+                        top: event.clientY - that.icon.height * 3 / 4 + 4,
+                        left: event.clientX - that.icon.width * 3 / 4
                     });
                 };
             };

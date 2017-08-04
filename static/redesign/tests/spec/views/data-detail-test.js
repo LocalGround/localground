@@ -14,10 +14,11 @@ define([
     rootDir + "lib/carousel/carousel",
     rootDir + "apps/gallery/views/data-detail",
     rootDir + "lib/audio/audio-player",
+    rootDir + "lib/maps/overlays/icon",
     "tests/spec-helper"
 ],
     function (Handlebars, Spreadsheet, Form, Photos, Audio,
-              Markers, Records, Carousel, DataDetail, AudioPlayer) {
+              Markers, Records, Carousel, DataDetail, AudioPlayer, Icon) {
         //
         //
         //
@@ -92,16 +93,6 @@ define([
                     mode: "view"
                 });
                 expect(newDataDetail).toEqual(jasmine.any(DataDetail));
-            });
-        });
-
-        describe("Data Detail: Render Test", function(){
-            beforeEach(function(){
-                initSpies(this);
-            });
-            it ("Initial render test successful", function(){
-                //expect("Please write render test code").toEqual(0);
-                expect(1).toEqual(1);
             });
         });
 
@@ -748,19 +739,33 @@ define([
                 // 5. Trigger click add geometry button:
                 fixture.find("#add-geometry").trigger("click");
 
+                $(window).trigger("mousemove"); // Needed for the inner HTML to appear
+
                 expect(fixture.find("button.button-secondary").html()).toEqual("Add Location Marker");
                 expect(fixture.find("button.button-secondary").html()).not.toEqual("Remove Location Marker");
                 expect(DataDetail.prototype.activateMarkerTrigger).toHaveBeenCalledTimes(1);
                 expect(fixture.find("p#drop-marker-message").html()).toEqual("click on the map to add location");
-                expect($('body').find('#follower')).toContainElement('svg'); // This is the current thing I am having trouble at
+                console.log($('body').find('#follower')[0]);
+                console.log($('body').find('#follower').html());
+                expect($('body').find('#follower')).toContainElement('svg');
 
-                //expect(1).toEqual(-1);
-                //1. Trigger the activateMarkerTrigger through DOM click:
+                var $svg = $('body').find('svg');
+                var $path = $svg.find('path');
+                var testIcon = newDataDetail.icon;
 
-                //2. Make sure taht $('body').find('#follower') contains an SVG element
-                //   that has <svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
-                //                <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
-                //            </svg>
+                console.log(testIcon);
+
+
+                expect($svg[0].getAttribute("viewBox")).toEqual(testIcon.viewBox);
+                expect($svg.attr("width")).toEqual(testIcon.width.toString());
+                expect($svg.attr("height")).toEqual(testIcon.height.toString());
+                expect($path.attr("fill")).toEqual(testIcon.fillColor);
+                expect($path.attr("stroke")).toEqual("#ed867d");
+                expect($path.attr("stroke-width")).toEqual("6");
+                expect($path.attr("stroke-opacity")).toEqual("0.5");
+                expect($path.attr("d")).toEqual(testIcon.path);
+                expect($path.attr("paint-order")).toEqual("stroke");
+
             });
 
         });
