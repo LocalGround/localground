@@ -7,11 +7,10 @@ define([
     "apps/gallery/views/toolbar-dataview",
     "lib/data/dataManager",
     "apps/spreadsheet/views/main",
-    "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (_, Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
-             DataManager, SpreadsheetView, Projects, appUtilities) {
+             DataManager, SpreadsheetView, appUtilities) {
     "use strict";
     var SpreadsheetApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -34,6 +33,7 @@ define([
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'show-list', this.showSpreadsheet);
             this.addMessageListeners();
+            console.log('starting!!');
         },
 
         initialize: function (options) {

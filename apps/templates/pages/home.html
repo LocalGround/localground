@@ -25,13 +25,20 @@
     <div id="share-form">
         <!--The Share Form modal window will go here-->
     </div>
-    <script src="/static/redesign/external/require.js"></script>
-    <script>
-        var username = '{{ user.username }}';
-        require(['/static/redesign/apps/require-config.js'], function(){
-            require(['apps/home/kickoff']);
-        });
-    </script>
+    {% if DEBUG %}
+        <script>
+            var configPath = '../',
+                username = '{{ user.username }}';
+        </script>
+        <script data-main="/static/redesign/apps/home/kickoff.js" src="/static/redesign/external/require.js"></script>
+    {% else %}
+       <!-- Use minified, concatenated code -->
+        <script>
+            var configPath = '../apps/',
+                username = '{{ user.username }}';
+        </script>
+        <script data-main="/static/redesign/build/home.min.js" src="/static/redesign/external/require.js"></script>
+    {% endif %}
 
 </body>
 </html>

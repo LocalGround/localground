@@ -1,15 +1,12 @@
-require(
-    ["jquery", "apps/home/home-app"],
-    function ($, HomeApp) {
-        'use strict';
+var configPath = (configPath || '') + 'require-config';
+require([configPath], function () {
+    'use strict';
+    require(["jquery", "apps/home/home-app"], function ($, App) {
         $(function () {
-            window.location.hash = ''; //make sure the page initializes on the first page...
-            var home = new HomeApp({
-                username: username
-            });
-            home.start();
+            var app = new App();
+            app.start();
         });
-    }
-);
+    });
+});
 
 

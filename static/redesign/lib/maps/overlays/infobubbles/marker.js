@@ -1,9 +1,9 @@
 define(['underscore',
         'jquery',
         'color-picker',
-        'text!/static/backbone/js/templates/infoBubble/markerAttachTip.html',
+        //'text!/static/backbone/js/templates/infoBubble/markerAttachTip.html',
         'lib/maps/overlays/infobubbles/base',
-        'slick'], function (_, $, jscolor, markerAttachTipTemplate, BaseBubble) {
+        'slick'], function (_, $, jscolor, /*markerAttachTipTemplate, */ BaseBubble) {
     "use strict";
     /**
      * Class that controls marker point model overlays.
@@ -60,7 +60,8 @@ define(['underscore',
         },
 
         showTipAttaching: function () {
-            var template = _.template(markerAttachTipTemplate);
+            var template = _.template('');
+            //var template = _.template(markerAttachTipTemplate);
             this.tip.setContent(template(this.getContext()));
             this._show(this.tip);
         },

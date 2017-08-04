@@ -26,16 +26,21 @@
         </div>
     </div>
     
-    <script src="/static/redesign/external/require.js"></script>
-    <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places">
-    </script>
-    <script>
-        var MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
-        require(['/static/redesign/apps/require-config.js'], function(){
-            require(['apps/style/kickoff']);  //or adminApp for the admin area, etc.
-        });
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places"></script>
+    {% if DEBUG %}
+        <script>
+            var configPath = '../',
+                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
+        </script>
+        <script data-main="/static/redesign/apps/style/kickoff.js" src="/static/redesign/external/require.js"></script>
+    {% else %}
+       <!-- Use minified, concatenated code -->
+        <script>
+            var configPath = '../apps/',
+                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
+        </script>
+        <script data-main="/static/redesign/build/style.js" src="/static/redesign/external/require.js"></script>
+    {% endif %}
 </body>
 </html>
 

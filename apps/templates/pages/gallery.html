@@ -8,7 +8,6 @@
     <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
     <link rel=stylesheet type="text/css" href="/static/redesign/css/gallery-style.css" />
     <link rel=stylesheet type="text/css" href="/static/redesign/css/modal_new_project.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/upload-media.css" />
     <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
     <link rel=stylesheet type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/css/pikaday.min.css" />
 </head>
@@ -28,11 +27,17 @@
         </aside>
     </div>
 
-    <script src="/static/redesign/external/require.js"></script>
-    <script>
-        require(['/static/redesign/apps/require-config.js'], function(){
-            require(['apps/gallery/kickoff']);  //or adminApp for the admin area, etc.
-        });
-    </script>
+    {% if DEBUG %}
+        <script>
+            var configPath = '../';
+        </script>
+        <script data-main="/static/redesign/apps/gallery/kickoff.js" src="/static/redesign/external/require.js"></script>
+    {% else %}
+       <!-- Use minified, concatenated code -->
+        <script>
+            var configPath = '../apps/';
+        </script>
+        <script data-main="/static/redesign/build/gallery.min.js" src="/static/redesign/external/require.js"></script>
+    {% endif %}
 </body>
 </html>

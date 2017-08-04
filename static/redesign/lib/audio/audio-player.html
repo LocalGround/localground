@@ -4,7 +4,7 @@
     </audio>
     <div>
         <div class="play-ctrls">
-            <div class="play"></div>
+            <div class="play fa fa-play fa-2x" aria-hidden="true"></div>
         </div>
     </div>
 {{/ifequal}}
@@ -16,16 +16,16 @@
     <div>
         <div class="play-ctrls">
             <!-- i class="fa fa-play play" aria-hidden="true" style="font-size:2em;"></i -->
-            <div class="play"></div>
+            <div class="play fa fa-play fa-3x" aria-hidden="true"></div>
         </div>
         <div class="audio-progress">
-            <span class="audio-labels time-current" style="left: 10px;"></span>
             <div class="progress-container">
                 <div class="audio-progress-bar"></div>
                 <div class="audio-progress-duration"></div>
                 <div class="audio-progress-circle"></div>
             </div>
-            <span class="audio-labels time-duration" style="right: 10px;"></span>
+            <div class="audio-labels time-current"></div>
+           <!-- <span class="audio-labels time-duration" style="right: 10px;"></span> -->
         </div>
     </div>
 {{/ifequal}}
@@ -35,22 +35,28 @@
       <source src="{{file_path}}" type="audio/mpeg" />
     </audio>
 
-    <div class="audio-container">
-        <div class="play-ctrls">
-            <i class="fa fa-backward fwd-back skip-back" aria-hidden="true"></i>
-            <i class="play" aria-hidden="true" style="font-size:0.5em;"></i>
-            <i class="fa fa-forward fwd-back skip-fwd" aria-hidden="true"></i>
-        </div>
+    <div class="audio-container" style="color: #{{paragraph.color}}">
         <div class="audio-progress">
-            <span class="audio-labels time-current" style="left: 10px;"></span>
-            <div class="progress-container">
-                <div class="audio-progress-bar"></div>
-                <div class="audio-progress-duration"></div>
-                <div class="audio-progress-circle"></div>
+            <div class="play-ctrls">
+                <!--   <i class="fa fa-backward fwd-back skip-back" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->
+          <!-- <i class="fa fa-play fa-2x play" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->
+                <i class="fa fa-play fa-lg play" aria-hidden="true" style="color: #{{paragraph.color}}"></i>
+                <!-- <i class="play" aria-hidden="true" style="font-size:0.5em; border-color: transparent transparent transparent #{{paragraph.color}}"></i> -->
+         <!--   <i class="fa fa-forward fwd-back skip-fwd" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->
             </div>
-            <span class="audio-labels time-duration" style="right: 10px;"></span>
+            <div class="progress-container">
+                <div class="audio-progress-bar" style="background-color: #{{paragraph.backgroundColor}}; border-color: #{{paragraph.color}}"></div>
+                <div class="audio-progress-duration" style="background-color: #{{paragraph.color}}; border-color: #{{paragraph.color}}"></div>
+                <div class="audio-progress-circle" style="border-color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}"></div>
+            </div>
+         <!--   <span class="audio-labels time-current" style="left: 10px; color: #{{paragraph.color}};"></span>  -->
+         <!--   <span class="audio-labels time-duration" style="right: 10px; color: #{{paragraph.color}};"></span> -->
         </div>
-        {{ name }}{{#if caption}}: {{ caption }} {{/if}}
+        <div class="info-container">
+            <p class="audio-info" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}{{#if caption}}: {{ caption }} {{/if}}</p>
+            <span class="audio-labels time-current" style="float: right; color: #{{paragraph.color}}; font-family: {{paragraph.font}}"></span>
+        </div>
+        
 
     </div>
 {{/ifequal}}

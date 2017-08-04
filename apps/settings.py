@@ -237,6 +237,7 @@ REST_FRAMEWORK = {
         'rest_framework_xml.renderers.XMLRenderer'
     )
 }
+'''
 SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
 SWAMP_DRAGON_REDIS_PORT = 6379 #default
 SWAMP_DRAGON_PORT = 9999 #default
@@ -249,6 +250,9 @@ DRAGON_URL='http://sd.localground.org:7777/' #remove port for prod
 #                        {% load swampdragon_tags %} in a template with 
 #                        {% swampdragon_settings %} somewhere in the page
 SWAMP_DRAGON = {'um': 'okay'}
+'''
+
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_HEADERS = (

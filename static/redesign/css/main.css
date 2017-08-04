@@ -1602,19 +1602,14 @@ tbody .failure-message, tbody .success-message {
 .carousel-modal .carouselbox {
     background: none;
 }
-.carousel-photo .carouselbox {
-   /* border-bottom: solid 1px #CCC;*/
-}
+
 
 .carousel-photo .active-slide, .carousel-video .active-slide {
     min-height: 370px;
- /*   border: solid 1px #CCC;  */
-    background: rgba(255, 255, 255, 0.5);
 }
 
 .active-slide.short {
     min-height: 340px !important;
-    background: rgba(255, 255, 255, 0.5)
 }
 
 .active-slide li {
@@ -1651,7 +1646,7 @@ tbody .failure-message, tbody .success-message {
 
 .carousel-buttons, .circle-buttons {
     display: block;
-    padding: 30px 0px 0px 0px;
+    padding: 3px 0px 0px 0px;
     text-align: center;
     z-index: 10;
     position: relative;
@@ -1669,6 +1664,10 @@ tbody .failure-message, tbody .success-message {
 .carousel-caption {
     display: none;
     color: #999;
+}
+
+.carousel-caption-wrapper {
+    margin-top: 28px;
 }
 
 .current .carousel-caption {
@@ -1910,8 +1909,7 @@ td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o, .fa-plus-square-o {
 /********************************/
 .carouselbox.audio {
     height: 180px;
-    background: rgba(255, 255, 255, 0.5);
- /*   border: solid 1px #EEE; */
+    
 }
 
 .carouselbox .audio-detail {
@@ -1919,7 +1917,7 @@ td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o, .fa-plus-square-o {
 }
 
 .carouselbox .audio-detail .audio-progress {
-    padding: 10px 30px 25px 30px;
+    padding: 10px 30px 5px 30px;
     position: relative;
 }
 
@@ -1972,7 +1970,7 @@ audio {
 
 .audio-container span {
     font-size: 1.6em;
-    margin-top: 20px;
+   /* margin-top: 20px; */
     display: block;
 }
 
@@ -2003,11 +2001,11 @@ audio {
 
 .play {
     cursor: pointer;
-    width: 0px;
+  /*  width: 0px;
     height: 0px;
     border-style: solid;
     border-width: 15px 0 15px 30px;
-    border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgb(104, 104, 104);
+    border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgb(104, 104, 104); */
     margin: 20px auto;
 }
 
@@ -2064,9 +2062,11 @@ audio {
 }
 
 .audio-basic .play {
-    margin-top: 35px;
+    margin-top: 15px;
+    margin-left: -2px;
     position: relative;
     z-index: 10;
+    color: #686868;
 }
 
 .audio-basic {
@@ -2082,7 +2082,7 @@ audio {
  **************************/
 .progress-container {
     width: calc(100% - 40px);
-    margin: auto;
+    display: inline-block;
     text-align: left;
 }
 
@@ -2093,15 +2093,18 @@ audio {
 .audio-simple .audio-labels, .audio-detail .audio-labels {
     font-size: 12px;
     color: #7a7a7a;
-    position: absolute;
+    display: inline-block;
+  /*  position: absolute; */
     top: 4px;
 }
 
 .audio-progress-bar {
-    background-color: #c4c4c4;
-    height: 6px;
+    color: #999999;
+    background-color: #f6f6f9;
+    height: 2px;
     border-radius: 10px;
     display: inline-block;
+    border: 1px solid;
 }
 
 .audio-simple .audio-progress-bar {
@@ -2113,23 +2116,33 @@ audio {
 }
 
 .audio-simple .audio-progress-duration, .audio-detail .audio-progress-duration {
-    background-color: #686868;
+    background-color: #999999;
+    color: #999999;
     width: 0px;
-    height: 6px;
+        height: 2px;
     border-radius: 10px;
     display: inline-block;
-    margin-top: -6px;
+    margin-top: -4px;
+    border: 1px solid;
 }
 
 .audio-simple .audio-progress-circle, .audio-detail .audio-progress-circle {
-    height: 10px;
-    width: 10px;
+    height: 12px;
+    width: 12px;
     border-radius: 40px;
-    border: 6px solid #7a7a7a;
-    background-color: white;
-    margin-top: -15px;
+    border: 1px solid #999999;
+    background-color: #f6f6f9;
+    margin-top: -9px;
     margin-left: -8px;
     position: relative;
+}
+
+.audio-simple .progress-container {
+    width: 100%;
+}
+
+.info-container {
+    padding: 1px 30px 25px 20px;
 }
 
  /**************************
@@ -2137,7 +2150,7 @@ audio {
  **************************/
 
 .audio-detail {
-    border: 1px solid #e4e5eb;
+  /*  border: 1px solid #e4e5eb;  */
     margin: 16px;
     position: relative;
 }
@@ -2155,8 +2168,14 @@ audio {
 }
 
 .audio-detail .play {
-    margin: 0px auto;
-    display: inline-block;
+    margin: -4px 10px 5px 5px;
+    float: left;
+}
+
+.audio-info {
+    float: left;
+    font-size: 12px;
+    margin-left: 15px;
 }
 
 .audio-detail .audio-container {

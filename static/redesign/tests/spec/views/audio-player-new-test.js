@@ -81,9 +81,9 @@ define([
                 fixture.find('.play').trigger('click');
                 expect(audioPlayer.togglePlay).toHaveBeenCalledTimes(1);
                 expect(audioPlayer.showPauseButton).toHaveBeenCalledTimes(1);
-                expect(fixture).toContainElement(".pause");
+                expect(fixture).toContainElement(".fa-pause");
                 expect(audioPlayer.showPlayButton).not.toHaveBeenCalled();
-                fixture.find('.pause').trigger('click');
+                fixture.find('.fa-pause').trigger('click');
                 expect(fixture).not.toContainElement(".pause");
                 expect(audioPlayer.showPlayButton).toHaveBeenCalledTimes(1);
             });

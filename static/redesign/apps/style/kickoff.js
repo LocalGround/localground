@@ -1,13 +1,14 @@
-require(
-    ["jquery", "apps/style/style-app"],
-    function ($, StyleApp) {
-        'use strict';
+var configPath = (configPath || '') + 'require-config';
+require([configPath], function () {
+    'use strict';
+    require(["jquery", "apps/style/style-app"], function ($, App) {
         $(function () {
             window.location.hash = ''; //make sure the page initializes on the first page...
-            var styleApp = new StyleApp();
-            styleApp.start();
+            var app = new App();
+            app.start();
         });
-    }
-);
+    });
+});
+
 
 

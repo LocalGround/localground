@@ -64,13 +64,18 @@
       </span>
 
     </div>
-
-    <script src="/static/redesign/external/require.js"></script>
-    <script>
-        require(['/static/redesign/apps/require-config.js'], function(){
-            require(['apps/spreadsheet/kickoff']);  //or adminApp for the admin area, etc.
-        });
-    </script>
+    {% if DEBUG %}
+        <script>
+            var configPath = '../';
+        </script>
+        <script data-main="/static/redesign/apps/spreadsheet/kickoff.js" src="/static/redesign/external/require.js"></script>
+    {% else %}
+       <!-- Use minified, concatenated code -->
+        <script>
+            var configPath = '../apps/';
+        </script>
+        <script data-main="/static/redesign/build/spreadsheet.min.js" src="/static/redesign/external/require.js"></script>
+    {% endif %}
 
 </body>
 </html>
