@@ -16,7 +16,8 @@ define([
         regions: {
             spreadsheetRegion: ".main-panel",
             toolbarMainRegion: "#toolbar-main",
-            toolbarDataViewRegion: "#toolbar-dataview"
+            toolbarDataViewRegion: "#toolbar-dataview",
+            tabViewRegion: "#tab-panel"
         },
 
         currentCollection: null,
