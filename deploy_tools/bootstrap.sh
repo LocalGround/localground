@@ -117,8 +117,10 @@ sudo pip install cairosvg==1.0.22
 # Install Node.js and Bower #
 #############################
 #curl -sL https://deb.nodesource.com/setup | sudo bash -
-#echo "Y" | sudo apt-get install nodejs
-#echo "Y" | sudo apt-get install npm
+echo "Y" | sudo apt-get install nodejs
+echo "Y" | sudo apt-get install npm
+echo "Y" | sudo npm install -g grunt-cli
+sudo ln -s /usr/bin/nodejs /usr/bin/node
 #echo "Y" | sudo npm install -g bower
 
 ####################################

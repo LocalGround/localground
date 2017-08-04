@@ -123,6 +123,10 @@ module.exports = function (grunt) {
 
 
 /*
+#sudo apt-get install nodejs
+#sudo apt-get install npm
+#sudo npm install -g grunt-cli
+#sudo ln -s /usr/bin/nodejs /usr/bin/node
 cd /localground
 npm update -g npm
 npm install
