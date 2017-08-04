@@ -1,13 +1,13 @@
-require(
-    ["jquery", "apps/map/map-app"],
-    function ($, MapApp) {
-        'use strict';
+var configPath = (configPath || '') + 'require-config';
+require([configPath], function () {
+    'use strict';
+    require(["jquery", "apps/map/map-app"], function ($, App) {
         $(function () {
-            //window.location.hash = ''; //make sure the page initializes on the first page...
-            var map = new MapApp();
-            map.start();
+            var app = new App();
+            app.start();
         });
-    }
-);
+    });
+});
+
 
 

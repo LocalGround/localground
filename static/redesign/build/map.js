@@ -3588,7 +3588,7 @@
   return Marionette;
 }));
 
-define('apps/spreadsheet/controller',[
+define('apps/map/controller',[
     "marionette"
 ], function (Marionette) {
     "use strict";
@@ -3596,8 +3596,9 @@ define('apps/spreadsheet/controller',[
         initialize: function (options) {
             this.app = options.app;
         },
-        addRow: function (dataType) {
-            this.app.vent.trigger("add-row", {
+        dataDetail: function (dataType, id) {
+            this.app.vent.trigger("show-detail", {
+                id: id,
                 dataType: dataType
             }, false);
         },
@@ -3606,18 +3607,18 @@ define('apps/spreadsheet/controller',[
         }
     });
 });
-
-define('apps/spreadsheet/router',[
+define('apps/map/router',[
     "jquery",
     "marionette",
     "backbone",
-    "apps/spreadsheet/controller"
+    "apps/map/controller"
 ], function ($, Marionette, Backbone, Controller) {
     "use strict";
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
-            ':dataType': 'dataList',
-            ':dataType/new': 'addRow'
+            ':dataType/new': 'dataDetail',
+            ':dataType/:id': 'dataDetail',
+            ':dataType': 'dataList'
         },
         initialize: function (options) {
             this.controller = new Controller({
@@ -3636,7 +3637,6 @@ define('apps/spreadsheet/router',[
     });
     return Router;
 });
-
 /**
  * @license RequireJS text 2.0.12 Copyright (c) 2010-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -16437,6 +16437,488 @@ define('lib/data/dataManager',["underscore", "marionette", "models/project", "co
         return DataManager;
     });
 
+define('apps/style/visibility-mixin',[], function () {
+    "use strict";
+    /*
+     * Since the show / hide panel functionality is the same across the views,
+     * we'll use the "mixin" pattern to consolidate functionality.
+     */
+    return {
+        events: {
+            'click .hide-panel': 'hideSection',
+            'click .show-panel': 'showSection'
+        },
+        hideSection: function (e) {
+            this.isShowing = false;
+            this.saveState();
+            this.render();
+            if (e) {
+                e.preventDefault();
+            }
+        },
+        showSection: function (e) {
+            this.isShowing = true;
+            this.saveState();
+            this.render();
+            if (e) {
+                e.preventDefault();
+            }
+        },
+        templateHelpers:  function () {
+            return {
+                isShowing: this.isShowing
+            };
+        },
+        saveState: function () {
+            this.app.saveState(this.stateKey, {
+                isShowing: this.isShowing
+            });
+        },
+        restoreState: function () {
+            var state = this.app.restoreState(this.stateKey);
+            if (state) {
+                this.isShowing = state.isShowing;
+            } else {
+                this.isShowing = true;
+            }
+        }
+    };
+});
+
+define('text!apps/map/templates/list-detail.html',[],function () { return '<a href="#/{{dataType}}/{{id}}" {{#if active }}class="highlight"{{/if}}  {{#ifnot displayOverlay}}style="opacity: 0.50"{{/ifnot}}>\n    {{#if geometry }}\n        <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ width }}">\n            <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"\n                  stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>\n        </svg>\n    {{else}}\n        <i class="fa fa-question-circle" aria-hidden="true"></i>\n    {{/if}}\n<p>{{truncate name 30}}</p>\n{{#if displayOverlay}}\n    <i class="fa fa-eye toggle-visibility"></i>\n{{else}}\n    <i class="fa fa-eye-slash toggle-visibility"></i>\n{{/if}}\n</a>';});
+
+
+define('text!apps/map/templates/list-detail-map-image.html',[],function () { return '<a href="#/{{dataType}}/{{id}}" {{#if active }}class="highlight"{{/if}}\n    {{#ifnot displayOverlay}}style="opacity: 0.50"{{/ifnot}}>\n<p>{{truncate name 30}}</p>\n{{#if displayOverlay}}\n    <i class="fa fa-eye toggle-visibility"></i>\n{{else}}\n    <i class="fa fa-eye-slash toggle-visibility"></i>\n{{/if}}\n</a>';});
+
+define('apps/map/views/marker-listing-detail',["jquery",
+        "marionette",
+        "underscore",
+        "handlebars",
+        "text!../templates/list-detail.html",
+        "text!../templates/list-detail-map-image.html"],
+    function ($, Marionette, _, Handlebars, DefaultTemplate, MapImageTemplate) {
+        'use strict';
+        var MarkerListingDetail = Marionette.ItemView.extend({
+            stateKey: 'marker-listing-',
+            displayOverlay: false,
+            initialize: function (opts) {
+                /* --------------------------
+                 * Initialization Parameters:
+                 * --------------------------
+                 * 1. app
+                 * 2. icon
+                 * 3. model
+                 * 4. displayOverlay (optional; defaults to false)
+                */
+                _.extend(this, opts);
+                this.stateKey = this.app.selectedProjectID + '-marker-listing-' +
+                    this.model.get("overlay_type") + "-" + this.model.id;
+                this.restoreState();
+
+                //add event listeners:
+                this.listenTo(this.model.collection, 'show-markers', this.redrawVisible);
+                this.listenTo(this.model.collection, 'hide-markers', this.redrawHidden);
+            },
+            getTemplate: function () {
+                if (this.model.get("overlay_type") === "map-image") {
+                    return Handlebars.compile(MapImageTemplate);
+                }
+                return Handlebars.compile(DefaultTemplate);
+            },
+            events: {
+                'click a .fa-eye': 'hideMarker',
+                'click a .fa-eye-slash': 'showMarker'
+            },
+            modelEvents: {
+                'saved': 'render',
+                'change:id': 'saveStateAndRender',
+                'do-hover': 'hoverHighlight',
+                'clear-hover': 'clearHoverHighlight',
+                'change:active': 'render',
+                'change:geometry': 'render',
+                'show-marker': 'redrawVisible',
+                'hide-marker': 'redrawHidden'
+            },
+            tagName: "li",
+            saveStateAndRender: function () {
+                //reset state key:
+                this.stateKey = 'marker-listing-' + this.model.get("overlay_type") + "-" + this.model.id;
+                this.saveState();
+                this.render();
+            },
+            templateHelpers: function () {
+                var opts = {
+                    dataType: this.model.getDataTypePlural(),
+                    icon: this.icon,
+                    name: this.model.get("name") || this.model.get("display_name"),
+                    displayOverlay: this.displayOverlay
+                };
+                if (this.icon) {
+                    _.extend(opts, {
+                        width: 15 * this.icon.getScale(),
+                        height: 15 * this.icon.getScale()
+                    });
+                }
+                return opts;
+            },
+            hoverHighlight: function () {
+                this.clearHoverHighlight();
+                if (!this.$el.find('a').hasClass('highlight')) {
+                    this.$el.addClass("hover-highlight");
+                }
+            },
+            clearHoverHighlight: function () {
+                $("li").removeClass("hover-highlight");
+            },
+            hideMarker: function (e) {
+                this.displayOverlay = false;
+                this.model.trigger('hide-marker');
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+            showMarker: function (e) {
+                this.displayOverlay = true;
+                this.model.trigger('show-marker');
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+            redrawVisible: function () {
+                this.displayOverlay = true;
+                this.saveState();
+                this.render();
+            },
+            redrawHidden: function () {
+                this.displayOverlay = false;
+                this.saveState();
+                this.render();
+            },
+            saveState: function () {
+                this.app.saveState(this.stateKey, {
+                    displayOverlay: this.displayOverlay
+                });
+            },
+            restoreState: function () {
+                var state = this.app.restoreState(this.stateKey);
+                if (state && typeof state.displayOverlay !== 'undefined') {
+                    this.displayOverlay = state.displayOverlay;
+                }
+                if (this.displayOverlay) {
+                    this.model.trigger('show-marker');
+                } else {
+                   this.model.trigger('hide-marker');
+                }
+                //console.log("restoring: ", this.model.get("name"), this.displayOverlay);
+                //console.log("restoring: ", state);
+                //this.saveState();
+            }
+        });
+        return MarkerListingDetail;
+    });
+
+define('text!apps/map/templates/list.html',[],function () { return '<div class="list-header">\n    <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>\n    {{ title }}\n    <!-- a class="new-feature-by-type add-{{ title }}" href="#/{{ typePlural }}/new">\n        <i class="fa fa-plus" aria-hidden="true" href="#place-marker"></i>\n    </a-->\n    <a href="#" class="add-new" data-value="{{ key }}">\n        <i class="fa fa-plus new-field-plus"></i>\n    </a>\n    <i class="toggle-visibility fa {{#if displayOverlays}}fa-eye{{else}}fa-eye-slash{{/if}}"></i>\n    <i class="fa fa-search zoom-to-extents"></i>\n</div>\n\n<ul class="marker-container list-indent" style={{#if isShowing}}display: block; {{else}} display:none; {{/if}}">\n</ul>\n<!-- div class="show-hide hide"></div -->\n';});
+
+define('apps/map/views/marker-listing',["marionette",
+        "underscore",
+        "handlebars",
+        "lib/maps/overlays/icon",
+        "lib/maps/marker-overlays",
+        "apps/style/visibility-mixin",
+        "apps/map/views/marker-listing-detail",
+        "text!../templates/list.html"],
+    function (Marionette, _, Handlebars, Icon, MarkerOverlays, PanelVisibilityExtensions, MarkerListingDetail, ListTemplate) {
+        'use strict';
+        var MarkerListing = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
+            isShowing: true,
+            displayOverlays: true, // initialize all overlays as hidden. ChildView will override.
+            overlays: null,
+            fields: null, //for custom data types
+            title: null,
+            collectionEvents: {
+                'show-marker': 'removeHideIcon',
+                'hide-marker': 'showHideIcon'
+            },
+            initialize: function (opts) {
+                _.extend(this, opts);
+                this.stateKey = this.app.selectedProjectID + '-marker-listing-';
+                this.title = this.title || this.collection.getTitle();
+                this.typePlural = this.collection.getDataType();
+                this.initDisplayFlags();
+                this.template = Handlebars.compile(ListTemplate);
+
+                Marionette.CompositeView.prototype.initialize.call(this);
+                if (!this.isMapImageCollection()) {
+                    this.icon = new Icon({
+                        shape: this.collection.getDataType(),
+                        fillColor: this.collection.fillColor,
+                        width: this.collection.size,
+                        height: this.collection.size
+                    });
+                }
+                this.displayMedia();
+
+                this.listenTo(this.app.vent, 'show-uploader', this.addMedia);
+                this.listenTo(this.app.vent, 'search-requested', this.doSearch);
+                this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
+            },
+            isMapImageCollection: function () {
+                return this.collection.key === "map_images";
+            },
+            initDisplayFlags: function () {
+                if (this.typePlural === "photos" || this.typePlural === "audio" ||
+                        this.typePlural === "map_images") {
+                    this.displayOverlays = false;
+                    this.isShowing = false;
+                } else {
+                    this.displayOverlays = true;
+                    this.isShowing = true;
+                }
+                this.stateKey += this.collection.getDataType();
+                this.restoreState();
+            },
+            templateHelpers: function () {
+                return {
+                    title: this.title,
+                    typePlural: this.typePlural,
+                    key: this.collection.key,
+                    isShowing: this.isShowing,
+                    displayOverlays: this.displayOverlays
+                };
+            },
+            getEmptyView: function () {
+                return Marionette.ItemView.extend({
+                    initialize: function (opts) {
+                        _.extend(this, opts);
+                    },
+                    tagName: "li",
+                    className: "empty",
+                    template: Handlebars.compile('No "{{ title }}" found'),
+                    templateHelpers: function () {
+                        return {
+                            title: this.title.toLowerCase()
+                        };
+                    }
+                });
+            },
+
+            childViewOptions: function () {
+                var opts = {
+                    app: this.app,
+                    title: this.title,
+                    icon: this.icon,
+                    displayOverlay: this.displayOverlays
+                };
+                return opts;
+            },
+            childView: MarkerListingDetail,
+            childViewContainer: ".marker-container",
+            events: function () {
+                return _.extend({
+                    'click .zoom-to-extents': 'zoomToExtents',
+                    'click .list-header > .fa-eye': 'hideMarkers',
+                    'click .list-header > .fa-eye-slash': 'showMarkers',
+                    'click .add-new': 'triggerAddNewMap'
+                }, PanelVisibilityExtensions.events);
+            },
+
+            removeHideIcon: function () {
+                this.$el.find('.list-header > .fa-eye-slash').removeClass('fa-eye-slash').addClass('fa-eye');
+            },
+
+            showHideIcon: function () {
+                var invisibilityCount = 0,
+                    that = this;
+                this.children.each(function (view) {
+                    if (!view.displayOverlay) {
+                        ++invisibilityCount;
+                        that.displayOverlays = false;
+                    }
+                });
+                if (invisibilityCount === this.children.length) {
+                    this.$el.find('.list-header > .fa-eye').removeClass('fa-eye').addClass('fa-eye-slash');
+                }
+                this.saveState();
+            },
+
+            zoomToExtents: function () {
+                this.collection.trigger('zoom-to-extents');
+            },
+            hideMarkers: function () {
+                this.displayOverlays = false;
+                this.collection.trigger('hide-markers');
+                this.saveState();
+                this.render();
+            },
+            showMarkers: function () {
+                this.displayOverlays = true;
+                this.collection.trigger('show-markers');
+                this.saveState();
+                this.render();
+            },
+
+            hideLoadingMessage: function () {
+                this.$el.find(this.childViewContainer).empty();
+            },
+
+            remove: function () {
+                Marionette.CompositeView.prototype.initialize.call(this);
+                if (this.overlays) {
+                    this.overlays.destroy();
+                }
+            },
+
+            renderOverlays: function () {
+                this.overlays = new MarkerOverlays({
+                    collection: this.collection,
+                    app: this.app,
+                    dataType: this.typePlural,
+                    _icon: this.icon,
+                    displayOverlays: this.displayOverlays
+                });
+            },
+
+            // This might also be the candidate for adding a new cell in the exisitng form
+            // without putting having the overlay_type assigned
+            triggerAddNewMap: function (e) {
+                var target = this.$el.find('.add-new');
+                this.app.vent.trigger('add-new-item-to-map', {
+                    target: target,
+                    preventDefault: function () {}
+                });
+                e.preventDefault();
+            },
+
+            doSearch: function (term) {
+                this.collection.doSearch(term, this.app.getProjectID(), this.fields);
+            },
+
+            clearSearch: function () {
+                this.collection.clearSearch(this.app.getProjectID());
+            },
+
+            displayMedia: function () {
+                _.bindAll(this, 'render');
+
+                // redraw CompositeView:
+                this.renderOverlays();
+                this.hideLoadingMessage();
+            },
+            saveState: function () {
+                this.app.saveState(this.stateKey, {
+                    isShowing: this.isShowing,
+                    displayOverlays: this.displayOverlays
+                });
+            },
+            restoreState: function () {
+                var state = this.app.restoreState(this.stateKey);
+                if (state && typeof state.isShowing !== 'undefined') {
+                    this.isShowing = state.isShowing;
+                }
+                if (state && typeof state.displayOverlays !== 'undefined') {
+                    this.displayOverlays = state.displayOverlays;
+                }
+            }
+
+        }));
+        return MarkerListing;
+    });
+
+define('apps/map/views/marker-listing-manager',["marionette",
+        "underscore",
+        "handlebars",
+        "jquery",
+        "apps/map/views/marker-listing"
+    ],
+    function (Marionette, _, Handlebars, $, MarkerListing) {
+        'use strict';
+        /**
+         * A class that handles display and rendering of the
+         * data panel and projects menu
+         * @class DataPanel
+         */
+        var ItemListManager = Marionette.LayoutView.extend({
+            tagName: 'div',
+            template: Handlebars.compile('<div class="show-hide hide"></div>'),
+            collections: [],
+            overlayViews: [],
+            initialize: function (opts) {
+                _.extend(this, opts);
+            },
+            events: {
+                'click .hide': 'hidePanel',
+                'click .show': 'showPanel'
+            },
+
+            addMarkerListingsToUI: function () {
+                var i = 0,
+                    key,
+                    data,
+                    selector,
+                    overlayView,
+                    dm = this.app.dataManager,
+                    dataSources = dm.getDataSources();
+                for (i = 0; i < dataSources.length; i++) {
+                    key = dataSources[i].value;
+                    data =  dm.getData(key);
+                    overlayView = new MarkerListing({
+                        collection: data.collection,
+                        fields: data.fields,
+                        app: this.app,
+                        title: dataSources[i].name
+                    });
+                    this.overlayViews.push(overlayView);
+                    selector = key + '-list';
+                    this.$el.append($('<div id="' + selector + '"></div>'));
+                    this.addRegion(key, '#' + selector);
+                    this[key].show(overlayView);
+                }
+                this.zoomToExtents();
+            },
+            zoomToExtents: function () {
+                var bounds = new google.maps.LatLngBounds(),
+                    i;
+                for (i = 0; i < this.overlayViews.length; i++) {
+                    bounds.union(this.overlayViews[i].overlays.getBounds());
+                }
+                //console.log(bounds.isEmpty());
+                if (!bounds.isEmpty()) {
+                    this.app.map.fitBounds(bounds);
+                }
+            },
+            onShow: function () {
+                this.addMarkerListingsToUI();
+            },
+            hidePanel: function (e) {
+                $(e.target).removeClass("hide").addClass("show");
+                this.app.vent.trigger('hide-list');
+                e.preventDefault();
+            },
+            showPanel: function (e) {
+                $(e.target).removeClass("show").addClass("hide");
+                this.app.vent.trigger('unhide-list');
+                e.preventDefault();
+            }
+        });
+
+        return ItemListManager;
+
+    });
+
+define('text!apps/gallery/templates/photo-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    {{#compare screenType "presentation" operator="!="}}\n        <h4>Preview</h4>\n    {{/compare}}\n    <div class="section">\n        <h3>{{ name }}</h3>\n    </div>\n\n    <div class="img-card">\n        <div class="photo-single">\n            <img src="{{this.path_medium}}" />\n        </div>\n        <p class="photo-caption">{{ caption }}</p>\n    </div>\n\n    <div class="section-card">\n        <p>\n        Attribution: {{ attribution }} <br>\n        {{#each tags}}\n            <a class="tag"> {{this}} </a>\n        {{/each}}\n        <!-- Three curly braces if you don\'t want to escape HTML -->\n    </div>\n    {{#compare screenType "presentation" operator="!="}}\n        <div class="save-options">\n            <button class="edit-mode button-tertiary ">Edit</button>\n        </div>\n    {{/compare}}\n{{/ifequal}}\n\n{{#ifequal mode "presentation"}}\n    <div class="section">\n        <h3>{{ name }}</h3>\n        <p style="font-style: italic">{{ caption }}</p>\n    </div>\n    <div class="img-card">\n        <div class="photo-single">\n            <img src="{{this.path_medium}}" />\n        </div>\n        <p class="photo-caption">{{ caption }}</p>\n    </div>\n    <div class="section-card">\n        <p>Tags:\n        {{#each tags}}\n            <!-- <p>{{this}}<br></p> -->\n            <a class="tag"> {{this}} </a>\n        {{/each}}\n        </p>\n        <!-- Three curly braces if you don\'t want to escape HTML -->\n    </div>\n{{/ifequal}}\n\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>\n        {{#if id}}\n        Edit\n        {{else}}\n        Add New\n        {{/if}}\n        Media Details\n    </h4>\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n            <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n            <div class="add-lat-lng">\n                <button class="button-secondary add-marker-button" id="add-geometry">\n                    Add Location Marker\n                </button>\n            </div>\n        {{/if}}\n        {{#if lat}}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n\n    <div class="img-card single-photo">\n        <div class="photo-container">\n            <img class="edit-photo" src="{{ path_medium }}" />\n        </div>\n        <div class="rotate-message">\n            <p>rotating photo...</p>\n            <i class="fa fa-refresh fa-spin fa-2x"></i>\n        </div>\n    </div>\n\n    <div class="rotate-photo">\n        <a class="rotate-left" rotation="left" ><i rotation="left" class="fa fa-rotate-left" aria-hidden="true"></i></a>\n        <a class="rotate-right" rotation="right" ><i rotation="right" class="fa fa-rotate-right" aria-hidden="true"></i></a>\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n             go to the redesign/models/photo.js / audio.js and modify\n             the form. Instructions re: how to use the Backbone Forms\n             library here:\n             https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n\n    <div class="save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
+
+
+define('text!apps/gallery/templates/audio-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    <h4>Preview</h4>\n    <div class="player-container audio-detail"></div>\n    <br>\n    {{tags}}\n    <br>\n    <div class="save-options">\n        <button class="edit-mode button-tertiary ">Edit</button>\n    </div>\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>\n        {{#if id}}\n        Edit\n        {{else}}\n        Add New\n        {{/if}}\n    </h4>\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n        <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n        <div class="add-lat-lng">\n            <button class="button-secondary add-marker-button" id="add-geometry">\n                Add Location Marker\n            </button>\n        </div>\n        {{/if}}\n        \n        {{#if lat}}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n    <div class="player-container audio-detail">\n\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n            go to the redesign/models/photo.js and/or audio.js and modify\n            the form. Instructions re: how to use the Backbone Forms\n            library here:\n            https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n    <div class = "save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
+
+
+define('text!apps/gallery/templates/video-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    <h4>Preview</h4>\n    <div>\n        {{name}}\n        <br>\n        {{caption}}\n        <br>\n        {{#ifequal video_provider "vimeo"}}\n            <iframe src="https://player.vimeo.com/video/{{video_id}}"\n            width="350" height="200"\n            frameborder="0"\n            webkitallowfullscreen mozallowfullscreen allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n\n\n        {{#ifequal video_provider "youtube"}}\n            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n            width="350" height="200"\n            frameborder="0" allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n    </div>\n    <br>\n    {{tags}}\n    <br>\n    <div class="save-options">\n        <button class="edit-mode button-tertiary ">Edit</button>\n    </div>\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>\n        {{#if id}}\n        Edit\n        {{else}}\n        Add New\n        {{/if}}\n    </h4>\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n        <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n        <div class="add-lat-lng">\n            <button class="button-secondary add-marker-button" id="add-geometry">\n                Add Location Marker\n            </button>\n        </div>\n        {{/if}}\n\n        {{#if lat}}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n    <div>\n            {{#ifequal video_provider "vimeo"}}\n                <iframe src="https://player.vimeo.com/video/{{video_id}}"\n                style="width: 100%" height="250"\n                frameborder="0"\n                webkitallowfullscreen mozallowfullscreen allowfullscreen>\n                </iframe>\n            {{/ifequal}}\n\n\n            {{#ifequal video_provider "youtube"}}\n                <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n                style="width: 100%" height="250"\n                frameborder="0" allowfullscreen>\n                </iframe>\n            {{/ifequal}}\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n            go to the redesign/models/photo.js and/or audio.js and modify\n            the form. Instructions re: how to use the Backbone Forms\n            library here:\n            https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n    <div class = "save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
+
+
+define('text!apps/gallery/templates/record-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    {{#compare screenType "presentation" operator="!="}}\n        <h4>Preview</h4>\n    {{/compare}}\n\n    <div class="section">\n        <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>\n\n        {{#if featuredImage}}\n            <img class="photo featured-photo" src=\'{{featuredImage.path_medium}}\'>\n        {{/if}}\n        {{#if caption }}\n            <p style="font-style: italic">{{ caption }}</p>\n        {{/if}}\n\n        {{#if video_count }}\n            <div class="carousel carousel-video" style="background-color: #{{paragraph.backgroundColor}}"></div>\n        {{/if}}\n        {{#if photo_count }}\n            <!-- This is where we need to make changes inside to ensure that featured image is not part of the carousel -->\n            <div class="carousel carousel-photo" style="background-color: #{{paragraph.backgroundColor}}"></div>\n        {{/if}}\n        {{#if audio_count }}\n            <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}"></div>\n        {{/if}}\n    </div>\n\n    {{#if fields }}\n        <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">\n        {{#each fields}}\n            <tr>\n                <td>{{ this.col_alias }}:</td>\n                <td>{{ this.val }}</td>\n            </tr>\n        {{/each}}\n        {{#if tags}}\n            <tr>\n                <td></td>\n                <td>\n                    {{#each tags}}\n                        <a class="tag"> {{this}} </a>\n                    {{/each}}\n                </td>\n            </tr>\n        {{/if}}\n        </table>\n    {{else}}\n        <div class="tag-container">\n        {{#each tags}}\n            <a class="tag"> {{this}} </a>\n        {{/each}}\n        </div>\n    {{/if}}\n    <button class="button button-tertiary streetview">Show Street View</button>\n\n    {{#compare screenType "presentation" operator="!="}}\n        <div class="save-options">\n            <button class="edit-mode button-tertiary">Edit</button>\n        </div>\n    {{/compare}}\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>\n        {{#if id}}\n        Edit\n        {{else}}\n        Add New\n        {{/if}}\n    </h4>\n\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n            <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n            <div class="add-lat-lng">\n                <button class="button-secondary add-marker-button" id="add-geometry">\n                    Add Location Marker\n                </button>\n            </div>\n        {{/if}}\n        {{#if lat }}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n\n    <div id="model-form"></div>\n    \n    <button class="button button-tertiary streetview">Show Street View</button>\n\n    <div class = "save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary" id="preview">Preview</button>\n        <button class="button-tertiary button-warning delete-model" id="delete">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
+
+
+define('text!apps/gallery/templates/map-image-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    <h4>Preview</h4>\n    <div class="section">\n        <h3>{{ name }}</h3>\n    </div>\n\n    <div class="img-card">\n        <div class="photo-single">\n            <img src="{{this.overlay_path}}" />\n        </div>\n        <p class="photo-caption">{{ caption }}</p>\n    </div>\n    {{#each tags}}\n        <a class="tag"> {{this}} </a>\n    {{/each}}\n    <br>\n    <div class="save-options">\n        <button class="edit-mode button-tertiary ">Edit</button>\n    </div>\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>\n        {{#if id}}\n        Edit\n        {{else}}\n        Add New\n        {{/if}}\n    </h4>\n    {{#if geometry}}\n        <button class="button-secondary delete-marker-button" id="delete-geometry">Detach Overlay From Map</button>\n    {{else}}\n        <div class="add-bounding-box">\n            <button class="button-secondary add-marker-button" id="add-rectangle">\n                Place Overlay\n            </button>\n        </div>\n    {{/if}}\n    <div class="img-card map-image">\n    {{#if overlay_path}}\n        <img src="{{ overlay_path }}" />\n    {{else}}\n        <img src="{{ file_path }}" />\n    {{/if}}\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n             go to the redesign/models/photo.js and/or audio.js and modify\n             the form. Instructions re: how to use the Backbone Forms\n             library here:\n             https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n    <div class="save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
+
 
 define('text!lib/audio/audio-player.html',[],function () { return '{{#ifequal audioMode "basic"}}\n    <audio controls preload class="audio">\n        <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n    <div>\n        <div class="play-ctrls">\n            <div class="play fa fa-play fa-2x" aria-hidden="true"></div>\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal audioMode "simple"}}\n    <audio controls preload class="audio">\n      <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n    <div>\n        <div class="play-ctrls">\n            <!-- i class="fa fa-play play" aria-hidden="true" style="font-size:2em;"></i -->\n            <div class="play fa fa-play fa-3x" aria-hidden="true"></div>\n        </div>\n        <div class="audio-progress">\n            <div class="progress-container">\n                <div class="audio-progress-bar"></div>\n                <div class="audio-progress-duration"></div>\n                <div class="audio-progress-circle"></div>\n            </div>\n            <div class="audio-labels time-current"></div>\n           <!-- <span class="audio-labels time-duration" style="right: 10px;"></span> -->\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal audioMode "detail"}}\n    <audio controls preload class="audio">\n      <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n\n    <div class="audio-container" style="color: #{{paragraph.color}}">\n        <div class="audio-progress">\n            <div class="play-ctrls">\n                <!--   <i class="fa fa-backward fwd-back skip-back" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n          <!-- <i class="fa fa-play fa-2x play" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n                <i class="fa fa-play fa-lg play" aria-hidden="true" style="color: #{{paragraph.color}}"></i>\n                <!-- <i class="play" aria-hidden="true" style="font-size:0.5em; border-color: transparent transparent transparent #{{paragraph.color}}"></i> -->\n         <!--   <i class="fa fa-forward fwd-back skip-fwd" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n            </div>\n            <div class="progress-container">\n                <div class="audio-progress-bar" style="background-color: #{{paragraph.backgroundColor}}; border-color: #{{paragraph.color}}"></div>\n                <div class="audio-progress-duration" style="background-color: #{{paragraph.color}}; border-color: #{{paragraph.color}}"></div>\n                <div class="audio-progress-circle" style="border-color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}"></div>\n            </div>\n         <!--   <span class="audio-labels time-current" style="left: 10px; color: #{{paragraph.color}};"></span>  -->\n         <!--   <span class="audio-labels time-duration" style="right: 10px; color: #{{paragraph.color}};"></span> -->\n        </div>\n        <div class="info-container">\n            <p class="audio-info" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}{{#if caption}}: {{ caption }} {{/if}}</p>\n            <span class="audio-labels time-current" style="float: right; color: #{{paragraph.color}}; font-family: {{paragraph.font}}"></span>\n        </div>\n        \n\n    </div>\n{{/ifequal}}\n';});
 
@@ -16763,6 +17245,193 @@ define('lib/audio/audio-player',["underscore", "marionette", "handlebars", "text
     });
 
 
+define('text!lib/carousel/carousel-container.html',[],function () { return '{{#if isSpreadsheet}}\n    {{#compare num_children 1 operator="=="}}\n        <div class="carousel-content img-card"></div>\n    {{/compare}}\n\n    {{#compare num_children 1 operator=">"}}\n        <div class="carouselbox spreadsheet">\n            <ol class="carousel-content"></ol>\n        </div>\n        <div class="circle-buttons">\n            <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n            {{#times 1 num_children}}\n                <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}"></i>\n            {{/times}}\n        </div>\n    {{/compare}}\n{{else}}\n\n    <div class="carouselbox">\n        <ol class="carousel-content"></ol>\n    </div>\n    \n    {{#compare num_children 1 operator=">"}}\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0" style="color: #{{paragraph.color}}"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}" style="color: #{{../paragraph.color}}"></i>\n        {{/times}}\n    </div>\n    <p class="carousel-caption" style="font-family: {{paragraph.font}}">{{this.caption }}</p>\n    {{/compare}}\n\n{{/if}}\n';});
+
+
+define('text!lib/carousel/carousel-container-audio.html',[],function () { return '\n{{#if isSpreadsheet}}\n    {{#compare num_children 1 operator="=="}}\n        <div class="carousel-content"></div>\n    {{/compare}}\n\n    {{#compare num_children 1 operator=">"}}\n    <div class="carouselbox spreadsheet audio">\n        <ol class="carousel-content"></ol>\n    </div>\n<!--    \n    <div class="carousel-buttons hover-to-show">\n        <i class="fa fa-chevron-left prev"></i>\n        <i class="fa fa-chevron-right next"></i>\n    </div>\n-->\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>\n        {{/times}}\n    </div>\n    {{/compare}}\n{{else}}\n    <div class="carouselbox audio">\n        <ol class="carousel-content"></ol>\n    </div>\n\n    {{#compare num_children 1 operator=">"}}\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>\n        {{/times}}\n    </div>\n    {{/compare}}\n\n{{/if}}\n';});
+
+
+define('text!lib/carousel/carousel-video-item.html',[],function () { return '{{#ifequal video_provider "vimeo"}}\n    <iframe class="photo" src="https://player.vimeo.com/video/{{video_id}}"\n    style="width:100%" height="200"\n    frameborder="0"\n    webkitallowfullscreen mozallowfullscreen allowfullscreen>\n    </iframe>\n{{/ifequal}}\n\n{{#ifequal video_provider "youtube"}}\n    <iframe class="photo" src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n    style="width:100%" height="200"\n    frameborder="0" allowfullscreen>\n    </iframe>\n{{/ifequal}}\n<p class="carousel-caption" style="color: {{paragraph.color}}; font-family: {{paragraph.font}}">{{this.caption }}</p>';});
+
+
+define('text!lib/carousel/carousel-photo-item.html',[],function () { return '<div class="photo" style="background: url(\'{{this.path_medium}}\');"></div>\n<div class="carousel-caption-wrapper">\n    <p class="carousel-caption" style="color: {{paragraph.color}}; font-family: {{paragraph.font}}">{{this.caption }}</p>\n<div>\n';});
+
+define('lib/carousel/carousel',["jquery", "underscore", "marionette", "handlebars",
+        "lib/audio/audio-player",
+        "text!../carousel/carousel-container.html",
+        "text!../carousel/carousel-container-audio.html",
+        "text!../carousel/carousel-video-item.html",
+        "text!../carousel/carousel-photo-item.html"],
+    function ($, _, Marionette, Handlebars, AudioPlayer,
+              CarouselContainerTemplate, CarouselContainerAudioTemplate, VideoItemTemplate, PhotoItemTemplate) {
+        'use strict';
+        var Carousel = Marionette.CompositeView.extend({
+            events: {
+                "click .next": "next",
+                "click .prev": "prev",
+                "click .show-slide": "jump",
+                'mouseover .carouselbox': 'showArrows',
+                'mouseout .carouselbox': 'hideArrows'
+            },
+            counter: 0,
+            className: "active-slide",
+            mode: "photos",
+            childViewContainer: ".carousel-content",
+            initialize: function (opts) {
+                _.extend(this, opts);
+                console.log(this);
+                if (this.mode == "photos") {
+                    this.template = Handlebars.compile(CarouselContainerTemplate);
+                } else if (this.mode == "videos") {
+                    this.template = Handlebars.compile(CarouselContainerTemplate);
+                } else {
+                    this.template = Handlebars.compile(CarouselContainerAudioTemplate);
+                }
+                this.render();
+                //this.$el.addClass('active-slide');
+                if (this.collection.length == 1 && this.mode !== "audio") {
+                    this.$el.addClass('short');
+                }
+                this.navigate(0);
+            },
+
+            showArrows: function () {
+                if (this.mode === "audio" || this.collection.length === 1) {
+                    return;
+                }
+                var $leftArrow, $rightArrow;
+                if (this.timeout) {
+                    clearTimeout(this.timeout);
+                    this.timeout = null;
+                } else {
+                    $leftArrow = $('<i class="fa fa-chevron-left prev"></i>');
+                    $rightArrow = $('<i class="fa fa-chevron-right next"></i>');
+                    this.$el.find('.carouselbox').append($leftArrow).append($rightArrow);
+                }
+            },
+            hideArrows: function () {
+                if (this.mode === "audio" || this.collection.length === 1) {
+                    return;
+                }
+                var that = this;
+                this.timeout = setTimeout(function () {
+                    that.$el.find('.fa-chevron-left, .fa-chevron-right').remove();
+                    that.timeout = null;
+                }, 100);
+            },
+            childViewOptions: function () {
+                return {
+                    mode: this.mode,
+                    app: this.app,
+                    num_children: this.collection.length,
+                    parent: this,
+                    panelStyles: this.panelStyles
+                };
+            },
+            getChildView: function () {
+                return Marionette.ItemView.extend({
+                    initialize: function (opts) {
+                        _.extend(this, opts);
+                        if (this.mode == "photos") {
+                            this.template = Handlebars.compile(PhotoItemTemplate);
+                        } else if (this.mode == "videos") {
+                            this.template = Handlebars.compile(VideoItemTemplate);
+                        } else {
+                            this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
+                        }
+                    },
+                    templateHelpers: function () {
+                        console.log(this);
+                        var paragraph;
+                        if (this.panelStyles) {
+                            paragraph = this.panelStyles.paragraph;
+                        }
+                        return {
+                            num_children: this.num_children,
+                            mode: this.mode, 
+                            paragraph: paragraph
+                        };
+                    },
+                    tagName: "li",
+                    onRender: function () {
+                        if (this.mode == "audio") {
+                            var player = new AudioPlayer({
+                                model: this.model,
+                                audioMode: "detail",
+                                app: this.app,
+                                panelStyles: this.panelStyles
+                            });
+                            this.$el.find('.player-container').append(player.$el);
+                        }
+                    }
+                });
+            },
+
+            templateHelpers: function () {
+                console.log(this);
+                var paragraph;
+                if (this.panelStyles) {
+                    paragraph = this.panelStyles.paragraph;
+                }
+                return {
+                    num_children: this.collection.length,
+                    isSpreadsheet: this.app.screenType === "spreadsheet",
+                    paragraph: paragraph
+                };
+            },
+
+            navigate: function () {
+                if (this.mode == "audio") {
+                    this.app.vent.trigger('audio-carousel-advanced');
+                }
+                var $items = this.$el.find('.carousel-content li'),
+                    amount = this.collection.length;
+                $items.removeClass('current').hide();
+                if (this.counter < 0) {
+                    this.counter = amount - 1;
+                }
+                if (this.counter >= amount) {
+                    this.counter = 0;
+                }
+                this.updateCircles();
+                $($items[this.counter]).addClass('current').show();
+            },
+
+            resetCurrentFrame: function () {
+                //needed to stop playing iFrame videos:
+                this.children.findByIndex(this.counter).render();
+            },
+
+            next: function () {
+                this.resetCurrentFrame();
+                this.counter += 1;
+                this.navigate();
+            },
+
+            prev: function () {
+                this.resetCurrentFrame();
+                this.counter -= 1;
+                this.navigate();
+            },
+
+            updateCircles: function () {
+                var $items = this.$el.find('.show-slide'),
+                    $clicked = $($items[this.counter]);
+                $items.removeClass("fa-circle");
+                $items.not($clicked).addClass("fa-circle-o");
+                $clicked.addClass("fa-circle");
+            },
+
+            jump: function (e) {
+                this.resetCurrentFrame();
+                this.counter = parseInt($(e.target).attr("data-index"), 10);
+                this.navigate();
+            }
+        });
+        return Carousel;
+    });
+
+
 define('text!apps/gallery/templates/table.html',[],function () { return '{{#ifequal dataType "photos"}}  \n    <td><img src="{{ path_medium }}" class="thumbnail-img"></td>\n{{/ifequal}}\n\n{{#ifequal dataType "audio"}}\n    <td><i class="fa fa-2x fa-volume-up" aria-hidden="true"></i></td>\n{{/ifequal}}\n\n{{#ifequal dataType "videos"}}\n    <td>\n        {{#ifequal video_provider "vimeo"}}\n            <i class="fa fa-2x fa-vimeo" aria-hidden="true"></i>\n        {{ else }}\n            <i class="fa fa-2x fa-youtube" aria-hidden="true"></i>\n        {{/ifequal}}\n    </td>\n{{/ifequal}}\n\n<td>{{ name }}</td>\n<td>{{ caption }}</td>\n<td>{{ tags }}</td>\n<td>{{ overlay_type }}</td>\n<td>{{ owner }}</td>\n\n';});
 
 
@@ -17017,1075 +17686,2121 @@ define('apps/gallery/views/media_browser',[
     });
 
 
-define('text!apps/spreadsheet/templates/create-field.html',[],function () { return '<div id="model-form"></div>';});
+define('text!apps/gallery/templates/media-browser-layout.html',[],function () { return '<nav>\n    <ul>\n        <li id="upload-tab-li">\n            <a href="#" class="add-media-tabs" id="upload-tab">\n                Upload\n            </a>\n        </li>\n        <li id="database-tab-li">\n            <a href="#" class="add-media-tabs" id="database-tab">\n                Select from Database\n            </a>\n        </li>\n    </ul>\n</nav>\n\n<section id="uploader"></section>\n    \n<section id="media_browser"></section>\n    \n';});
 
-define('apps/spreadsheet/views/create-field',[
-    "backbone",
-    "marionette",
-    "handlebars",
-    "models/field",
-    "text!../templates/create-field.html",
-    "form"
-], function (Backbone, Marionette, Handlebars, Field, CreateFieldTemplate) {
+define('apps/gallery/views/add-media',["marionette",
+        "handlebars",
+        "apps/gallery/views/media_browser",
+     //   "apps/gallery/views/media-browser-uploader",
+        "apps/gallery/views/create-media",
+        "text!../templates/media-browser-layout.html",
+        "models/layer"
+    ],
+    function (Marionette, Handlebars, MediaBrowserView, UploaderView, AddMediaModalTemplate)  {
+        'use strict';
+        // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
+        var AddMediaModal = Marionette.LayoutView.extend({
+            template: Handlebars.compile(AddMediaModalTemplate),
+            activeRegion: null,
+            initialize: function (opts) {
+                _.extend(this, opts);
+                this.render();
+            },
+
+            events: {
+                'click #upload-tab' : 'showUploader',
+                'click #database-tab' : 'showDatabase'
+            },
+
+            regions: {
+                uploaderRegion: "#uploader",
+                mediaBrowserRegion: "#media_browser"
+            },
+            onRender: function () {
+                // only load views after the LayoutView has
+                // been rendered to the screen:
+
+               /* var upld = new SelectMapView({ app: this.app });
+                this.menu.show(upld);
+                */
+                this.upld = new UploaderView({
+                    app: this.app,
+                    parentModel: this.parentModel
+                });
+                this.uploaderRegion.show(this.upld);
+                this.uploaderRegion.$el.hide();
+
+                this.mb = new MediaBrowserView({
+                    app: this.app,
+                    parentModel: this.parentModel
+                });
+                this.mediaBrowserRegion.show(this.mb);
+                this.$el.find("#database-tab-li").addClass("active");
+
+                //sets proper region from which to call addModel()
+                this.activeRegion = "mediaBrowser";
+
+
+            },
+
+            showUploader: function (e) {
+                this.mediaBrowserRegion.$el.hide();
+                this.uploaderRegion.$el.show();
+                this.$el.find("#database-tab-li").removeClass("active");
+                this.$el.find("#upload-tab-li").addClass("active");
+                this.activeRegion = "uploader";
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+
+            showDatabase: function (e) {
+                this.uploaderRegion.$el.hide();
+                this.mediaBrowserRegion.$el.show();
+                this.$el.find("#upload-tab-li").removeClass("active");
+                this.$el.find("#database-tab-li").addClass("active");
+                this.activeRegion = "mediaBrowser";
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+            addModels: function () {
+                if (this.activeRegion == "mediaBrowser") {
+                    console.log("read mb.addModels()");
+                    this.mb.addModels();
+                } else if (this.activeRegion == "uploader") {
+                    this.upld.addModels();
+                }
+            }
+        });
+        return AddMediaModal;
+    });
+
+/*!
+ * Pikaday
+ *
+ * Copyright © 2014 David Bushell | BSD & MIT license | https://github.com/dbushell/Pikaday
+ */
+
+(function (root, factory)
+{
     'use strict';
-    var CreateFieldView = Marionette.ItemView.extend({
-        template: Handlebars.compile(CreateFieldTemplate),
-        initialize: function (opts) {
-            //console.log("Creating field");
-            this.model = new Field(null, { id: opts.formID });
-            this.fields = opts.fields;
-            this.app = opts.app;
-            // see documentation: https://github.com/powmedia/backbone-forms
-            this.form = new Backbone.Form({
-                model: this.model,
-                schema: {
-                    col_alias: {
-                        type: 'Text',
-                        title: "Name",
-                        validators: ['required']
-                    },
-                    data_type: {
-                        title: 'Data Type',
-                        type: 'Select',
-                        options: { text: 'Text', integer: 'Integer', boolean: 'Boolean' }
+
+    var moment;
+    if (typeof exports === 'object') {
+        // CommonJS module
+        // Load moment.js as an optional dependency
+        try { moment = require('moment'); } catch (e) {}
+        module.exports = factory(moment);
+    } else if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define('external/pikaday-forked',['require'],function (req)
+        {
+            // Load moment.js as an optional dependency
+            var id = 'moment';
+            try { moment = req(id); } catch (e) {}
+            return factory(moment);
+        });
+    } else {
+        root.Pikaday = factory(root.moment);
+    }
+}(this, function (moment)
+{
+    'use strict';
+
+    /**
+     * feature detection and helper functions
+     */
+    var hasMoment = typeof moment === 'function',
+
+    hasEventListeners = !!window.addEventListener,
+
+    document = window.document,
+
+    sto = window.setTimeout,
+
+    addEvent = function(el, e, callback, capture)
+    {
+        if (hasEventListeners) {
+            el.addEventListener(e, callback, !!capture);
+        } else {
+            el.attachEvent('on' + e, callback);
+        }
+    },
+
+    removeEvent = function(el, e, callback, capture)
+    {
+        if (hasEventListeners) {
+            el.removeEventListener(e, callback, !!capture);
+        } else {
+            el.detachEvent('on' + e, callback);
+        }
+    },
+
+    trim = function(str)
+    {
+        return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g,'');
+    },
+
+    hasClass = function(el, cn)
+    {
+        return (' ' + el.className + ' ').indexOf(' ' + cn + ' ') !== -1;
+    },
+
+    addClass = function(el, cn)
+    {
+        if (!hasClass(el, cn)) {
+            el.className = (el.className === '') ? cn : el.className + ' ' + cn;
+        }
+    },
+
+    removeClass = function(el, cn)
+    {
+        el.className = trim((' ' + el.className + ' ').replace(' ' + cn + ' ', ' '));
+    },
+
+    isArray = function(obj)
+    {
+        return (/Array/).test(Object.prototype.toString.call(obj));
+    },
+
+    isDate = function(obj)
+    {
+        return (/Date/).test(Object.prototype.toString.call(obj)) && !isNaN(obj.getTime());
+    },
+
+    isWeekend = function(date)
+    {
+        var day = date.getDay();
+        return day === 0 || day === 6;
+    },
+
+    isLeapYear = function(year)
+    {
+        // solution by Matti Virkkunen: http://stackoverflow.com/a/4881951
+        return year % 4 === 0 && year % 100 !== 0 || year % 400 === 0;
+    },
+
+    getDaysInMonth = function(year, month)
+    {
+        return [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+    },
+
+    setToStartOfDay = function(date)
+    {
+        if (isDate(date)) date.setHours(0,0,0,0);
+    },
+
+    compareDates = function(a,b)
+    {
+        // weak date comparison (use setToStartOfDay(date) to ensure correct result)
+        return a.getTime() === b.getTime();
+    },
+
+    extend = function(to, from, overwrite)
+    {
+        var prop, hasProp;
+        for (prop in from) {
+            hasProp = to[prop] !== undefined;
+            if (hasProp && typeof from[prop] === 'object' && from[prop] !== null && from[prop].nodeName === undefined) {
+                if (isDate(from[prop])) {
+                    if (overwrite) {
+                        to[prop] = new Date(from[prop].getTime());
                     }
                 }
-            }).render();
-            /*
-            this.render();
-            this.$el.find("#model-form").append(this.form.$el);
-            */
+                else if (isArray(from[prop])) {
+                    if (overwrite) {
+                        to[prop] = from[prop].slice(0);
+                    }
+                } else {
+                    to[prop] = extend({}, from[prop], overwrite);
+                }
+            } else if (overwrite || !hasProp) {
+                to[prop] = from[prop];
+            }
+        }
+        return to;
+    },
+
+    fireEvent = function(el, eventName, data)
+    {
+        var ev;
+
+        if (document.createEvent) {
+            ev = document.createEvent('HTMLEvents');
+            ev.initEvent(eventName, true, false);
+            ev = extend(ev, data);
+            el.dispatchEvent(ev);
+        } else if (document.createEventObject) {
+            ev = document.createEventObject();
+            ev = extend(ev, data);
+            el.fireEvent('on' + eventName, ev);
+        }
+    },
+
+    adjustCalendar = function(calendar) {
+        if (calendar.month < 0) {
+            calendar.year -= Math.ceil(Math.abs(calendar.month)/12);
+            calendar.month += 12;
+        }
+        if (calendar.month > 11) {
+            calendar.year += Math.floor(Math.abs(calendar.month)/12);
+            calendar.month -= 12;
+        }
+        return calendar;
+    },
+
+    /**
+     * defaults and localisation
+     */
+    defaults = {
+
+        // bind the picker to a form field
+        field: null,
+
+        // automatically show/hide the picker on `field` focus (default `true` if `field` is set)
+        bound: undefined,
+
+        // position of the datepicker, relative to the field (default to bottom & left)
+        // ('bottom' & 'left' keywords are not used, 'top' & 'right' are modifier on the bottom/left position)
+        position: 'bottom left',
+
+        // automatically fit in the viewport even if it means repositioning from the position option
+        reposition: true,
+
+        // the default output format for `.toString()` and `field` value
+        format: 'YYYY-MM-DD',
+
+        // the toString function which gets passed a current date object and format
+        // and returns a string
+        toString: null,
+
+        // used to create date object from current input string
+        parse: null,
+
+        // the initial date to view when first opened
+        defaultDate: null,
+
+        // make the `defaultDate` the initial selected value
+        setDefaultDate: false,
+
+        // first day of week (0: Sunday, 1: Monday etc)
+        firstDay: 0,
+
+        // the default flag for moment's strict date parsing
+        formatStrict: false,
+
+        // the minimum/earliest date that can be selected
+        minDate: null,
+        // the maximum/latest date that can be selected
+        maxDate: null,
+
+        // number of years either side, or array of upper/lower range
+        yearRange: 10,
+
+        // show week numbers at head of row
+        showWeekNumber: false,
+
+        // Week picker mode
+        pickWholeWeek: false,
+
+        // used internally (don't config outside)
+        minYear: 0,
+        maxYear: 9999,
+        minMonth: undefined,
+        maxMonth: undefined,
+
+        startRange: null,
+        endRange: null,
+
+        isRTL: false,
+
+        // Additional text to append to the year in the calendar title
+        yearSuffix: '',
+
+        // Render the month after year in the calendar title
+        showMonthAfterYear: false,
+
+        // Render days of the calendar grid that fall in the next or previous month
+        showDaysInNextAndPreviousMonths: false,
+
+        // Allows user to select days that fall in the next or previous month
+        enableSelectionDaysInNextAndPreviousMonths: false,
+
+        // how many months are visible
+        numberOfMonths: 1,
+
+        // when numberOfMonths is used, this will help you to choose where the main calendar will be (default `left`, can be set to `right`)
+        // only used for the first display or when a selected date is not visible
+        mainCalendar: 'left',
+
+        // Specify a DOM element to render the calendar in
+        container: undefined,
+
+        // Blur field when date is selected
+        blurFieldOnSelect : true,
+
+        // internationalization
+        i18n: {
+            previousMonth : 'Previous Month',
+            nextMonth     : 'Next Month',
+            months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
+            weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+            weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
         },
 
-        onShow: function(){
-            this.render();
-            this.$el.find("#model-form").append(this.form.$el);
+        // Theme Classname
+        theme: null,
 
+        // events array
+        events: [],
+
+        // callback function
+        onSelect: null,
+        onOpen: null,
+        onClose: null,
+        onDraw: null
+    },
+
+
+    /**
+     * templating functions to abstract HTML rendering
+     */
+    renderDayName = function(opts, day, abbr)
+    {
+        day += opts.firstDay;
+        while (day >= 7) {
+            day -= 7;
+        }
+        return abbr ? opts.i18n.weekdaysShort[day] : opts.i18n.weekdays[day];
+    },
+
+    renderDay = function(opts)
+    {
+        var arr = [];
+        var ariaSelected = 'false';
+        if (opts.isEmpty) {
+            if (opts.showDaysInNextAndPreviousMonths) {
+                arr.push('is-outside-current-month');
+
+                if(!opts.enableSelectionDaysInNextAndPreviousMonths) {
+                    arr.push('is-selection-disabled')
+                }
+
+            } else {
+                return '<td class="is-empty"></td>';
+            }
+        }
+        if (opts.isDisabled) {
+            arr.push('is-disabled');
+        }
+        if (opts.isToday) {
+            arr.push('is-today');
+        }
+        if (opts.isSelected) {
+            arr.push('is-selected');
+            ariaSelected = 'true';
+        }
+        if (opts.hasEvent) {
+            arr.push('has-event');
+        }
+        if (opts.isInRange) {
+            arr.push('is-inrange');
+        }
+        if (opts.isStartRange) {
+            arr.push('is-startrange');
+        }
+        if (opts.isEndRange) {
+            arr.push('is-endrange');
+        }
+        return '<td data-day="' + opts.day + '" class="' + arr.join(' ') + '" aria-selected="' + ariaSelected + '">' +
+                 '<button class="pika-button pika-day" type="button" ' +
+                    'data-pika-year="' + opts.year + '" data-pika-month="' + opts.month + '" data-pika-day="' + opts.day + '">' +
+                        opts.day +
+                 '</button>' +
+               '</td>';
+    },
+
+    renderWeek = function (d, m, y) {
+        // Lifted from http://javascript.about.com/library/blweekyear.htm, lightly modified.
+        var onejan = new Date(y, 0, 1),
+            weekNum = Math.ceil((((new Date(y, m, d) - onejan) / 86400000) + onejan.getDay()+1)/7);
+        return '<td class="pika-week">' + weekNum + '</td>';
+    },
+
+    renderRow = function(days, isRTL, pickWholeWeek, isRowSelected)
+    {
+        return '<tr class="pika-row' + (pickWholeWeek ? ' pick-whole-week' : '') + (isRowSelected ? ' is-selected' : '') + '">' + (isRTL ? days.reverse() : days).join('') + '</tr>';
+    },
+
+    renderBody = function(rows)
+    {
+        return '<tbody>' + rows.join('') + '</tbody>';
+    },
+
+    renderHead = function(opts)
+    {
+        var i, arr = [];
+        if (opts.showWeekNumber) {
+            arr.push('<th></th>');
+        }
+        for (i = 0; i < 7; i++) {
+            arr.push('<th scope="col"><abbr title="' + renderDayName(opts, i) + '">' + renderDayName(opts, i, true) + '</abbr></th>');
+        }
+        return '<thead><tr>' + (opts.isRTL ? arr.reverse() : arr).join('') + '</tr></thead>';
+    },
+
+    renderTitle = function(instance, c, year, month, refYear, randId)
+    {
+        var i, j, arr,
+            opts = instance._o,
+            isMinYear = year === opts.minYear,
+            isMaxYear = year === opts.maxYear,
+            html = '<div id="' + randId + '" class="pika-title" role="heading" aria-live="assertive">',
+            monthHtml,
+            yearHtml,
+            prev = true,
+            next = true;
+
+        for (arr = [], i = 0; i < 12; i++) {
+            arr.push('<option value="' + (year === refYear ? i - c : 12 + i - c) + '"' +
+                (i === month ? ' selected="selected"': '') +
+                ((isMinYear && i < opts.minMonth) || (isMaxYear && i > opts.maxMonth) ? 'disabled="disabled"' : '') + '>' +
+                opts.i18n.months[i] + '</option>');
+        }
+
+        monthHtml = '<div class="pika-label">' + opts.i18n.months[month] + '<select class="pika-select pika-select-month" tabindex="-1">' + arr.join('') + '</select></div>';
+
+        if (isArray(opts.yearRange)) {
+            i = opts.yearRange[0];
+            j = opts.yearRange[1] + 1;
+        } else {
+            i = year - opts.yearRange;
+            j = 1 + year + opts.yearRange;
+        }
+
+        for (arr = []; i < j && i <= opts.maxYear; i++) {
+            if (i >= opts.minYear) {
+                arr.push('<option value="' + i + '"' + (i === year ? ' selected="selected"': '') + '>' + (i) + '</option>');
+            }
+        }
+        yearHtml = '<div class="pika-label">' + year + opts.yearSuffix + '<select class="pika-select pika-select-year" tabindex="-1">' + arr.join('') + '</select></div>';
+
+        if (opts.showMonthAfterYear) {
+            html += yearHtml + monthHtml;
+        } else {
+            html += monthHtml + yearHtml;
+        }
+
+        if (isMinYear && (month === 0 || opts.minMonth >= month)) {
+            prev = false;
+        }
+
+        if (isMaxYear && (month === 11 || opts.maxMonth <= month)) {
+            next = false;
+        }
+
+        if (c === 0) {
+            html += '<button class="pika-prev' + (prev ? '' : ' is-disabled') + '" type="button">' + opts.i18n.previousMonth + '</button>';
+        }
+        if (c === (instance._o.numberOfMonths - 1) ) {
+            html += '<button class="pika-next' + (next ? '' : ' is-disabled') + '" type="button">' + opts.i18n.nextMonth + '</button>';
+        }
+
+        return html += '</div>';
+    },
+
+    renderTable = function(opts, data, randId)
+    {
+        return '<table cellpadding="0" cellspacing="0" class="pika-table" role="grid" aria-labelledby="' + randId + '">' + renderHead(opts) + renderBody(data) + '</table>';
+    },
+
+
+    /**
+     * Pikaday constructor
+     */
+    Pikaday = function(options)
+    {
+        var self = this,
+            opts = self.config(options);
+
+        self._onMouseDown = function(e)
+        {
+            if (!self._v) {
+                return;
+            }
+            e = e || window.event;
+            var target = e.target || e.srcElement;
+            if (!target) {
+                return;
+            }
+
+            if (!hasClass(target, 'is-disabled')) {
+                if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty') && !hasClass(target.parentNode, 'is-disabled')) {
+                    self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')));
+                    if (opts.bound) {
+                        sto(function() {
+                            self.hide();
+                            if (opts.blurFieldOnSelect && opts.field) {
+                                opts.field.blur();
+                            }
+                        }, 100);
+                    }
+                }
+                else if (hasClass(target, 'pika-prev')) {
+                    self.prevMonth();
+                }
+                else if (hasClass(target, 'pika-next')) {
+                    self.nextMonth();
+                }
+            }
+            if (!hasClass(target, 'pika-select')) {
+                // if this is touch event prevent mouse events emulation
+                if (e.preventDefault) {
+                    e.preventDefault();
+                } else {
+                    e.returnValue = false;
+                    return false;
+                }
+            } else {
+                self._c = true;
+            }
+        };
+
+        self._onChange = function(e)
+        {
+            e = e || window.event;
+            var target = e.target || e.srcElement;
+            if (!target) {
+                return;
+            }
+            if (hasClass(target, 'pika-select-month')) {
+                self.gotoMonth(target.value);
+            }
+            else if (hasClass(target, 'pika-select-year')) {
+                self.gotoYear(target.value);
+            }
+        };
+
+        self._onKeyChange = function(e)
+        {
+            console.log("self._onKeyChange", e.keyCode);
+            e = e || window.event;
+
+            if (self.isVisible()) {
+                console.log(self.isVisible());
+
+                switch(e.keyCode){
+                    case 13:
+                        break;
+                    case 27:
+                        if (opts.field) {
+                            opts.field.blur();
+                        }
+                        break;
+                    case 37:
+                        //e.preventDefault();
+                        console.log("Subtract day by 1");
+                        self.adjustDate('subtract', 1);
+                        break;
+                    case 38:
+                        self.adjustDate('subtract', 7);
+                        break;
+                    case 39:
+                        self.adjustDate('add', 1);
+                        break;
+                    case 40:
+                        self.adjustDate('add', 7);
+                        break;
+                }
+            }
+        };
+
+        self._onInputChange = function(e)
+        {
+            var date;
+            if (e.firedBy === self) {
+                return;
+            }
+            if (opts.parse) {
+                console.log('PARSE:', opts.parse);
+                date = opts.parse(opts.field.value, opts.format);
+            } else if (hasMoment) {
+                console.log('hasMoment');
+                date = moment(opts.field.value, opts.format, opts.formatStrict);
+                date = (date && date.isValid()) ? date.toDate() : null;
+            }
+            else {
+                'date parse';
+                date = new Date(Date.parse(opts.field.value));
+            }
+            if (isDate(date)) {
+              self.setDate(date);
+            }
+            if (!self._v) {
+                self.show();
+            }
+        };
+
+        self._onInputFocus = function()
+        {
+            self.show();
+        };
+
+        self._onInputClick = function()
+        {
+            console.log('clicked');
+            self.show();
+        };
+
+        self._onInputBlur = function()
+        {
+            console.log('self._onInputBlur');
+            // IE allows pika div to gain focus; catch blur the input field
+            var pEl = document.activeElement;
+            do {
+                if (hasClass(pEl, 'pika-single')) {
+                    return;
+                }
+            }
+            while ((pEl = pEl.parentNode));
+
+            if (!self._c) {
+                self._b = sto(function() {
+                    self.hide();
+                }, 50);
+            }
+            self._c = false;
+        };
+
+        self._onClick = function(e)
+        {
+            console.log('self._onClick');
+            e = e || window.event;
+            var target = e.target || e.srcElement,
+                pEl = target;
+            if (!target) {
+                return;
+            }
+            if (!hasEventListeners && hasClass(target, 'pika-select')) {
+                if (!target.onchange) {
+                    target.setAttribute('onchange', 'return;');
+                    addEvent(target, 'change', self._onChange);
+                }
+            }
+            do {
+                if (hasClass(pEl, 'pika-single') || pEl === opts.trigger) {
+                    return;
+                }
+            }
+            while ((pEl = pEl.parentNode));
+            if (self._v && target !== opts.trigger && pEl !== opts.trigger) {
+                self.hide();
+            }
+        };
+
+        self.el = document.createElement('div');
+        self.el.className = 'pika-single' + (opts.isRTL ? ' is-rtl' : '') + (opts.theme ? ' ' + opts.theme : '');
+
+        addEvent(self.el, 'mousedown', self._onMouseDown, true);
+        addEvent(self.el, 'touchend', self._onMouseDown, true);
+        addEvent(self.el, 'change', self._onChange);
+        addEvent(document, 'keydown', self._onKeyChange);
+
+        if (opts.field) {
+            if (opts.container) {
+                opts.container.appendChild(self.el);
+            } else if (opts.bound) {
+                document.body.appendChild(self.el);
+            } else {
+                opts.field.parentNode.insertBefore(self.el, opts.field.nextSibling);
+            }
+            addEvent(opts.field, 'change', self._onInputChange);
+
+            if (!opts.defaultDate) {
+                if (hasMoment && opts.field.value) {
+                    opts.defaultDate = moment(opts.field.value, opts.format).toDate();
+                } else {
+                    opts.defaultDate = new Date(Date.parse(opts.field.value));
+                }
+                opts.setDefaultDate = true;
+            }
+        }
+
+        var defDate = opts.defaultDate;
+
+        if (isDate(defDate)) {
+            if (opts.setDefaultDate) {
+                self.setDate(defDate, true);
+            } else {
+                self.gotoDate(defDate);
+            }
+        } else {
+            self.gotoDate(new Date());
+        }
+
+        if (opts.bound) {
+            this.hide();
+            self.el.className += ' is-bound';
+            addEvent(opts.trigger, 'click', self._onInputClick);
+            addEvent(opts.trigger, 'focus', self._onInputFocus);
+            addEvent(opts.trigger, 'blur', self._onInputBlur);
+        } else {
+            this.show();
+        }
+    };
+
+
+    /**
+     * public Pikaday API
+     */
+    Pikaday.prototype = {
+
+
+        /**
+         * configure functionality
+         */
+        config: function(options)
+        {
+            if (!this._o) {
+                this._o = extend({}, defaults, true);
+            }
+
+            var opts = extend(this._o, options, true);
+
+            opts.isRTL = !!opts.isRTL;
+
+            opts.field = (opts.field && opts.field.nodeName) ? opts.field : null;
+
+            opts.theme = (typeof opts.theme) === 'string' && opts.theme ? opts.theme : null;
+
+            opts.bound = !!(opts.bound !== undefined ? opts.field && opts.bound : opts.field);
+
+            opts.trigger = (opts.trigger && opts.trigger.nodeName) ? opts.trigger : opts.field;
+
+            opts.disableWeekends = !!opts.disableWeekends;
+
+            opts.disableDayFn = (typeof opts.disableDayFn) === 'function' ? opts.disableDayFn : null;
+
+            var nom = parseInt(opts.numberOfMonths, 10) || 1;
+            opts.numberOfMonths = nom > 4 ? 4 : nom;
+
+            if (!isDate(opts.minDate)) {
+                opts.minDate = false;
+            }
+            if (!isDate(opts.maxDate)) {
+                opts.maxDate = false;
+            }
+            if ((opts.minDate && opts.maxDate) && opts.maxDate < opts.minDate) {
+                opts.maxDate = opts.minDate = false;
+            }
+            if (opts.minDate) {
+                this.setMinDate(opts.minDate);
+            }
+            if (opts.maxDate) {
+                this.setMaxDate(opts.maxDate);
+            }
+
+            if (isArray(opts.yearRange)) {
+                var fallback = new Date().getFullYear() - 10;
+                opts.yearRange[0] = parseInt(opts.yearRange[0], 10) || fallback;
+                opts.yearRange[1] = parseInt(opts.yearRange[1], 10) || fallback;
+            } else {
+                opts.yearRange = Math.abs(parseInt(opts.yearRange, 10)) || defaults.yearRange;
+                if (opts.yearRange > 100) {
+                    opts.yearRange = 100;
+                }
+            }
+
+            return opts;
         },
-        saveToDatabase: function () {
+
+        /**
+         * return a formatted string of the current selection (using Moment.js if available)
+         */
+        toString: function(format)
+        {
+            format = format || this._o.format;
+            if (!isDate(this._d)) {
+                return '';
+            }
+            if (this._o.toString) {
+              return this._o.toString(this._d, format);
+            }
+            if (hasMoment) {
+              return moment(this._d).format(format);
+            }
+            return this._d.toDateString();
+        },
+
+        /**
+         * return a Moment.js object of the current selection (if available)
+         */
+        getMoment: function()
+        {
+            return hasMoment ? moment(this._d) : null;
+        },
+
+        /**
+         * set the current selection from a Moment.js object (if available)
+         */
+        setMoment: function(date, preventOnSelect)
+        {
+            if (hasMoment && moment.isMoment(date)) {
+                this.setDate(date.toDate(), preventOnSelect);
+            }
+        },
+
+        /**
+         * return a Date object of the current selection
+         */
+        getDate: function()
+        {
+            return isDate(this._d) ? new Date(this._d.getTime()) : null;
+        },
+
+        /**
+         * set the current selection
+         */
+        setDate: function(date, preventOnSelect) {
+            if (!date) {
+                this._d = null;
+
+                if (this._o.field) {
+                    this._o.field.value = '';
+                    fireEvent(this._o.field, 'change', { firedBy: this });
+                }
+
+                return this.draw();
+            }
+            if (typeof date === 'string') {
+                date = new Date(Date.parse(date));
+            }
+            if (typeof date === 'object') {
+              var utc = date.getTime() + (date.getTimezoneOffset() * 60000 + 500);
+              date = new Date(utc)
+            }
+            console.log('date set', date);
+            if (!isDate(date)) {
+                return;
+            }
+
+            var min = this._o.minDate,
+                max = this._o.maxDate;
+
+            if (isDate(min) && date < min) {
+                date = min;
+            } else if (isDate(max) && date > max) {
+                date = max;
+            }
+
+            this._d = new Date(date.getTime());
+            setToStartOfDay(this._d);
+            this.gotoDate(this._d);
+
+            if (this._o.field) {
+                this._o.field.value = this.toString();
+                fireEvent(this._o.field, 'change', { firedBy: this });
+            }
+            if (!preventOnSelect && typeof this._o.onSelect === 'function') {
+                this._o.onSelect.call(this, this.getDate());
+            }
+        },
+
+        /**
+         * change view to a specific date
+         */
+        gotoDate: function(date)
+        {
+            var newCalendar = true;
+
+            if (!isDate(date)) {
+                return;
+            }
+
+            if (this.calendars) {
+                var firstVisibleDate = new Date(this.calendars[0].year, this.calendars[0].month, 1),
+                    lastVisibleDate = new Date(this.calendars[this.calendars.length-1].year, this.calendars[this.calendars.length-1].month, 1),
+                    visibleDate = date.getTime();
+                // get the end of the month
+                lastVisibleDate.setMonth(lastVisibleDate.getMonth()+1);
+                lastVisibleDate.setDate(lastVisibleDate.getDate()-1);
+                newCalendar = (visibleDate < firstVisibleDate.getTime() || lastVisibleDate.getTime() < visibleDate);
+            }
+
+            if (newCalendar) {
+                this.calendars = [{
+                    month: date.getMonth(),
+                    year: date.getFullYear()
+                }];
+                if (this._o.mainCalendar === 'right') {
+                    this.calendars[0].month += 1 - this._o.numberOfMonths;
+                }
+            }
+
+            this.adjustCalendars();
+        },
+
+        adjustDate: function(sign, days) {
+
+            var day = this.getDate() || new Date();
+            var difference = parseInt(days)*24*60*60*1000;
+
+            var newDay;
+
+            if (sign === 'add') {
+                newDay = new Date(day.valueOf() + difference);
+            } else if (sign === 'subtract') {
+                newDay = new Date(day.valueOf() - difference);
+            } else {
+                newDay = new Date(day.valueOf());
+            }
+
+            this.setDate(newDay);
+        },
+
+        adjustCalendars: function() {
+            this.calendars[0] = adjustCalendar(this.calendars[0]);
+            for (var c = 1; c < this._o.numberOfMonths; c++) {
+                this.calendars[c] = adjustCalendar({
+                    month: this.calendars[0].month + c,
+                    year: this.calendars[0].year
+                });
+            }
+            this.draw();
+        },
+
+        gotoToday: function()
+        {
+            this.gotoDate(new Date());
+        },
+
+        /**
+         * change view to a specific month (zero-index, e.g. 0: January)
+         */
+        gotoMonth: function(month)
+        {
+            if (!isNaN(month)) {
+                this.calendars[0].month = parseInt(month, 10);
+                this.adjustCalendars();
+            }
+        },
+
+        nextMonth: function()
+        {
+            this.calendars[0].month++;
+            this.adjustCalendars();
+        },
+
+        prevMonth: function()
+        {
+            this.calendars[0].month--;
+            this.adjustCalendars();
+        },
+
+        /**
+         * change view to a specific full year (e.g. "2012")
+         */
+        gotoYear: function(year)
+        {
+            if (!isNaN(year)) {
+                this.calendars[0].year = parseInt(year, 10);
+                this.adjustCalendars();
+            }
+        },
+
+        /**
+         * change the minDate
+         */
+        setMinDate: function(value)
+        {
+            if(value instanceof Date) {
+                setToStartOfDay(value);
+                this._o.minDate = value;
+                this._o.minYear  = value.getFullYear();
+                this._o.minMonth = value.getMonth();
+            } else {
+                this._o.minDate = defaults.minDate;
+                this._o.minYear  = defaults.minYear;
+                this._o.minMonth = defaults.minMonth;
+                this._o.startRange = defaults.startRange;
+            }
+
+            this.draw();
+        },
+
+        /**
+         * change the maxDate
+         */
+        setMaxDate: function(value)
+        {
+            if(value instanceof Date) {
+                setToStartOfDay(value);
+                this._o.maxDate = value;
+                this._o.maxYear = value.getFullYear();
+                this._o.maxMonth = value.getMonth();
+            } else {
+                this._o.maxDate = defaults.maxDate;
+                this._o.maxYear = defaults.maxYear;
+                this._o.maxMonth = defaults.maxMonth;
+                this._o.endRange = defaults.endRange;
+            }
+
+            this.draw();
+        },
+
+        setStartRange: function(value)
+        {
+            this._o.startRange = value;
+        },
+
+        setEndRange: function(value)
+        {
+            this._o.endRange = value;
+        },
+
+        /**
+         * refresh the HTML
+         */
+        draw: function(force)
+        {
+            if (!this._v && !force) {
+                return;
+            }
+            var opts = this._o,
+                minYear = opts.minYear,
+                maxYear = opts.maxYear,
+                minMonth = opts.minMonth,
+                maxMonth = opts.maxMonth,
+                html = '',
+                randId;
+
+            if (this._y <= minYear) {
+                this._y = minYear;
+                if (!isNaN(minMonth) && this._m < minMonth) {
+                    this._m = minMonth;
+                }
+            }
+            if (this._y >= maxYear) {
+                this._y = maxYear;
+                if (!isNaN(maxMonth) && this._m > maxMonth) {
+                    this._m = maxMonth;
+                }
+            }
+
+            randId = 'pika-title-' + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 2);
+
+            for (var c = 0; c < opts.numberOfMonths; c++) {
+                html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year, randId) + this.render(this.calendars[c].year, this.calendars[c].month, randId) + '</div>';
+            }
+
+            this.el.innerHTML = html;
+
+            if (opts.bound) {
+                if(opts.field.type !== 'hidden') {
+                    sto(function() {
+                        opts.trigger.focus();
+                    }, 1);
+                }
+            }
+
+            if (typeof this._o.onDraw === 'function') {
+                this._o.onDraw(this);
+            }
+
+            if (opts.bound) {
+                // let the screen reader user know to use arrow keys
+                opts.field.setAttribute('aria-label', 'Use the arrow keys to pick a date');
+            }
+        },
+
+        adjustPosition: function()
+        {
+            var field, pEl, width, height, viewportWidth, viewportHeight, scrollTop, left, top, clientRect;
+
+            if (this._o.container) return;
+
+            this.el.style.position = 'absolute';
+
+            field = this._o.trigger;
+            pEl = field;
+            width = this.el.offsetWidth;
+            height = this.el.offsetHeight;
+            viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+            viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            scrollTop = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop;
+
+            if (typeof field.getBoundingClientRect === 'function') {
+                clientRect = field.getBoundingClientRect();
+                left = clientRect.left + window.pageXOffset;
+                top = clientRect.bottom + window.pageYOffset;
+            } else {
+                left = pEl.offsetLeft;
+                top  = pEl.offsetTop + pEl.offsetHeight;
+                while((pEl = pEl.offsetParent)) {
+                    left += pEl.offsetLeft;
+                    top  += pEl.offsetTop;
+                }
+            }
+
+            // default position is bottom & left
+            if ((this._o.reposition && left + width > viewportWidth) ||
+                (
+                    this._o.position.indexOf('right') > -1 &&
+                    left - width + field.offsetWidth > 0
+                )
+            ) {
+                left = left - width + field.offsetWidth;
+            }
+            if ((this._o.reposition && top + height > viewportHeight + scrollTop) ||
+                (
+                    this._o.position.indexOf('top') > -1 &&
+                    top - height - field.offsetHeight > 0
+                )
+            ) {
+                top = top - height - field.offsetHeight;
+            }
+
+            this.el.style.left = left + 'px';
+            this.el.style.top = top + 'px';
+        },
+
+        /**
+         * render HTML for a particular month
+         */
+        render: function(year, month, randId)
+        {
+            var opts   = this._o,
+                now    = new Date(),
+                days   = getDaysInMonth(year, month),
+                before = new Date(year, month, 1).getDay(),
+                data   = [],
+                row    = [];
+            setToStartOfDay(now);
+            if (opts.firstDay > 0) {
+                before -= opts.firstDay;
+                if (before < 0) {
+                    before += 7;
+                }
+            }
+            var previousMonth = month === 0 ? 11 : month - 1,
+                nextMonth = month === 11 ? 0 : month + 1,
+                yearOfPreviousMonth = month === 0 ? year - 1 : year,
+                yearOfNextMonth = month === 11 ? year + 1 : year,
+                daysInPreviousMonth = getDaysInMonth(yearOfPreviousMonth, previousMonth);
+            var cells = days + before,
+                after = cells;
+            while(after > 7) {
+                after -= 7;
+            }
+            cells += 7 - after;
+            var isWeekSelected = false;
+            for (var i = 0, r = 0; i < cells; i++)
+            {
+                var day = new Date(year, month, 1 + (i - before)),
+                    isSelected = isDate(this._d) ? compareDates(day, this._d) : false,
+                    isToday = compareDates(day, now),
+                    hasEvent = opts.events.indexOf(day.toDateString()) !== -1 ? true : false,
+                    isEmpty = i < before || i >= (days + before),
+                    dayNumber = 1 + (i - before),
+                    monthNumber = month,
+                    yearNumber = year,
+                    isStartRange = opts.startRange && compareDates(opts.startRange, day),
+                    isEndRange = opts.endRange && compareDates(opts.endRange, day),
+                    isInRange = opts.startRange && opts.endRange && opts.startRange < day && day < opts.endRange,
+                    isDisabled = (opts.minDate && day < opts.minDate) ||
+                                 (opts.maxDate && day > opts.maxDate) ||
+                                 (opts.disableWeekends && isWeekend(day)) ||
+                                 (opts.disableDayFn && opts.disableDayFn(day));
+
+                if (isEmpty) {
+                    if (i < before) {
+                        dayNumber = daysInPreviousMonth + dayNumber;
+                        monthNumber = previousMonth;
+                        yearNumber = yearOfPreviousMonth;
+                    } else {
+                        dayNumber = dayNumber - days;
+                        monthNumber = nextMonth;
+                        yearNumber = yearOfNextMonth;
+                    }
+                }
+
+                var dayConfig = {
+                        day: dayNumber,
+                        month: monthNumber,
+                        year: yearNumber,
+                        hasEvent: hasEvent,
+                        isSelected: isSelected,
+                        isToday: isToday,
+                        isDisabled: isDisabled,
+                        isEmpty: isEmpty,
+                        isStartRange: isStartRange,
+                        isEndRange: isEndRange,
+                        isInRange: isInRange,
+                        showDaysInNextAndPreviousMonths: opts.showDaysInNextAndPreviousMonths,
+                        enableSelectionDaysInNextAndPreviousMonths: opts.enableSelectionDaysInNextAndPreviousMonths
+                    };
+
+                if (opts.pickWholeWeek && isSelected) {
+                    isWeekSelected = true;
+                }
+
+                row.push(renderDay(dayConfig));
+
+                if (++r === 7) {
+                    if (opts.showWeekNumber) {
+                        row.unshift(renderWeek(i - before, month, year));
+                    }
+                    data.push(renderRow(row, opts.isRTL, opts.pickWholeWeek, isWeekSelected));
+                    row = [];
+                    r = 0;
+                    isWeekSelected = false;
+                }
+            }
+            return renderTable(opts, data, randId);
+        },
+
+        isVisible: function()
+        {
+            return this._v;
+        },
+
+        show: function()
+        {
+            if (!this.isVisible()) {
+                this._v = true;
+                this.draw();
+                removeClass(this.el, 'is-hidden');
+                if (this._o.bound) {
+                    addEvent(document, 'click', this._onClick);
+                    this.adjustPosition();
+                }
+                if (typeof this._o.onOpen === 'function') {
+                    this._o.onOpen.call(this);
+                }
+            }
+        },
+
+        hide: function()
+        {
+            var v = this._v;
+            if (v !== false) {
+                if (this._o.bound) {
+                    removeEvent(document, 'click', this._onClick);
+                }
+                this.el.style.position = 'static'; // reset
+                this.el.style.left = 'auto';
+                this.el.style.top = 'auto';
+                addClass(this.el, 'is-hidden');
+                this._v = false;
+                if (v !== undefined && typeof this._o.onClose === 'function') {
+                    this._o.onClose.call(this);
+                }
+            }
+        },
+
+        /**
+         * GAME OVER
+         */
+        destroy: function()
+        {
+            this.hide();
+            removeEvent(this.el, 'mousedown', this._onMouseDown, true);
+            removeEvent(this.el, 'touchend', this._onMouseDown, true);
+            removeEvent(this.el, 'change', this._onChange);
+            if (this._o.field) {
+                removeEvent(this._o.field, 'change', this._onInputChange);
+                if (this._o.bound) {
+                    removeEvent(this._o.trigger, 'click', this._onInputClick);
+                    removeEvent(this._o.trigger, 'focus', this._onInputFocus);
+                    removeEvent(this._o.trigger, 'blur', this._onInputBlur);
+                }
+            }
+            if (this.el.parentNode) {
+                this.el.parentNode.removeChild(this.el);
+            }
+        }
+
+    };
+
+    return Pikaday;
+
+}));
+
+
+define('text!lib/forms/templates/date-time-template.html',[],function () { return '<input class="datepicker input-small-custom" value="{{ dateString }}" type="text" />\n<br>\n<table class="time-table">\n    <tr>\n        <td>\n        <input class="hours" value="{{ hoursString }}" type="number" min="01" max="12"/>\n        </td>\n        <td>\n        <input class="minutes" value="{{ minutesString }}" type="number"  min="00" max="59"/>\n        </td>\n        <td>\n        <input class="seconds" value="{{ secondsString }}" type="number"  min="00" max="59"/>\n        </td>\n        <td>\n        <select class="am_pm">\n          <option value="AM" {{#ifnot isPm}}selected{{/ifnot}}>AM</option>\n          <option value="PM" {{#if isPm}}selected{{/if}}>PM</option>\n        </select>\n\n        </td>\n    </tr>\n    <tr>\n        <td>\n            hours\n        </td>\n        <td>\n            minutes\n        </td>\n        <td>\n            seconds\n        </td>\n        <td>\n        </td>\n    </tr>\n</table>\n\n<!-- Somehow, we have to figure out how to make this AM/PM work because\n    12AM is 0 military and 12PM is 12 military\n    could be achieved by doing 12 modulo (%) but have 0 become 12\n    along with the general 24 modulo to ensure accurate hours\n-->\n';});
+
+
+define('text!lib/forms/templates/media-editor-template.html',[],function () { return '<h2 style="margin:20px 30px 0px 0px;">Add Media aa{{ selected_photo }}</h2>\n<div class="attached-media-container">\n    <div class="upload-spot" id="left-panel-upload">\n        <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>\n    </div>\n    {{#each children.photos.data}}\n        <div class="attached-container photo-attached">\n            <div class="attached-media" style="background: url(\'{{this.path_medium}}\');"></div>\n            <div class="attached-media-overlay">\n                <div class="hover-to-show {{#ifequal ../featured_image this.id}}featured{{/ifequal}}">\n                    <i class="fa {{#ifequal ../featured_image this.id}}fa-star{{else}}fa-star-o{{/ifequal}} featured" title="Click to select / unselect featured image" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>\n                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>\n                    <p>Featured</p>\n                </div>\n            </div>\n        </div>\n    {{/each}}\n    {{#each children.audio.data}}\n        <div class="attached-container audio-attached">\n            <div class="player-container audio-basic" data-id="{{this.id}}">\n                <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->\n            </div>\n            <div class="attached-media-overlay">\n                <div class="hover-to-show">\n                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="audio" media-name="{{this.name}}"></i>\n                </div>\n            </div>\n        </div>\n    {{/each}}\n    {{#each children.videos.data}}\n        <div class="attached-container photo-attached">\n            <div class="attached-media" data-id="{{this.id}}">\n                {{#ifequal this.video_provider "vimeo"}}\n                    <iframe src="https://player.vimeo.com/video/{{this.video_id}}"\n                    style="width:100%;height:100%"\n                    frameborder="0">\n                    </iframe>\n                {{/ifequal}}\n        \n                {{#ifequal this.video_provider "youtube"}}\n                    <iframe src="https://www.youtube.com/embed/{{this.video_id}}?ecver=1"\n                    style="width:100%;height:100%"\n                    frameborder="0">\n                    </iframe>\n                {{/ifequal}}\n            </div>\n            <div class="attached-media-overlay video-hover">\n                <div class="hover-to-show video-hover">\n                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="videos" media-name="{{this.name}}"></i>\n                </div>\n            </div>\n        </div>\n    {{/each}}\n</div>\n';});
+
+define('lib/forms/backbone-form-editors',[
+    "jquery",
+    "backbone",
+    "handlebars",
+    "models/association",
+    "models/audio",
+    "apps/gallery/views/add-media",
+    "lib/audio/audio-player",
+    "external/pikaday-forked",
+    "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
+    "text!../forms/templates/date-time-template.html",
+    "text!../forms/templates/media-editor-template.html",
+    "form"
+], function ($, Backbone, Handlebars, Association, Audio, AddMedia, AudioPlayer,
+             Pikaday, dateFns, DateTimeTemplate, MediaTemplate) {
+    "use strict";
+
+    Backbone.Form.editors.Rating = Backbone.Form.editors.Select.extend({
+        getValue: function () {
+            var value = this.$el.val();
+            return parseInt(value, 10);
+        }
+    });
+
+    Backbone.Form.editors.DatePicker = Backbone.Form.editors.Text.extend({
+
+        initialize: function (options) {
+            Backbone.Form.editors.Text.prototype.initialize.call(this, options);
+            this.$el.addClass('datepicker input-small-custom');
+        },
+        getValue: function () {
+            var value = this.$el.val();
+            return value;
+        },
+        render: function () {
+            Backbone.Form.editors.Text.prototype.render.apply(this, arguments);
+            var picker = new Pikaday({
+                field: this.$el[0],
+                format: "YYYY-MM-DDThh:mm",
+                toString: function (date, format) {
+                    return dateFns.format(date, format);
+                }
+            });
+            return this;
+        }
+    });
+
+    Backbone.Form.editors.DateTimePicker = Backbone.Form.editors.Base.extend({
+        tagName: "div",
+        picker: null,
+        format: "YYYY-MM-DD",
+        initialize: function (options) {
+            options.schema.validators = [this.dateTimeValidator];
+            Backbone.Form.editors.Text.prototype.initialize.call(this, options);
+            var template = Handlebars.compile(DateTimeTemplate);
+            if (!this.value) {
+                this.$el.append(template({
+                    hoursString: "00",
+                    minutesString: "00",
+                    secondsString: "00"
+                }));
+                return;
+            }
+            var hours = parseInt(dateFns.format(this.value, 'HH'));
+            var isPm = hours >= 12 ? true: false;
+            var ds = dateFns.format(this.value, this.format);
+            console.log('initialize:', ds);
+            this.$el.append(template(
+                {
+                    dateString: ds,
+                    hoursString: dateFns.format(this.value, 'hh'),
+                    minutesString: dateFns.format(this.value, 'mm'),
+                    secondsString: dateFns.format(this.value, 'ss'),
+                    am_pm_String: dateFns.format(this.value, 'a'),
+                    hours: hours,
+                    isPm: isPm
+                })
+            );
+        },
+        dateTimeValidator: function (value, formValues) {
+            try {
+                var d = new Date(value);
+                if (d == "Invalid Date") {
+                    return {
+                        type: 'date',
+                        message: 'Invalid date / time value. Format is: YYYY-MM-DDThh:mm:ss. Please try again.'
+                    };
+                }
+            } catch (ex) {
+                return {
+                    type: 'date',
+                    message: 'Invalid date / time value. Format is: YYYY-MM-DDThh:mm:ss. Please try again.'
+                };
+            }
+            return null;
+        },
+        getValue: function () {
+            //contatenate the date and time input values
+            var date = dateFns.format(this.$el.find('input.datepicker').val(), this.format),
+                dateStr = this.$el.find('.datepicker').val(),
+                am_pm = this.$el.find('.am_pm').val(),
+                hours = this.$el.find('.hours').val(),
+                hours00 = hours.substr(hours.length - 2),
+                hourInt = parseInt(hours00, 10),
+                minutes = this.$el.find('.minutes').val(),
+                minutes00 = minutes.substr(minutes.length - 2),
+                minuteInt = parseInt(minutes00, 10),
+                seconds = this.$el.find('.seconds').val(),
+                seconds00 = seconds.substr(seconds.length - 2),
+                secondInt = parseInt(seconds00, 10),
+                val;
+
+            if (am_pm == "PM") {
+                hourInt = hourInt < 12 ? hourInt + 12 : 12;
+                hours00 = String(hourInt);
+            } else {
+                if (hourInt < 10) {
+                    hours00 = "0" + String(hourInt);
+                } else if (hourInt == 12) {
+                    hours00 = "00";
+                }
+            }
+
+            if (minuteInt < 10) {
+                minutes00 = "0" + String(minuteInt);
+            } else if (minuteInt == 0) {
+                minutes00 = "00";
+            }
+
+            if (secondInt < 10) {
+                seconds00 = "0" + String(secondInt);
+            } else if (secondInt == 0) {
+                seconds00 = "00";
+            }
+
+            if (dateStr === ''){
+                return null;
+            }
+
+            if (date === '1969-12-31') {
+                return '';
+            }
+
+            val = date + "T" + hours00 + ":" + minutes00 + ":" + seconds00;
+            console.log('getValue:', val);
+            return val;
+        },
+        render: function () {
+            Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
             var that = this;
-            // see the "saveModel" method of the
-            // apps/gallery/views/data-detail.js to see
-            // how to save, using Backbone forms
+            this.picker = new Pikaday({
+                field: this.$el.find('.datepicker')[0],
+                format: this.format,
+                blurFieldOnSelect: false,
+                defaultDate: this.$el.find('.datepicker').val(),
+                onSelect: function (date, format) {
+                },
+                toString: function (date, format) {
+                    var s = dateFns.format(date, format);
+                    if (s === '1969-12-31') {
+                        return "";
+                    }
+                    return s;
+                }
+            });
+            //this.picker.setDate(this.value);
+            return this;
+        }
+    });
+
+    Backbone.Form.editors.MediaEditor = Backbone.Form.editors.Base.extend({
+
+        events: {
+            'click #add-media-button': 'showMediaBrowser',
+            'click .detach_media': 'detachModel',
+            'click .fa-star-o': 'addStar',
+            'click .fa-star': 'removeStar'
+        },
+
+        tagName: "div",
+
+        initialize: function (options) {
+            Backbone.Form.editors.Base.prototype.initialize.call(this, options);
+            this.app = this.form.app;
+            this.listenTo(this.model, 'add-models-to-marker', this.attachModels);
+            this.template = Handlebars.compile(MediaTemplate);
+        },
+        attachModels: function (models) {
+            var errors = this.form.commit({ validate: true }),
+                that = this;
+            if (errors) {
+                console.log("errors: ", errors);
+                return;
+            }
+            this.model.save(null, {
+                success: function () {
+                    that.attachMedia(models);
+                }
+            });
+            this.app.vent.trigger('hide-modal');
+        },
+        /*
+        * Attach Media and Detach Model calls the following that causes
+        * the current unsaved values of fields in HTML form to be reset to stored values:
+        *
+        * that.model.fetch({reset: true});
+        */
+        attachMedia: function (models) {
+            var that = this,
+                i,
+                ordering,
+                fetch = function () {
+                    that.model.fetch({reset: true});
+                };
+            for (i = 0; i < models.length; ++i) {
+                ordering = this.model.get("photo_count") + this.model.get("audio_count");
+                this.model.attach(models[i], (ordering + i + 1));
+            }
+            //fetch and re-render model:
+            if (models.length > 0) { setTimeout(fetch, 800); }
+        },
+        detachModel: function (e) {
+            var $elem = $(e.target),
+                attachmentType = $elem.attr("data-type"),
+                attachmentID = $elem.attr("data-id"),
+                that = this;
+            this.model.detach(attachmentType, attachmentID, function () {
+                that.model.fetch({reset: true});
+            });
+        },
+        showMediaBrowser: function (e) {
+            var addMediaLayoutView = new AddMedia({
+                app: this.app,
+                parentModel: this.model
+            });
+            this.app.vent.trigger("show-modal", {
+                title: 'Media Browser',
+                width: 1100,
+                height: 400,
+                view: addMediaLayoutView,
+                saveButtonText: "Add",
+                showSaveButton: true,
+                saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView),
+            });
+            addMediaLayoutView.showUploader();
+            e.preventDefault();
+        },
+        getValue: function () {
+            return null;
+        },
+        render: function () {
+            //re-render the child template:
+            this.$el.empty().append(this.template({
+                children: this.model.get("children"),
+                featured_image: this.getFeaturedImage()
+            }));
+            Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
+            this.renderAudioPlayers();
+            this.enableMediaReordering();
+            return this;
+        },
+        getFeaturedImage: function () {
+            var extras = this.model.get("extras") || {};
+            return extras.featured_image;
+        },
+        renderAudioPlayers: function () {
+            var audio_attachments = [],
+                that = this,
+                player,
+                $elem;
+            if (this.model.get("children") && this.model.get("children").audio) {
+                audio_attachments = this.model.get("children").audio.data;
+            }
+            _.each(audio_attachments, function (item) {
+                $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
+                player = new AudioPlayer({
+                    model: new Audio(item),
+                    audioMode: "basic",
+                    app: that.app
+                });
+                $elem.append(player.$el[0]);
+            });
+        },
+        enableMediaReordering: function () {
+            var sortableFields = this.$el.find(".attached-media-container"),
+                that = this,
+                newOrder,
+                attachmentType,
+                attachmentID,
+                association;
+            sortableFields.sortable({
+                helper: this.fixHelper,
+                items : '.attached-container',
+                update: function (event, ui) {
+                    newOrder = ui.item.index();
+                    attachmentType = ui.item.find('.detach_media').attr("data-type");
+                    attachmentID = ui.item.find('.detach_media').attr("data-id");
+                    association = new Association({
+                        model: that.model,
+                        attachmentType: attachmentType,
+                        attachmentID: attachmentID
+                    });
+                    association.save({ ordering: newOrder}, {patch: true});
+                }
+            }).disableSelection();
+        },
+
+        fixHelper: function (e, ui) {
+            //not sure what this does:
+            ui.children().each(function () {
+                $(this).width($(this).width());
+            });
+            return ui;
+        },
+        removeStars: function () {
+            this.$el.find(".hover-to-show.featured").removeClass("featured");
+            this.$el.find("i.fa-star").removeClass("fa-star").addClass("fa-star-o");
+        },
+        addStar: function (e) {
+            this.removeStars();
+            var $elem = $(e.target),
+                extras = this.model.get("extras") || {};
+            $elem.removeClass("fa-star-o").addClass("fa-star");
+            $elem.parent().addClass("featured");
+            extras.featured_image = parseInt($elem.attr("data-id"), 10);
+            this.model.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
+            this.model.set("extras", extras);
+        },
+        removeStar: function () {
+            this.removeStars();
+            var extras = this.model.get("extras") || {};
+            delete extras.featured_image;
+            this.model.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
+            this.model.set("extras", extras);
+        }
+    });
+});
+
+define('lib/forms/backbone-form',[
+    "jquery",
+    "backbone",
+    "underscore",
+    "form",
+    "form-list",
+    "lib/forms/backbone-form-editors"
+], function ($, Backbone, _) {
+    "use strict";
+    var DataForm = Backbone.Form.extend({
+        initialize: function (options) {
+            _.extend(this, options);
+            Backbone.Form.prototype.initialize.call(this, options);
+        },
+        render: function () {
+            Backbone.Form.prototype.render.call(this);
+            this.removeLabelFromMediaEditor();
+            return this;
+        },
+        removeLabelFromMediaEditor: function () {
+            //super hacky; not proud of this:
+            this.$el.find("label").each(function () {
+                if ($(this).attr("for").indexOf("children") != -1) {
+                    $(this).remove();
+                }
+            });
+        }
+    });
+    return DataForm;
+});
+
+define('apps/gallery/views/data-detail',[
+    "jquery",
+    "underscore",
+    "handlebars",
+    "marionette",
+    "collections/photos", "collections/audio", "collections/videos",
+    "text!../templates/photo-detail.html",
+    "text!../templates/audio-detail.html",
+    "text!../templates/video-detail.html",
+    "text!../templates/record-detail.html",
+    "text!../templates/map-image-detail.html",
+    "lib/audio/audio-player",
+    "lib/carousel/carousel",
+    "lib/maps/overlays/icon",
+    "lib/forms/backbone-form"
+], function ($, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
+        MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
+    "use strict";
+    var MediaEditor = Marionette.ItemView.extend({
+        events: {
+            'click .view-mode': 'switchToViewMode',
+            'click .edit-mode': 'switchToEditMode',
+            'click .save-model': 'saveModel',
+            'click .delete-model': 'deleteModel',
+            'click .hide': 'hideMapPanel',
+            'click .show': 'showMapPanel',
+            'click .rotate-left': 'rotatePhoto',
+            'click .rotate-right': 'rotatePhoto',
+            "click #add-geometry": "activateMarkerTrigger",
+            "click #delete-geometry": "deleteMarkerTrigger",
+            "click #add-rectangle": "activateRectangleTrigger",
+            "click .streetview": 'showStreetView'
+        },
+        getTemplate: function () {
+            console.log(this.dataType);
+            if (this.dataType == "photos") {
+                return Handlebars.compile(PhotoTemplate);
+            }
+            if (this.dataType == "audio") {
+                return Handlebars.compile(AudioTemplate);
+            }
+            if (this.dataType == "videos") {
+                return Handlebars.compile(VideoTemplate);
+            }
+            if (this.dataType == "map_images") {
+                return Handlebars.compile(MapImageTemplate);
+            }
+            return Handlebars.compile(SiteTemplate);
+        },
+        featuredImageID: null,
+        initialize: function (opts) {
+            _.extend(this, opts);
+            this.bindFields();
+            this.dataType = this.dataType || this.app.dataType;
+            Marionette.ItemView.prototype.initialize.call(this);
+            this.listenTo(this.app.vent, 'save-model', this.saveModel);
+            this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
+        },
+        activateRectangleTrigger: function () {
+            $('body').css({ cursor: 'crosshair' });
+            this.app.vent.trigger("add-new-marker", this.model);
+            this.app.vent.trigger("add-rectangle", this.model);
+        },
+
+        activateMarkerTrigger: function () {
+            if (this.$el.find('#drop-marker-message').get(0)) {
+                //button has already been clicked
+                return;
+            }
+            this.$el.find("#add-marker-button").css({
+                background: "#4e70d4",
+                color: "white"
+            });
+            this.$el.find(".add-lat-lng").append("<p id='drop-marker-message'>click on the map to add location</p>");
+            //Define Class:
+            var that = this, MouseMover, $follower, mm;
+            MouseMover = function ($follower) {
+                var icon;
+                this.generateIcon = function () {
+                    var template, shape;
+                    template = Handlebars.compile('<svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
+                        '    <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
+                        '</svg>');
+                    shape = that.model.get("overlay_type");
+                    // If clicking an add new and click on marker, there is no overlay_type found
+                    //*
+                    // If outside, then save the model
+                    // and add it to the end of the list so the marker
+                    // so that new markers can be added seamlessly
+                    if (shape.indexOf("form_") != -1) {
+                        shape = "marker";
+                    }
+                    //*/
+                    else {
+                        console.log("The current form of adding marker on empty form is buggy");
+                    }
+                    icon = new Icon({
+                        shape: shape,
+                        strokeWeight: 6,
+                        fillColor: that.model.collection.fillColor,
+                        width: that.model.collection.size,
+                        height: that.model.collection.size
+                    }).generateGoogleIcon();
+                    icon.width *= 1.5;
+                    icon.height *= 1.5;
+                    $follower.html(template(icon));
+                    $follower.show();
+                };
+                this.start = function () {
+                    this.generateIcon();
+                    $(window).bind('mousemove', this.mouseListener);
+                };
+                this.stop = function (event) {
+                    $(window).unbind('mousemove');
+                    $follower.remove();
+                    that.app.vent.trigger("place-marker", {
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                };
+                this.mouseListener = function (event) {
+                    $follower.css({
+                        top: event.clientY - icon.height * 3 / 4 + 4,
+                        left: event.clientX - icon.width * 3 / 4
+                    });
+                };
+            };
+
+            //Instantiate Class and Add UI Event Handlers:
+            $follower = $('<div id="follower"></div>');
+            $('body').append($follower);
+            mm = new MouseMover($follower);
+            $(window).mousemove(mm.start.bind(mm));
+            $follower.click(mm.stop);
+            this.app.vent.trigger("add-new-marker", this.model);
+        },
+
+        deleteMarkerTrigger: function () {
+            this.commitForm();
+            this.app.vent.trigger("delete-marker", this.model);
+        },
+
+        bindFields: function () {
+            if (!this.model || !this.model.get("overlay_type")) {
+                return;
+            }
+            var i, f;
+            if (this.model.get("overlay_type").indexOf("form_") != -1) {
+                for (i = 0; i < this.model.get("fields").length; i++) {
+                    /* https://github.com/powmedia/backbone-forms */
+                    f = this.model.get("fields")[i];
+                    f.val = this.model.get(f.col_name);
+                }
+            }
+        },
+
+        modelEvents: {
+            "change:children": "render",
+            "commit-data-no-save": "commitForm"
+        },
+        switchToViewMode: function () {
+            this.app.mode = "view";
+            this.app.vent.trigger('mode-change');
+            this.render();
+        },
+        switchToEditMode: function () {
+            this.app.mode = "edit";
+            this.app.vent.trigger('mode-change');
+            this.render();
+        },
+        switchToAddMode: function () {
+            this.app.mode = "add";
+            this.render();
+        },
+        templateHelpers: function () {
+            var lat, lng, paragraph;
+            if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
+                lat =  this.model.get("geometry").coordinates[1].toFixed(4);
+                lng =  this.model.get("geometry").coordinates[0].toFixed(4);
+            }
+
+            if (this.panelStyles) {
+                paragraph = this.panelStyles.paragraph;
+                this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
+                this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
+            }
+
+            return {
+                mode: this.app.mode,
+                dataType: this.dataType,
+                audioMode: "detail",
+                name: this.model.get("name") || this.model.get("display_name"),
+                screenType: this.app.screenType,
+                lat: lat,
+                lng: lng,
+                paragraph: paragraph,
+                featuredImage: this.getFeaturedImage(),
+                photo_count: this.getPhotos().length,
+                audio_count: this.getAudio().length,
+                video_count: this.getVideos().length,
+            };
+        },
+
+        getFeaturedImage: function () {
+            if (!this.model.get("children") || !this.model.get("extras") || !this.model.get("children").photos) {
+                return null;
+            }
+            var featuredID = this.model.get("extras").featured_image,
+                photoData = this.model.get("children").photos.data,
+                i;
+            for (i = 0; i < photoData.length; ++i) {
+                if (photoData[i].id === featuredID) {
+                    return photoData[i];
+                }
+            }
+            return null;
+        },
+        getPhotos: function () {
+            var children = this.model.get("children") || {},
+                featuredImage = this.getFeaturedImage(),
+                photos = children.photos ? new Photos(children.photos.data) : new Photos([]);
+            if (featuredImage) {
+                photos.remove(photos.get(featuredImage.id));
+            }
+            return photos;
+        },
+        getAudio: function () {
+            var children = this.model.get("children") || {};
+            return children.audio ? new Audio(children.audio.data) : new Audio([]);
+        },
+        getVideos: function () {
+            var children = this.model.get("children") || {};
+            return children.videos ? new Videos(children.videos.data) : new Videos([]);
+        },
+        viewRender: function () {
+            //any extra view logic. Carousel functionality goes here
+            var c,
+                photos = this.getPhotos(),
+                videos = this.getVideos(),
+                audio = this.getAudio(), 
+                that = this;
+                console.log(audio);
+            if (this.panelStyles) {
+                var panelStyles = this.panelStyles;
+            }
+
+            if (photos.length > 0) {
+                c = new Carousel({
+                    model: this.model,
+                    app: this.app,
+                    featuredImage: this.getFeaturedImage(),
+                    mode: "photos",
+                    collection: photos,
+                    panelStyles: panelStyles
+                });
+                this.$el.find(".carousel-photo").append(c.$el);
+            }
+            if (videos.length > 0) {
+                c = new Carousel({
+                    model: this.model,
+                    app: this.app,
+                    mode: "videos",
+                    collection: videos,
+                    panelStyles: panelStyles
+                });
+                this.$el.find(".carousel-video").append(c.$el);
+            }
+            if (audio.length > 0) {
+                /*
+                c = new Carousel({
+                    model: this.model,
+                    app: this.app,
+                    mode: "audio",
+                    collection: audio,
+                    panelStyles: panelStyles
+                });
+                */
+                audio.forEach(function (audioTrack) {
+                    c = new AudioPlayer({
+                        model: audioTrack,
+                        app: that.app,
+                        panelStyles: panelStyles,
+                        audioMode: "detail",
+                        className: "audio-detail"
+                    });
+                    that.$el.find(".carousel-audio").append(c.$el);
+                });                
+            }
+        },
+        editRender: function () {
+            if (this.form) {
+                this.form.remove();
+            }
+            this.form = new DataForm({
+                model: this.model,
+                schema: this.model.getFormSchema(),
+                app: this.app
+            }).render();
+            this.$el.find('#model-form').append(this.form.$el);
+        },
+
+        onRender: function () {
+            if (this.app.mode == "view" || this.app.mode == "presentation") {
+                this.viewRender();
+            } else {
+                this.editRender();
+            }
+            if (this.dataType == "audio") {
+                var player = new AudioPlayer({
+                    model: this.model,
+                    audioMode: "detail",
+                    app: this.app
+                });
+                this.$el.find(".player-container").append(player.$el);
+            }
+
+        },
+
+        rotatePhoto: function (e) {
+            var $elem = $(e.target),
+                rotation = $elem.attr("rotation");
+            this.$el.find(".rotate-message").show();
+            this.$el.find(".edit-photo").css({
+                filter: "brightness(0.4)"
+            });
+            this.model.rotate(rotation);
+        },
+        commitForm: function () {
             var errors = this.form.commit({ validate: true });
             if (errors) {
                 console.log("errors: ", errors);
                 return;
             }
-            this.model.set("ordering", this.fields.length+1); // list starting at 1, thus +1 needed
-            this.model.save(
-                null,
-                {
-                    success: function(){
-                        // Successfully add a new field
-                        that.fields.add(that.model);
-                        that.app.vent.trigger('success-message', "New Field added");
-                        that.app.vent.trigger("render-spreadsheet");
-                        that.app.vent.trigger("hide-modal");
-                    }
-                }
-            );
+        },
 
-        }
-
-    });
-    return CreateFieldView;
-
-});
-
-
-define('text!apps/spreadsheet/templates/spreadsheet.html',[],function () { return '<div id="grid" class="hot handsontable htColumnHeaders"></div>\n<div id="logging"></div>\n';});
-
-
-define('text!lib/carousel/carousel-container.html',[],function () { return '{{#if isSpreadsheet}}\n    {{#compare num_children 1 operator="=="}}\n        <div class="carousel-content img-card"></div>\n    {{/compare}}\n\n    {{#compare num_children 1 operator=">"}}\n        <div class="carouselbox spreadsheet">\n            <ol class="carousel-content"></ol>\n        </div>\n        <div class="circle-buttons">\n            <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n            {{#times 1 num_children}}\n                <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}"></i>\n            {{/times}}\n        </div>\n    {{/compare}}\n{{else}}\n\n    <div class="carouselbox">\n        <ol class="carousel-content"></ol>\n    </div>\n    \n    {{#compare num_children 1 operator=">"}}\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0" style="color: #{{paragraph.color}}"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}" style="color: #{{../paragraph.color}}"></i>\n        {{/times}}\n    </div>\n    <p class="carousel-caption" style="font-family: {{paragraph.font}}">{{this.caption }}</p>\n    {{/compare}}\n\n{{/if}}\n';});
-
-
-define('text!lib/carousel/carousel-container-audio.html',[],function () { return '\n{{#if isSpreadsheet}}\n    {{#compare num_children 1 operator="=="}}\n        <div class="carousel-content"></div>\n    {{/compare}}\n\n    {{#compare num_children 1 operator=">"}}\n    <div class="carouselbox spreadsheet audio">\n        <ol class="carousel-content"></ol>\n    </div>\n<!--    \n    <div class="carousel-buttons hover-to-show">\n        <i class="fa fa-chevron-left prev"></i>\n        <i class="fa fa-chevron-right next"></i>\n    </div>\n-->\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>\n        {{/times}}\n    </div>\n    {{/compare}}\n{{else}}\n    <div class="carouselbox audio">\n        <ol class="carousel-content"></ol>\n    </div>\n\n    {{#compare num_children 1 operator=">"}}\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>\n        {{/times}}\n    </div>\n    {{/compare}}\n\n{{/if}}\n';});
-
-
-define('text!lib/carousel/carousel-video-item.html',[],function () { return '{{#ifequal video_provider "vimeo"}}\n    <iframe class="photo" src="https://player.vimeo.com/video/{{video_id}}"\n    style="width:100%" height="200"\n    frameborder="0"\n    webkitallowfullscreen mozallowfullscreen allowfullscreen>\n    </iframe>\n{{/ifequal}}\n\n{{#ifequal video_provider "youtube"}}\n    <iframe class="photo" src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n    style="width:100%" height="200"\n    frameborder="0" allowfullscreen>\n    </iframe>\n{{/ifequal}}\n<p class="carousel-caption" style="color: {{paragraph.color}}; font-family: {{paragraph.font}}">{{this.caption }}</p>';});
-
-
-define('text!lib/carousel/carousel-photo-item.html',[],function () { return '<div class="photo" style="background: url(\'{{this.path_medium}}\');"></div>\n<div class="carousel-caption-wrapper">\n    <p class="carousel-caption" style="color: {{paragraph.color}}; font-family: {{paragraph.font}}">{{this.caption }}</p>\n<div>\n';});
-
-define('lib/carousel/carousel',["jquery", "underscore", "marionette", "handlebars",
-        "lib/audio/audio-player",
-        "text!../carousel/carousel-container.html",
-        "text!../carousel/carousel-container-audio.html",
-        "text!../carousel/carousel-video-item.html",
-        "text!../carousel/carousel-photo-item.html"],
-    function ($, _, Marionette, Handlebars, AudioPlayer,
-              CarouselContainerTemplate, CarouselContainerAudioTemplate, VideoItemTemplate, PhotoItemTemplate) {
-        'use strict';
-        var Carousel = Marionette.CompositeView.extend({
-            events: {
-                "click .next": "next",
-                "click .prev": "prev",
-                "click .show-slide": "jump",
-                'mouseover .carouselbox': 'showArrows',
-                'mouseout .carouselbox': 'hideArrows'
-            },
-            counter: 0,
-            className: "active-slide",
-            mode: "photos",
-            childViewContainer: ".carousel-content",
-            initialize: function (opts) {
-                _.extend(this, opts);
-                console.log(this);
-                if (this.mode == "photos") {
-                    this.template = Handlebars.compile(CarouselContainerTemplate);
-                } else if (this.mode == "videos") {
-                    this.template = Handlebars.compile(CarouselContainerTemplate);
-                } else {
-                    this.template = Handlebars.compile(CarouselContainerAudioTemplate);
-                }
-                this.render();
-                //this.$el.addClass('active-slide');
-                if (this.collection.length == 1 && this.mode !== "audio") {
-                    this.$el.addClass('short');
-                }
-                this.navigate(0);
-            },
-
-            showArrows: function () {
-                if (this.mode === "audio" || this.collection.length === 1) {
-                    return;
-                }
-                var $leftArrow, $rightArrow;
-                if (this.timeout) {
-                    clearTimeout(this.timeout);
-                    this.timeout = null;
-                } else {
-                    $leftArrow = $('<i class="fa fa-chevron-left prev"></i>');
-                    $rightArrow = $('<i class="fa fa-chevron-right next"></i>');
-                    this.$el.find('.carouselbox').append($leftArrow).append($rightArrow);
-                }
-            },
-            hideArrows: function () {
-                if (this.mode === "audio" || this.collection.length === 1) {
-                    return;
-                }
-                var that = this;
-                this.timeout = setTimeout(function () {
-                    that.$el.find('.fa-chevron-left, .fa-chevron-right').remove();
-                    that.timeout = null;
-                }, 100);
-            },
-            childViewOptions: function () {
-                return {
-                    mode: this.mode,
-                    app: this.app,
-                    num_children: this.collection.length,
-                    parent: this,
-                    panelStyles: this.panelStyles
-                };
-            },
-            getChildView: function () {
-                return Marionette.ItemView.extend({
-                    initialize: function (opts) {
-                        _.extend(this, opts);
-                        if (this.mode == "photos") {
-                            this.template = Handlebars.compile(PhotoItemTemplate);
-                        } else if (this.mode == "videos") {
-                            this.template = Handlebars.compile(VideoItemTemplate);
-                        } else {
-                            this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
-                        }
-                    },
-                    templateHelpers: function () {
-                        console.log(this);
-                        var paragraph;
-                        if (this.panelStyles) {
-                            paragraph = this.panelStyles.paragraph;
-                        }
-                        return {
-                            num_children: this.num_children,
-                            mode: this.mode, 
-                            paragraph: paragraph
-                        };
-                    },
-                    tagName: "li",
-                    onRender: function () {
-                        if (this.mode == "audio") {
-                            var player = new AudioPlayer({
-                                model: this.model,
-                                audioMode: "detail",
-                                app: this.app,
-                                panelStyles: this.panelStyles
-                            });
-                            this.$el.find('.player-container').append(player.$el);
-                        }
-                    }
-                });
-            },
-
-            templateHelpers: function () {
-                console.log(this);
-                var paragraph;
-                if (this.panelStyles) {
-                    paragraph = this.panelStyles.paragraph;
-                }
-                return {
-                    num_children: this.collection.length,
-                    isSpreadsheet: this.app.screenType === "spreadsheet",
-                    paragraph: paragraph
-                };
-            },
-
-            navigate: function () {
-                if (this.mode == "audio") {
-                    this.app.vent.trigger('audio-carousel-advanced');
-                }
-                var $items = this.$el.find('.carousel-content li'),
-                    amount = this.collection.length;
-                $items.removeClass('current').hide();
-                if (this.counter < 0) {
-                    this.counter = amount - 1;
-                }
-                if (this.counter >= amount) {
-                    this.counter = 0;
-                }
-                this.updateCircles();
-                $($items[this.counter]).addClass('current').show();
-            },
-
-            resetCurrentFrame: function () {
-                //needed to stop playing iFrame videos:
-                this.children.findByIndex(this.counter).render();
-            },
-
-            next: function () {
-                this.resetCurrentFrame();
-                this.counter += 1;
-                this.navigate();
-            },
-
-            prev: function () {
-                this.resetCurrentFrame();
-                this.counter -= 1;
-                this.navigate();
-            },
-
-            updateCircles: function () {
-                var $items = this.$el.find('.show-slide'),
-                    $clicked = $($items[this.counter]);
-                $items.removeClass("fa-circle");
-                $items.not($clicked).addClass("fa-circle-o");
-                $clicked.addClass("fa-circle");
-            },
-
-            jump: function (e) {
-                this.resetCurrentFrame();
-                this.counter = parseInt($(e.target).attr("data-index"), 10);
-                this.navigate();
-            }
-        });
-        return Carousel;
-    });
-
-define('apps/spreadsheet/views/main',["jquery",
-        "marionette",
-        "underscore",
-        "handlebars",
-        "apps/gallery/views/media_browser",
-        "models/record",
-        "models/marker",
-        "apps/spreadsheet/views/create-field",
-        "handsontable",
-        "text!../templates/spreadsheet.html",
-        "lib/audio/audio-player",
-        "lib/carousel/carousel"
-    ],
-    function ($, Marionette, _, Handlebars, MediaBrowser,
-        Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate,
-        AudioPlayer, Carousel) {
-        'use strict';
-        var Spreadsheet = Marionette.ItemView.extend({
-            template: function () {
-                return Handlebars.compile(SpreadsheetTemplate);
-            },
-            table: null,
-            currentModel: null,
-            show_hide_deleteColumn: true,
-            events: {
-                'click #addColumn': 'showCreateFieldForm',
-                'click .addMedia': 'showMediaBrowser',
-                'click .delete_column' : 'deleteField',
-                'click .carousel-photo': 'carouselPhoto',
-                'click .carousel-audio': 'carouselAudio',
-                'click .carousel-video': 'carouselVideo'
-            },
-            foo: "bar",
-            initialize: function (opts) {
-                _.extend(this, opts);
-
-                // call Marionette's default functionality (similar to "super")
-                Marionette.ItemView.prototype.initialize.call(this);
-                this.registerRatingEditor();
-                this.render();
-                //listen to events that fire from other parts of the application:
-                this.listenTo(this.app.vent, 'search-requested', this.doSearch);
-                this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
-                this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
-                this.listenTo(this.app.vent, "add-row", this.addRow);
-                this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
-                if (this.collection) {
-                    this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
-                    this.listenTo(this.collection, 'add', this.renderSpreadsheet);
-                }
-                if (this.fields) {
-                    this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
-                }
-            },
-            registerRatingEditor: function () {
-                // following this tutorial: https://docs.handsontable.com/0.15.0-beta1/tutorial-cell-editor.html
-                var SelectRatingsEditor = Handsontable.editors.SelectEditor.prototype.extend(),
-                    that = this;
-                SelectRatingsEditor.prototype.prepare = function () {
-                    var me = this, selectOptions, i, option, optionElement;
-                    Handsontable.editors.SelectEditor.prototype.prepare.apply(this, arguments);
-                    selectOptions = this.cellProperties.selectOptions;
-                    $(this.select).empty();
-                    optionElement = document.createElement('OPTION');
-                    optionElement.value = "";
-                    optionElement.innerHTML = "-- Select --";
-                    this.select.appendChild(optionElement);
-                    for (i = 0; i < selectOptions.length; i++) {
-                        option = selectOptions[i];
-                        optionElement = document.createElement('OPTION');
-                        optionElement.value = option.value;
-                        optionElement.innerHTML = option.value + ": " + option.name;
-                        if (option.value == this.originalValue) {
-                            optionElement.selected = true;
-                        }
-                        this.select.appendChild(optionElement);
-                    }
-                    //this is a hack b/c the renderer isn't being called correctly:
-                    $(this.select).blur(function () {
-                        setTimeout(function () {
-                            that.table.setDataAtCell(me.row, me.col, me.getValue());
-                        }, 50);
-                    });
-                };
-                SelectRatingsEditor.prototype.getValue = function () {
-                    var val = this.select.value;
-                    if (val === "") {
-                        val = null;
-                    }
-                    return val;
-                };
-                Handsontable.editors.registerEditor('select-ratings', SelectRatingsEditor);
-            },
-            onRender: function () {
-                this.renderSpreadsheet();
-            },
-            //
-            // Arranging the columns
-            // For now, I only want to arrange without any saving
-            // for this current draft
-            columnMoveBefore: function(col_indexes_to_be_moved, destination_index){
-                var media_column_index = this.fields.length + 4; //change to whatever one is valid
-                var pre_field_index = 2;
-                if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index) {
-                    console.error('Cannot move your column behind the media column');
-                    return false;
-                } else if (col_indexes_to_be_moved.indexOf(pre_field_index) != -1 || destination_index <= pre_field_index){
-                    console.error('Cannot move your column before the ID and lat/lng');
-                    return false;
-                }
-            },
-
-            columnMoveAfter: function(col_indexes_to_be_moved, destination_index){
-                var media_column_index = this.fields.length + 4, //change to whatever one is valid
-                    pre_field_index = 2,
-                    i = 0,
-                    currentOrdering,
-                    oldPosition,
-                    newPosition,
-                    fieldIndex,
-                    field;
-                if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index ||
-                        col_indexes_to_be_moved.indexOf(pre_field_index) != -1 || destination_index <= pre_field_index) {
-                    return false;
-                }
-
-                for (i = 0; i < col_indexes_to_be_moved.length; i++) {
-                    fieldIndex = col_indexes_to_be_moved[i] - 3;
-                    field = this.fields.at(fieldIndex);
-                    oldPosition = field.get("ordering") + 2;
-                    if (oldPosition < destination_index) {
-                        --destination_index;
-                    }
-                    newPosition = destination_index - 2 + i;
-
-                    field.set("ordering", newPosition);
-                    field.save({"ordering": newPosition, do_reshuffle: 1}, { patch: true, wait: true });
-                }
-            },
-            renderSpreadsheet: function () {
-                // When the spreadsheet is made without a defined collection
-                // Alert that there is no collection
-                // for the sole purpose of unit testing
-
-                if (!this.collection) {
-                    this.$el.find('#grid').html("Collection is not defined");
-                    return;
-                }
-
-                if (this.collection.length == 0) {
-                    this.$el.find('#grid').html("no rows found");
-                    return;
-                }
-                var grid = this.$el.find('#grid').get(0),
-                    rowHeights = [],
-                    i = 0,
-                    data = [],
-                    that = this;
-                if (this.table) {
-                    this.table.destroy();
-                    this.table = null;
-                }
-                for (i = 0; i < this.collection.length; i++) {
-                    rowHeights.push(55);
-                }
-                this.collection.each(function (model) {
-                    var rec = model.toJSON();
-                    if (rec.tags) {
-                        rec.tags = rec.tags.join(", ");
-                    }
-                    data.push(rec);
-                });
-                this.table = new Handsontable(grid, {
-                    data: data,
-                    colWidths: this.getColumnWidths(),
-                    rowHeights: rowHeights,
-                    colHeaders: this.getColumnHeaders(),
-                    manualColumnResize: true,
-                    manualColumnMove: (this.fields != null && this.fields != undefined),
-                    rowHeaders: true,
-                    columns: this.getColumns(),
-                    maxRows: this.collection.length,
-                    autoRowSize: true,
-                    columnSorting: true,
-                    undo: true,
-                    afterChange: function (changes, source) {
-                        that.saveChanges(changes, source);
-                    }
-                });
-                if (this.fields) {
-                    this.table.addHook('beforeColumnMove', this.columnMoveBefore.bind(this));
-                    this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
-                }
-            },
-            saveChanges: function (changes, source) {
-                var that = this;
-                //sync with collection:
-                source = source.split(".");
-                source = source[source.length - 1];
-                var i, idx, key, oldVal, newVal, model, geoJSON;
-                if (_.contains(["edit", "autofill", "fill", "undo", "redo", "paste"], source)) {
-                    for (i = 0; i < changes.length; i++) {
-                        idx = changes[i][0];
-                        key = changes[i][1];
-                        oldVal = changes[i][2];
-                        newVal = changes[i][3];
-                        if (oldVal !== newVal) {
-                            //Note: relies on the fact that the first column is the ID column
-                            //      see the getColumns() function below
-                            model = this.getModelFromCell(null, idx);
-                            if (key === 'lat' || key === 'lng') {
-                                //SV TODO: To handle polygons and polylines, only set latLng if current
-                                //          geometry is null of of type "Point." Still TODO.
-                                // Good article: https://handsontable.com/blog/articles/4-ways-to-handle-read-only-cells
-                                model.set(key, newVal);
-                                if (model.get("lat") && model.get("lng")) {
-                                    geoJSON = model.setPointFromLatLng(model.get("lat"), model.get("lng"));
-                                    model.save({ geometry: JSON.stringify(geoJSON) }, {patch: true, wait: true});
-                                } else {
-                                    model.set("geometry", null);
-                                    if (!model.get("lat") && !model.get("lng")) {
-                                        model.save({ geometry: null }, {patch: true, wait: true});
-                                    }
-                                }
-                            } else {
-                                model.set(key, newVal);
-                                model.save(model.changedAttributes(), { patch: true, wait: true});
-                            }
-                        } else {
-                            console.log("[" + source + "], but no value change. Ignored.");
-                            console.log("old value:", oldVal, "new value:", newVal);
-                        }
-                    }
-                }
-            },
-            getModelFromCell: function (table, index) {
-                table = table || this.table;
-                var modelID = table.getDataAtRowProp(index, "id");
-                return this.collection.get(modelID);
-            },
-            thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-                var that = this,
-                    img = document.createElement('IMG'),
-                    model,
-                    modalImg,
-                    captionText,
-                    modal,
-                    span;
-                img.src = value;
-                img.onclick = function () {
-                    model = that.getModelFromCell(instance, rowIndex);
-                    // Get the modal
-                    modal = document.getElementById('myModal');
-
-                    // Get the image and insert it inside the modal - use its "alt" text as a caption
-                    //var img = document.getElementById('myImg');
-                    modalImg = document.getElementById("img01");
-                    captionText = document.getElementById("caption");
-                    modal.style.display = "block";
-                    modalImg.src = model.get("path_medium");
-
-                    // Get the <span> element that closes the modal
-                    span = document.getElementsByClassName("close")[0];
-
-                    // When the user clicks on <span> (x), close the modal
-                    span.onclick = function () {
-                        modal.style.display = "none";
-                    };
-                };
-                Handsontable.Dom.empty(td);
-                td.appendChild(img);
-                return td;
-            },
-            audioRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-
-
-                var audio_model = this.getModelFromCell(instance, rowIndex);
-
-                var player = new AudioPlayer({
-                    model: audio_model,
-                    audioMode: "basic",
-                    app: this.app
-                });
-                $(td).html(player.$el.addClass("spreadsheet"));
-                return td;
-            },
-
-
-            videoRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-                var that = this,
-                    i = document.createElement('i'),
-                    model = this.getModelFromCell(instance, rowIndex),
-                    modalImg,
-                    captionText,
-                    modal,
-                    videoFrame,
-                    span;
-                if (model.get('video_provider') === "vimeo") {
-                    i.className = "fa fa-3x fa-vimeo";
-                } else {
-                    i.className = "fa fa-3x fa-youtube";
-                }
-                i.onclick = function () {
-                    //alert('show iframe');
-
-                    modal = document.getElementById("videoModal");
-                    captionText = document.getElementById("caption");
-                    videoFrame = document.getElementById("video-iframe");
-                    videoFrame.src = ""
-                    if (model.get("video_provider") == "vimeo"){
-                        // Vimeo
-                        videoFrame.src = "https://player.vimeo.com/video/" + model.get("video_id");
+        saveModel: function () {
+            var that = this,
+                isNew = this.model.get("id") ? false : true;
+            this.commitForm();
+            this.model.save(null, {
+                success: function (model, response) {
+                    //perhaps some sort of indication of success here?
+                    that.app.vent.trigger('success-message', "The form was saved successfully");
+                    if (!isNew) {
+                        model.trigger('saved');
                     } else {
-                        // Youtube
-                        videoFrame.src = "https://www.youtube.com/embed/" +
-                        model.get("video_id") + "?ecver=1";
+                        model.collection.add(model);
                     }
+                },
+                error: function (model, response) {
 
-                    modal.style.display = "block";
-                    console.log(model);
-
-                };
-                Handsontable.Dom.empty(td);
-                td.appendChild(i);
-                return td;
-            },
-
-            mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
-                var model = this.getModelFromCell(instance, row),
-                    photoCount = model.get("photo_count") || 0,
-                    audioCount = model.get("audio_count") || 0,
-                    videoCount = model.get("video_count") || 0,
-                    i;
-                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
-                for (i = 0; i < photoCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
+                    that.app.vent.trigger('error-message', "The form has not saved");
+                    that.$el.find("#model-form").append("error saving");
                 }
-                for (i = 0; i < audioCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-                for (i = 0; i < videoCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-video' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-video-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-
-            },
-
-            carouselPhoto: function(e){
-
-                var that = this;
-
-                var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                //any extra view logic. Carousel functionality goes here
-                this.currentModel.fetch({success: function(){
-                    var c = new Carousel({
-                        model: that.currentModel,
-                        mode: "photos",
-                        app: that.app
-                    });
-
-                    $("#carouselModal").empty();
-                    $("#carouselModal").append(c.$el);
-                    var $span = $("<span class='close big'>&times;</span>");
-                    $span.click(function () {
-                        $("#carouselModal").hide();
-                    })
-                    $("#carouselModal").append($span);
-
-                    // Get the modal
-                    var modal = document.getElementById('carouselModal');
-
-                    modal.style.display = "block";
-
-                }});
-            },
-
-            carouselAudio: function(e){
-
-                var that = this;
-
-                var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                //any extra view logic. Carousel functionality goes here
-                this.currentModel.fetch({success: function(){
-                    var c = new Carousel({
-                        model: that.currentModel,
-                        mode: "audio",
-                        app: that.app
-                    });
-                    //that.$el.find(".carousel").append(c.$el);
-
-                    $("#carouselModal").empty();
-                    $("#carouselModal").append(c.$el);
-                    var $span = $("<span class='close big'>&times;</span>");
-                    $span.click(function () {
-                        $("#carouselModal").hide();
-                        //document.getElementById("carouselModal").style.display='none';
-                    })
-                    $("#carouselModal").append($span);
-
-                    // Get the modal
-                    var modal = document.getElementById('carouselModal');
-
-                    modal.style.display = "block";
-                }});
-            },
-
-
-
-            carouselVideo: function(e){
-
-                var that = this;
-
-                var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                //any extra view logic. Carousel functionality goes here
-                this.currentModel.fetch({success: function(){
-                    var c = new Carousel({
-                        model: that.currentModel,
-                        mode: "videos",
-                        app: that.app
-                    });
-                    //that.$el.find(".carousel").append(c.$el);
-
-                    $("#carouselModal").empty();
-                    $("#carouselModal").append(c.$el);
-                    var $span = $("<span class='close big'>&times;</span>");
-                    $span.click(function () {
-                        $("#carouselModal").hide();
-                        //document.getElementById("carouselModal").style.display='none';
-                    })
-                    $("#carouselModal").append($span);
-
-                    // Get the modal
-                    var modal = document.getElementById('carouselModal');
-
-                    modal.style.display = "block";
-                }});
-            },
-
-            buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var button = document.createElement('BUTTON'),
-                    that = this,
-                    model;
-                button.innerHTML = "<i class='fa fa-trash trash_button' aria-hidden='true'></i>";
-                Handsontable.Dom.empty(td);
-                td.appendChild(button);
-                button.onclick = function () {
-                    if (!confirm("Are you sure you want to delete this row?")) {
-                        return;
-                    }
-                    // First grab the model of the target row to delete
-                    model = that.getModelFromCell(instance, row);
-
-                    // The model holding the row data is destroyed,
-                    // but the row containing the data still appears
-                    // inside the data from handsontable (H.O.T.)
-                    model.destroy();
-
-                    // We need to call instance, since it calls the data table
-                    // from H.O.T. to easily alter the table
-                    // by removing the target row
-                    instance.alter("remove_row", row);
-
-                    // Now there is no trace of any deleted data,
-                    // especially when the user refreshes the page
-                };
-                return td;
-            },
-
-            ratingRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var that = this,
-                    model = this.getModelFromCell(instance, row),
-                    idx = col - 3,
-                    field = this.fields.getModelByAttribute('col_name', prop),
-                    extras = field.get("extras") || [],
-                    intVal = model.get(prop),
-                    textVal = null,
-                    i;
-                for (i = 0; i < extras.length; i++){
-                    if (extras[i].value == intVal){
-                        textVal = extras[i].value + ": " + extras[i].name;
-                        break;
-                    }
-                }
-                td.innerHTML = textVal;
-                return td;
-            },
-
-            showMediaBrowser: function (e) {
-                var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                var mediaBrowser = new MediaBrowser({
-                    app: this.app
-                });
-                this.app.vent.trigger("show-modal", {
-                    title: 'Media Browser',
-                    width: 1100,
-                    height: 400,
-                    view: mediaBrowser,
-                    saveButtonText: "Add",
-                    showSaveButton: true,
-                    saveFunction: mediaBrowser.addModels.bind(mediaBrowser)
-                });
-            },
-
-            attachModels: function (models) {
-                var that = this,
-                    i = 0,
-                    ordering;
-                for (i = 0; i < models.length; i++) {
-                    ordering = this.currentModel.get("photo_count") + this.currentModel.get("audio_count");
-                    this.currentModel.attach(models[i], (ordering + i + 1), function () {
-                        that.currentModel.fetch({
-                            success: function(){
-                                that.renderSpreadsheet();
-                            }
-                        });
-                    }, function () {});
-                }
-
-                this.app.vent.trigger('hide-modal');
-            },
-
-            getColumnHeaders: function () {
-                var cols;
-                switch (this.collection.key) {
-                    case "audio":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"];
-                    case "photos":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
-                    case "videos":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Video", "Tags", "Attribution", "Owner", "Delete"];
-                    case "markers":
-                        cols = ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Media", "Delete"];
-                        return cols;
-                    default:
-                        if (!this.fields){
-                            return null;
-                        }//*/
-                        cols = ["ID", "Lat", "Lng"];
-
-                        for (var i = 0; i < this.fields.length; ++i) {
-                            var deleteColumn = this.show_hide_deleteColumn == true ? " <a class='fa fa-minus-circle delete_column' fieldIndex= '" +
-                                                                              i +"' aria-hidden='true'></a>" : "";
-                            cols.push(this.fields.at(i).get("col_name") + deleteColumn);
-                        }
-                        cols.push("Media");
-                        cols.push("Delete");
-                        cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
-                        return cols;
-                }
-            },
-            getColumnWidths: function () {
-                switch(this.collection.key){
-                    case "audio":
-                        return [30, 80, 80, 200, 400, 300, 200, 100, 80, 100];
-                    case "photos":
-                        return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
-                    case "videos":
-                        return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
-                    case "markers":
-                        return [30, 80, 80, 200, 400, 200, 120, 100, 100];
-                    default:
-                        if (!this.fields){
-                            return null;
-                        }//*/
-                        var cols = [30, 80, 80];
-                        for (var i = 0; i < this.fields.length; ++i){
-                            cols.push(150);
-                        }
-                        cols.push(120);
-                        return cols;
-                }
-            },
-
-            doSearch: function (term) {
-
-                // If form exist, do search with 3 parameters, otherwise, do search with two parameters]
-                if (this.collection.key.indexOf("form_")){
-                    this.collection.doSearch(term, this.app.getProjectID(), this.fields);
-                } else {
-                    this.collection.doSearch(term, this.app.getProjectID());
-                }
-
-            },
-
-            clearSearch: function () {
-                this.collection.clearSearch(this.app.getProjectID());
-            },
-
-            getColumns: function () {
-                switch (this.collection.key) {
-                    case "audio":
-                        return [
-                            { data: "id", readOnly: true},
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' },
-                            { data: "name", renderer: "html"},
-                            { data: "caption", renderer: "html"},
-                            { data: "file_path", renderer: this.audioRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                            { data: "tags", renderer: "html" },
-                            { data: "attribution", renderer: "html"},
-                            { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                        ];
-                    case "photos":
-                       return [
-                            { data: "id", readOnly: true},
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' },
-                            { data: "name", renderer: "html"},
-                            { data: "caption", renderer: "html"},
-                            { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                            { data: "tags", renderer: "html" },
-                            { data: "attribution", renderer: "html"},
-                            { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                       ];
-                   case "videos":
-                      return [
-                           { data: "id", readOnly: true},
-                           { data: "lat", type: "numeric", format: '0.00000' },
-                           { data: "lng", type: "numeric", format: '0.00000' },
-                           { data: "name", renderer: "html"},
-                           { data: "caption", renderer: "html"},
-                           // As for this, will need to replace with video and videoRenderer
-                           { data: "video_provider", renderer: this.videoRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                           //{ data: "video_provider", type: "text"},
-                           //{ data: "video_id", type: "text"},
-                           { data: "tags", renderer: "html" },
-                           { data: "attribution", renderer: "html"},
-                           { data: "owner", readOnly: true},
-                           { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                      ];
-                    case "markers":
-                       return [
-                            { data: "id", readOnly: true},
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' },
-                            { data: "name", renderer: "html"},
-                            { data: "caption", renderer: "html"},
-                            { data: "tags", renderer: "html" },
-                            { data: "owner", readOnly: true},
-                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                       ];
-                    default:
-                        if (!this.fields){
-                            return null;
-                        }//*/
-                        var cols = [
-                            { data: "id", readOnly: true },
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' }
-                        ];
-                        for (var i = 0; i < this.fields.length; ++i){
-                            // Make sure to add in the "-" symbol after field name to delete column
-                            var type = this.fields.at(i).get("data_type").toLowerCase();
-                            var field_format = "";
-                            var field_dateFormat = "";
-                            var field_correctFormat = false;
-                            var renderer = null;
-                            var editor = null;
-                            var entry = null;
-                            switch (type) {
-                                case "boolean":
-                                    entry = {
-                                        type:  "checkbox"
-                                    };
-                                    break;
-                                case "integer":
-                                    entry = {
-                                        type:  "numeric"
-                                    };
-                                    break;
-                                case "decimal":
-                                    entry = {
-                                        type:  "numeric",
-                                        format: "0,0.000"
-                                    };
-                                    break;
-                                case "choice":
-                                    var choiceOpts = [],
-                                        j = 0,
-                                        extras = this.fields.at(i).get("extras");
-                                    for (j = 0; j < extras.length; j++) {
-                                        choiceOpts.push(extras[j].name);
-                                    }
-                                    entry = {
-                                        type:  "text",
-                                        editor: "select",
-                                        selectOptions: choiceOpts
-                                    };
-                                    break;
-                                case "date-time":
-                                    entry = {
-                                        type:  "date",
-                                        dateFormat: "YYYY-MM-DDThh:mm",
-                                        correctFormat: true
-                                    };
-                                    break;
-                                case "rating":
-                                    entry = {
-                                        type:  "numeric",
-                                        editor: "select-ratings",
-                                        renderer: this.ratingRenderer.bind(this),
-                                        selectOptions: this.fields.at(i).get("extras") || []
-                                    };
-                                    break;
-                                default:
-                                    entry = {
-                                        type:  "text"
-                                    };
-                            }
-                            _.extend(entry, {
-                                data: this.fields.at(i).get("col_name")
-                            });
-                            cols.push(entry);
-                        };
-
-                        cols.push(
-                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
-                        );
-
-                        cols.push(
-                            {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
-                        );
-
-                        cols.push(
-                            {data: "addField", renderer: "html", readOnly: true, disableVisualSelection: true }
-                        );
-                        return cols;
-                }
-            },
-
-            showCreateFieldForm: function () {
-                // see the apps/gallery/views/toolbar-dataview.js function
-                // to pass the appropriate arguments:
-                var fieldView = new CreateFieldView({
-                    formID: this.app.dataType.split("_")[1],
-                    fields: this.fields,
-                    app: this.app
-                });
-                this.app.vent.trigger('show-modal', {
-                    title: "Create New Column",
-                    view: fieldView,
-                    saveFunction: fieldView.saveToDatabase,
-                    width: 300,
-                    height: 100
-                });
-            },
-
-            deleteField: function (e) {
-                //
-                // You need to access the column that is being selected
-                // Then re-order the columns so that the deleted column is last
-                // Then after re-ordering the columns, then delete the selected column
-                //
-                var that = this;
-                if (!confirm("Do you want to delete this field?")){
-                    return;
-                }
-
-                e.preventDefault();
-                var fieldIndex = $(e.currentTarget).attr("fieldIndex");
-                var targetColumn = this.fields.at(fieldIndex);
-                targetColumn.destroy({
-                    success: function () {
-                        that.renderSpreadsheet();
-                    }
-                });
-
-            },
-            addRow: function (dataType) {
-
-                var that = this;
-                var projectID = this.app.getProjectID();
-                var rec;
-
-                if (dataType == "markers"){
-                    rec = new Marker({project_id: projectID});
-                } else {
-                    rec = new Record ({project_id: projectID});
-                }
-
-                rec.collection = this.collection;
-                rec.save(null, {
-                    success: function(){
-                        // To add an empty column a the top, set the index to insert at 0
-                        that.collection.add(rec, {at: 0});
-                        that.renderSpreadsheet();
-                    }
-                });
-
+            });
+        },
+        deleteModel: function (e) {
+            var that = this;
+            if (!confirm("Are you sure you want to delete this entry?")) {
+                return;
             }
-
-        });
-        return Spreadsheet;
+            this.model.destroy({
+                success: function () {
+                    //trigger an event that clears out the deleted model's detail:
+                    that.app.vent.trigger('hide-detail');
+                }
+            });
+            e.preventDefault();
+        },
+        doNotDisplay: function () {
+            this.$el.html("");
+        },
+        hideMapPanel: function (e) {
+            $(e.target).removeClass("hide").addClass("show");
+            this.app.vent.trigger('hide-detail');
+            e.preventDefault();
+        },
+        showMapPanel: function (e) {
+            $(e.target).removeClass("show").addClass("hide");
+            this.app.vent.trigger('unhide-detail');
+            e.preventDefault();
+        },
+        showStreetView: function (e) {
+            var $elem = $(e.target);
+            if ($elem.html() === "Show Street View") {
+                this.app.vent.trigger('show-streetview', this.model);
+                $elem.html('Show Map');
+            } else {
+                $elem.html('Show Street View');
+                this.app.vent.trigger('hide-streetview');
+            }
+            e.preventDefault();
+        },
+        updateStreetViewButton: function () {
+            this.$el.find('.streetview').html('Show Street View');
+        }
     });
+    return MediaEditor;
+});
 
 /**AppUtilities defines a set of mixin properties that perform many of the same functions as the old
  *'sb' object, minus event aggregation.  I'm separating it out into this file just to keep track of what
@@ -18321,125 +20036,193 @@ define('lib/appUtilities',["jquery"],
         };
     });
 
-define('apps/spreadsheet/spreadsheet-app',[
-    "underscore",
+define('apps/map/map-app',[
     "marionette",
     "backbone",
-    "apps/spreadsheet/router",
+    "apps/map/router",
     "views/toolbar-global",
     "apps/gallery/views/toolbar-dataview",
     "lib/data/dataManager",
-    "apps/spreadsheet/views/main",
+    "apps/map/views/marker-listing-manager",
+    "lib/maps/basemap",
+    "apps/gallery/views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (_, Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
-             DataManager, SpreadsheetView, appUtilities) {
+], function (Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
+             DataManager, MarkerListingManager, Basemap, DataDetail, appUtilities) {
     "use strict";
-    var SpreadsheetApp = Marionette.Application.extend(_.extend(appUtilities, {
+    /* TODO: Move some of this stuff to a Marionette LayoutView */
+    var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
-            spreadsheetRegion: ".main-panel",
+            container: ".main-panel",
+            markerListRegion: "#left-panel",
+            mapRegion: "#map-panel",
+            markerDetailRegion: "#right-panel",
             toolbarMainRegion: "#toolbar-main",
             toolbarDataViewRegion: "#toolbar-dataview"
         },
-
+        mode: "edit",
+        screenType: "map",
+        showLeft: true,
+        showRight: false,
         currentCollection: null,
-        dataType: "markers",
-        screenType: "spreadsheet",
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
             Marionette.Application.prototype.start.apply(this, [options]);
             this.initAJAX(options);
+            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
+            this.listenTo(this.vent, 'show-detail', this.showDetail);
+            this.listenTo(this.vent, 'hide-detail', this.hideDetail);
+            this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
+            this.listenTo(this.vent, 'unhide-list', this.unhideList);
+            this.listenTo(this.vent, 'hide-list', this.hideList);
+            this.addMessageListeners();
             this.router = new Router({ app: this});
             Backbone.history.start();
-
-            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
-            this.listenTo(this.vent, 'show-list', this.showSpreadsheet);
-            this.addMessageListeners();
-            console.log('starting!!');
         },
-
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+            this.showGlobalToolbar();
+            this.showDataToolbar();
+            this.showBasemap();
         },
+
         loadRegions: function () {
-            //initialize toobar view
-            this.restoreAppState();
-            var data;
-            try {
-                data = this.dataManager.getData(this.dataType);
-            } catch (e) {
-                this.dataType = "markers";
-                data = this.dataManager.getData(this.dataType);
+            this.showMarkerListManager();
+            if (this.showDetailsWhenInitialized) {
+                this.showDetail(this.showDetailsWhenInitialized);
             }
+        },
+
+        showGlobalToolbar: function () {
             this.toolbarView = new ToolbarGlobal({
                 app: this
             });
+            this.toolbarMainRegion.show(this.toolbarView);
+        },
+
+        showDataToolbar: function () {
             this.toolbarDataView = new ToolbarDataView({
                 app: this
             });
-            this.spreadsheetView = new SpreadsheetView({
-                app: this,
-                collection: data.collection,
-                fields: data.fields
-            });
-
-            //load views into regions:
-            this.toolbarMainRegion.show(this.toolbarView);
             this.toolbarDataViewRegion.show(this.toolbarDataView);
-            this.spreadsheetRegion.show(this.spreadsheetView);
         },
 
-        showSpreadsheet: function (dataType) {
-            this.dataType = dataType;
-            this.saveAppState();
-            var data;
-            try {
-                data = this.dataManager.getData(this.dataType);
-            } catch (e) {
-                this.dataType = "markers";
-                data = this.dataManager.getData(this.dataType);
+        updateDisplay: function () {
+            var className = "none";
+            if (this.showLeft && this.showRight) {
+                className = "both";
+            } else if (this.showLeft) {
+                className = "left";
+            } else if (this.showRight) {
+                className = "right";
             }
-            this.spreadsheetView = new SpreadsheetView({
+            this.container.$el.removeClass("left right none both");
+            this.container.$el.addClass(className);
+            //wait 'til CSS animation completes before redrawing map
+            setTimeout(this.basemapView.redraw, 220);
+        },
+
+        showBasemap: function () {
+            this.basemapView = new Basemap({
                 app: this,
-                collection: data.collection,
-                fields: data.fields
+                showSearchControl: true, // added for rosa parks pilot
+                mapID: "map",
+                minZoom: 1 // added for rosa parks pilot
             });
-            this.spreadsheetRegion.show(this.spreadsheetView);
+            this.mapRegion.show(this.basemapView);
         },
-        saveAppState: function () {
-            this.saveState("dataView", {
-                dataType: this.dataType
-            }, true);
+
+        showMarkerListManager: function () {
+            this.showLeft = true;
+            this.updateDisplay();
+            this.markerListManager = new MarkerListingManager({
+                app: this
+            });
+            this.markerListRegion.show(this.markerListManager);
         },
-        restoreAppState: function () {
-            var state = this.restoreState("dataView");
-            if (state) {
-                this.dataType = state.dataType;
-            } else if (this.dataManager) {
-                this.dataType = this.dataManager.getDataSources()[1].value;
+
+        hideList: function () {
+            this.showLeft = false;
+            this.updateDisplay();
+        },
+        unhideList: function () {
+            this.showLeft = true;
+            this.updateDisplay();
+        },
+
+        createNewModelFromCurrentCollection: function () {
+            var Model = this.currentCollection.model,
+                model = new Model();
+            model.collection = this.currentCollection;
+            model.set("project_id", this.getProjectID());
+            model.set("overlay_type", this.currentCollection.overlay_type);
+            return model;
+        },
+
+        showDetail: function (opts) {
+            if (this.dataManager.isEmpty()) {
+                this.showDetailsWhenInitialized = opts;
+                return;
             }
-            //console.log('restored', this.dataType);
+            var dataType = opts.dataType,
+                dataEntry = this.dataManager.getData(dataType),
+                model = null;
+            this.currentCollection = dataEntry.collection;
+            if (opts.id) {
+                model = this.currentCollection.get(opts.id);
+                if (dataType == "markers" || dataType.indexOf("form_") != -1) {
+                    if (!model.get("children")) {
+                        model.fetch({"reset": true});
+                    }
+                }
+            } else {
+                this.mode = "edit";
+                model = this.createNewModelFromCurrentCollection();
+            }
+            model.set("active", true);
+            this.vent.trigger('highlight-marker', model);
+
+            if (dataType.indexOf("form_") != -1) {
+                model.set("fields", dataEntry.fields.toJSON());
+            }
+            this.dataDetail = new DataDetail({
+                model: model,
+                app: this,
+                dataType: dataType
+            });
+            this.markerDetailRegion.show(this.dataDetail);
+            this.unhideDetail();
+        },
+
+        hideDetail: function () {
+            this.showRight = false;
+            this.updateDisplay();
+        },
+
+        unhideDetail: function () {
+            this.showRight = true;
+            this.updateDisplay();
         }
     }));
-    return SpreadsheetApp;
+    return MapApp;
 });
 
 var configPath = (configPath || '') + 'require-config';
 require([configPath], function () {
     'use strict';
-    require(["jquery", "apps/spreadsheet/spreadsheet-app"], function ($, SpreadsheetApp) {
+    require(["jquery", "apps/map/map-app"], function ($, App) {
         $(function () {
-            window.location.hash = ''; //make sure the page initializes on the first page...
-            var spreadsheet = new SpreadsheetApp();
-            spreadsheet.start();
+            var app = new App();
+            app.start();
         });
     });
 });
 
 
 
-define("apps/spreadsheet/kickoff", function(){});
+
+define("apps/map/kickoff", function(){});
 

@@ -2,6 +2,54 @@ module.exports = function (grunt) {
     'use strict';
     grunt.initConfig({
 	    requirejs: {
+	        home: {
+                options: {
+                    out: './static/redesign/build/home.js',
+                    baseUrl: "./static/redesign/",
+                    mainConfigFile: "./static/redesign/apps/require-config.js",
+                    name: 'apps/home/kickoff',
+                    removeCombined: 'true',
+                    findNestedDependencies: 'true',
+                    wrapShim: 'true',
+                    optimize: 'none'
+                }
+	        },
+            gallery: {
+                options: {
+                    out: './static/redesign/build/gallery.js',
+                    baseUrl: "./static/redesign/",
+                    mainConfigFile: "./static/redesign/apps/require-config.js",
+                    name: 'apps/gallery/kickoff',
+                    removeCombined: 'true',
+                    findNestedDependencies: 'true',
+                    wrapShim: 'true',
+                    optimize: 'none'
+                }
+	        },
+            map: {
+                options: {
+                    out: './static/redesign/build/map.js',
+                    baseUrl: "./static/redesign/",
+                    mainConfigFile: "./static/redesign/apps/require-config.js",
+                    name: 'apps/map/kickoff',
+                    removeCombined: 'true',
+                    findNestedDependencies: 'true',
+                    wrapShim: 'true',
+                    optimize: 'none'
+                }
+	        },
+            style: {
+                options: {
+                    out: './static/redesign/build/style.js',
+                    baseUrl: "./static/redesign/",
+                    mainConfigFile: "./static/redesign/apps/require-config.js",
+                    name: 'apps/style/kickoff',
+                    removeCombined: 'true',
+                    findNestedDependencies: 'true',
+                    wrapShim: 'true',
+                    optimize: 'none'
+                }
+	        },
 	        spreadsheet: {
                 options: {
                     out: './static/redesign/build/spreadsheet.js',
@@ -29,6 +77,30 @@ module.exports = function (grunt) {
 		},
 
 		uglify: {
+			home: {
+				files: {
+                    './static/redesign/build/home.min.js':
+						['./static/redesign/build/home.js']
+				}
+			},
+            gallery: {
+				files: {
+                    './static/redesign/build/gallery.min.js':
+						['./static/redesign/build/gallery.js']
+				}
+			},
+            map: {
+				files: {
+                    './static/redesign/build/map.min.js':
+						['./static/redesign/build/map.js']
+				}
+			},
+            /*style: {
+				files: {
+                    './static/redesign/build/style.min.js':
+						['./static/redesign/build/style.js']
+				}
+			},*/
 			spreadsheet: {
 				files: {
                     './static/redesign/build/spreadsheet.min.js':

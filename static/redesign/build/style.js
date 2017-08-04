@@ -3588,7 +3588,7 @@
   return Marionette;
 }));
 
-define('apps/spreadsheet/controller',[
+define('apps/map/controller',[
     "marionette"
 ], function (Marionette) {
     "use strict";
@@ -3596,8 +3596,9 @@ define('apps/spreadsheet/controller',[
         initialize: function (options) {
             this.app = options.app;
         },
-        addRow: function (dataType) {
-            this.app.vent.trigger("add-row", {
+        dataDetail: function (dataType, id) {
+            this.app.vent.trigger("show-detail", {
+                id: id,
                 dataType: dataType
             }, false);
         },
@@ -3606,18 +3607,17 @@ define('apps/spreadsheet/controller',[
         }
     });
 });
-
-define('apps/spreadsheet/router',[
+define('apps/style/router',[
     "jquery",
     "marionette",
     "backbone",
-    "apps/spreadsheet/controller"
+    "apps/map/controller"
 ], function ($, Marionette, Backbone, Controller) {
     "use strict";
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
-            ':dataType': 'dataList',
-            ':dataType/new': 'addRow'
+            ':dataType/:id': 'dataDetail',
+            ':dataType': 'dataList'
         },
         initialize: function (options) {
             this.controller = new Controller({
@@ -3636,7 +3636,6 @@ define('apps/spreadsheet/router',[
     });
     return Router;
 });
-
 /**
  * @license RequireJS text 2.0.12 Copyright (c) 2010-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -12023,3172 +12022,6 @@ define('views/toolbar-global',[
     return Toolbar;
 });
 
-define('models/dataType',["underscore", "models/base"], function (_, Base) {
-    "use strict";
-    var DataType = Base.extend({
-
-        toString: function () {
-            return this.get('name');
-        }
-    });
-    return DataType;
-});
-
-define('collections/dataTypes',["backbone", "models/dataType"],
-    function (Backbone, DataType) {
-        "use strict";
-        var DataTypes = Backbone.Collection.extend({
-            model: DataType,
-            name: 'Data Types',
-            url: '/api/0/data-types/',
-            parse: function (response) {
-                return response.results;
-            }
-        });
-        return DataTypes;
-    });
-define('models/field',["underscore", "collections/dataTypes", "models/base"],
-    function (_, DataTypes, Base) {
-        'use strict';
-        var Field = Base.extend({
-            baseURL: null,
-            form: null,
-            defaults: _.extend({}, Base.prototype.defaults, {
-                col_alias: '',
-                is_display_field: false,
-                display_width: 100,
-                is_printable: true,
-                ordering: 1
-            }),
-            schema: {
-                data_type: { type: 'Select', options: new DataTypes() },
-                col_alias: { type: 'Text', title: 'Column Name' },
-                is_display_field: 'Hidden',
-                display_width: 'Hidden',
-                is_printable: 'Hidden',
-                has_snippet_field: 'Hidden',
-                ordering: 'Hidden'
-            },
-            urlRoot: function () {
-                if (this.baseURL) {
-                    return this.baseURL;
-                }
-                return '/api/0/forms/' + this.form.get("id") + '/fields/';
-            },
-            initialize: function (data, opts) {
-                // This had to be made dynamic because there are different Fields
-                // for each form
-                if (this.collection && this.collection.url) {
-                    this.baseURL = this.collection.url();
-                } else if (opts.id) {
-                    this.baseURL = '/api/0/forms/' + opts.id + '/fields/';
-                } else if (opts.form) {
-                    this.form =  opts.form;
-                } else {
-                    alert("id initialization parameter required for Field");
-                    return;
-                }
-                this.set('temp_id', parseInt(Math.random(10) * 10000000).toString());
-                if (this.get("field")) {
-                    this.url = this.urlRoot() + this.get("field") + "/";
-                }
-                Base.prototype.initialize.apply(this, arguments);
-            }/*,
-            toJSON: function () {
-                var json = Base.prototype.toJSON.call(this);
-                if (json.extras !== null) {
-                    json.extras = JSON.stringify(json.extras);
-                }
-                return json;
-            }*/
-        });
-        return Field;
-    });
-
-define('collections/fields',["models/field", "collections/basePageable"], function (Field, BasePageable) {
-    "use strict";
-    /*
-    This is a rough draft of the fields file
-    It is expected to be revised since it's templated
-    after projectUsers in structure.
-    */
-    var Fields = BasePageable.extend({
-        model: Field,
-        name: 'Fields',
-        baseURL: null,
-        form: null,
-        sort_key: 'ordering',
-        url: function () {
-            if (this.baseURL) {
-                return this.baseURL;
-            }
-            return '/api/0/forms/' + this.form.get("id") + '/fields/';
-        },
-        comparator: function (item) {
-            return item.get(this.sort_key);
-        },
-        getModelByAttribute: function (key, val) {
-            return this.find(function (model) { return model.get(key) === val; });
-        },
-        initialize: function (recs, opts) {
-            if (opts.url) {
-                this.baseURL = opts.url;
-            } else if (opts.id) {
-                this.baseURL = '/api/0/forms/' + opts.id + '/fields/';
-            } else if (opts.form) {
-                this.form = opts.form;
-            } else {
-                alert("The Fields collection requires a url parameter upon initialization");
-                return;
-            }
-            // This had to be made dynamic because there are different fields
-            // for each form
-            BasePageable.prototype.initialize.apply(this, arguments);
-        }
-    });
-    return Fields;
-});
-
-define('models/form',["underscore", "models/base", "models/field", "collections/fields"],
-    function (_, Base, Field, Fields) {
-        "use strict";
-        var Form = Base.extend({
-            defaults: _.extend({}, Base.prototype.defaults, {
-                isActive: false,
-                isVisible: false,
-                checked: false
-            }),
-            urlRoot: '/api/0/forms/',
-            initialize: function (data, opts) {
-                if (this.get("id")) {
-                    this.fields = new Fields(null, { id: this.get("id") });
-                }
-                if (data && data.fields) {
-                    this.fields = new Fields(data.fields, {
-                        id: this.get("id")
-                    });
-                }
-                Base.prototype.initialize.apply(this, arguments);
-            },
-
-            getFields: function () {
-                if (this.fields) {
-                    this.fields.fetch({ reset: true });
-                }
-            },
-
-            createField: function (name, fieldType, displayField, ordering) {
-                var field = new Field(null, { id: this.get("id") }),
-                    that = this;
-                field.set("col_alias", name);
-                field.set("data_type", fieldType);
-                field.set("is_display_field", displayField);
-                field.set("ordering", ordering);
-                field.save(null, {
-                    success: function () {
-                        //that.getFields();
-                        //that.fields.add(field);
-                    },
-                    error: function () {
-                        console.error("Field is not saved");
-                    }
-                });
-            },
-            getFieldByID: function (id) {
-                return this.fields.get(id);
-            }
-        });
-        return Form;
-    });
-
-define('collections/forms',["jquery", "backbone", "models/form", "collections/basePageable"], function ($, Backbone, Form, BasePageable) {
-    "use strict";
-    var Forms = BasePageable.extend({
-        model: Form,
-        name: 'Forms',
-        key: 'forms',
-        url: '/api/0/forms/',
-        parse: function (response) {
-            return response.results;
-        }
-    });
-    return Forms;
-});
-
-
-define('text!apps/gallery/templates/create-form.html',[],function () { return '<a class="back button-tertiary">\n  <i class="fa fa-chevron-left"> </i> Back\n</a>\n<br>\n\n<!--h3>Name</h3-->\n<div class="inline-form">\n    <label for="formName">Name: </label>\n    <input type="text" id="formName" class="formName" value="{{name}}">\n</div>\n<!--h3>Description</h3--->\n<div class="inline-form">\n    <label for="caption">Description: </label>\n    <textarea id="caption" class="caption" rows="5" cols="50"\n    placeholder="Describe this form">{{caption}}</textarea>\n</div>\n<div class="fields-header inline-form">\n<h3>Fields</h3>\n\n<a class="new_field_button button-tertiary">\n    <i class="fa fa-plus add" aria-hidden="true">\n    </i>Add Column\n</a>\n</div>\n<div class="inline-form">\n    <!--label>Fields:</label-->\n    <div id="fieldTableDiv" class = "container-3-4">\n        <table class="fieldTable">\n            <thead>\n                <tr>\n                    <th></th>\n                    <th class="th-display-field">Display Field</th>\n                    <th class="th-field-name">Field Name</th>\n                    <th class="th-data-type">Data Type</th>\n                    <th class="th-delete-row"></th>\n                </tr>\n            </thead>\n            <tbody id="fieldList"></tbody>\n        </table>\n    </div>\n</div>\n';});
-
-
-define('text!apps/gallery/templates/field-item.html',[],function () { return '\n<!-- A <div> tag may be necessary to fit in the whole row inside.\n     However, it is unknown how to solve the row format problem\n-->\n<td>\n    <i class="fa fa-grip fa-rotate-90"></i> <!-- The rotate grip item will need to be extended to fit the whole row-->\n</td>\n<td>\n    <!-- Radio button -->\n    <input class=display-field type="radio" name="display_field"\n    {{#if is_display_field}}checked{{/if}}><br>\n</td>\n<td>\n    <input type="text" class="fieldname" placeholder="field name" value="{{ col_alias }}">\n    {{#if errorFieldName}}<span>Field Name Missing</span>{{/if}}\n    {{#if serverErrorMessage}}<span>{{serverErrorMessage}}</span>{{/if}}\n\n</td>\n<td class="form-reorder">\n    {{#if id }}\n        <!-- hidden form field that stashes the id -->\n        <input class="id" value={{ id }} type="hidden">\n        <span class="fieldType">\n            {{#ifequal data_type "boolean"}} Yes/No\n            {{else}} {{ data_type }}\n            {{/ifequal}}\n\n            {{#ifequal data_type "rating"}}\n            <!-- Make this list the new extras list to reduce confusion for users -->\n                <span class ="extras">\n                    <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>\n                    <table>\n                        {{#each extraList}}\n                        <tr class="rating-row">\n\n                            <td>\n                                <input type="text" class="rating-value" placeholder="Type rating value" value="{{this.value}}" />\n                                {{#if this.errorRatingValue}}<span class="ratingError">Must Be a Number</span>{{/if}}\n                            </td>\n                            <td>\n                                <input type="text" class="rating-name" placeholder="Type new rating" value="{{this.name}}" />\n                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}\n                            </td>\n                            <td>\n                                <a href="#" class="remove-rating">&times;</a>\n                            </td>\n                        </tr>\n                        {{/each}}\n                    </table>\n                </span>\n\n            {{/ifequal}}\n\n            {{#ifequal data_type "choice"}}\n                <span class="extras">\n                    <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>\n                    <table>\n                        {{#each extraList}}\n                        <tr class="choice-row">\n\n                            <td>\n                                <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />\n                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}\n                            </td>\n                            <td>\n                                <a href="#" class="remove-choice">&times;</a>\n                            </td>\n                        </tr>\n                        {{/each}}\n                    </table>\n                </span>\n            {{/ifequal}}\n        </span>\n    {{else}}\n        <select class="fieldType">\n            <option value="-1">Select One</option>\n            <option value="text" {{#ifequal data_type "text"}} SELECTED {{/ifequal}}>Text</option>\n            <option value="integer"{{#ifequal data_type "integer"}} SELECTED {{/ifequal}}>Integer</option>\n            <option value="boolean"{{#ifequal data_type "boolean"}} SELECTED {{/ifequal}}>Yes/No</option>\n            <option value="decimal" {{#ifequal data_type "decimal"}} SELECTED {{/ifequal}}>Decimal</option>\n            <option value="date-time"{{#ifequal data_type "date-time"}} SELECTED {{/ifequal}}>Date / Time</option>\n            <option value="rating"{{#ifequal data_type "rating"}} SELECTED {{/ifequal}}>Rating</option>\n            <option value="choice"{{#ifequal data_type "choice"}} SELECTED {{/ifequal}}>Choice</option>\n        </select>\n\n            {{#ifequal data_type "rating"}}\n            <!-- Make this list the new extras list to reduce confusion for users -->\n                <span class ="extras">\n                    <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>\n                    <table>\n                        {{#each extraList}}\n                        <tr class="rating-row">\n                            <td>\n                                <input type="text" class="rating-value" placeholder="Type rating value" value="{{this.value}}" />\n                                {{#if this.errorRatingValue}}<span class="ratingError">Must Be a Number</span>{{/if}}\n                            </td>\n                            <td>\n                                <input type="text" class="rating-name" placeholder="Type new rating" value="{{this.name}}" />\n                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}\n                            </td>\n                            <td>\n                                <a href="#" class="remove-rating">&times;</a>\n                            </td>\n                        </tr>\n                        {{/each}}\n                    </table>\n                </span>\n\n            {{/ifequal}}\n\n            {{#ifequal data_type "choice"}}\n                <span class="extras">\n                    <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>\n                    <table>\n                        {{#each extraList}}\n                        <tr class="choice-row">\n                            <td>\n                                <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />\n                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}\n                            </td>\n                            <td>\n                                <a href="#" class="remove-choice">&times;</a>\n                            </td>\n                        </tr>\n                        {{/each}}\n                    </table>\n                </span>\n            {{/ifequal}}\n\n        {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}\n    {{/if}}\n</td>\n<td><a href="#" class="{{#if id }}delete-field {{else}} remove-row{{/if}} ">&times;</a></td>\n';});
-
-define('apps/gallery/views/field-child-view',[
-    "jquery",
-    "underscore",
-    "handlebars",
-    "marionette",
-    "text!../templates/field-item.html"
-], function ($, _, Handlebars, Marionette, FieldItemTemplate) {
-    'use strict';
-    var FieldChildView = Marionette.ItemView.extend({
-        ratingsList: [],
-        choicesList: [],
-        initialize: function (opts) {
-            _.extend(this, opts);
-            if (!this.app) {
-                this.app = this.parent.app;
-            }
-            this.setRatingsFromModel();
-            this.setChoicesFromModel();
-        },
-        modelEvents: {
-            'draw': 'render'
-        },
-        events: {
-            'click .remove-row': 'removeModel',
-            'click .delete-field': 'doDelete',
-            'blur input.fieldname': 'setAlias',
-            'blur input.rating-value': 'saveNewRating',
-            'blur input.rating-name': 'saveNewRating',
-            'blur input.choice': 'saveNewChoice',
-            'change select.fieldType': 'setDataType',
-            'click .add-new-rating': 'addNewRating',
-            'click .remove-rating': 'removeRating',
-            'click .add-new-choice': 'addNewChoice',
-            'click .remove-choice': 'removeChoice'
-        },
-        templateHelpers: function () {
-            var errorMessages = {
-                errorFieldType: this.model.errorFieldType,
-                errorFieldName: this.model.errorFieldName,
-                serverErrorMessage: this.model.serverErrorMessage,
-                extraList: this.model.get("extras")
-
-            };
-            return errorMessages;
-        },
-        id: function () {
-            return this.model.get("temp_id");
-        },
-        template: Handlebars.compile(FieldItemTemplate),
-        tagName: "tr",
-
-        setAlias: function () {
-            this.model.set("col_alias", this.$el.find(".fieldname").val());
-        },
-
-        setRatingsFromModel: function () {
-            if (this.model.get("data_type") != "rating") { return; }
-            console.log("Loading Ratings");
-            this.ratingsList = this.model.get("extras") || [];
-        },
-
-        setChoicesFromModel: function () {
-            if (this.model.get("data_type") != "choice") { return; }
-            console.log("Loading Choices");
-            this.choicesList = this.model.get("extras") || [];
-        },
-
-        saveNewRating: function () {
-            this.updateRatingList();
-        },
-
-        saveNewChoice: function () {
-            this.updateChoiceList();
-        },
-
-        removeRating: function (e) {
-            e.preventDefault();
-            if (window.confirm("Want to remove rating?")){
-                var rating_row = $(e.target).closest(".rating-row");
-                $(rating_row).remove();
-                this.updateRatingList();
-            }
-        },
-        removeChoice: function (e) {
-            e.preventDefault();
-            if (window.confirm("Want to remove choice?")){
-                var choice_row = $(e.target).closest(".choice-row");
-                $(choice_row).remove();
-                this.updateChoiceList();
-            }
-        },
-
-        updateRatingList: function () {
-            //if (!this.ratingsList) return;
-            //AN attempt to solve the problem, but this.ratingsList is undefined
-            // despite that it is an empty array, therefore nothing can be pushed
-            //console.log("update ratings list called");
-            if (this.$el.find('.rating-row').length == 0) { return; }
-            this.ratingsList = [];
-            var that = this,
-                $rows = this.$el.find('.rating-row'),
-                $row;
-            $rows.each(function () {
-                $row = $(this);
-
-                var original_value = $row.find('.rating-value').val();
-                var _rating_value = parseInt($row.find('.rating-value').val());
-                if (isNaN(_rating_value)) _rating_value = original_value;
-
-
-
-                that.ratingsList.push({
-                    name: $row.find('.rating-name').val(),
-                    value: _rating_value
-                });
-            });
-            console.log(this.ratingsList);
-            this.saveRatingsToModel();
-        },
-
-        updateChoiceList: function () {
-            //if (!this.ratingsList) return;
-            //AN attempt to solve the problem, but this.ratingsList is undefined
-            // despite that it is an empty array, therefore nothing can be pushed
-            //console.log("update ratings list called");
-            if (this.$el.find('.choice-row').length == 0) { return; }
-            this.choicesList = [];
-            var that = this,
-                $rows = this.$el.find('.choice-row'),
-                $row;
-            $rows.each(function () {
-                $row = $(this);
-
-                console.log($row);
-                console.log($row.find(".choice").val());
-
-                ///*
-                that.choicesList.push({
-                    name: $row.find(".choice").val()
-                });
-                //*/
-            });
-            console.log(this.choicesList);
-            this.saveChoicesToModel();
-        },
-
-        addNewRating: function (e) {
-
-            this.ratingsList.push({
-                name: "",
-                value: ""
-            });
-            this.saveRatingsToModel();
-            this.render();
-            e.preventDefault();
-        },
-
-        addNewChoice: function (e) {
-            this.choicesList.push({
-                name: ""
-            });
-            this.saveChoicesToModel();
-            this.render();
-            e.preventDefault();
-        },
-
-        setDataType: function () {
-            this.model.set("data_type", this.$el.find(".fieldType").val());
-            if (this.model.get("data_type") == "rating") {
-                this.render();
-            } else if (this.model.get("data_type") == "choice") {
-                this.render();
-            }
-        },
-        saveRatingsToModel: function () {
-
-            this.model.set("extras", this.ratingsList);
-        },
-
-
-        saveChoicesToModel: function () {
-
-            this.model.set("extras", this.choicesList);
-        },
-        saveField: function () {
-            var that = this,
-                fieldName = this.$el.find(".fieldname").val(),
-                fieldType = this.$el.find(".fieldType").val(),
-                isDisplaying = this.$el.find('.display-field').is(":checked"),
-                messages;
-            this.validate(fieldName, fieldType);
-            this.model.set("col_alias", fieldName);
-            this.model.set("is_display_field", isDisplaying);
-
-            if (fieldType) {
-                this.model.set("data_type", fieldType);
-            }
-
-            if (fieldType == "rating"){
-                this.saveRatingsToModel();
-            } else if (fieldType == "choice"){
-                this.saveChoicesToModel();
-            }
-
-            if (!this.model.errorFieldName && !this.model.errorFieldType &&
-                this.validateRating() && this.validateChoice()){
-                console.log('saving...');
-                this.model.save(null, {
-                    success: function () {
-                    that.app.vent.trigger('success-message', "Child field has been saved.");
-                        that.parent.renderWithSaveMessages();
-
-                    },
-                    error: function (model, response) {
-                        messages = JSON.parse(response.responseText);
-                        that.model.serverErrorMessage = messages.detail;
-                        that.parent.renderWithSaveMessages();
-                        that.app.vent.trigger('error-message', "Child field has not been saved.");
-                    }
-                });
-            } else {
-                console.log('rendering...');
-                this.render();
-            }
-        },
-        validate: function (fieldName, fieldType) {
-            this.model.errorFieldName = this.model.errorFieldType = false;
-            this.model.serverErrorMessage = null;
-            if (fieldName.trim() === "") {
-                this.model.errorFieldName = true;
-            }
-            if (fieldType === "-1") {
-                this.model.errorFieldType = true;
-            }
-        },
-
-        validateRating: function () {
-            // No need to check if incorrect type
-            if (this.model.get("data_type") != "rating") return true;
-            var errors = false;
-            for (var i = 0; i < this.ratingsList.length; ++i){
-                console.log(this.ratingsList[i]);
-                if (this.ratingsList[i].name.trim() === ""){
-                    this.ratingsList[i].errorRatingName = true;
-                    errors = true;
-                }
-                if (isNaN(parseInt(this.ratingsList[i].value))){
-                    this.ratingsList[i].errorRatingValue = true;
-                    errors = true;
-                }
-            }
-            return !errors;
-        },
-
-
-        validateChoice: function () {
-            // No need to check if incorrect type
-            if (this.model.get("data_type") != "choice") return true;
-            var errors = false;
-            for (var i = 0; i < this.choicesList.length; ++i){
-                console.log(this.choicesList[i]);
-                if (this.choicesList[i].name.trim() === ""){
-                    this.choicesList[i].errorRatingName = true;
-                    errors = true;
-                }
-            }
-            return !errors;
-        },
-
-        onRender: function () {
-            this.$el.removeClass("failure-message");
-            if (this.model.errorFieldType || this.model.errorFieldName || this.model.serverErrorMessage) {
-                this.$el.addClass("failure-message show");
-            }
-            var that = this;
-            if (this.ratingsList){
-                var ratingTextBoxes = this.$el.find('.rating');
-                ratingTextBoxes.each(function (index) {
-                    $(this).val(that.ratingsList[index]);
-                });
-            }
-
-            else if (this.choicesList){
-                var choiceTextBoxes = this.$el.find('.choice');
-                choiceTextBoxes.each(function (index) {
-                    $(this).val(that.choicesList[index]);
-                });
-            }
-
-        },
-        removeModel: function () {
-            this.model.destroy();
-        },
-
-        doDelete: function (e) {
-            if (!confirm("Are you sure you want to remove this field from the form?")) {
-                return;
-            }
-            var $elem = $(e.target),
-                $row = $elem.parent().parent();
-            $row.remove();
-
-            this.model.destroy();
-            if (e) {
-                e.preventDefault();
-            }
-        }
-
-    });
-    return FieldChildView;
-
-});
-
-define('apps/gallery/views/create-form',[
-    "jquery",
-    "underscore",
-    "handlebars",
-    "marionette",
-    "text!../templates/create-form.html",
-    "models/form",
-    "models/field",
-    "collections/fields",
-    "apps/gallery/views/field-child-view",
-    "jquery.ui"
-], function ($, _, Handlebars, Marionette, CreateFormTemplate, Form, Field, Fields, FieldChildView) {
-    'use strict';
-    var CreateFormView = Marionette.CompositeView.extend({
-        showSuccess: false,
-        showError: false,
-        className: 'create-form',
-        initialize: function (opts) {
-            _.extend(this, opts);
-
-            if (!this.model) {
-                // Create a blank project if new project made
-                this.model = new Form();
-            } else {
-                this.initModel();
-            }
-            this.template = Handlebars.compile(CreateFormTemplate);
-            this.render();
-        },
-        initModel: function () {
-            this.initCollection();
-            Marionette.CompositeView.prototype.initialize.call(this);
-            if (!this.collection || this.collection.isEmpty()) {
-                this.fetchShareData();
-            }
-        },
-
-        templateHelpers: function () {
-            return {
-                showSuccess: this.showSuccess,
-                showError: this.showError,
-                caption: this.model.get("caption")
-            };
-        },
-
-        childViewContainer: "#fieldList",
-        childViewOptions: function () {
-            return {
-                parent: this
-            };
-        },
-        childView: FieldChildView,
-        template: Handlebars.compile(CreateFormTemplate),
-        events: {
-            'click .remove-row': 'removeRow',
-            'click .new_field_button' : 'addFieldButton',
-            'click .back': 'backToList',
-            'blur .formName': 'setFormName',
-            'blur .caption': 'setCaption'
-        },
-        setFormName: function () {
-            this.model.set('name', this.$el.find('.formName').val());
-        },
-        setCaption: function () {
-            this.model.set('caption', this.$el.find('.caption').val());
-        },
-        onRender: function () {
-            var sortableFields = this.$el.find("#fieldList"),
-                that  = this;
-            sortableFields.sortable({
-                helper: this.fixHelper,
-                update: function (event, ui) {
-                    var $rows = that.$el.find("#fieldList > tr"),
-                        tempID,
-                        model;
-                    $rows.each(function (i) {
-                        tempID = $(this).attr("id");
-                        model = that.collection.find(function (model) { return model.get('temp_id') === tempID; });
-                        model.set("ordering", i + 1);
-                    });
-                    that.collection.sort("ordering");
-                    that.render();
-                }
-            }).disableSelection();
-        },
-
-        // Fix helper with preserved width of cells
-        fixHelper: function (e, ui) {
-            ui.children().each(function () {
-                $(this).width($(this).width());
-            });
-            return ui;
-        },
-        fetchShareData: function () {
-            this.model.getFields();
-        },
-        removeRow: function (e) { // to remove a field that has not yet been saved
-            var $elem = $(e.target),
-                $row =  $elem.parent().parent();
-            if ($row.has('select').length != 0) {
-                $row.remove();
-            }
-        },
-        wait: function (ms) {
-            var d = new Date(),
-                d2 = null;
-            do { d2 = new Date(); } while (d2 - d < ms);
-        },
-        saveFormSettings: function () {
-            var formName = this.$el.find('.formName').val(),
-                caption = this.$el.find('.caption').val(),
-                that = this;
-            this.model.set('name', formName);
-            this.model.set('caption', caption);
-            this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
-            this.model.set('project_ids', [this.app.getProjectID()]);
-            this.model.save(null, {
-                success: function () {
-                    that.saveFields();
-                    that.app.vent.trigger('success-message', "The form was saved successfully");
-                    that.app.vent.trigger('hide-modal');
-                },
-                error: function () {
-                    console.error("The form could not be saved");
-                }
-            });
-        },
-
-        initCollection: function () {
-            if (this.collection) {
-                return;
-            }
-            if (!this.model.fields) {
-                this.model.fields = new Fields(
-                    null,
-                    { form: this.model }
-                );
-            }
-            this.collection = this.model.fields;
-        },
-
-        saveFields: function () {
-            this.initCollection();
-            var that = this,
-                $rows = this.$el.find("#fieldList > tr"),
-                tempID,
-                model,
-                childView;
-            $rows.each(function (i) {
-                tempID = $(this).attr("id");
-                model = that.collection.getModelByAttribute('temp_id', tempID);
-                childView = that.children.findByModel(model);
-                console.log(childView);
-                childView.saveField(i + 1);
-                that.wait(100);
-            });
-        },
-        addFieldButton: function () {
-            this.initCollection();
-            this.collection.add(new Field(
-                { ordering: this.collection.length + 1},
-                { form: this.model }
-            ));
-            this.render();
-        },
-
-        deleteForm: function () {
-            var that = this;
-            if (!confirm("Are you sure you want to delete this form? This will delete all data associated with this form and cannot be undone.")) {
-                return;
-            }
-            this.model.destroy({
-                success: function () {
-                    that.backToList();
-                }
-            });
-        },
-
-        backToList: function () {
-            this.app.vent.trigger("show-form-list");
-        },
-        renderWithSaveMessages: function () {
-            this.showMessage();
-            this.render();
-        },
-        showMessage: function () {
-            var that = this;
-            this.showSuccess = this.showError = false;
-            this.collection.each(function (model) {
-                if (model.serverErrorMessage ||
-                        model.errorFieldType || model.errorFieldName) {
-                    that.showError = true;
-                    return;
-                }
-            });
-            if (!this.showError) {
-                this.showSuccess = true;
-            }
-        }
-    });
-    return CreateFormView;
-
-});
-
-define('models/photo',["models/base", "jquery"], function (Base, $) {
-    "use strict";
-    /**
-     * A Backbone Model class for the Photo datatype.
-     * @class Photo
-     * @see <a href="//localground.org/api/0/photos/">//localground.org/api/0/photos/</a>
-     */
-    var Photo = Base.extend({
-        schema: {
-            name: { type: 'TextArea', title: "Name" },
-            caption:  { type: 'TextArea', title: "Caption" },
-            attribution: { type: 'TextArea', title: "Attribution" },
-            tags: { type: 'List', itemType: 'Text' }
-        },
-        rotate: function (direction) {
-            $.ajax({
-                url: '/api/0/photos/' + this.id + '/rotate-' + direction + '/.json',
-                type: 'PUT',
-                success: function(data) {
-                    this.set(data);
-                }.bind(this),
-                notmodified: function(data) { console.error('Photo Not modified'); },
-                error: function(data) { console.error('Error: Rotation failed'); }
-            });
-        },
-        //be careful not to overwrite inherited defaults (but OK to extend them):
-        defaults: _.extend({}, Base.prototype.defaults, {
-            checked: false
-        })
-
-    });
-    return Photo;
-});
-
-define('models/audio',["models/base", "underscore"], function (Base, _) {
-    "use strict";
-    /**
-     * A Backbone Model class for the Audio datatype.
-     * @class Audio
-     * @see <a href="//localground.org/api/0/audio/">//localground.org/api/0/audio/</a>
-     */
-    var Audio = Base.extend({
-        schema: {
-            name: { type: 'TextArea', title: "Name" },
-            caption:  { type: 'TextArea', title: "Caption" },
-            attribution: { type: 'TextArea', title: "Attribution" },
-            tags: { type: 'List', itemType: 'Text' }
-        },
-        getExtension: function () {
-            return _.last(this.get('file_name').split('.'));
-        },
-        defaults: _.extend({}, Base.prototype.defaults, {
-            checked: false
-        })
-    });
-    return Audio;
-});
-
-
-define('text!apps/gallery/templates/create-media.html',[],function () { return '<div class="alert failure-message ">There were errors when uploading your files. See below.</div>\n<div class="alert warning-message"></div>\n<div id="dropzone">\n    <div id="nothing-here">\n        <h4>Drag files here or</h4>\n        <button type="button" class="button-tertiary" id="upload-button">\n            Select files from your computer\n        </button>        \n    </div>\n</div>\n<input id="fileupload" type="file" name="media_file" multiple="">\n';});
-
-
-define('text!apps/gallery/templates/new-media.html',[],function () { return '{{#ifequal mode "begin"}}\n    <div class="file-container">\n        <div class="img-polaroid thumbnail">\n            <div class="img-container">\n                <img class="preview" src="{{ imageSerial }}" />\n            </div>\n            <p>\n                {{ file_name }}<br>\n                {{ file_size }}<br>\n            </p>\n        </div>\n        <div class="progress">\n            <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: 10%;"></div>\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal mode "end"}}\n    <div class="file-container">\n        <div class="img-polaroid thumbnail">\n            <div class="img-container">\n                <div class="badge success-icon">\n                    <i class="fa fa-check"></i>\n                </div>\n                <img class="preview" src="{{ imageSerial }}" />\n            </div>\n            <p>\n                {{ file_name }}<br>\n                {{ file_size }}<br>\n                <a href="#" class="delete">delete</a>\n            </p>\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal mode "error"}}\n    <div class="file-container">\n        <div class="img-polaroid thumbnail">\n            <div class="img-container">\n                <div class="failure-icon">\n                    <i class="fa fa-exclamation"></i>\n                </div>\n                <img class="preview" src="{{ imageSerial }}" />\n            </div>\n           <div class="error-holder">{{ errorMessage }}</div>\n        </div>\n    </div>\n{{/ifequal}}';});
-
-(function(a){"use strict";var b=function(a,c,d){var e=document.createElement("img"),f,g;return e.onerror=c,e.onload=function(){g&&b.revokeObjectURL(g),c(b.scale(e,d))},window.Blob&&a instanceof Blob||window.File&&a instanceof File?f=g=b.createObjectURL(a):f=a,f?(e.src=f,e):b.readFile(a,function(a){e.src=a})},c=window.createObjectURL&&window||window.URL&&URL||window.webkitURL&&webkitURL;b.scale=function(a,b){b=b||{};var c=document.createElement("canvas"),d=Math.max((b.minWidth||a.width)/a.width,(b.minHeight||a.height)/a.height);return d>1&&(a.width=parseInt(a.width*d,10),a.height=parseInt(a.height*d,10)),d=Math.min((b.maxWidth||a.width)/a.width,(b.maxHeight||a.height)/a.height),d<1&&(a.width=parseInt(a.width*d,10),a.height=parseInt(a.height*d,10)),!b.canvas||!c.getContext?a:(c.width=a.width,c.height=a.height,c.getContext("2d").drawImage(a,0,0,a.width,a.height),c)},b.createObjectURL=function(a){return c?c.createObjectURL(a):!1},b.revokeObjectURL=function(a){return c?c.revokeObjectURL(a):!1},b.readFile=function(a,b){if(window.FileReader&&FileReader.prototype.readAsDataURL){var c=new FileReader;return c.onload=function(a){b(a.target.result)},c.readAsDataURL(a),c}return!1},typeof define!="undefined"&&define.amd?define('load-image',[],function(){return b}):a.loadImage=b})(this);
-(function(a){"use strict";var b=window.MozBlobBuilder||window.WebKitBlobBuilder||window.BlobBuilder,c=/^image\/(jpeg|png)$/,d=function(a,e,f){f=f||{};if(a.toBlob)return a.toBlob(e,f.type),!0;if(a.mozGetAsFile){var g=f.name;return e(a.mozGetAsFile(c.test(f.type)&&g||(g&&g.replace(/\..+$/,"")||"blob")+".png",f.type)),!0}return a.toDataURL&&b&&window.atob&&window.ArrayBuffer&&window.Uint8Array?(e(d.dataURItoBlob(a.toDataURL(f.type))),!0):!1};d.dataURItoBlob=function(a){var c,d,e,f,g,h;a.split(",")[0].indexOf("base64")>=0?c=atob(a.split(",")[1]):c=decodeURIComponent(a.split(",")[1]),d=new ArrayBuffer(c.length),e=new Uint8Array(d);for(f=0;f<c.length;f+=1)e[f]=c.charCodeAt(f);return g=new b,g.append(d),h=a.split(",")[0].split(":")[1].split(";")[0],g.getBlob(h)},typeof define!="undefined"&&define.amd?define('canvas-to-blob',[],function(){return d}):a.canvasToBlob=d})(this);
-/*
- * jQuery UI Widget 1.10.3+amd
- * https://github.com/blueimp/jQuery-File-Upload
- *
- * Copyright 2013 jQuery Foundation and other contributors
- * Released under the MIT license.
- * http://jquery.org/license
- *
- * http://api.jqueryui.com/jQuery.widget/
- */
-
-(function (factory) {
-    if (typeof define === "function" && define.amd) {
-        // Register as an anonymous AMD module:
-        define('jquery.ui.widget',["jquery"], factory);
-    } else {
-        // Browser globals:
-        factory(jQuery);
-    }
-}(function( $, undefined ) {
-
-var uuid = 0,
-	slice = Array.prototype.slice,
-	_cleanData = $.cleanData;
-$.cleanData = function( elems ) {
-	for ( var i = 0, elem; (elem = elems[i]) != null; i++ ) {
-		try {
-			$( elem ).triggerHandler( "remove" );
-		// http://bugs.jquery.com/ticket/8235
-		} catch( e ) {}
-	}
-	_cleanData( elems );
-};
-
-$.widget = function( name, base, prototype ) {
-	var fullName, existingConstructor, constructor, basePrototype,
-		// proxiedPrototype allows the provided prototype to remain unmodified
-		// so that it can be used as a mixin for multiple widgets (#8876)
-		proxiedPrototype = {},
-		namespace = name.split( "." )[ 0 ];
-
-	name = name.split( "." )[ 1 ];
-	fullName = namespace + "-" + name;
-
-	if ( !prototype ) {
-		prototype = base;
-		base = $.Widget;
-	}
-
-	// create selector for plugin
-	$.expr[ ":" ][ fullName.toLowerCase() ] = function( elem ) {
-		return !!$.data( elem, fullName );
-	};
-
-	$[ namespace ] = $[ namespace ] || {};
-	existingConstructor = $[ namespace ][ name ];
-	constructor = $[ namespace ][ name ] = function( options, element ) {
-		// allow instantiation without "new" keyword
-		if ( !this._createWidget ) {
-			return new constructor( options, element );
-		}
-
-		// allow instantiation without initializing for simple inheritance
-		// must use "new" keyword (the code above always passes args)
-		if ( arguments.length ) {
-			this._createWidget( options, element );
-		}
-	};
-	// extend with the existing constructor to carry over any static properties
-	$.extend( constructor, existingConstructor, {
-		version: prototype.version,
-		// copy the object used to create the prototype in case we need to
-		// redefine the widget later
-		_proto: $.extend( {}, prototype ),
-		// track widgets that inherit from this widget in case this widget is
-		// redefined after a widget inherits from it
-		_childConstructors: []
-	});
-
-	basePrototype = new base();
-	// we need to make the options hash a property directly on the new instance
-	// otherwise we'll modify the options hash on the prototype that we're
-	// inheriting from
-	basePrototype.options = $.widget.extend( {}, basePrototype.options );
-	$.each( prototype, function( prop, value ) {
-		if ( !$.isFunction( value ) ) {
-			proxiedPrototype[ prop ] = value;
-			return;
-		}
-		proxiedPrototype[ prop ] = (function() {
-			var _super = function() {
-					return base.prototype[ prop ].apply( this, arguments );
-				},
-				_superApply = function( args ) {
-					return base.prototype[ prop ].apply( this, args );
-				};
-			return function() {
-				var __super = this._super,
-					__superApply = this._superApply,
-					returnValue;
-
-				this._super = _super;
-				this._superApply = _superApply;
-
-				returnValue = value.apply( this, arguments );
-
-				this._super = __super;
-				this._superApply = __superApply;
-
-				return returnValue;
-			};
-		})();
-	});
-	constructor.prototype = $.widget.extend( basePrototype, {
-		// TODO: remove support for widgetEventPrefix
-		// always use the name + a colon as the prefix, e.g., draggable:start
-		// don't prefix for widgets that aren't DOM-based
-		widgetEventPrefix: existingConstructor ? basePrototype.widgetEventPrefix : name
-	}, proxiedPrototype, {
-		constructor: constructor,
-		namespace: namespace,
-		widgetName: name,
-		widgetFullName: fullName
-	});
-
-	// If this widget is being redefined then we need to find all widgets that
-	// are inheriting from it and redefine all of them so that they inherit from
-	// the new version of this widget. We're essentially trying to replace one
-	// level in the prototype chain.
-	if ( existingConstructor ) {
-		$.each( existingConstructor._childConstructors, function( i, child ) {
-			var childPrototype = child.prototype;
-
-			// redefine the child widget using the same prototype that was
-			// originally used, but inherit from the new version of the base
-			$.widget( childPrototype.namespace + "." + childPrototype.widgetName, constructor, child._proto );
-		});
-		// remove the list of existing child constructors from the old constructor
-		// so the old child constructors can be garbage collected
-		delete existingConstructor._childConstructors;
-	} else {
-		base._childConstructors.push( constructor );
-	}
-
-	$.widget.bridge( name, constructor );
-};
-
-$.widget.extend = function( target ) {
-	var input = slice.call( arguments, 1 ),
-		inputIndex = 0,
-		inputLength = input.length,
-		key,
-		value;
-	for ( ; inputIndex < inputLength; inputIndex++ ) {
-		for ( key in input[ inputIndex ] ) {
-			value = input[ inputIndex ][ key ];
-			if ( input[ inputIndex ].hasOwnProperty( key ) && value !== undefined ) {
-				// Clone objects
-				if ( $.isPlainObject( value ) ) {
-					target[ key ] = $.isPlainObject( target[ key ] ) ?
-						$.widget.extend( {}, target[ key ], value ) :
-						// Don't extend strings, arrays, etc. with objects
-						$.widget.extend( {}, value );
-				// Copy everything else by reference
-				} else {
-					target[ key ] = value;
-				}
-			}
-		}
-	}
-	return target;
-};
-
-$.widget.bridge = function( name, object ) {
-	var fullName = object.prototype.widgetFullName || name;
-	$.fn[ name ] = function( options ) {
-		var isMethodCall = typeof options === "string",
-			args = slice.call( arguments, 1 ),
-			returnValue = this;
-
-		// allow multiple hashes to be passed on init
-		options = !isMethodCall && args.length ?
-			$.widget.extend.apply( null, [ options ].concat(args) ) :
-			options;
-
-		if ( isMethodCall ) {
-			this.each(function() {
-				var methodValue,
-					instance = $.data( this, fullName );
-				if ( !instance ) {
-					return $.error( "cannot call methods on " + name + " prior to initialization; " +
-						"attempted to call method '" + options + "'" );
-				}
-				if ( !$.isFunction( instance[options] ) || options.charAt( 0 ) === "_" ) {
-					return $.error( "no such method '" + options + "' for " + name + " widget instance" );
-				}
-				methodValue = instance[ options ].apply( instance, args );
-				if ( methodValue !== instance && methodValue !== undefined ) {
-					returnValue = methodValue && methodValue.jquery ?
-						returnValue.pushStack( methodValue.get() ) :
-						methodValue;
-					return false;
-				}
-			});
-		} else {
-			this.each(function() {
-				var instance = $.data( this, fullName );
-				if ( instance ) {
-					instance.option( options || {} )._init();
-				} else {
-					$.data( this, fullName, new object( options, this ) );
-				}
-			});
-		}
-
-		return returnValue;
-	};
-};
-
-$.Widget = function( /* options, element */ ) {};
-$.Widget._childConstructors = [];
-
-$.Widget.prototype = {
-	widgetName: "widget",
-	widgetEventPrefix: "",
-	defaultElement: "<div>",
-	options: {
-		disabled: false,
-
-		// callbacks
-		create: null
-	},
-	_createWidget: function( options, element ) {
-		element = $( element || this.defaultElement || this )[ 0 ];
-		this.element = $( element );
-		this.uuid = uuid++;
-		this.eventNamespace = "." + this.widgetName + this.uuid;
-		this.options = $.widget.extend( {},
-			this.options,
-			this._getCreateOptions(),
-			options );
-
-		this.bindings = $();
-		this.hoverable = $();
-		this.focusable = $();
-
-		if ( element !== this ) {
-			$.data( element, this.widgetFullName, this );
-			this._on( true, this.element, {
-				remove: function( event ) {
-					if ( event.target === element ) {
-						this.destroy();
-					}
-				}
-			});
-			this.document = $( element.style ?
-				// element within the document
-				element.ownerDocument :
-				// element is window or document
-				element.document || element );
-			this.window = $( this.document[0].defaultView || this.document[0].parentWindow );
-		}
-
-		this._create();
-		this._trigger( "create", null, this._getCreateEventData() );
-		this._init();
-	},
-	_getCreateOptions: $.noop,
-	_getCreateEventData: $.noop,
-	_create: $.noop,
-	_init: $.noop,
-
-	destroy: function() {
-		this._destroy();
-		// we can probably remove the unbind calls in 2.0
-		// all event bindings should go through this._on()
-		this.element
-			.unbind( this.eventNamespace )
-			// 1.9 BC for #7810
-			// TODO remove dual storage
-			.removeData( this.widgetName )
-			.removeData( this.widgetFullName )
-			// support: jquery <1.6.3
-			// http://bugs.jquery.com/ticket/9413
-			.removeData( $.camelCase( this.widgetFullName ) );
-		this.widget()
-			.unbind( this.eventNamespace )
-			.removeAttr( "aria-disabled" )
-			.removeClass(
-				this.widgetFullName + "-disabled " +
-				"ui-state-disabled" );
-
-		// clean up events and states
-		this.bindings.unbind( this.eventNamespace );
-		this.hoverable.removeClass( "ui-state-hover" );
-		this.focusable.removeClass( "ui-state-focus" );
-	},
-	_destroy: $.noop,
-
-	widget: function() {
-		return this.element;
-	},
-
-	option: function( key, value ) {
-		var options = key,
-			parts,
-			curOption,
-			i;
-
-		if ( arguments.length === 0 ) {
-			// don't return a reference to the internal hash
-			return $.widget.extend( {}, this.options );
-		}
-
-		if ( typeof key === "string" ) {
-			// handle nested keys, e.g., "foo.bar" => { foo: { bar: ___ } }
-			options = {};
-			parts = key.split( "." );
-			key = parts.shift();
-			if ( parts.length ) {
-				curOption = options[ key ] = $.widget.extend( {}, this.options[ key ] );
-				for ( i = 0; i < parts.length - 1; i++ ) {
-					curOption[ parts[ i ] ] = curOption[ parts[ i ] ] || {};
-					curOption = curOption[ parts[ i ] ];
-				}
-				key = parts.pop();
-				if ( value === undefined ) {
-					return curOption[ key ] === undefined ? null : curOption[ key ];
-				}
-				curOption[ key ] = value;
-			} else {
-				if ( value === undefined ) {
-					return this.options[ key ] === undefined ? null : this.options[ key ];
-				}
-				options[ key ] = value;
-			}
-		}
-
-		this._setOptions( options );
-
-		return this;
-	},
-	_setOptions: function( options ) {
-		var key;
-
-		for ( key in options ) {
-			this._setOption( key, options[ key ] );
-		}
-
-		return this;
-	},
-	_setOption: function( key, value ) {
-		this.options[ key ] = value;
-
-		if ( key === "disabled" ) {
-			this.widget()
-				.toggleClass( this.widgetFullName + "-disabled ui-state-disabled", !!value )
-				.attr( "aria-disabled", value );
-			this.hoverable.removeClass( "ui-state-hover" );
-			this.focusable.removeClass( "ui-state-focus" );
-		}
-
-		return this;
-	},
-
-	enable: function() {
-		return this._setOption( "disabled", false );
-	},
-	disable: function() {
-		return this._setOption( "disabled", true );
-	},
-
-	_on: function( suppressDisabledCheck, element, handlers ) {
-		var delegateElement,
-			instance = this;
-
-		// no suppressDisabledCheck flag, shuffle arguments
-		if ( typeof suppressDisabledCheck !== "boolean" ) {
-			handlers = element;
-			element = suppressDisabledCheck;
-			suppressDisabledCheck = false;
-		}
-
-		// no element argument, shuffle and use this.element
-		if ( !handlers ) {
-			handlers = element;
-			element = this.element;
-			delegateElement = this.widget();
-		} else {
-			// accept selectors, DOM elements
-			element = delegateElement = $( element );
-			this.bindings = this.bindings.add( element );
-		}
-
-		$.each( handlers, function( event, handler ) {
-			function handlerProxy() {
-				// allow widgets to customize the disabled handling
-				// - disabled as an array instead of boolean
-				// - disabled class as method for disabling individual parts
-				if ( !suppressDisabledCheck &&
-						( instance.options.disabled === true ||
-							$( this ).hasClass( "ui-state-disabled" ) ) ) {
-					return;
-				}
-				return ( typeof handler === "string" ? instance[ handler ] : handler )
-					.apply( instance, arguments );
-			}
-
-			// copy the guid so direct unbinding works
-			if ( typeof handler !== "string" ) {
-				handlerProxy.guid = handler.guid =
-					handler.guid || handlerProxy.guid || $.guid++;
-			}
-
-			var match = event.match( /^(\w+)\s*(.*)$/ ),
-				eventName = match[1] + instance.eventNamespace,
-				selector = match[2];
-			if ( selector ) {
-				delegateElement.delegate( selector, eventName, handlerProxy );
-			} else {
-				element.bind( eventName, handlerProxy );
-			}
-		});
-	},
-
-	_off: function( element, eventName ) {
-		eventName = (eventName || "").split( " " ).join( this.eventNamespace + " " ) + this.eventNamespace;
-		element.unbind( eventName ).undelegate( eventName );
-	},
-
-	_delay: function( handler, delay ) {
-		function handlerProxy() {
-			return ( typeof handler === "string" ? instance[ handler ] : handler )
-				.apply( instance, arguments );
-		}
-		var instance = this;
-		return setTimeout( handlerProxy, delay || 0 );
-	},
-
-	_hoverable: function( element ) {
-		this.hoverable = this.hoverable.add( element );
-		this._on( element, {
-			mouseenter: function( event ) {
-				$( event.currentTarget ).addClass( "ui-state-hover" );
-			},
-			mouseleave: function( event ) {
-				$( event.currentTarget ).removeClass( "ui-state-hover" );
-			}
-		});
-	},
-
-	_focusable: function( element ) {
-		this.focusable = this.focusable.add( element );
-		this._on( element, {
-			focusin: function( event ) {
-				$( event.currentTarget ).addClass( "ui-state-focus" );
-			},
-			focusout: function( event ) {
-				$( event.currentTarget ).removeClass( "ui-state-focus" );
-			}
-		});
-	},
-
-	_trigger: function( type, event, data ) {
-		var prop, orig,
-			callback = this.options[ type ];
-
-		data = data || {};
-		event = $.Event( event );
-		event.type = ( type === this.widgetEventPrefix ?
-			type :
-			this.widgetEventPrefix + type ).toLowerCase();
-		// the original event may come from any element
-		// so we need to reset the target on the new event
-		event.target = this.element[ 0 ];
-
-		// copy original event properties over to the new event
-		orig = event.originalEvent;
-		if ( orig ) {
-			for ( prop in orig ) {
-				if ( !( prop in event ) ) {
-					event[ prop ] = orig[ prop ];
-				}
-			}
-		}
-
-		this.element.trigger( event, data );
-		return !( $.isFunction( callback ) &&
-			callback.apply( this.element[0], [ event ].concat( data ) ) === false ||
-			event.isDefaultPrevented() );
-	}
-};
-
-$.each( { show: "fadeIn", hide: "fadeOut" }, function( method, defaultEffect ) {
-	$.Widget.prototype[ "_" + method ] = function( element, options, callback ) {
-		if ( typeof options === "string" ) {
-			options = { effect: options };
-		}
-		var hasOptions,
-			effectName = !options ?
-				method :
-				options === true || typeof options === "number" ?
-					defaultEffect :
-					options.effect || defaultEffect;
-		options = options || {};
-		if ( typeof options === "number" ) {
-			options = { duration: options };
-		}
-		hasOptions = !$.isEmptyObject( options );
-		options.complete = callback;
-		if ( options.delay ) {
-			element.delay( options.delay );
-		}
-		if ( hasOptions && $.effects && $.effects.effect[ effectName ] ) {
-			element[ method ]( options );
-		} else if ( effectName !== method && element[ effectName ] ) {
-			element[ effectName ]( options.duration, options.easing, callback );
-		} else {
-			element.queue(function( next ) {
-				$( this )[ method ]();
-				if ( callback ) {
-					callback.call( element[ 0 ] );
-				}
-				next();
-			});
-		}
-	};
-});
-
-}));
-
-/*
- * jQuery File Upload Plugin 5.10.0
- * https://github.com/blueimp/jQuery-File-Upload
- *
- * Copyright 2010, Sebastian Tschan
- * https://blueimp.net
- *
- * Licensed under the MIT license:
- * http://www.opensource.org/licenses/MIT
- */
-
-/*jslint nomen: true, unparam: true, regexp: true */
-/*global define, window, document, Blob, FormData, location */
-
-(function (factory) {
-    'use strict';
-    if (typeof define === 'function' && define.amd) {
-        // Register as an anonymous AMD module:
-        define('jquery.fileupload',[
-            'jquery',
-            'jquery.ui.widget'
-        ], factory);
-    } else {
-        // Browser globals:
-        factory(window.jQuery);
-    }
-}(function ($) {
-    'use strict';
-
-    // The FileReader API is not actually used, but works as feature detection,
-    // as e.g. Safari supports XHR file uploads via the FormData API,
-    // but not non-multipart XHR file uploads:
-    $.support.xhrFileUpload = !!(window.XMLHttpRequestUpload && window.FileReader);
-    $.support.xhrFormDataFileUpload = !!window.FormData;
-
-    // The fileupload widget listens for change events on file input fields defined
-    // via fileInput setting and paste or drop events of the given dropZone.
-    // In addition to the default jQuery Widget methods, the fileupload widget
-    // exposes the "add" and "send" methods, to add or directly send files using
-    // the fileupload API.
-    // By default, files added via file input selection, paste, drag & drop or
-    // "add" method are uploaded immediately, but it is possible to override
-    // the "add" callback option to queue file uploads.
-    $.widget('blueimp.fileupload', {
-
-        options: {
-            // The namespace used for event handler binding on the dropZone and
-            // fileInput collections.
-            // If not set, the name of the widget ("fileupload") is used.
-            namespace: undefined,
-            // The drop target collection, by the default the complete document.
-            // Set to null or an empty collection to disable drag & drop support:
-            dropZone: $(document),
-            // The file input field collection, that is listened for change events.
-            // If undefined, it is set to the file input fields inside
-            // of the widget element on plugin initialization.
-            // Set to null or an empty collection to disable the change listener.
-            fileInput: undefined,
-            // By default, the file input field is replaced with a clone after
-            // each input field change event. This is required for iframe transport
-            // queues and allows change events to be fired for the same file
-            // selection, but can be disabled by setting the following option to false:
-            replaceFileInput: true,
-            // The parameter name for the file form data (the request argument name).
-            // If undefined or empty, the name property of the file input field is
-            // used, or "files[]" if the file input name property is also empty,
-            // can be a string or an array of strings:
-            paramName: undefined,
-            // By default, each file of a selection is uploaded using an individual
-            // request for XHR type uploads. Set to false to upload file
-            // selections in one request each:
-            singleFileUploads: true,
-            // To limit the number of files uploaded with one XHR request,
-            // set the following option to an integer greater than 0:
-            limitMultiFileUploads: undefined,
-            // Set the following option to true to issue all file upload requests
-            // in a sequential order:
-            sequentialUploads: false,
-            // To limit the number of concurrent uploads,
-            // set the following option to an integer greater than 0:
-            limitConcurrentUploads: undefined,
-            // Set the following option to true to force iframe transport uploads:
-            forceIframeTransport: false,
-            // Set the following option to the location of a redirect url on the
-            // origin server, for cross-domain iframe transport uploads:
-            redirect: undefined,
-            // The parameter name for the redirect url, sent as part of the form
-            // data and set to 'redirect' if this option is empty:
-            redirectParamName: undefined,
-            // Set the following option to the location of a postMessage window,
-            // to enable postMessage transport uploads:
-            postMessage: undefined,
-            // By default, XHR file uploads are sent as multipart/form-data.
-            // The iframe transport is always using multipart/form-data.
-            // Set to false to enable non-multipart XHR uploads:
-            multipart: true,
-            // To upload large files in smaller chunks, set the following option
-            // to a preferred maximum chunk size. If set to 0, null or undefined,
-            // or the browser does not support the required Blob API, files will
-            // be uploaded as a whole.
-            maxChunkSize: undefined,
-            // When a non-multipart upload or a chunked multipart upload has been
-            // aborted, this option can be used to resume the upload by setting
-            // it to the size of the already uploaded bytes. This option is most
-            // useful when modifying the options object inside of the "add" or
-            // "send" callbacks, as the options are cloned for each file upload.
-            uploadedBytes: undefined,
-            // By default, failed (abort or error) file uploads are removed from the
-            // global progress calculation. Set the following option to false to
-            // prevent recalculating the global progress data:
-            recalculateProgress: true,
-
-            // Additional form data to be sent along with the file uploads can be set
-            // using this option, which accepts an array of objects with name and
-            // value properties, a function returning such an array, a FormData
-            // object (for XHR file uploads), or a simple object.
-            // The form of the first fileInput is given as parameter to the function:
-            formData: function (form) {
-                return form.serializeArray();
-            },
-
-            // The add callback is invoked as soon as files are added to the fileupload
-            // widget (via file input selection, drag & drop, paste or add API call).
-            // If the singleFileUploads option is enabled, this callback will be
-            // called once for each file in the selection for XHR file uplaods, else
-            // once for each file selection.
-            // The upload starts when the submit method is invoked on the data parameter.
-            // The data object contains a files property holding the added files
-            // and allows to override plugin options as well as define ajax settings.
-            // Listeners for this callback can also be bound the following way:
-            // .bind('fileuploadadd', func);
-            // data.submit() returns a Promise object and allows to attach additional
-            // handlers using jQuery's Deferred callbacks:
-            // data.submit().done(func).fail(func).always(func);
-            add: function (e, data) {
-                data.submit();
-            },
-
-            // Other callbacks:
-            // Callback for the submit event of each file upload:
-            // submit: function (e, data) {}, // .bind('fileuploadsubmit', func);
-            // Callback for the start of each file upload request:
-            // send: function (e, data) {}, // .bind('fileuploadsend', func);
-            // Callback for successful uploads:
-            // done: function (e, data) {}, // .bind('fileuploaddone', func);
-            // Callback for failed (abort or error) uploads:
-            // fail: function (e, data) {}, // .bind('fileuploadfail', func);
-            // Callback for completed (success, abort or error) requests:
-            // always: function (e, data) {}, // .bind('fileuploadalways', func);
-            // Callback for upload progress events:
-            // progress: function (e, data) {}, // .bind('fileuploadprogress', func);
-            // Callback for global upload progress events:
-            // progressall: function (e, data) {}, // .bind('fileuploadprogressall', func);
-            // Callback for uploads start, equivalent to the global ajaxStart event:
-            // start: function (e) {}, // .bind('fileuploadstart', func);
-            // Callback for uploads stop, equivalent to the global ajaxStop event:
-            // stop: function (e) {}, // .bind('fileuploadstop', func);
-            // Callback for change events of the fileInput collection:
-            // change: function (e, data) {}, // .bind('fileuploadchange', func);
-            // Callback for paste events to the dropZone collection:
-            // paste: function (e, data) {}, // .bind('fileuploadpaste', func);
-            // Callback for drop events of the dropZone collection:
-            // drop: function (e, data) {}, // .bind('fileuploaddrop', func);
-            // Callback for dragover events of the dropZone collection:
-            // dragover: function (e) {}, // .bind('fileuploaddragover', func);
-
-            // The plugin options are used as settings object for the ajax calls.
-            // The following are jQuery ajax settings required for the file uploads:
-            processData: false,
-            contentType: false,
-            cache: false
-        },
-
-        // A list of options that require a refresh after assigning a new value:
-        _refreshOptionsList: [
-            'namespace',
-            'dropZone',
-            'fileInput',
-            'multipart',
-            'forceIframeTransport'
-        ],
-
-        _isXHRUpload: function (options) {
-            return !options.forceIframeTransport &&
-                ((!options.multipart && $.support.xhrFileUpload) ||
-                $.support.xhrFormDataFileUpload);
-        },
-
-        _getFormData: function (options) {
-            var formData;
-            if (typeof options.formData === 'function') {
-                return options.formData(options.form);
-            } else if ($.isArray(options.formData)) {
-                return options.formData;
-            } else if (options.formData) {
-                formData = [];
-                $.each(options.formData, function (name, value) {
-                    formData.push({name: name, value: value});
-                });
-                return formData;
-            }
-            return [];
-        },
-
-        _getTotal: function (files) {
-            var total = 0;
-            $.each(files, function (index, file) {
-                total += file.size || 1;
-            });
-            return total;
-        },
-
-        _onProgress: function (e, data) {
-            if (e.lengthComputable) {
-                var total = data.total || this._getTotal(data.files),
-                    loaded = parseInt(
-                        e.loaded / e.total * (data.chunkSize || total),
-                        10
-                    ) + (data.uploadedBytes || 0);
-                this._loaded += loaded - (data.loaded || data.uploadedBytes || 0);
-                data.lengthComputable = true;
-                data.loaded = loaded;
-                data.total = total;
-                // Trigger a custom progress event with a total data property set
-                // to the file size(s) of the current upload and a loaded data
-                // property calculated accordingly:
-                this._trigger('progress', e, data);
-                // Trigger a global progress event for all current file uploads,
-                // including ajax calls queued for sequential file uploads:
-                this._trigger('progressall', e, {
-                    lengthComputable: true,
-                    loaded: this._loaded,
-                    total: this._total
-                });
-            }
-        },
-
-        _initProgressListener: function (options) {
-            var that = this,
-                xhr = options.xhr ? options.xhr() : $.ajaxSettings.xhr();
-            // Accesss to the native XHR object is required to add event listeners
-            // for the upload progress event:
-            if (xhr.upload) {
-                $(xhr.upload).bind('progress', function (e) {
-                    var oe = e.originalEvent;
-                    // Make sure the progress event properties get copied over:
-                    e.lengthComputable = oe.lengthComputable;
-                    e.loaded = oe.loaded;
-                    e.total = oe.total;
-                    that._onProgress(e, options);
-                });
-                options.xhr = function () {
-                    return xhr;
-                };
-            }
-        },
-
-        _initXHRData: function (options) {
-            var formData,
-                file = options.files[0],
-                // Ignore non-multipart setting if not supported:
-                multipart = options.multipart || !$.support.xhrFileUpload,
-                paramName = options.paramName[0];
-            if (!multipart || options.blob) {
-                // For non-multipart uploads and chunked uploads,
-                // file meta data is not part of the request body,
-                // so we transmit this data as part of the HTTP headers.
-                // For cross domain requests, these headers must be allowed
-                // via Access-Control-Allow-Headers or removed using
-                // the beforeSend callback:
-                options.headers = $.extend(options.headers, {
-                    'X-File-Name': file.name,
-                    'X-File-Type': file.type,
-                    'X-File-Size': file.size
-                });
-                if (!options.blob) {
-                    // Non-chunked non-multipart upload:
-                    options.contentType = file.type;
-                    options.data = file;
-                } else if (!multipart) {
-                    // Chunked non-multipart upload:
-                    options.contentType = 'application/octet-stream';
-                    options.data = options.blob;
-                }
-            }
-            if (multipart && $.support.xhrFormDataFileUpload) {
-                if (options.postMessage) {
-                    // window.postMessage does not allow sending FormData
-                    // objects, so we just add the File/Blob objects to
-                    // the formData array and let the postMessage window
-                    // create the FormData object out of this array:
-                    formData = this._getFormData(options);
-                    if (options.blob) {
-                        formData.push({
-                            name: paramName,
-                            value: options.blob
-                        });
-                    } else {
-                        $.each(options.files, function (index, file) {
-                            formData.push({
-                                name: options.paramName[index] || paramName,
-                                value: file
-                            });
-                        });
-                    }
-                } else {
-                    if (options.formData instanceof FormData) {
-                        formData = options.formData;
-                    } else {
-                        formData = new FormData();
-                        $.each(this._getFormData(options), function (index, field) {
-                            formData.append(field.name, field.value);
-                        });
-                    }
-                    if (options.blob) {
-                        formData.append(paramName, options.blob, file.name);
-                    } else {
-                        $.each(options.files, function (index, file) {
-                            // File objects are also Blob instances.
-                            // This check allows the tests to run with
-                            // dummy objects:
-                            if (file instanceof Blob) {
-                                formData.append(
-                                    options.paramName[index] || paramName,
-                                    file,
-                                    file.name
-                                );
-                            }
-                        });
-                    }
-                }
-                options.data = formData;
-            }
-            // Blob reference is not needed anymore, free memory:
-            options.blob = null;
-        },
-
-        _initIframeSettings: function (options) {
-            // Setting the dataType to iframe enables the iframe transport:
-            options.dataType = 'iframe ' + (options.dataType || '');
-            // The iframe transport accepts a serialized array as form data:
-            options.formData = this._getFormData(options);
-            // Add redirect url to form data on cross-domain uploads:
-            if (options.redirect && $('<a></a>').prop('href', options.url)
-                    .prop('host') !== location.host) {
-                options.formData.push({
-                    name: options.redirectParamName || 'redirect',
-                    value: options.redirect
-                });
-            }
-        },
-
-        _initDataSettings: function (options) {
-            if (this._isXHRUpload(options)) {
-                if (!this._chunkedUpload(options, true)) {
-                    if (!options.data) {
-                        this._initXHRData(options);
-                    }
-                    this._initProgressListener(options);
-                }
-                if (options.postMessage) {
-                    // Setting the dataType to postmessage enables the
-                    // postMessage transport:
-                    options.dataType = 'postmessage ' + (options.dataType || '');
-                }
-            } else {
-                this._initIframeSettings(options, 'iframe');
-            }
-        },
-
-        _getParamName: function (options) {
-            var fileInput = $(options.fileInput),
-                paramName = options.paramName;
-            if (!paramName) {
-                paramName = [];
-                fileInput.each(function () {
-                    var input = $(this),
-                        name = input.prop('name') || 'files[]',
-                        i = (input.prop('files') || [1]).length;
-                    while (i) {
-                        paramName.push(name);
-                        i -= 1;
-                    }
-                });
-                if (!paramName.length) {
-                    paramName = [fileInput.prop('name') || 'files[]'];
-                }
-            } else if (!$.isArray(paramName)) {
-                paramName = [paramName];
-            }
-            return paramName;
-        },
-
-        _initFormSettings: function (options) {
-            // Retrieve missing options from the input field and the
-            // associated form, if available:
-            if (!options.form || !options.form.length) {
-                options.form = $(options.fileInput.prop('form'));
-            }
-            options.paramName = this._getParamName(options);
-            if (!options.url) {
-                options.url = options.form.prop('action') || location.href;
-            }
-            // The HTTP request method must be "POST" or "PUT":
-            options.type = (options.type || options.form.prop('method') || '')
-                .toUpperCase();
-            if (options.type !== 'POST' && options.type !== 'PUT') {
-                options.type = 'POST';
-            }
-        },
-
-        _getAJAXSettings: function (data) {
-            var options = $.extend({}, this.options, data);
-            this._initFormSettings(options);
-            this._initDataSettings(options);
-            return options;
-        },
-
-        // Maps jqXHR callbacks to the equivalent
-        // methods of the given Promise object:
-        _enhancePromise: function (promise) {
-            promise.success = promise.done;
-            promise.error = promise.fail;
-            promise.complete = promise.always;
-            return promise;
-        },
-
-        // Creates and returns a Promise object enhanced with
-        // the jqXHR methods abort, success, error and complete:
-        _getXHRPromise: function (resolveOrReject, context, args) {
-            var dfd = $.Deferred(),
-                promise = dfd.promise();
-            context = context || this.options.context || promise;
-            if (resolveOrReject === true) {
-                dfd.resolveWith(context, args);
-            } else if (resolveOrReject === false) {
-                dfd.rejectWith(context, args);
-            }
-            promise.abort = dfd.promise;
-            return this._enhancePromise(promise);
-        },
-
-        // Uploads a file in multiple, sequential requests
-        // by splitting the file up in multiple blob chunks.
-        // If the second parameter is true, only tests if the file
-        // should be uploaded in chunks, but does not invoke any
-        // upload requests:
-        _chunkedUpload: function (options, testOnly) {
-            var that = this,
-                file = options.files[0],
-                fs = file.size,
-                ub = options.uploadedBytes = options.uploadedBytes || 0,
-                mcs = options.maxChunkSize || fs,
-                // Use the Blob methods with the slice implementation
-                // according to the W3C Blob API specification:
-                slice = file.webkitSlice || file.mozSlice || file.slice,
-                upload,
-                n,
-                jqXHR,
-                pipe;
-            if (!(this._isXHRUpload(options) && slice && (ub || mcs < fs)) ||
-                    options.data) {
-                return false;
-            }
-            if (testOnly) {
-                return true;
-            }
-            if (ub >= fs) {
-                file.error = 'uploadedBytes';
-                return this._getXHRPromise(
-                    false,
-                    options.context,
-                    [null, 'error', file.error]
-                );
-            }
-            // n is the number of blobs to upload,
-            // calculated via filesize, uploaded bytes and max chunk size:
-            n = Math.ceil((fs - ub) / mcs);
-            // The chunk upload method accepting the chunk number as parameter:
-            upload = function (i) {
-                if (!i) {
-                    return that._getXHRPromise(true, options.context);
-                }
-                // Upload the blobs in sequential order:
-                return upload(i -= 1).pipe(function () {
-                    // Clone the options object for each chunk upload:
-                    var o = $.extend({}, options);
-                    o.blob = slice.call(
-                        file,
-                        ub + i * mcs,
-                        ub + (i + 1) * mcs
-                    );
-                    // Store the current chunk size, as the blob itself
-                    // will be dereferenced after data processing:
-                    o.chunkSize = o.blob.size;
-                    // Process the upload data (the blob and potential form data):
-                    that._initXHRData(o);
-                    // Add progress listeners for this chunk upload:
-                    that._initProgressListener(o);
-                    jqXHR = ($.ajax(o) || that._getXHRPromise(false, o.context))
-                        .done(function () {
-                            // Create a progress event if upload is done and
-                            // no progress event has been invoked for this chunk:
-                            if (!o.loaded) {
-                                that._onProgress($.Event('progress', {
-                                    lengthComputable: true,
-                                    loaded: o.chunkSize,
-                                    total: o.chunkSize
-                                }), o);
-                            }
-                            options.uploadedBytes = o.uploadedBytes +=
-                                o.chunkSize;
-                        });
-                    return jqXHR;
-                });
-            };
-            // Return the piped Promise object, enhanced with an abort method,
-            // which is delegated to the jqXHR object of the current upload,
-            // and jqXHR callbacks mapped to the equivalent Promise methods:
-            pipe = upload(n);
-            pipe.abort = function () {
-                return jqXHR.abort();
-            };
-            return this._enhancePromise(pipe);
-        },
-
-        _beforeSend: function (e, data) {
-            if (this._active === 0) {
-                // the start callback is triggered when an upload starts
-                // and no other uploads are currently running,
-                // equivalent to the global ajaxStart event:
-                this._trigger('start');
-            }
-            this._active += 1;
-            // Initialize the global progress values:
-            this._loaded += data.uploadedBytes || 0;
-            this._total += this._getTotal(data.files);
-        },
-
-        _onDone: function (result, textStatus, jqXHR, options) {
-            if (!this._isXHRUpload(options)) {
-                // Create a progress event for each iframe load:
-                this._onProgress($.Event('progress', {
-                    lengthComputable: true,
-                    loaded: 1,
-                    total: 1
-                }), options);
-            }
-            options.result = result;
-            options.textStatus = textStatus;
-            options.jqXHR = jqXHR;
-            this._trigger('done', null, options);
-        },
-
-        _onFail: function (jqXHR, textStatus, errorThrown, options) {
-            options.jqXHR = jqXHR;
-            options.textStatus = textStatus;
-            options.errorThrown = errorThrown;
-            this._trigger('fail', null, options);
-            if (options.recalculateProgress) {
-                // Remove the failed (error or abort) file upload from
-                // the global progress calculation:
-                this._loaded -= options.loaded || options.uploadedBytes || 0;
-                this._total -= options.total || this._getTotal(options.files);
-            }
-        },
-
-        _onAlways: function (jqXHRorResult, textStatus, jqXHRorError, options) {
-            this._active -= 1;
-            options.textStatus = textStatus;
-            if (jqXHRorError && jqXHRorError.always) {
-                options.jqXHR = jqXHRorError;
-                options.result = jqXHRorResult;
-            } else {
-                options.jqXHR = jqXHRorResult;
-                options.errorThrown = jqXHRorError;
-            }
-            this._trigger('always', null, options);
-            if (this._active === 0) {
-                // The stop callback is triggered when all uploads have
-                // been completed, equivalent to the global ajaxStop event:
-                this._trigger('stop');
-                // Reset the global progress values:
-                this._loaded = this._total = 0;
-            }
-        },
-
-        _onSend: function (e, data) {
-            var that = this,
-                jqXHR,
-                slot,
-                pipe,
-                options = that._getAJAXSettings(data),
-                send = function (resolve, args) {
-                    that._sending += 1;
-                    jqXHR = jqXHR || (
-                        (resolve !== false &&
-                        that._trigger('send', e, options) !== false &&
-                        (that._chunkedUpload(options) || $.ajax(options))) ||
-                        that._getXHRPromise(false, options.context, args)
-                    ).done(function (result, textStatus, jqXHR) {
-                        that._onDone(result, textStatus, jqXHR, options);
-                    }).fail(function (jqXHR, textStatus, errorThrown) {
-                        that._onFail(jqXHR, textStatus, errorThrown, options);
-                    }).always(function (jqXHRorResult, textStatus, jqXHRorError) {
-                        that._sending -= 1;
-                        that._onAlways(
-                            jqXHRorResult,
-                            textStatus,
-                            jqXHRorError,
-                            options
-                        );
-                        if (options.limitConcurrentUploads &&
-                                options.limitConcurrentUploads > that._sending) {
-                            // Start the next queued upload,
-                            // that has not been aborted:
-                            var nextSlot = that._slots.shift();
-                            while (nextSlot) {
-                                if (!nextSlot.isRejected()) {
-                                    nextSlot.resolve();
-                                    break;
-                                }
-                                nextSlot = that._slots.shift();
-                            }
-                        }
-                    });
-                    return jqXHR;
-                };
-            this._beforeSend(e, options);
-            if (this.options.sequentialUploads ||
-                    (this.options.limitConcurrentUploads &&
-                    this.options.limitConcurrentUploads <= this._sending)) {
-                if (this.options.limitConcurrentUploads > 1) {
-                    slot = $.Deferred();
-                    this._slots.push(slot);
-                    pipe = slot.pipe(send);
-                } else {
-                    pipe = (this._sequence = this._sequence.pipe(send, send));
-                }
-                // Return the piped Promise object, enhanced with an abort method,
-                // which is delegated to the jqXHR object of the current upload,
-                // and jqXHR callbacks mapped to the equivalent Promise methods:
-                pipe.abort = function () {
-                    var args = [undefined, 'abort', 'abort'];
-                    if (!jqXHR) {
-                        if (slot) {
-                            slot.rejectWith(args);
-                        }
-                        return send(false, args);
-                    }
-                    return jqXHR.abort();
-                };
-                return this._enhancePromise(pipe);
-            }
-            return send();
-        },
-
-        _onAdd: function (e, data) {
-            var that = this,
-                result = true,
-                options = $.extend({}, this.options, data),
-                limit = options.limitMultiFileUploads,
-                paramName = this._getParamName(options),
-                paramNameSet,
-                paramNameSlice,
-                fileSet,
-                i;
-            if (!(options.singleFileUploads || limit) ||
-                    !this._isXHRUpload(options)) {
-                fileSet = [data.files];
-                paramNameSet = [paramName];
-            } else if (!options.singleFileUploads && limit) {
-                fileSet = [];
-                paramNameSet = [];
-                for (i = 0; i < data.files.length; i += limit) {
-                    fileSet.push(data.files.slice(i, i + limit));
-                    paramNameSlice = paramName.slice(i, i + limit);
-                    if (!paramNameSlice.length) {
-                        paramNameSlice = paramName;
-                    }
-                    paramNameSet.push(paramNameSlice);
-                }
-            } else {
-                paramNameSet = paramName;
-            }
-            data.originalFiles = data.files;
-            $.each(fileSet || data.files, function (index, element) {
-                var newData = $.extend({}, data);
-                newData.files = fileSet ? element : [element];
-                newData.paramName = paramNameSet[index];
-                newData.submit = function () {
-                    newData.jqXHR = this.jqXHR =
-                        (that._trigger('submit', e, this) !== false) &&
-                        that._onSend(e, this);
-                    return this.jqXHR;
-                };
-                return (result = that._trigger('add', e, newData));
-            });
-            return result;
-        },
-
-        // File Normalization for Gecko 1.9.1 (Firefox 3.5) support:
-        _normalizeFile: function (index, file) {
-            if (file.name === undefined && file.size === undefined) {
-                file.name = file.fileName;
-                file.size = file.fileSize;
-            }
-        },
-
-        _replaceFileInput: function (input) {
-            var inputClone = input.clone(true);
-            $('<form></form>').append(inputClone)[0].reset();
-            // Detaching allows to insert the fileInput on another form
-            // without loosing the file input value:
-            input.after(inputClone).detach();
-            // Avoid memory leaks with the detached file input:
-            $.cleanData(input.unbind('remove'));
-            // Replace the original file input element in the fileInput
-            // collection with the clone, which has been copied including
-            // event handlers:
-            this.options.fileInput = this.options.fileInput.map(function (i, el) {
-                if (el === input[0]) {
-                    return inputClone[0];
-                }
-                return el;
-            });
-            // If the widget has been initialized on the file input itself,
-            // override this.element with the file input clone:
-            if (input[0] === this.element[0]) {
-                this.element = inputClone;
-            }
-        },
-
-        _onChange: function (e) {
-            var that = e.data.fileupload,
-                data = {
-                    files: $.each($.makeArray(e.target.files), that._normalizeFile),
-                    fileInput: $(e.target),
-                    form: $(e.target.form)
-                };
-            if (!data.files.length) {
-                // If the files property is not available, the browser does not
-                // support the File API and we add a pseudo File object with
-                // the input value as name with path information removed:
-                data.files = [{name: e.target.value.replace(/^.*\\/, '')}];
-            }
-            if (that.options.replaceFileInput) {
-                that._replaceFileInput(data.fileInput);
-            }
-            if (that._trigger('change', e, data) === false ||
-                    that._onAdd(e, data) === false) {
-                return false;
-            }
-        },
-
-        _onPaste: function (e) {
-            var that = e.data.fileupload,
-                cbd = e.originalEvent.clipboardData,
-                items = (cbd && cbd.items) || [],
-                data = {files: []};
-            $.each(items, function (index, item) {
-                var file = item.getAsFile && item.getAsFile();
-                if (file) {
-                    data.files.push(file);
-                }
-            });
-            if (that._trigger('paste', e, data) === false ||
-                    that._onAdd(e, data) === false) {
-                return false;
-            }
-        },
-
-        _onDrop: function (e) {
-            var that = e.data.fileupload,
-                dataTransfer = e.dataTransfer = e.originalEvent.dataTransfer,
-                data = {
-                    files: $.each(
-                        $.makeArray(dataTransfer && dataTransfer.files),
-                        that._normalizeFile
-                    )
-                };
-            if (that._trigger('drop', e, data) === false ||
-                    that._onAdd(e, data) === false) {
-                return false;
-            }
-            e.preventDefault();
-        },
-
-        _onDragOver: function (e) {
-            var that = e.data.fileupload,
-                dataTransfer = e.dataTransfer = e.originalEvent.dataTransfer;
-            if (that._trigger('dragover', e) === false) {
-                return false;
-            }
-            if (dataTransfer) {
-                dataTransfer.dropEffect = dataTransfer.effectAllowed = 'copy';
-            }
-            e.preventDefault();
-        },
-
-        _initEventHandlers: function () {
-            var ns = this.options.namespace;
-            if (this._isXHRUpload(this.options)) {
-                this.options.dropZone
-                    .bind('dragover.' + ns, {fileupload: this}, this._onDragOver)
-                    .bind('drop.' + ns, {fileupload: this}, this._onDrop)
-                    .bind('paste.' + ns, {fileupload: this}, this._onPaste);
-            }
-            this.options.fileInput
-                .bind('change.' + ns, {fileupload: this}, this._onChange);
-        },
-
-        _destroyEventHandlers: function () {
-            var ns = this.options.namespace;
-            this.options.dropZone
-                .unbind('dragover.' + ns, this._onDragOver)
-                .unbind('drop.' + ns, this._onDrop)
-                .unbind('paste.' + ns, this._onPaste);
-            this.options.fileInput
-                .unbind('change.' + ns, this._onChange);
-        },
-
-        _setOption: function (key, value) {
-            var refresh = $.inArray(key, this._refreshOptionsList) !== -1;
-            if (refresh) {
-                this._destroyEventHandlers();
-            }
-            $.Widget.prototype._setOption.call(this, key, value);
-            if (refresh) {
-                this._initSpecialOptions();
-                this._initEventHandlers();
-            }
-        },
-
-        _initSpecialOptions: function () {
-            var options = this.options;
-            if (options.fileInput === undefined) {
-                options.fileInput = this.element.is('input:file') ?
-                        this.element : this.element.find('input:file');
-            } else if (!(options.fileInput instanceof $)) {
-                options.fileInput = $(options.fileInput);
-            }
-            if (!(options.dropZone instanceof $)) {
-                options.dropZone = $(options.dropZone);
-            }
-        },
-
-        _create: function () {
-            var options = this.options,
-                dataOpts = $.extend({}, this.element.data());
-            dataOpts[this.widgetName] = undefined;
-            $.extend(options, dataOpts);
-            options.namespace = options.namespace || this.widgetName;
-            this._initSpecialOptions();
-            this._slots = [];
-            this._sequence = this._getXHRPromise(true);
-            this._sending = this._active = this._loaded = this._total = 0;
-            this._initEventHandlers();
-        },
-
-        destroy: function () {
-            this._destroyEventHandlers();
-            $.Widget.prototype.destroy.call(this);
-        },
-
-        enable: function () {
-            $.Widget.prototype.enable.call(this);
-            this._initEventHandlers();
-        },
-
-        disable: function () {
-            this._destroyEventHandlers();
-            $.Widget.prototype.disable.call(this);
-        },
-
-        // This method is exposed to the widget API and allows adding files
-        // using the fileupload API. The data parameter accepts an object which
-        // must have a files property and can contain additional options:
-        // .fileupload('add', {files: filesList});
-        add: function (data) {
-            if (!data || this.options.disabled) {
-                return;
-            }
-            data.files = $.each($.makeArray(data.files), this._normalizeFile);
-            this._onAdd(null, data);
-        },
-
-        // This method is exposed to the widget API and allows sending files
-        // using the fileupload API. The data parameter accepts an object which
-        // must have a files property and can contain additional options:
-        // .fileupload('send', {files: filesList});
-        // The method returns a Promise object for the file upload call.
-        send: function (data) {
-            if (data && !this.options.disabled) {
-                data.files = $.each($.makeArray(data.files), this._normalizeFile);
-                if (data.files.length) {
-                    return this._onSend(null, data);
-                }
-            }
-            return this._getXHRPromise(false, data && data.context);
-        }
-
-    });
-
-}));
-
-/*
- * jQuery File Upload Image Processing Plugin 1.0.6
- * https://github.com/blueimp/jQuery-File-Upload
- *
- * Copyright 2012, Sebastian Tschan
- * https://blueimp.net
- *
- * Licensed under the MIT license:
- * http://www.opensource.org/licenses/MIT
- */
-
-/*jslint nomen: true, unparam: true, regexp: true */
-/*global define, window, document */
-
-(function (factory) {
-    'use strict';
-    if (typeof define === 'function' && define.amd) {
-        // Register as an anonymous AMD module:
-        define('jquery.fileupload-ip',[
-            'jquery',
-            'load-image',
-            'canvas-to-blob',
-            './jquery.fileupload'
-        ], factory);
-    } else {
-        // Browser globals:
-        factory(
-            window.jQuery,
-            window.loadImage,
-            window.canvasToBlob
-        );
-    }
-}(function ($, loadImage, canvasToBlob) {
-    'use strict';
-
-    // The File Upload IP version extends the basic fileupload widget
-    // with image processing functionality:
-    $.widget('blueimpIP.fileupload', $.blueimp.fileupload, {
-
-        options: {
-            // The regular expression to define which image files are to be
-            // resized, given that the browser supports the operation:
-            resizeSourceFileTypes: /^image\/(gif|jpeg|png)$/,
-            // The maximum file size of images that are to be resized:
-            resizeSourceMaxFileSize: 20000000, // 20MB
-            // The maximum width of the resized images:
-            resizeMaxWidth: undefined,
-            // The maximum height of the resized images:
-            resizeMaxHeight: undefined,
-            // The minimum width of the resized images:
-            resizeMinWidth: undefined,
-            // The minimum height of the resized images:
-            resizeMinHeight: undefined,
-
-            // The add callback is invoked as soon as files are added to the fileupload
-            // widget (via file input selection, drag & drop or add API call).
-            // See the basic file upload widget for more information:
-            add: function (e, data) {
-                $(this).fileupload('resize', data).done(function () {
-                    data.submit();
-                });
-            }
-        },
-
-        // Resizes the image file at the given index and stores the created blob
-        // at the original position of the files list, returns a Promise object:
-        _resizeImage: function (files, index, options) {
-            var that = this,
-                file = files[index],
-                deferred = $.Deferred(),
-                canvas,
-                blob;
-            options = options || this.options;
-            loadImage(
-                file,
-                function (img) {
-                    var width = img.width,
-                        height = img.height;
-                    canvas = loadImage.scale(img, {
-                        maxWidth: options.resizeMaxWidth,
-                        maxHeight: options.resizeMaxHeight,
-                        minWidth: options.resizeMinWidth,
-                        minHeight: options.resizeMinHeight,
-                        canvas: true
-                    });
-                    alert(canvas);
-                    if (width !== canvas.width || height !== canvas.height) {
-                        canvasToBlob(canvas, function (blob) {
-                            if (!blob.name) {
-                                if (file.type === blob.type) {
-                                    blob.name = file.name;
-                                } else if (file.name) {
-                                    blob.name = file.name.replace(
-                                        /\..+$/,
-                                        '.' + blob.type.substr(6)
-                                    );
-                                }
-                            }
-                            files[index] = blob;
-                            deferred.resolveWith(that);
-                        }, file);
-                    } else {
-                        deferred.resolveWith(that);
-                    }
-                }
-            );
-            return deferred.promise();
-        },
-
-        // Resizes the images given as files property of the data parameter,
-        // returns a Promise object that allows to bind a done handler, which
-        // will be invoked after processing all images is done:
-        resize: function (data) {
-            //alert('resizing...');
-            var that = this,
-                options = $.extend({}, this.options, data),
-                resizeAll = $.type(options.resizeSourceMaxFileSize) !== 'number',
-                isXHRUpload = this._isXHRUpload(options);
-            $.each(data.files, function (index, file) {
-                if (isXHRUpload && that._resizeSupport &&
-                        (options.resizeMaxWidth || options.resizeMaxHeight ||
-                            options.resizeMinWidth || options.resizeMinHeight) &&
-                        (resizeAll || file.size < options.resizeSourceMaxFileSize) &&
-                        options.resizeSourceFileTypes.test(file.type)) {
-                    that._processing += 1;
-                    if (that._processing === 1) {
-                        that.element.addClass('fileupload-processing');
-                    }
-                    that._processingQueue = that._processingQueue.pipe(function () {
-                        var deferred = $.Deferred();
-                        that._resizeImage(
-                            data.files,
-                            index,
-                            options
-                        ).done(function () {
-                            that._processing -= 1;
-                            if (that._processing === 0) {
-                                that.element
-                                    .removeClass('fileupload-processing');
-                            }
-                            deferred.resolveWith(that);
-                        });
-                        return deferred.promise();
-                    });
-                }
-            });
-            return this._processingQueue;
-        },
-
-        _create: function () {
-            $.blueimp.fileupload.prototype._create.call(this);
-            this._processing = 0;
-            this._processingQueue = $.Deferred().resolveWith(this).promise();
-            this._resizeSupport = canvasToBlob && canvasToBlob(
-                document.createElement('canvas'),
-                $.noop
-            );
-        }
-
-    });
-
-}));
-
-define('apps/gallery/views/create-media',[
-    "jquery",
-    "marionette",
-    "backbone",
-    "handlebars",
-    "models/photo",
-    "models/audio",
-    "text!../templates/create-media.html",
-    "text!../templates/new-media.html",
-    'load-image',
-    'canvas-to-blob',
-    'jquery.fileupload-ip'
-], function ($, Marionette, Backbone, Handlebars, Photo, Audio, CreateMediaTemplate, NewMediaItemTemplate, loadImage) {
-    'use strict';
-
-    var CreateMediaView = Marionette.CompositeView.extend({
-        models: [],
-        template: Handlebars.compile(CreateMediaTemplate),
-        getChildView: function () {
-            return Marionette.ItemView.extend({
-                initialize: function (opts) {
-                    _.extend(this, opts);
-                    this.file = this.model.get("file");
-                    this.data = this.model.get("data");
-                    this.options = opts.parent.options;
-                    this.doPost();
-                },
-                mode: "begin",
-                template: Handlebars.compile(NewMediaItemTemplate),
-                modelEvents: {
-                    'change:id': 'showSuccess'
-                },
-                events: {
-                    'click .delete': 'deleteModel'
-                },
-                tagName: "div",
-                templateHelpers: function () {
-                    return {
-                        mode: this.mode,
-                        file_name: this.formatFilename(this.file.name),
-                        file_size: this.formatFileSize(this.file.size),
-                        errorMessage: this.errorMessage,
-                        imageSerial: this.imageSerial
-                    };
-                },
-                getUrl: function (baseURL, ext) {
-                    ext = ext.toLowerCase();
-                    var isAudio = this.options.audioTypes.indexOf(ext) != -1,
-                        url = 'photos/';
-                    if (this.options.dataType == 'map_images') {
-                        url = 'map-images/';
-                    } else if (isAudio) {
-                        url =  'audio/';
-                    }
-                    return baseURL + url;
-                },
-                getApiUrl: function (ext) {
-                    return this.getUrl('/api/0/', ext);
-                },
-                deleteModel: function (e) {
-                    this.model.destroy();
-                    e.preventDefault();
-                },
-                showPreview: function (file) {
-                    //load image function defined in fileupload-ip.js
-                    if (this.options.previewSourceFileTypes.test(file.type)) {
-                        this.renderBlob(file);
-                    } else {
-                        var $preview = file.context.find('.preview');
-                        $('<div class="audio-holder"><i class="fa fa-headphones fa-5x"></i></div>')
-                            .insertAfter($preview);
-                        $preview.remove();
-                    }
-                },
-                renderBlob: function (file) {
-                    var that = this;
-                    return ((loadImage && loadImage(
-                        file,
-                        function (img) {
-                            that.imageSerial = img.toDataURL("image/jpeg");
-                            that.render();
-                        },
-                        {
-                            maxWidth: that.options.previewMaxWidth,
-                            maxHeight: that.options.previewMaxHeight,
-                            canvas: true
-                        }
-                    )));
-                },
-                doPost: function () {
-                    this.data.url = this.getApiUrl(this.file.ext);
-                    this.render();
-                    //a hack to coordinate between upload manager and child model
-                    this.file.context = this.$el;
-                    this.file.model = this.model;
-                    //end hack
-                    this.showPreview(this.file);
-                    this.data.media_file = this.data.files;
-                    var that = this;
-                    this.data.submit()
-                        .error(function (result, textStatus, jqXHR) {
-                            that.handleServerError(that.data.files[0], result, textStatus, jqXHR);
-                        });
-                    return true;
-                },
-                formatFilename: function (filename) {
-                    if (filename.length > 25) {
-                        return filename.substring(0, 12) +
-                                '...' +
-                                filename.substring(filename.length - 10, filename.length);
-                    }
-                    return filename;
-                },
-                formatFileSize: function (bytes) {
-                    if (typeof bytes !== 'number') {
-                        return '';
-                    }
-                    if (bytes >= 1000000000) {
-                        return (bytes / 1000000000).toFixed(2) + ' GB';
-                    }
-                    if (bytes >= 1000000) {
-                        return (bytes / 1000000).toFixed(2) + ' MB';
-                    }
-                    return (bytes / 1000).toFixed(2) + ' KB';
-                },
-                handleServerError: function (file, result, textStatus, jqXHR) {
-                    this.mode = "error";
-                    this.errorMessage = 'Error uploading ' + file.name + ": " + result.responseText;
-                    this.parent.errorCount += 1;
-                },
-                showSuccess: function () {
-                    this.mode = "end";
-                    this.render();
-                    this.parent.models.push(this.model);
-                }
-            });
-        },
-        childViewContainer: "#dropzone",
-        events: {
-            'click #upload-button': 'triggerFileInputButton'
-        },
-        collectionEvents: {
-            "destroy": "showInitMessage"
-        },
-        triggerFileInputButton: function (e) {
-            this.$el.find("#fileupload").trigger('click');
-            e.preventDefault();
-        },
-        templateHelpers: function () {
-            return {
-                count: this.collection.length
-            };
-        },
-        defaults: {
-            dataType: "default",
-            acceptFileTypes: 'png, jpg, jpeg, gif, audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg, wav',
-            imageTypes: 'png, jpg, jpeg, gif',
-            audioTypes: 'audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg, wav',
-            isIframe: false
-        },
-
-        childViewOptions: function () {
-            return {
-                parent: this
-            };
-        },
-        getOptions: function () {
-            return {
-                maxFileSize: undefined,
-                minFileSize: undefined,
-                maxNumberOfFiles: 20,
-                previewSourceFileTypes: /^image\/(gif|jpeg|png)$/,
-                imageFileTypes: /^image\/(gif|jpeg|png)$/,
-                audioFileTypes: /^audio\/(x-m4a|mp3|m4a|mp4|mpeg|wav)$/,
-                previewSourceMaxFileSize: 5000000, // 5MB
-                previewMaxWidth: 800,
-                previewMaxHeight: 800,
-                autoUpload: true,
-                imageTypes: this.defaults.imageTypes.split(', '),
-                audioTypes: this.defaults.audioTypes.split(', '),
-                acceptFileTypes: this.defaults.acceptFileTypes.split(', ')
-            };
-        },
-        onShow: function () {
-            var that = this;
-            this.$el.find('#fileupload').fileupload({
-                dataType: 'json',
-                autoUpload: true,
-                dropZone: this.$el.find("#dropzone"),
-                add: that.onAdd.bind(that),
-                done: that.done.bind(that),
-                stop: that.stop.bind(that),
-                progress: function (e, data) {
-                    data.files[0].context.find('.progress-bar').css(
-                        'width',
-                        parseInt(data.loaded / data.total * 100, 10) + '%'
-                    );
-                },
-                submit: function (e, data) {
-                    data.formData = that.getFormData();
-                }
-            });
-
-            //section for uploading by dragging files from your desktop:
-            this.$el.find("#dropzone").bind({
-                dragover: function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    var dropZone = that.$el.find('#dropzone'),
-                        timeout = window.dropZoneTimeout;
-                    if (!timeout) {
-                        dropZone.addClass('in hover');
-                    } else {
-                        clearTimeout(timeout);
-                    }
-                    window.dropZoneTimeout = setTimeout(function (e) {
-                        window.dropZoneTimeout = null;
-                        dropZone.removeClass('in hover');
-                        return false;
-                    }, 500);
-                },
-                drop: function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    return false;
-                }
-            });
-        },
-        initialize: function (opts) {
-            _.extend(this, opts);
-            this.collection = new Backbone.Collection();
-            var that = this;
-            this.options = this.getOptions();
-            if (opts.dataType) {
-                this.options.dataType = opts.dataType;
-            }
-            $('#warning-message-text').empty();
-            this.render();
-            console.log(this.$el.find("#fileupload"));
-            this.$el.find('#fileupload').fileupload({
-                dataType: 'json',
-                autoUpload: true,
-                dropZone: this.$el.find("#dropzone"),
-                add: that.onAdd.bind(that),
-                done: that.done.bind(that),
-                stop: that.stop.bind(that),
-                progress: function (e, data) {
-                    data.files[0].context.find('.progress-bar').css(
-                        'width',
-                        parseInt(data.loaded / data.total * 100, 10) + '%'
-                    );
-                },
-                submit: function (e, data) {
-                    data.formData = that.getFormData();
-                }
-            });
-
-            //section for uploading by dragging files from your desktop:
-            this.$el.find("#dropzone").bind({
-                dragover: function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    var dropZone = this.$el.find('#dropzone'),
-                        timeout = window.dropZoneTimeout;
-                    if (!timeout) {
-                        dropZone.addClass('in hover');
-                    } else {
-                        clearTimeout(timeout);
-                    }
-                    window.dropZoneTimeout = setTimeout(function (e) {
-                        window.dropZoneTimeout = null;
-                        dropZone.removeClass('in hover');
-                        return false;
-                    }, 500);
-                },
-                drop: function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    return false;
-                }
-            });
-        },
-        dragover: function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            var dropZone = this.$el.find('#dropzone'),
-                timeout = window.dropZoneTimeout;
-            if (!timeout) {
-                dropZone.addClass('in hover');
-            } else {
-                clearTimeout(timeout);
-            }
-            window.dropZoneTimeout = setTimeout(function (e) {
-                window.dropZoneTimeout = null;
-                dropZone.removeClass('in hover');
-                return false;
-            }, 500);
-        },
-        errorCount: 0,
-        successCount: 0,
-        stop: function () {
-            if (this.successCount > 0) {
-                this.$el.find('.success-message').show();
-            } else {
-                this.$el.find('.success-message').hide();
-            }
-            if (this.errorCount > 0) {
-                this.$el.find('.failure-message').show();
-            } else {
-                this.$el.find('.failure-message').hide();
-            }
-            //reset counters:
-            this.errorCount = 0;
-            this.successCount = 0;
-        },
-
-        getFormData: function () {
-            return {
-                project_id: this.app.getProjectID(),
-                csrfmiddlewaretoken: this.app.getCookie('csrftoken')
-            };
-        },
-
-        hasError: function (file) {
-            var pieces = file.name.split('.'),
-                ext = pieces[pieces.length - 1];
-            file.ext = ext;
-            if (file.error) {
-                return file.error;
-            }
-            if (this.options.acceptFileTypes.indexOf(file.type.toLowerCase()) == -1 &&
-                    this.options.acceptFileTypes.indexOf(ext.toLowerCase()) == -1) {
-                return 'acceptFileTypes';
-            }
-            if (this.options.maxFileSize &&
-                    file.size > this.options.maxFileSize) {
-                return 'maxFileSize';
-            }
-            if (typeof file.size === 'number' &&
-                    file.size < this.options.minFileSize) {
-                return 'minFileSize';
-            }
-            return null;
-        },
-        validate: function (data) {
-            var that = this,
-                valid = !!data.files.length;
-            $.each(data.files, function (index, file) {
-                file.error = that.hasError(file);
-                if (file.error) {
-                    valid = false;
-                }
-            });
-            return valid;
-        },
-
-        showOmittedFiles: function (data) {
-            var omitted = 0,
-                messages = [],
-                message = "The following files were ignored because they are not supported  by the file uploader:<br>";
-            $.each(data.files, function (index, file) {
-                if (file.error) {
-                    if (file.error == 'acceptFileTypes') {
-                        ++omitted;
-                        messages.push(file.name + ": " + file.type);
-                    }
-                }
-            });
-            if (omitted > 0) {
-                message += messages.join(", ");
-                this.$el.find('.warning-message').html(message).show();
-            }
-        },
-
-        showInitMessage: function () {
-            if (this.collection.length == 0) {
-                this.$el.find('#nothing-here').show();
-                this.$el.find('#dropzone').css('border', 'dashed 1px #CCC');
-            }
-        },
-
-        onAdd: function (e, data) {
-            var that = this,
-                model;
-            this.$el.find('#nothing-here').hide();
-            this.$el.find('#dropzone').css('border', 'none');
-            //validate files:
-            this.validate(data);
-            this.showOmittedFiles(data);
-            $.each(data.files, function (index, file) {
-                if (file.error) {
-                    //continue to next iteration: return true;
-                    that.showInitMessage();
-                    return true;
-                }
-                if (that.options.previewSourceFileTypes.test(file.type)) {
-                    model = new Photo({
-                        file: file,
-                        data: data
-                    });
-                } else {
-                    model = new Audio({
-                        file: file,
-                        data: data
-                    });
-                }
-                that.collection.add(model);
-            });
-        },
-
-        done: function (e, data) {
-            var attributes = data.result,
-                model = data.files[0].model,
-                sourceCollection = null;
-            model.set(attributes);
-            if (model.get("overlay_type") == "photo") {
-                sourceCollection = this.app.dataManager.getData("photos").collection;
-            } else {
-                sourceCollection = this.app.dataManager.getData("audio").collection;
-            }
-            model.urlRoot = sourceCollection.url;
-            delete model.attributes.data;
-            delete model.attributes.file;
-            sourceCollection.unshift(model); //add to top
-        },
-
-        addModels: function () {
-            var selectedModels = [];
-            this.collection.each(function (model) {
-                // if (model.get("isSelected")) {
-                    selectedModels.push(model);
-                // }
-            });
-            this.parentModel.trigger('add-models-to-marker', selectedModels);
-        }
-    });
-    return CreateMediaView;
-
-});
-
-
-define('text!apps/gallery/templates/form-list.html',[],function () { return '<!-- <h3>List of your forms</h3> -->\n<a href="#" class="add-new-form button-tertiary"><i class="fa fa-plus"></i> Add New Form</a>\n<div id="form-list-container">\n    <table id="form-list">  \n        <!-- where our child views will go -->\n    </table>\n</div>';});
-
-
-define('text!apps/gallery/templates/form-item.html',[],function () { return '<p class="edit-form">{{ name }}</p>';});
-
-define('apps/gallery/views/form-list',[
-    "jquery",
-    "underscore",
-    "handlebars",
-    "marionette",
-    "text!../templates/form-list.html",
-    "text!../templates/form-item.html",
-    "models/form",
-    "collections/forms"
-], function ($, _, Handlebars, Marionette, FormListTemplate, FormItemTemplate, Form, Forms) {
-    // Setting up a create form js
-    'use strict';
-    var FormListView = Marionette.CompositeView.extend({
-        app: null,
-        initialize: function (opts) {
-            _.extend(this, opts);
-            this.childViewOptions = {
-                app: this.app
-            };
-            this.template = Handlebars.compile(FormListTemplate);
-            this.collection = new Forms();
-            this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
-            this.collection.fetch({ reset: true });
-            this.render();
-        },
-
-        events: {
-            'click .add-new-form': 'showNewForm'
-        },
-
-        showNewForm: function () {
-            this.app.vent.trigger('show-form');
-        },
-        childViewContainer: "#form-list",
-        getChildView: function () {
-            // this child view is responsible for displaying
-            // and deleting Field models:
-            return Marionette.ItemView.extend({
-                initialize: function (opts) {
-                    console.log(opts);
-                    _.extend(this, opts);
-                },
-                events: {
-                    'click .edit-form': 'showEditForm'
-                },
-                template: Handlebars.compile(FormItemTemplate),
-                tagName: "tr",
-                showEditForm: function (e) {
-                    this.app.vent.trigger('show-form', {
-                        model: this.model
-                    });
-                    e.preventDefault();
-                },
-                onRender: function () {
-                    console.log(this.model.toJSON());
-                }
-            });
-        }
-
-    });
-    return FormListView;
-
-});
-
-
-define('text!apps/gallery/templates/toolbar-dataview.html',[],function () { return '<div class = "project-detail">\n    <!-- Temporary placement for implementation purposes -->\n\n    {{#ifequal activeTab "data"}}\n        {{#ifequal screenType "spreadsheet"}}\n            <select class="media-type">\n                <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>\n                <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>\n                <option value="videos" {{#ifequal dataType "videos"}}SELECTED{{/ifequal}}>Videos</option>\n                <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>\n            {{#each forms}}\n                <option value="form_{{ this.id }}" {{#ifequal ../dataType this.overlay_type}}SELECTED{{/ifequal}}>{{ this.name }}</option>\n            {{/each}}\n            </select>\n        {{/ifequal}}\n\n        {{#ifequal screenType "gallery"}}\n            <select class="media-type">\n                <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>\n                <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>\n                <option value="videos" {{#ifequal dataType "videos"}}SELECTED{{/ifequal}}>Videos</option>\n                <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>\n            {{#each forms}}\n                <option value="form_{{ this.id }}" {{#ifequal ../dataType this.overlay_type}}SELECTED{{/ifequal}}>{{ this.name }}</option>\n            {{/each}}\n            </select>\n        {{/ifequal}}\n    {{/ifequal}}\n\n    {{#ifequal screenType "map"}}\n    <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</button>\n    <div class="dropdown-menu" id="add-data-type" style="display: none;">\n        <a href="#" class="add-map-image">Map Image</a>\n        <hr>\n        <a href="#" class="add-new" data-value="markers">Site</a>\n        {{#each forms}}\n        <a href="#" class="add-new" data-value="form_{{ this.id }}">{{ this.name }}</a>\n        {{/each}}\n        <hr>\n        <a href="#" class="add-data">Edit Site Types</a>\n    </div>\n    {{/ifequal}}\n\n\n    {{#ifequal activeTab "data"}}\n\n        {{#ifequal screenType "spreadsheet"}}\n            <a id="add-new" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Row</a>\n        {{/ifequal}}\n        {{#ifequal screenType "gallery"}}\n            <a id="add-new" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</a>\n        {{/ifequal}}\n\t{{/ifequal}}\n</div>\n<div class="main-search">\n\t<form class="search-form" value="Search Media">\n\t\t<input id="searchTerm" type="text" value="" placeholder="Filter data and media">\n\t\t<button id="toolbar-search"><i class="fa fa-search" aria-hidden="true"></i></button>\n\t</form>\n</div>\n<button id="toolbar-clear" style = "display:none;">Clear</button>\n\n<div class="view-options">\n    <a href="/map" id="map-link" class="database-view-buttons tooltip {{#ifequal screenType "map"}}active{{/ifequal}}"><i class="fa fa-map" aria-hidden="true"><span class="tooltiptext">Map View</span></i></a>\n    <a href="/gallery" class="database-view-buttons tooltip {{#ifequal screenType "gallery"}}active{{/ifequal}}"><i class="fa fa-th" aria-hidden="true"><span class="tooltiptext">Card View</span></i></a>\n    <a href="/table" class="database-view-buttons tooltip {{#ifequal screenType "spreadsheet"}}active{{/ifequal}}"><i class="fa fa-bars" aria-hidden="true"><span class="tooltiptext">Table View</span></i></a>\n</div>\n';});
-
-define('apps/gallery/views/toolbar-dataview',[
-    "underscore",
-    "jquery",
-    "handlebars",
-    "marionette",
-    "collections/forms",
-    "apps/gallery/views/create-form",
-    "apps/gallery/views/create-media",
-    "apps/gallery/views/form-list",
-    "lib/modals/modal",
-    "text!../templates/toolbar-dataview.html"
-], function (_, $, Handlebars, Marionette, Forms, CreateForm, CreateMedia,
-             FormList, Modal, ToolbarTemplate) {
-    "use strict";
-    var ToolbarDataView = Marionette.ItemView.extend({
-        /*
-        Because of the blinking, consider:
-        http://stackoverflow.com/questions/10746706/attaching-backbone-js-views-to-existing-elements-vs-inserting-el-into-the-doms
-        */
-        events: {
-            'click #toolbar-search': 'doSearch',
-            'click #toolbar-clear': 'clearSearch',
-            'change .media-type': 'changeDisplay',
-            'click .add-data' : 'showFormList',
-            'click #show-media-type' : 'showMediaTypeForm',
-            'click #add-row' : 'triggerAddRow',
-            'click .add-media': 'createMediaUploadModal',
-            'click .add-map-image': 'createMapImageUploadModal',
-            'click .add': 'toggleMenu',
-            'click #add-new': 'triggerAddNew',
-            'click .add-new': 'triggerAddNewMap'
-        },
-        modal: null,
-        forms: null,
-
-        template: Handlebars.compile(ToolbarTemplate),
-
-        templateHelpers: function () {
-            return {
-                mode: this.app.mode,
-                dataType: this.app.dataType,
-                screenType: this.app.screenType,
-                activeTab: this.app.activeTab,
-                forms: this.forms.toJSON()
-            };
-        },
-
-        initialize: function (opts) {
-            _.extend(this, opts);
-            Marionette.ItemView.prototype.initialize.call(this);
-            this.template = Handlebars.compile(ToolbarTemplate);
-
-            // Collection of listeners
-            this.listenTo(this.app.vent, 'add-media', this.createMediaUploadModal);
-            this.listenTo(this.app.vent, 'add-map-image', this.createMapImageUploadModal);
-            this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
-            this.listenTo(this.app.vent, 'show-media-type', this.showMediaTypeForm);
-            this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
-            this.listenTo(this.app.vent, 'show-form', this.showCreateForm);
-            this.listenTo(this.app.vent, 'show-form-list', this.showFormList);
-            this.listenTo(this.app.vent, 'show-modal', this.showModal);
-            this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
-            this.listenTo(this.app.vent, 'show-list', this.updateNewObejctRoute);
-            this.listenTo(this.app.vent, 'add-new-item-to-map', this.triggerAddNewMap);
-            $('body').click(this.hideMenus);
-            this.modal = new Modal();
-            this.forms = new Forms();
-            this.listenTo(this.forms, "reset", this.render);
-            this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
-            this.listenTo(this.forms, 'reset', this.renderAndRoute);
-            this.forms.fetch({ reset: true });
-        },
-
-        hideMenus: function (e) {
-            var $el = $(e.target);
-            if (!$el.hasClass('add') &&
-                    !$el.parent().hasClass('add') &&
-                    !$el.parent().hasClass('media-type')) {
-                $("#add-data-type").hide();
-            }
-        },
-
-        toggleMenu: function (e) {
-            var $btn = $(e.target);
-            this.$el.find("#add-data-type").toggle().css({
-                top: $btn.position().top + 30,
-                left: $btn.position().left
-            });
-        },
-
-        triggerAddRow: function (e) {
-            this.app.vent.trigger('add-row');
-            e.preventDefault();
-        },
-        triggerAddNew: function (e) {
-            var mediaType = this.$el.find('.media-type').val(),
-                url = "//" + mediaType + "/new";
-            if (mediaType === 'photos' || mediaType === 'audio') {
-                this.createMediaUploadModal();
-            } else if (mediaType === 'map_images') {
-                this.createMapImageUploadModal();
-            } else {
-                this.app.router.navigate(url, {
-                    trigger: true,
-                    forceReload: true
-                });
-            }
-            e.preventDefault();
-        },
-
-        triggerAddNewMap: function (e) {
-            /*
-            This is where it might begin the creation of a new
-            field with the add marker
-            */
-            var mediaType = $(e.target).attr('data-value'),
-                url = "//" + mediaType + "/new";
-            if (mediaType === 'photos' || mediaType === 'audio') {
-                this.createMediaUploadModal();
-            } else if (mediaType === 'map_images') {
-                this.createMapImageUploadModal();
-            } else {
-                this.app.router.navigate(url, {
-                    trigger: true,
-                    forceReload: true
-                });
-            }
-            e.preventDefault();
-        },
-        changeMode: function () {
-            this.renderAndRoute();
-        },
-        updateNewObejctRoute: function () {
-            this.$el.find("#add-site").attr("href", '#/' + this.app.dataType + '/new');
-        },
-
-        renderAndRoute: function () {
-            this.forms.each(function (form) {
-                //TODO: add to API:
-                form.set("overlay_type", "form_" + form.get("id"));
-            });
-            this.render();
-            //this.app.router.navigate(this.$el.find(".media-type").val(), { trigger: true });
-        },
-
-        //*
-        doSearch: function (e) {
-            /*
-             * NOTE
-             *   - app.js is listening for the search-requested event
-             *   - Please see localground/apps/site/api/tests/sql_parse_tests.py
-             *     for samples of valid queries.
-             */
-
-            var term = this.$el.find("#searchTerm").val();
-            if (term === "") {
-                this.app.vent.trigger("clear-search");
-            } else {
-                this.app.vent.trigger("search-requested", term);
-            }
-            e.preventDefault();
-        },
-
-        //*/
-
-        changeDisplay: function (e) {
-            var dataType =  $(e.currentTarget).val();
-            this.app.router.navigate('//' + dataType, { trigger: true });
-        },
-
-        showFormList: function () {
-            var formList = new FormList({
-                app: this.app
-            });
-            this.modal.update({
-                view: formList,
-                title: 'List of Forms',
-                width: 800,
-                showSaveButton: false,
-                showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
-            });
-            this.modal.show();
-        },
-
-        createMediaUploadModal: function () {
-            var uploadMediaForm = new CreateMedia({
-                app: this.app
-            });
-            this.modal.update({
-                view: uploadMediaForm,
-                title: 'Upload Media',
-                width: 800,
-                height: 350,
-                closeButtonText: "Done",
-                showSaveButton: false,
-                showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
-            });
-            this.modal.show();
-        },
-
-        createMapImageUploadModal: function () {
-            var uploadMediaForm = new CreateMedia({
-                app: this.app,
-                dataType: 'map_images'
-            });
-            this.modal.update({
-                view: uploadMediaForm,
-                title: 'Upload Map Images',
-                width: 800,
-                height: 350,
-                closeButtonText: "Done",
-                showSaveButton: false,
-                showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
-            });
-            this.modal.show();
-        },
-
-        showModal: function (opts) {
-            //generic function that displays a view in a modal
-            var params = {},
-                defaults = {
-                    width: 500,
-                    height: 200
-                };
-            _.extend(params, defaults, opts);
-            _.extend(params, {
-                showSaveButton: opts.saveFunction ? true : false,
-                showDeleteButton: opts.deleteFunction ? true : false,
-                saveFunction: opts.saveFunction ? opts.saveFunction.bind(opts.view) : null,
-                deleteFunction: opts.deleteFunction ? opts.deleteFunction.bind(opts.view) : null
-            });
-            this.modal.update(params);
-            this.modal.show();
-        },
-
-        hideModal: function () {
-            this.modal.hide();
-        },
-
-        showCreateForm: function (opts) {
-            opts = opts || {};
-            var createForm = new CreateForm({
-                    app: this.app,
-                    model: opts.model
-                }),
-                title = "Create New Form";
-            if (opts.model) {
-                title = "Update " + opts.model.get("name") + " Settings";
-            }
-            this.modal.update({
-                view: createForm,
-                title: title,
-                width: 800,
-                showSaveButton: true,
-                showDeleteButton: opts.model,
-                // bind the scope of the save function to the source view:
-                saveFunction: createForm.saveFormSettings.bind(createForm),
-                deleteFunction: createForm.deleteForm.bind(createForm)
-            });
-            this.modal.show();
-        }
-
-    });
-    return ToolbarDataView;
-});
-
 define('models/projectUser',["underscore", "models/base"], function (_, Base) {
     "use strict";
     /**
@@ -15327,6 +12160,40 @@ define(
     }
 );
 
+define('models/photo',["models/base", "jquery"], function (Base, $) {
+    "use strict";
+    /**
+     * A Backbone Model class for the Photo datatype.
+     * @class Photo
+     * @see <a href="//localground.org/api/0/photos/">//localground.org/api/0/photos/</a>
+     */
+    var Photo = Base.extend({
+        schema: {
+            name: { type: 'TextArea', title: "Name" },
+            caption:  { type: 'TextArea', title: "Caption" },
+            attribution: { type: 'TextArea', title: "Attribution" },
+            tags: { type: 'List', itemType: 'Text' }
+        },
+        rotate: function (direction) {
+            $.ajax({
+                url: '/api/0/photos/' + this.id + '/rotate-' + direction + '/.json',
+                type: 'PUT',
+                success: function(data) {
+                    this.set(data);
+                }.bind(this),
+                notmodified: function(data) { console.error('Photo Not modified'); },
+                error: function(data) { console.error('Error: Rotation failed'); }
+            });
+        },
+        //be careful not to overwrite inherited defaults (but OK to extend them):
+        defaults: _.extend({}, Base.prototype.defaults, {
+            checked: false
+        })
+
+    });
+    return Photo;
+});
+
 define('collections/photos',["models/photo", "collections/base", "collections/basePageable"], function (Photo, Base, BasePageable) {
     "use strict";
     /**
@@ -15342,6 +12209,30 @@ define('collections/photos',["models/photo", "collections/base", "collections/ba
         url: '/api/0/photos/'
     });
     return Photos;
+});
+
+define('models/audio',["models/base", "underscore"], function (Base, _) {
+    "use strict";
+    /**
+     * A Backbone Model class for the Audio datatype.
+     * @class Audio
+     * @see <a href="//localground.org/api/0/audio/">//localground.org/api/0/audio/</a>
+     */
+    var Audio = Base.extend({
+        schema: {
+            name: { type: 'TextArea', title: "Name" },
+            caption:  { type: 'TextArea', title: "Caption" },
+            attribution: { type: 'TextArea', title: "Attribution" },
+            tags: { type: 'List', itemType: 'Text' }
+        },
+        getExtension: function () {
+            return _.last(this.get('file_name').split('.'));
+        },
+        defaults: _.extend({}, Base.prototype.defaults, {
+            checked: false
+        })
+    });
+    return Audio;
 });
 
 define('collections/audio',["backbone", "models/audio", "collections/base", "collections/basePageable"], function (Backbone, Audio, Base, BasePageable) {
@@ -15945,6 +12836,132 @@ define('collections/records',[
     return Records;
 });
 
+define('models/dataType',["underscore", "models/base"], function (_, Base) {
+    "use strict";
+    var DataType = Base.extend({
+
+        toString: function () {
+            return this.get('name');
+        }
+    });
+    return DataType;
+});
+
+define('collections/dataTypes',["backbone", "models/dataType"],
+    function (Backbone, DataType) {
+        "use strict";
+        var DataTypes = Backbone.Collection.extend({
+            model: DataType,
+            name: 'Data Types',
+            url: '/api/0/data-types/',
+            parse: function (response) {
+                return response.results;
+            }
+        });
+        return DataTypes;
+    });
+define('models/field',["underscore", "collections/dataTypes", "models/base"],
+    function (_, DataTypes, Base) {
+        'use strict';
+        var Field = Base.extend({
+            baseURL: null,
+            form: null,
+            defaults: _.extend({}, Base.prototype.defaults, {
+                col_alias: '',
+                is_display_field: false,
+                display_width: 100,
+                is_printable: true,
+                ordering: 1
+            }),
+            schema: {
+                data_type: { type: 'Select', options: new DataTypes() },
+                col_alias: { type: 'Text', title: 'Column Name' },
+                is_display_field: 'Hidden',
+                display_width: 'Hidden',
+                is_printable: 'Hidden',
+                has_snippet_field: 'Hidden',
+                ordering: 'Hidden'
+            },
+            urlRoot: function () {
+                if (this.baseURL) {
+                    return this.baseURL;
+                }
+                return '/api/0/forms/' + this.form.get("id") + '/fields/';
+            },
+            initialize: function (data, opts) {
+                // This had to be made dynamic because there are different Fields
+                // for each form
+                if (this.collection && this.collection.url) {
+                    this.baseURL = this.collection.url();
+                } else if (opts.id) {
+                    this.baseURL = '/api/0/forms/' + opts.id + '/fields/';
+                } else if (opts.form) {
+                    this.form =  opts.form;
+                } else {
+                    alert("id initialization parameter required for Field");
+                    return;
+                }
+                this.set('temp_id', parseInt(Math.random(10) * 10000000).toString());
+                if (this.get("field")) {
+                    this.url = this.urlRoot() + this.get("field") + "/";
+                }
+                Base.prototype.initialize.apply(this, arguments);
+            }/*,
+            toJSON: function () {
+                var json = Base.prototype.toJSON.call(this);
+                if (json.extras !== null) {
+                    json.extras = JSON.stringify(json.extras);
+                }
+                return json;
+            }*/
+        });
+        return Field;
+    });
+
+define('collections/fields',["models/field", "collections/basePageable"], function (Field, BasePageable) {
+    "use strict";
+    /*
+    This is a rough draft of the fields file
+    It is expected to be revised since it's templated
+    after projectUsers in structure.
+    */
+    var Fields = BasePageable.extend({
+        model: Field,
+        name: 'Fields',
+        baseURL: null,
+        form: null,
+        sort_key: 'ordering',
+        url: function () {
+            if (this.baseURL) {
+                return this.baseURL;
+            }
+            return '/api/0/forms/' + this.form.get("id") + '/fields/';
+        },
+        comparator: function (item) {
+            return item.get(this.sort_key);
+        },
+        getModelByAttribute: function (key, val) {
+            return this.find(function (model) { return model.get(key) === val; });
+        },
+        initialize: function (recs, opts) {
+            if (opts.url) {
+                this.baseURL = opts.url;
+            } else if (opts.id) {
+                this.baseURL = '/api/0/forms/' + opts.id + '/fields/';
+            } else if (opts.form) {
+                this.form = opts.form;
+            } else {
+                alert("The Fields collection requires a url parameter upon initialization");
+                return;
+            }
+            // This had to be made dynamic because there are different fields
+            // for each form
+            BasePageable.prototype.initialize.apply(this, arguments);
+        }
+    });
+    return Fields;
+});
+
 define('lib/maps/tiles/mapbox',["jquery"], function ($) {
     "use strict";
     var MapBox = function (opts) {
@@ -16438,1654 +13455,3848 @@ define('lib/data/dataManager',["underscore", "marionette", "models/project", "co
     });
 
 
-define('text!lib/audio/audio-player.html',[],function () { return '{{#ifequal audioMode "basic"}}\n    <audio controls preload class="audio">\n        <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n    <div>\n        <div class="play-ctrls">\n            <div class="play fa fa-play fa-2x" aria-hidden="true"></div>\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal audioMode "simple"}}\n    <audio controls preload class="audio">\n      <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n    <div>\n        <div class="play-ctrls">\n            <!-- i class="fa fa-play play" aria-hidden="true" style="font-size:2em;"></i -->\n            <div class="play fa fa-play fa-3x" aria-hidden="true"></div>\n        </div>\n        <div class="audio-progress">\n            <div class="progress-container">\n                <div class="audio-progress-bar"></div>\n                <div class="audio-progress-duration"></div>\n                <div class="audio-progress-circle"></div>\n            </div>\n            <div class="audio-labels time-current"></div>\n           <!-- <span class="audio-labels time-duration" style="right: 10px;"></span> -->\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal audioMode "detail"}}\n    <audio controls preload class="audio">\n      <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n\n    <div class="audio-container" style="color: #{{paragraph.color}}">\n        <div class="audio-progress">\n            <div class="play-ctrls">\n                <!--   <i class="fa fa-backward fwd-back skip-back" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n          <!-- <i class="fa fa-play fa-2x play" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n                <i class="fa fa-play fa-lg play" aria-hidden="true" style="color: #{{paragraph.color}}"></i>\n                <!-- <i class="play" aria-hidden="true" style="font-size:0.5em; border-color: transparent transparent transparent #{{paragraph.color}}"></i> -->\n         <!--   <i class="fa fa-forward fwd-back skip-fwd" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n            </div>\n            <div class="progress-container">\n                <div class="audio-progress-bar" style="background-color: #{{paragraph.backgroundColor}}; border-color: #{{paragraph.color}}"></div>\n                <div class="audio-progress-duration" style="background-color: #{{paragraph.color}}; border-color: #{{paragraph.color}}"></div>\n                <div class="audio-progress-circle" style="border-color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}"></div>\n            </div>\n         <!--   <span class="audio-labels time-current" style="left: 10px; color: #{{paragraph.color}};"></span>  -->\n         <!--   <span class="audio-labels time-duration" style="right: 10px; color: #{{paragraph.color}};"></span> -->\n        </div>\n        <div class="info-container">\n            <p class="audio-info" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}{{#if caption}}: {{ caption }} {{/if}}</p>\n            <span class="audio-labels time-current" style="float: right; color: #{{paragraph.color}}; font-family: {{paragraph.font}}"></span>\n        </div>\n        \n\n    </div>\n{{/ifequal}}\n';});
+define('text!apps/style/templates/left/new-map-modal.html',[],function () { return '\n<div class="inline-form {{#if generalError}}error{{/if}}">\n    <label>Title: </label>\n    <input type="text" placeholder="name of map" id="new-map-name" value="{{name}}">\n</div>\n<div class = "inline-form slug {{#if slugError}}error{{/if}}">\n    <label>Friendly URL:</label>\n    <input type="text" placeholder="enter name or leave blank for autofill" id="new-map-slug" value="{{slug}}">\n</div>\n{{#if slugError}}\n<p class="errorMessage">{{slugError}}</p>\n{{/if}}\n{{#if generalError}}\n<p class="errorMessage">{{generalError}}</p>\n{{/if}}';});
 
-define('lib/handlebars-helpers',["handlebars"],
-    function (Handlebars) {
-        "use strict";
-        Handlebars.registerHelper("ifHasQuotes", function (txt, block) {
-            if (txt && txt.indexOf("\"") != -1) {
-                return block.fn(this);
-            }
-            return false;
-        });
-        Handlebars.registerHelper('ifequal', function (lvalue, rvalue, options) {
-            if (arguments.length < 3) {
-                throw new Error("Handlebars Helper equal needs 2 parameters");
-            }
-            if (lvalue != rvalue) {
-                return options.inverse(this);
-            }
-            return options.fn(this);
-        });
-
-        Handlebars.registerHelper('ifcontains', function (val, chars, block) {
-            if (val.indexOf(chars) != -1) {
-                return block.fn(this);
-            }
-        });
-
-        Handlebars.registerHelper('ifnotequal', function (lvalue, rvalue, options) {
-            if (arguments.length < 3) {
-                throw new Error("Handlebars Helper equal needs 2 parameters");
-            }
-            if (lvalue == rvalue) {
-                return options.inverse(this);
-            }
-            return options.fn(this);
-        });
-
-        Handlebars.registerHelper('ifnot', function (value, options) {
-            if (arguments.length < 2) {
-                throw new Error("Handlebars Helper ifnot needs 1 parameter");
-            }
-            if (value){
-                return options.inverse(this);
-            }
-            return options.fn(this);
-        });
-
-        Handlebars.registerHelper('compare', function(lvalue, rvalue, options) {
-
-            if (arguments.length < 3)
-                throw new Error("Handlerbars Helper 'compare' needs 2 parameters");
-
-            var operator = options.hash.operator || "==";
-
-            var operators = {
-                '==':       function(l,r) { return l == r; },
-                '===':      function(l,r) { return l === r; },
-                '!=':       function(l,r) { return l != r; },
-                '<':        function(l,r) { return l < r; },
-                '>':        function(l,r) { return l > r; },
-                '<=':       function(l,r) { return l <= r; },
-                '>=':       function(l,r) { return l >= r; },
-                'typeof':   function(l,r) { return typeof l == r; }
-            }
-
-            if (!operators[operator])
-                throw new Error("Handlerbars Helper 'compare' doesn't know the operator "+operator);
-
-            var result = operators[operator](lvalue,rvalue);
-
-            if( result ) {
-                return options.fn(this);
-            } else {
-                return options.inverse(this);
-            }
-
-        });
-
-        Handlebars.registerHelper('truncate', function (str, numChars) {
-            if (!str) {
-                return;
-            }
-            if (str.length > numChars && str.length > 0) {
-                var new_str = str + " ";
-                new_str = str.substr(0, numChars);
-                new_str = str.substr(0, new_str.lastIndexOf(" "));
-                new_str = (new_str.length > 0) ? new_str : str.substr(0, numChars);
-                return new Handlebars.SafeString(new_str + '...');
-            }
-            return str;
-        });
-
-        Handlebars.registerHelper("hexToRgb", function (hex, opacity) {
-            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            result = result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : null;
-            if (result) {
-                return "rgba(" + result.r + ", " + result.g + ", " + result.b + ", " + opacity + ")";
-            }
-            return "";
-        });
-
-        Handlebars.registerHelper("highlightIntensity", function (txt) {
-            var re = /(d+):/i,
-                found = txt.match(re),
-                color;
-            console.log(found);
-            if (!txt) { return ''; }
-            if (txt.indexOf("1:") != -1) {
-                color = "#F6FEAA";
-            } else if (txt.indexOf("2:") != -1) {
-                color = "#F7F8A4";
-            } else if (txt.indexOf("3:") != -1) {
-                color = "#F9F29F";
-            } else if (txt.indexOf("4:") != -1) {
-                color = "#FAEC99";
-            } else if (txt.indexOf("5:") != -1) {
-                color = "#FCE694";
-            }
-            return new Handlebars.SafeString('style="background-color: ' + color + '"');
-        });
-
-        Handlebars.registerHelper('times', function (start, end, block) {
-            var accum = '', i;
-            for (i = start; i < end; ++i) {
-                accum += block.fn(i);
-            }
-            return accum;
-        });
-
-        Handlebars.registerHelper("repeat", function (txt, fa_class) {
-            if (!txt) { return ''; }
-
-            var found = txt.match(/(\d+):/i),
-                bubbles = "",
-                count,
-                i;
-            if (found && found.length > 1) {
-                count = found[1];
-                for (i = 0; i < count; i++) {
-                    bubbles += '<i class="fa ' + fa_class + '"></i>&nbsp;';
-                }
-            }
-            return bubbles;
-        });
-
-        Handlebars.registerHelper("paginator", function () {
-            var re = /page=(\d+)/i,
-                previous = null,
-                next = null,
-                html = '';
-            if (this.previous) { previous = this.previous.match(re); }
-            if (this.next) { next = this.next.match(re); }
-            if (previous && previous.length > 1) {
-                html += '<button class="btn page" style="margin-right:10px" page-num="' + previous[1] + '">' +
-                    '<i class="fa fa-angle-double-left"></i> previous' +
-                    '</button>';
-            }
-            if (next && next.length > 1) {
-                html += '<button class="btn page" page-num="' + next[1] + '">' +
-                    'next <i class="fa fa-angle-double-right"></i>' +
-                    '</button>';
-            }
-            return html;
-        });
-
-
-    });
-
-define('lib/audio/audio-player',["underscore", "marionette", "handlebars", "text!../audio/audio-player.html", "lib/handlebars-helpers"],
-    function (_, Marionette, Handlebars, PlayerTemplate) {
-        'use strict';
-
-        var AudioPlayer = Marionette.ItemView.extend({
-            events: {
-                'click .close': 'hide',
-                'click .close-modal': 'hide',
-                'click .volUp': 'volumeUp',
-                'click .volDown': 'volumeDown',
-                'click .play' : 'togglePlay',
-                'click .skip-fwd' : 'skipForward',
-                'click .skip-back' : 'skipBackward',
-                'click .progress-container' : 'jumpToTime'
-            },
-            suspendUIUpdate: false,
-            audio: null,
-            template: Handlebars.compile(PlayerTemplate),
-            initialize: function (opts) {
-                opts = opts || {};
-                _.extend(this, opts);
-                this.render();
-                this.audio = this.$el.find(".audio").get(0);
-                this.listenTo(this.app.vent, 'audio-carousel-advanced', this.stop);
-
-                // need to attach audio events directly to the element b/c the
-                // HTML5 audio events work slightly differently than other element
-                // events:
-                _.bindAll(this, 'playerDurationUpdate');
-                this.$el.find('audio').on('timeupdate', this.playerDurationUpdate);
-                this.$el.find('audio').on('ended', this.showPlayButton.bind(this));
-            },
-            onRender: function () {
-                if (!this.$el.find('.progress-container').get(0)) {
-                    return;
-                }
-                // setTimeout necessary b/c need to wait 'til rendered audio player
-                // has been attached to the DOM in order to calculate the offset
-                setTimeout(this.initDraggable.bind(this), 50);
-            },
-            initDraggable: function () {
-                var $c = this.$el.find('.progress-container'),
-                    x = $c.offset().left,
-                    w = $c.width(),
-                    containment = [x, 0, x + w + 5, 0],
-                    that = this;
-                this.$el.find(".audio-progress-circle").draggable({
-                    axis: "x",
-                    containment: containment, //[ x1, y1, x2, y2 ]
-                    start: that.seek.bind(that),
-                    stop: that.jumpToTime.bind(that)
-                });
-            },
-            templateHelpers: function () {
-                var paragraph;
-                if (this.panelStyles) {
-                    paragraph = this.panelStyles.paragraph;
-                }
-                return {
-                    audioMode: this.audioMode,
-                    paragraph: paragraph
-                };
-            },
-            stop: function () {
-                this.showPlayButton();
-                this.audio.pause();
-            },
-            showPauseButton: function () {
-                this.$el.find(".play").addClass("fa-pause");
-            },
-            showPlayButton: function () {
-                this.$el.find(".play").removeClass("fa-pause");
-            },
-            togglePlay: function () {
-                console.log("play toggle");
-                if (this.audio.paused) {
-                    this.audio.play();
-                    this.showPauseButton();
-                } else {
-                    this.audio.pause();
-                    this.showPlayButton();
-                }
-            },
-            volumeUp: function () {
-                this.audio.volume += ((this.audio.volume + 0.1) < 1) ? 0.1 : 0;
-            },
-            volumeDown: function () {
-                this.audio.volume -= ((this.audio.volume - 0.1) > 0) ? 0.1 : 0;
-            },
-            jumpToTime: function (e) {
-                this.suspendUIUpdate = false;
-                var $progressContainer = this.$el.find('.progress-container'),
-                    posX = $progressContainer.offset().left,
-                    w = (e.pageX - posX) / $progressContainer.width();
-                this.audio.currentTime = w * this.audio.duration;
-                if (this.audio.paused) {
-                    this.showPauseButton();
-                    this.audio.play();
-                }
-            },
-            seek: function () {
-                this.suspendUIUpdate = true;
-            },
-            skipForward: function () {
-                if (this.audio.currentTime < this.audio.duration) {
-                    var skipStep = this.audio.duration / 10;
-                    this.audio.currentTime += skipStep;
-                } else {
-                    this.audio.currentTime = this.audio.duration;
-                }
-            },
-            skipBackward: function () {
-                if (this.audio.currentTime > 0) {
-                    var skipStep = this.audio.duration / 10;
-                    this.audio.currentTime -= skipStep;
-                } else {
-                    this.audio.currentTime = 0;
-                }
-            },
-            playerDurationUpdate: function (e, pos) {
-                if (this.suspendUIUpdate) {
-                    return;
-                }
-                if (!pos) {
-                    pos = this.audio.currentTime / this.audio.duration * 100 + "%";
-                }
-                this.$el.find(".audio-progress-duration").width(pos);
-                this.$el.find(".audio-progress-circle").css({
-                    "left": "calc(" + pos + ")"
-                });
-                this.$el.find(".time-current").html(this.getCurrentTime());
-                this.$el.find(".time-duration").html(this.getDuration());
-                e.preventDefault();
-            },
-            formatTime: function (timeCount) {
-                var seconds = timeCount,
-                    minutes = Math.floor(seconds / 60);
-                minutes = (minutes >= 10) ? minutes : "0" + minutes;
-                seconds = Math.floor(seconds % 60);
-                seconds = (seconds >= 10) ? seconds : "0" + seconds;
-                return minutes + ":" + seconds;
-            },
-            getDuration: function () {
-                return this.formatTime(this.audio.duration);
-            },
-            getCurrentTime: function () {
-                return this.formatTime(this.audio.currentTime);
-            }
-        });
-        return AudioPlayer;
-    });
-
-
-define('text!apps/gallery/templates/table.html',[],function () { return '{{#ifequal dataType "photos"}}  \n    <td><img src="{{ path_medium }}" class="thumbnail-img"></td>\n{{/ifequal}}\n\n{{#ifequal dataType "audio"}}\n    <td><i class="fa fa-2x fa-volume-up" aria-hidden="true"></i></td>\n{{/ifequal}}\n\n{{#ifequal dataType "videos"}}\n    <td>\n        {{#ifequal video_provider "vimeo"}}\n            <i class="fa fa-2x fa-vimeo" aria-hidden="true"></i>\n        {{ else }}\n            <i class="fa fa-2x fa-youtube" aria-hidden="true"></i>\n        {{/ifequal}}\n    </td>\n{{/ifequal}}\n\n<td>{{ name }}</td>\n<td>{{ caption }}</td>\n<td>{{ tags }}</td>\n<td>{{ overlay_type }}</td>\n<td>{{ owner }}</td>\n\n';});
-
-
-define('text!apps/gallery/templates/thumb.html',[],function () { return '{{#ifequal dataType "photos"}}\n    <a href="#/{{ dataType }}/{{id}}">\n        <div class="card-img-preview" style="background-image: url(\'{{ path_medium }}\');" />\n    </a>\n    <h1>\n        {{ name }}\n    </h1>\n    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}\n    <h2>\n        {{owner}}\n    </h2>\n\n\n{{/ifequal}}\n\n{{#ifequal dataType "audio"}}\n<a href="#/{{ dataType }}/{{id}}" id="audio-card">\n    <div class="player-container audio-simple">\n\n    </div>\n\n    <h1>\n        {{ name }}\n    </h1>\n    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}\n    <h2>\n        {{owner}}\n    </h2>\n</a>\n{{/ifequal}}\n\n\n{{#ifequal dataType "videos"}}\n<a href="#/{{ dataType }}/{{id}}" class="video-simple">\n    <div class="video-simple">\n        {{#ifequal video_provider "vimeo"}}\n            <iframe src="https://player.vimeo.com/video/{{video_id}}"\n            style="width:100%" height="200"\n            frameborder="0"\n            webkitallowfullscreen mozallowfullscreen allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n\n        {{#ifequal video_provider "youtube"}}\n            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n            style="width:100%" height="200"\n            frameborder="0" allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n    </div>\n\n    <h1>\n        {{ name }}\n    </h1>\n    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}\n    <h2>\n        {{owner}}\n    </h2>\n</a>\n{{/ifequal}}\n\n{{#ifcontains dataType "markers"}}\n    <div class="card-site-field">\n\n        <a href="#/{{ dataType }}/{{id}}">\n\n            <table>\n                   <tr>\n                       <td>Name</td>\n                       <td>{{ this.name }}</td>\n                   </tr>\n\n                   <tr>\n                       <td>Caption</td>\n                       <td>{{truncate this.caption 42}}</td>\n                   </tr>\n\n                   <tr>\n                       <td>Tags</td>\n                       <td>{{ this.tags }}</td>\n                   </tr>\n\n                   <tr>\n                       <td>Coordinates</td>\n                       <td>{{ coords }}</td>\n                   </tr>\n            </table>\n\n            <h1>\n                {{ name }}\n            </h1>\n            <h2>\n                {{owner}}\n            </h2>\n\n        </a>\n    </div>\n{{/ifcontains}}\n\n{{#ifcontains dataType "form_"}}\n    <div class="card-site-field">\n\n        <a href="#/{{ dataType }}/{{id}}">\n            <table>\n\n                {{#each fields}}\n                    <tr>\n                        <td>{{ this.col_alias }}</td>\n                        <td>{{ this.val }}</td>\n                    </tr>\n                {{/each}}\n                <tr>\n                    <td>Coordinates</td>\n                    <td>{{ coords }}</td>\n                </tr>\n            </table>\n\n            <h1>\n                {{display_name}}\n            </h1>\n            <h2>\n                {{owner}}\n            </h2>\n\n        </a>\n    </div>\n{{/ifcontains}}\n';});
-
-define ('apps/gallery/views/media-browser-child-view',[
-    "underscore",
-    "marionette",
-    "handlebars",
-    "lib/audio/audio-player",
-    "text!../templates/table.html",
-    "text!../templates/thumb.html"],
-    function (_, Marionette, Handlebars, AudioPlayer, TableTemplate, ThumbTemplate) {
-        'use strict';
-
-        var MediaBrowserChildView = Marionette.ItemView.extend({
-            initialize: function (opts) {
-                _.extend(this, opts);
-                this.render();
-            },
-            getTemplate: function () {
-                if (this.parent.viewMode == "thumb") {
-                    return Handlebars.compile(ThumbTemplate);
-                }
-                return Handlebars.compile(TableTemplate);
-            },
-            events: {
-                'click .card-img-preview' : 'doSelection',
-                'click .audio-simple' : 'doSelection',
-                'click .video-simple' : 'doSelection',
-                'click td' : "doSelection"
-            },
-
-            doSelection: function (e) {
-                if (this.tagName === "tr") {
-                    this.selectedClass(e, this.parent.$el.find("tr"));
-                } else {
-                    this.selectedClass(e, this.parent.$el.find(".column"));
-                }
-            },
-            selectedClass: function (e, $columns) {
-                var hasPrevModel, previousModel, currentModel,
-                    startIndex, endIndex, i, currModel, currColumn;
-
-                // 1) if neither SHIFT nor CMD selected, clear everything:
-                if (!e.metaKey && !e.shiftKey) {
-                    $columns.removeClass("selected-card");
-                    this.model.collection.each(function (model) {
-                        model.set("isSelected", false);
-                    });
-                }
-
-                // 2) Then either select or deselect current element:
-                if (this.$el.hasClass("selected-card")) {
-                    this.$el.removeClass("selected-card");
-                    this.model.set("isSelected", false);
-                } else {
-                    this.$el.addClass("selected-card");
-                    this.model.set("isSelected", true);
-                }
-
-                // 3) then, if shift key selected, select everything in between:
-                if (e.shiftKey) {
-                    hasPrevModel = true;
-                    if (this.parent.lastSelectedModel == null) {
-                        hasPrevModel = false;
-                    }
-
-                    if (hasPrevModel) {
-                        previousModel = this.parent.lastSelectedModel;
-                        currentModel = this.model;
-                        if (this.model.collection.indexOf(previousModel) <
-                                this.model.collection.indexOf(currentModel)) {
-                            startIndex = this.model.collection.indexOf(previousModel);
-                            endIndex = this.model.collection.indexOf(currentModel);
-                        } else {
-                            endIndex = this.model.collection.indexOf(previousModel);
-                            startIndex = this.model.collection.indexOf(currentModel);
-                        }
-
-                        for (i = startIndex + 1; i < endIndex + 1; i++) {
-                            currModel = this.model.collection.models[i];
-                            currColumn = $columns.eq(i);
-                            currColumn.addClass("selected-card");
-                            currModel.set("isSelected", true);
-                        }
-                    }
-                }
-
-                // 4) Finally, remember lastSelectedModel:
-                if (this.$el.hasClass("selected-card")) {
-                    this.parent.lastSelectedModel = this.model;
-                } else {
-                    this.parent.lastSelectedModel = null;
-                }
-                e.preventDefault();
-            },
-
-            onRender: function () {
-                var player;
-                if (this.currentMedia == "audio") {
-                    player = new AudioPlayer({
-                        model: this.model,
-                        audioMode: "simple",
-                        app: this.app
-                    });
-                    this.$el.find(".player-container").html(player.$el);
-                }
-            },
-
-            templateHelpers: function () {
-                return {
-                    dataType: this.currentMedia
-                };
-            }
-        });
-        return MediaBrowserChildView;
-    });
-
-
-define('text!apps/gallery/templates/media-list-add.html',[],function () { return '<div class="filter">\n    <form class="modal-search-form">\n        <input type="text" id="searchTerm" value="{{searchTerm}}" placeholder="Filter data and media">\n    \t<button id="toolbar-search"><i class="fa fa-search" aria-hidden="true"></i></button>\n    </form>\n    <button id="card-view-button-modal" class="button-secondary database-view-buttons-modal"><i class="fa fa-th" aria-hidden="true"></i></button>\n    <button id="table-view-button-modal" class="button-secondary database-view-buttons-modal active"><i class="fa fa-bars" aria-hidden="true"></i></button>\n    <button id="media-videos" class="button-secondary fetch-btn" data-value="videos">Videos</button>\n    <button id="media-audio" class="button-secondary fetch-btn" data-value="audio">Audio</button>\n    <button id="media-photos" class="button-secondary fetch-btn" data-value="photos">Photos</button>\n</div>\n\n\n{{#ifequal viewMode "thumb"}}\n<div class="container-wrapper">\n    <div class="container" id="gallery-main">\n        <br>\n        <div id="loading-animation">\n            <i class="fa fa-cog fa-5x fa-spin"></i>\n        </div>\n    </div>\n</div>\n{{/ifequal}}\n\n\n\n{{#ifequal viewMode "table"}}\n<div class="container">\n    <div id="table-view-modal" class="database-views-modal" style="display: block;">\n        <table>\n            <thead>\n                <tr>\n                    <th></th>\n                    <th>Name</th>\n                    <th>Description</th>\n                    <th>Tags</th>\n                    <th>Kind</th>\n                    <th>Author</th>\n                </tr>\n            </thead>\n\n            <tbody id="gallery-main">\n            </tbody>\n        </table>\n        <br>\n        <div id="loading-animation">\n            <i class="fa fa-cog fa-5x fa-spin"></i>\n        </div>\n    </div>\n</div>\n{{/ifequal}}\n';});
-
-define('apps/gallery/views/media_browser',[
+define ('apps/style/views/left/new-map-modal-view',[
     "jquery",
     "underscore",
     "marionette",
     "handlebars",
-    "collections/photos",
-    "collections/audio",
-    "collections/videos",
-    "apps/gallery/views/media-browser-child-view",
-    "text!../templates/media-list-add.html"],
-    function ($, _, Marionette, Handlebars, Photos, Audio, Videos,
-            MediaBrowserChildView, ParentTemplate) {
+    "text!../../templates/left/new-map-modal.html"],
+    function ($, _, Marionette, Handlebars, NewMapModalTemplate) {
         'use strict';
-        var BrowserView = Marionette.CompositeView.extend({
-            currentMedia: "photos",
-            lastSelectedModel: null,
-            viewMode: "thumb",
-            childView: MediaBrowserChildView,
-            childViewContainer: "#gallery-main",
-            searchTerm: null,
-            events: {
-                "click .fetch-btn" : "fetchMedia",
-                'click #card-view-button-modal' : 'displayCards',
-                'click #table-view-button-modal' : 'displayTable',
-                'click #toolbar-search': 'doSearch'
-            },
 
+        var NewMap = Marionette.ItemView.extend({    
             initialize: function (opts) {
                 _.extend(this, opts);
-                Marionette.CompositeView.prototype.initialize.call(this);
-                this.template = Handlebars.compile(ParentTemplate);
-                this.displayMedia();
-
-                this.listenTo(this.app.vent, 'search-requested', this.doSearch);
-                this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
+                this.listenTo(this.app.vent, "send-modal-error", this.updateModal);
+                this.template = Handlebars.compile(NewMapModalTemplate);
             },
 
+            events: {
+                "change #new-map-name" : "generateSlug"
+            },
+            slugError: null,
+            templateHelpers: function () {
+                var helpers = {
+                    slugError: this.slugError,
+                    generalError: this.generalError
+                };
+                return helpers; 
+            },
+
+            saveMap: function () {
+                var mapAttrs = {};
+                mapAttrs.name = this.$el.find("#new-map-name").val();
+                mapAttrs.slug = this.$el.find('#new-map-slug').val();
+                this.app.vent.trigger("create-new-map", mapAttrs);
+            },
+           
+            generateSlug: function () {
+                var name = this.$el.find('#new-map-name').val(),
+                    slug = name.toLowerCase().replace(/\s+/g, "-");
+                this.$el.find('#new-map-slug').val(slug);
+            },
+
+            updateModal: function (errorMessage) {
+                if (errorMessage.status == '400') {
+                    var messages = JSON.parse(errorMessage.responseText);
+                    this.slugError = messages.slug[0];
+                    this.generalError = null;
+                } else {
+                    this.generalError = "Save Unsuccessful. Unspecified Server Error. Consider changing Map Title or Friendly Url";
+                    this.slugError = null;
+                }
+                this.render();
+            }
+
+        });
+        return NewMap;
+
+    }
+);
+
+
+define('text!apps/style/templates/left/select-map.html',[],function () { return '<div class="style-section-header-wrapper">\n    <div class="plus-container" style="position:relative;float:right;">\n        <a class="add-map"><i class="fa fa-plus add" aria-hidden="true"></i></a>\n    </div>\n    <h4>Map</h4>\n</div>\n\n{{#if noItems}}\n    <p class="map-none-message">Click the plus sign to create a new map</p>\n{{else}}\n<select class="style-wide-select" id="map-select">\n    {{#each items}}\n    <option class="map-select-option" value="{{ this.id }}">{{ this.name }}</option>\n    {{/each}}\n</select>\n\n{{/if}}';});
+
+define('apps/style/views/left/select-map-view',["jquery",
+        "marionette",
+        "handlebars",
+        "models/map",
+        "collections/maps",
+        "models/layer",
+        "collections/layers",
+        "apps/style/views/left/new-map-modal-view",
+        "text!../../templates/left/select-map.html",
+        "lib/modals/modal"
+    ],
+    function ($, Marionette, Handlebars, Map, Maps, Layer, Layers, NewMap, MapTemplate, Modal) {
+        'use strict';
+
+        var SelectMapView = Marionette.ItemView.extend(_.extend({}, {
+            stateKey: 'select-map',
+            isShowing: true,
+            template: Handlebars.compile(MapTemplate),
+            templateHelpers: function() {
+                return {
+                    noItems: (this.collection.length === 0)
+                }
+            },
+
+            events: function () {
+                return _.extend(
+                    {
+                        'change #map-select': 'setActiveMap',
+                        'click .add-map': 'showAddMapModal'
+                    }
+                );
+            },
+            modal: null,
+
+            initialize: function (opts) {
+                var that = this;
+                _.extend(this, opts);
+                if (!this.collection) {
+                    // /api/0/maps/ API Endpoint gets built:
+                    this.collection = new Maps();
+                    this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
+                    this.collection.fetch({ reset: true });
+                } else {
+                    this.drawOnce();
+                }
+                this.modal = new Modal();
+
+                this.listenTo(this.collection, 'reset', this.drawOnce);
+                this.listenTo(this.app.vent, "create-new-map", this.newMap);
+                this.listenTo(this.app.vent, 'update-map-list', this.setActiveMap);
+            },
+
+
+            newMap: function (mapAttrs) {
+                var that = this,
+                    latLng = this.app.basemapView.getCenter();
+                this.map = new Map({
+                    name: mapAttrs.name,
+                    slug: mapAttrs.slug,
+                    center: {
+                        "type": "Point",
+                        "coordinates": [
+                            latLng.lng(),
+                            latLng.lat()
+                        ]
+                    },
+                    basemap: this.app.getMapTypeId(),
+                    zoom: this.app.getZoom(),
+                    project_id: this.app.getProjectID()
+                });
+
+                this.map.save(null, {
+                    success: this.setMapAndRender.bind(this),
+                    error: function (model, response){
+                        var messages = JSON.parse(response.responseText);
+                        console.log(messages);
+                        if (messages.slug && messages.slug.length > 0) {
+                            that.slugError = messages.slug[0];
+                            console.log("should have error message", that.slugError);
+                        }
+                        that.app.vent.trigger("send-modal-error", that.slugError);
+                    }
+                });
+            },
+
+            setMapAndRender: function () {
+                var that = this;
+                this.collection.add(this.map);
+                var dataSources = this.app.dataManager.getDataSources();
+                this.modal.hide();               
+                this.render();
+                this.$el.find('#map-select').val(this.map.id);
+                
+                var layers = new Layers(null, {mapID: this.map.get("id")});
+                this.map.set("layers", layers);
+
+                dataSources.forEach(function(dataSource) {
+                    var collection = that.app.dataManager.getCollection(dataSource.value);
+                    if (collection.length < 1) {return;}
+                        if (dataSource.value === "markers") {
+                            var layer = new Layer({
+                                map_id: that.map.id,
+                                data_source: dataSource.value, 
+                                layer_type: "basic",
+                                filters: {},
+                                symbols: [{
+                                    "fillColor": collection.fillColor,
+                                    "width": 20,
+                                    "rule": "*",
+                                    "title": dataSource.name
+                                }],
+                                metadata: {
+                                    buckets: 4,
+                                    paletteId: 0,
+                                    fillOpacity: 1,
+                                    width: 20,
+                                    fillColor: collection.fillColor,
+                                    strokeColor: "#ffffff",
+                                    strokeWeight: 1,
+                                    strokeOpacity: 1,
+                                    shape: "circle"
+                                },
+                                title: "Sites"
+                            });
+                            layers.add(layer);
+                            layer.save();
+                        } else if (dataSource.value.includes("form_")){
+                            var layer = new Layer({
+                                map_id: that.map.id,
+                                data_source: dataSource.value, 
+                                layer_type: "basic",
+                                filters: {},
+                                symbols: [{
+                                    "fillColor": collection.fillColor,
+                                    "width": 20,
+                                    "rule": "*",
+                                    "title": dataSource.name
+                                }],
+                                metadata: {
+                                    buckets: 4,
+                                    paletteId: 0,
+                                    fillOpacity: 1,
+                                    width: 20,
+                                    fillColor: collection.fillColor,
+                                    strokeColor: "#ffffff",
+                                    strokeWeight: 1,
+                                    strokeOpacity: 1,
+                                    shape: "circle"
+                                },
+                                title: dataSource.name
+                            });
+                            layers.add(layer);
+                            layer.save();
+                        }});
+                this.app.vent.trigger("change-map", this.map);
+            },
+
+            drawOnce: function () {
+                this.render();
+                this.setActiveMap();
+            },
+
+            setActiveMap: function () {
+                if (this.collection.length == 0) {
+                    return;
+                }
+                var id = this.$el.find('#map-select').val(),
+                    that = this,
+                    selectedMapModel = this.collection.get(id);
+                //re-fetch map from server so that it also returns the layers:
+                selectedMapModel.fetch({ success: function () {
+                    that.setCenterZoom(selectedMapModel);
+                    that.setMapTypeId(selectedMapModel);
+                    that.app.vent.trigger("change-map", selectedMapModel);
+                    that.app.vent.trigger("hide-right-panel");
+                }});
+            },
+
+            showAddMapModal: function () {
+                var createMapModel = new NewMap({
+                    app: this.app
+                });
+                this.modal.update({
+                    class: "add-map",
+                    view: createMapModel,
+                    title: 'Add Map',
+                    width: 400,
+                    height: 0,
+                    closeButtonText: "Done",
+                    showSaveButton: true,
+                    saveFunction: createMapModel.saveMap.bind(createMapModel),
+                    showDeleteButton: false
+                });
+                this.modal.show();
+            },
+
+            setCenterZoom: function (selectedMapModel) {
+                var location = selectedMapModel.getDefaultLocation();
+                this.app.basemapView.setCenter(location.center);
+                this.app.basemapView.setZoom(location.zoom);
+            },
+
+            setMapTypeId: function (selectedMapModel) {
+                var skin = selectedMapModel.getDefaultSkin();
+                this.app.basemapView.setMapTypeId(skin.basemap);
+            }
+
+        }));
+        return SelectMapView;
+    });
+
+define('text!apps/style/templates/left/layer-item.html',[],function () { return '<input type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} /> \n<p class="layer-name">{{ title }}</p> \n<a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>\n<a class="edit">edit</a>\n';});
+
+define('apps/style/views/left/layer-list-child-view',["jquery",
+        "marionette",
+        "handlebars",
+        'lib/maps/marker-overlays',
+        "text!../../templates/left/layer-item.html"
+    ],
+    function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate) {
+        'use strict';
+        var LayerListChild =  Marionette.ItemView.extend({
+            initialize: function (opts) {
+                _.extend(this, opts);
+                this.listenTo(this.app.vent, "change-map", this.hideOverlays);
+                this.listenTo(this.model, "change:title", this.render);
+                this.initMapOverlays();
+                if (this.model.get("metadata").isShowing) {
+                    this.showOverlays();
+                }
+            },
+            template: Handlebars.compile(LayerItemTemplate),
+            tagName: "div",
+            className: "layer-column",
             templateHelpers: function () {
                 return {
-                    viewMode: this.viewMode,
-                    searchTerm: this.searchTerm
+                    isChecked: this.model.get("metadata").isShowing
                 };
             },
+            markerOverlayList: null,
+            modelEvents: {
+                'rebuild-markers': 'updateMapOverlays'
+            },
+            events: {
+                //edit event here, pass the this.model to the right panel
+                'click .edit' : 'sendCollection',
+                'click .layer-delete' : 'deleteLayer',
+                'change input': 'showHideOverlays'
+            },
+
+            sendCollection: function () {
+               // this.$el.addClass('selected-layer');
+                this.$el.attr('id', this.model.id);
+                console.log(this.model, this.model.id);
+                this.app.vent.trigger('handle-selected-layer', this.model.id);
+                this.app.vent.trigger("edit-layer", this.model, this.collection);
+            },
+
+            deleteLayer: function () {
+                if (!confirm("Are you sure you want to delete this layer?")) {
+                    return;
+                }
+                console.log("deleteLayer()", this.model);
+                console.log("collection before delete: ", this.collection);
+                this.model.destroy();
+                this.collection.remove(this.model);
+                this.deleteOverlays();
+                //this.hideOverlays();
+                console.log("collection after delete: ", this.collection);
+                this.app.vent.trigger('update-layer-list');
+                this.app.vent.trigger("hide-right-panel");
+            },
+
+            updateTitle: function (title) {
+                this.model.set("title", title);
+                this.render();
+            },
+
+            updateMapOverlays: function () {
+                console.log('rebuilding map overlays');
+                console.log(this.model.getSymbols());
+                this.hideOverlays();
+                this.model.rebuildSymbolMap();
+                this.initMapOverlays();
+                if (this.model.get("metadata").isShowing) {
+                    this.showOverlays();
+                }
+            },
+
+            initMapOverlays: function () {
+                // create an MarkerOverlays for each symbol in the
+                // layer.
+                this.markerOverlayList = [];
+                var matchedCollection,
+                    overlays,
+                    that = this,
+                    dataSource = this.model.get("data_source"),
+                    data = this.app.dataManager.getCollection(dataSource),
+                    symbols = this.model.getSymbols();
+                    console.log(this.model.getSymbols());
+                symbols.each(function (symbol) {
+                    matchedCollection = new data.constructor(null, { url: "dummy" });
+                    data.each(function (model) {
+                        console.log("symbol looped once", symbol.checkModel(model));
+                        if (symbol.checkModel(model)) {
+                            matchedCollection.add(model);
+                        }
+                    });
+                    overlays = new MarkerOverlays({
+                        collection: matchedCollection,
+                        app: that.app,
+                        iconOpts: symbol.toJSON(),
+                        isShowing: false
+                    });
+                    that.markerOverlayList.push(overlays);
+                });
+                console.log(this.markerOverlayList);
+            },
+
+            showOverlays: function () {
+                _.each(this.markerOverlayList, function (overlays) {
+                    overlays.showAll();
+                });
+            },
+
+            hideOverlays: function () {
+                _.each(this.markerOverlayList, function (overlays) {
+                    overlays.hideAll();
+                });
+            },
+
+            deleteOverlays: function () {
+                console.log("deleteOverlays() called")
+              //  this.$el.find('.gmnoprint').remove();
+                
+                _.each(this.markerOverlayList, function (overlays) {
+                    overlays.remove();
+                });
+            },
+
+            showHideOverlays: function () {
+                this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
+                if (this.model.get("metadata").isShowing) {
+                    this.showOverlays();
+                } else {
+                    this.hideOverlays();
+                }
+            }
+        });
+        return LayerListChild;
+    });
+
+define('text!apps/style/templates/left/layer-list.html',[],function () { return '<div class="style-section-header-wrapper">\n    <div class="plus-container" style="position:relative;float:right;">\n        <a class="add-layer"><i class="fa fa-plus add" aria-hidden="true"></i></a>\n    </div>\n\n    <h4>Layers</h4>\n</div>\n    {{#if noLayers}}\n    <p class="layer-none-message">Click the plus sign to create a new layer</p>\n    {{/if}}\n<div id="layers" class="layers">\n</div>';});
+
+define('apps/style/views/left/layer-list-view',["marionette",
+        "handlebars",
+        "collections/layers",
+        "models/layer",
+        "apps/style/views/left/layer-list-child-view",
+        "text!../../templates/left/layer-list.html"
+    ],
+    function (Marionette, Handlebars, Layers, Layer, LayerListChild,
+        LayerListTemplate) {
+        'use strict';
+
+        var LayerListView = Marionette.CompositeView.extend(_.extend({}, {
+            stateKey: 'layer_list',
+            template: Handlebars.compile(LayerListTemplate),
+            templateHelpers: function () {
+                return {
+                    noLayers: (this.collection.length === 0)
+                };
+            },
+            isShowing: true,
+            childView: LayerListChild,
+            childViewContainer: "#layers",
 
             childViewOptions: function () {
                 return {
                     app: this.app,
-                    currentMedia: this.currentMedia,
-                    lastSelectedModel: this.lastSelectedColumn,
-                    parent: this,
-                    tagName: this.determineChildViewTagName(this.viewMode),
-                    className: this.determineChildViewClassName(this.viewMode)
+                    collection: this.collection
                 };
             },
 
-            determineChildViewTagName: function (vm) {
-                if (vm == "thumb") {
-                    return "div";
+            initialize: function (opts) {
+                this.app = opts.app;
+                this.model = opts.model;
+
+                this.listenTo(this.app.vent, 'update-layer-list', this.render);
+                this.listenTo(this.app.vent, 'handle-selected-layer', this.handleSelectedLayer);
+                this.listenTo(this.app.vent, 'create-new-layer', this.createNewLayer);
+            },
+
+            events: function () {
+                return _.extend(
+                    { 'click .add-layer' : 'createNewLayer' }                );
+            },
+            showDropDown: function () {
+                this.$el.find("#new-layer-options").toggle();
+            },
+
+            handleSelectedLayer: function (id) {
+                this.$el.find('.layer-column').removeClass('selected-layer');
+                this.$el.find('#' + id).addClass('selected-layer');
+            },
+            
+            createNewLayer: function (e) {
+                console.log("Altered?: ", this.app.layerHasBeenAltered)
+                console.log("Saved?: ", this.app.layerHasBeenSaved)
+                var continueAction = true;
+                if (this.app.layerHasBeenAltered && !this.layerHasBeenSaved) {
+                    console.log("should send save confirmation");
+                    continueAction = confirm("You have unsaved changes on your currently selected layer. If you continue, your changes will not be saved. Do you wish to continue?");
                 }
-                return "tr";
-            },
-
-            determineChildViewClassName: function (vm) {
-                if (vm == "thumb") {
-                    return "column";
+                if(!continueAction) {
+                    console.log("should exit createLayer()");
+                    return;
                 }
-                return "table";
-            },
-
-            displayCards: function () {
-                this.viewMode = "thumb";
-                this.render();
-                this.hideLoadingMessage();
-            },
-
-            displayTable: function () {
-                this.viewMode = "table";
-                this.render();
-                this.hideLoadingMessage();
-            },
-
-            hideLoadingMessage: function () {
-                this.$el.find("#loading-animation").empty();
-            },
-
-            displayMedia: function () {
-                if (this.currentMedia == 'photos') {
-                    this.collection = new Photos();
-                } else if (this.currentMedia == 'audio') {
-                    this.collection = new Audio();
-                } else {
-                    this.collection = new Videos();
-                }
-                this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
-                this.collection.fetch({reset: true});
-                this.listenTo(this.collection, 'reset', this.render);
-                this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
-            },
-
-            doSearch: function (e) {
-                this.searchTerm = this.$el.find("#searchTerm").val();
-                this.collection.doSearch(this.searchTerm, this.app.getProjectID());
-                e.preventDefault();
-            },
-
-            clearSearch: function () {
-                this.collection.clearSearch(this.app.getProjectID());
-            },
-
-            fetchMedia: function (e) {
-                this.currentMedia = $(e.target).attr('data-value');
-                this.collection = this.app.dataManager.getCollection(this.currentMedia);
-                this.displayMedia();
-                e.preventDefault();
-            },
-
-            addModels: function () {
-                var selectedModels = [];
-                this.collection.each(function (model) {
-                    if (model.get("isSelected")) {
-                        selectedModels.push(model);
-                    }
+                console.log("createNewLayer triggered", this.app.selectedMapModel);
+                var layer = new Layer({
+                    map_id: this.app.selectedMapModel.id,
+                    data_source: "photos", //default
+                    layer_type: "basic",
+                    filters: {},
+                    symbols: [{
+                        "fillColor": "#7075FF",
+                        "width": 30,
+                        "rule": "sculptures > 0",
+                        "title": "At least 1 sculpture"
+                    }],
+                    title: "Layer 1"
                 });
-                this.parentModel.trigger('add-models-to-marker', selectedModels);
+                this.app.vent.trigger("edit-layer", layer, this.collection);
+                this.showSection();
+                /*
+                if (e) {
+                    e.preventDefault();
+                }
+                */
             }
 
-        });
-        return BrowserView;
-
+        }));
+        return LayerListView;
     });
 
 
-define('text!apps/spreadsheet/templates/create-field.html',[],function () { return '<div id="model-form"></div>';});
+define('text!apps/style/templates/left/skin.html',[],function () { return '<div class="style-section-header-wrapper">\n    <h4 class="skin-header">Map Skin Style</h4>\n</div>\n<select id="skin-select" class="style-wide-select">\n{{#each items}}\n    <option value={{ this.id }}>{{ this.name }}</option>\n{{/each}}\n</select>\n';});
 
-define('apps/spreadsheet/views/create-field',[
-    "backbone",
-    "marionette",
-    "handlebars",
-    "models/field",
-    "text!../templates/create-field.html",
-    "form"
-], function (Backbone, Marionette, Handlebars, Field, CreateFieldTemplate) {
-    'use strict';
-    var CreateFieldView = Marionette.ItemView.extend({
-        template: Handlebars.compile(CreateFieldTemplate),
-        initialize: function (opts) {
-            //console.log("Creating field");
-            this.model = new Field(null, { id: opts.formID });
-            this.fields = opts.fields;
-            this.app = opts.app;
-            // see documentation: https://github.com/powmedia/backbone-forms
-            this.form = new Backbone.Form({
-                model: this.model,
-                schema: {
-                    col_alias: {
-                        type: 'Text',
-                        title: "Name",
-                        validators: ['required']
-                    },
-                    data_type: {
-                        title: 'Data Type',
-                        type: 'Select',
-                        options: { text: 'Text', integer: 'Integer', boolean: 'Boolean' }
-                    }
-                }
-            }).render();
-            /*
-            this.render();
-            this.$el.find("#model-form").append(this.form.$el);
-            */
-        },
+define('apps/style/views/left/skin-view',["marionette",
+        "handlebars",
+        "collections/maps",
+        "text!../../templates/left/skin.html"
+    ],
+    function (Marionette, Handlebars, Maps, SkinTemplate) {
+        'use strict';
 
-        onShow: function(){
-            this.render();
-            this.$el.find("#model-form").append(this.form.$el);
+        var SelectSkinView = Marionette.ItemView.extend(_.extend({}, {
+            stateKey: 'skin',
+            isShowing: false,
+            template: Handlebars.compile(SkinTemplate),
 
-        },
-        saveToDatabase: function () {
-            var that = this;
-            // see the "saveModel" method of the
-            // apps/gallery/views/data-detail.js to see
-            // how to save, using Backbone forms
-            var errors = this.form.commit({ validate: true });
-            if (errors) {
-                console.log("errors: ", errors);
-                return;
+            initialize: function (opts) {
+                this.app = opts.app;
+
+                // here is some fake data until the
+                // /api/0/maps/ API Endpoint gets built:
+                this.collection = new Maps([
+                    { id: 1, name: "Greyscale", project_id: 4 },
+                    { id: 2, name: "Default", project_id: 4 },
+                    { id: 3, name: "Dark", project_id: 4 }                ]);
             }
-            this.model.set("ordering", this.fields.length+1); // list starting at 1, thus +1 needed
-            this.model.save(
-                null,
-                {
-                    success: function(){
-                        // Successfully add a new field
-                        that.fields.add(that.model);
-                        that.app.vent.trigger('success-message', "New Field added");
-                        that.app.vent.trigger("render-spreadsheet");
-                        that.app.vent.trigger("hide-modal");
-                    }
-                }
-            );
+        }));
+        return SelectSkinView;
+    });
+(function(root) {
+define("color-picker-eyecon", ["jquery"], function() {
+  return (function() {
+/**
+ *
+ * Color picker
+ * Author: Stefan Petre www.eyecon.ro
+ * 
+ * Dual licensed under the MIT and GPL licenses
+ * 
+ */
+(function ($) {
+	var ColorPicker = function () {
+		var
+			ids = {},
+			inAction,
+			charMin = 65,
+			visible,
+			tpl = '<div class="colorpicker"><div class="colorpicker_color"><div><div></div></div></div><div class="colorpicker_hue"><div></div></div><div class="colorpicker_new_color"></div><div class="colorpicker_current_color"></div><div class="colorpicker_hex"><input type="text" maxlength="6" size="6" /></div><div class="colorpicker_rgb_r colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_g colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_b colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_h colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_s colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_b colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_submit"></div></div>',
+			defaults = {
+				eventName: 'click',
+				onShow: function () {},
+				onBeforeShow: function(){},
+				onHide: function () {},
+				onChange: function () {},
+				onSubmit: function () {},
+				color: 'ff0000',
+				livePreview: true,
+				flat: false
+			},
+			fillRGBFields = function  (hsb, cal) {
+				var rgb = HSBToRGB(hsb);
+				$(cal).data('colorpicker').fields
+					.eq(1).val(rgb.r).end()
+					.eq(2).val(rgb.g).end()
+					.eq(3).val(rgb.b).end();
+			},
+			fillHSBFields = function  (hsb, cal) {
+				$(cal).data('colorpicker').fields
+					.eq(4).val(hsb.h).end()
+					.eq(5).val(hsb.s).end()
+					.eq(6).val(hsb.b).end();
+			},
+			fillHexFields = function (hsb, cal) {
+				$(cal).data('colorpicker').fields
+					.eq(0).val(HSBToHex(hsb)).end();
+			},
+			setSelector = function (hsb, cal) {
+				$(cal).data('colorpicker').selector.css('backgroundColor', '#' + HSBToHex({h: hsb.h, s: 100, b: 100}));
+				$(cal).data('colorpicker').selectorIndic.css({
+					left: parseInt(150 * hsb.s/100, 10),
+					top: parseInt(150 * (100-hsb.b)/100, 10)
+				});
+			},
+			setHue = function (hsb, cal) {
+				$(cal).data('colorpicker').hue.css('top', parseInt(150 - 150 * hsb.h/360, 10));
+			},
+			setCurrentColor = function (hsb, cal) {
+				$(cal).data('colorpicker').currentColor.css('backgroundColor', '#' + HSBToHex(hsb));
+			},
+			setNewColor = function (hsb, cal) {
+				$(cal).data('colorpicker').newColor.css('backgroundColor', '#' + HSBToHex(hsb));
+			},
+			keyDown = function (ev) {
+				var pressedKey = ev.charCode || ev.keyCode || -1;
+				if ((pressedKey > charMin && pressedKey <= 90) || pressedKey == 32) {
+					return false;
+				}
+				var cal = $(this).parent().parent();
+				if (cal.data('colorpicker').livePreview === true) {
+					change.apply(this);
+				}
+			},
+			change = function (ev) {
+				var cal = $(this).parent().parent(), col;
+				if (this.parentNode.className.indexOf('_hex') > 0) {
+					cal.data('colorpicker').color = col = HexToHSB(fixHex(this.value));
+				} else if (this.parentNode.className.indexOf('_hsb') > 0) {
+					cal.data('colorpicker').color = col = fixHSB({
+						h: parseInt(cal.data('colorpicker').fields.eq(4).val(), 10),
+						s: parseInt(cal.data('colorpicker').fields.eq(5).val(), 10),
+						b: parseInt(cal.data('colorpicker').fields.eq(6).val(), 10)
+					});
+				} else {
+					cal.data('colorpicker').color = col = RGBToHSB(fixRGB({
+						r: parseInt(cal.data('colorpicker').fields.eq(1).val(), 10),
+						g: parseInt(cal.data('colorpicker').fields.eq(2).val(), 10),
+						b: parseInt(cal.data('colorpicker').fields.eq(3).val(), 10)
+					}));
+				}
+				if (ev) {
+					fillRGBFields(col, cal.get(0));
+					fillHexFields(col, cal.get(0));
+					fillHSBFields(col, cal.get(0));
+				}
+				setSelector(col, cal.get(0));
+				setHue(col, cal.get(0));
+				setNewColor(col, cal.get(0));
+				cal.data('colorpicker').onChange.apply(cal, [col, HSBToHex(col), HSBToRGB(col)]);
+			},
+			blur = function (ev) {
+				var cal = $(this).parent().parent();
+				cal.data('colorpicker').fields.parent().removeClass('colorpicker_focus');
+			},
+			focus = function () {
+				charMin = this.parentNode.className.indexOf('_hex') > 0 ? 70 : 65;
+				$(this).parent().parent().data('colorpicker').fields.parent().removeClass('colorpicker_focus');
+				$(this).parent().addClass('colorpicker_focus');
+			},
+			downIncrement = function (ev) {
+				var field = $(this).parent().find('input').focus();
+				var current = {
+					el: $(this).parent().addClass('colorpicker_slider'),
+					max: this.parentNode.className.indexOf('_hsb_h') > 0 ? 360 : (this.parentNode.className.indexOf('_hsb') > 0 ? 100 : 255),
+					y: ev.pageY,
+					field: field,
+					val: parseInt(field.val(), 10),
+					preview: $(this).parent().parent().data('colorpicker').livePreview					
+				};
+				$(document).bind('mouseup', current, upIncrement);
+				$(document).bind('mousemove', current, moveIncrement);
+			},
+			moveIncrement = function (ev) {
+				ev.data.field.val(Math.max(0, Math.min(ev.data.max, parseInt(ev.data.val + ev.pageY - ev.data.y, 10))));
+				if (ev.data.preview) {
+					change.apply(ev.data.field.get(0), [true]);
+				}
+				return false;
+			},
+			upIncrement = function (ev) {
+				change.apply(ev.data.field.get(0), [true]);
+				ev.data.el.removeClass('colorpicker_slider').find('input').focus();
+				$(document).unbind('mouseup', upIncrement);
+				$(document).unbind('mousemove', moveIncrement);
+				return false;
+			},
+			downHue = function (ev) {
+				var current = {
+					cal: $(this).parent(),
+					y: $(this).offset().top
+				};
+				current.preview = current.cal.data('colorpicker').livePreview;
+				$(document).bind('mouseup', current, upHue);
+				$(document).bind('mousemove', current, moveHue);
+			},
+			moveHue = function (ev) {
+				change.apply(
+					ev.data.cal.data('colorpicker')
+						.fields
+						.eq(4)
+						.val(parseInt(360*(150 - Math.max(0,Math.min(150,(ev.pageY - ev.data.y))))/150, 10))
+						.get(0),
+					[ev.data.preview]
+				);
+				return false;
+			},
+			upHue = function (ev) {
+                moveHue(ev);
+				fillRGBFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
+				fillHexFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
+				$(document).unbind('mouseup', upHue);
+				$(document).unbind('mousemove', moveHue);
+				return false;
+			},
+			downSelector = function (ev) {
+				var current = {
+					cal: $(this).parent(),
+					pos: $(this).offset()
+				};
+				current.preview = current.cal.data('colorpicker').livePreview;
+				$(document).bind('mouseup', current, upSelector);
+				$(document).bind('mousemove', current, moveSelector);
+			},
+			moveSelector = function (ev) {
+				change.apply(
+					ev.data.cal.data('colorpicker')
+						.fields
+						.eq(6)
+						.val(parseInt(100*(150 - Math.max(0,Math.min(150,(ev.pageY - ev.data.pos.top))))/150, 10))
+						.end()
+						.eq(5)
+						.val(parseInt(100*(Math.max(0,Math.min(150,(ev.pageX - ev.data.pos.left))))/150, 10))
+						.get(0),
+					[ev.data.preview]
+				);
+				return false;
+			},
+              
+            upSelector = function (ev) {
+              
+                moveSelector(ev);
+                
+                fillRGBFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
+                fillHexFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
+                $(document).unbind('mouseup', upSelector);
+                $(document).unbind('mousemove', moveSelector);
+                return false;
+            }, 
+			enterSubmit = function (ev) {
+				$(this).addClass('colorpicker_focus');
+			},
+			leaveSubmit = function (ev) {
+				$(this).removeClass('colorpicker_focus');
+			},
+			clickSubmit = function (ev) {
+				var cal = $(this).parent();
+				var col = cal.data('colorpicker').color;
+				cal.data('colorpicker').origColor = col;
+				setCurrentColor(col, cal.get(0));
+				cal.data('colorpicker').onSubmit(col, HSBToHex(col), HSBToRGB(col), cal.data('colorpicker').el);
+			},
+			show = function (ev) {
+				var cal = $('#' + $(this).data('colorpickerId'));
+				cal.data('colorpicker').onBeforeShow.apply(this, [cal.get(0)]);
+				var pos = $(this).offset();
+				var viewPort = getViewport();
+				var top = pos.top + this.offsetHeight;
+				var left = pos.left;
+				if (top + 176 > viewPort.t + viewPort.h) {
+					top -= this.offsetHeight + 176;
+				}
+				if (left + 356 > viewPort.l + viewPort.w) {
+					left -= 356;
+				}
+				cal.css({left: left + 'px', top: top + 'px'});
+				if (cal.data('colorpicker').onShow.apply(this, [cal.get(0)]) != false) {
+					cal.show();
+				}
+				$(document).bind('mousedown', {cal: cal}, hide);
+				return false;
+			},
+			hide = function (ev) {
+				if (!isChildOf(ev.data.cal.get(0), ev.target, ev.data.cal.get(0))) {
+					if (ev.data.cal.data('colorpicker').onHide.apply(this, [ev.data.cal.get(0)]) != false) {
+						ev.data.cal.hide();
+					}
+					$(document).unbind('mousedown', hide);
+				}
+			},
+			isChildOf = function(parentEl, el, container) {
+				if (parentEl == el) {
+					return true;
+				}
+				if (parentEl.contains) {
+					return parentEl.contains(el);
+				}
+				if ( parentEl.compareDocumentPosition ) {
+					return !!(parentEl.compareDocumentPosition(el) & 16);
+				}
+				var prEl = el.parentNode;
+				while(prEl && prEl != container) {
+					if (prEl == parentEl)
+						return true;
+					prEl = prEl.parentNode;
+				}
+				return false;
+			},
+			getViewport = function () {
+				var m = document.compatMode == 'CSS1Compat';
+				return {
+					l : window.pageXOffset || (m ? document.documentElement.scrollLeft : document.body.scrollLeft),
+					t : window.pageYOffset || (m ? document.documentElement.scrollTop : document.body.scrollTop),
+					w : window.innerWidth || (m ? document.documentElement.clientWidth : document.body.clientWidth),
+					h : window.innerHeight || (m ? document.documentElement.clientHeight : document.body.clientHeight)
+				};
+			},
+			fixHSB = function (hsb) {
+				return {
+					h: Math.min(360, Math.max(0, hsb.h)),
+					s: Math.min(100, Math.max(0, hsb.s)),
+					b: Math.min(100, Math.max(0, hsb.b))
+				};
+			}, 
+			fixRGB = function (rgb) {
+				return {
+					r: Math.min(255, Math.max(0, rgb.r)),
+					g: Math.min(255, Math.max(0, rgb.g)),
+					b: Math.min(255, Math.max(0, rgb.b))
+				};
+			},
+			fixHex = function (hex) {
+				var len = 6 - hex.length;
+				if (len > 0) {
+					var o = [];
+					for (var i=0; i<len; i++) {
+						o.push('0');
+					}
+					o.push(hex);
+					hex = o.join('');
+				}
+				return hex;
+			}, 
+			HexToRGB = function (hex) {
+				var hex = parseInt(((hex.indexOf('#') > -1) ? hex.substring(1) : hex), 16);
+				return {r: hex >> 16, g: (hex & 0x00FF00) >> 8, b: (hex & 0x0000FF)};
+			},
+			HexToHSB = function (hex) {
+				return RGBToHSB(HexToRGB(hex));
+			},
+			RGBToHSB = function (rgb) {
+				var hsb = {
+					h: 0,
+					s: 0,
+					b: 0
+				};
+				var min = Math.min(rgb.r, rgb.g, rgb.b);
+				var max = Math.max(rgb.r, rgb.g, rgb.b);
+				var delta = max - min;
+				hsb.b = max;
+				if (max != 0) {
+					
+				}
+				hsb.s = max != 0 ? 255 * delta / max : 0;
+				if (hsb.s != 0) {
+					if (rgb.r == max) {
+						hsb.h = (rgb.g - rgb.b) / delta;
+					} else if (rgb.g == max) {
+						hsb.h = 2 + (rgb.b - rgb.r) / delta;
+					} else {
+						hsb.h = 4 + (rgb.r - rgb.g) / delta;
+					}
+				} else {
+					hsb.h = -1;
+				}
+				hsb.h *= 60;
+				if (hsb.h < 0) {
+					hsb.h += 360;
+				}
+				hsb.s *= 100/255;
+				hsb.b *= 100/255;
+				return hsb;
+			},
+			HSBToRGB = function (hsb) {
+				var rgb = {};
+				var h = Math.round(hsb.h);
+				var s = Math.round(hsb.s*255/100);
+				var v = Math.round(hsb.b*255/100);
+				if(s == 0) {
+					rgb.r = rgb.g = rgb.b = v;
+				} else {
+					var t1 = v;
+					var t2 = (255-s)*v/255;
+					var t3 = (t1-t2)*(h%60)/60;
+					if(h==360) h = 0;
+					if(h<60) {rgb.r=t1;	rgb.b=t2; rgb.g=t2+t3}
+					else if(h<120) {rgb.g=t1; rgb.b=t2;	rgb.r=t1-t3}
+					else if(h<180) {rgb.g=t1; rgb.r=t2;	rgb.b=t2+t3}
+					else if(h<240) {rgb.b=t1; rgb.r=t2;	rgb.g=t1-t3}
+					else if(h<300) {rgb.b=t1; rgb.g=t2;	rgb.r=t2+t3}
+					else if(h<360) {rgb.r=t1; rgb.g=t2;	rgb.b=t1-t3}
+					else {rgb.r=0; rgb.g=0;	rgb.b=0}
+				}
+				return {r:Math.round(rgb.r), g:Math.round(rgb.g), b:Math.round(rgb.b)};
+			},
+			RGBToHex = function (rgb) {
+				var hex = [
+					rgb.r.toString(16),
+					rgb.g.toString(16),
+					rgb.b.toString(16)
+				];
+				$.each(hex, function (nr, val) {
+					if (val.length == 1) {
+						hex[nr] = '0' + val;
+					}
+				});
+				return hex.join('');
+			},
+			HSBToHex = function (hsb) {
+				return RGBToHex(HSBToRGB(hsb));
+			},
+			restoreOriginal = function () {
+				var cal = $(this).parent();
+				var col = cal.data('colorpicker').origColor;
+				cal.data('colorpicker').color = col;
+				fillRGBFields(col, cal.get(0));
+				fillHexFields(col, cal.get(0));
+				fillHSBFields(col, cal.get(0));
+				setSelector(col, cal.get(0));
+				setHue(col, cal.get(0));
+				setNewColor(col, cal.get(0));
+			};
+		return {
+			init: function (opt) {
+				opt = $.extend({}, defaults, opt||{});
+				if (typeof opt.color == 'string') {
+					opt.color = HexToHSB(opt.color);
+				} else if (opt.color.r != undefined && opt.color.g != undefined && opt.color.b != undefined) {
+					opt.color = RGBToHSB(opt.color);
+				} else if (opt.color.h != undefined && opt.color.s != undefined && opt.color.b != undefined) {
+					opt.color = fixHSB(opt.color);
+				} else {
+					return this;
+				}
+				return this.each(function () {
+					if (!$(this).data('colorpickerId')) {
+						var options = $.extend({}, opt);
+						options.origColor = opt.color;
+						var id = 'collorpicker_' + parseInt(Math.random() * 1000);
+						$(this).data('colorpickerId', id);
+						var cal = $(tpl).attr('id', id);
+						if (options.flat) {
+							cal.appendTo(this).show();
+						} else {
+							cal.appendTo(document.body);
+						}
+						options.fields = cal
+											.find('input')
+												.bind('keyup', keyDown)
+												.bind('change', change)
+												.bind('blur', blur)
+												.bind('focus', focus);
+						cal
+							.find('span').bind('mousedown', downIncrement).end()
+							.find('>div.colorpicker_current_color').bind('click', restoreOriginal);
+						options.selector = cal.find('div.colorpicker_color').bind('mousedown', downSelector);
+						options.selectorIndic = options.selector.find('div div');
+						options.el = this;
+						options.hue = cal.find('div.colorpicker_hue div');
+						cal.find('div.colorpicker_hue').bind('mousedown', downHue);
+						options.newColor = cal.find('div.colorpicker_new_color');
+						options.currentColor = cal.find('div.colorpicker_current_color');
+						cal.data('colorpicker', options);
+						cal.find('div.colorpicker_submit')
+							.bind('mouseenter', enterSubmit)
+							.bind('mouseleave', leaveSubmit)
+							.bind('click', clickSubmit);
+						fillRGBFields(options.color, cal.get(0));
+						fillHSBFields(options.color, cal.get(0));
+						fillHexFields(options.color, cal.get(0));
+						setHue(options.color, cal.get(0));
+						setSelector(options.color, cal.get(0));
+						setCurrentColor(options.color, cal.get(0));
+						setNewColor(options.color, cal.get(0));
+						if (options.flat) {
+							cal.css({
+								position: 'relative',
+								display: 'block'
+							});
+						} else {
+							$(this).bind(options.eventName, show);
+						}
+					}
+				});
+			},
+			showPicker: function() {
+				return this.each( function () {
+					if ($(this).data('colorpickerId')) {
+						show.apply(this);
+					}
+				});
+			},
+			hidePicker: function() {
+				return this.each( function () {
+					if ($(this).data('colorpickerId')) {
+						$('#' + $(this).data('colorpickerId')).hide();
+					}
+				});
+			},
+			setColor: function(col) {
+				if (typeof col == 'string') {
+					col = HexToHSB(col);
+				} else if (col.r != undefined && col.g != undefined && col.b != undefined) {
+					col = RGBToHSB(col);
+				} else if (col.h != undefined && col.s != undefined && col.b != undefined) {
+					col = fixHSB(col);
+				} else {
+					return this;
+				}
+				return this.each(function(){
+					if ($(this).data('colorpickerId')) {
+						var cal = $('#' + $(this).data('colorpickerId'));
+						cal.data('colorpicker').color = col;
+						cal.data('colorpicker').origColor = col;
+						fillRGBFields(col, cal.get(0));
+						fillHSBFields(col, cal.get(0));
+						fillHexFields(col, cal.get(0));
+						setHue(col, cal.get(0));
+						setSelector(col, cal.get(0));
+						setCurrentColor(col, cal.get(0));
+						setNewColor(col, cal.get(0));
+					}
+				});
+			}
+		};
+	}();
+	$.fn.extend({
+		ColorPicker: ColorPicker.init,
+		ColorPickerHide: ColorPicker.hidePicker,
+		ColorPickerShow: ColorPicker.showPicker,
+		ColorPickerSetColor: ColorPicker.setColor
+	});
+})(jQuery);
 
+  }).apply(root, arguments);
+});
+}(this));
+
+define('apps/style/visibility-mixin',[], function () {
+    "use strict";
+    /*
+     * Since the show / hide panel functionality is the same across the views,
+     * we'll use the "mixin" pattern to consolidate functionality.
+     */
+    return {
+        events: {
+            'click .hide-panel': 'hideSection',
+            'click .show-panel': 'showSection'
+        },
+        hideSection: function (e) {
+            this.isShowing = false;
+            this.saveState();
+            this.render();
+            if (e) {
+                e.preventDefault();
+            }
+        },
+        showSection: function (e) {
+            this.isShowing = true;
+            this.saveState();
+            this.render();
+            if (e) {
+                e.preventDefault();
+            }
+        },
+        templateHelpers:  function () {
+            return {
+                isShowing: this.isShowing
+            };
+        },
+        saveState: function () {
+            this.app.saveState(this.stateKey, {
+                isShowing: this.isShowing
+            });
+        },
+        restoreState: function () {
+            var state = this.app.restoreState(this.stateKey);
+            if (state) {
+                this.isShowing = state.isShowing;
+            } else {
+                this.isShowing = true;
+            }
         }
-
-    });
-    return CreateFieldView;
-
+    };
 });
 
+define('text!apps/style/templates/left/panel-styles.html',[],function () { return '\n<div class="bordered-section end-section">\n    <div class="style-section-header-wrapper">\n        <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>\n        <h4>Panel Styles</h4>\n    </div>\n    \n    \n    \n    <div id="type" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">\n    <div class="legend-prompt-wrapper">\n        <p class="legend-prompt">Show Legend on Presentation Map:</p>\n        <input class="legend-checkbox" type="checkbox" {{#if displayLegend}}checked{{/if}}></input>\n    </div>\n    <!--Choose the type category to style -->\n        <select id="text-type" class="style-wide-select" name="title-list" style="width:100%; margin: 20px 0px 10px;">\n            <option value="title" {{#ifequal activeKey "title"}} SELECTED {{/ifequal}}>Title</option>\n         <!--   <option value="subtitle" {{#ifequal activeKey "subtitle"}} SELECTED {{/ifequal}}>Subtitle</option> -->\n            <option value="paragraph" {{#ifequal activeKey "paragraph"}} SELECTED {{/ifequal}}>Body</option>\n         <!--   <option value="tags" {{#ifequal activeKey "tags"}} SELECTED {{/ifequal}}>Tag</option> -->\n        </select>\n        <table class="type-table">\n            <tbody>\n                <tr>\n                    <td>Font:</td>\n                    <td>\n                        <div id="font" class="font-dropdown-display" style="background-color: #{{currentType.backgroundColor}}">\n                            <div class="font-display" style="font-family: {{currentType.font}}; color: #{{currentType.color}}; background-color: #{{currentType.backgroundColor}}; font-weight: {{currentType.fw}}" >{{currentType.font}}</div>\n                        </div>\n                        <div id="font-div" class="font-options">\n                            <div class="font-wrapper">\n                                <div value="lato" style = "font-family: lato" >Lato</div>\n                                <div value="open sans" style = "font-family: open sans" >Open Sans</div>\n                                <div value="slabo" style = "font-family: slabo" >Slabo</div>\n                                <div value="Pt Serif" style = "font-family: Pt Serif" >Pt Serif</div>\n                                <div value="Lemonada" style = "font-family: Lemonada" >Lemonada</div>\n                                <div value="Comfortaa" style = "font-family: Comfortaa" >Comfortaa</div>\n                                <div value="Amatic SC" style = "font-family: Amatic SC" >Amatic SC</div>\n                                <div value="Pacifico" style = "font-family: Pacifico" >Pacifico</div>\n                                <div value="Permanent Marker" style = "font-family: Permanent Marker" >Permanent Marker</div>\n                            </div>\n                            <div class="arrow-wrapper">\n                                <i class="fa fa-angle-down font-arrow" aria-hidden="true"></i>\n                            </div>\n                        </div>\n                    </td>\n\n                    <!--\n                    <td>\n                        <select id="font" class="style-wide-select">\n                            <option value="lato" font-family="lato" {{#ifequal currentType.font "lato"}} SELECTED {{/ifequal}}>Lato</option>\n                            <option value="bebas" font-family="bebas" {{#ifequal currentType.font "bebas"}} SELECTED {{/ifequal}}>Bebas</option>\n                        </select>\n                    </td>\n                    -->\n                </tr>\n                <tr>\n                    <td>Font color:</td>\n                    <td>\n                        <i id="font-color-picker" class="fa fa-circle marker-icon jscolor" style="color: #{{currentType.color}} " aria-hidden="true">\n                    </i></td>\n                </tr>\n                <tr>\n                    <td>Background color:</td>\n                    <td>\n                        <i id="background-color-picker" class="fa fa-circle marker-icon jscolor" style="color: #{{currentType.backgroundColor}} " aria-hidden="true">\n                    </i></td>\n                </tr>\n                {{#ifequal activeKey "title"}}\n                <tr>\n                    <td>Font weight:</td>\n                    <td>\n                        <select id="fw" class="style-wide-select">\n                            <option value="regular" {{#ifequal currentType.fw "regular"}} SELECTED {{/ifequal}}>Regular</option>\n                            <option value="bold" {{#ifequal currentType.fw "bold"}} SELECTED {{/ifequal}}>Bold</option>\n                        </select>\n                    </td>\n                </tr>\n                {{/ifequal}}\n            </tbody>\n        </table>\n    </div>\n</div>';});
 
-define('text!apps/spreadsheet/templates/spreadsheet.html',[],function () { return '<div id="grid" class="hot handsontable htColumnHeaders"></div>\n<div id="logging"></div>\n';});
-
-
-define('text!lib/carousel/carousel-container.html',[],function () { return '{{#if isSpreadsheet}}\n    {{#compare num_children 1 operator="=="}}\n        <div class="carousel-content img-card"></div>\n    {{/compare}}\n\n    {{#compare num_children 1 operator=">"}}\n        <div class="carouselbox spreadsheet">\n            <ol class="carousel-content"></ol>\n        </div>\n        <div class="circle-buttons">\n            <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n            {{#times 1 num_children}}\n                <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}"></i>\n            {{/times}}\n        </div>\n    {{/compare}}\n{{else}}\n\n    <div class="carouselbox">\n        <ol class="carousel-content"></ol>\n    </div>\n    \n    {{#compare num_children 1 operator=">"}}\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0" style="color: #{{paragraph.color}}"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}" style="color: #{{../paragraph.color}}"></i>\n        {{/times}}\n    </div>\n    <p class="carousel-caption" style="font-family: {{paragraph.font}}">{{this.caption }}</p>\n    {{/compare}}\n\n{{/if}}\n';});
-
-
-define('text!lib/carousel/carousel-container-audio.html',[],function () { return '\n{{#if isSpreadsheet}}\n    {{#compare num_children 1 operator="=="}}\n        <div class="carousel-content"></div>\n    {{/compare}}\n\n    {{#compare num_children 1 operator=">"}}\n    <div class="carouselbox spreadsheet audio">\n        <ol class="carousel-content"></ol>\n    </div>\n<!--    \n    <div class="carousel-buttons hover-to-show">\n        <i class="fa fa-chevron-left prev"></i>\n        <i class="fa fa-chevron-right next"></i>\n    </div>\n-->\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>\n        {{/times}}\n    </div>\n    {{/compare}}\n{{else}}\n    <div class="carouselbox audio">\n        <ol class="carousel-content"></ol>\n    </div>\n\n    {{#compare num_children 1 operator=">"}}\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>\n        {{/times}}\n    </div>\n    {{/compare}}\n\n{{/if}}\n';});
-
-
-define('text!lib/carousel/carousel-video-item.html',[],function () { return '{{#ifequal video_provider "vimeo"}}\n    <iframe class="photo" src="https://player.vimeo.com/video/{{video_id}}"\n    style="width:100%" height="200"\n    frameborder="0"\n    webkitallowfullscreen mozallowfullscreen allowfullscreen>\n    </iframe>\n{{/ifequal}}\n\n{{#ifequal video_provider "youtube"}}\n    <iframe class="photo" src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n    style="width:100%" height="200"\n    frameborder="0" allowfullscreen>\n    </iframe>\n{{/ifequal}}\n<p class="carousel-caption" style="color: {{paragraph.color}}; font-family: {{paragraph.font}}">{{this.caption }}</p>';});
-
-
-define('text!lib/carousel/carousel-photo-item.html',[],function () { return '<div class="photo" style="background: url(\'{{this.path_medium}}\');"></div>\n<div class="carousel-caption-wrapper">\n    <p class="carousel-caption" style="color: {{paragraph.color}}; font-family: {{paragraph.font}}">{{this.caption }}</p>\n<div>\n';});
-
-define('lib/carousel/carousel',["jquery", "underscore", "marionette", "handlebars",
-        "lib/audio/audio-player",
-        "text!../carousel/carousel-container.html",
-        "text!../carousel/carousel-container-audio.html",
-        "text!../carousel/carousel-video-item.html",
-        "text!../carousel/carousel-photo-item.html"],
-    function ($, _, Marionette, Handlebars, AudioPlayer,
-              CarouselContainerTemplate, CarouselContainerAudioTemplate, VideoItemTemplate, PhotoItemTemplate) {
+define('apps/style/views/left/panel-styles-view',["marionette",
+        "handlebars",
+        'color-picker-eyecon',
+        "models/map",
+        "apps/style/visibility-mixin",
+        "text!../../templates/left/panel-styles.html"
+    ],
+    function (Marionette, Handlebars, colorPicker, Map, PanelVisibilityExtensions, PanelStylesTemplate) {
         'use strict';
-        var Carousel = Marionette.CompositeView.extend({
-            events: {
-                "click .next": "next",
-                "click .prev": "prev",
-                "click .show-slide": "jump",
-                'mouseover .carouselbox': 'showArrows',
-                'mouseout .carouselbox': 'hideArrows'
+
+        var SelectSkinView = Marionette.ItemView.extend(_.extend({}, PanelVisibilityExtensions, {
+            stateKey: 'panel-styles',
+            activeKey: "title",
+            isShowing: false,
+            template: Handlebars.compile(PanelStylesTemplate),
+
+            events: function () {
+                return _.extend(
+                    {
+                        'change #text-type': 'updateType',
+                     //   'change #font': 'updateFont',
+                        'change #fw': 'updateFontWeight',
+                        'change #font-size': 'updateFontSize',
+                        'click #font': 'showFonts',
+                        'click .font-wrapper div': 'updateFont',
+                        'click .legend-checkbox': 'updateLegend'
+                    },
+                    PanelVisibilityExtensions.events
+                );
             },
-            counter: 0,
-            className: "active-slide",
-            mode: "photos",
-            childViewContainer: ".carousel-content",
+
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this);
-                if (this.mode == "photos") {
-                    this.template = Handlebars.compile(CarouselContainerTemplate);
-                } else if (this.mode == "videos") {
-                    this.template = Handlebars.compile(CarouselContainerTemplate);
-                } else {
-                    this.template = Handlebars.compile(CarouselContainerAudioTemplate);
-                }
-                this.render();
-                //this.$el.addClass('active-slide');
-                if (this.collection.length == 1 && this.mode !== "audio") {
-                    this.$el.addClass('short');
-                }
-                this.navigate(0);
+                this.restoreState();
+                $('body').click(this.hideFonts);
             },
-
-            showArrows: function () {
-                if (this.mode === "audio" || this.collection.length === 1) {
-                    return;
-                }
-                var $leftArrow, $rightArrow;
-                if (this.timeout) {
-                    clearTimeout(this.timeout);
-                    this.timeout = null;
-                } else {
-                    $leftArrow = $('<i class="fa fa-chevron-left prev"></i>');
-                    $rightArrow = $('<i class="fa fa-chevron-right next"></i>');
-                    this.$el.find('.carouselbox').append($leftArrow).append($rightArrow);
-                }
-            },
-            hideArrows: function () {
-                if (this.mode === "audio" || this.collection.length === 1) {
-                    return;
-                }
+            
+            onRender: function () {
                 var that = this;
-                this.timeout = setTimeout(function () {
-                    that.$el.find('.fa-chevron-left, .fa-chevron-right').remove();
-                    that.timeout = null;
-                }, 100);
-            },
-            childViewOptions: function () {
-                return {
-                    mode: this.mode,
-                    app: this.app,
-                    num_children: this.collection.length,
-                    parent: this,
-                    panelStyles: this.panelStyles
-                };
-            },
-            getChildView: function () {
-                return Marionette.ItemView.extend({
-                    initialize: function (opts) {
-                        _.extend(this, opts);
-                        if (this.mode == "photos") {
-                            this.template = Handlebars.compile(PhotoItemTemplate);
-                        } else if (this.mode == "videos") {
-                            this.template = Handlebars.compile(VideoItemTemplate);
-                        } else {
-                            this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
-                        }
+                var newHex,
+                fontColor = this.model.get('panel_styles')[this.activeKey].color,
+                backgroundColor = this.model.get('panel_styles')[this.activeKey].backgroundColor;
+        
+                $('panel-styles-color-picker-font').remove();
+                that.$el.find('#font-color-picker').ColorPicker({
+                    color: fontColor,
+                    onShow: function (colpkr) {
+                        $(colpkr).fadeIn(500);
+                        return false;
                     },
-                    templateHelpers: function () {
-                        console.log(this);
-                        var paragraph;
-                        if (this.panelStyles) {
-                            paragraph = this.panelStyles.paragraph;
-                        }
-                        return {
-                            num_children: this.num_children,
-                            mode: this.mode, 
-                            paragraph: paragraph
-                        };
+                    onHide: function (colpkr) {
+                        that.updateFontColor(fontColor);                 
+                        $(colpkr).fadeOut(500);
+                        return false;
                     },
-                    tagName: "li",
-                    onRender: function () {
-                        if (this.mode == "audio") {
-                            var player = new AudioPlayer({
-                                model: this.model,
-                                audioMode: "detail",
-                                app: this.app,
-                                panelStyles: this.panelStyles
-                            });
-                            this.$el.find('.player-container').append(player.$el);
-                        }
+                    onChange: function (hsb, hex, rgb) {
+                        fontColor = hex;
                     }
                 });
+                $(".colorpicker:last-child").addClass('panel-styles-color-picker-font');
+
+                $('panel-styles-color-picker-background').remove();
+                that.$el.find('#background-color-picker').ColorPicker({
+                    color: backgroundColor,
+                    onShow: function (colpkr) {
+                        $(colpkr).fadeIn(500);
+                        return false;
+                    },
+                    onHide: function (colpkr) {
+                        that.updateBackgroundColor(backgroundColor);
+                        $(colpkr).fadeOut(500);
+                        return false;
+                    },
+                    onChange: function (hsb, hex, rgb) {
+                        backgroundColor = hex;
+                    }
+                });
+                $(".colorpicker:last-child").addClass('panel-styles-color-picker-font');
+            
+                
+            },
+
+            showFonts: function () {
+                console.log(this.model);
+                this.$el.find('#font-div').show();
+            },
+
+            hideFonts: function (e) {
+                var $el = $(e.target);                
+                if (!$el.hasClass('font-options') && !$el.hasClass('font-dropdown-display') && !$el.hasClass('font-display')) {
+                    $(".font-options").hide();
+                }
             },
 
             templateHelpers: function () {
-                console.log(this);
-                var paragraph;
-                if (this.panelStyles) {
-                    paragraph = this.panelStyles.paragraph;
+                var opts = PanelVisibilityExtensions.templateHelpers();
+                if (!this.model) {
+                    return {
+                        isShowing: this.isShowing
+                    };
                 }
                 return {
-                    num_children: this.collection.length,
-                    isSpreadsheet: this.app.screenType === "spreadsheet",
-                    paragraph: paragraph
+                    json: JSON.stringify(this.model.toJSON(), null, 2),
+                    currentType: this.model.get("panel_styles")[this.activeKey],
+                    activeKey: this.activeKey,
+                    isShowing: this.isShowing,
+                    displayLegend: this.model.get("panel_styles").display_legend
                 };
             },
 
-            navigate: function () {
-                if (this.mode == "audio") {
-                    this.app.vent.trigger('audio-carousel-advanced');
-                }
-                var $items = this.$el.find('.carousel-content li'),
-                    amount = this.collection.length;
-                $items.removeClass('current').hide();
-                if (this.counter < 0) {
-                    this.counter = amount - 1;
-                }
-                if (this.counter >= amount) {
-                    this.counter = 0;
-                }
-                this.updateCircles();
-                $($items[this.counter]).addClass('current').show();
+            updateLegend: function (event) {
+                console.log(this.model);
+                this.model.get("panel_styles").display_legend = $(event.target).is(':checked');
+            },
+           
+            updateType: function () {
+                this.activeKey = this.$el.find("#text-type").val();
+                this.render();
+            },
+            updateFont: function (event) {
+                console.log($(event.target).text());
+                this.model.get("panel_styles")[this.activeKey].font = $(event.target).text();
+                this.render();
+            },
+            updateFontWeight: function () {
+                this.model.get("panel_styles")[this.activeKey].fw = this.$el.find("#fw").val();
+                this.render();
+            },
+            // triggered from colorPicker
+            updateFontColor: function (hex) {
+                console.log("update font color");
+                this.model.get("panel_styles")[this.activeKey].color = hex;
+                $('#font-color-picker').css('color', '#' + hex);
+                this.render();
+            }, 
+
+            // triggered from colorPicker
+            updateBackgroundColor: function (hex) {
+                console.log("update background color");
+                this.model.get("panel_styles")[this.activeKey].backgroundColor = hex;
+                $('#background-color-picker').css('color', '#' + hex);
+                this.render();
             },
 
-            resetCurrentFrame: function () {
-                //needed to stop playing iFrame videos:
-                this.children.findByIndex(this.counter).render();
-            },
-
-            next: function () {
-                this.resetCurrentFrame();
-                this.counter += 1;
-                this.navigate();
-            },
-
-            prev: function () {
-                this.resetCurrentFrame();
-                this.counter -= 1;
-                this.navigate();
-            },
-
-            updateCircles: function () {
-                var $items = this.$el.find('.show-slide'),
-                    $clicked = $($items[this.counter]);
-                $items.removeClass("fa-circle");
-                $items.not($clicked).addClass("fa-circle-o");
-                $clicked.addClass("fa-circle");
-            },
-
-            jump: function (e) {
-                this.resetCurrentFrame();
-                this.counter = parseInt($(e.target).attr("data-index"), 10);
-                this.navigate();
+            updateFontSize: function () {
+                this.model.get("panel_styles")[this.activeKey].size = +this.$el.find("#font-size").val();
+                this.render();
             }
-        });
-        return Carousel;
+        }));
+        return SelectSkinView;
     });
 
-define('apps/spreadsheet/views/main',["jquery",
-        "marionette",
-        "underscore",
-        "handlebars",
-        "apps/gallery/views/media_browser",
-        "models/record",
-        "models/marker",
-        "apps/spreadsheet/views/create-field",
-        "handsontable",
-        "text!../templates/spreadsheet.html",
-        "lib/audio/audio-player",
-        "lib/carousel/carousel"
-    ],
-    function ($, Marionette, _, Handlebars, MediaBrowser,
-        Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate,
-        AudioPlayer, Carousel) {
-        'use strict';
-        var Spreadsheet = Marionette.ItemView.extend({
-            template: function () {
-                return Handlebars.compile(SpreadsheetTemplate);
-            },
-            table: null,
-            currentModel: null,
-            show_hide_deleteColumn: true,
-            events: {
-                'click #addColumn': 'showCreateFieldForm',
-                'click .addMedia': 'showMediaBrowser',
-                'click .delete_column' : 'deleteField',
-                'click .carousel-photo': 'carouselPhoto',
-                'click .carousel-audio': 'carouselAudio',
-                'click .carousel-video': 'carouselVideo'
-            },
-            foo: "bar",
-            initialize: function (opts) {
-                _.extend(this, opts);
+//This view needs to update the map.js model;
 
-                // call Marionette's default functionality (similar to "super")
-                Marionette.ItemView.prototype.initialize.call(this);
-                this.registerRatingEditor();
+define('text!apps/style/templates/left/left-panel-layout.html',[],function () { return '<div class="left-wrapper">\n    <section class="style-section" id="map_dropdown_region"></section>\n    \n    <section class="style-section" id="layers_region"></section>\n    \n    <section class="style-section" id="map_skin_region"></section>\n    \n    <section class="style-section" id="global_style_region"></section>\n</div>\n<div class="save-options save-options-left">\n    <button id="map-delete" class="button-tertiary button-warning delete-model">Delete</button>\n    <button class="button-primary pull-right map-save">Save Map</button>\n</div>\n<div class="show-hide hide"></div>\n\n';});
+
+define('apps/style/views/left/left-panel',["jquery",
+        "marionette",
+        "handlebars",
+        "apps/style/views/left/select-map-view",
+        "apps/style/views/left/layer-list-view",
+        "apps/style/views/left/skin-view",
+        "apps/style/views/left/panel-styles-view",
+        "text!../../templates/left/left-panel-layout.html"
+    ],
+    function ($, Marionette, Handlebars, SelectMapView, LayerListView, SkinView, PanelStylesView, LeftPanelLayoutTemplate) {
+        'use strict';
+        // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
+        var LeftPanelLayout = Marionette.LayoutView.extend({
+            template: Handlebars.compile(LeftPanelLayoutTemplate),
+
+            initialize: function (opts) {
+                /*This Layout View relies on a Map model which gets set from the change-map event, 
+                which is triggered from the select-map-view.js */
+                this.app = opts.app;
                 this.render();
-                //listen to events that fire from other parts of the application:
-                this.listenTo(this.app.vent, 'search-requested', this.doSearch);
-                this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
-                this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
-                this.listenTo(this.app.vent, "add-row", this.addRow);
-                this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
-                if (this.collection) {
-                    this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
-                    this.listenTo(this.collection, 'add', this.renderSpreadsheet);
-                }
-                if (this.fields) {
-                    this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
-                }
+                this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
             },
-            registerRatingEditor: function () {
-                // following this tutorial: https://docs.handsontable.com/0.15.0-beta1/tutorial-cell-editor.html
-                var SelectRatingsEditor = Handsontable.editors.SelectEditor.prototype.extend(),
-                    that = this;
-                SelectRatingsEditor.prototype.prepare = function () {
-                    var me = this, selectOptions, i, option, optionElement;
-                    Handsontable.editors.SelectEditor.prototype.prepare.apply(this, arguments);
-                    selectOptions = this.cellProperties.selectOptions;
-                    $(this.select).empty();
-                    optionElement = document.createElement('OPTION');
-                    optionElement.value = "";
-                    optionElement.innerHTML = "-- Select --";
-                    this.select.appendChild(optionElement);
-                    for (i = 0; i < selectOptions.length; i++) {
-                        option = selectOptions[i];
-                        optionElement = document.createElement('OPTION');
-                        optionElement.value = option.value;
-                        optionElement.innerHTML = option.value + ": " + option.name;
-                        if (option.value == this.originalValue) {
-                            optionElement.selected = true;
-                        }
-                        this.select.appendChild(optionElement);
-                    }
-                    //this is a hack b/c the renderer isn't being called correctly:
-                    $(this.select).blur(function () {
-                        setTimeout(function () {
-                            that.table.setDataAtCell(me.row, me.col, me.getValue());
-                        }, 50);
-                    });
-                };
-                SelectRatingsEditor.prototype.getValue = function () {
-                    var val = this.select.value;
-                    if (val === "") {
-                        val = null;
-                    }
-                    return val;
-                };
-                Handsontable.editors.registerEditor('select-ratings', SelectRatingsEditor);
+            events: {
+                'click #new-layer-options a' : 'createNewLayer',
+                'click .hide': 'hidePanel',
+                'click .show': 'showPanel',
+                'click .map-save' : 'saveMap',
+                'click #map-delete': 'deleteMap'
+            },
+
+            regions: {
+                menu: "#map_dropdown_region",
+                layers: "#layers_region",
+                skins: "#map_skin_region",
+                styles: "#global_style_region"
             },
             onRender: function () {
-                this.renderSpreadsheet();
+                // only load views after the LayoutView has
+                // been rendered to the screen:
+                var skv = new SkinView({ app: this.app });
+                this.sv = new SelectMapView({ app: this.app }),
+                this.menu.show(this.sv);
+                this.skins.show(skv);
             },
-            //
-            // Arranging the columns
-            // For now, I only want to arrange without any saving
-            // for this current draft
-            columnMoveBefore: function(col_indexes_to_be_moved, destination_index){
-                var media_column_index = this.fields.length + 4; //change to whatever one is valid
-                var pre_field_index = 2;
-                if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index) {
-                    console.error('Cannot move your column behind the media column');
-                    return false;
-                } else if (col_indexes_to_be_moved.indexOf(pre_field_index) != -1 || destination_index <= pre_field_index){
-                    console.error('Cannot move your column before the ID and lat/lng');
-                    return false;
-                }
-            },
-
-            columnMoveAfter: function(col_indexes_to_be_moved, destination_index){
-                var media_column_index = this.fields.length + 4, //change to whatever one is valid
-                    pre_field_index = 2,
-                    i = 0,
-                    currentOrdering,
-                    oldPosition,
-                    newPosition,
-                    fieldIndex,
-                    field;
-                if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index ||
-                        col_indexes_to_be_moved.indexOf(pre_field_index) != -1 || destination_index <= pre_field_index) {
-                    return false;
-                }
-
-                for (i = 0; i < col_indexes_to_be_moved.length; i++) {
-                    fieldIndex = col_indexes_to_be_moved[i] - 3;
-                    field = this.fields.at(fieldIndex);
-                    oldPosition = field.get("ordering") + 2;
-                    if (oldPosition < destination_index) {
-                        --destination_index;
-                    }
-                    newPosition = destination_index - 2 + i;
-
-                    field.set("ordering", newPosition);
-                    field.save({"ordering": newPosition, do_reshuffle: 1}, { patch: true, wait: true });
-                }
-            },
-            renderSpreadsheet: function () {
-                // When the spreadsheet is made without a defined collection
-                // Alert that there is no collection
-                // for the sole purpose of unit testing
-
-                if (!this.collection) {
-                    this.$el.find('#grid').html("Collection is not defined");
-                    return;
-                }
-
-                if (this.collection.length == 0) {
-                    this.$el.find('#grid').html("no rows found");
-                    return;
-                }
-                var grid = this.$el.find('#grid').get(0),
-                    rowHeights = [],
-                    i = 0,
-                    data = [],
-                    that = this;
-                if (this.table) {
-                    this.table.destroy();
-                    this.table = null;
-                }
-                for (i = 0; i < this.collection.length; i++) {
-                    rowHeights.push(55);
-                }
-                this.collection.each(function (model) {
-                    var rec = model.toJSON();
-                    if (rec.tags) {
-                        rec.tags = rec.tags.join(", ");
-                    }
-                    data.push(rec);
-                });
-                this.table = new Handsontable(grid, {
-                    data: data,
-                    colWidths: this.getColumnWidths(),
-                    rowHeights: rowHeights,
-                    colHeaders: this.getColumnHeaders(),
-                    manualColumnResize: true,
-                    manualColumnMove: (this.fields != null && this.fields != undefined),
-                    rowHeaders: true,
-                    columns: this.getColumns(),
-                    maxRows: this.collection.length,
-                    autoRowSize: true,
-                    columnSorting: true,
-                    undo: true,
-                    afterChange: function (changes, source) {
-                        that.saveChanges(changes, source);
-                    }
-                });
-                if (this.fields) {
-                    this.table.addHook('beforeColumnMove', this.columnMoveBefore.bind(this));
-                    this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
-                }
-            },
-            saveChanges: function (changes, source) {
-                var that = this;
-                //sync with collection:
-                source = source.split(".");
-                source = source[source.length - 1];
-                var i, idx, key, oldVal, newVal, model, geoJSON;
-                if (_.contains(["edit", "autofill", "fill", "undo", "redo", "paste"], source)) {
-                    for (i = 0; i < changes.length; i++) {
-                        idx = changes[i][0];
-                        key = changes[i][1];
-                        oldVal = changes[i][2];
-                        newVal = changes[i][3];
-                        if (oldVal !== newVal) {
-                            //Note: relies on the fact that the first column is the ID column
-                            //      see the getColumns() function below
-                            model = this.getModelFromCell(null, idx);
-                            if (key === 'lat' || key === 'lng') {
-                                //SV TODO: To handle polygons and polylines, only set latLng if current
-                                //          geometry is null of of type "Point." Still TODO.
-                                // Good article: https://handsontable.com/blog/articles/4-ways-to-handle-read-only-cells
-                                model.set(key, newVal);
-                                if (model.get("lat") && model.get("lng")) {
-                                    geoJSON = model.setPointFromLatLng(model.get("lat"), model.get("lng"));
-                                    model.save({ geometry: JSON.stringify(geoJSON) }, {patch: true, wait: true});
-                                } else {
-                                    model.set("geometry", null);
-                                    if (!model.get("lat") && !model.get("lng")) {
-                                        model.save({ geometry: null }, {patch: true, wait: true});
-                                    }
-                                }
-                            } else {
-                                model.set(key, newVal);
-                                model.save(model.changedAttributes(), { patch: true, wait: true});
-                            }
-                        } else {
-                            console.log("[" + source + "], but no value change. Ignored.");
-                            console.log("old value:", oldVal, "new value:", newVal);
-                        }
-                    }
-                }
-            },
-            getModelFromCell: function (table, index) {
-                table = table || this.table;
-                var modelID = table.getDataAtRowProp(index, "id");
-                return this.collection.get(modelID);
-            },
-            thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-                var that = this,
-                    img = document.createElement('IMG'),
-                    model,
-                    modalImg,
-                    captionText,
-                    modal,
-                    span;
-                img.src = value;
-                img.onclick = function () {
-                    model = that.getModelFromCell(instance, rowIndex);
-                    // Get the modal
-                    modal = document.getElementById('myModal');
-
-                    // Get the image and insert it inside the modal - use its "alt" text as a caption
-                    //var img = document.getElementById('myImg');
-                    modalImg = document.getElementById("img01");
-                    captionText = document.getElementById("caption");
-                    modal.style.display = "block";
-                    modalImg.src = model.get("path_medium");
-
-                    // Get the <span> element that closes the modal
-                    span = document.getElementsByClassName("close")[0];
-
-                    // When the user clicks on <span> (x), close the modal
-                    span.onclick = function () {
-                        modal.style.display = "none";
-                    };
-                };
-                Handsontable.Dom.empty(td);
-                td.appendChild(img);
-                return td;
-            },
-            audioRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-
-
-                var audio_model = this.getModelFromCell(instance, rowIndex);
-
-                var player = new AudioPlayer({
-                    model: audio_model,
-                    audioMode: "basic",
-                    app: this.app
-                });
-                $(td).html(player.$el.addClass("spreadsheet"));
-                return td;
-            },
-
-
-            videoRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-                var that = this,
-                    i = document.createElement('i'),
-                    model = this.getModelFromCell(instance, rowIndex),
-                    modalImg,
-                    captionText,
-                    modal,
-                    videoFrame,
-                    span;
-                if (model.get('video_provider') === "vimeo") {
-                    i.className = "fa fa-3x fa-vimeo";
-                } else {
-                    i.className = "fa fa-3x fa-youtube";
-                }
-                i.onclick = function () {
-                    //alert('show iframe');
-
-                    modal = document.getElementById("videoModal");
-                    captionText = document.getElementById("caption");
-                    videoFrame = document.getElementById("video-iframe");
-                    videoFrame.src = ""
-                    if (model.get("video_provider") == "vimeo"){
-                        // Vimeo
-                        videoFrame.src = "https://player.vimeo.com/video/" + model.get("video_id");
-                    } else {
-                        // Youtube
-                        videoFrame.src = "https://www.youtube.com/embed/" +
-                        model.get("video_id") + "?ecver=1";
-                    }
-
-                    modal.style.display = "block";
-                    console.log(model);
-
-                };
-                Handsontable.Dom.empty(td);
-                td.appendChild(i);
-                return td;
-            },
-
-            mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
-                var model = this.getModelFromCell(instance, row),
-                    photoCount = model.get("photo_count") || 0,
-                    audioCount = model.get("audio_count") || 0,
-                    videoCount = model.get("video_count") || 0,
-                    i;
-                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
-                for (i = 0; i < photoCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-                for (i = 0; i < audioCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-                for (i = 0; i < videoCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-video' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-video-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-
-            },
-
-            carouselPhoto: function(e){
-
-                var that = this;
-
-                var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                //any extra view logic. Carousel functionality goes here
-                this.currentModel.fetch({success: function(){
-                    var c = new Carousel({
-                        model: that.currentModel,
-                        mode: "photos",
-                        app: that.app
+            handleNewMap: function (model) {
+                // is 'this.app.model' necessary?
+                var ps = new PanelStylesView({
+                        app: this.app,
+                        model: model
                     });
-
-                    $("#carouselModal").empty();
-                    $("#carouselModal").append(c.$el);
-                    var $span = $("<span class='close big'>&times;</span>");
-                    $span.click(function () {
-                        $("#carouselModal").hide();
-                    })
-                    $("#carouselModal").append($span);
-
-                    // Get the modal
-                    var modal = document.getElementById('carouselModal');
-
-                    modal.style.display = "block";
-
-                }});
-            },
-
-            carouselAudio: function(e){
-
-                var that = this;
-
-                var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                //any extra view logic. Carousel functionality goes here
-                this.currentModel.fetch({success: function(){
-                    var c = new Carousel({
-                        model: that.currentModel,
-                        mode: "audio",
-                        app: that.app
-                    });
-                    //that.$el.find(".carousel").append(c.$el);
-
-                    $("#carouselModal").empty();
-                    $("#carouselModal").append(c.$el);
-                    var $span = $("<span class='close big'>&times;</span>");
-                    $span.click(function () {
-                        $("#carouselModal").hide();
-                        //document.getElementById("carouselModal").style.display='none';
-                    })
-                    $("#carouselModal").append($span);
-
-                    // Get the modal
-                    var modal = document.getElementById('carouselModal');
-
-                    modal.style.display = "block";
-                }});
-            },
-
-
-
-            carouselVideo: function(e){
-
-                var that = this;
-
-                var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                //any extra view logic. Carousel functionality goes here
-                this.currentModel.fetch({success: function(){
-                    var c = new Carousel({
-                        model: that.currentModel,
-                        mode: "videos",
-                        app: that.app
-                    });
-                    //that.$el.find(".carousel").append(c.$el);
-
-                    $("#carouselModal").empty();
-                    $("#carouselModal").append(c.$el);
-                    var $span = $("<span class='close big'>&times;</span>");
-                    $span.click(function () {
-                        $("#carouselModal").hide();
-                        //document.getElementById("carouselModal").style.display='none';
-                    })
-                    $("#carouselModal").append($span);
-
-                    // Get the modal
-                    var modal = document.getElementById('carouselModal');
-
-                    modal.style.display = "block";
-                }});
-            },
-
-            buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var button = document.createElement('BUTTON'),
-                    that = this,
-                    model;
-                button.innerHTML = "<i class='fa fa-trash trash_button' aria-hidden='true'></i>";
-                Handsontable.Dom.empty(td);
-                td.appendChild(button);
-                button.onclick = function () {
-                    if (!confirm("Are you sure you want to delete this row?")) {
-                        return;
-                    }
-                    // First grab the model of the target row to delete
-                    model = that.getModelFromCell(instance, row);
-
-                    // The model holding the row data is destroyed,
-                    // but the row containing the data still appears
-                    // inside the data from handsontable (H.O.T.)
-                    model.destroy();
-
-                    // We need to call instance, since it calls the data table
-                    // from H.O.T. to easily alter the table
-                    // by removing the target row
-                    instance.alter("remove_row", row);
-
-                    // Now there is no trace of any deleted data,
-                    // especially when the user refreshes the page
-                };
-                return td;
-            },
-
-            ratingRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var that = this,
-                    model = this.getModelFromCell(instance, row),
-                    idx = col - 3,
-                    field = this.fields.getModelByAttribute('col_name', prop),
-                    extras = field.get("extras") || [],
-                    intVal = model.get(prop),
-                    textVal = null,
-                    i;
-                for (i = 0; i < extras.length; i++){
-                    if (extras[i].value == intVal){
-                        textVal = extras[i].value + ": " + extras[i].name;
-                        break;
-                    }
-                }
-                td.innerHTML = textVal;
-                return td;
-            },
-
-            showMediaBrowser: function (e) {
-                var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                var mediaBrowser = new MediaBrowser({
-                    app: this.app
+                this.lv = new LayerListView({
+                    app: this.app,
+                    model: model,
+                    collection: model.getLayers()
                 });
-                this.app.vent.trigger("show-modal", {
-                    title: 'Media Browser',
-                    width: 1100,
-                    height: 400,
-                    view: mediaBrowser,
-                    saveButtonText: "Add",
-                    showSaveButton: true,
-                    saveFunction: mediaBrowser.addModels.bind(mediaBrowser)
-                });
+                //set active model:
+                this.app.selectedMapModel = model;
+                this.app.model = model;
+                this.model = model;
+
+                //replace the PanelStylesView
+                this.styles.show(ps);
+
+                //replace the LayerListView:
+                this.layers.show(this.lv);
             },
-
-            attachModels: function (models) {
-                var that = this,
-                    i = 0,
-                    ordering;
-                for (i = 0; i < models.length; i++) {
-                    ordering = this.currentModel.get("photo_count") + this.currentModel.get("audio_count");
-                    this.currentModel.attach(models[i], (ordering + i + 1), function () {
-                        that.currentModel.fetch({
-                            success: function(){
-                                that.renderSpreadsheet();
-                            }
-                        });
-                    }, function () {});
-                }
-
-                this.app.vent.trigger('hide-modal');
-            },
-
-            getColumnHeaders: function () {
-                var cols;
-                switch (this.collection.key) {
-                    case "audio":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"];
-                    case "photos":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
-                    case "videos":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Video", "Tags", "Attribution", "Owner", "Delete"];
-                    case "markers":
-                        cols = ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Media", "Delete"];
-                        return cols;
-                    default:
-                        if (!this.fields){
-                            return null;
-                        }//*/
-                        cols = ["ID", "Lat", "Lng"];
-
-                        for (var i = 0; i < this.fields.length; ++i) {
-                            var deleteColumn = this.show_hide_deleteColumn == true ? " <a class='fa fa-minus-circle delete_column' fieldIndex= '" +
-                                                                              i +"' aria-hidden='true'></a>" : "";
-                            cols.push(this.fields.at(i).get("col_name") + deleteColumn);
-                        }
-                        cols.push("Media");
-                        cols.push("Delete");
-                        cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
-                        return cols;
-                }
-            },
-            getColumnWidths: function () {
-                switch(this.collection.key){
-                    case "audio":
-                        return [30, 80, 80, 200, 400, 300, 200, 100, 80, 100];
-                    case "photos":
-                        return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
-                    case "videos":
-                        return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
-                    case "markers":
-                        return [30, 80, 80, 200, 400, 200, 120, 100, 100];
-                    default:
-                        if (!this.fields){
-                            return null;
-                        }//*/
-                        var cols = [30, 80, 80];
-                        for (var i = 0; i < this.fields.length; ++i){
-                            cols.push(150);
-                        }
-                        cols.push(120);
-                        return cols;
-                }
-            },
-
-            doSearch: function (term) {
-
-                // If form exist, do search with 3 parameters, otherwise, do search with two parameters]
-                if (this.collection.key.indexOf("form_")){
-                    this.collection.doSearch(term, this.app.getProjectID(), this.fields);
-                } else {
-                    this.collection.doSearch(term, this.app.getProjectID());
-                }
-
-            },
-
-            clearSearch: function () {
-                this.collection.clearSearch(this.app.getProjectID());
-            },
-
-            getColumns: function () {
-                switch (this.collection.key) {
-                    case "audio":
-                        return [
-                            { data: "id", readOnly: true},
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' },
-                            { data: "name", renderer: "html"},
-                            { data: "caption", renderer: "html"},
-                            { data: "file_path", renderer: this.audioRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                            { data: "tags", renderer: "html" },
-                            { data: "attribution", renderer: "html"},
-                            { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                        ];
-                    case "photos":
-                       return [
-                            { data: "id", readOnly: true},
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' },
-                            { data: "name", renderer: "html"},
-                            { data: "caption", renderer: "html"},
-                            { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                            { data: "tags", renderer: "html" },
-                            { data: "attribution", renderer: "html"},
-                            { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                       ];
-                   case "videos":
-                      return [
-                           { data: "id", readOnly: true},
-                           { data: "lat", type: "numeric", format: '0.00000' },
-                           { data: "lng", type: "numeric", format: '0.00000' },
-                           { data: "name", renderer: "html"},
-                           { data: "caption", renderer: "html"},
-                           // As for this, will need to replace with video and videoRenderer
-                           { data: "video_provider", renderer: this.videoRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                           //{ data: "video_provider", type: "text"},
-                           //{ data: "video_id", type: "text"},
-                           { data: "tags", renderer: "html" },
-                           { data: "attribution", renderer: "html"},
-                           { data: "owner", readOnly: true},
-                           { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                      ];
-                    case "markers":
-                       return [
-                            { data: "id", readOnly: true},
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' },
-                            { data: "name", renderer: "html"},
-                            { data: "caption", renderer: "html"},
-                            { data: "tags", renderer: "html" },
-                            { data: "owner", readOnly: true},
-                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                       ];
-                    default:
-                        if (!this.fields){
-                            return null;
-                        }//*/
-                        var cols = [
-                            { data: "id", readOnly: true },
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' }
-                        ];
-                        for (var i = 0; i < this.fields.length; ++i){
-                            // Make sure to add in the "-" symbol after field name to delete column
-                            var type = this.fields.at(i).get("data_type").toLowerCase();
-                            var field_format = "";
-                            var field_dateFormat = "";
-                            var field_correctFormat = false;
-                            var renderer = null;
-                            var editor = null;
-                            var entry = null;
-                            switch (type) {
-                                case "boolean":
-                                    entry = {
-                                        type:  "checkbox"
-                                    };
-                                    break;
-                                case "integer":
-                                    entry = {
-                                        type:  "numeric"
-                                    };
-                                    break;
-                                case "decimal":
-                                    entry = {
-                                        type:  "numeric",
-                                        format: "0,0.000"
-                                    };
-                                    break;
-                                case "choice":
-                                    var choiceOpts = [],
-                                        j = 0,
-                                        extras = this.fields.at(i).get("extras");
-                                    for (j = 0; j < extras.length; j++) {
-                                        choiceOpts.push(extras[j].name);
-                                    }
-                                    entry = {
-                                        type:  "text",
-                                        editor: "select",
-                                        selectOptions: choiceOpts
-                                    };
-                                    break;
-                                case "date-time":
-                                    entry = {
-                                        type:  "date",
-                                        dateFormat: "YYYY-MM-DDThh:mm",
-                                        correctFormat: true
-                                    };
-                                    break;
-                                case "rating":
-                                    entry = {
-                                        type:  "numeric",
-                                        editor: "select-ratings",
-                                        renderer: this.ratingRenderer.bind(this),
-                                        selectOptions: this.fields.at(i).get("extras") || []
-                                    };
-                                    break;
-                                default:
-                                    entry = {
-                                        type:  "text"
-                                    };
-                            }
-                            _.extend(entry, {
-                                data: this.fields.at(i).get("col_name")
-                            });
-                            cols.push(entry);
-                        };
-
-                        cols.push(
-                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
-                        );
-
-                        cols.push(
-                            {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
-                        );
-
-                        cols.push(
-                            {data: "addField", renderer: "html", readOnly: true, disableVisualSelection: true }
-                        );
-                        return cols;
-                }
-            },
-
-            showCreateFieldForm: function () {
-                // see the apps/gallery/views/toolbar-dataview.js function
-                // to pass the appropriate arguments:
-                var fieldView = new CreateFieldView({
-                    formID: this.app.dataType.split("_")[1],
-                    fields: this.fields,
-                    app: this.app
-                });
-                this.app.vent.trigger('show-modal', {
-                    title: "Create New Column",
-                    view: fieldView,
-                    saveFunction: fieldView.saveToDatabase,
-                    width: 300,
-                    height: 100
-                });
-            },
-
-            deleteField: function (e) {
-                //
-                // You need to access the column that is being selected
-                // Then re-order the columns so that the deleted column is last
-                // Then after re-ordering the columns, then delete the selected column
-                //
-                var that = this;
-                if (!confirm("Do you want to delete this field?")){
-                    return;
-                }
-
+            hidePanel: function (e) {
+                $(e.target).removeClass("hide").addClass("show");
+                this.app.vent.trigger('hide-list');
                 e.preventDefault();
-                var fieldIndex = $(e.currentTarget).attr("fieldIndex");
-                var targetColumn = this.fields.at(fieldIndex);
-                targetColumn.destroy({
+            },
+            showPanel: function (e) {
+                $(e.target).removeClass("show").addClass("hide");
+                this.app.vent.trigger('unhide-list');
+                e.preventDefault();
+            },
+
+            saveMap: function () {
+                this.model.set("zoom", this.app.getZoom());
+                this.model.set("center", this.app.getCenter());
+                this.model.set("basemap", this.app.getMapTypeId());
+                console.log(JSON.stringify(this.model.toJSON(), null, 2));
+                this.model.save({
+                    error: function () {
+                        console.log('error');
+                    },
                     success: function () {
-                        that.renderSpreadsheet();
+                        console.log('success');
                     }
                 });
-
             },
-            addRow: function (dataType) {
 
-                var that = this;
-                var projectID = this.app.getProjectID();
-                var rec;
-
-                if (dataType == "markers"){
-                    rec = new Marker({project_id: projectID});
-                } else {
-                    rec = new Record ({project_id: projectID});
+            deleteMap: function () {
+                if (!confirm("Are you sure you want to delete this map?")) {
+                    return;
+                }
+                
+                // delete marker overlays from selected map's layers
+                this.lv.children.call("deleteOverlays");
+                
+                // delete selected map's layers
+                var listModel;
+                while (listModel = this.lv.collection.first()) {
+                    listModel.destroy();
                 }
 
-                rec.collection = this.collection;
-                rec.save(null, {
-                    success: function(){
-                        // To add an empty column a the top, set the index to insert at 0
-                        that.collection.add(rec, {at: 0});
-                        that.renderSpreadsheet();
+                // delete selected map
+                this.model.destroy();
+
+                // re-render menu region
+                this.menu.show(this.sv, {forceShow: true});
+            
+                //rerender layers
+                //this.app.vent.trigger('update-layer-list');
+                
+                // resets the map list so the correct layers are displayed
+                this.app.vent.trigger('update-map-list');
+
+                // hide the right panel if it is open; 
+                //necessary so the user cannot edit a non-existent layer
+                this.app.vent.trigger("hide-right-panel");
+            }
+        });
+        return LeftPanelLayout;
+    });
+
+
+define('text!apps/style/templates/right/data-source.html',[],function () { return '<h5>Title</h5><input class="layer-title" type="text" value="{{title}}"></input>\n<h5>Data Source</h5>\n<select class="selected-data-source">\n    {{#each dataSource}}\n    <option value="{{this.value}}" {{#ifequal this.value ../currentDataSource }}SELECTED{{/ifequal}}>{{this.name}}</option>\n    {{/each}}\n    \n</div>\n';});
+
+define('apps/style/views/right/data-source-view',["marionette",
+        "handlebars",
+        "collections/maps",
+        "text!../../templates/right/data-source.html"
+    ],
+    function (Marionette, Handlebars, Maps, DataSourceTemplate) {
+        'use strict';
+
+        var DataSourceView = Marionette.ItemView.extend({
+
+            template: Handlebars.compile(DataSourceTemplate),
+
+            initialize: function (opts) {
+                _.extend(this, opts);
+                this.dataSource = this.app.dataManager.getDataSources();
+            },
+            
+            
+            events: {
+                "change .layer-title": "updateTitle",
+                "change .selected-data-source" : "changeDataSource"
+            },
+            
+            templateHelpers: function () {
+                return {
+                    dataSource: this.dataSource,
+                    currentDataSource: this.model.attributes.data_source
+                };
+            },
+
+            changeDataSource: function() {
+                var dataSource = this.$el.find(".selected-data-source").val();
+                this.model.set("data_source", dataSource);
+                this.app.vent.trigger('update-data-source');
+            },
+
+            
+            updateTitle: function () {
+                var title = this.$el.find('.layer-title').val();
+                this.model.set("title", title);
+                console.log(title);
+                this.app.vent.trigger("update-title", title);
+            }
+            
+        });
+        return DataSourceView;
+    });
+
+define('text!apps/style/templates/right/marker-style-child.html',[],function () { return '{{#ifequal this.dataType "categorical"}}\n\n<td><i class="fa fa-circle marker-icon jscolor" id="{{id}}" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>\n<td>{{ title }}</td>\n<td>\n    <select class="marker-shape">\n    {{#each icons}}\n        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n    {{/each}}\n    </select>    \n</td>\n{{/ifequal}}\n\n\n{{#ifequal this.dataType "continuous"}}\n\n<td><i class="fa fa-circle marker-icon jscolor" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>\n<td>{{ title }}</td>\n<td>\n    <select class="marker-shape">\n    {{#each icons}}\n        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n    {{/each}}\n    </select>\n</td>\n\n{{/ifequal}}\n\n{{#ifequal this.dataType "basic"}}\n\n<td><i class="fa fa-circle marker-icon fa-lg jscolor" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>\n<td>{{ title }}</td>\n<td>\n    <select class="marker-shape">\n    {{#each icons}}\n        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n    {{/each}}\n    </select>\n</td>\n\n{{/ifequal}}\n\n\n{{#ifequal dataType "no-variable"}}\n\n<td>{{ title }}</td>\n<td>edit img</td>\n\n{{/ifequal}}\n';});
+
+define('apps/style/views/right/marker-style-view-child',["jquery",
+        "marionette",
+        "handlebars",
+        "lib/maps/icon-lookup",
+        "text!../../templates/right/marker-style-child.html",
+        'color-picker-eyecon'
+    ],
+    function ($, Marionette, Handlebars, IconLookup, MarkerStyleChildTemplate) {
+        'use strict';
+
+        var MarkerStyleChildView = Marionette.ItemView.extend({
+            initialize: function (opts) {
+                _.extend(this, opts);
+                this.listenTo(this.app.vent, "update-opacity", this.updateSymbolOpacity);
+            },
+            template: Handlebars.compile(MarkerStyleChildTemplate),
+            events: {
+                'change .marker-shape': 'updateShape'
+            },
+            modelEvents: {
+                'change': 'updateLayerSymbols'
+            },
+                
+            tagName: "tr",
+            className: "table-row",
+            templateHelpers: function () {
+                console.log("child helpers", this);
+                return {
+                    dataType: this.dataType,
+                    icons: IconLookup.getIcons(),
+                    fillOpacity: this.model.get("fillOpacity"),
+                    id: "cp" + this.model.get('id')
+                };
+            },
+            onRender: function () {
+                var that = this,
+                    color = this.model.get('fillColor'),
+                    id = this.model.get('id');
+                
+                //new color picker is added to the dom each time the icon is clicked, 
+                //so we remove the previous color picker with each additional click.
+                //for this reason, each marker's picker needs to be uniquely identified
+                $(".marker-child-color-picker" + id).remove();
+                this.picker = this.$el.find('.jscolor').ColorPicker({
+                    color: color,
+                    onShow: function (colpkr) {
+                        $(colpkr).fadeIn(500);
+                        return false;
+                    },
+                    onHide: function (colpkr) {
+                        that.updateFillColor(color);
+                        $(colpkr).fadeOut(500);
+                        return false;
+                    },
+                    onChange: function (hsb, hex, rgb) {
+                        color = "#" + hex;
                     }
                 });
-
+                $(".colorpicker:last-child").addClass('marker-child-color-picker' + id);
+            },
+            updateFillColor: function (newHex) {
+                this.model.set("fillColor", newHex);
+                this.app.vent.trigger('update-map');
+            },
+            updateShape: function () {
+                this.model.set("shape", this.$el.find('.marker-shape').val());
+                this.app.vent.trigger('update-map'); //added
+            },
+            updateLayerSymbols: function () {
+                this.layer.setSymbol(this.model);
+                this.render(); 
+            },
+            updateSymbolOpacity: function (opacity) {
+                this.model.set("fillOpacity", opacity);
             }
 
         });
-        return Spreadsheet;
+        return MarkerStyleChildView;
     });
+
+define('text!apps/style/templates/right/marker-style.html',[],function () { return '\n<h5>Marker Style</h5>\n<div class="toggle-buttons">\n    <ul>\n        <li class=" active">\n            <a class="marker-style-tabs style-basic-tab">Basic</a>\n        </li>\n        <li>\n            <a class="marker-style-tabs style-source-tab">Source Code</a>\n        </li>\n    </ul> \n</div>\n<div class="toggle-container marker-style visual-edit" id="visual-marker-style">\n    <table class="color-properties">\n        <tbody>\n            <tr>\n                <td>Data Type</td> \n                <td>\n                    <!-- Need a better term that "data type". this is how the legend is set up so items are organized based on certain properties..-->\n                    <select name="place-properties" id="data-type-select" class="marker-style-select">\n                        <option value="categorical" {{#ifequal dataType "categorical"}} SELECTED {{/ifequal}} {{#unless hasCategoricalFields}}disabled="disabled"{{/unless}}>Category</option>\n\n                        <option value="continuous" {{#ifequal dataType "continuous"}} SELECTED {{/ifequal}} {{#unless hasContinuousFields}}disabled="disabled"{{/unless}} >\n                            Continuous\n                        </option>\n                        <option value="basic" {{#ifequal dataType "basic"}} SELECTED {{/ifequal}}>Simple</option>\n                        <option value="individual" {{#ifequal dataType "individual"}} SELECTED {{/ifequal}}>Individual Sites</option>\n                    </select>\n                </td>\n            </tr>\n        </tbody>\n    </table>    \n{{#ifequal dataType "categorical"}}\n    <table class="color-properties">\n        <tbody>\n            <!-- Rows in this table update based on what "data type" is selected.-->\n            <tr class="categorical-variable">\n                <td>Property</td> \n                <td>\n                    <select id="cat-prop" class="marker-style-select">\n                        {{#each categoricalList}}\n                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}} value="{{ this.value }}">\n                            {{ this.text }} {{#unless this.hasData}} (no data){{/unless}} \n                            </option>\n                        {{/each}}\n                    </select>\n                </td>\n            </tr>\n            <tr class="categorical-variable">\n                <td>Color Ramp</td>\n                <td>\n                    <div>\n                        <a>\n                            \n                            <div class="selected-palette-wrapper">\n                                <a>\n                                    <ul class="selected-ul">\n                                        {{#with selectedColorPalette}}\n                                        \n                                            <li class="selected-palette-list">\n                                                <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">\n                                                    {{#each this}}\n                                                    <li class="palette-item" style= "background-color: #{{this}}">\n                                                          \n                                                    </li>\n                                                    {{/each}}\n                                                </ul>\n                                            </li>\n                                       \n                                        {{/with}}\n                                    </ul>\n                                <i class="fa fa-angle-down palette-icon"></i>\n                                </a>\n                            </div>\n                        </a>\n                        <div class="palette-wrapper">\n                            <ul>\n                                {{#each allColors}}\n                                <a>\n                                    <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">\n                                        <ul class="palette-container" value="{{@index}}">\n                                            {{#each this}}\n                                            <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">\n                                                \n                                            </li>\n                                            {{/each}}\n                                        </ul>\n                                    </li>\n                                </a>\n                                {{/each}}\n                            </ul>\n                        </div>\n                    </div>\n                </td>\n            </tr>\n            <tr>\n                <td>Symbol Shape</td>\n                <td>\n                    <select class="global-marker-shape marker-style-select">\n                    {{#each icons}}\n                        <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n                    {{/each}}\n                    </select>\n                </td>\n            </tr>\n            <tr>\n                <td>Width</td>\n                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>\n            </tr>\n            <tr>\n                <td>Stroke Weight</td>\n                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>\n            </tr>\n            <tr>   \n                <td>Stroke Color</td>\n                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: {{metadata.strokeColor}} " aria-hidden="true">\n                    </i>\n                    </td>\n            </tr>\n            <tr>\n                <td>Stroke Opacity</td>\n                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>\n            </tr>\n\n        </tbody>\n    </table>\n</div>\n\n<div>\n    <table class="symbols-table">\n        <thead>\n            <tr>\n                <th>Value</th>\n                <th>Legend Label</th> \n                <th>Shape</th> \n            </tr>\n        </thead>\n        <tbody id="symbols">\n            \n        </tbody>\n    </table>\n</div>\n{{/ifequal}}\n{{#ifequal dataType "continuous"}}\n    <table class="color-properties">\n        <tbody>    \n            <tr class="continuous-variable">\n                <td>Property</td> \n                <td>\n                    <select id="cont-prop" class="marker-style-select">\n                        {{#each continuousList}}\n                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}} value="{{ this.value }}">\n                                {{ this.text }}{{#unless this.hasData}} (no data){{/unless}}\n                            </option>\n                        {{/each}}\n                    </select>\n                </td>\n            </tr>\n\n            <tr class="continuous-variable">\n                <td>Buckets:</td>\n                <td><input id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="9"></td>\n            </tr>\n            <tr class="continuous-variable">\n                <td>Color Ramp</td>\n                <td>\n                    <div>\n                        <a>\n                            \n                            <div class="selected-palette-wrapper">\n                                <a>\n                                    <ul class="selected-ul">\n                                        {{#with selectedColorPalette}}\n                                        \n                                            <li class="selected-palette-list">\n                                                <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">\n                                                    {{#each this}}\n                                                    <li class="palette-item" style= "background-color: #{{this}}">\n                                                          \n                                                    </li>\n                                                    {{/each}}\n                                                </ul>\n                                            </li>\n                                       \n                                        {{/with}}\n                                    </ul>\n                                <i class="fa fa-angle-down palette-icon"></i>\n                                </a>\n                            </div>\n                        </a>\n                        <div class="palette-wrapper">\n                            <ul>\n                                {{#each allColors}}\n                                <a>\n                                    <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">\n                                        <ul class="palette-container" value="{{@index}}">\n                                            {{#each this}}\n                                            <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">\n                                                \n                                            </li>\n                                            {{/each}}\n                                        </ul>\n                                    </li>\n                                </a>\n                                {{/each}}\n                            </ul>\n                        </div>\n                    </div>\n                </td>\n            </tr>\n            <tr>\n                <td>Symbol Shape</td>\n                <td>\n                    <select class="global-marker-shape marker-style-select">\n                    {{#each icons}}\n                        <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n                    {{/each}}\n                    </select>\n                </td>\n            </tr>\n        </tbody>\n    </table>\n    <table class="color-properties">\n        <tbody>\n            <tr>\n                <td>Opacity</td>\n                <td>\n                     <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">\n                </td>\n                <td>Width</td>\n                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>\n            </tr>\n            <tr>\n                <td>Stroke Weight</td>\n                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>\n            </tr>\n            <tr>   \n                <td>Stroke Color</td>\n                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: {{metadata.strokeColor}} " aria-hidden="true">\n                    </i>\n                    </td>\n            </tr>\n            <tr>\n                <td>Stroke Opacity</td>\n                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>\n            </tr>\n        </tbody>\n    </table>\n</div>\n\n<div>\n    <table class="symbols-table">\n        <thead>\n            <tr>\n                <th class="symbols-th">Value</th>\n                <th class="symbols-th">Legend Label</th> \n                <th class="symbols-th">Shape</th> \n            </tr>\n        </thead>\n        <tbody id="symbols">\n            \n        </tbody>\n    </table>\n</div>\n{{/ifequal}}\n\n{{#ifequal dataType "basic"}}\n<table class="color-properties">\n        <tbody>            \n            <tr>\n                <td>Symbol Shape</td>\n                <td>\n                    <select class="global-marker-shape marker-style-select">\n                    {{#each icons}}\n                        <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n                    {{/each}}\n                    </select>\n                </td>\n            </tr>\n            <tr>\n                <td>Width</td>\n                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>\n            </tr>\n            <tr>\n                <td>Stroke Weight</td>\n                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>\n            </tr>\n            <tr>   \n                <td>Stroke Color</td>\n                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: {{metadata.strokeColor}} " aria-hidden="true">\n                    </i>\n                    </td>\n            </tr>\n            <tr>\n                <td>Stroke Opacity</td>\n                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>\n            </tr>\n        </tbody>\n    </table>\n</div>\n\n<div>\n    <table class="symbols-table">\n        <thead>\n            <tr>\n                <th></th>\n                <th>Legend Label</th> \n                <th>Shape</th> \n            </tr>\n        </thead>\n        <tbody id="symbols">\n            \n        </tbody>\n    </table>\n</div>\n{{/ifequal}}\n\n';});
+
+/** @license
+ *
+ *     Colour Palette Generator script.
+ *     Copyright (c) 2014 Google Inc.
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License"); you may
+ *     not use this file except in compliance with the License.  You may
+ *     obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ *     implied.  See the License for the specific language governing
+ *     permissions and limitations under the License.
+ *
+ * Furthermore, ColorBrewer colour schemes are covered by the following:
+ *
+ *     Copyright (c) 2002 Cynthia Brewer, Mark Harrower, and
+ *                        The Pennsylvania State University.
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License"); you may
+ *     not use this file except in compliance with the License. You may obtain
+ *     a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ *     implied. See the License for the specific language governing
+ *     permissions and limitations under the License.
+ *
+ *     Redistribution and use in source and binary forms, with or without
+ *     modification, are permitted provided that the following conditions are
+ *     met:
+ *
+ *     1. Redistributions as source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *     2. The end-user documentation included with the redistribution, if any,
+ *     must include the following acknowledgment: "This product includes color
+ *     specifications and designs developed by Cynthia Brewer
+ *     (http://colorbrewer.org/)." Alternately, this acknowledgment may appear
+ *     in the software itself, if and wherever such third-party
+ *     acknowledgments normally appear.
+ *
+ *     4. The name "ColorBrewer" must not be used to endorse or promote products
+ *     derived from this software without prior written permission. For written
+ *     permission, please contact Cynthia Brewer at cbrewer@psu.edu.
+ *
+ *     5. Products derived from this software may not be called "ColorBrewer",
+ *     nor may "ColorBrewer" appear in their name, without prior written
+ *     permission of Cynthia Brewer.
+ *
+ * Furthermore, Solarized colour schemes are covered by the following:
+ *
+ *     Copyright (c) 2011 Ethan Schoonover
+ *
+ *     Permission is hereby granted, free of charge, to any person obtaining
+ *     a copy of this software and associated documentation files (the
+ *     "Software"), to deal in the Software without restriction, including
+ *     without limitation the rights to use, copy, modify, merge, publish,
+ *     distribute, sublicense, and/or sell copies of the Software, and to
+ *     permit persons to whom the Software is furnished to do so, subject to
+ *     the following conditions:
+ *
+ *     The above copyright notice and this permission notice shall be included
+ *     in all copies or substantial portions of the Software.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ *     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ *     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ *     LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *     OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ *     WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+
+
+var palette = (function() {
+
+  var proto = Array.prototype;
+  var slice = function(arr, opt_begin, opt_end) {
+    return proto.slice.apply(arr, proto.slice.call(arguments, 1));
+  };
+
+  var extend = function(arr, arr2) {
+    return proto.push.apply(arr, arr2);
+  };
+
+  var function_type = typeof function() {};
+
+  var INF = 1000000000;  // As far as we're concerned, that's infinity. ;)
+
+
+  /**
+   * Generate a colour palette from given scheme.
+   *
+   * If scheme argument is not a function it is passed to palettes.listSchemes
+   * function (along with the number argument).  This may result in an array
+   * of more than one available scheme.  If that is the case, scheme at
+   * opt_index position is taken.
+   *
+   * This allows using different palettes for different data without having to
+   * name the schemes specifically, for example:
+   *
+   *     palette_for_foo = palette('sequential', 10, 0);
+   *     palette_for_bar = palette('sequential', 10, 1);
+   *     palette_for_baz = palette('sequential', 10, 2);
+   *
+   * @param {!palette.SchemeType|string|palette.Palette} scheme Scheme to
+   *     generate palette for.  Either a function constructed with
+   *     palette.Scheme object, or anything that palette.listSchemes accepts
+   *     as name argument.
+   * @param {number} number Number of colours to return.  If negative, absolute
+   *     value is taken and colours will be returned in reverse order.
+   * @param {number=} opt_index If scheme is a name of a group or an array and
+   *     results in more than one scheme, index of the scheme to use.  The
+   *     index wraps around.
+   * @param {...*} varargs Additional arguments to pass to palette or colour
+   *     generator (if the chosen scheme uses those).
+   * @return {Array<string>} Array of abs(number) 'RRGGBB' strings or null if
+   *     no matching scheme was found.
+   */
+  var palette = function(scheme, number, opt_index, varargs) {
+    number |= 0;
+    if (number == 0) {
+      return [];
+    }
+
+    if (typeof scheme !== function_type) {
+      var arr = palette.listSchemes(
+          /** @type {string|palette.Palette} */ (scheme), number);
+      if (!arr.length) {
+        return null;
+      }
+      scheme = arr[(opt_index || 0) % arr.length];
+    }
+
+    var args = slice(arguments, 2);
+    args[0] = number;
+    return scheme.apply(scheme, args);
+  };
+
+
+  /**
+   * Returns a callable colour scheme object.
+   *
+   * Just after being created, the scheme has no colour palettes and no way of
+   * generating any, thus generate method will return null.  To turn scheme
+   * into a useful object, addPalette, addPalettes or setColorFunction methods
+   * need to be used.
+   *
+   * To generate a colour palette with given number colours using function
+   * returned by this method, just call it with desired number of colours.
+   *
+   * Since this function *returns* a callable object, it must *not* be used
+   * with the new operator.
+   *
+   * @param {string} name Name of the scheme.
+   * @param {string|!Array<string>=} opt_groups A group name or list of
+   *     groups the scheme should be categorised under.  Three typical groups
+   *     to use are 'qualitative', 'sequential' and 'diverging', but any
+   *     groups may be created.
+   * @return {!palette.SchemeType} A colour palette generator function, which
+   *     in addition has methods and properties like a regular object.  Think
+   *     of it as a callable object.
+   */
+  palette.Scheme = function(name, opt_groups) {
+    /**
+     * A map from a number to a colour palettes with given number of colours.
+     * @type {!Object<number, palette.Palette>}
+     */
+    var palettes = {};
+
+    /**
+     * The biggest palette in palettes map.
+     * @type {number}
+     */
+    var palettes_max = 0;
+
+    /**
+     * The smallest palette in palettes map.
+     * @type {number}
+     */
+    var palettes_min = INF;
+
+    var makeGenerator = function() {
+      if (arguments.length <= 1) {
+        return self.color_func.bind(self);
+      } else {
+        var args = slice(arguments);
+        return function(x) {
+          args[0] = x;
+          return self.color_func.apply(self, args);
+        };
+      }
+    };
+
+    /**
+     * Generate a colour palette from the scheme.
+     *
+     * If there was a palette added with addPalette (or addPalettes) with
+     * enough colours, that palette will be used.  Otherwise, if colour
+     * function has been set using setColorFunction method, that function will
+     * be used to generate the palette.  Otherwise null is returned.
+     *
+     * @param {number} number Number of colours to return.  If negative,
+     *     absolute value is taken and colours will be returned in reverse
+     *     order.
+     * @param {...*} varargs Additional arguments to pass to palette or colour
+     *     generator (if the chosen scheme uses those).
+     */
+    var self = function(number, varargs) {
+      number |= 0;
+      if (!number) {
+        return [];
+      }
+
+      var _number = number;
+      number = Math.abs(number);
+
+      if (number <= palettes_max) {
+        for (var i = Math.max(number, palettes_min); !(i in palettes); ++i) {
+          /* nop */
+        }
+        var colors = palettes[i];
+        if (i > number) {
+          var take_head =
+              'shrinking_takes_head' in colors ?
+              colors.shrinking_takes_head : self.shrinking_takes_head;
+          if (take_head) {
+            colors = colors.slice(0, number);
+            i = number;
+          } else {
+            return palette.generate(
+                function(x) { return colors[Math.round(x)]; },
+                _number, 0, colors.length - 1);
+          }
+        }
+        colors = colors.slice();
+        if (_number < 0) {
+          colors.reverse();
+        }
+        return colors;
+
+      } else if (self.color_func) {
+        return palette.generate(makeGenerator.apply(self, arguments),
+                                _number, 0, 1, self.color_func_cyclic);
+
+      } else {
+        return null;
+      }
+    };
+
+    /**
+     * The name of the palette.
+     * @type {string}
+     */
+    self.scheme_name = name;
+
+    /**
+     * A list of groups the palette belongs to.
+     * @type {!Array<string>}
+     */
+    self.groups = opt_groups ?
+      typeof opt_groups === 'string' ? [opt_groups] : opt_groups : [];
+
+    /**
+     * The biggest palette this scheme can generate.
+     * @type {number}
+     */
+    self.max = 0;
+
+    /**
+     * The biggest palette this scheme can generate that is colour-blind
+     * friendly.
+     * @type {number}
+     */
+    self.cbf_max = INF;
+
+
+    /**
+     * Adds a colour palette to the colour scheme.
+     *
+     * @param {palette.Palette} palette An array of 'RRGGBB' strings
+     *     representing the palette to add.
+     * @param {boolean=} opt_is_cbf Whether the palette is colourblind friendly.
+     */
+    self.addPalette = function(palette, opt_is_cbf) {
+      var len = palette.length;
+      if (len) {
+        palettes[len] = palette;
+        palettes_min = Math.min(palettes_min, len);
+        palettes_max = Math.max(palettes_max, len);
+        self.max = Math.max(self.max, len);
+        if (!opt_is_cbf && len != 1) {
+          self.cbf_max = Math.min(self.cbf_max, len - 1);
+        }
+      }
+    };
+
+    /**
+     * Adds number of colour palettes to the colour scheme.
+     *
+     * @param {palette.PalettesList} palettes A map or an array of colour
+     *     palettes to add.  If map, i.e.  object, is used, properties should
+     *     use integer property names.
+     * @param {number=} opt_max Size of the biggest palette in palettes set.
+     *     If not set, palettes must have a length property which will be used.
+     * @param {number=} opt_cbf_max Size of the biggest palette which is still
+     *     colourblind friendly.  1 by default.
+     */
+    self.addPalettes = function(palettes, opt_max, opt_cbf_max) {
+      opt_max = opt_max || palettes.length;
+      for (var i = 0; i < opt_max; ++i) {
+        if (i in palettes) {
+          self.addPalette(palettes[i], true);
+        }
+      }
+      self.cbf_max = Math.min(self.cbf_max, opt_cbf_max || 1);
+    };
+
+    /**
+     * Enable shrinking palettes taking head of the list of colours.
+     *
+     * When user requests n-colour palette but the smallest palette added with
+     * addPalette (or addPalettes) is m-colour one (where n < m), n colours
+     * across the palette will be returned.  For example:
+     *     var ex = palette.Scheme('ex');
+     *     ex.addPalette(['000000', 'bcbcbc', 'ffffff']);
+     *     var pal = ex(2);
+     *     // pal == ['000000', 'ffffff']
+     *
+     * This works for palettes where the distance between colours is
+     * correlated to distance in the palette array, which is true in gradients
+     * such as the one above.
+     *
+     * To turn this feature off shrinkByTakingHead can be set to true either
+     * for all palettes in the scheme (if opt_idx is not given) or for palette
+     * with given number of colours only.  In general, setting the option for
+     * given palette overwrites whatever has been set for the scheme.  The
+     * default, as described above, is false.
+     *
+     * Alternatively, the feature can be enabled by setting shrinking_takes_head
+     * property for the palette Array or the scheme object.
+     *
+     * For example, all of the below give equivalent results:
+     *     var pal = ['ff0000', '00ff00', '0000ff'];
+     *
+     *     var ex = palette.Scheme('ex');
+     *     ex.addPalette(pal);               // ex(2) == ['ff0000', '0000ff']
+     *     ex.shrinkByTakingHead(true);      // ex(2) == ['ff0000', '00ff00']
+     *
+     *     ex = palette.Scheme('ex');
+     *     ex.addPalette(pal);               // ex(2) == ['ff0000', '0000ff']
+     *     ex.shrinkByTakingHead(true, 3);   // ex(2) == ['ff0000', '00ff00']
+     *
+     *     ex = palette.Scheme('ex');
+     *     ex.addPalette(pal);
+     *     ex.addPalette(pal);               // ex(2) == ['ff0000', '0000ff']
+     *     pal.shrinking_takes_head = true;  // ex(2) == ['ff0000', '00ff00']
+     *
+     * @param {boolean} enabled Whether to enable or disable the “shrinking
+     *     takes head” feature.  It is disabled by default.
+     * @param {number=} opt_idx If given, the “shrinking takes head” option
+     *     for palette with given number of colours is set.  If such palette
+     *     does not exist, nothing happens.
+     */
+    self.shrinkByTakingHead = function(enabled, opt_idx) {
+      if (opt_idx !== void(0)) {
+        if (opt_idx in palettes) {
+          palettes[opt_idx].shrinking_takes_head = !!enabled;
+        }
+      } else {
+        self.shrinking_takes_head = !!enabled;
+      }
+    };
+
+    /**
+     * Sets a colour generation function of the colour scheme.
+     *
+     * The function must accept a singe number argument whose value can be from
+     * 0.0 to 1.0, and return a colour as an 'RRGGBB' string.  This function
+     * will be used when generating palettes, i.e. if 11-colour palette is
+     * requested, this function will be called with arguments 0.0, 0.1, …, 1.0.
+     *
+     * If the palette generated by the function is colourblind friendly,
+     * opt_is_cbf should be set to true.
+     *
+     * In some cases, it is not desirable to reach 1.0 when generating
+     * a palette.  This happens for hue-rainbows where the 0–1 range corresponds
+     * to a 0°–360° range in hues, and since hue at 0° is the same as at 360°,
+     * it's desired to stop short the end of the range when generating
+     * a palette.  To accomplish this, opt_cyclic should be set to true.
+     *
+     * @param {palette.ColorFunction} func A colour generator function.
+     * @param {boolean=} opt_is_cbf Whether palette generate with the function
+     *     is colour-blind friendly.
+     * @param {boolean=} opt_cyclic Whether colour at 0.0 is the same as the
+     *     one at 1.0.
+     */
+    self.setColorFunction = function(func, opt_is_cbf, opt_cyclic) {
+      self.color_func = func;
+      self.color_func_cyclic = !!opt_cyclic;
+      self.max = INF;
+      if (!opt_is_cbf && self.cbf_max === INF) {
+        self.cbf_max = 1;
+      }
+    };
+
+    self.color = function(x, varargs) {
+      if (self.color_func) {
+        return self.color_func.apply(this, arguments);
+      } else {
+        return null;
+      }
+    };
+
+    return self;
+  };
+
+
+  /**
+   * Creates a new palette.Scheme and initialises it by calling addPalettes
+   * method with the rest of the arguments.
+   *
+   * @param {string} name Name of the scheme.
+   * @param {string|!Array<string>} groups A group name or list of group
+   *     names the scheme belongs to.
+   * @param {!Object<number, palette.Palette>|!Array<palette.Palette>}
+   *     palettes A map or an array of colour palettes to add.  If map, i.e.
+   *     object, is used, properties should use integer property names.
+   * @param {number=} opt_max Size of the biggest palette in palettes set.
+   *     If not set, palettes must have a length property which will be used.
+   * @param {number=} opt_cbf_max Size of the biggest palette which is still
+   *     colourblind friendly.  1 by default.
+   * @return {!palette.SchemeType} A colour palette generator function, which
+   *     in addition has methods and properties like a regular object.  Think
+   *     of it as a callable object.
+   */
+  palette.Scheme.fromPalettes = function(name, groups,
+                                         palettes, opt_max, opt_cbf_max) {
+    var scheme = palette.Scheme(name, groups);
+    scheme.addPalettes.apply(scheme, slice(arguments, 2));
+    return scheme;
+  };
+
+
+  /**
+   * Creates a new palette.Scheme and initialises it by calling
+   * setColorFunction method with the rest of the arguments.
+   *
+   * @param {string} name Name of the scheme.
+   * @param {string|!Array<string>} groups A group name or list of group
+   *     names the scheme belongs to.
+   * @param {palette.ColorFunction} func A colour generator function.
+   * @param {boolean=} opt_is_cbf Whether palette generate with the function
+   *     is colour-blind friendly.
+   * @param {boolean=} opt_cyclic Whether colour at 0.0 is the same as the
+   *     one at 1.0.
+   * @return {!palette.SchemeType} A colour palette generator function, which
+   *     in addition has methods and properties like a regular object.  Think
+   *     of it as a callable object.
+   */
+  palette.Scheme.withColorFunction = function(name, groups,
+                                              func, opt_is_cbf, opt_cyclic) {
+    var scheme = palette.Scheme(name, groups);
+    scheme.setColorFunction.apply(scheme, slice(arguments, 2));
+    return scheme;
+  };
+
+
+  /**
+   * A map of registered schemes.  Maps a scheme or group name to a list of
+   * scheme objects.  Property name is either 'n-<name>' for single scheme
+   * names or 'g-<name>' for scheme group names.
+   *
+   * @type {!Object<string, !Array<!Object>>}
+   */
+  var registered_schemes = {};
+
+
+  /**
+   * Registers a new colour scheme.
+   *
+   * @param {!palette.SchemeType} scheme The scheme to add.
+   */
+  palette.register = function(scheme) {
+    registered_schemes['n-' + scheme.scheme_name] = [scheme];
+    scheme.groups.forEach(function(g) {
+      (registered_schemes['g-' + g] =
+       registered_schemes['g-' + g] || []).push(scheme);
+    });
+    (registered_schemes['g-all'] =
+       registered_schemes['g-all'] || []).push(scheme);
+  };
+
+
+  /**
+   * List all schemes that match given name and number of colours.
+   *
+   * name argument can be either a string or an array of strings.  In the
+   * former case, the function acts as if the argument was an array with name
+   * as a single argument (i.e. “palette.listSchemes('foo')” is exactly the same
+   * as “palette.listSchemes(['foo'])”).
+   *
+   * Each name can be either name of a palette (e.g. 'tol-sq' for Paul Tol's
+   * sequential palette), or a name of a group (e.g. 'sequential' for all
+   * sequential palettes).  Name can therefore map to a single scheme or
+   * several schemes.
+   *
+   * Furthermore, name can be suffixed with '-cbf' to indicate that only
+   * schemes that are colourblind friendly should be returned.  For example,
+   * 'rainbow' returns a HSV rainbow scheme, but because it is not colourblind
+   * friendly, 'rainbow-cbf' returns no schemes.
+   *
+   * Some schemes may produce colourblind friendly palettes for some number of
+   * colours.  For example ColorBrewer's Dark2 scheme is colourblind friendly
+   * if no more than 3 colours are generated.  If opt_number is not specified,
+   * 'qualitative-cbf' will include 'cb-Dark2' but if opt_number is given as,
+   * say, 5 it won't.
+   *
+   * Name can also be 'all' which will return all registered schemes.
+   * Naturally, 'all-cbf' will return all colourblind friendly schemes.
+   *
+   * Schemes are added to the library using palette.register.  Schemes are
+   * created using palette.Scheme function.  By default, the following schemes
+   * are available:
+   *
+   *     Name            Description
+   *     --------------  -----------------------------------------------------
+   *     tol             Paul Tol's qualitative scheme, cbf, max 12 colours.
+   *     tol-dv          Paul Tol's diverging scheme, cbf.
+   *     tol-sq          Paul Tol's sequential scheme, cbf.
+   *     tol-rainbow     Paul Tol's qualitative scheme, cbf.
+   *
+   *     rainbow         A rainbow palette.
+   *
+   *     cb-YlGn         ColorBrewer sequential schemes.
+   *     cb-YlGnBu
+   *     cb-GnBu
+   *     cb-BuGn
+   *     cb-PuBuGn
+   *     cb-PuBu
+   *     cb-BuPu
+   *     cb-RdPu
+   *     cb-PuRd
+   *     cb-OrRd
+   *     cb-YlOrRd
+   *     cb-YlOrBr
+   *     cb-Purples
+   *     cb-Blues
+   *     cb-Greens
+   *     cb-Oranges
+   *     cb-Reds
+   *     cb-Greys
+   *
+   *     cb-PuOr         ColorBrewer diverging schemes.
+   *     cb-BrBG
+   *     cb-PRGn
+   *     cb-PiYG
+   *     cb-RdBu
+   *     cb-RdGy
+   *     cb-RdYlBu
+   *     cb-Spectral
+   *     cb-RdYlGn
+   *
+   *     cb-Accent       ColorBrewer qualitative schemes.
+   *     cb-Dark2
+   *     cb-Paired
+   *     cb-Pastel1
+   *     cb-Pastel2
+   *     cb-Set1
+   *     cb-Set2
+   *     cb-Set3
+   *
+   *     sol-base        Solarized base colours.
+   *     sol-accent      Solarized accent colours.
+   *
+   * The following groups are also available by default:
+   *
+   *     Name            Description
+   *     --------------  -----------------------------------------------------
+   *     all             All registered schemes.
+   *     sequential      All sequential schemes.
+   *     diverging       All diverging schemes.
+   *     qualitative     All qualitative schemes.
+   *     cb-sequential   All ColorBrewer sequential schemes.
+   *     cb-diverging    All ColorBrewer diverging schemes.
+   *     cb-qualitative  All ColorBrewer qualitative schemes.
+   *
+   * You can read more about Paul Tol's palettes at http://www.sron.nl/~pault/.
+   * You can read more about ColorBrewer at http://colorbrewer2.org.
+   *
+   * @param {string|!Array<string>} name A name of a colour scheme, of
+   *     a group of colour schemes, or an array of any of those.
+   * @param {number=} opt_number When requesting only colourblind friendly
+   *     schemes, number of colours the scheme must provide generating such
+   *     that the palette is still colourblind friendly.  2 by default.
+   * @return {!Array<!palette.SchemeType>} An array of colour scheme objects
+   *     matching the criteria.  Sorted by scheme name.
+   */
+  palette.listSchemes = function(name, opt_number) {
+    if (!opt_number) {
+      opt_number = 2;
+    } else if (opt_number < 0) {
+      opt_number = -opt_number;
+    }
+
+    var ret = [];
+    (typeof name === 'string' ? [name] : name).forEach(function(n) {
+      var cbf = n.substring(n.length - 4) === '-cbf';
+      if (cbf) {
+        n = n.substring(0, n.length - 4);
+      }
+      var schemes =
+          registered_schemes['g-' + n] ||
+          registered_schemes['n-' + n] ||
+          [];
+      for (var i = 0, scheme; (scheme = schemes[i]); ++i) {
+        if ((cbf ? scheme.cbf : scheme.max) >= opt_number) {
+          ret.push(scheme);
+        }
+      }
+    });
+
+    ret.sort(function(a, b) {
+      return a.scheme_name >= b.scheme_name ?
+        a.scheme_name > b.scheme_name ? 1 : 0 : -1;
+    });
+    return ret;
+  };
+
+
+  /**
+   * Generates a palette using given colour generating function.
+   *
+   * The color_func callback must accept a singe number argument whose value
+   * can vary from 0.0 to 1.0 (or in general from opt_start to opt_end), and
+   * return a colour as an 'RRGGBB' string.  This function will be used when
+   * generating palettes, i.e. if 11-colour palette is requested, this
+   * function will be called with arguments 0.0, 0.1, …, 1.0.
+   *
+   * In some cases, it is not desirable to reach 1.0 when generating
+   * a palette.  This happens for hue-rainbows where the 0–1 range corresponds
+   * to a 0°–360° range in hues, and since hue at 0° is the same as at 360°,
+   * it's desired to stop short the end of the range when generating
+   * a palette.  To accomplish this, opt_cyclic should be set to true.
+   *
+   * opt_start and opt_end may be used to change the range the colour
+   * generation function is called with.  opt_end may be less than opt_start
+   * which will case to traverse the range in reverse.  Another way to reverse
+   * the palette is requesting negative number of colours.  The two methods do
+   * not always lead to the same results (especially if opt_cyclic is set).
+   *
+   * @param {palette.ColorFunction} color_func A colours generating callback
+   *     function.
+   * @param {number} number Number of colours to generate in the palette.  If
+   *     number is negative, colours in the palette will be reversed.  If only
+   *     one colour is requested, colour at opt_start will be returned.
+   * @param {number=} opt_start Optional starting point for the palette
+   *     generation function.  Zero by default.
+   * @param {number=} opt_end Optional ending point for the palette generation
+   *     function.  One by default.
+   * @param {boolean=} opt_cyclic If true, function will assume colour at
+   *     point opt_start is the same as one at opt_end.
+   * @return {palette.Palette} An array of 'RRGGBB' colours.
+   */
+  palette.generate = function(color_func, number, opt_start, opt_end,
+                              opt_cyclic) {
+    if (Math.abs(number) < 1) {
+      return [];
+    }
+
+    opt_start = opt_start === void(0) ? 0 : opt_start;
+    opt_end = opt_end === void(0) ? 1 : opt_end;
+
+    if (Math.abs(number) < 2) {
+      return [color_func(opt_start)];
+    }
+
+    var i = Math.abs(number);
+    var x = opt_start;
+    var ret = [];
+    var step = (opt_end - opt_start) / (opt_cyclic ? i : (i - 1));
+
+    for (; --i >= 0; x += step) {
+      ret.push(color_func(x));
+    }
+    if (number < 0) {
+      ret.reverse();
+    }
+    return ret;
+  };
+
+
+  /**
+   * Clamps value to [0, 1] range.
+   * @param {number} v Number to limit value of.
+   * @return {number} If v is inside of [0, 1] range returns v, otherwise
+   *     returns 0 or 1 depending which side of the range v is closer to.
+   */
+  var clamp = function(v) {
+    return v > 0 ? (v < 1 ? v : 1) : 0;
+  };
+
+  /**
+   * Converts r, g, b triple into RRGGBB hex representation.
+   * @param {number} r Red value of the colour in the range [0, 1].
+   * @param {number} g Green value of the colour in the range [0, 1].
+   * @param {number} b Blue value of the colour in the range [0, 1].
+   * @return {string} A lower-case RRGGBB representation of the colour.
+   */
+  palette.rgbColor = function(r, g, b) {
+    return [r, g, b].map(function(v) {
+      v = Number(Math.round(clamp(v) * 255)).toString(16);
+      return v.length == 1 ? '0' + v : v;
+    }).join('');
+  };
+
+  /**
+   * Converts a linear r, g, b triple into RRGGBB hex representation.
+   * @param {number} r Linear red value of the colour in the range [0, 1].
+   * @param {number} g Linear green value of the colour in the range [0, 1].
+   * @param {number} b Linear blue value of the colour in the range [0, 1].
+   * @return {string} A lower-case RRGGBB representation of the colour.
+   */
+  palette.linearRgbColor = function(r, g, b) {
+    // http://www.brucelindbloom.com/index.html?Eqn_XYZ_to_RGB.html
+    return [r, g, b].map(function(v) {
+      v = clamp(v);
+      if (v <= 0.0031308) {
+        v = 12.92 * v;
+      } else {
+        v = 1.055 * Math.pow(v, 1 / 2.4) - 0.055;
+      }
+      v = Number(Math.round(v * 255)).toString(16);
+      return v.length == 1 ? '0' + v : v;
+    }).join('');
+  };
+
+  /**
+   * Converts an HSV colours to RRGGBB hex representation.
+   * @param {number} h Hue in the range [0, 1].
+   * @param {number=} opt_s Saturation in the range [0, 1].  One by default.
+   * @param {number=} opt_v Value in the range [0, 1].  One by default.
+   * @return {string} An RRGGBB representation of the colour.
+   */
+  palette.hsvColor = function(h, opt_s, opt_v) {
+    h *= 6;
+    var s = opt_s === void(0) ? 1 : clamp(opt_s);
+    var v = opt_v === void(0) ? 1 : clamp(opt_v);
+    var x = v * (1 - s * Math.abs(h % 2 - 1));
+    var m = v * (1 - s);
+    switch (Math.floor(h) % 6) {
+    case 0: return palette.rgbColor(v, x, m);
+    case 1: return palette.rgbColor(x, v, m);
+    case 2: return palette.rgbColor(m, v, x);
+    case 3: return palette.rgbColor(m, x, v);
+    case 4: return palette.rgbColor(x, m, v);
+    default: return palette.rgbColor(v, m, x);
+    }
+  };
+
+  palette.register(palette.Scheme.withColorFunction(
+    'rainbow', 'qualitative', palette.hsvColor, false, true));
+
+  return palette;
+})();
+
+
+/** @typedef {function(number): string} */
+palette.ColorFunction;
+
+/** @typedef {!Array<string>} */
+palette.Palette;
+
+/** @typedef {!Object<number, palette.Palette>|!Array<palette.Palette>} */
+palette.PalettesList;
+
+/**
+ * @typedef {
+ *   function(number, ...?): Array<string>|
+ *   {
+ *     scheme_name: string,
+ *     groups: !Array<string>,
+ *     max: number,
+ *     cbf_max: number,
+ *     addPalette: function(!Array<string>, boolean=),
+ *     addPalettes: function(palette.PalettesList, number=, number=),
+ *     shrinkByTakingHead: function(boolean, number=),
+ *     setColorFunction: function(palette.ColorFunction, boolean=, boolean=),
+ *     color: function(number, ...?): ?string}}
+ */
+palette.SchemeType;
+
+
+/* Paul Tol's schemes start here. *******************************************/
+/* See http://www.sron.nl/~pault/ */
+
+(function() {
+  var rgb = palette.rgbColor;
+
+  /**
+   * Calculates value of a polynomial at given point.
+   * For example, poly(x, 1, 2, 3) calculates value of “1 + 2*x + 2*X^2”.
+   * @param {number} x Value to calculate polynomial for.
+   * @param {...number} varargs Coefficients of the polynomial specified in
+   *     the order of rising powers of x including constant as the first
+   *     variable argument.
+   */
+  var poly = function(x, varargs) {
+    var i = arguments.length - 1, n = arguments[i];
+    while (i > 1) {
+      n = n * x + arguments[--i];
+    }
+    return n;
+  };
+
+  /**
+   * Calculate approximate value of error function with maximum error of 0.0005.
+   * See <https://en.wikipedia.org/wiki/Error_function>.
+   * @param {number} x Argument of the error function.
+   * @return {number} Value of error function for x.
+   */
+  var erf = function(x) {
+    // https://en.wikipedia.org/wiki/Error_function#Approximation_with_elementary_functions
+    // This produces a maximum error of 0.0005 which is more then we need.  In
+    // the worst case, that error is multiplied by four and then divided by two
+    // before being multiplied by 255, so in the end, the error is multiplied by
+    // 510 which produces 0.255 which is less than a single colour step.
+    var y = poly(Math.abs(x), 1, 0.278393, 0.230389, 0.000972, 0.078108);
+    y *= y; // y^2
+    y *= y; // y^4
+    y = 1 - 1 / y;
+    return x < 0 ? -y : y;
+  };
+
+  palette.register(palette.Scheme.fromPalettes('tol', 'qualitative', [
+    ['4477aa'],
+    ['4477aa', 'cc6677'],
+    ['4477aa', 'ddcc77', 'cc6677'],
+    ['4477aa', '117733', 'ddcc77', 'cc6677'],
+    ['332288', '88ccee', '117733', 'ddcc77', 'cc6677'],
+    ['332288', '88ccee', '117733', 'ddcc77', 'cc6677', 'aa4499'],
+    ['332288', '88ccee', '44aa99', '117733', 'ddcc77', 'cc6677', 'aa4499'],
+    ['332288', '88ccee', '44aa99', '117733', '999933', 'ddcc77', 'cc6677',
+     'aa4499'],
+    ['332288', '88ccee', '44aa99', '117733', '999933', 'ddcc77', 'cc6677',
+     '882255', 'aa4499'],
+    ['332288', '88ccee', '44aa99', '117733', '999933', 'ddcc77', '661100',
+     'cc6677', '882255', 'aa4499'],
+    ['332288', '6699cc', '88ccee', '44aa99', '117733', '999933', 'ddcc77',
+     '661100', 'cc6677', '882255', 'aa4499'],
+    ['332288', '6699cc', '88ccee', '44aa99', '117733', '999933', 'ddcc77',
+     '661100', 'cc6677', 'aa4466', '882255', 'aa4499']
+  ], 12, 12));
+
+  /**
+   * Calculates a colour along Paul Tol's sequential colours axis.
+   * See <http://www.sron.nl/~pault/colourschemes.pdf> figure 7 and equation 1.
+   * @param {number} x Position of the colour on the axis in the [0, 1] range.
+   * @return {string} An RRGGBB representation of the colour.
+   */
+  palette.tolSequentialColor = function(x) {
+    return rgb(1 - 0.392 * (1 + erf((x - 0.869) / 0.255)),
+               1.021 - 0.456 * (1 + erf((x - 0.527) / 0.376)),
+               1 - 0.493 * (1 + erf((x - 0.272) / 0.309)));
+  };
+
+  palette.register(palette.Scheme.withColorFunction(
+    'tol-sq', 'sequential', palette.tolSequentialColor, true));
+
+  /**
+   * Calculates a colour along Paul Tol's diverging colours axis.
+   * See <http://www.sron.nl/~pault/colourschemes.pdf> figure 8 and equation 2.
+   * @param {number} x Position of the colour on the axis in the [0, 1] range.
+   * @return {string} An RRGGBB representation of the colour.
+   */
+  palette.tolDivergingColor = function(x) {
+    var g = poly(x, 0.572, 1.524, -1.811) / poly(x, 1, -0.291, 0.1574);
+    return rgb(poly(x, 0.235, -2.13, 26.92, -65.5, 63.5, -22.36),
+               g * g,
+               1 / poly(x, 1.579, -4.03, 12.92, -31.4, 48.6, -23.36));
+  };
+
+  palette.register(palette.Scheme.withColorFunction(
+    'tol-dv', 'diverging', palette.tolDivergingColor, true));
+
+  /**
+   * Calculates a colour along Paul Tol's rainbow colours axis.
+   * See <http://www.sron.nl/~pault/colourschemes.pdf> figure 13 and equation 3.
+   * @param {number} x Position of the colour on the axis in the [0, 1] range.
+   * @return {string} An RRGGBB representation of the colour.
+   */
+  palette.tolRainbowColor = function(x) {
+    return rgb(poly(x, 0.472, -0.567, 4.05) / poly(x, 1, 8.72, -19.17, 14.1),
+               poly(x, 0.108932, -1.22635, 27.284, -98.577, 163.3, -131.395,
+                    40.634),
+               1 / poly(x, 1.97, 3.54, -68.5, 243, -297, 125));
+  };
+
+  palette.register(palette.Scheme.withColorFunction(
+    'tol-rainbow', 'qualitative', palette.tolRainbowColor, true));
+})();
+
+
+/* Solarized colour schemes start here. *************************************/
+/* See http://ethanschoonover.com/solarized */
+
+(function() {
+  /*
+   * Those are not really designed to be used in graphs, but we're keeping
+   * them here in case someone cares.
+   */
+  palette.register(palette.Scheme.fromPalettes('sol-base', 'sequential', [
+    ['002b36', '073642', '586e75', '657b83', '839496', '93a1a1', 'eee8d5',
+     'fdf6e3']
+  ], 1, 8));
+  palette.register(palette.Scheme.fromPalettes('sol-accent', 'qualitative', [
+    ['b58900', 'cb4b16', 'dc322f', 'd33682', '6c71c4', '268bd2', '2aa198',
+     '859900']
+  ]));
+})();
+
+
+/* ColorBrewer colour schemes start here. ***********************************/
+/* See http://colorbrewer2.org/ */
+
+(function() {
+  var schemes = {
+    YlGn: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['f7fcb9', 'addd8e', '31a354'],
+      4: ['ffffcc', 'c2e699', '78c679', '238443'],
+      5: ['ffffcc', 'c2e699', '78c679', '31a354', '006837'],
+      6: ['ffffcc', 'd9f0a3', 'addd8e', '78c679', '31a354', '006837'],
+      7: ['ffffcc', 'd9f0a3', 'addd8e', '78c679', '41ab5d', '238443',
+          '005a32'],
+      8: ['ffffe5', 'f7fcb9', 'd9f0a3', 'addd8e', '78c679', '41ab5d',
+          '238443', '005a32'],
+      9: ['ffffe5', 'f7fcb9', 'd9f0a3', 'addd8e', '78c679', '41ab5d',
+          '238443', '006837', '004529']
+    },
+    YlGnBu: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['edf8b1', '7fcdbb', '2c7fb8'],
+      4: ['ffffcc', 'a1dab4', '41b6c4', '225ea8'],
+      5: ['ffffcc', 'a1dab4', '41b6c4', '2c7fb8', '253494'],
+      6: ['ffffcc', 'c7e9b4', '7fcdbb', '41b6c4', '2c7fb8', '253494'],
+      7: ['ffffcc', 'c7e9b4', '7fcdbb', '41b6c4', '1d91c0', '225ea8',
+          '0c2c84'],
+      8: ['ffffd9', 'edf8b1', 'c7e9b4', '7fcdbb', '41b6c4', '1d91c0',
+          '225ea8', '0c2c84'],
+      9: ['ffffd9', 'edf8b1', 'c7e9b4', '7fcdbb', '41b6c4', '1d91c0',
+          '225ea8', '253494', '081d58']
+    },
+    GnBu: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['e0f3db', 'a8ddb5', '43a2ca'],
+      4: ['f0f9e8', 'bae4bc', '7bccc4', '2b8cbe'],
+      5: ['f0f9e8', 'bae4bc', '7bccc4', '43a2ca', '0868ac'],
+      6: ['f0f9e8', 'ccebc5', 'a8ddb5', '7bccc4', '43a2ca', '0868ac'],
+      7: ['f0f9e8', 'ccebc5', 'a8ddb5', '7bccc4', '4eb3d3', '2b8cbe',
+          '08589e'],
+      8: ['f7fcf0', 'e0f3db', 'ccebc5', 'a8ddb5', '7bccc4', '4eb3d3',
+          '2b8cbe', '08589e'],
+      9: ['f7fcf0', 'e0f3db', 'ccebc5', 'a8ddb5', '7bccc4', '4eb3d3',
+          '2b8cbe', '0868ac', '084081']
+    },
+    BuGn: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['e5f5f9', '99d8c9', '2ca25f'],
+      4: ['edf8fb', 'b2e2e2', '66c2a4', '238b45'],
+      5: ['edf8fb', 'b2e2e2', '66c2a4', '2ca25f', '006d2c'],
+      6: ['edf8fb', 'ccece6', '99d8c9', '66c2a4', '2ca25f', '006d2c'],
+      7: ['edf8fb', 'ccece6', '99d8c9', '66c2a4', '41ae76', '238b45',
+          '005824'],
+      8: ['f7fcfd', 'e5f5f9', 'ccece6', '99d8c9', '66c2a4', '41ae76',
+          '238b45', '005824'],
+      9: ['f7fcfd', 'e5f5f9', 'ccece6', '99d8c9', '66c2a4', '41ae76',
+          '238b45', '006d2c', '00441b']
+    },
+    PuBuGn: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['ece2f0', 'a6bddb', '1c9099'],
+      4: ['f6eff7', 'bdc9e1', '67a9cf', '02818a'],
+      5: ['f6eff7', 'bdc9e1', '67a9cf', '1c9099', '016c59'],
+      6: ['f6eff7', 'd0d1e6', 'a6bddb', '67a9cf', '1c9099', '016c59'],
+      7: ['f6eff7', 'd0d1e6', 'a6bddb', '67a9cf', '3690c0', '02818a',
+          '016450'],
+      8: ['fff7fb', 'ece2f0', 'd0d1e6', 'a6bddb', '67a9cf', '3690c0',
+          '02818a', '016450'],
+      9: ['fff7fb', 'ece2f0', 'd0d1e6', 'a6bddb', '67a9cf', '3690c0',
+          '02818a', '016c59', '014636']
+    },
+    PuBu: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['ece7f2', 'a6bddb', '2b8cbe'],
+      4: ['f1eef6', 'bdc9e1', '74a9cf', '0570b0'],
+      5: ['f1eef6', 'bdc9e1', '74a9cf', '2b8cbe', '045a8d'],
+      6: ['f1eef6', 'd0d1e6', 'a6bddb', '74a9cf', '2b8cbe', '045a8d'],
+      7: ['f1eef6', 'd0d1e6', 'a6bddb', '74a9cf', '3690c0', '0570b0',
+          '034e7b'],
+      8: ['fff7fb', 'ece7f2', 'd0d1e6', 'a6bddb', '74a9cf', '3690c0',
+          '0570b0', '034e7b'],
+      9: ['fff7fb', 'ece7f2', 'd0d1e6', 'a6bddb', '74a9cf', '3690c0',
+          '0570b0', '045a8d', '023858']
+    },
+    BuPu: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['e0ecf4', '9ebcda', '8856a7'],
+      4: ['edf8fb', 'b3cde3', '8c96c6', '88419d'],
+      5: ['edf8fb', 'b3cde3', '8c96c6', '8856a7', '810f7c'],
+      6: ['edf8fb', 'bfd3e6', '9ebcda', '8c96c6', '8856a7', '810f7c'],
+      7: ['edf8fb', 'bfd3e6', '9ebcda', '8c96c6', '8c6bb1', '88419d',
+          '6e016b'],
+      8: ['f7fcfd', 'e0ecf4', 'bfd3e6', '9ebcda', '8c96c6', '8c6bb1',
+          '88419d', '6e016b'],
+      9: ['f7fcfd', 'e0ecf4', 'bfd3e6', '9ebcda', '8c96c6', '8c6bb1',
+          '88419d', '810f7c', '4d004b']
+    },
+    RdPu: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['fde0dd', 'fa9fb5', 'c51b8a'],
+      4: ['feebe2', 'fbb4b9', 'f768a1', 'ae017e'],
+      5: ['feebe2', 'fbb4b9', 'f768a1', 'c51b8a', '7a0177'],
+      6: ['feebe2', 'fcc5c0', 'fa9fb5', 'f768a1', 'c51b8a', '7a0177'],
+      7: ['feebe2', 'fcc5c0', 'fa9fb5', 'f768a1', 'dd3497', 'ae017e',
+          '7a0177'],
+      8: ['fff7f3', 'fde0dd', 'fcc5c0', 'fa9fb5', 'f768a1', 'dd3497',
+          'ae017e', '7a0177'],
+      9: ['fff7f3', 'fde0dd', 'fcc5c0', 'fa9fb5', 'f768a1', 'dd3497',
+          'ae017e', '7a0177', '49006a']
+    },
+    PuRd: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['e7e1ef', 'c994c7', 'dd1c77'],
+      4: ['f1eef6', 'd7b5d8', 'df65b0', 'ce1256'],
+      5: ['f1eef6', 'd7b5d8', 'df65b0', 'dd1c77', '980043'],
+      6: ['f1eef6', 'd4b9da', 'c994c7', 'df65b0', 'dd1c77', '980043'],
+      7: ['f1eef6', 'd4b9da', 'c994c7', 'df65b0', 'e7298a', 'ce1256',
+          '91003f'],
+      8: ['f7f4f9', 'e7e1ef', 'd4b9da', 'c994c7', 'df65b0', 'e7298a',
+          'ce1256', '91003f'],
+      9: ['f7f4f9', 'e7e1ef', 'd4b9da', 'c994c7', 'df65b0', 'e7298a',
+          'ce1256', '980043', '67001f']
+    },
+    OrRd: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['fee8c8', 'fdbb84', 'e34a33'],
+      4: ['fef0d9', 'fdcc8a', 'fc8d59', 'd7301f'],
+      5: ['fef0d9', 'fdcc8a', 'fc8d59', 'e34a33', 'b30000'],
+      6: ['fef0d9', 'fdd49e', 'fdbb84', 'fc8d59', 'e34a33', 'b30000'],
+      7: ['fef0d9', 'fdd49e', 'fdbb84', 'fc8d59', 'ef6548', 'd7301f',
+          '990000'],
+      8: ['fff7ec', 'fee8c8', 'fdd49e', 'fdbb84', 'fc8d59', 'ef6548',
+          'd7301f', '990000'],
+      9: ['fff7ec', 'fee8c8', 'fdd49e', 'fdbb84', 'fc8d59', 'ef6548',
+          'd7301f', 'b30000', '7f0000']
+    },
+    YlOrRd: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['ffeda0', 'feb24c', 'f03b20'],
+      4: ['ffffb2', 'fecc5c', 'fd8d3c', 'e31a1c'],
+      5: ['ffffb2', 'fecc5c', 'fd8d3c', 'f03b20', 'bd0026'],
+      6: ['ffffb2', 'fed976', 'feb24c', 'fd8d3c', 'f03b20', 'bd0026'],
+      7: ['ffffb2', 'fed976', 'feb24c', 'fd8d3c', 'fc4e2a', 'e31a1c',
+          'b10026'],
+      8: ['ffffcc', 'ffeda0', 'fed976', 'feb24c', 'fd8d3c', 'fc4e2a',
+          'e31a1c', 'b10026'],
+      9: ['ffffcc', 'ffeda0', 'fed976', 'feb24c', 'fd8d3c', 'fc4e2a',
+          'e31a1c', 'bd0026', '800026']
+    },
+    YlOrBr: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['fff7bc', 'fec44f', 'd95f0e'],
+      4: ['ffffd4', 'fed98e', 'fe9929', 'cc4c02'],
+      5: ['ffffd4', 'fed98e', 'fe9929', 'd95f0e', '993404'],
+      6: ['ffffd4', 'fee391', 'fec44f', 'fe9929', 'd95f0e', '993404'],
+      7: ['ffffd4', 'fee391', 'fec44f', 'fe9929', 'ec7014', 'cc4c02',
+          '8c2d04'],
+      8: ['ffffe5', 'fff7bc', 'fee391', 'fec44f', 'fe9929', 'ec7014',
+          'cc4c02', '8c2d04'],
+      9: ['ffffe5', 'fff7bc', 'fee391', 'fec44f', 'fe9929', 'ec7014',
+          'cc4c02', '993404', '662506']
+    },
+    Purples: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['efedf5', 'bcbddc', '756bb1'],
+      4: ['f2f0f7', 'cbc9e2', '9e9ac8', '6a51a3'],
+      5: ['f2f0f7', 'cbc9e2', '9e9ac8', '756bb1', '54278f'],
+      6: ['f2f0f7', 'dadaeb', 'bcbddc', '9e9ac8', '756bb1', '54278f'],
+      7: ['f2f0f7', 'dadaeb', 'bcbddc', '9e9ac8', '807dba', '6a51a3',
+          '4a1486'],
+      8: ['fcfbfd', 'efedf5', 'dadaeb', 'bcbddc', '9e9ac8', '807dba',
+          '6a51a3', '4a1486'],
+      9: ['fcfbfd', 'efedf5', 'dadaeb', 'bcbddc', '9e9ac8', '807dba',
+          '6a51a3', '54278f', '3f007d']
+    },
+    Blues: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['deebf7', '9ecae1', '3182bd'],
+      4: ['eff3ff', 'bdd7e7', '6baed6', '2171b5'],
+      5: ['eff3ff', 'bdd7e7', '6baed6', '3182bd', '08519c'],
+      6: ['eff3ff', 'c6dbef', '9ecae1', '6baed6', '3182bd', '08519c'],
+      7: ['eff3ff', 'c6dbef', '9ecae1', '6baed6', '4292c6', '2171b5',
+          '084594'],
+      8: ['f7fbff', 'deebf7', 'c6dbef', '9ecae1', '6baed6', '4292c6',
+          '2171b5', '084594'],
+      9: ['f7fbff', 'deebf7', 'c6dbef', '9ecae1', '6baed6', '4292c6',
+          '2171b5', '08519c', '08306b']
+    },
+    Greens: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['e5f5e0', 'a1d99b', '31a354'],
+      4: ['edf8e9', 'bae4b3', '74c476', '238b45'],
+      5: ['edf8e9', 'bae4b3', '74c476', '31a354', '006d2c'],
+      6: ['edf8e9', 'c7e9c0', 'a1d99b', '74c476', '31a354', '006d2c'],
+      7: ['edf8e9', 'c7e9c0', 'a1d99b', '74c476', '41ab5d', '238b45',
+          '005a32'],
+      8: ['f7fcf5', 'e5f5e0', 'c7e9c0', 'a1d99b', '74c476', '41ab5d',
+          '238b45', '005a32'],
+      9: ['f7fcf5', 'e5f5e0', 'c7e9c0', 'a1d99b', '74c476', '41ab5d',
+          '238b45', '006d2c', '00441b']
+    },
+    Oranges: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['fee6ce', 'fdae6b', 'e6550d'],
+      4: ['feedde', 'fdbe85', 'fd8d3c', 'd94701'],
+      5: ['feedde', 'fdbe85', 'fd8d3c', 'e6550d', 'a63603'],
+      6: ['feedde', 'fdd0a2', 'fdae6b', 'fd8d3c', 'e6550d', 'a63603'],
+      7: ['feedde', 'fdd0a2', 'fdae6b', 'fd8d3c', 'f16913', 'd94801',
+          '8c2d04'],
+      8: ['fff5eb', 'fee6ce', 'fdd0a2', 'fdae6b', 'fd8d3c', 'f16913',
+          'd94801', '8c2d04'],
+      9: ['fff5eb', 'fee6ce', 'fdd0a2', 'fdae6b', 'fd8d3c', 'f16913',
+          'd94801', 'a63603', '7f2704']
+    },
+    Reds: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['fee0d2', 'fc9272', 'de2d26'],
+      4: ['fee5d9', 'fcae91', 'fb6a4a', 'cb181d'],
+      5: ['fee5d9', 'fcae91', 'fb6a4a', 'de2d26', 'a50f15'],
+      6: ['fee5d9', 'fcbba1', 'fc9272', 'fb6a4a', 'de2d26', 'a50f15'],
+      7: ['fee5d9', 'fcbba1', 'fc9272', 'fb6a4a', 'ef3b2c', 'cb181d',
+          '99000d'],
+      8: ['fff5f0', 'fee0d2', 'fcbba1', 'fc9272', 'fb6a4a', 'ef3b2c',
+          'cb181d', '99000d'],
+      9: ['fff5f0', 'fee0d2', 'fcbba1', 'fc9272', 'fb6a4a', 'ef3b2c',
+          'cb181d', 'a50f15', '67000d']
+    },
+    Greys: {
+      type: 'sequential',
+      cbf: 42,
+      3: ['f0f0f0', 'bdbdbd', '636363'],
+      4: ['f7f7f7', 'cccccc', '969696', '525252'],
+      5: ['f7f7f7', 'cccccc', '969696', '636363', '252525'],
+      6: ['f7f7f7', 'd9d9d9', 'bdbdbd', '969696', '636363', '252525'],
+      7: ['f7f7f7', 'd9d9d9', 'bdbdbd', '969696', '737373', '525252',
+          '252525'],
+      8: ['ffffff', 'f0f0f0', 'd9d9d9', 'bdbdbd', '969696', '737373',
+          '525252', '252525'],
+      9: ['ffffff', 'f0f0f0', 'd9d9d9', 'bdbdbd', '969696', '737373',
+          '525252', '252525', '000000']
+    },
+    PuOr: {
+      type: 'diverging',
+      cbf: 42,
+      3: ['f1a340', 'f7f7f7', '998ec3'],
+      4: ['e66101', 'fdb863', 'b2abd2', '5e3c99'],
+      5: ['e66101', 'fdb863', 'f7f7f7', 'b2abd2', '5e3c99'],
+      6: ['b35806', 'f1a340', 'fee0b6', 'd8daeb', '998ec3', '542788'],
+      7: ['b35806', 'f1a340', 'fee0b6', 'f7f7f7', 'd8daeb', '998ec3',
+          '542788'],
+      8: ['b35806', 'e08214', 'fdb863', 'fee0b6', 'd8daeb', 'b2abd2',
+          '8073ac', '542788'],
+      9: ['b35806', 'e08214', 'fdb863', 'fee0b6', 'f7f7f7', 'd8daeb',
+          'b2abd2', '8073ac', '542788'],
+      10: ['7f3b08', 'b35806', 'e08214', 'fdb863', 'fee0b6', 'd8daeb',
+           'b2abd2', '8073ac', '542788', '2d004b'],
+      11: ['7f3b08', 'b35806', 'e08214', 'fdb863', 'fee0b6', 'f7f7f7',
+           'd8daeb', 'b2abd2', '8073ac', '542788', '2d004b']
+    },
+    BrBG: {
+      type: 'diverging',
+      cbf: 42,
+      3: ['d8b365', 'f5f5f5', '5ab4ac'],
+      4: ['a6611a', 'dfc27d', '80cdc1', '018571'],
+      5: ['a6611a', 'dfc27d', 'f5f5f5', '80cdc1', '018571'],
+      6: ['8c510a', 'd8b365', 'f6e8c3', 'c7eae5', '5ab4ac', '01665e'],
+      7: ['8c510a', 'd8b365', 'f6e8c3', 'f5f5f5', 'c7eae5', '5ab4ac',
+          '01665e'],
+      8: ['8c510a', 'bf812d', 'dfc27d', 'f6e8c3', 'c7eae5', '80cdc1',
+          '35978f', '01665e'],
+      9: ['8c510a', 'bf812d', 'dfc27d', 'f6e8c3', 'f5f5f5', 'c7eae5',
+          '80cdc1', '35978f', '01665e'],
+      10: ['543005', '8c510a', 'bf812d', 'dfc27d', 'f6e8c3', 'c7eae5',
+           '80cdc1', '35978f', '01665e', '003c30'],
+      11: ['543005', '8c510a', 'bf812d', 'dfc27d', 'f6e8c3', 'f5f5f5',
+           'c7eae5', '80cdc1', '35978f', '01665e', '003c30']
+    },
+    PRGn: {
+      type: 'diverging',
+      cbf: 42,
+      3: ['af8dc3', 'f7f7f7', '7fbf7b'],
+      4: ['7b3294', 'c2a5cf', 'a6dba0', '008837'],
+      5: ['7b3294', 'c2a5cf', 'f7f7f7', 'a6dba0', '008837'],
+      6: ['762a83', 'af8dc3', 'e7d4e8', 'd9f0d3', '7fbf7b', '1b7837'],
+      7: ['762a83', 'af8dc3', 'e7d4e8', 'f7f7f7', 'd9f0d3', '7fbf7b',
+          '1b7837'],
+      8: ['762a83', '9970ab', 'c2a5cf', 'e7d4e8', 'd9f0d3', 'a6dba0',
+          '5aae61', '1b7837'],
+      9: ['762a83', '9970ab', 'c2a5cf', 'e7d4e8', 'f7f7f7', 'd9f0d3',
+          'a6dba0', '5aae61', '1b7837'],
+      10: ['40004b', '762a83', '9970ab', 'c2a5cf', 'e7d4e8', 'd9f0d3',
+           'a6dba0', '5aae61', '1b7837', '00441b'],
+      11: ['40004b', '762a83', '9970ab', 'c2a5cf', 'e7d4e8', 'f7f7f7',
+           'd9f0d3', 'a6dba0', '5aae61', '1b7837', '00441b']
+    },
+    PiYG: {
+      type: 'diverging',
+      cbf: 42,
+      3: ['e9a3c9', 'f7f7f7', 'a1d76a'],
+      4: ['d01c8b', 'f1b6da', 'b8e186', '4dac26'],
+      5: ['d01c8b', 'f1b6da', 'f7f7f7', 'b8e186', '4dac26'],
+      6: ['c51b7d', 'e9a3c9', 'fde0ef', 'e6f5d0', 'a1d76a', '4d9221'],
+      7: ['c51b7d', 'e9a3c9', 'fde0ef', 'f7f7f7', 'e6f5d0', 'a1d76a',
+          '4d9221'],
+      8: ['c51b7d', 'de77ae', 'f1b6da', 'fde0ef', 'e6f5d0', 'b8e186',
+          '7fbc41', '4d9221'],
+      9: ['c51b7d', 'de77ae', 'f1b6da', 'fde0ef', 'f7f7f7', 'e6f5d0',
+          'b8e186', '7fbc41', '4d9221'],
+      10: ['8e0152', 'c51b7d', 'de77ae', 'f1b6da', 'fde0ef', 'e6f5d0',
+           'b8e186', '7fbc41', '4d9221', '276419'],
+      11: ['8e0152', 'c51b7d', 'de77ae', 'f1b6da', 'fde0ef', 'f7f7f7',
+           'e6f5d0', 'b8e186', '7fbc41', '4d9221', '276419']
+    },
+    RdBu: {
+      type: 'diverging',
+      cbf: 42,
+      3: ['ef8a62', 'f7f7f7', '67a9cf'],
+      4: ['ca0020', 'f4a582', '92c5de', '0571b0'],
+      5: ['ca0020', 'f4a582', 'f7f7f7', '92c5de', '0571b0'],
+      6: ['b2182b', 'ef8a62', 'fddbc7', 'd1e5f0', '67a9cf', '2166ac'],
+      7: ['b2182b', 'ef8a62', 'fddbc7', 'f7f7f7', 'd1e5f0', '67a9cf',
+          '2166ac'],
+      8: ['b2182b', 'd6604d', 'f4a582', 'fddbc7', 'd1e5f0', '92c5de',
+          '4393c3', '2166ac'],
+      9: ['b2182b', 'd6604d', 'f4a582', 'fddbc7', 'f7f7f7', 'd1e5f0',
+          '92c5de', '4393c3', '2166ac'],
+      10: ['67001f', 'b2182b', 'd6604d', 'f4a582', 'fddbc7', 'd1e5f0',
+           '92c5de', '4393c3', '2166ac', '053061'],
+      11: ['67001f', 'b2182b', 'd6604d', 'f4a582', 'fddbc7', 'f7f7f7',
+           'd1e5f0', '92c5de', '4393c3', '2166ac', '053061']
+    },
+    RdGy: {
+      type: 'diverging',
+      cbf: 42,
+      3: ['ef8a62', 'ffffff', '999999'],
+      4: ['ca0020', 'f4a582', 'bababa', '404040'],
+      5: ['ca0020', 'f4a582', 'ffffff', 'bababa', '404040'],
+      6: ['b2182b', 'ef8a62', 'fddbc7', 'e0e0e0', '999999', '4d4d4d'],
+      7: ['b2182b', 'ef8a62', 'fddbc7', 'ffffff', 'e0e0e0', '999999',
+          '4d4d4d'],
+      8: ['b2182b', 'd6604d', 'f4a582', 'fddbc7', 'e0e0e0', 'bababa',
+          '878787', '4d4d4d'],
+      9: ['b2182b', 'd6604d', 'f4a582', 'fddbc7', 'ffffff', 'e0e0e0',
+          'bababa', '878787', '4d4d4d'],
+      10: ['67001f', 'b2182b', 'd6604d', 'f4a582', 'fddbc7', 'e0e0e0',
+           'bababa', '878787', '4d4d4d', '1a1a1a'],
+      11: ['67001f', 'b2182b', 'd6604d', 'f4a582', 'fddbc7', 'ffffff',
+           'e0e0e0', 'bababa', '878787', '4d4d4d', '1a1a1a']
+    },
+    RdYlBu: {
+      type: 'diverging',
+      cbf: 42,
+      3: ['fc8d59', 'ffffbf', '91bfdb'],
+      4: ['d7191c', 'fdae61', 'abd9e9', '2c7bb6'],
+      5: ['d7191c', 'fdae61', 'ffffbf', 'abd9e9', '2c7bb6'],
+      6: ['d73027', 'fc8d59', 'fee090', 'e0f3f8', '91bfdb', '4575b4'],
+      7: ['d73027', 'fc8d59', 'fee090', 'ffffbf', 'e0f3f8', '91bfdb',
+          '4575b4'],
+      8: ['d73027', 'f46d43', 'fdae61', 'fee090', 'e0f3f8', 'abd9e9',
+          '74add1', '4575b4'],
+      9: ['d73027', 'f46d43', 'fdae61', 'fee090', 'ffffbf', 'e0f3f8',
+          'abd9e9', '74add1', '4575b4'],
+      10: ['a50026', 'd73027', 'f46d43', 'fdae61', 'fee090', 'e0f3f8',
+           'abd9e9', '74add1', '4575b4', '313695'],
+      11: ['a50026', 'd73027', 'f46d43', 'fdae61', 'fee090', 'ffffbf',
+           'e0f3f8', 'abd9e9', '74add1', '4575b4', '313695']
+    },
+    Spectral: {
+      type: 'diverging',
+      cbf: 0,
+      3: ['fc8d59', 'ffffbf', '99d594'],
+      4: ['d7191c', 'fdae61', 'abdda4', '2b83ba'],
+      5: ['d7191c', 'fdae61', 'ffffbf', 'abdda4', '2b83ba'],
+      6: ['d53e4f', 'fc8d59', 'fee08b', 'e6f598', '99d594', '3288bd'],
+      7: ['d53e4f', 'fc8d59', 'fee08b', 'ffffbf', 'e6f598', '99d594',
+          '3288bd'],
+      8: ['d53e4f', 'f46d43', 'fdae61', 'fee08b', 'e6f598', 'abdda4',
+          '66c2a5', '3288bd'],
+      9: ['d53e4f', 'f46d43', 'fdae61', 'fee08b', 'ffffbf', 'e6f598',
+          'abdda4', '66c2a5', '3288bd'],
+      10: ['9e0142', 'd53e4f', 'f46d43', 'fdae61', 'fee08b', 'e6f598',
+           'abdda4', '66c2a5', '3288bd', '5e4fa2'],
+      11: ['9e0142', 'd53e4f', 'f46d43', 'fdae61', 'fee08b', 'ffffbf',
+           'e6f598', 'abdda4', '66c2a5', '3288bd', '5e4fa2']
+    },
+    RdYlGn: {
+      type: 'diverging',
+      cbf: 0,
+      3: ['fc8d59', 'ffffbf', '91cf60'],
+      4: ['d7191c', 'fdae61', 'a6d96a', '1a9641'],
+      5: ['d7191c', 'fdae61', 'ffffbf', 'a6d96a', '1a9641'],
+      6: ['d73027', 'fc8d59', 'fee08b', 'd9ef8b', '91cf60', '1a9850'],
+      7: ['d73027', 'fc8d59', 'fee08b', 'ffffbf', 'd9ef8b', '91cf60',
+          '1a9850'],
+      8: ['d73027', 'f46d43', 'fdae61', 'fee08b', 'd9ef8b', 'a6d96a',
+          '66bd63', '1a9850'],
+      9: ['d73027', 'f46d43', 'fdae61', 'fee08b', 'ffffbf', 'd9ef8b',
+          'a6d96a', '66bd63', '1a9850'],
+      10: ['a50026', 'd73027', 'f46d43', 'fdae61', 'fee08b', 'd9ef8b',
+           'a6d96a', '66bd63', '1a9850', '006837'],
+      11: ['a50026', 'd73027', 'f46d43', 'fdae61', 'fee08b', 'ffffbf',
+           'd9ef8b', 'a6d96a', '66bd63', '1a9850', '006837']
+    },
+    Accent: {
+      type: 'qualitative',
+      cbf: 0,
+      3: ['7fc97f', 'beaed4', 'fdc086'],
+      4: ['7fc97f', 'beaed4', 'fdc086', 'ffff99'],
+      5: ['7fc97f', 'beaed4', 'fdc086', 'ffff99', '386cb0'],
+      6: ['7fc97f', 'beaed4', 'fdc086', 'ffff99', '386cb0', 'f0027f'],
+      7: ['7fc97f', 'beaed4', 'fdc086', 'ffff99', '386cb0', 'f0027f',
+          'bf5b17'],
+      8: ['7fc97f', 'beaed4', 'fdc086', 'ffff99', '386cb0', 'f0027f',
+          'bf5b17', '666666']
+    },
+    Dark2: {
+      type: 'qualitative',
+      cbf: 3,
+      3: ['1b9e77', 'd95f02', '7570b3'],
+      4: ['1b9e77', 'd95f02', '7570b3', 'e7298a'],
+      5: ['1b9e77', 'd95f02', '7570b3', 'e7298a', '66a61e'],
+      6: ['1b9e77', 'd95f02', '7570b3', 'e7298a', '66a61e', 'e6ab02'],
+      7: ['1b9e77', 'd95f02', '7570b3', 'e7298a', '66a61e', 'e6ab02',
+          'a6761d'],
+      8: ['1b9e77', 'd95f02', '7570b3', 'e7298a', '66a61e', 'e6ab02',
+          'a6761d', '666666']
+    },
+    Paired: {
+      type: 'qualitative',
+      cbf: 4,
+      3: ['a6cee3', '1f78b4', 'b2df8a'],
+      4: ['a6cee3', '1f78b4', 'b2df8a', '33a02c'],
+      5: ['a6cee3', '1f78b4', 'b2df8a', '33a02c', 'fb9a99'],
+      6: ['a6cee3', '1f78b4', 'b2df8a', '33a02c', 'fb9a99', 'e31a1c'],
+      7: ['a6cee3', '1f78b4', 'b2df8a', '33a02c', 'fb9a99', 'e31a1c',
+          'fdbf6f'],
+      8: ['a6cee3', '1f78b4', 'b2df8a', '33a02c', 'fb9a99', 'e31a1c',
+          'fdbf6f', 'ff7f00'],
+      9: ['a6cee3', '1f78b4', 'b2df8a', '33a02c', 'fb9a99', 'e31a1c',
+          'fdbf6f', 'ff7f00', 'cab2d6'],
+      10: ['a6cee3', '1f78b4', 'b2df8a', '33a02c', 'fb9a99', 'e31a1c',
+           'fdbf6f', 'ff7f00', 'cab2d6', '6a3d9a'],
+      11: ['a6cee3', '1f78b4', 'b2df8a', '33a02c', 'fb9a99', 'e31a1c',
+           'fdbf6f', 'ff7f00', 'cab2d6', '6a3d9a', 'ffff99'],
+      12: ['a6cee3', '1f78b4', 'b2df8a', '33a02c', 'fb9a99', 'e31a1c',
+           'fdbf6f', 'ff7f00', 'cab2d6', '6a3d9a', 'ffff99', 'b15928']
+    },
+    Pastel1: {
+      type: 'qualitative',
+      cbf: 0,
+      3: ['fbb4ae', 'b3cde3', 'ccebc5'],
+      4: ['fbb4ae', 'b3cde3', 'ccebc5', 'decbe4'],
+      5: ['fbb4ae', 'b3cde3', 'ccebc5', 'decbe4', 'fed9a6'],
+      6: ['fbb4ae', 'b3cde3', 'ccebc5', 'decbe4', 'fed9a6', 'ffffcc'],
+      7: ['fbb4ae', 'b3cde3', 'ccebc5', 'decbe4', 'fed9a6', 'ffffcc',
+          'e5d8bd'],
+      8: ['fbb4ae', 'b3cde3', 'ccebc5', 'decbe4', 'fed9a6', 'ffffcc',
+          'e5d8bd', 'fddaec'],
+      9: ['fbb4ae', 'b3cde3', 'ccebc5', 'decbe4', 'fed9a6', 'ffffcc',
+          'e5d8bd', 'fddaec', 'f2f2f2']
+    },
+    Pastel2: {
+      type: 'qualitative',
+      cbf: 0,
+      3: ['b3e2cd', 'fdcdac', 'cbd5e8'],
+      4: ['b3e2cd', 'fdcdac', 'cbd5e8', 'f4cae4'],
+      5: ['b3e2cd', 'fdcdac', 'cbd5e8', 'f4cae4', 'e6f5c9'],
+      6: ['b3e2cd', 'fdcdac', 'cbd5e8', 'f4cae4', 'e6f5c9', 'fff2ae'],
+      7: ['b3e2cd', 'fdcdac', 'cbd5e8', 'f4cae4', 'e6f5c9', 'fff2ae',
+          'f1e2cc'],
+      8: ['b3e2cd', 'fdcdac', 'cbd5e8', 'f4cae4', 'e6f5c9', 'fff2ae',
+          'f1e2cc', 'cccccc']
+    },
+    Set1: {
+      type: 'qualitative',
+      cbf: 0,
+      3: ['e41a1c', '377eb8', '4daf4a'],
+      4: ['e41a1c', '377eb8', '4daf4a', '984ea3'],
+      5: ['e41a1c', '377eb8', '4daf4a', '984ea3', 'ff7f00'],
+      6: ['e41a1c', '377eb8', '4daf4a', '984ea3', 'ff7f00', 'ffff33'],
+      7: ['e41a1c', '377eb8', '4daf4a', '984ea3', 'ff7f00', 'ffff33',
+          'a65628'],
+      8: ['e41a1c', '377eb8', '4daf4a', '984ea3', 'ff7f00', 'ffff33',
+          'a65628', 'f781bf'],
+      9: ['e41a1c', '377eb8', '4daf4a', '984ea3', 'ff7f00', 'ffff33',
+          'a65628', 'f781bf', '999999']
+    },
+    Set2: {
+      type: 'qualitative',
+      cbf: 3,
+      3: ['66c2a5', 'fc8d62', '8da0cb'],
+      4: ['66c2a5', 'fc8d62', '8da0cb', 'e78ac3'],
+      5: ['66c2a5', 'fc8d62', '8da0cb', 'e78ac3', 'a6d854'],
+      6: ['66c2a5', 'fc8d62', '8da0cb', 'e78ac3', 'a6d854', 'ffd92f'],
+      7: ['66c2a5', 'fc8d62', '8da0cb', 'e78ac3', 'a6d854', 'ffd92f',
+          'e5c494'],
+      8: ['66c2a5', 'fc8d62', '8da0cb', 'e78ac3', 'a6d854', 'ffd92f',
+          'e5c494', 'b3b3b3']
+    },
+    Set3: {
+      type: 'qualitative',
+      cbf: 0,
+      3: ['8dd3c7', 'ffffb3', 'bebada'],
+      4: ['8dd3c7', 'ffffb3', 'bebada', 'fb8072'],
+      5: ['8dd3c7', 'ffffb3', 'bebada', 'fb8072', '80b1d3'],
+      6: ['8dd3c7', 'ffffb3', 'bebada', 'fb8072', '80b1d3', 'fdb462'],
+      7: ['8dd3c7', 'ffffb3', 'bebada', 'fb8072', '80b1d3', 'fdb462',
+          'b3de69'],
+      8: ['8dd3c7', 'ffffb3', 'bebada', 'fb8072', '80b1d3', 'fdb462',
+          'b3de69', 'fccde5'],
+      9: ['8dd3c7', 'ffffb3', 'bebada', 'fb8072', '80b1d3', 'fdb462',
+          'b3de69', 'fccde5', 'd9d9d9'],
+      10: ['8dd3c7', 'ffffb3', 'bebada', 'fb8072', '80b1d3', 'fdb462',
+           'b3de69', 'fccde5', 'd9d9d9', 'bc80bd'],
+      11: ['8dd3c7', 'ffffb3', 'bebada', 'fb8072', '80b1d3', 'fdb462',
+           'b3de69', 'fccde5', 'd9d9d9', 'bc80bd', 'ccebc5'],
+      12: ['8dd3c7', 'ffffb3', 'bebada', 'fb8072', '80b1d3', 'fdb462',
+           'b3de69', 'fccde5', 'd9d9d9', 'bc80bd', 'ccebc5', 'ffed6f']
+    }
+  };
+
+  for (var name in schemes) {
+    var scheme = schemes[name];
+    scheme = palette.Scheme.fromPalettes(
+      'cb-' + name, [scheme.type, 'cb-' + scheme.type], scheme, 12, scheme.cbf);
+    palette.register(scheme);
+  }
+})();
+
+define("palette", function(){});
+
+define('apps/style/views/right/marker-style-view',["jquery",
+        "backbone",
+        "marionette",
+        "handlebars",
+        "lib/maps/icon-lookup",
+        "apps/style/views/right/marker-style-view-child",
+        "text!../../templates/right/marker-style.html",
+        "collections/symbols",
+        'color-picker-eyecon',
+        "palette"
+    ],
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, MarkerStyleTemplate, Symbols) {
+        'use strict';
+
+        var MarkerStyleView = Marionette.CompositeView.extend({
+            categoricalList: [],
+            continuousList: [],
+            allColors: [],
+            selectedColorPalette: null,
+            layerDraft: {
+                continuous: null,
+                categorical: null,
+                simple: null,
+                individual: null
+            },
+            catDataHasBeenBuilt: false,
+            template: Handlebars.compile(MarkerStyleTemplate),
+            modelEvents: {
+                //'change:symbols': 'render'//,
+                //'change:metadata': 'contData'
+            },
+
+            //each of these childViews is a symbol. this view renders the value-rules box
+            childView: MarkerStyleChildView,
+            childViewContainer: "#symbols",
+
+            childViewOptions: function () {
+                return {
+                    app: this.app,
+                    layer: this.model,
+                    dataType: this.dataType
+                };
+            },
+
+            initialize: function (opts) {
+                _.extend(this, opts);
+                console.log('initialize', this.model.get('symbols'), this.collection);
+                this.dataType = this.model.get('layer_type');
+                this.data_source = this.model.get('data_source'); //e.g. "form_1"
+                this.collection = new Symbols(this.model.get("symbols"));
+
+                // builds correct palette on-load
+               // this.buildPalettes(this.getCatInfo().list.length);
+               this.createCorrectSymbols();
+             
+                $('body').click(this.hideColorRamp);
+
+                this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
+                this.listenTo(this.app.vent, 'update-data-source', this.render);
+                this.listenTo(this.app.vent, 'update-map', this.updateMap);
+            },
+
+            onRender: function () {
+                var that = this,
+                    color = this.model.get('fillColor');
+                $(".marker-style-color-picker").remove();
+                this.$el.find('#stroke-color-picker').ColorPicker({
+
+                    onShow: function (colpkr) {
+                        console.log("colorPicker show");
+                        $(colpkr).fadeIn(500);
+                        return false;
+                    },
+                    onHide: function (colpkr) {
+                        console.log("colorPicker hide");
+                        that.updateStrokeColor(color);
+                        $(colpkr).fadeOut(500);
+                        return false;
+                    },
+                    onChange: function (hsb, hex, rgb) {
+                        console.log("colorPicker changed");
+                        color = "#" + hex;
+                    }
+                });
+                $(".colorpicker:last-child").addClass('marker-style-color-picker');
+            },
+
+            hideColorRamp: function (e) {
+                var $el = $(e.target);
+                if (!$el.hasClass('palette-wrapper') &&
+                        !$el.hasClass('selected-palette-list') &&
+                        !$el.hasClass('selected-palette-wrapper') &&
+                        !$el.hasClass('selected-ul') &&
+                        !$el.hasClass('palette-item')
+                        ) {
+                    $(".palette-wrapper").hide();
+                }
+            },
+/*
+            reRender: function () {
+                console.log("symbol change registered");
+                //rebuild symbols collection based on updated info:
+                this.collection = new Backbone.Collection(this.model.get("symbols"));
+                this.render();
+            },
+*/
+            templateHelpers: function () {
+                var metadata = this.model.get("metadata"),
+                columnList = this.buildColumnList(),
+                    helpers;
+                helpers = {
+                    metadata: metadata,
+                    dataType: this.dataType,
+                    allColors: this.allColors,
+                    selectedColorPalette: this.selectedColorPalette,
+                    categoricalList: columnList[0],
+                    continuousList: columnList[1],
+                    icons: IconLookup.getIcons(),
+                    selectedProp: this.selectedProp,
+                    hasContinuousFields: (columnList[1].length > 0),
+                    hasCategoricalFields: (columnList[0].length > 0)
+                };
+                if (this.fields) {
+                    helpers.properties = this.fields.toJSON();
+                }
+                return helpers;
+            },
+
+            events: {
+                'change #data-type-select': 'selectDataType',
+                'change #cat-prop': 'catData',
+                'change #cont-prop': 'contData',
+                'change #bucket': 'updateBuckets',
+                'change #palette-opacity': 'updatePaletteOpacity',
+                'change .global-marker-shape': 'updateGlobalShape',
+                'change #marker-width': 'updateWidth',
+                'change #stroke-weight': 'updateStrokeWeight',
+                'change #stroke-color': 'updateStrokeColor',
+                'change #stroke-opacity': 'updateStrokeOpacity',
+                'click .selected-palette-wrapper': 'showPalettes',
+                'click .palette-list': 'selectPalette',
+                'click .palette-list *': 'selectPalette'
+            },
+
+            selectDataType: function (e) {
+                this.dataType = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
+                this.model.set("layer_type", this.dataType);
+                this.render();
+                this.createCorrectSymbols();
+            },
+
+            displaySymbols: function () {
+                this.collection = new Symbols(this.model.get("symbols"));
+                this.render();
+            },
+            buildColumnList: function () {
+                //clearing out the lists
+                this.categoricalList = [];
+                this.continuousList = [];
+                var photoAudioList = ["id", "name", "caption", "tags", "owner", "attribution"],
+                markerList = ["name", "caption", "tags", "owner"];
+                var key = this.model.get('data_source'),
+                    dataEntry = this.app.dataManager.getData(key);
+                //still need to account for map-images below...
+                if (key == "photos" || key == "audio") {
+                    this.buildGenericColumnList(photoAudioList);
+                } else if (key == "markers") {
+                    this.buildGenericColumnList(markerList);
+                } else if (key.includes("form_")) {
+                    this.buildCustomColumnList(dataEntry);
+                }
+                return [this.categoricalList, this.continuousList];
+            },
+
+            buildGenericColumnList: function(list) {
+                for (var i=0;i<list.length;i++) {
+                    this.categoricalList.push({
+                        text: list[i], 
+                        value:list[i],
+                        hasData: true
+                    });
+                }
+            },
+
+            buildCustomColumnList: function (dataEntry) {
+                var that = this;
+                dataEntry.fields.models.forEach(function(log) {
+                    var field = log.get("col_name");
+    
+                    if (log.get("data_type") === "text" || log.get("data_type") === "choice") {
+                        that.categoricalList.push({
+                            text: log.get("col_alias"),
+                            value: log.get("col_name"),
+                            hasData: that.columnHasData(dataEntry, field)
+                        });
+                    } else if (log.get("data_type") === "integer" || log.get("data_type") === "rating"){
+                        that.continuousList.push({
+                            text: log.get("col_alias"),
+                            value: log.get("col_name"),
+                            hasData: that.columnHasData(dataEntry, field)
+                        });  
+                    }
+                });
+            },
+
+            columnHasData: function (dataEntry, field) {
+                var hasData = [];
+                dataEntry.collection.models.forEach(function(d) {
+                    if (d.get(field)){
+                        hasData.push(true);
+                    } else {
+                        hasData.push(false);
+                    }
+                });
+
+                if (hasData.includes(true)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+
+            createCorrectSymbols: function () {
+                if (this.dataType == "continuous") {
+                    this.contData();
+                } else if (this.dataType == "categorical") {
+                    this.catData();
+
+                    /*
+                    // below was an attempt to not regenerate categorical symbols every time
+                    // but it didn't work if the existing symbols it retrieved were categorical
+                    if (!this.model.get("metadata").catBuilt) {
+                        console.log("building catData", this.collection);
+                        this.catData();
+                    } else {
+                        console.log("catData already exists", this.model.get("symbols"));
+                        this.setSymbols(new Symbols(this.model.get("symbols")));
+                        console.log(this.getCatInfo().list, this.getCatInfo().list.length);
+                        this.buildPalettes(this.getCatInfo().list.length);
+                       // return;
+                    }
+                    */
+                } else if (this.dataType == "basic") {
+                    this.simpleData();
+                }
+            },
+
+            contData: function() {
+                console.log("cont change registered");
+                this.buildPalettes();
+                var cssId = "#cont-prop";
+                this.setSelectedProp(cssId);
+                this.setSymbols(this.buildContinuousSymbols(this.getContInfo()));
+            },
+
+            catData: function() { 
+                console.log("catData triggered"); 
+                var cssId = "#cat-prop";
+                this.setSelectedProp(cssId);
+                var catInfo = this.getCatInfo();
+                this.buildPalettes(catInfo.list.length);
+             
+                this.setSymbols(this.buildCategoricalSymbols(catInfo));
+                this.model.get("metadata").catBuilt = true;
+            },
+
+            buildContinuousSymbols: function (cont) {
+                var counter = 0,
+                selected = this.selectedProp;
+                this.layerDraft.continuous = new Symbols();
+                while (cont.currentFloor < cont.max) {
+                    this.layerDraft.continuous.add({
+                        "rule": selected + " >= " + cont.currentFloor.toFixed(0) + " and " + selected + " <= " + (cont.currentFloor + cont.segmentSize).toFixed(0),
+                        "title": "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
+                        "fillOpacity": parseFloat(this.$el.find("#palette-opacity").val()) || 1,
+                        "strokeWeight": parseFloat(this.$el.find("#stroke-weight").val()) || 1,
+                        "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()) || 1,
+                        "width": parseFloat(this.$el.find("#marker-width").val()) || 20,
+                        "shape": this.$el.find(".global-marker-shape").val(),
+                        "fillColor": "#" + this.selectedColorPalette[counter],
+                        "strokeColor": this.model.get("metadata").strokeColor,
+                        "id": (counter + 1)
+                    });
+                    counter++;
+                    cont.currentFloor = Math.round((cont.currentFloor + cont.segmentSize)*100)/100;
+                    console.log(cont.currentFloor);
+                }
+                return this.layerDraft.continuous;
+            },
+/*
+            manageDefault: function (input) {
+                console.log(input);
+                var output;
+                if (input == undefined || NaN) { 
+                    output = 1;
+                } else {
+                    output = parseFloat(input);
+                }
+                console.log(output);
+                return output;
+            },
+*/
+            buildCategoricalSymbols: function (cat) {
+                console.log(cat);
+                var that = this,
+                idCounter = 1,
+                paletteCounter = 0;
+                this.layerDraft.categorical = new Symbols();
+                cat.list.forEach(function(item){
+                    that.layerDraft.categorical.add({
+                        "rule": that.selectedProp + " = " + item,
+                        "title": item,
+                        "fillOpacity": parseFloat(that.$el.find("#palette-opacity").val()) || 1,
+                        "strokeWeight": parseFloat(that.$el.find("#stroke-weight").val()) || 1,
+                        "strokeOpacity": parseFloat(that.$el.find("#stroke-opacity").val()) || 1,
+                        "width": parseFloat(that.$el.find("#marker-width").val()) || 20,
+                        "shape": that.$el.find(".global-marker-shape").val(),
+                        "fillColor": "#" + that.selectedColorPalette[paletteCounter > 7 ? paletteCounter = 0 : paletteCounter],
+                        "strokeColor": that.model.get("metadata").strokeColor,
+                        "id": idCounter, 
+                        "instanceCount": cat.instanceCount[item]
+                    });
+
+                    idCounter++;
+                    paletteCounter++;
+                });
+                return that.layerDraft.categorical;
+            },
+
+            /* returns an object containing information
+             * for defining a layer's continuous 'buckets'
+            */
+            getContInfo: function () {
+                var that = this,
+                selected = this.selectedProp;
+                console.log(selected);
+                var buckets = this.model.get("metadata").buckets;
+                this.continuousData = [];
+                var key = this.model.get('data_source'); 
+                var dataEntry = this.app.dataManager.getData(key);
+
+                dataEntry.collection.models.forEach(function(d) {
+                    that.continuousData.push(d.get(selected));
+                });
+                var cont = {};
+                cont.min = Math.min(...this.continuousData);
+                cont.max = Math.max(...this.continuousData);
+                cont.range = cont.max - cont.min;
+                cont.segmentSize = cont.range / buckets;
+                cont.currentFloor = cont.min;
+                return cont;
+            },
+
+            /* returns a list of the unique categories/entries
+             * for a layer's selected property/field. Also returns
+             * how many instances there are of each unique
+             * category/entry
+            */
+            getCatInfo: function () {
+                var key = this.model.get('data_source'),
+                cat = {
+                   list: [], 
+                   instanceCount: {},
+                },
+                selected = this.selectedProp,
+                categoricalData = this.app.dataManager.getData(key);
+                console.log("get catInfo: $selected", selected, this.model.get('metadata'), this.selectedProp);
+                categoricalData.collection.models.forEach(function(d) {
+                    if (!cat.list.includes(d.get(selected)) && d.get(selected)) {
+                        cat.list.push(d.get(selected));
+                        cat.instanceCount[d.get(selected)] = 1;
+                    } else {
+                        cat.instanceCount[d.get(selected)]++;
+                    }                  
+                });
+                return cat; 
+            },
+
+
+
+            simpleData: function () {
+                console.log("simpleData triggered", this.model); 
+                this.setSymbols(this.buildSimpleSymbols(this.model.get('data_source')));
+            },
+
+            buildSimpleSymbols: function (key) {
+                name = this.app.dataManager.getData(key).name;
+
+               // if (this.model.getSymbols().length > 0) {
+               //     this.layerDraft.simple = this.model.getSymbols();
+               // } else {
+                    this.layerDraft.simple = new Symbols([{
+                        "rule": "*",
+                        "title": name,
+                        "shape": "circle",
+                        "fillColor": "#60c7cc",
+                        "id": 1
+                    }]);
+              //  }
+                return this.layerDraft.simple;
+            },
+
+            // gets and sets user-selected property from the dom
+            //this.selectedProp is global so it can be used in template helper
+            setSelectedProp: function (cssId) {
+                if (this.$el.find(cssId).val()) {
+                    this.model.get('metadata').currentProp = this.$el.find(cssId).val();
+                } 
+                this.selectedProp = this.model.get('metadata').currentProp;
+                console.log('changing selected proprty', this.$el.find(cssId).val(), this.selectedProp);
+            },
+
+            setSymbols: function (symbs) {
+                this.collection = symbs;
+                this.model.set("symbols", symbs.toJSON());
+                this.updateMapAndRender();
+            },
+
+            updateMapAndRender: function () {
+                this.updateMap();
+                this.render();
+            },
+            
+
+            delayExecution: function (timeoutVar, func, millisecs) {
+                /*
+                 * This method applies a time buffer to whatever
+                 * "func" function is passed in as an argument. So,
+                 * for example, if a user changes the width value,
+                 * and then changes it again before "millisecs"
+                 * milliseconds pass, the new value will "reset the clock,"
+                 * and the "func" function won't fire until the
+                 * user stops changing the value.
+                 */
+                if (this[timeoutVar]) {
+                    clearTimeout(this[timeoutVar]);
+                    this[timeoutVar] = null;
+                }
+                this[timeoutVar] = setTimeout(func, millisecs);
+            },
+
+            updateBuckets: function (e) {
+                var that = this;
+                this.delayExecution(
+                    "bucketTimer",
+                    function () {
+                        var buckets = parseFloat(that.$el.find("#bucket").val());
+                        that.updateMetadata("buckets", buckets);
+                        that.buildPalettes();
+                        that.contData();
+                       // that.render();
+                        that.$el.find("#bucket").focus();
+                    },
+                    500 //experiment with how many milliseconds to delay
+                );
+            },
+
+            buildPalettes: function (itemCount) {
+                console.log("building palette, count = ", count);
+                var count = itemCount;
+                if (count > 8) { count = 8; }
+                var seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8;
+                var catPalettes = ['cb-Accent', 'cb-Dark2', 'cb-Paired', 'cb-Pastel1', 'cb-Set1', 'cb-Set2', 'cb-Set3'];
+                var contPalettes = ['cb-Blues', 'cb-Oranges', 'cb-Greys', 'cb-YlGn', 'cb-RdYlBu', 'tol-dv', 'cb-Purples'];
+                var paletteId = this.model.get("metadata").paletteId || 0;
+
+                if (this.dataType == "categorical") {
+                    var buckets = count;
+                    var paletteList = catPalettes;
+                } else if (this.dataType == "continuous") {
+                    var buckets = this.model.get("metadata").buckets;
+                    var paletteList = contPalettes;
+                } else if (this.dataType == "basic") {
+                    var buckets = count;
+                    var paletteList = catPalettes;
+                }
+
+                seq1 = palette(paletteList[0], buckets);
+                seq2 = palette(paletteList[1], buckets);
+                seq3 = palette(paletteList[2], buckets);
+                seq4 = palette(paletteList[3], buckets);
+                seq5 = palette(paletteList[4], buckets);
+                seq6 = palette(paletteList[5], buckets);
+                seq7 = palette(paletteList[6], buckets);
+                this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8];
+                this.selectedColorPalette = this.allColors[paletteId];
+                return this.selectedColorPalette;
+            },
+
+            updateMap: function () {
+                console.log('updateMap');
+                var that = this;
+                this.delayExecution("mapTimer", function () {
+                    that.model.trigger('rebuild-markers')
+                }, 250);
+            },
+
+            updatePaletteOpacity: function() {
+                var opacity = parseFloat(this.$el.find("#palette-opacity").val());
+                if (opacity > 1) {
+                    opacity = 1;
+                } else if (opacity < 0 ) {
+                    opacity = 0;
+                } 
+                this.updateMetadata("fillOpacity", opacity);
+                this.updateMap();
+                //this.render();
+            },
+
+            updateGlobalShape: function(e) {
+                var shape = $(e.target).val();
+                this.updateMetadata("shape", shape);
+                this.updateMap();
+            },
+
+            updateWidth: function(e) {
+                var width = parseFloat($(e.target).val());
+                this.updateMetadata("width", width);
+                this.updateMap();
+            },
+
+            updateStrokeWeight: function(e) {
+                var strokeWeight = parseFloat($(e.target).val());
+                this.updateMetadata("strokeWeight", strokeWeight);
+                this.updateMap();
+            },
+
+            updateStrokeOpacity: function(e) {
+                var opacity = parseFloat($(e.target).val());
+                    if (opacity > 1) {
+                        opacity = 1;
+                    } else if (opacity < 0 ) {
+                        opacity = 0;
+                    } 
+                this.updateMetadata("strokeOpacity", opacity);
+                this.updateMap();
+            },
+
+            // triggered from colorPicker
+            updateStrokeColor: function (hex) {
+                this.updateMetadata("strokeColor", hex);
+                $('#stroke-color-picker').css('color', hex);
+                this.updateMap();
+            },
+
+            selectPalette: function (e) {
+                this.$el.find(".palette-wrapper").toggle();
+                var paletteId = $(e.target).val();
+                this.updateMetadata("paletteId", paletteId);
+                this.selectedColorPalette = this.allColors[paletteId];
+                if (this.dataType == "categorical") {
+                    this.catData();
+                } else if (this.dataType == "continuous") {
+                    this.contData();
+                }
+            }, 
+
+            showPalettes: function () {
+                this.$el.find(".palette-wrapper").css({display: 'block'});
+                this.$el.find(".palette-wrapper").addClass("okok");
+            },
+
+            //convenience function
+            updateMetadata: function(newKey, newValue) {
+                var that = this;
+                console.log("a.", this.collection.length, this.model.getSymbols().length);
+                var localMeta = this.model.get("metadata") || {},
+                    that = this;
+                localMeta[newKey] = newValue;
+                this.model.set("metadata", localMeta); 
+                
+                console.log("b.", this.collection.length, this.model.getSymbols().length);
+                this.collection.each(function(symbol) {
+                    console.log(symbol.id, that.model.getSymbols().length);
+                    symbol.set(newKey, newValue);
+                    console.log(symbol.id, that.model.getSymbols().length);
+                });
+                this.app.layerHasBeenAltered = true;
+                this.app.layerHasBeenSaved = false;
+                
+                console.log("c.", this.collection.length, this.model.getSymbols().length);
+            }
+
+        });
+        return MarkerStyleView;
+    });
+
+
+define('text!apps/style/templates/right/source-code-style.html',[],function () { return '<h5>Marker Style</h5>\n<div class="toggle-buttons">\n    <ul>\n        <li>\n            <a class="marker-style-tabs style-basic-tab">Basic</a>\n        </li>\n        <li class=" active">\n            <a class="marker-style-tabs style-source-tab">Source Code</a>\n        </li>\n    </ul> \n</div>\n\n<div class="visual-edit">\n    <textarea name="symbols" class="source-code" rows="20">{{symbols}}</textarea>\n</div>';});
+
+define('apps/style/views/right/source-code-style-view',["marionette",
+        "handlebars",
+        "text!../../templates/right/source-code-style.html"
+    ],
+    function (Marionette, Handlebars, SourceCodeStyleTemplate) {
+        'use strict';
+
+        var MarkerStyleView = Marionette.CompositeView.extend({
+            template: Handlebars.compile(SourceCodeStyleTemplate),
+            hasChanged: false,
+            initialize: function (opts) {
+                _.extend(this, opts);
+            },
+
+            events: {
+                'blur .source-code': 'updateModel',
+                'input .source-code': 'trackChanges',
+                'propertychange .source-code': 'trackChanges',
+                'paste .source-code': 'trackChanges'
+            },
+
+            modelEvents: {
+                'rebuild-markers': 'render'
+            },
+
+            templateHelpers: function () {
+                return {
+                    symbols: JSON.stringify(this.model.getSymbolsJSON(), null, 3)
+                };
+            },
+
+            trackChanges: function () {
+                console.log("source code has changed");
+                // for efficiency: will only apply "updatedModel" code if
+                // something has actually changed in the textbox:
+                this.hasChanged = true;
+            },
+
+            resetTracking: function () {
+                this.hasChanged = false;
+            },
+
+            onShow: function () {
+                this.render();
+            },
+
+            updateModel: function () {
+                console.log('updateModel: sourceCode', this.$el.find(".source-code").val());
+                // if nothing has changed, exit this function
+                if (!this.hasChanged) {
+                    return;
+                }
+                // if something has changed, rebuild the symbols and redraw the map:
+                var sourceCode;
+                try {
+                    sourceCode = JSON.parse(this.$el.find(".source-code").val());
+                } catch (e1) {
+                    alert('Invalid JSON. Please revert and try again.');
+                    return;
+                }
+                try {
+                    this.model.set("symbols", sourceCode);
+                    this.model.trigger('rebuild-markers');
+                } catch (e2) {
+                    alert('Invalid icon shape specified. Please revert and try again.');
+                }
+                // reset hasChanged flag:
+                this.resetTracking();
+            }
+
+        });
+        return MarkerStyleView;
+    });
+
+define('text!apps/style/templates/right/filter-rules.html',[],function () { return '<h5>Filter Rules</h5>\n\n';});
+
+define('apps/style/views/right/filter-rules-view',["marionette",
+        "handlebars",
+        "collections/maps",
+        "text!../../templates/right/filter-rules.html"
+    ],
+    function (Marionette, Handlebars, Maps, FilterRulesTemplate) {
+        'use strict';
+
+        var FilterRulesView = Marionette.ItemView.extend({
+
+            template: Handlebars.compile(FilterRulesTemplate),
+
+            initialize: function (opts) {
+                _.extend(this, opts);
+            }
+
+        });
+        return FilterRulesView;
+    });
+
+define('text!apps/style/templates/right/right-panel-layout.html',[],function () { return '<h3 class="right-panel-header">Edit Layer</h3>\n\n<section class="style-section" id="data_source_region"></section>\n\n<section class="style-section" id="marker_style_region"></section>\n\n<section class="style-section" id="source_code_style_region"></section>\n\n<section class="style-section" id="filter_rules_region"></section>\n\n<div class="save-options">\n    <button class="button-primary pull-right layer-save">Save Layer</button>\n</div>\n<div class="show-hide hide right-panel-btn" style="display:none;"></div>\n';});
+
+define('apps/style/views/right/right-panel',["jquery",
+        "marionette",
+        "handlebars",
+        "apps/style/views/right/data-source-view",
+        "apps/style/views/right/marker-style-view",
+        "apps/style/views/right/source-code-style-view",
+        "apps/style/views/right/filter-rules-view",
+        "text!../../templates/right/right-panel-layout.html"
+    ],
+    function ($, Marionette, Handlebars, DataSourceView, MarkerStyleView, SourceCodeStyleView, FilterRulesView, RightPanelLayoutTemplate) {
+        'use strict';
+        // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
+        var RightPanelLayout = Marionette.LayoutView.extend({
+            template: Handlebars.compile(RightPanelLayoutTemplate),
+            initialize: function (opts) {
+                _.extend(this, opts);
+                this.render();
+                this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
+                this.listenTo(this.app.vent, 'hide-right-panel', this.hidePanel);
+            },
+
+            events: {
+                "click .layer-save" : "saveLayer",
+                "click .style-source-tab" : "showSourceRegion",
+                "click .style-basic-tab" : "showMarkerStyleRegion",
+                'click .hide': 'hidePanel',
+                'click .show': 'showPanel'
+            },
+
+            regions: {
+                dataSource: "#data_source_region",
+                markerStyle: "#marker_style_region",
+                sourceCodeStyle: "#source_code_style_region",
+                filterRules: "#filter_rules_region"
+            },
+            onRender: function () {
+                // only load views after the LayoutView has
+                // been rendered to the screen:
+
+                var frv = new FilterRulesView({ app: this.app });
+                this.filterRules.show(frv);
+
+            },
+
+            createLayer: function (layer, collection) {
+                console.log("right panel createLayer() triggered. 1. layer, 2. collection", layer, collection);
+                this.triggerShowPanel();
+                this.model = layer;
+                this.collection = collection;
+                var dsv = new DataSourceView({
+                    app: this.app,
+                    model: this.model
+                });
+                this.msv = new MarkerStyleView({
+                    app: this.app,
+                    model: this.model
+                });
+                this.frv = new FilterRulesView({
+                    app: this.app,
+                    model: this.model
+                });
+                this.dataSource.show(dsv);
+                this.markerStyle.show(this.msv);
+                this.filterRules.show(this.frv);
+                this.app.vent.trigger("re-render");
+                this.updateSourceCode();
+                this.saveLayer();
+            },
+
+            updateSourceCode: function () {
+                if (this.sourceCode) {
+                    this.sourceCode.model = this.model;
+                    this.sourceCode.render();
+                } else {
+                    this.sourceCode = new SourceCodeStyleView({
+                        app: this.app,
+                        model: this.model
+                    });
+                }
+            },
+
+            showSourceRegion: function () {
+                if (this.sourceCodeStyle.$el) {
+                    this.sourceCodeStyle.$el.show();
+                } else {
+                    this.sourceCodeStyle.show(this.sourceCode);
+                }
+                if (this.markerStyle.$el) {
+                    this.markerStyle.$el.hide();
+                }
+            },
+
+            showMarkerStyleRegion: function () {
+                if (this.sourceCodeStyle.$el) {
+                    this.sourceCodeStyle.$el.hide();
+                }
+                this.markerStyle.$el.show();
+            },
+
+            saveLayer: function () {
+                var that = this;
+                var title = this.$el.find(".layer-title").val(),
+                    dataSource = this.$el.find(".selected-data-source").val(),
+                    layerType = this.$el.find("#data-type-select").val(), 
+                    buckets = this.$el.find("#bucket").val();
+                if (this.model.get("filters") === null) {
+                    console.log("accounting for no filters");
+                    this.model.set("filters", { 'tag' : 'nothing' });
+                }
+                if (!this.model.get('symbols').length) {
+                    console.log("Layer will not save because symbols do not exist");
+                    this.app.vent.trigger('update-data-source');
+                }
+               // this.model.set("title", title);
+               // this.model.set("data_source", dataSource);
+                this.model.set("layer_type", layerType);
+                console.log("saveLayer() triggered", this.model.toJSON());
+                console.log(this.model.urlRoot);
+
+                this.model.save(null, {
+                    error: function (model, response) {
+                        var messages = JSON.parse(response.responseText);
+                        console.log('error', messages);
+                        if (messages.non_field_errors) {
+                            alert("You have already used the title '" + that.model.get("title") +
+                            "' for another layer. Please choose a different title.");
+                        }
+                    },
+                    success: function () {
+                        console.log('success', that.model.get("metadata"));
+                        that.collection.add(that.model);
+                        that.app.layerHasBeenSaved = true;
+                        that.app.layerHasBeenAltered = false;
+                    }
+                });
+            },
+            triggerShowPanel: function () {
+                this.showPanel();
+                this.$el.find('.right-panel-btn').show();
+            },
+            hidePanel: function (e) {
+                $('#right-panel .show-hide').removeClass("hide").addClass("show");
+                this.app.vent.trigger('hide-detail');
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+            showPanel: function (e) {
+                $('#right-panel .show-hide').removeClass("show").addClass("hide");
+                this.app.vent.trigger('unhide-detail');
+                if (e) {
+                    e.preventDefault();
+                }
+            }
+        });
+        return RightPanelLayout;
+    });
+
+define('collections/projects',["models/project", "collections/base", "collections/basePageable"], function (Project, Base,BasePageable) {
+    "use strict";
+    /**
+     * @class localground.collections.Projects
+     */
+    var Projects = BasePageable.extend({
+        model: Project,
+        name: 'Projects',
+        key: 'projects',
+        overlay_type: 'project',
+        url: '/api/0/projects/',
+        // parse: function (response) {
+        //     return response.results;
+        // }
+    });
+    return Projects;
+});
 
 /**AppUtilities defines a set of mixin properties that perform many of the same functions as the old
  *'sb' object, minus event aggregation.  I'm separating it out into this file just to keep track of what
@@ -18321,30 +17532,206 @@ define('lib/appUtilities',["jquery"],
         };
     });
 
-define('apps/spreadsheet/spreadsheet-app',[
-    "underscore",
+define('lib/handlebars-helpers',["handlebars"],
+    function (Handlebars) {
+        "use strict";
+        Handlebars.registerHelper("ifHasQuotes", function (txt, block) {
+            if (txt && txt.indexOf("\"") != -1) {
+                return block.fn(this);
+            }
+            return false;
+        });
+        Handlebars.registerHelper('ifequal', function (lvalue, rvalue, options) {
+            if (arguments.length < 3) {
+                throw new Error("Handlebars Helper equal needs 2 parameters");
+            }
+            if (lvalue != rvalue) {
+                return options.inverse(this);
+            }
+            return options.fn(this);
+        });
+
+        Handlebars.registerHelper('ifcontains', function (val, chars, block) {
+            if (val.indexOf(chars) != -1) {
+                return block.fn(this);
+            }
+        });
+
+        Handlebars.registerHelper('ifnotequal', function (lvalue, rvalue, options) {
+            if (arguments.length < 3) {
+                throw new Error("Handlebars Helper equal needs 2 parameters");
+            }
+            if (lvalue == rvalue) {
+                return options.inverse(this);
+            }
+            return options.fn(this);
+        });
+
+        Handlebars.registerHelper('ifnot', function (value, options) {
+            if (arguments.length < 2) {
+                throw new Error("Handlebars Helper ifnot needs 1 parameter");
+            }
+            if (value){
+                return options.inverse(this);
+            }
+            return options.fn(this);
+        });
+
+        Handlebars.registerHelper('compare', function(lvalue, rvalue, options) {
+
+            if (arguments.length < 3)
+                throw new Error("Handlerbars Helper 'compare' needs 2 parameters");
+
+            var operator = options.hash.operator || "==";
+
+            var operators = {
+                '==':       function(l,r) { return l == r; },
+                '===':      function(l,r) { return l === r; },
+                '!=':       function(l,r) { return l != r; },
+                '<':        function(l,r) { return l < r; },
+                '>':        function(l,r) { return l > r; },
+                '<=':       function(l,r) { return l <= r; },
+                '>=':       function(l,r) { return l >= r; },
+                'typeof':   function(l,r) { return typeof l == r; }
+            }
+
+            if (!operators[operator])
+                throw new Error("Handlerbars Helper 'compare' doesn't know the operator "+operator);
+
+            var result = operators[operator](lvalue,rvalue);
+
+            if( result ) {
+                return options.fn(this);
+            } else {
+                return options.inverse(this);
+            }
+
+        });
+
+        Handlebars.registerHelper('truncate', function (str, numChars) {
+            if (!str) {
+                return;
+            }
+            if (str.length > numChars && str.length > 0) {
+                var new_str = str + " ";
+                new_str = str.substr(0, numChars);
+                new_str = str.substr(0, new_str.lastIndexOf(" "));
+                new_str = (new_str.length > 0) ? new_str : str.substr(0, numChars);
+                return new Handlebars.SafeString(new_str + '...');
+            }
+            return str;
+        });
+
+        Handlebars.registerHelper("hexToRgb", function (hex, opacity) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            result = result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+            if (result) {
+                return "rgba(" + result.r + ", " + result.g + ", " + result.b + ", " + opacity + ")";
+            }
+            return "";
+        });
+
+        Handlebars.registerHelper("highlightIntensity", function (txt) {
+            var re = /(d+):/i,
+                found = txt.match(re),
+                color;
+            console.log(found);
+            if (!txt) { return ''; }
+            if (txt.indexOf("1:") != -1) {
+                color = "#F6FEAA";
+            } else if (txt.indexOf("2:") != -1) {
+                color = "#F7F8A4";
+            } else if (txt.indexOf("3:") != -1) {
+                color = "#F9F29F";
+            } else if (txt.indexOf("4:") != -1) {
+                color = "#FAEC99";
+            } else if (txt.indexOf("5:") != -1) {
+                color = "#FCE694";
+            }
+            return new Handlebars.SafeString('style="background-color: ' + color + '"');
+        });
+
+        Handlebars.registerHelper('times', function (start, end, block) {
+            var accum = '', i;
+            for (i = start; i < end; ++i) {
+                accum += block.fn(i);
+            }
+            return accum;
+        });
+
+        Handlebars.registerHelper("repeat", function (txt, fa_class) {
+            if (!txt) { return ''; }
+
+            var found = txt.match(/(\d+):/i),
+                bubbles = "",
+                count,
+                i;
+            if (found && found.length > 1) {
+                count = found[1];
+                for (i = 0; i < count; i++) {
+                    bubbles += '<i class="fa ' + fa_class + '"></i>&nbsp;';
+                }
+            }
+            return bubbles;
+        });
+
+        Handlebars.registerHelper("paginator", function () {
+            var re = /page=(\d+)/i,
+                previous = null,
+                next = null,
+                html = '';
+            if (this.previous) { previous = this.previous.match(re); }
+            if (this.next) { next = this.next.match(re); }
+            if (previous && previous.length > 1) {
+                html += '<button class="btn page" style="margin-right:10px" page-num="' + previous[1] + '">' +
+                    '<i class="fa fa-angle-double-left"></i> previous' +
+                    '</button>';
+            }
+            if (next && next.length > 1) {
+                html += '<button class="btn page" page-num="' + next[1] + '">' +
+                    'next <i class="fa fa-angle-double-right"></i>' +
+                    '</button>';
+            }
+            return html;
+        });
+
+
+    });
+
+define('apps/style/style-app',[
     "marionette",
     "backbone",
-    "apps/spreadsheet/router",
+    "apps/style/router",
     "views/toolbar-global",
-    "apps/gallery/views/toolbar-dataview",
+    "lib/maps/basemap",
     "lib/data/dataManager",
-    "apps/spreadsheet/views/main",
+    "apps/style/views/left/left-panel",
+    "apps/style/views/right/right-panel",
+    "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (_, Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
-             DataManager, SpreadsheetView, appUtilities) {
+], function (Marionette, Backbone, Router, ToolbarGlobal, Basemap,
+             DataManager, LeftPanel, RightPanel, Projects, appUtilities) {
     "use strict";
-    var SpreadsheetApp = Marionette.Application.extend(_.extend(appUtilities, {
+    /* TODO: Move some of this stuff to a Marionette LayoutView */
+    var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
-            spreadsheetRegion: ".main-panel",
-            toolbarMainRegion: "#toolbar-main",
-            toolbarDataViewRegion: "#toolbar-dataview"
+            container: ".main-panel",
+            rightRegion: "#right-panel",
+            mapRegion: "#map-panel",
+            leftRegion: "#left-panel",
+            toolbarMainRegion: "#toolbar-main"
         },
-
+        screenType: "style",
+        showLeft: true,
+        showRight: false,
+        layerHasBeenAltered: false,
+        layerHasBeenSaved: false,
         currentCollection: null,
-        dataType: "markers",
-        screenType: "spreadsheet",
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
@@ -18352,94 +17739,121 @@ define('apps/spreadsheet/spreadsheet-app',[
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
-
-            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
-            this.listenTo(this.vent, 'show-list', this.showSpreadsheet);
-            this.addMessageListeners();
-            console.log('starting!!');
         },
-
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+            this.showGlobalToolbar();
+            this.showBasemap();
+            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
+            this.listenTo(this.vent, 'hide-detail', this.hideDetail);
+            this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
+            this.listenTo(this.vent, 'unhide-list', this.unhideList);
+            this.listenTo(this.vent, 'hide-list', this.hideList);
+            this.addMessageListeners();
         },
         loadRegions: function () {
-            //initialize toobar view
-            this.restoreAppState();
-            var data;
-            try {
-                data = this.dataManager.getData(this.dataType);
-            } catch (e) {
-                this.dataType = "markers";
-                data = this.dataManager.getData(this.dataType);
-            }
+            this.showRightLayout();
+            this.showLeftLayout();
+        },
+
+        showLeftLayout: function () {
+            //load view into left region:
+            this.leftPanelView = new LeftPanel({
+                app: this
+            });
+            this.leftRegion.show(this.leftPanelView);
+        },
+
+        showRightLayout: function () {
+            this.rightPanelView = new RightPanel({
+                app: this
+            });
+            this.rightRegion.show(this.rightPanelView);
+        },
+
+        showGlobalToolbar: function () {
             this.toolbarView = new ToolbarGlobal({
                 app: this
             });
-            this.toolbarDataView = new ToolbarDataView({
-                app: this
-            });
-            this.spreadsheetView = new SpreadsheetView({
-                app: this,
-                collection: data.collection,
-                fields: data.fields
-            });
-
-            //load views into regions:
             this.toolbarMainRegion.show(this.toolbarView);
-            this.toolbarDataViewRegion.show(this.toolbarDataView);
-            this.spreadsheetRegion.show(this.spreadsheetView);
         },
 
-        showSpreadsheet: function (dataType) {
-            this.dataType = dataType;
-            this.saveAppState();
-            var data;
-            try {
-                data = this.dataManager.getData(this.dataType);
-            } catch (e) {
-                this.dataType = "markers";
-                data = this.dataManager.getData(this.dataType);
-            }
-            this.spreadsheetView = new SpreadsheetView({
-                app: this,
-                collection: data.collection,
-                fields: data.fields
-            });
-            this.spreadsheetRegion.show(this.spreadsheetView);
+        getZoom: function () {
+            return this.basemapView.getZoom();
         },
-        saveAppState: function () {
-            this.saveState("dataView", {
-                dataType: this.dataType
-            }, true);
+
+        getCenter: function () {
+            var latLng = this.basemapView.getCenter();
+            return {
+                "type": "Point",
+                "coordinates": [
+                    latLng.lng(),
+                    latLng.lat()
+                ]
+            };
         },
-        restoreAppState: function () {
-            var state = this.restoreState("dataView");
-            if (state) {
-                this.dataType = state.dataType;
-            } else if (this.dataManager) {
-                this.dataType = this.dataManager.getDataSources()[1].value;
+
+        getMapTypeId: function () {
+            return this.basemapView.getMapTypeId();
+        },
+
+        showBasemap: function () {
+            var opts = { app: this };
+            this.basemapView = new Basemap(opts);
+            this.mapRegion.show(this.basemapView);
+        },
+        updateDisplay: function () {
+            var className = "none";
+            if (this.showLeft && this.showRight) {
+                className = "both";
+            } else if (this.showLeft) {
+                className = "left";
+            } else if (this.showRight) {
+                className = "right";
             }
-            //console.log('restored', this.dataType);
+            this.container.$el.removeClass("left right none both");
+            this.container.$el.addClass(className);
+            //wait 'til CSS animation completes before redrawing map
+            setTimeout(this.basemapView.redraw, 220);
+        },
+
+        hideList: function () {
+            this.showLeft = false;
+            this.updateDisplay();
+        },
+        unhideList: function () {
+            this.showLeft = true;
+            this.updateDisplay();
+        },
+
+        hideDetail: function () {
+            this.showRight = false;
+            this.updateDisplay();
+        },
+
+        unhideDetail: function () {
+            this.showRight = true;
+            this.updateDisplay();
         }
     }));
-    return SpreadsheetApp;
+    return MapApp;
 });
 
 var configPath = (configPath || '') + 'require-config';
 require([configPath], function () {
     'use strict';
-    require(["jquery", "apps/spreadsheet/spreadsheet-app"], function ($, SpreadsheetApp) {
+    require(["jquery", "apps/style/style-app"], function ($, App) {
         $(function () {
             window.location.hash = ''; //make sure the page initializes on the first page...
-            var spreadsheet = new SpreadsheetApp();
-            spreadsheet.start();
+            var app = new App();
+            app.start();
         });
     });
 });
 
 
 
-define("apps/spreadsheet/kickoff", function(){});
+
+define("apps/style/kickoff", function(){});
 

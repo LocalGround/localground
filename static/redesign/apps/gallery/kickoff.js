@@ -1,13 +1,13 @@
-require(
-    ["jquery", "apps/gallery/gallery-app"],
-    function ($, GalleryApp) {
-        'use strict';
+var configPath = (configPath || '') + 'require-config';
+require([configPath], function () {
+    'use strict';
+    require(["jquery", "apps/gallery/gallery-app"], function ($, App) {
         $(function () {
             window.location.hash = ''; //make sure the page initializes on the first page...
-            var gallery = new GalleryApp();
-            gallery.start();
+            var app = new App();
+            app.start();
         });
-    }
-);
+    });
+});
 
 

@@ -20,13 +20,21 @@
     <div id="presentation-title"></div>
     <div id="legend" style="display:none;"></div>
 
-    <script>
-        var MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
-    </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places"></script>
-    <!-- script data-main="../static/redesign/apps/presentation/kickoff" src="/static/redesign/external/require.js"></script -->
-    <script data-main="/static/redesign/build/presentation" src="/static/redesign/external/require.js"></script>
-
+    {% if DEBUG %}
+        <script>
+            var configPath = '../',
+                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
+        </script>
+        <script data-main="/static/redesign/apps/presentation/kickoff.js" src="/static/redesign/external/require.js"></script>
+    {% else %}
+       <!-- Use minified, concatenated code -->
+        <script>
+            var configPath = '../apps/',
+                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
+        </script>
+        <script data-main="/static/redesign/build/presentation.min.js" src="/static/redesign/external/require.js"></script>
+    {% endif %}
 
 </body>
 </html>

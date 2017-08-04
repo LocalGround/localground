@@ -1,4 +1,5 @@
-require(['../require-config'], function () {
+var configPath = (configPath || '') + 'require-config';
+require([configPath], function () {
     'use strict';
     require(["jquery", "apps/spreadsheet/spreadsheet-app"], function ($, SpreadsheetApp) {
         $(function () {
