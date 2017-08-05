@@ -105,3 +105,8 @@ class PhotoSerializer(MediaGeometrySerializer):
     
 class PhotoSerializerUpdate(PhotoSerializer):
     media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
+    project_id = serializers.SerializerMethodField()
+    
+    def get_project_id(self, obj):
+        # Instance is read-only
+        return obj.project.id

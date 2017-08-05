@@ -397,10 +397,10 @@ class ModelMixin(object):
             host=mapimage.host,
             virtual_path=mapimage.virtual_path,
             extents=p.extents,
-            zoom=p.zoom,
-            northeast=p.northeast,
-            southwest=p.southwest,
-            center=p.center
+            #zoom=p.zoom,
+            #northeast=p.northeast,
+            #southwest=p.southwest,
+            #center=p.center
         )
         img.save(user=mapimage.owner)
         return img

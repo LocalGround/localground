@@ -15,7 +15,7 @@ def get_metadata():
         'file_path': {'read_only': True, 'required': False, 'type': 'field'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
-        'project_id': {'read_only': False, 'required': False, 'type': 'field'},
+        'project_id': {'read_only': False, 'required': True, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         "caption": { "type": "memo", "required": False, "read_only": False },
@@ -95,7 +95,10 @@ class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
         self.urls = [self.url]
         self.view = views.AudioInstance.as_view()
         self.metadata = get_metadata()
-        self.metadata.update({"media_file": { "type": "string", "required": False, "read_only": True }})
+        self.metadata.update({
+            "media_file": { "type": "string", "required": False, "read_only": True },
+            'project_id': {'read_only': True, 'required': False, 'type': 'field'}
+        })
 
     def test_update_audio_using_put(self, **kwargs):
         name, caption = 'New Audio Name', 'Test description'

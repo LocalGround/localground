@@ -17,7 +17,7 @@ def get_metadata():
         "overlay_type": { "type": "field", "required": False, "read_only": True },
         "tags": { "type": "field", "required": False, "read_only": False },
         "owner": { "type": "field", "required": False, "read_only": True },
-        "project_id": { "type": "field", "required": False, "read_only": False },
+        "project_id": { "type": "field", "required": True, "read_only": False },
         "geometry": { "type": "geojson", "required": False, "read_only": False },
         "attribution": { "type": "string", "required": False, "read_only": False },
         "file_name": { "type": "string", "required": False, "read_only": True },
@@ -119,7 +119,10 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self.urls = [self.url]
         self.view = views.PhotoInstance.as_view()
         self.metadata = get_metadata()
-        self.metadata.update({"media_file": { "type": "string", "required": False, "read_only": True }})
+        self.metadata.update({
+            'media_file': { 'type': 'string', 'required': False, 'read_only': True },
+            'project_id': {'read_only': True, 'required': False, 'type': 'field'}
+        })
         
     def tearDown(self):
         #delete method also removes files from file system:

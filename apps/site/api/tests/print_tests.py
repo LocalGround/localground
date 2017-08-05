@@ -139,7 +139,7 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
             'center': {'read_only': True, 'required': False, 'type': 'geojson'},
             'layout': {'read_only': True, 'required': False, 'type': 'field'},
             'map_provider': {'read_only': True, 'required': False, 'type': 'field'}, 
-            'project_id': {'read_only': False, 'required': False, 'type': 'field'},
+            'project_id': {'read_only': True, 'required': False, 'type': 'field'},
             'zoom': {'read_only': True, 'required': False, 'type': 'integer'},    
         })
 

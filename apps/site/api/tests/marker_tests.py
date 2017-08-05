@@ -19,7 +19,7 @@ def get_metadata():
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
-        'project_id': {'read_only': False, 'required': False, 'type': 'field'},
+        'project_id': {'read_only': False, 'required': True, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'color': {'read_only': False, 'required': False, 'type': 'string'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
@@ -173,7 +173,8 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.metadata = get_metadata()
         self.metadata.update({
             'children': {'read_only': True, 'required': False, 'type': u'field'},
-            'form_ids': {'read_only': True, 'required': False, 'type': u'field'}
+            'form_ids': {'read_only': True, 'required': False, 'type': u'field'},
+            'project_id': {'read_only': True, 'required': False, 'type': 'field'}
         })
     
     def tearDown(self):
