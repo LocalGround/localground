@@ -27,7 +27,7 @@ define([
             'click .rotate-left': 'rotatePhoto',
             'click .rotate-right': 'rotatePhoto',
             "click #add-geometry": "activateMarkerTrigger",
-            "click #delete-geometry": "deleteMarkerTrigger",
+            "click #delete-geometry": "deleteMarker",
             "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView'
         },
@@ -75,7 +75,7 @@ define([
             //Define Class:
             var that = this, MouseMover, $follower, mm;
             MouseMover = function ($follower) {
-                var icon;
+
                 this.generateIcon = function () {
                     var template, shape;
                     template = Handlebars.compile('<svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
@@ -94,16 +94,16 @@ define([
                     else {
                         console.log("The current form of adding marker on empty form is buggy");
                     }
-                    icon = new Icon({
+                    that.icon = new Icon({
                         shape: shape,
                         strokeWeight: 6,
                         fillColor: that.model.collection.fillColor,
                         width: that.model.collection.size,
                         height: that.model.collection.size
                     }).generateGoogleIcon();
-                    icon.width *= 1.5;
-                    icon.height *= 1.5;
-                    $follower.html(template(icon));
+                    that.icon.width *= 1.5;
+                    that.icon.height *= 1.5;
+                    $follower.html(template(that.icon));
                     $follower.show();
                 };
                 this.start = function () {
@@ -120,8 +120,8 @@ define([
                 };
                 this.mouseListener = function (event) {
                     $follower.css({
-                        top: event.clientY - icon.height * 3 / 4 + 4,
-                        left: event.clientX - icon.width * 3 / 4
+                        top: event.clientY - that.icon.height * 3 / 4 + 4,
+                        left: event.clientX - that.icon.width * 3 / 4
                     });
                 };
             };
@@ -135,9 +135,10 @@ define([
             this.app.vent.trigger("add-new-marker", this.model);
         },
 
-        deleteMarkerTrigger: function () {
+        deleteMarker: function () {
+            this.model.set("geometry", null);
             this.commitForm();
-            this.app.vent.trigger("delete-marker", this.model);
+            this.model.save();
         },
 
         bindFields: function () {
@@ -300,12 +301,14 @@ define([
         },
 
         onRender: function () {
+            console.log(this.dataType, "On Render");
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {
                 this.editRender();
             }
             if (this.dataType == "audio") {
+                console.log("Audio player initialized")
                 var player = new AudioPlayer({
                     model: this.model,
                     audioMode: "detail",
@@ -323,7 +326,7 @@ define([
             this.$el.find(".edit-photo").css({
                 filter: "brightness(0.4)"
             });
-            this.model.rotate(rotation);
+            this.model.rotate(rotation, this.render);
         },
         commitForm: function () {
             var errors = this.form.commit({ validate: true });
@@ -361,6 +364,7 @@ define([
             }
             this.model.destroy({
                 success: function () {
+                    console.log("about to hide details'")
                     //trigger an event that clears out the deleted model's detail:
                     that.app.vent.trigger('hide-detail');
                 }

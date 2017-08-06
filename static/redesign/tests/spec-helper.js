@@ -36,8 +36,8 @@ define(
               Audio, Video, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
         'use strict';
         afterEach(function () {
-            $('body').find('.colorpicker').remove();
-            $('body').find('.modal').remove();
+            $('body').find('.colorpicker, .modal, #map_canvas').remove();
+            $('body').find('.success-message, .warning-message, .failure-message').remove();
         });
         beforeEach(function () {
             //spoof google maps API:
@@ -94,7 +94,8 @@ define(
 
             // SAFETY MEASURES: makes sure that nothing interacts w/database.
             spyOn(Backbone, 'sync').and.callFake(function (method, model, opts, error) {
-                console.log("Backbone sync intercepted");
+                console.log("Backbone sync intercepted")
+                console.log(method, model, opts, error);
                 if (opts && opts.success) {
                     opts.success({ foo: 'fake' });
                 }
@@ -331,7 +332,7 @@ define(
                 "url": "http://localhost:7777/api/0/forms/1/",
                 "id": 1,
                 "name": "Test Form",
-                "caption": "",
+                "caption": "Test Caption",
                 "overlay_type": "form",
                 "tags": [],
                 "owner": "MrJBRPG",
@@ -442,15 +443,15 @@ define(
                 new Print({id: 3, name: "Print 3", tags: ['emeryville'], project_id: 2, overlay_type: "print" })
             ]);
             this.markers = new Markers([
-                new Marker({ id: 1, name: "POI 1", tags: ['my house'], project_id: 1, overlay_type: "marker", caption: "Caption1", color: "FF0000", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
-                new Marker({id: 2, name: "POI 2", tags: ['friend\'s house', 'tag1'], project_id: 1, overlay_type: "marker" }),
+                new Marker({ id: 1, name: "POI 1", tags: ['my house'], project_id: 1, overlay_type: "marker", caption: "Caption1", color: "FF0000", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, extras: {featured_image: 1} }),
+                new Marker({id: 2, name: "POI 2", tags: ['friend\'s house', 'tag1'], project_id: 1, overlay_type: "marker", extras: {featured_image: 20}}),
                 new Marker({id: 3, name: "POI 3", tags: ['coffee shop', 'tag1'], project_id: 2, overlay_type: "marker" })
             ]);
 
             this.form_1 = new Records([
-                new Record({ id: 1, test_text: "Blue team", display_name: "Blue team", tags: ['my house'], test_integer: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, photo_count: 3, audio_count: 1, video_count: 2 }),
-                new Record({id: 2, test_text: "Green team", tags: ['friend\'s house', 'tag1'], test_integer: 8, project_id: 1, overlay_type: "form_1", photo_count: 1, audio_count: 2, video_count: 2 }),
-                new Record({id: 3, test_text: "Red team", tags: ['coffee shop'], test_integer: 12, project_id: 2, overlay_type: "form_1", photo_count: 2, audio_count: 3, video_count: 2 })
+                new Record({id: 1, name: "Blue Team", caption: "Blue Team Caption", test_text: "Blue team", test_integer: 4, test_rating: 3, test_choice: "Red", test_boolean: true, fields: this.form.fields.toJSON(), display_name: "Blue team", tags: ['my house'], project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, photo_count: 3, audio_count: 1, video_count: 2 }),
+                new Record({id: 2, name: "Green Team", caption: "Green Team Caption", test_text: "Green team", fields: this.form.fields.toJSON(), tags: ['friend\'s house', 'tag1'], test_integer: 8, project_id: 1, overlay_type: "form_1", photo_count: 1, audio_count: 2, video_count: 2 }),
+                new Record({id: 3, name: "Red Team", caption: "Red Team Caption",  test_text: "Red team", fields: this.form.fields.toJSON(), tags: ['coffee shop'], test_integer: 12, project_id: 2, overlay_type: "form_1", photo_count: 2, audio_count: 3, video_count: 2 })
             ], { 'url': 'dummy/url' });
             this.form_2 = new Records([
                 new Record({ id: 2,
@@ -601,7 +602,28 @@ define(
             this.project = this.projects.at(0);
 
             this.marker = this.markers.at(0);
+            this.marker_1 = this.markers.at(1);
             this.marker.set("children", {
+                photos: {
+                    name: "Photos",
+                    id: "photos",
+                    overlay_type: "photo",
+                    data: this.photos.toJSON()
+                },
+                audio: {
+                    name: "Audio",
+                    id: "audio",
+                    overlay_type: "audio",
+                    data: this.audioFiles.toJSON()
+                },
+                videos: {
+                    name: "Videos",
+                    id: "videos",
+                    overlay_type: "video",
+                    data: this.videos.toJSON()
+                }
+            });
+            this.marker_1.set("children", {
                 photos: {
                     name: "Photos",
                     id: "photos",

@@ -182,7 +182,7 @@ define([
                 categoricalMarkerStyleView.buildColumnList();
                 expect(categoricalMarkerStyleView.categoricalList).toEqual([
                     { text: "Test Text", value: "test_text", hasData: true },
-                    { text: 'Test Choice', value: 'test_choice', hasData: false }
+                    { text: 'Test Choice', value: 'test_choice', hasData: true }
                 ]);
 
                 expect(categoricalFixture.find("#cat-prop").find("option:eq(0)").val()).toEqual("test_text");
@@ -314,7 +314,7 @@ define([
                 continuousMarkerStyleView.buildColumnList();
                 expect(continuousMarkerStyleView.continuousList).toEqual([
                     { text: "Test Integer", value: "test_integer", hasData: true },
-                    { text: "Test Rating", value: "test_rating", hasData: false }
+                    { text: "Test Rating", value: "test_rating", hasData: true }
                 ]);
 
                 
