@@ -41,16 +41,16 @@
 }
 
 .modal-content.spreadsheet {
-    vertical-align: middle;
+    /* vertical-align: middle; */
     border-radius: 6px;
     background-color: #fefefe;
     box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
-    width: 800px;
     height: auto;
-    transform-origin: center;
-    transform: translate(20%, 40%);
+    margin: calc((100vh - 480px) / 2) auto 0px auto;
+    transform: none;
+    display: block;
+    position: static;
 }
-
 .modal-body {
     background-color: #fafafc;
     border-top: 1px solid #e4e5eb;
