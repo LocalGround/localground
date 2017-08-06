@@ -325,12 +325,15 @@ define(["jquery",
                 return td;
             },
 
-            mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
+            mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
                 var model = this.getModelFromCell(instance, row),
                     photoCount = model.get("photo_count") || 0,
                     audioCount = model.get("audio_count") || 0,
                     videoCount = model.get("video_count") || 0,
                     i;
+                //for whatever reason, the first row renders twice. Weird:
+                //console.log("mediaCountRenderer:", model.id, photoCount, audioCount, videoCount);
+                
                 td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
                 for (i = 0; i < photoCount; ++i) {
                     td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\

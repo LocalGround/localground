@@ -717,6 +717,10 @@ define([
                 initSpies(this);
             });
 
+            afterEach(function () {
+                $('body').find('#follower').remove();
+            });
+
             it("successfully rotates photo both ways", function(){
                 // 1. initialize the dataDetail view
                 setupDataDetail(this, {

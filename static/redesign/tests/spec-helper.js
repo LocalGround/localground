@@ -36,8 +36,8 @@ define(
               Audio, Video, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
         'use strict';
         afterEach(function () {
-            $('body').find('.colorpicker').remove();
-            $('body').find('.modal').remove();
+            $('body').find('.colorpicker, .modal, #map_canvas').remove();
+            $('body').find('.success-message, .warning-message, .failure-message').remove();
         });
         beforeEach(function () {
             //spoof google maps API:
