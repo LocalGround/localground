@@ -51,7 +51,8 @@ class MediaMixin():
             m.remove_table_from_cache()
         
     def create_photo_with_media(self, name="f1", tags=[], point=None):
-        import Image, tempfile
+        from PIL import Image
+        import tempfile
         image = Image.new('RGB', (100, 100))
         tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
         image.save(tmp_file)

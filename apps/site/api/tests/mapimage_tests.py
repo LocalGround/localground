@@ -44,7 +44,8 @@ class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
             print 'Skipping test on TRAVIS because of Celery'
             self.assertEqual(1, 1)
             return
-        import Image, tempfile
+        from PIL import Image
+        import tempfile
         image = Image.new('RGB', (100, 100))
         tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
         image.save(tmp_file)
