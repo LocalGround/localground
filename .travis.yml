@@ -1,5 +1,6 @@
 sudo: required
 dist: trusty
+dist: precise
 language: python
 
 python:
@@ -80,7 +81,7 @@ install:
   - pip install -r deploy_tools/requirements.txt
   - python --version
   # Am having a heck of a time installing cairo. Trying this workaround...
-  - pip uninstall cffi
+  # - pip uninstall cffi # commented out on August 5, 2017 for testing
   - pip install cffi==1.10.0
   - pip install cairocffi==0.8.0
   - pip install cairosvg==1.0.22
