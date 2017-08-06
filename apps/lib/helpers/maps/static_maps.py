@@ -43,7 +43,8 @@ class StaticMap():
         self.east = None
         
     def get_basemap(self, map_type, zoom, center, width, height):
-        import os, urllib, StringIO, Image, time
+        import os, urllib, StringIO, time
+        from PIL import Image
         map_url = None
         total_tries = 1
         tries = 0
