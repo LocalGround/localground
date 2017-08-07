@@ -66,13 +66,16 @@ class ZIPRenderer(renderers.BaseRenderer):
         Decodes the URL from serializer and returns the 
         absolute file path on the server:
         """
-        file_path = row.get(key)[:-1]
-        file_path = file_path.split("/")[-1]
+        file_path = row.get(key)
+        file_path = '/' + file_path.split("//")[-1]
+        '''
         try:
             file_path = base64.b64decode(file_path)
         except:
             raise Exception("Could not b64decode path {}".format(file_path), row.get(key))
+        '''
         file_path = file_path.split('#')[0] #removes the hash (used to ensure no caching for media files)
+        #print file_path
         if not file_path:
             return None
         return file_path
@@ -95,6 +98,7 @@ class ZIPRenderer(renderers.BaseRenderer):
         Adds any URL media to the zip file:
         """
         abs_file_path = self.get_abs_path(row, key)
+        #print abs_file_path
         if not abs_file_path:
             return None
         
