@@ -14,13 +14,10 @@
             <p style="font-style: italic">{{ caption }}</p>
         {{/if}}
 
-        {{#if video_count }}
-            <div class="carousel carousel-video" style="background-color: #{{paragraph.backgroundColor}}"></div>
+        {{#if video_photo_count }}
+            <div class="carousel carousel-videos-photos" style="background-color: #{{paragraph.backgroundColor}}"></div>
         {{/if}}
-        {{#if photo_count }}
-            <!-- This is where we need to make changes inside to ensure that featured image is not part of the carousel -->
-            <div class="carousel carousel-photo" style="background-color: #{{paragraph.backgroundColor}}"></div>
-        {{/if}}
+
         {{#if audio_count }}
             <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}"></div>
         {{/if}}

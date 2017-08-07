@@ -1,6 +1,7 @@
 define([
     "jquery",
     "underscore",
+    "backbone",
     "handlebars",
     "marionette",
     "collections/photos", "collections/audio", "collections/videos",
@@ -13,7 +14,7 @@ define([
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form"
-], function ($, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
+], function ($, _, Backbone, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
         MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
@@ -198,6 +199,7 @@ define([
                 photo_count: this.getPhotos().length,
                 audio_count: this.getAudio().length,
                 video_count: this.getVideos().length,
+                video_photo_count: this.getVideos().length + this.getPhotos().length
             };
         },
 
@@ -237,44 +239,32 @@ define([
             var c,
                 photos = this.getPhotos(),
                 videos = this.getVideos(),
-                audio = this.getAudio(), 
-                that = this;
-                console.log(audio);
+                audio = this.getAudio(),
+                that = this,
+                panelStyles,
+                genericList,
+                i;
             if (this.panelStyles) {
-                var panelStyles = this.panelStyles;
+                panelStyles = this.panelStyles;
             }
 
-            if (photos.length > 0) {
-                c = new Carousel({
-                    model: this.model,
-                    app: this.app,
-                    featuredImage: this.getFeaturedImage(),
-                    mode: "photos",
-                    collection: photos,
-                    panelStyles: panelStyles
-                });
-                this.$el.find(".carousel-photo").append(c.$el);
-            }
-            if (videos.length > 0) {
+            if (photos.length > 0 || videos.length > 0) {
+                genericList = [];
+                genericList = genericList.concat(photos.toJSON());
+                genericList = genericList.concat(videos.toJSON());
+                for (i = 0; i < genericList.length; i++) {
+                    genericList[i].id = (i + 1);
+                }
                 c = new Carousel({
                     model: this.model,
                     app: this.app,
                     mode: "videos",
-                    collection: videos,
+                    collection: new Backbone.Collection(genericList),
                     panelStyles: panelStyles
                 });
-                this.$el.find(".carousel-video").append(c.$el);
+                this.$el.find(".carousel-videos-photos").append(c.$el);
             }
             if (audio.length > 0) {
-                /*
-                c = new Carousel({
-                    model: this.model,
-                    app: this.app,
-                    mode: "audio",
-                    collection: audio,
-                    panelStyles: panelStyles
-                });
-                */
                 audio.forEach(function (audioTrack) {
                     c = new AudioPlayer({
                         model: audioTrack,
@@ -284,7 +274,7 @@ define([
                         className: "audio-detail"
                     });
                     that.$el.find(".carousel-audio").append(c.$el);
-                });                
+                });
             }
         },
         editRender: function () {
