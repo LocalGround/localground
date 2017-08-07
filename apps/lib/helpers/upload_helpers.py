@@ -10,12 +10,19 @@ Utility File Path Methods
 def encrypt_media_path(host, model_name_plural, path):
     timestamp = int(time.time())
     path = path + '#' + str(timestamp)
+    return '%s://%s/%s/' % (
+        settings.PROTOCOL,
+        host,
+        path
+    )
+    '''
     return '%s://%s/profile/%s/%s/' % (
         settings.PROTOCOL,
         host,
         model_name_plural.replace(' ', '-'),
         base64.b64encode(path)
     )
+    '''
 
 def get_absolute_path(virtual_path):
     return settings.FILE_ROOT + virtual_path

@@ -7,23 +7,29 @@
     # Be sure to install and enable mod_xsendfile, for basic static file
     # security (https://tn123.org/mod_xsendfile/)
     # ------------------------------------------------------------------
-    WSGIPassAuthorization On
-    XSendFile on
-    XSendFilePath /localground/userdata
-    <Directory "/localground/userdata">
-       Require all denied
-    </Directory>
+    #WSGIPassAuthorization On
+    #XSendFile on
+    #XSendFilePath /localground/userdata
+    #<Directory "/localground/userdata">
+    #   Require all denied
+    #</Directory>
 
     # --------------------------------------
     # For static files (css, js, and images)
     #---------------------------------------
-
     Alias /static/ "/localground/static/"
     <Directory "/localground/static">
         Options +FollowSymlinks
-        Options Indexes
         Require all granted
-        IndexOptions FancyIndexing
+    </Directory>
+    
+    # --------------------------------------
+    # For user-generated media files
+    #---------------------------------------
+    Alias /userdata/ "/localground/userdata/"
+    <Directory "/localground/userdata">
+        Options +FollowSymlinks
+        Require all granted
     </Directory>
 
     # -------------------
