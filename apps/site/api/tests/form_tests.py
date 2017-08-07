@@ -27,7 +27,7 @@ def get_metadata_records():
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
-        'project_id': {'read_only': False, 'required': False, 'type': 'field'},
+        'project_id': {'read_only': False, 'required': True, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'owner': {'read_only': True, 'required': False, 'type': 'field' }
     }

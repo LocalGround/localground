@@ -5,10 +5,10 @@ from django.forms.fields import FileField
 from localground.apps.lib.helpers import upload_helpers, generic, get_timestamp_no_milliseconds
 from localground.apps.site import models
 from localground.apps.site.api import fields
-from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer, AuditSerializerMixin
+from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer, AuditSerializerMixin, ProjectSerializerMixin
 
 
-class MapImageSerializerCreate(BaseNamedSerializer):
+class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     media_file = serializers.CharField(
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
@@ -19,11 +19,6 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         required=False,
         default=1,
         queryset=models.StatusCode.objects.all()
-    )
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=False
     )
     source_print = serializers.PrimaryKeyRelatedField(
         queryset=models.Print.objects.all(),
@@ -41,6 +36,7 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     overlay_path = serializers.SerializerMethodField()
     file_path = serializers.SerializerMethodField()
     file_name = serializers.SerializerMethodField()
+    #zoom = serializers.SerializerMethodField()
     
     '''
     Proposal: 
@@ -61,12 +57,6 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     map_image.center = p.center
     map_image.save(user=self.user)
     '''
-    
-    def get_fields(self, *args, **kwargs):
-        fields = super(MapImageSerializerCreate, self).get_fields(*args, **kwargs)
-        #restrict project list at runtime:
-        fields['project_id'].queryset = self.get_projects()
-        return fields
 
     class Meta:
         model = models.MapImage
@@ -160,11 +150,11 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         else:
             return obj.processed_image.southwest.x
 
-    def get_zoom(self, obj):
-        if obj.processed_image is None:
-            return
-        else:
-            return obj.processed_image.zoom
+    #def get_zoom(self, obj):
+    #    if obj.processed_image is None:
+    #        return
+    #    else:
+    #        return obj.processed_image.zoom
 
     def get_overlay_path(self, obj):
         return obj.processed_map_url_path()
@@ -174,6 +164,8 @@ class MapImageSerializerUpdate(MapImageSerializerCreate):
     status = serializers.PrimaryKeyRelatedField(
         queryset=models.StatusCode.objects.all(),
         read_only=False)
+    project_id = serializers.SerializerMethodField()
+    
     class Meta:
         model = models.MapImage
         fields = BaseNamedSerializer.Meta.fields + (
@@ -186,8 +178,10 @@ class MapImageSerializerUpdate(MapImageSerializerCreate):
     # overriding update 
     def update(self, instance, validated_data):
         instance = super(MapImageSerializerUpdate, self).update(instance, validated_data)
-
         from localground.apps.tasks import process_map
         result = process_map.delay(self.instance)
-
         return instance
+    
+    def get_project_id(self, obj):
+        # Instance is read-only
+        return obj.project.id

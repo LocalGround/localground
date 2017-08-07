@@ -17,7 +17,7 @@ def get_metadata():
         "overlay_type": { "type": "field", "required": False, "read_only": True },
         "tags": { "type": "field", "required": False, "read_only": False },
         "owner": { "type": "field", "required": False, "read_only": True },
-        "project_id": { "type": "field", "required": False, "read_only": False },
+        "project_id": { "type": "field", "required": True, "read_only": False },
         "geometry": { "type": "geojson", "required": False, "read_only": False },
         "attribution": { "type": "string", "required": False, "read_only": False },
         "file_name": { "type": "string", "required": False, "read_only": True },
@@ -51,7 +51,8 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         self.metadata = get_metadata()
 
     def test_create_photo_using_post(self, **kwargs):
-        import Image, tempfile
+        from PIL import Image
+        import tempfile
         image = Image.new('RGB', (100, 100))
         tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
         image.save(tmp_file)
@@ -101,7 +102,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
 class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def create_photo_with_file(self):
-        import Image
+        from PIL import Image
         image = Image.new('RGB', (200, 100))
         image.save('test.jpg')
         with open('test.jpg', 'rb') as data:
@@ -119,7 +120,10 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self.urls = [self.url]
         self.view = views.PhotoInstance.as_view()
         self.metadata = get_metadata()
-        self.metadata.update({"media_file": { "type": "string", "required": False, "read_only": True }})
+        self.metadata.update({
+            'media_file': { 'type': 'string', 'required': False, 'read_only': True },
+            'project_id': {'read_only': True, 'required': False, 'type': 'field'}
+        })
         
     def tearDown(self):
         #delete method also removes files from file system:
@@ -205,7 +209,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self._test_rotate_photo_using_put('/api/0/photos/%s/rotate-right/' % self.photo.id, **kwargs)
             
     def _test_rotate_photo_using_put(self, rotation_url, **kwargs):
-        import Image
+        from PIL import Image
         img_path = '%s%s' % (self.photo.get_absolute_path(), self.photo.file_name_orig)
         img = Image.open(img_path)
         (width, height) = img.size

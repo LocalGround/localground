@@ -2,7 +2,7 @@
 from localground.apps.site.models.abstract.base import Base
 from localground.apps.site.models.abstract.audit import BaseAudit
 from localground.apps.site.models.abstract.named import BaseNamed
-from localground.apps.site.models.abstract.media import BaseMedia, BaseUploadedMedia
+from localground.apps.site.models.abstract.media import BaseMedia, BaseUploadedMedia, BaseMediaMixin
 from localground.apps.site.models.abstract.geometry import BaseExtents
 from localground.apps.site.models.abstract.mixins import ExtrasMixin, BasePointMixin, ProjectMixin, BaseGenericRelationMixin
 
@@ -39,6 +39,7 @@ from localground.apps.site.models.layout import Layout
 from localground.apps.site.models.prints import Print
 
 # uploads
+from localground.apps.site.models.icon import Icon
 from localground.apps.site.models.mapimage import MapImage, ImageOpts
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio

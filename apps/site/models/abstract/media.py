@@ -10,35 +10,7 @@ import os
 import stat
 from rest_framework import exceptions
 
-class BaseMedia(BaseAudit):
-
-    '''
-    Important:  the "groups" generic relation is needed to ensure cascading
-    deletes.  For example, if a photo gets deleted, you also want to ensure
-    that its associations w/any markers / views also get deleted.  The reverse
-    relationship needs to be defined here in order for this to occur:
-    http://stackoverflow.com/questions/6803018/why-wont-my-genericforeignkey-cascade-when-deleting
-    '''
-    host = models.CharField(max_length=255)
-    virtual_path = models.CharField(max_length=255)
-    file_name_orig = models.CharField(max_length=255)
-    content_type = models.CharField(max_length=50)
-    groups = GenericRelation(
-        'GenericAssociation',
-        content_type_field='entity_type',
-        object_id_field='entity_id',
-        related_query_name="%(app_label)s_%(class)s_related"
-    )
-    filter_fields = ('id', 'project', 'date_created', 'file_name_orig',)
-
-    @classmethod
-    def inline_form(cls, user):
-        from localground.apps.site.forms import get_inline_form
-        return get_inline_form(cls, user)
-
-    class Meta:
-        abstract = True
-        app_label = 'site'
+class BaseMediaMixin(object):
 
     def get_absolute_path(self):
         return upload_helpers.get_absolute_path(self.virtual_path)
@@ -79,6 +51,31 @@ class BaseMedia(BaseAudit):
 
     def can_edit(self, user):
         return self.project.can_edit(user)
+    
+class BaseMedia(BaseMediaMixin, BaseAudit):
+
+    '''
+    Important:  the "groups" generic relation is needed to ensure cascading
+    deletes.  For example, if a photo gets deleted, you also want to ensure
+    that its associations w/any markers / views also get deleted.  The reverse
+    relationship needs to be defined here in order for this to occur:
+    http://stackoverflow.com/questions/6803018/why-wont-my-genericforeignkey-cascade-when-deleting
+    '''
+    host = models.CharField(max_length=255)
+    virtual_path = models.CharField(max_length=255)
+    file_name_orig = models.CharField(max_length=255)
+    content_type = models.CharField(max_length=50)
+    groups = GenericRelation(
+        'GenericAssociation',
+        content_type_field='entity_type',
+        object_id_field='entity_id',
+        related_query_name="%(app_label)s_%(class)s_related"
+    )
+    filter_fields = ('id', 'project', 'date_created', 'file_name_orig',)
+
+    class Meta:
+        abstract = True
+        app_label = 'site'
 
 
 class BaseNamedMedia(BaseMedia, ProjectMixin):

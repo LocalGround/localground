@@ -1,5 +1,6 @@
 from localground.apps.site.api.views.audio_views import AudioList, AudioInstance
 from localground.apps.site.api.views.video_views import VideoList, VideoInstance
+from localground.apps.site.api.views.icon_views import IconList, IconInstance
 from localground.apps.site.api.views.mapimage_views import MapImageList, MapImageInstance
 from localground.apps.site.api.views.mapimage_overlay_views import MapImageOverlayList, MapImageOverlayInstance
 
@@ -43,6 +44,7 @@ def api_root(request, format=None, **kwargs):
     d['audio'] = reverse('audio-list', request=request, format=format)
     d['forms'] = reverse('form-list', request=request, format=format)
     d['groups'] = reverse('group-list', request=request, format=format)
+    d['icon'] = reverse('icon-list', request=request, format=format)
     d['layouts'] = reverse('layout-list', request=request, format=format)
     d['data-types'] = reverse('datatype-list', request=request, format=format)
     d['markers'] = reverse('marker-list', request=request, format=format)
