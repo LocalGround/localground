@@ -115,12 +115,14 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI, PrintMixin):
         # TODO: This is broken. Need to figure out how to do this w/
         #       new file system setup:
         #data = response.data
+        #print settings.DEBUG, settings.MEDIA_URL, settings.MEDIA_ROOT
         #pdf_response = self.client_user.get(data.get('pdf'))
+        #print data.get('pdf')
         #self.assertEqual(pdf_response.status_code, status.HTTP_200_OK)
-        
-        #print data.get('pdf'), pdf_response
-        
-        
+        #
+        #
+        #
+        #
         #thumb_response = self.client_user.get(data.get('thumb'))
         #self.assertEqual(thumb_response.status_code, status.HTTP_200_OK)
         #print data.get('thumb'), thumb_response

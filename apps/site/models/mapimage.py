@@ -93,7 +93,7 @@ class MapImage(BaseUploadedMedia):
         path = self.get_abs_directory_path()
         #raise Exception(path)
         if os.path.exists(path):
-            dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
+            dest = '%s/deleted/%s' % (settings.MEDIA_ROOT, self.uuid)
             if os.path.exists(dest):
                 from localground.apps.lib.helpers import generic
                 dest = dest + '.dup.' + generic.generateID()

@@ -4,6 +4,7 @@ from django.shortcuts import render as direct_to_template
 from django.contrib.auth.decorators import login_required
 import sys
 from django.contrib import admin
+from django.conf.urls.static import static
 
 urlpatterns = patterns('',
 
@@ -30,4 +31,7 @@ urlpatterns = patterns('',
     # data API
     url(r'^api/0/', include('localground.apps.site.api.urls'))
 )
+if settings.DEBUG is True:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 

@@ -150,7 +150,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         import os
         path = self.get_abs_directory_path()
         if os.path.exists(path):
-            dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
+            dest = '%s/deleted/%s' % (settings.MEDIA_ROOT, self.uuid)
             if os.path.exists(dest):
                 from localground.apps.lib.helpers import generic
                 dest = dest + '.dup.' + generic.generateID()
@@ -244,7 +244,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         m = StaticMap()
         map_width = self.layout.map_width_pixels
         map_height = self.layout.map_height_pixels
-        path = settings.USER_MEDIA_ROOT + '/prints/' + self.uuid
+        path = settings.MEDIA_ROOT + '/prints/' + self.uuid
         os.mkdir(path)  # create new directory
         file_name = 'Print_' + self.uuid + '.pdf'
 
