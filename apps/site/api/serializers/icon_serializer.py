@@ -31,7 +31,7 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
     def get_owner(self, obj):
         return obj.owner.username
 
-    def process_file(self, file, owner):
+    def process_file(self, file, owner, validated_data):
         #save to disk:
         model_name_plural = models.Icon.model_name_plural
         file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file)
@@ -67,7 +67,9 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
             #abs_path = '%s/%s' % (media_path, file_name_new)
             abs_path = '%s/%s_%s%s' % (media_path,file_name, s, ext)
             im.save(abs_path)
-
+        anchor_x = im.size[0]/2
+        if validated_data.get('anchor_x'):
+            anchor_x = validated_data.get('anchor_x') * scale_ratio
         return {
             'file_name_orig': file.name,
             'name': self.initial_data.get('name') or file.name,
@@ -76,7 +78,7 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
             'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural),
             'width': im.size[0],
             'height': im.size[1],
-            'anchor_x': im.size[0]/2,
+            'anchor_x': anchor_x,
             'anchor_y': im.size[1]/2
         }
         
@@ -89,7 +91,7 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
         upload_helpers.validate_file(f, self.ext_whitelist)
         
         # save it to disk
-        data = self.process_file(f, owner)
+        data = self.process_file(f, owner, validated_data)
         data.update(self.get_presave_create_dictionary())
         data.update({
             'host': settings.SERVER_HOST
