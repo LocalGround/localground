@@ -7,7 +7,7 @@ import os
 class Icon(ProjectMixin, BaseMediaMixin, BaseAudit):
     FILE_TYPES = (
         ('svg', 'svg'),
-        ('jpeg', 'jpeg'),
+        ('jpg', 'jpg'),
         ('png', 'png')
     )
     name = models.CharField(max_length=255, null=True, blank=True)

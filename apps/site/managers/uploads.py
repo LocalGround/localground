@@ -120,6 +120,9 @@ class IconManager(models.GeoManager, BaseMixin):
             q = q.order_by(ordering_field)
         return q
 
+     def get_project_icons(self, request=None, ordering_field='name', **kwargs):
+         pass
+
 
 
 class RecordMixin(UploadMixin, MarkerMixin):
