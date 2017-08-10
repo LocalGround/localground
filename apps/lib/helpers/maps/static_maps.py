@@ -8,7 +8,8 @@ from PIL import Image, ImageFilter, ImageDraw, ImageFont, ImageOps
 from localground.apps.lib.helpers.units import Units
 from django.contrib.gis.geos import Point, LinearRing, Polygon
 import cStringIO as StringIO
-import logging, mapscript, urllib, json
+#import logging, mapscript, urllib, json
+import logging, urllib, json
 
 class OutputFormat():
 
@@ -42,7 +43,8 @@ class StaticMap():
         self.east = None
         
     def get_basemap(self, map_type, zoom, center, width, height):
-        import os, urllib, StringIO, Image, time
+        import os, urllib, StringIO, time
+        from PIL import Image
         map_url = None
         total_tries = 1
         tries = 0
@@ -86,6 +88,8 @@ class StaticMap():
         return map_image
         
     def _render_mapimages(self, msmap, mapimages, srs):
+        # removing mapscript dependency for now:
+        '''
         for mapimage in mapimages:
             mapimage_layer = mapscript.layerObj()
             mapimage_layer.name = mapimage.uuid
@@ -102,8 +106,12 @@ class StaticMap():
             mapimage_layer.setExtent(southwest.x, southwest.y, northeast.x, northeast.y)
             mapimage_layer.setProjection('init=epsg:%s' % (srs)) 
             msmap.insertLayer(mapimage_layer)
+        '''
+        pass
         
     def _add_north_arrow(self, msmap, map_height):
+        # removing mapscript dependency for now:
+        '''
         north_arrow_layer = mapscript.layerObj()
         north_arrow_layer.transform = False
         north_arrow_layer.name = 'north_arrow'
@@ -122,8 +130,12 @@ class StaticMap():
         point.x = 30
         point.y = map_height-30
         north_arrow_layer.addFeature(point.toShape())
+        '''
+        pass
         
     def _draw_extents_as_rectangle(self, msmap):
+        # removing mapscript dependency for now:
+        '''
         #generate a new temporary layer and draw a polygon on it:
         new_layer = mapscript.layerObj()
         new_layer.name = 'temp'
@@ -144,6 +156,8 @@ class StaticMap():
         si = msmap.getLayer(li).getClass(ci).insertStyle(new_style)
         box = mapscript.rectObj(self.west, self.south, self.east, self.north)
         new_layer.addFeature(box.toPolygon())
+        '''
+        pass
         
     @classmethod
     def draw_border(cls, img, border_width, color='black'):

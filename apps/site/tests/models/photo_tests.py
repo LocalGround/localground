@@ -38,7 +38,7 @@ class PhotoModelTest(test.TestCase, ModelMixin):
         self._test_photo_rotates(photo, photo.rotate_left, **kwargs)
 
     def _test_photo_rotates(self, photo, rotate_function, **kwargs):
-        import Image
+        from PIL import Image
         img_path = '%s%s' % (photo.get_absolute_path(), photo.file_name_orig)
         img = Image.open(img_path)
         (width, height) = img.size

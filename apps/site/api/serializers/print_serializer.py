@@ -6,11 +6,6 @@ from localground.apps.site.api import fields
 
 
 class PrintSerializerMixin(serializers.ModelSerializer):
-    def get_fields(self, *args, **kwargs):
-        fields = super(PrintSerializerMixin, self).get_fields(*args, **kwargs)
-        #note: queryset restricted at runtime
-        fields['project_id'].queryset = self.get_projects()
-        return fields
     
     uuid = serializers.SerializerMethodField()
     layout_url = serializers.HyperlinkedRelatedField(
@@ -88,9 +83,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
             'layout',
             'layout_url',
             'center',
-            'overlay_type',
-            #'edit_url',
-            'project_id'
+            'overlay_type'
         )
 
 
@@ -99,7 +92,7 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
     class Meta:
         model = models.Print
         fields = PrintSerializerMixin.Meta.fields
-        fields_read_only = ('id', 'uuid')
+        read_only_fields = ('id', 'uuid')
         depth = 0
 
 
@@ -112,6 +105,7 @@ class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17, read_only=True)
     layout = serializers.SerializerMethodField()
     map_provider = serializers.SerializerMethodField()
+    project_id = serializers.SerializerMethodField()
     
     class Meta:
         model = models.Print
@@ -123,6 +117,8 @@ class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
 
     def get_layout(self, obj):
         return obj.layout.id
-
-    def get_project(self, obj):
+    
+    def get_project_id(self, obj):
+        # Instance is read-only
         return obj.project.id
+

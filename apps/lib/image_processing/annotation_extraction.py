@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os, sys
-import Image, ImageDraw, ImageChops, ImageMath, ImageOps
+from PIL import Image, ImageDraw, ImageChops, ImageMath, ImageOps
 import cv, cv2, numpy, csv
 
 

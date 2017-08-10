@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import traceback, sys
-import Image, ImageDraw, ImageChops, ImageMath
+from PIL import Image, ImageDraw, ImageChops, ImageMath
 import os, stat, urllib, StringIO, cv, math
 from datetime import datetime 
 from django.conf import settings
@@ -1231,7 +1231,7 @@ class ImageQuality():
         import scipy.misc      
         import scipy.cluster
         import struct
-        import ImageStat
+        from PIL import ImageStat
         
         self.logger.log('Getting image statistics...')
         

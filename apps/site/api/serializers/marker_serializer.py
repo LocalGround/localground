@@ -10,7 +10,6 @@ class MarkerSerializerMixin(GeometrySerializer):
     #color = fields.ColorField(required=False)
     color = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     update_metadata = serializers.SerializerMethodField()
-
     
     class Meta:
         model = models.Marker
@@ -33,6 +32,7 @@ class MarkerSerializer(MarkerSerializerMixin):
     audio_count = serializers.SerializerMethodField()
     map_image_count = serializers.SerializerMethodField()
     record_count = serializers.SerializerMethodField()
+    project_id = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
@@ -42,6 +42,10 @@ class MarkerSerializer(MarkerSerializerMixin):
 
     def get_form_ids(self, obj):
         return obj.get_form_ids()
+
+    def get_project_id(self, obj):
+        # Instance is read-only
+        return obj.project.id
 
     def get_children(self, obj):
         # ~21 queries per marker is the best I can do if data from 2 separate
