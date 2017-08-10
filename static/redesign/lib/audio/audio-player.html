@@ -53,8 +53,15 @@
          <!--   <span class="audio-labels time-duration" style="right: 10px; color: #{{paragraph.color}};"></span> -->
         </div>
         <div class="info-container">
-            <p class="audio-info" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}{{#if caption}}: {{ caption }} {{/if}}</p>
             <span class="audio-labels time-current" style="float: right; color: #{{paragraph.color}}; font-family: {{paragraph.font}}"></span>
+            <p class="audio-info" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</p>
+
+           {{#if caption}}
+            <p class="audio-caption" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}"> 
+                {{ caption }}
+            </p>
+            {{/if}}
+            
         </div>
         
 

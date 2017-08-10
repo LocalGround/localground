@@ -2087,7 +2087,7 @@ audio {
 }
 
 .audio-simple .audio-progress, .audio-detail .audio-progress {
-    padding: 10px 30px 30px 30px;
+    padding: 10px 0px 17px 0px;
     position: relative;
 }
 .audio-simple .audio-labels, .audio-detail .audio-labels {
@@ -2096,6 +2096,7 @@ audio {
     display: inline-block;
   /*  position: absolute; */
     top: 4px;
+    width: 10%;
 }
 
 .audio-progress-bar {
@@ -2141,9 +2142,6 @@ audio {
     width: 100%;
 }
 
-.info-container {
-    padding: 1px 30px 25px 20px;
-}
 
  /**************************
  * Detailed Player
@@ -2173,9 +2171,18 @@ audio {
 }
 
 .audio-info {
+    width: 90%;
     float: left;
+    text-align: left;
     font-size: 12px;
-    margin-left: 15px;
+    font-weight: bold;
+}
+
+.audio-caption {
+    font-style: italic;
+    margin-top: 7px;
+    display: inline-block;
+    text-align: left;
 }
 
 .audio-detail .audio-container {
