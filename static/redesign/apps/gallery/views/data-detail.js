@@ -29,7 +29,8 @@ define([
             "click #add-geometry": "activateMarkerTrigger",
             "click #delete-geometry": "deleteMarker",
             "click #add-rectangle": "activateRectangleTrigger",
-            "click .streetview": 'showStreetView'
+            "click .streetview": 'showStreetView',
+            "click #open-full": 'openMobileDetail'
         },
         getTemplate: function () {
             console.log(this.dataType);
@@ -53,6 +54,7 @@ define([
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
+            $('#marker-detail-panel').addClass('mobile-minimize');
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
         },
@@ -199,6 +201,7 @@ define([
                 photo_count: this.getPhotos().length,
                 audio_count: this.getAudio().length,
                 video_count: this.getVideos().length,
+                mobileMode: this.app.mobileMode
             };
         },
 
@@ -397,6 +400,20 @@ define([
         },
         updateStreetViewButton: function () {
             this.$el.find('.streetview').html('Show Street View');
+        },
+        openMobileDetail: function () {
+            if ($('#marker-detail-panel').hasClass('mobile-minimize')) {
+
+                $('#marker-detail-panel').addClass('mobile-full');
+                $('#marker-detail-panel').removeClass('mobile-minimize');
+
+            } else if ($('#marker-detail-panel').hasClass('mobile-full')) {
+
+                $('#marker-detail-panel').addClass('mobile-minimize');
+                $('#marker-detail-panel').removeClass('mobile-full');
+            }
+            
+            console.log("mobile toggle");
         }
     });
     return MediaEditor;

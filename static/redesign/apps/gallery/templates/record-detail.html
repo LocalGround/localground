@@ -3,10 +3,17 @@
     {{#compare screenType "presentation" operator="!="}}
         <h4>Preview</h4>
     {{/compare}}
+    
+     <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
+    <div class="min-thumbnail">
 
-    <div class="section">
+    </div>
+    <div class="header-info">
         <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
-
+    </div>
+    
+    <div class="section">
+        
         {{#if featuredImage}}
             <img class="photo featured-photo" src='{{featuredImage.path_medium}}'>
         {{/if}}
@@ -58,6 +65,7 @@
             <button class="edit-mode button-tertiary">Edit</button>
         </div>
     {{/compare}}
+   
 {{/ifequal}}
 
 

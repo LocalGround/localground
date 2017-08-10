@@ -1950,10 +1950,15 @@ audio {
 /**************************
  * Old Templated Player
  **************************/
+
+ /*
+
+ these may be important, but need to be applied to specific classes, not just '.fa'
 .fa {
     display: inline-block;
     text-rendering: auto;
 }
+*/
 
 .audio-container {
     background: #EDEDED;

@@ -92,14 +92,15 @@ ul{
         flex: none;
         overflow: scroll;
         height:100%;
-        transition: 0s;
         padding-top: 0px; 
         border: none !important;
         bottom: 0px;
-        max-height: 200px;
+        max-height: 150px;
         position: fixed;
         float: right;
         width: 100%;
+        -webkit-transition: width .5s, height .5s; /* Safari */
+        transition: width .5s, height .5s, max-height .5s;
     }
 }
 
@@ -255,6 +256,71 @@ svg, .fa-question-circle {
     box-shadow: -1px 1px 4px rgba(0,0,0,0.3);
 }
 
+/**************
+* Mobile Minimize/Full *
+***************/
+
+.min-thumbnail {
+    height: 0px;
+    width: 0px;
+    background: #4e70d4;
+    -webkit-transition: width 2s, height 4s; /* Safari */
+    transition: width .5s, height .5s;
+}
+
+.mobile-toggle {
+    display: none;
+}
+
+@media (max-width: 900px) {
+
+    .min-thumbnail {
+        height: 150px;
+        width: 150px;
+    }
+    .mobile-toggle {
+        display: inline-block;
+        float: right;
+    }
+
+    .mobile-full {
+        height: 80% !important;
+        max-height: 80% !important;
+    }
+
+    .mobile-minimize {
+        min-height: 80px;
+        max-height: 150px;
+    }
+
+    .mobile-full .min-thumbnail {
+        width: 0px;
+        height: 0px;
+    }
+
+    .mobile-minimize .min-thumbnail {
+        height: 150px;
+        width: 150px;
+        float: left;
+    }
+
+    .mobile-minimize .header-info {
+        float: left;
+        margin: 0 20px;
+    }
+
+    .mobile-full .header-info {
+        float: auto;
+        margin: 0 auto;
+        max-width: 400px;
+        padding: 0px 10px;
+    }
+
+    
+}
+
+
+
 
 /**********************
  * Google Maps Override
@@ -369,6 +435,7 @@ svg, .fa-question-circle {
         margin: 0 auto;
         max-width: 400px;
         padding: 0px 10px;
+        clear: both;
     }
 
     table.preview-properties {
