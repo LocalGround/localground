@@ -13,6 +13,7 @@ class Icon(ProjectMixin, BaseMediaMixin, BaseAudit):
     name = models.CharField(max_length=255, null=True, blank=True)
     file_type = models.CharField(max_length=63, null=False, blank=False,
                                 choices=FILE_TYPES, verbose_name="file type")
+    size = models.IntegerField(null=False, blank=False)
     width = models.FloatField(null=False, blank=False)
     height = models.FloatField(null=False, blank=False)
     host = models.CharField(max_length=255)

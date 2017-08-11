@@ -14,16 +14,18 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
-    width = serializers.FloatField(max_value=250, min_value=10)
-    height = serializers.FloatField(max_value=250, min_value=10)
+    #set max and min sizes for icon
+    size_max = 250.0
+    size_min = 10.0
+    size = serializers.IntegerField(max_value=size_max, min_value=size_min)
     file_path = serializers.SerializerMethodField('get_file_path_new')
     owner = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Icon
-        read_only_fields = ('file_type',)
+        read_only_fields = ('width', 'height', 'file_type')
         fields = ('url', 'id', 'name', 'icon', 'file_type', 'file_path',
-                  'owner', 'project_id', 'width', 'height', 'anchor_x', 'anchor_y')
+                  'owner', 'project_id', 'size', 'width', 'height', 'anchor_x', 'anchor_y')
         depth = 0
     
     def get_file_path_new(self, obj):
@@ -41,22 +43,26 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
         if file_type == 'jpeg':
             file_type = 'jpg'
 
-        # resize icon if needed:
         media_path = upload_helpers.generate_absolute_path(
             owner, model_name_plural)
         im = Image.open(media_path + '/' + file_name_new)
-        #set max and min sizes for icon
-        size_max = 250.0
-        size_min = 10.0
+
+        #get size user entered.  If user didn't enter anything, use largest icon size or max size
+        if validated_data.get('size'):
+            size = validated_data.get('size')
+        else:
+            size = max(im.size)
+        if size > self.size_max:
+            size = self.size_max
         #compare 
         #get largest and smallest value of image
         icon_max = max(im.size)
         icon_min = min(im.size)
         #calculate scale_ratio
-        if icon_max > size_max:
-            scale_ratio = size_max / icon_max
-        elif icon_min < size_min:
-            scale_ratio = size_min / icon_min
+        if icon_max > self.size_max:
+            scale_ratio = self.size_max / icon_max
+        elif icon_min < self.size_min:
+            scale_ratio = self.size_min / icon_min
         else:
             scale_ratio = 1.0
         #resize icon if needed
@@ -86,6 +92,7 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
             'file_name_new': file_name_new,
             'file_type': file_type,
             'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural),
+            'size': size,
             'width': im.size[0],
             'height': im.size[1],
             'anchor_x': int(anchor_x),
