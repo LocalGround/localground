@@ -14,8 +14,8 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
     #set max and min sizes for icon
-    size_max = 250.0
-    size_min = 10.0
+    size_max = 250
+    size_min = 10
     size = serializers.IntegerField(max_value=size_max, min_value=size_min)
     file_path = serializers.SerializerMethodField('get_file_path_new')
     owner = serializers.SerializerMethodField()
@@ -31,31 +31,39 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
         #raise Exception(media_path + '/' + file_name_new)
         im = Image.open(media_path + '/' + file_name_new)
         
+        #get largest and smallest value of image
+        icon_max = max(im.size) * 1.0
+        icon_min = min(im.size) * 1.0
 
-        #get size user entered.  If user didn't enter anything, use largest icon size or max size
+        #get size user entered.  If user didn't enter anything, use largest icon size or size_max.
+        #also check to make sure icon size is >= size_min
         if validated_data.get('size'):
             size = validated_data.get('size')
-        else:
-            size = max(im.size)
-        if size > self.size_max:
+        elif icon_max > self.size_max:
             size = self.size_max
-        #compare 
-        #get largest and smallest value of image
-        icon_max = max(im.size)
-        icon_min = min(im.size)
-        #calculate scale_ratio
-        if icon_max > self.size_max:
-            scale_ratio = self.size_max / icon_max
         elif icon_min < self.size_min:
-            scale_ratio = self.size_min / icon_min
+            size = self.size_min
+        else:
+            size = icon_max
+        
+        #calculate scale_ratio
+        if icon_max > size:
+            scale_ratio = size / icon_max
+        elif icon_min < size:
+            scale_ratio = size / icon_min
         else:
             scale_ratio = 1.0
+
+        #check for case where resizing by scale ratio would make icon_max too large
+        if scale_ratio > self.size_max / icon_max:
+            scale_ratio = self.size_max / icon_max
+        #raise Exception(size, scale_ratio)
         #resize icon if needed
         if scale_ratio != 1.0:
             new_x = (im.size)[0] * scale_ratio
             new_y = (im.size)[1] * scale_ratio
             im.thumbnail((int(new_x), int(new_y)), Image.ANTIALIAS)
-            abs_path = '%s/%s%s' % (media_path, file_name_resized, ext)
+            abs_path = '%s/%s' % (media_path, file_name_resized)
             im.save(abs_path)
         anchor_x = im.size[0]/2
         anchor_y = im.size[1] / 2
@@ -75,7 +83,8 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
         }
     
     def get_file_path_new(self, obj):
-        return obj.encrypt_url(obj.file_name_new)
+        #return obj.file_name_resized
+        return obj.encrypt_url(obj.file_name_resized)
 
     def get_owner(self, obj):
         return obj.owner.username
@@ -119,7 +128,7 @@ class IconSerializerList(IconSerializerBase):
             'name': self.validated_data.get('name') or f.name,
             'virtual_path': upload_helpers.generate_relative_path(owner, "icons")
         })
-        raise Exception(data)
+        #raise Exception(data)
 
         self.instance = self.Meta.model.objects.create(**data)
         return self.instance
@@ -127,17 +136,22 @@ class IconSerializerList(IconSerializerBase):
     
 class IconSerializerUpdate(IconSerializerBase):
     icon = serializers.CharField(source='file_name_orig', required=False, read_only=True)
+    project_id = serializers.SerializerMethodField()
+
+    def get_project_id(self, obj):
+        # Instance is read-only
+        return obj.project.id
 
     def update(self, instance, validated_data):
         data = self.get_presave_update_dictionary()
         data.update(validated_data)
-        resized_icon_parameters = self.resize_icon(owner, instance.file_name_new, validated_data)
+        resized_icon_parameters = self.resize_icon(instance.owner, instance.file_name_new, validated_data)
         data.update(resized_icon_parameters)
-        return super(AuditSerializerMixin, self).update(instance, data)
+        return super(IconSerializerBase, self).update(instance, data)
     
     class Meta:
         model = models.Icon
-        read_only_fields = ('width', 'height', 'file_type')
+        read_only_fields = ('width', 'height', 'project_id', 'file_type')
         fields = ('url', 'id', 'name', 'icon', 'file_type', 'file_path',
-                  'owner', 'project_id', 'size', 'width', 'height', 'anchor_x', 'anchor_y')
+                  'owner', 'size', 'width', 'height', 'project_id', 'anchor_x', 'anchor_y')
         depth = 0
