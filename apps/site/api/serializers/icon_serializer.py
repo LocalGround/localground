@@ -14,13 +14,14 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
-
+    width = serializers.FloatField(max_value=250, min_value=10)
+    height = serializers.FloatField(max_value=250, min_value=10)
     file_path = serializers.SerializerMethodField('get_file_path_new')
     owner = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = models.Icon
-        read_only_fields = ('width', 'height', 'file_type')
+        read_only_fields = ('file_type',)
         fields = ('url', 'id', 'name', 'icon', 'file_type', 'file_path',
                   'owner', 'project_id', 'width', 'height', 'anchor_x', 'anchor_y')
         depth = 0
@@ -47,6 +48,7 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
         #set max and min sizes for icon
         size_max = 250.0
         size_min = 10.0
+        #compare 
         #get largest and smallest value of image
         icon_max = max(im.size)
         icon_min = min(im.size)
@@ -56,20 +58,28 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
         elif icon_min < size_min:
             scale_ratio = size_min / icon_min
         else:
-            scale_ratio = 1
+            scale_ratio = 1.0
         #resize icon if needed
         #raise Exception (im.size, scale_ratio)
-        if scale_ratio != 1:
-            new_x = int ((im.size)[0] * scale_ratio)
-            new_y = int ((im.size)[1] * scale_ratio)
-            im = im.resize((new_x, new_y))
+        if scale_ratio != 1.0:
+            new_x = (im.size)[0] * scale_ratio
+            new_y = (im.size)[1] * scale_ratio
+            #im = im.resize((int(new_x), int(new_y)))
+            im.thumbnail((int(new_x), int(new_y)), Image.ANTIALIAS)
             s='resized'
             #abs_path = '%s/%s' % (media_path, file_name_new)
             abs_path = '%s/%s_%s%s' % (media_path,file_name, s, ext)
             im.save(abs_path)
         anchor_x = im.size[0]/2
+        anchor_y = im.size[1] / 2
         if validated_data.get('anchor_x'):
+            #raise Exception(validated_data.get('anchor_x'), scale_ratio)
             anchor_x = validated_data.get('anchor_x') * scale_ratio
+        if validated_data.get('anchor_y'):
+            anchor_y = validated_data.get('anchor_y') * scale_ratio
+        
+        #raise Exception(anchor_x, anchor_y)
+    
         return {
             'file_name_orig': file.name,
             'name': self.initial_data.get('name') or file.name,
@@ -78,8 +88,8 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
             'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural),
             'width': im.size[0],
             'height': im.size[1],
-            'anchor_x': anchor_x,
-            'anchor_y': im.size[1]/2
+            'anchor_x': int(anchor_x),
+            'anchor_y': int(anchor_y)
         }
         
     def create(self, validated_data):
@@ -91,12 +101,17 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
         upload_helpers.validate_file(f, self.ext_whitelist)
         
         # save it to disk
-        data = self.process_file(f, owner, validated_data)
-        data.update(self.get_presave_create_dictionary())
+        data = self.get_presave_create_dictionary()
+        data.update(validated_data)
+        
+        extra = self.process_file(f, owner, validated_data)
+        data.update(extra)
         data.update({
             'host': settings.SERVER_HOST
         })
-        data.update(validated_data)
+        #raise Exception(data)
+
+        #data.update(validated_data)
         self.instance = self.Meta.model.objects.create(**data)
         return self.instance
     
