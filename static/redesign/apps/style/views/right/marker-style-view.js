@@ -1,15 +1,15 @@
 define(["jquery",
-        "backbone",
         "marionette",
         "handlebars",
         "lib/maps/icon-lookup",
+        "collections/icons",
         "apps/style/views/right/marker-style-view-child",
         "text!../../templates/right/marker-style.html",
         "collections/symbols",
         'color-picker-eyecon',
         "palette"
     ],
-    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, MarkerStyleTemplate, Symbols) {
+    function ($, Marionette, Handlebars, IconLookup, Icons, MarkerStyleChildView, MarkerStyleTemplate, Symbols) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
@@ -44,15 +44,18 @@ define(["jquery",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.icons = new Icons();
+                this.listenTo(this.icons, 'reset', this.render());
+                this.icons.fetch({ reset: true });
                 console.log('initialize', this.model.get('symbols'), this.collection);
                 this.dataType = this.model.get('layer_type');
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
                 this.collection = new Symbols(this.model.get("symbols"));
 
                 // builds correct palette on-load
-               // this.buildPalettes(this.getCatInfo().list.length);
-               this.createCorrectSymbols();
-             
+                // this.buildPalettes(this.getCatInfo().list.length);
+                this.createCorrectSymbols();
+
                 $('body').click(this.hideColorRamp);
 
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
