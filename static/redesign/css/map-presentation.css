@@ -268,7 +268,7 @@ svg, .fa-question-circle {
     transition: width .5s, height .5s;
 }
 
-.mobile-toggle {
+.mobile-toggle, .thumbnail-play, .thumbnail-play-circle {
     display: none;
 }
 
@@ -278,6 +278,7 @@ svg, .fa-question-circle {
         height: 150px;
         width: 150px;
     }
+    
     .mobile-toggle {
         display: inline-block;
         float: right;
@@ -302,6 +303,8 @@ svg, .fa-question-circle {
         height: 150px;
         width: 150px;
         float: left;
+        background-size: cover;
+        background-position: center;
     }
 
     .mobile-minimize .header-info {
@@ -315,6 +318,40 @@ svg, .fa-question-circle {
         max-width: 400px;
         padding: 0px 10px;
     }
+
+    .mobile-minimize .thumbnail-play {
+        opacity: .7;
+        top: 12%;
+        left: 27%;
+        bottom: 34%;
+        right: 34%;
+        color: white;
+        position: relative;
+        display: inline-block;
+    }
+
+    .mobile-minimize .thumbnail-play-circle {
+        top: 30%;
+        bottom: 34%;
+        position: relative;
+        background-color: rgba(255, 255, 255, 0);
+        border: 2px solid rgba(255, 255, 255, .7);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        left: 30%;
+        display: inline-block;
+    }
+
+    .mobile-full .thumbnail-play {
+        display: none;
+    }
+
+    .mobile-full .thumbnail-play-circle {
+        display: none;
+    }
+
+
 
     
 }

@@ -52,6 +52,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 }
             },
             hideArrows: function () {
+                console.log("hide damn arrows");
                 if (this.mode === "audio" || this.collection.length === 1) {
                     return;
                 }

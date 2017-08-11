@@ -187,7 +187,7 @@ define([
                 this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
-
+            console.log("featured image: ", this.getFeaturedImage());
             return {
                 mode: this.app.mode,
                 dataType: this.dataType,
@@ -198,6 +198,7 @@ define([
                 lng: lng,
                 paragraph: paragraph,
                 featuredImage: this.getFeaturedImage(),
+                thumbnail: this.getThumbnail(),
                 photo_count: this.getPhotos().length,
                 audio_count: this.getAudio().length,
                 video_count: this.getVideos().length,
@@ -205,7 +206,19 @@ define([
             };
         },
 
+        getThumbnail: function () {
+            if (this.getFeaturedImage()) {
+                return this.getFeaturedImage();
+            } else if (this.model.get("children")) {
+                var photoData = this.model.get("children").photos.data;
+                return photoData[0];
+            } else {
+                return null;
+            }
+        },
+
         getFeaturedImage: function () {
+            console.log(this.model);
             if (!this.model.get("children") || !this.model.get("extras") || !this.model.get("children").photos) {
                 return null;
             }
