@@ -23,7 +23,7 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
 
     class Meta:
         model = models.Icon
-        read_only_fields = ('width', 'height', 'file_type')
+        read_only_fields = ('width', 'height', 'anchor_x', 'anchor_y', 'file_type')
         fields = ('url', 'id', 'name', 'icon', 'file_type', 'file_path',
                   'owner', 'project_id', 'size', 'width', 'height', 'anchor_x', 'anchor_y')
         depth = 0
