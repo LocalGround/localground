@@ -7,8 +7,7 @@ from localground.apps.lib.helpers import upload_helpers, generic
 from localground.apps.site.api import fields
 from PIL import Image, ImageOps
 
-
-class IconSerializer(ProjectSerializerMixin, BaseSerializer):
+class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'png', 'svg']
     icon = serializers.CharField(
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
@@ -20,32 +19,18 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
     size = serializers.IntegerField(max_value=size_max, min_value=size_min)
     file_path = serializers.SerializerMethodField('get_file_path_new')
     owner = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Icon
-        read_only_fields = ('width', 'height', 'anchor_x', 'anchor_y', 'file_type')
-        fields = ('url', 'id', 'name', 'icon', 'file_type', 'file_path',
-                  'owner', 'project_id', 'size', 'width', 'height', 'anchor_x', 'anchor_y')
-        depth = 0
     
-    def get_file_path_new(self, obj):
-        return obj.encrypt_url(obj.file_name_new)
-
-    def get_owner(self, obj):
-        return obj.owner.username
-
-    def process_file(self, file, owner, validated_data):
-        #save to disk:
-        model_name_plural = models.Icon.model_name_plural
-        file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file)
+    def resize_icon(self, owner, file_name_new, validated_data):
         file_name, ext = os.path.splitext(file_name_new)
         file_type = ext.replace('.', '').lower()
         if file_type == 'jpeg':
             file_type = 'jpg'
-
+        file_name_resized = file_name + '_resized.' + file_type
         media_path = upload_helpers.generate_absolute_path(
-            owner, model_name_plural)
+            owner, "icons")
+        #raise Exception(media_path + '/' + file_name_new)
         im = Image.open(media_path + '/' + file_name_new)
+        
 
         #get size user entered.  If user didn't enter anything, use largest icon size or max size
         if validated_data.get('size'):
@@ -66,38 +51,53 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
         else:
             scale_ratio = 1.0
         #resize icon if needed
-        #raise Exception (im.size, scale_ratio)
         if scale_ratio != 1.0:
             new_x = (im.size)[0] * scale_ratio
             new_y = (im.size)[1] * scale_ratio
-            #im = im.resize((int(new_x), int(new_y)))
             im.thumbnail((int(new_x), int(new_y)), Image.ANTIALIAS)
-            s='resized'
-            #abs_path = '%s/%s' % (media_path, file_name_new)
-            abs_path = '%s/%s_%s%s' % (media_path,file_name, s, ext)
+            abs_path = '%s/%s%s' % (media_path, file_name_resized, ext)
             im.save(abs_path)
         anchor_x = im.size[0]/2
         anchor_y = im.size[1] / 2
         if validated_data.get('anchor_x'):
-            #raise Exception(validated_data.get('anchor_x'), scale_ratio)
             anchor_x = validated_data.get('anchor_x') * scale_ratio
         if validated_data.get('anchor_y'):
             anchor_y = validated_data.get('anchor_y') * scale_ratio
-        
-        #raise Exception(anchor_x, anchor_y)
-    
+
         return {
-            'file_name_orig': file.name,
-            'name': self.initial_data.get('name') or file.name,
-            'file_name_new': file_name_new,
-            'file_type': file_type,
-            'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural),
-            'size': size,
             'width': im.size[0],
             'height': im.size[1],
             'anchor_x': int(anchor_x),
-            'anchor_y': int(anchor_y)
+            'anchor_y': int(anchor_y),
+            'file_name_new': file_name_new,
+            'file_name_resized': file_name_resized,
+            'file_type': file_type
         }
+    
+    def get_file_path_new(self, obj):
+        return obj.encrypt_url(obj.file_name_new)
+
+    def get_owner(self, obj):
+        return obj.owner.username
+    
+    class Meta:
+        abstract = True
+
+
+class IconSerializerList(IconSerializerBase):
+    
+    class Meta:
+        model = models.Icon
+        read_only_fields = ('width', 'height', 'anchor_x', 'anchor_y', 'file_type')
+        fields = ('url', 'id', 'name', 'icon', 'file_type', 'file_path',
+                  'owner', 'project_id', 'size', 'width', 'height', 'anchor_x', 'anchor_y')
+        depth = 0
+        
+    def create_file(self, file, owner, validated_data):
+            file_name = file.name
+            file_name_new = upload_helpers.save_file_to_disk(owner, "icons", file)
+            resized_icon_parameters = self.resize_icon(owner, file_name_new, validated_data)
+            return resized_icon_parameters
         
     def create(self, validated_data):
         # Overriding the create method to handle file processing
@@ -111,17 +111,33 @@ class IconSerializer(ProjectSerializerMixin, BaseSerializer):
         data = self.get_presave_create_dictionary()
         data.update(validated_data)
         
-        extra = self.process_file(f, owner, validated_data)
-        data.update(extra)
+        resized_icon_parameters = self.create_file(f, owner, validated_data)
+        data.update(resized_icon_parameters)
         data.update({
-            'host': settings.SERVER_HOST
+            'host': settings.SERVER_HOST,
+            'file_name_orig': f.name,
+            'name': self.validated_data.get('name') or f.name,
+            'virtual_path': upload_helpers.generate_relative_path(owner, "icons")
         })
-        #raise Exception(data)
+        raise Exception(data)
 
-        #data.update(validated_data)
         self.instance = self.Meta.model.objects.create(**data)
         return self.instance
     
     
-class IconSerializerUpdate(IconSerializer):
+class IconSerializerUpdate(IconSerializerBase):
     icon = serializers.CharField(source='file_name_orig', required=False, read_only=True)
+
+    def update(self, instance, validated_data):
+        data = self.get_presave_update_dictionary()
+        data.update(validated_data)
+        resized_icon_parameters = self.resize_icon(owner, instance.file_name_new, validated_data)
+        data.update(resized_icon_parameters)
+        return super(AuditSerializerMixin, self).update(instance, data)
+    
+    class Meta:
+        model = models.Icon
+        read_only_fields = ('width', 'height', 'file_type')
+        fields = ('url', 'id', 'name', 'icon', 'file_type', 'file_path',
+                  'owner', 'project_id', 'size', 'width', 'height', 'anchor_x', 'anchor_y')
+        depth = 0
