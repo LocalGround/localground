@@ -14,9 +14,13 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
     #set max and min sizes for icon
-    size_max = 250
-    size_min = 10
+    size_max = 250.0
+    size_min = 10.0
     size = serializers.IntegerField(max_value=size_max, min_value=size_min)
+    anchor_x = serializers.IntegerField(max_value=size_max, min_value=size_min)
+    anchor_y = serializers.IntegerField(max_value=size_max, min_value=size_min)
+    width = serializers.IntegerField(max_value=size_max, min_value=size_min)
+    height = serializers.IntegerField(max_value=size_max, min_value=size_min)
     file_path = serializers.SerializerMethodField('get_file_path_new')
     owner = serializers.SerializerMethodField()
     
