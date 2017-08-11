@@ -46,11 +46,20 @@ class BaseMediaMixin(object):
     def make_directory(cls, path):
         upload_helpers.make_directory(path)
 
+    '''
     def can_view(self, user, access_key=None):
         return self.project.can_view(user=user, access_key=access_key)
 
     def can_edit(self, user):
         return self.project.can_edit(user)
+    '''
+    def can_view(self, user, access_key=None):
+        return self.project.can_view(user=user, access_key=access_key) or \
+            self.owner == user
+
+    def can_edit(self, user):
+        return self.project.can_edit(user) or \
+            self.owner == user
     
 class BaseMedia(BaseMediaMixin, BaseAudit):
 
