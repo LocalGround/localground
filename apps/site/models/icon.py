@@ -20,6 +20,7 @@ class Icon(ProjectMixin, BaseMediaMixin, BaseAudit):
     virtual_path = models.CharField(max_length=255)
     file_name_orig = models.CharField(max_length=255)
     file_name_new = models.CharField(max_length=255)
+    file_name_resized = models.CharField(max_length=255)
     anchor_x = models.FloatField(null=False, blank=False)
     anchor_y = models.FloatField(null=False, blank=False)
     objects = IconManager()
