@@ -70,12 +70,12 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
         anchor_y = im.size[1] / 2.0
         validated_data_x = validated_data.get('anchor_x')
         validated_data_y = validated_data.get('anchor_y')
-        if (validated_data_x == 0) or validated_data_x:
-            if validated_data_x <= new_x:
-                anchor_x = validated_data_x
-        if (validated_data_y == 0) or validated_data_y:
-            if validated_data_y <= new_y:
-                anchor_y = validated_data_y
+        if validated_data_x is not None and validated_data_x <= new_x:
+            anchor_x = validated_data_x
+            #validated_data['anchor_x'] = anchor_x
+        if validated_data_y is not None and validated_data_y <= new_y:
+            anchor_y = validated_data_y
+            #validated_data['anchor_y'] = anchor_y
 
         return {
             'width': im.size[0],
@@ -143,8 +143,8 @@ class IconSerializerList(IconSerializerBase):
     
     
 class IconSerializerUpdate(IconSerializerBase):
-    anchor_x = serializers.IntegerField(max_value=IconSerializerBase.size_max, min_value=0)
-    anchor_y = serializers.IntegerField(max_value=IconSerializerBase.size_max, min_value=0)
+    anchor_x = serializers.IntegerField(allow_null=True, max_value=IconSerializerBase.size_max, min_value=0)
+    anchor_y = serializers.IntegerField(allow_null=True, max_value=IconSerializerBase.size_max, min_value=0)
     width = serializers.IntegerField(read_only=True)
     height = serializers.IntegerField(read_only=True)
     icon = serializers.CharField(source='file_name_orig', required=False, read_only=True)
