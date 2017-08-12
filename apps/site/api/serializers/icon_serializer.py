@@ -65,17 +65,18 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
             im.thumbnail((new_x, new_y), Image.ANTIALIAS)
             abs_path = '%s/%s' % (media_path, file_name_resized)
             im.save(abs_path)
+        #set anchor point center of icon or user entered coordinates
         anchor_x = im.size[0] / 2.0
         anchor_y = im.size[1] / 2.0
-        if validated_data.get('anchor_x'):
-            anchor_x = validated_data.get('anchor_x')
-            if anchor_x > new_x:
-                anchor_x = im.size[0] / 2.0
-        if validated_data.get('anchor_y'):
-            #raise Exception(anchor_y)
-            anchor_y = validated_data.get('anchor_y')
-            if anchor_y > new_y:
-                anchor_y = im.size[0] / 2.0
+        validated_data_x = validated_data.get('anchor_x')
+        validated_data_y = validated_data.get('anchor_y')
+        if (validated_data_x == 0) or validated_data_x:
+            if validated_data_x <= new_x:
+                anchor_x = validated_data_x
+        if (validated_data_y == 0) or validated_data_y:
+            if validated_data_y <= new_y:
+                anchor_y = validated_data_y
+
         return {
             'width': im.size[0],
             'height': im.size[1],
