@@ -17,10 +17,6 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
     size_max = 250.0
     size_min = 10.0
     size = serializers.IntegerField(max_value=size_max, min_value=size_min)
-    anchor_x = serializers.IntegerField(max_value=size_max, min_value=size_min)
-    anchor_y = serializers.IntegerField(max_value=size_max, min_value=size_min)
-    width = serializers.IntegerField(max_value=size_max, min_value=size_min)
-    height = serializers.IntegerField(max_value=size_max, min_value=size_min)
     file_path = serializers.SerializerMethodField('get_file_path_new')
     owner = serializers.SerializerMethodField()
     
@@ -64,23 +60,27 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
         #raise Exception(size, scale_ratio)
         #resize icon if needed
         if scale_ratio != 1.0:
-            new_x = (im.size)[0] * scale_ratio
-            new_y = (im.size)[1] * scale_ratio
-            im.thumbnail((int(new_x), int(new_y)), Image.ANTIALIAS)
+            new_x = int (round ((im.size)[0] * scale_ratio))
+            new_y = int (round ((im.size)[1] * scale_ratio))
+            im.thumbnail((new_x, new_y), Image.ANTIALIAS)
             abs_path = '%s/%s' % (media_path, file_name_resized)
             im.save(abs_path)
-        anchor_x = im.size[0]/2
-        anchor_y = im.size[1] / 2
+        anchor_x = im.size[0] / 2.0
+        anchor_y = im.size[1] / 2.0
         if validated_data.get('anchor_x'):
-            anchor_x = validated_data.get('anchor_x') * scale_ratio
+            anchor_x = validated_data.get('anchor_x')
+            if anchor_x > new_x:
+                anchor_x = im.size[0] / 2.0
         if validated_data.get('anchor_y'):
-            anchor_y = validated_data.get('anchor_y') * scale_ratio
-
+            #raise Exception(anchor_y)
+            anchor_y = validated_data.get('anchor_y')
+            if anchor_y > new_y:
+                anchor_y = im.size[0] / 2.0
         return {
             'width': im.size[0],
             'height': im.size[1],
-            'anchor_x': int(anchor_x),
-            'anchor_y': int(anchor_y),
+            'anchor_x': anchor_x,
+            'anchor_y': anchor_y,
             'file_name_new': file_name_new,
             'file_name_resized': file_name_resized,
             'file_type': file_type
@@ -98,7 +98,10 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
 
 
 class IconSerializerList(IconSerializerBase):
-    
+    anchor_x = serializers.IntegerField(read_only=True)
+    anchor_y = serializers.IntegerField(read_only=True)
+    width = serializers.IntegerField(read_only=True)
+    height = serializers.IntegerField(read_only=True)   
     class Meta:
         model = models.Icon
         read_only_fields = ('width', 'height', 'anchor_x', 'anchor_y', 'file_type')
@@ -139,6 +142,10 @@ class IconSerializerList(IconSerializerBase):
     
     
 class IconSerializerUpdate(IconSerializerBase):
+    anchor_x = serializers.IntegerField(max_value=IconSerializerBase.size_max, min_value=0)
+    anchor_y = serializers.IntegerField(max_value=IconSerializerBase.size_max, min_value=0)
+    width = serializers.IntegerField(read_only=True)
+    height = serializers.IntegerField(read_only=True)
     icon = serializers.CharField(source='file_name_orig', required=False, read_only=True)
     project_id = serializers.SerializerMethodField()
 
