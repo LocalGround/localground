@@ -226,9 +226,6 @@ define(["jquery",
                                 model.set(key, newVal);
                                 model.save(model.changedAttributes(), { patch: true, wait: true});
                             }
-                        } else {
-                            console.log("[" + source + "], but no value change. Ignored.");
-                            console.log("old value:", oldVal, "new value:", newVal);
                         }
                     }
                 }
@@ -288,49 +285,48 @@ define(["jquery",
 
             videoRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
                 var that = this,
-                    i = document.createElement('i'),
                     model = this.getModelFromCell(instance, rowIndex),
-                    modalImg,
-                    captionText,
-                    modal,
-                    videoFrame,
-                    span;
+                    i = document.createElement('i');
+
                 if (model.get('video_provider') === "vimeo") {
                     i.className = "fa fa-3x fa-vimeo";
                 } else {
                     i.className = "fa fa-3x fa-youtube";
                 }
                 i.onclick = function () {
-                    //alert('show iframe');
-
-                    modal = document.getElementById("videoModal");
-                    captionText = document.getElementById("caption");
-                    videoFrame = document.getElementById("video-iframe");
-                    videoFrame.src = ""
-                    if (model.get("video_provider") == "vimeo"){
-                        // Vimeo
-                        videoFrame.src = "https://player.vimeo.com/video/" + model.get("video_id");
-                    } else {
-                        // Youtube
-                        videoFrame.src = "https://www.youtube.com/embed/" +
-                        model.get("video_id") + "?ecver=1";
-                    }
-
-                    modal.style.display = "block";
-                    console.log(model);
-
+                    that.showVideoModal(model);
                 };
                 Handsontable.Dom.empty(td);
                 td.appendChild(i);
                 return td;
             },
 
-            mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
+            showVideoModal: function(model){
+                var modal = document.getElementById("videoModal");
+                var captionText = document.getElementById("caption");
+                var videoFrame = document.getElementById("video-iframe");
+                videoFrame.src = ""
+                if (model.get("video_provider") == "vimeo"){
+                    // Vimeo
+                    videoFrame.src = "https://player.vimeo.com/video/" + model.get("video_id");
+                } else {
+                    // Youtube
+                    videoFrame.src = "https://www.youtube.com/embed/" +
+                    model.get("video_id") + "?ecver=1";
+                }
+
+                modal.style.display = "block";
+            },
+
+            mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
                 var model = this.getModelFromCell(instance, row),
                     photoCount = model.get("photo_count") || 0,
                     audioCount = model.get("audio_count") || 0,
                     videoCount = model.get("video_count") || 0,
                     i;
+                //for whatever reason, the first row renders twice. Weird:
+                //console.log("mediaCountRenderer:", model.id, photoCount, audioCount, videoCount);
+                
                 td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
                 for (i = 0; i < photoCount; ++i) {
                     td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\

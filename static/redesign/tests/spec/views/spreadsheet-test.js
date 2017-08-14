@@ -25,6 +25,13 @@ define([
                         &times;\
                       </span>\
                     </div>\
+                    <div id="videoModal" class="modal">\
+                      <span class="close big" onclick="document.getElementById(\'myModal\').style.display=\'none\'">\
+                        &times;\
+                      </span>\
+                      <iframe class="modal-content spreadsheet" id="video-iframe" style="width: 70%; height: 480px;"></iframe>\
+                      <div id="caption"></div>\
+                    </div>\
                     ');
             spyOn(scope.app.vent, 'trigger').and.callThrough();
 
@@ -47,6 +54,7 @@ define([
             spyOn(Spreadsheet.prototype, "buttonRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "mediaCountRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "ratingRenderer").and.callThrough();
+            spyOn(Spreadsheet.prototype, "showVideoModal").and.callThrough();
 
             // column functions
             spyOn(Spreadsheet.prototype, "getColumns").and.callThrough();
@@ -280,7 +288,6 @@ define([
             describe("Spreadsheet Create Field Form Tests", function(){
                 it ("Opens the Modal Window", function(){
                     expect(this.app.vent.trigger).toHaveBeenCalledTimes(0);
-                    //console.log($(".modal").is(":visible"));
                     triggerAddField();
                     expect(this.app.vent.trigger).toHaveBeenCalledTimes(1);
 
@@ -294,7 +301,6 @@ define([
             describe("Spreadsheet Show Media Browser Tests", function(){
                 it ("Opens the Modal Window", function(){
                     expect(this.app.vent.trigger).toHaveBeenCalledTimes(0);
-                    //console.log($(".modal").is(":visible"));
                     triggerMediaBrowser();
                     expect(this.app.vent.trigger).toHaveBeenCalledTimes(newSpreadsheet.collection.length);
 
@@ -307,8 +313,6 @@ define([
                     spyOn(window, 'confirm').and.returnValue(false);
                     triggerDeleteField();
                     expect(Spreadsheet.prototype.deleteField).toHaveBeenCalledTimes(newSpreadsheet.fields.length * 2);
-                    // We discovered that there are two of those delete column items per header, but one is on top
-                    // of the other, hence we had to multiply by two for number of available fields
                 });
                 it("Does delete field", function(){
                     spyOn(window, 'confirm').and.returnValue(true);
@@ -336,7 +340,6 @@ define([
             var triggerCarouselAudio = function(){
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 newSpreadsheet.renderSpreadsheet();
-                console.log($('.carousel-audio'));
                 expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(0);
                 newSpreadsheet.$el.find('.carousel-audio').trigger('click');
                 expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(6);
@@ -345,7 +348,6 @@ define([
             var triggerCarouselPhoto = function(){
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 newSpreadsheet.renderSpreadsheet();
-                console.log($('.carousel-photo'));
                 expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(0);
                 newSpreadsheet.$el.find('.carousel-photo').trigger('click');
                 expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(6);
@@ -354,7 +356,6 @@ define([
             var triggerCarouselVideo = function(){
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 newSpreadsheet.renderSpreadsheet();
-                console.log($('.carousel-video'));
                 expect(Spreadsheet.prototype.carouselVideo).toHaveBeenCalledTimes(0);
                 newSpreadsheet.$el.find('.carousel-video').trigger('click');
                 expect(Spreadsheet.prototype.carouselVideo).toHaveBeenCalledTimes(6);
@@ -414,6 +415,18 @@ define([
                 expect(Spreadsheet.prototype.videoRenderer).toHaveBeenCalledTimes(6);
             });
 
+            it("Successfully displays the video from clicking on icon", function(){
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                newSpreadsheet.collection = this.videos;
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.showVideoModal).toHaveBeenCalledTimes(0);
+                var $testTumbnailYT = $(fixture.find("i.fa-vimeo, i.fa-youtube").get(0));
+                $testTumbnailYT.trigger('click');
+                expect(Spreadsheet.prototype.showVideoModal).toHaveBeenCalledTimes(1);
+
+                //expect(1).toEqual(-1);
+            });
+
             it("Go through the Media Count renderer", function () {
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(0);
@@ -421,11 +434,10 @@ define([
                 newSpreadsheet.collection = this.form_1;
                 newSpreadsheet.renderSpreadsheet();
                 //these counts don't make sense. TODO: revisit.
-                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(3);
+                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(4);
             });
 
             it("Go through the Rating renderer", function () {
-                console.log("Testing the Ratings Renderer");
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 expect(Spreadsheet.prototype.ratingRenderer).toHaveBeenCalledTimes(0);
                 newSpreadsheet.fields = this.fields;
