@@ -1221,11 +1221,22 @@ tbody .failure-message, tbody .success-message {
 }
 
 .spreadsheet-tab-panel {
-    background-color: #CCC;
-    height: 50px;
+    background-color: #fff;
+    height: 30px;
     position: fixed;
     bottom: 0px;
     width: 100%;
+}
+
+.tab {
+    height: 30px;
+    line-height: 30px;
+    background: #DDD;
+    display: inline-block;
+    padding: 0px 10px;
+}
+.tab-selected {
+    background: #FFF;
 }
 
 .gallery-panel {

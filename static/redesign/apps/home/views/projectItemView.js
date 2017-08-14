@@ -76,9 +76,11 @@ define(["marionette",
                 var diffYears = this.currentDate.getFullYear() - timeStampYear;
                 var diffMonths = this.currentDate.getMonth() - timeStampMonth;
                 var diffDays = this.currentDate.getDate() - timeStampDay;
-                //console.log(diffYears);
-                //console.log(diffMonths);
-                //console.log(diffDays);
+
+                if (diffDays > 29){
+                    diffMonths = 1;
+                }
+                
                 if (diffYears > 0){
                     addPlural = diffYears > 1 ? "s" : "";
                     lastEditString = diffYears + " Year" + addPlural + " ago";

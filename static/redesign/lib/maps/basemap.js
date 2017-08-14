@@ -46,7 +46,6 @@ define(["marionette",
                 this.listenTo(this.tilesets, 'reset', this.onShow);
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
-                this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
                 this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
                 this.listenTo(this.app.vent, 'add-rectangle', this.initDrawingManager);
                 this.listenTo(this.app.vent, 'show-streetview', this.showStreetView);
@@ -179,12 +178,6 @@ define(["marionette",
             activateMarker: function (model) {
                 this.addMarkerClicked = true;
                 this.targetedModel = model;
-            },
-
-            deleteMarker: function (model) {
-                //model.trigger('hide-marker');
-                model.set("geometry", null);
-                model.save();
             },
 
             renderMap: function () {

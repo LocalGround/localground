@@ -1,47 +1,43 @@
 define([
-    "backbone",
+    "jquery",
     "marionette",
     "handlebars",
-    "text!../templates/tabs,html",
-    "models/record",
-    "models/marker",
-    "forms"
-], function (Backbone, Marionette, Handlebars, TabsTemplate, Record, Marker) {
+    "text!../templates/tabs.html",
+    "collections/forms"
+], function ($, Marionette, Handlebars, TabsTemplate, Forms) {
     'use strict';
     var CreateFieldView = Marionette.ItemView.extend({
-        template: function () {
-            return Handlebars.compile(TabsTemplate);
+        events: {
+            'click .tab': 'switchTab'
         },
         initialize: function (opts) {
             _.extend(this, opts);
+            this.template = Handlebars.compile(TabsTemplate);
             this.fields = opts.fields;
             this.app = opts.app;
-            // Will have to get more stuff in
-            console.log(this);
             this.forms = new Forms();
             this.listenTo(this.forms, "reset", this.render);
             this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
             this.forms.fetch({ reset: true });
         },
 
-        templateHelpers: function(){
-
-            return {
-                forms: this.forms.toJSON()
-            };
-        },
-
-        selectTab: function(){
-            /*
-            Make sure that selected tab lods all the data
-            and highlight the selected tab only
-            */
-        },
-
-        onShow: function(){
-
-            console.log("Calling On Show in Tabs")
+        switchTab: function (e) {
+            e.preventDefault();
+            var $elem = $(e.target),
+                dataType = $elem.attr("data-value");
+            this.app.router.navigate('//' + dataType, { trigger: true });
             this.render();
+        },
+
+        templateHelpers: function () {
+            this.forms.each(function (model) {
+                model.set("instance_type", "form_" + model.id);
+            });
+            console.log(this.forms.toJSON());
+            return {
+                forms: this.forms.toJSON(),
+                dataType: this.app.dataType
+            };
         }
 
     });
