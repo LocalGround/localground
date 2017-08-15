@@ -172,6 +172,7 @@ define(["jquery",
                 });
                 this.table = new Handsontable(grid, {
                     data: data,
+                    fixedRowsTop: 0,
                     colWidths: this.getColumnWidths(),
                     rowHeights: rowHeights,
                     colHeaders: this.getColumnHeaders(),

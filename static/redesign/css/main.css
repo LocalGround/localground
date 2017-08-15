@@ -1221,7 +1221,8 @@ tbody .failure-message, tbody .success-message {
 }
 
 .spreadsheet-tab-panel {
-    background-color: #fff;
+    border-top: solid 1px #CCC;
+    background-color: #eaeaea;
     height: 30px;
     position: fixed;
     bottom: 0px;
@@ -1229,16 +1230,21 @@ tbody .failure-message, tbody .success-message {
 }
 
 .tab {
-    height: 30px;
-    line-height: 30px;
-    background: #DDD;
+    height: 28px;
+    line-height: 28px;
+    background: #ecedf2;
     display: inline-block;
     padding: 0px 10px;
-}
-.tab-selected {
-    background: #FFF;
+    border-left: solid 1px #CCC;
+    border-right: solid 1px #CCC;
+    border-bottom: solid 1px #CCC;
+    margin-top: -1px;
 }
 
+.tab-selected {
+    background: #FFF;
+    border-top: solid 1px #FFF;
+}
 .gallery-panel {
     display: flex;
     flex-wrap: wrap;

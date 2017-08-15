@@ -22,10 +22,7 @@ define([
         },
 
         switchTab: function (e) {
-            e.preventDefault();
-            var $elem = $(e.target),
-                dataType = $elem.attr("data-value");
-            this.app.router.navigate('//' + dataType, { trigger: true });
+            this.app.dataType = $(e.target).attr("data-value");
             this.render();
         },
 
