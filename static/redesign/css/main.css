@@ -2040,6 +2040,14 @@ audio {
     margin: 20px 0 10px;
 }
 
+.spreadsheet .play-ctrls {
+    margin: 0px;
+}
+.spreadsheet .play {
+    margin: 10px;
+    color: #666;
+}
+
 .spreadsheet > div {
     padding: 0px !important;
     margin: 0px auto !important;
