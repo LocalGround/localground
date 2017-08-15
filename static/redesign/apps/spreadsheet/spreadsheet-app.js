@@ -112,3 +112,25 @@ define([
     }));
     return SpreadsheetApp;
 });
+
+
+/*
+// Rough draft plans to making a visible tab group
+// Tested out using google inspector
+<aside id="tab-panel" class="spreadsheet-tab-panel">
+    <table>
+    <!-- Probably a good start, but a div portion might be more suitable
+         with horizontal alignment and some formatting
+    -->
+        <tbody>
+            <tr>
+            <!-- This is where all of the data group types should go if taken as HTML table format -->
+                <td>Test 1</td>
+                <td>Test 2</td>
+                <td>Test 3</td>
+                <td>Test 4</td>
+            </tr>
+        </tbody>
+    </table>
+</aside>
+*/
