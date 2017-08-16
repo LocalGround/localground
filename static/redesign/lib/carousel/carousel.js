@@ -21,7 +21,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
             childViewContainer: ".carousel-content",
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this);
                 if (this.mode == "photos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
                 } else if (this.mode == "videos") {
@@ -52,7 +51,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 }
             },
             hideArrows: function () {
-                console.log("hide damn arrows");
                 if (this.mode === "audio" || this.collection.length === 1) {
                     return;
                 }
@@ -84,7 +82,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
                         }
                     },
                     templateHelpers: function () {
-                        console.log(this);
                         var paragraph;
                         if (this.panelStyles) {
                             paragraph = this.panelStyles.paragraph;
@@ -111,7 +108,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
 
             templateHelpers: function () {
-                console.log(this);
                 var paragraph;
                 if (this.panelStyles) {
                     paragraph = this.panelStyles.paragraph;

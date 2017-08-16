@@ -87,20 +87,20 @@ ul{
         border-right: 1px solid #e4e5eb;
         box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
         width: 400px;
-        background-color: #fafafc;
+        background: rgba(0, 0, 0, 0.71);
         z-index: 40;
         flex: none;
-        overflow: scroll;
-        height:100%;
+        overflow: hidden;
+        height: 20vw;
+        max-height: 120px;
         padding-top: 0px; 
         border: none !important;
         bottom: 0px;
-        max-height: 150px;
         position: fixed;
         float: right;
         width: 100%;
-        -webkit-transition: width .5s, height .5s; /* Safari */
-        transition: width .5s, height .5s, max-height .5s;
+        -webkit-transition: width .5s, height .5s, max-height .5s;; /* Safari */
+        transition: .6s;
     }
 }
 
@@ -264,12 +264,13 @@ svg, .fa-question-circle {
     height: 0px;
     width: 0px;
     background: #4e70d4;
-    -webkit-transition: width 2s, height 4s; /* Safari */
+    -webkit-transition: width .5s, height .5s; /* Safari */
     transition: width .5s, height .5s;
 }
 
 .mobile-toggle, .thumbnail-play, .thumbnail-play-circle {
     display: none;
+    padding: 10px;
 }
 
 @media (max-width: 900px) {
@@ -282,16 +283,17 @@ svg, .fa-question-circle {
     .mobile-toggle {
         display: inline-block;
         float: right;
+        margin-top: 10px;
     }
 
     .mobile-full {
-        height: 80% !important;
-        max-height: 80% !important;
+        height: 100% !important;
+        max-height: 100% !important; 
     }
 
     .mobile-minimize {
-        min-height: 80px;
-        max-height: 150px;
+        min-height: 50px;
+     /*   max-height: 150px; */
     }
 
     .mobile-full .min-thumbnail {
@@ -300,8 +302,12 @@ svg, .fa-question-circle {
     }
 
     .mobile-minimize .min-thumbnail {
-        height: 150px;
-        width: 150px;
+        height: 20vw;
+        max-height: 120px;
+        min-height: 50px;
+        width: 20vw;
+        max-width: 120px;
+        min-width: 50px;
         float: left;
         background-size: cover;
         background-position: center;
@@ -320,14 +326,18 @@ svg, .fa-question-circle {
     }
 
     .mobile-minimize .thumbnail-play {
-        opacity: .7;
-        top: 12%;
-        left: 27%;
+        opacity: .7;   
+        top: 19%;
+        left: 21%;
         bottom: 34%;
         right: 34%;
         color: white;
         position: relative;
         display: inline-block;
+    }
+
+    .mobile-full .thumbnail-play {
+        display: none;
     }
 
     .mobile-minimize .thumbnail-play-circle {
@@ -337,23 +347,85 @@ svg, .fa-question-circle {
         background-color: rgba(255, 255, 255, 0);
         border: 2px solid rgba(255, 255, 255, .7);
         border-radius: 50%;
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
         left: 30%;
         display: inline-block;
     }
 
-    .mobile-full .thumbnail-play {
-        display: none;
-    }
-
     .mobile-full .thumbnail-play-circle {
         display: none;
+    } 
+    .mobile-full #presentation-title {
+        top: -150px;
     }
 
+    .mobile-full-legend {
+        top: -150px !important;
+    }
 
+    .mobile-minimize-legend {
+        top: 10px;
+    }
 
-    
+    .mobile-full-title {
+        top: -150px !important;
+    }
+
+    .mobile-minimize-title {
+        top: auto;
+    }
+
+    .mobile-full .preview-properties {
+        display: auto;
+    }
+
+    .mobile-minimize .preview-properties {
+        display: none;
+    }
+}
+
+/**********************
+Separate Mobile CSS
+**************/
+.body-section {
+    width: 100%;
+    height: 120px;
+    background: #e8e8e8;
+    z-index: 2;
+    position: absolute;
+    bottom: 0;
+    transition: .5s;
+}
+
+.top-section {
+    width: 100%;
+    height: 120px;
+    z-index: 1;
+    position: absolute;
+    bottom: 0;
+    transition: width .5s, height .5s;
+}
+
+.mobile-full .top-section {
+    height: 100%;
+}
+
+.mobile-full .body-section {
+    height: 340px;
+    max-height: 50%;
+    min-height: auto;
+    overflow: scroll;
+}
+
+.mobile-minimize .top-section {
+    height: 120px;
+}
+
+.mobile-minimize .body-section {
+    max-height: 120px;
+    height: 20vw;
+    min-height: 50px;
 }
 
 
@@ -413,6 +485,8 @@ svg, .fa-question-circle {
     width: 401px;
     box-shadow: 0 3px 0 0 rgba(53, 76, 122, 0.08);
     z-index: 100;
+    top: 0px;
+    transition: 0.5s;
 }
 
 #presentation-title h1 {

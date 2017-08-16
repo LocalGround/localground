@@ -1,5 +1,6 @@
 define([
     "jquery",
+    "jquery-ui",
     "underscore",
     "handlebars",
     "marionette",
@@ -13,7 +14,7 @@ define([
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form"
-], function ($, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
+], function ($, UI, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
         MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
@@ -30,7 +31,8 @@ define([
             "click #delete-geometry": "deleteMarker",
             "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView',
-            "click #open-full": 'openMobileDetail'
+            "click #open-full": 'openMobileDetail',
+            "click .thumbnail-play-circle": 'playAudio'
         },
         getTemplate: function () {
             console.log(this.dataType);
@@ -55,9 +57,47 @@ define([
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
             $('#marker-detail-panel').addClass('mobile-minimize');
+            $(window).on("resize", _.bind(this.screenSize, this));
+            this.isMobile();
+            console.log("init checker", $( ".body-section" ));
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
-            this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
+            this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
+
+        initDraggable: function () {
+            console.log("init darggable", this.$el.find( "#drag-header" ));
+            var that = this;
+            $( "#drag-header" ).draggable({
+                tolerance: "pointer"
+            });
+        },
+
+        isMobile: function () {
+            if ($(window).width() >= 900) {
+                this.mobileMode = false;
+            } else if ($(window).width() <= 900) {
+                this.mobileMode = true;
+            }
+        },
+
+        screenSize: function () {
+            if (this.oldWidth) {
+                if (this.oldWidth < 900 && $(window).width() > 900) {
+                    this.mobileMode = false;
+                    this.render();
+                } else if (this.oldWidth > 900 && $(window).width() < 900) {
+                    this.mobileMode = true;
+                    this.render();
+                } else {
+                    return;
+                }
+            } else {
+                this.oldWidth = $(window).width();
+                this.screenSize();
+            }
+            this.oldWidth = $(window).width();
+        },
+
         activateRectangleTrigger: function () {
             $('body').css({ cursor: 'crosshair' });
             this.app.vent.trigger("add-new-marker", this.model);
@@ -188,6 +228,10 @@ define([
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
             console.log("featured image: ", this.getFeaturedImage());
+            console.log(this.mobileMode);
+
+            //initializing 'jquery drag' here after html has been rendered
+            this.initDraggable();
             return {
                 mode: this.app.mode,
                 dataType: this.dataType,
@@ -202,14 +246,16 @@ define([
                 photo_count: this.getPhotos().length,
                 audio_count: this.getAudio().length,
                 video_count: this.getVideos().length,
-                mobileMode: this.app.mobileMode
+                mobileMode: this.mobileMode,
+                hasAudio: this.getAudio().length
             };
         },
 
         getThumbnail: function () {
             if (this.getFeaturedImage()) {
                 return this.getFeaturedImage();
-            } else if (this.model.get("children")) {
+            } else if (!_.isEmpty(this.model.get("children"))) {
+                console.log(this.model.get("children"));
                 var photoData = this.model.get("children").photos.data;
                 return photoData[0];
             } else {
@@ -218,7 +264,6 @@ define([
         },
 
         getFeaturedImage: function () {
-            console.log(this.model);
             if (!this.model.get("children") || !this.model.get("extras") || !this.model.get("children").photos) {
                 return null;
             }
@@ -415,18 +460,46 @@ define([
             this.$el.find('.streetview').html('Show Street View');
         },
         openMobileDetail: function () {
+            console.log("init darggable", $( ".body-section" ));
             if ($('#marker-detail-panel').hasClass('mobile-minimize')) {
 
                 $('#marker-detail-panel').addClass('mobile-full');
                 $('#marker-detail-panel').removeClass('mobile-minimize');
 
+                $('#legend').addClass('mobile-full-legend');
+                $('#legend').removeClass('mobile-minimize-legend');
+
+                $('#presentation-title').addClass('mobile-full-title');
+                $('#presentation-title').removeClass('mobile-minimize-title');
+
             } else if ($('#marker-detail-panel').hasClass('mobile-full')) {
 
                 $('#marker-detail-panel').addClass('mobile-minimize');
                 $('#marker-detail-panel').removeClass('mobile-full');
+
+                $('#legend').addClass('mobile-minimize-legend');
+                $('#legend').removeClass('mobile-full-legend');
+
+                $('#presentation-title').addClass('mobile-minimize-title');
+                $('#presentation-title').removeClass('mobile-full-title');
             }
             
             console.log("mobile toggle");
+        },
+
+        playAudio: function () {
+            var audio = this.$el.find(".audio").first().get(0);
+            if (this.$el.find('.thumbnail-play').hasClass('fa-play')) {
+                this.$el.find('.thumbnail-play').addClass("fa-pause");
+                this.$el.find('.thumbnail-play').removeClass("fa-play");
+                console.log("play audio");
+                audio.play();
+            } else {
+                this.$el.find('.thumbnail-play').addClass("fa-play");
+                this.$el.find('.thumbnail-play').removeClass("fa-pause");
+                console.log("pause audio");
+                audio.pause();
+            }
         }
     });
     return MediaEditor;

@@ -178,7 +178,7 @@ define([
 
 
             var paragraph = this.model.get('panel_styles').paragraph;
-            if (paragraph) {
+            if (paragraph && $(window).width() >= 900) {
                 console.log(paragraph.color);
                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
             }
