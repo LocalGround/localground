@@ -28,21 +28,6 @@ function(Handlebars, Spreadsheet, SpreadsheetTabs, Form){
         beforeEach(function () {
             setupSpreadsheetTabTest(this);
         });
-        /**
-         * 1. Check to make sure that there's a tab for photos, audio, sites, videos, and any form
-         * in the forms collection.
-         *
-         * 2. Make sure that the tab name, class, and link are rendered correctly
-         *
-         * 3. Make sure that when the tab is clicked, it triggers switchTab
-         *
-         * 4. Make sure that switch tab does it's job (i.e. changes the dataType appropriately
-         * and calls the render function)
-         *
-         * 5. Make sure that after tab switch, the tab that was just clicked has the
-         *    tab-selected class in the DOM.
-         *
-         */
 
         it("Renders all the elements correctly", function(){
 
