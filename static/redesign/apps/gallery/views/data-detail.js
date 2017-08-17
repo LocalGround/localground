@@ -1,6 +1,5 @@
 define([
     "jquery",
-    "jquery-ui",
     "underscore",
     "handlebars",
     "marionette",
@@ -13,8 +12,9 @@ define([
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
-    "lib/forms/backbone-form"
-], function ($, UI, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
+    "lib/forms/backbone-form",
+    "touchPunch"
+], function ($, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
         MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
@@ -59,17 +59,55 @@ define([
             $('#marker-detail-panel').addClass('mobile-minimize');
             $(window).on("resize", _.bind(this.screenSize, this));
             this.isMobile();
-            console.log("init checker", $( ".body-section" ));
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
 
         initDraggable: function () {
-            console.log("init darggable", this.$el.find( "#drag-header" ));
             var that = this;
-            $( "#drag-header" ).draggable({
-                tolerance: "pointer"
+            
+            $( '#marker-detail-panel' ).draggable({
+               // handle: '.body-section',
+                axis: 'y',
+                handle: '.body-section',
+                scrollSpeed: 100,
+                snap: true,
+                drag: function (event, ui) {
+                    if  (ui.position.top <= 0) {
+                        console.log("stop");
+                    } else {
+                        $('#marker-detail-panel').css('max-height', 'none');
+                        $('.body-section').css('max-height', '50%');
+                    //  $('.top-section').css('height', 'auto');
+                        //var top = parseFloat($('.body-section').css('top'));
+                        var top =  screen.height - ui.position.top;
+                        console.log("dragging", top, screen.height, ui.position.top);
+                        
+                        $('#marker-detail-panel').css({
+                            'height':'auto',
+                            'max-height': 'auto',
+                        });
+
+                        $('.body-section').css({
+                            'height': top
+                                    
+                        });
+
+                        $('.top-section').css({
+                            'height': screen.height - ui.position.top
+                        })
+
+                        $('#presentation-title').css({
+                            'opacity': 0
+                        })
+
+                        $('#legend').css({
+                            'opacity': 0
+                        })
+                    }
+                }
             });
+            
         },
 
         isMobile: function () {
@@ -230,8 +268,6 @@ define([
             console.log("featured image: ", this.getFeaturedImage());
             console.log(this.mobileMode);
 
-            //initializing 'jquery drag' here after html has been rendered
-            this.initDraggable();
             return {
                 mode: this.app.mode,
                 dataType: this.dataType,
@@ -377,7 +413,8 @@ define([
                 });
                 this.$el.find(".player-container").append(player.$el);
             }
-
+            // setTimeout necessary to register DOM element
+            setTimeout(this.initDraggable.bind(this), 50);
         },
 
         rotatePhoto: function (e) {
