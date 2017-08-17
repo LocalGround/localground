@@ -447,5 +447,28 @@ define([
             });
         });
 
+        describe("Spreadsheet: Video Cell Updates", function(){
+            beforeEach(function(){
+                setupSpreadsheetTest(this);
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app,
+                    collection: this.videos
+                });
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+            });
+
+            it ("Sucessfully switch between different video providers from drop-down", function(){
+                /*
+                Check the following:
+
+                Make sure that there is a video provider and video id column
+                There should be a drop-down option at the "Provider" column
+
+                After switching th e provider, the whole table should re-render
+                and a new video icon should be displayed
+                */
+            });
+        });
+
     }
 );
