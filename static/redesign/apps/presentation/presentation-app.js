@@ -112,6 +112,9 @@ define([
                     position: google.maps.ControlPosition.LEFT_BOTTOM
                 }
             });
+            setTimeout(function () {
+                $("#map").css({"position": "fixed"});
+            }, 500);
             this.mapRegion.show(this.basemapView);
         },
 

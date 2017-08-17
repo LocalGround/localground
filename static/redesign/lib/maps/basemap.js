@@ -303,7 +303,6 @@ define(["marionette",
                     that.saveState();
                 });
                 google.maps.event.addListener(this.map, "idle", function () {
-                    $("#map").css({"position": "fixed"});
                     that.saveState();
                 });
                 google.maps.event.addListener(this.map, 'zoom_changed', function () {
