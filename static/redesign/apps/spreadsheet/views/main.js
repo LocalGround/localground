@@ -188,6 +188,9 @@ define(["jquery",
                     undo: true,
                     afterChange: function (changes, source) {
                         that.saveChanges(changes, source);
+                        if (changes && changes[0] && changes[0].length > 1 && changes[0][1] == "video_provider") {
+                            that.table.render();
+                        }
                     }
                 });
                 if (this.fields) {
