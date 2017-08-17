@@ -2053,6 +2053,13 @@ audio {
     margin: 0px auto !important;
     /*border: solid 1px #000;*/
 }
+.empty-message {
+    text-align: center;
+    margin-top: 30vh;
+    color: #AAA;
+    font-size: 30px;
+    font-weight: bold;
+}
 
 .play.pause {
     width: 10px;

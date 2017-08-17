@@ -14,6 +14,7 @@ define(
         "collections/markers",
         "collections/records",
         "collections/prints",
+        "collections/forms",
         "collections/fields",
         "models/project",
         "models/projectUser",
@@ -32,7 +33,7 @@ define(
     ],
 
     function (Backbone, Marionette, $, appUtilities, Projects, Photos, AudioFiles, Videos, Maps,
-              MapImages, Markers, Records, Prints, Fields, Project, ProjectUser, Photo, Marker,
+              MapImages, Markers, Records, Prints, Forms, Fields, Project, ProjectUser, Photo, Marker,
               Audio, Video, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
         'use strict';
         afterEach(function () {
@@ -417,8 +418,34 @@ define(
                         "data_type": "choice"
                     }]
             });
+            this.form2 = new Form({
+                "url": "http://localhost:7777/api/0/forms/2/",
+                "id": 2,
+                "name": "Animals",
+                "caption": "Test Caption",
+                "overlay_type": "form",
+                "tags": [],
+                "owner": "MrJBRPG",
+                "data_url": "http://localhost:7777/api/0/forms/2/data/",
+                "fields_url": "http://localhost:7777/api/0/forms/2/fields/",
+                "slug": "slug_64358",
+                "project_ids": [
+                    3
+                ],
+                "fields": [{
+                    "id": 15,
+                    "form": 2,
+                    "col_alias": "Name",
+                    "col_name": "name",
+                    "is_display_field": true,
+                    "ordering": 1,
+                    "data_type": "text",
+                    "url": "http://localhost:7777/api/0/forms/2/fields/15"
+                }]
+            });
+            this.forms = new Forms([this.form, this.form2]);
             this.photos = new Photos([
-                new Photo({ id:1, name: "Cat", tags: ['animal', 'cat', 'cute', 'tag1'], project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", attribution: "Owner1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_medium_sm: '//:0', path_marker_sm: "//:0" }),
+                new Photo({ id: 1, name: "Cat", tags: ['animal', 'cat', 'cute', 'tag1'], project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", attribution: "Owner1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_medium_sm: '//:0', path_marker_sm: "//:0" }),
                 new Photo({id: 2, name: "Dog", tags: ['animal', 'dog'], project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_medium: '//:0', path_small: '//:0', path_marker_sm: "//:0" }),
                 new Photo({id: 3, name: "Frog", tags: ['animal', 'amphibian', 'cute', 'frog'], project_id: 2, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_marker_sm: '//:0' })
             ]);

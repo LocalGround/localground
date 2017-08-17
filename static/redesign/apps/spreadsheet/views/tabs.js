@@ -13,12 +13,14 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
             this.template = Handlebars.compile(TabsTemplate);
-            this.fields = opts.fields;
             this.app = opts.app;
-            this.forms = new Forms();
+            if (!this.forms) {
+                this.forms = new Forms();
+                this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
+                this.forms.fetch({ reset: true });
+                this.listenTo(this.forms, "reset", this.render);
+            }
             this.listenTo(this.forms, "reset", this.render);
-            this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
-            this.forms.fetch({ reset: true });
         },
 
         switchTab: function (e) {
@@ -30,7 +32,6 @@ define([
             this.forms.each(function (model) {
                 model.set("instance_type", "form_" + model.id);
             });
-            console.log(this.forms.toJSON());
             return {
                 forms: this.forms.toJSON(),
                 dataType: this.app.dataType

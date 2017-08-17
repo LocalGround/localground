@@ -82,7 +82,7 @@ define([
                 expect(fixture).toContainElement(".play-ctrls");
                 expect(fixture).toContainElement(".play");
                 expect(fixture.find('source')).toHaveAttr('src', audioPlayer.model.get("file_path"));
-                expect(fixture.find('.play').class().toHaveClass('class', 'fa-play');
+                expect(fixture.find('.play').class().toHaveClass('class', 'fa-play'));
             });
 
             it("Listens for play / pause click events", genericTests.listensForPlayPauseClickEvents);

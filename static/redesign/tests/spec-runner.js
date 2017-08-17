@@ -63,6 +63,7 @@ require(['boot'], function () {
         'spec/views/create-form-test.js',
         'spec/views/form-field-test.js',
         'spec/views/spreadsheet-test.js',
+        'spec/views/spreadsheet-tabs-test.js',
         'spec/views/gallery-app-test.js',
 
         //MAP Editor

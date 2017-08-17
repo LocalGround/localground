@@ -148,7 +148,9 @@ define(["jquery",
                 }
 
                 if (this.collection.length == 0) {
-                    this.$el.find('#grid').html("no rows found");
+                    this.$el.find('#grid').html('<div class="empty-message">' +
+                        'No ' + this.app.dataType + ' have been added yet.' +
+                        '</div>');
                     return;
                 }
                 var grid = this.$el.find('#grid').get(0),
