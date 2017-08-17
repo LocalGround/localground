@@ -204,6 +204,9 @@ define(["marionette",
 
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.mapID),
                     mapOptions);
+                //setTimeout(function () {
+                //    $("#map").css({"position": "fixed"});
+                //s}, 500);                
                 this.initTileManager();
             },
             showStreetView: function (model) {
@@ -300,6 +303,7 @@ define(["marionette",
                     that.saveState();
                 });
                 google.maps.event.addListener(this.map, "idle", function () {
+                    $("#map").css({"position": "fixed"});
                     that.saveState();
                 });
                 google.maps.event.addListener(this.map, 'zoom_changed', function () {

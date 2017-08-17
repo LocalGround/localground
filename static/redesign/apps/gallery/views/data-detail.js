@@ -63,7 +63,35 @@ define([
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
 
+        initParallax: function () {
+            var MoveItItem = function (el) {
+                this.el = $(el);
+                this.speed = parseInt(this.el.attr('data-scroll-speed'), 10);
+                this.update = function (scrollTop) {
+                    this.el.css('transform', 'translateY(' + -(scrollTop / this.speed) + 'px)');
+                };
+            };
+            $.fn.moveIt = function () {
+                var $window = $(window),
+                    instances = [];
+                $(this).each(function () {
+                    instances.push(new MoveItItem($(this)));
+                });
+
+                window.onscroll = function () {
+                    var scrollTop = $window.scrollTop();
+                    instances.forEach(function (inst) {
+                        inst.update(scrollTop);
+                    });
+                };
+            };
+            $(function () {
+                $('[data-scroll-speed]').moveIt();
+            });
+        },
+
         initDraggable: function () {
+            return;
             var that = this;
             
             $( '#marker-detail-panel' ).draggable({
@@ -429,6 +457,7 @@ define([
             }
             // setTimeout necessary to register DOM element
             setTimeout(this.initDraggable.bind(this), 50);
+            this.initParallax();
         },
 
         rotatePhoto: function (e) {

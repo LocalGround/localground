@@ -3,9 +3,7 @@
     {{#compare screenType "presentation" operator="!="}}
         <h4>Preview</h4>
     {{/compare}}
-
     {{#if mobileMode}}
-
     <div class="body-section">
          <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
          <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}})">
@@ -231,3 +229,7 @@
 {{#ifequal screenType "map"}}
     <div class="show-hide hide"></div>
 {{/ifequal}}
+
+<!-- This only works in non-mobile mode after you've clicked on a marker -->
+<div class="parallax black" data-scroll-speed="1">TESTER PARALLAX TOP</div>
+<div class="parallax" data-scroll-speed="4">TESTER PARALLAX</div>
