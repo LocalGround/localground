@@ -329,7 +329,7 @@ define(["jquery",
                     i;
                 //for whatever reason, the first row renders twice. Weird:
                 //console.log("mediaCountRenderer:", model.id, photoCount, audioCount, videoCount);
-                
+
                 td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
                 for (i = 0; i < photoCount; ++i) {
                     td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
@@ -532,7 +532,7 @@ define(["jquery",
                     case "photos":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "videos":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Video", "Tags", "Attribution", "Owner", "Delete"];
+                        return ["ID", "Lat", "Lng", "Title", "Caption", "Video", "Video ID", "Provider", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
                         cols = ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Media", "Delete"];
                         return cols;
@@ -560,7 +560,7 @@ define(["jquery",
                     case "photos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "videos":
-                        return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
+                        return [30, 80, 80, 200, 400, 65, 100, 100, 200, 100, 80, 100];
                     case "markers":
                         return [30, 80, 80, 200, 400, 200, 120, 100, 100];
                     default:
@@ -626,10 +626,9 @@ define(["jquery",
                            { data: "lng", type: "numeric", format: '0.00000' },
                            { data: "name", renderer: "html"},
                            { data: "caption", renderer: "html"},
-                           // As for this, will need to replace with video and videoRenderer
                            { data: "video_provider", renderer: this.videoRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                           //{ data: "video_provider", type: "text"},
-                           //{ data: "video_id", type: "text"},
+                           { data: "video_id", type: "text"},
+                           { data: "video_provider", type: "dropdown", source: ["vimeo", "youtube"]},
                            { data: "tags", renderer: "html" },
                            { data: "attribution", renderer: "html"},
                            { data: "owner", readOnly: true},
