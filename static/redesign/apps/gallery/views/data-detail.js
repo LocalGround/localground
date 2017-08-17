@@ -70,8 +70,7 @@ define([
                // handle: '.body-section',
                 axis: 'y',
                 handle: '.body-section',
-                scrollSpeed: 100,
-                snap: true,
+                
                 drag: function (event, ui) {
                     if  (ui.position.top <= 0) {
                         console.log("stop");
@@ -107,7 +106,22 @@ define([
                     }
                 }
             });
-            
+            /*
+            $( '.body-section' ).draggable({
+                axis: 'y',
+                drag: function (event, ui) {
+                    var top =  screen.height - ui.position.top;
+                    $('#marker-detail-panel').css({
+                        'max-height': 'none',
+                        'height': 'auto',
+                    });
+                    $('.body-section').css({
+                        'max-height': '50%',
+                        'height': 'auto'
+                    });
+                }
+            });
+            */
         },
 
         isMobile: function () {

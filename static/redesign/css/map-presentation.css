@@ -77,7 +77,6 @@ ul{
     flex: none;
     overflow: scroll;
     height:100%;
-    transition: 0s;
     padding-top: 80px;
     border: none !important;
 }
@@ -99,8 +98,8 @@ ul{
         position: fixed;
         float: right;
         width: 100%;
-        -webkit-transition: width .5s, height .5s, max-height .5s;; /* Safari */
-        transition: .6s;
+      /*  -webkit-transition: width .5s, height .5s, max-height .5s;; /* Safari */
+    /*    transition: .6s; */
     }
 }
 
@@ -264,9 +263,8 @@ svg, .fa-question-circle {
     height: 0px;
     width: 0px;
     background: #4e70d4;
-    -webkit-transition: width .5s, height .5s; /* Safari */
-    transition: width .5s, height .5s;
-}
+  /*  -webkit-transition: width .5s, height .5s; /* Safari */ 
+/*    transition: width .5s, height .5s; */}
 
 .mobile-toggle, .thumbnail-play, .thumbnail-play-circle {
     display: none;
@@ -395,7 +393,7 @@ Separate Mobile CSS
     z-index: 2;
     position: absolute;
     bottom: 0;
-    transition: .5s;
+  /*  transition: .5s; */
 }
 
 .top-section {
@@ -404,7 +402,7 @@ Separate Mobile CSS
     z-index: 1;
     position: absolute;
     bottom: 0;
-    transition: width .5s, height .5s;
+/*    transition: width .5s, height .5s; */
 }
 
 .mobile-full .top-section {
