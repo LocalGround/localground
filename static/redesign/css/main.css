@@ -1409,6 +1409,8 @@ tbody .failure-message, tbody .success-message {
 #map {
     width: 100%;
     height: 100%;
+    -webkit-transform: translate3d(0,0,0);
+    z-index: -10;
 }
 .both #map-panel {
     width: calc(100% - 680px);
@@ -2342,6 +2344,7 @@ span.plus {
     position: absolute;
     top: calc(100vh - 120px);
     width: 100%;
+    -webkit-transform: translate3d(2,2,2);
 }
 
 .parallax.black {

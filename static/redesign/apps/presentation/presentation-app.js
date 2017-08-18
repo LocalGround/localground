@@ -114,7 +114,8 @@ define([
                 }
             });
             setTimeout(function () {
-                $("#map").css({"position": "fixed"});
+                $("#map").css({"position": "fixed", 
+            'z-index': '0'});
             }, 500);
             this.mapRegion.show(this.basemapView);
         },

@@ -73,12 +73,13 @@ ul{
     box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
     width: 400px;
     background-color: #fafafc;
-    z-index: 40;
+    z-index: 40; 
     flex: none;
     overflow: scroll;
     height:100%;
     padding-top: 80px;
     border: none !important;
+    -webkit-transform: translate3d(1,1,1);
 }
 
 @media (max-width: 900px) {
