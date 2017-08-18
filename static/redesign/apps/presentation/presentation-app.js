@@ -89,6 +89,7 @@ define([
             } else {
                 this.showLegend();
             }
+        //    $('#marker-detail-panel').addClass('parallax').attr('data-scroll-speed', '1');
         },
 
         showBasemap: function () {
