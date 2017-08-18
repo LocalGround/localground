@@ -8,7 +8,7 @@ define([
     "lib/data/dataManager",
     "apps/spreadsheet/views/main",
     "apps/spreadsheet/views/tabs",
-    "apps/gallery/views/data-list",
+    "apps/dataviewer/views/datagallery",
     "apps/gallery/views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
@@ -16,7 +16,7 @@ define([
              DataManager, SpreadsheetView, TabView,
              GalleryView, GalleryDetail, appUtilities) {
     "use strict";
-    var SpreadsheetApp = Marionette.Application.extend(_.extend(appUtilities, {
+    var DataApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
             mainRegion: ".main-panel",
             toolbarMainRegion: "#toolbar-main",
@@ -140,5 +140,5 @@ define([
             //console.log('restored', this.dataType);
         }
     }));
-    return SpreadsheetApp;
+    return DataApp;
 });

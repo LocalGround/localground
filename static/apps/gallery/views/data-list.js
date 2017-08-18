@@ -105,6 +105,9 @@ define(["jquery",
                     }
                 });
             },
+            onShow: function () {
+              this.render();
+            },
 
             onRender: function () {
                 this.$el.find("#loading-animation").empty();
