@@ -2,7 +2,7 @@ define([
     "underscore",
     "marionette",
     "backbone",
-    "apps/spreadsheet/router",
+    "apps/dataviewer/router",
     "views/toolbar-global",
     "apps/gallery/views/toolbar-dataview",
     "lib/data/dataManager",

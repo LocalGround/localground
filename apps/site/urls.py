@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     # mostly static html:
     (r'^$', direct_to_template, {'template_name': 'pages/splash.html'}),
     (r'^map/$', login_required(direct_to_template), {'template_name': 'pages/map.html'}),
+    (r'^data/$', login_required(direct_to_template), {'template_name': 'pages/data.html'}),
     (r'^gallery/$', login_required(direct_to_template), {'template_name': 'pages/gallery.html'}),
     (r'^table/$', login_required(direct_to_template), {'template_name': 'pages/spreadsheet.html'}),
     (r'^style/$', login_required(direct_to_template), {'template_name': 'pages/style.html'}),
@@ -30,4 +31,3 @@ urlpatterns = patterns('',
     # data API
     url(r'^api/0/', include('localground.apps.site.api.urls'))
 )
-
