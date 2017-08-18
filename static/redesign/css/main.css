@@ -477,7 +477,7 @@ nav .selected{
     text-align: left;
 }
 
-.form-reorder, {
+.form-reorder, {G
     cursor: move;
 }
 
@@ -1909,7 +1909,7 @@ td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o, .fa-plus-square-o {
 /********************************/
 .carouselbox.audio {
     height: 180px;
-    
+
 }
 
 .carouselbox .audio-detail {
@@ -2338,9 +2338,9 @@ span.plus {
 
 .parallax {
     background: #EEE;
-    height: 100vh;
+    height: 68vh;
     position: absolute;
-    top: 90vh;
+    top: calc(100vh - 120px);
     width: 100%;
 }
 
