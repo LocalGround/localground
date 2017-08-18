@@ -106,7 +106,6 @@ define(["jquery",
                 });
             },
             onShow: function () {
-              console.log("showing!!!");
               this.render();
             },
 

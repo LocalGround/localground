@@ -36,7 +36,7 @@ define([
             Backbone.history.start();
 
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
-            this.listenTo(this.vent, 'show-list', this.showGallery);
+            this.listenTo(this.vent, 'show-list', this.showViewMode);
             this.listenTo(this.vent, 'show-gallery', this.showGallery);
             this.listenTo(this.vent, 'show-table', this.showSpreadsheet);
             this.addMessageListeners();
@@ -89,33 +89,23 @@ define([
         },
 
         showSpreadsheet: function (dataType) {
-            this.dataType = dataType;
-            this.screenType = "spreadsheet";
-            this.toolbarDataView.render();
-            this.mainRegion.$el.addClass("spreadsheet-main-panel");
-            this.saveAppState();
-            var data;
-            try {
-                data = this.dataManager.getData(this.dataType);
-                console.log("Check data type");
-            } catch (e) {
-                this.dataType = "markers";
-                data = this.dataManager.getData(this.dataType);
-                console.log("Data type error");
-            }
-            this.spreadsheetView = new SpreadsheetView({
-                app: this,
-                collection: data.collection,
-                fields: data.fields
-            });
-            this.mainRegion.show(this.spreadsheetView);
+            this.showViewMode(dataType, "spreadsheet");
 
         },
         showGallery: function (dataType) {
-            this.dataType = dataType;
-            this.screenType = "gallery";
+            this.showViewMode(dataType, "gallery");
+        },
+
+        showViewMode: function (dataType, mode) {
+            if (dataType) {
+              this.dataType = dataType;
+            }
+            if (mode) {
+              this.screenType = mode;
+            }
+
+            console.log(this.screenType, this.dataType, dataType, mode);
             this.toolbarDataView.render();
-            this.mainRegion.$el.removeClass("spreadsheet-main-panel")
             this.saveAppState();
 
             var data;
@@ -127,12 +117,24 @@ define([
                 data = this.dataManager.getData(this.dataType);
                 console.log("Data type error");
             }
-            this.galleryView = new GalleryView({
-                app: this,
-                collection: data.collection,
-                fields: data.fields
-            });
-            this.mainRegion.show(this.galleryView);
+            console.log(this.screenType, this.dataType, dataType, mode);
+            if (this.screenType == 'spreadsheet') {
+                this.mainRegion.$el.addClass("spreadsheet-main-panel");
+                this.spreadsheetView = new SpreadsheetView({
+                    app: this,
+                    collection: data.collection,
+                    fields: data.fields
+                });
+                this.mainRegion.show(this.spreadsheetView);
+            } else {
+              this.mainRegion.$el.removeClass("spreadsheet-main-panel");
+                this.galleryView = new GalleryView({
+                    app: this,
+                    collection: data.collection,
+                    fields: data.fields
+                });
+                this.mainRegion.show(this.galleryView);
+            }
         },
         saveAppState: function () {
             this.saveState("dataView", {
