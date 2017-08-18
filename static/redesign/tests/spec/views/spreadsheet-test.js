@@ -482,6 +482,7 @@ define([
 
                 var changedCell = newSpreadsheet.table.getDataAtCell(0, 5);
                 expect(newSpreadsheet.table.getDataAtCell(0, 7)).toEqual(changedCell);
+                console.log(changedCell, newSpreadsheet.table.getDataAtCell(0, 7));
 
                 expect(1).toEqual(0);
             });
