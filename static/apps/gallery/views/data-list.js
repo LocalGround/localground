@@ -3,7 +3,7 @@ define(["jquery",
         "marionette",
         "handlebars",
         "lib/audio/audio-player",
-        "text!../templates/thumb.html",
+        "text!templates/thumb.html",
         "text!../templates/thumb-list.html"],
     function ($, _, Marionette, Handlebars, AudioPlayer, ThumbTemplate, ListTemplate) {
         'use strict';

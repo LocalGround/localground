@@ -1,5 +1,5 @@
 define([
-    "apps/gallery/views/create-media"
+    "views/create-media"
 ], function (CreateMedia) {
     'use strict';
 

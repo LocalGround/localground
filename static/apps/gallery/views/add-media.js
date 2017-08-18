@@ -1,9 +1,9 @@
 define(["marionette",
         "handlebars",
-        "apps/gallery/views/media_browser",
+        "views/media_browser",
      //   "apps/gallery/views/media-browser-uploader",
-        "apps/gallery/views/create-media",
-        "text!../templates/media-browser-layout.html",
+        "views/create-media",
+        "text!templates/media-browser-layout.html",
         "models/layer"
     ],
     function (Marionette, Handlebars, MediaBrowserView, UploaderView, AddMediaModalTemplate)  {

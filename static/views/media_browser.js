@@ -6,7 +6,7 @@ define([
     "collections/photos",
     "collections/audio",
     "collections/videos",
-    "apps/gallery/views/media-browser-child-view",
+    "views/media-browser-child-view",
     "text!../templates/media-list-add.html"],
     function ($, _, Marionette, Handlebars, Photos, Audio, Videos,
             MediaBrowserChildView, ParentTemplate) {

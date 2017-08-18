@@ -6,8 +6,8 @@ define ([
     "collections/photos",
     "collections/audio",
     "lib/audio/audio-player",
-    "text!../templates/thumb.html",
-    "text!../templates/media-list.html"],
+    "text!templates/thumb.html",
+    "text!templates/media-list.html"],
     function ($, _, Marionette, Handlebars, Photos, Audio,
               AudioPlayer, ThumbTemplate, ListTemplate) {
         'use strict';

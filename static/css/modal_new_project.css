@@ -294,7 +294,7 @@
        -moz-user-select: none; /* Firefox */
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none;
-    line-height: 40px;
+    /*line-height: 40px;*/
     padding: 5px;
 }
 

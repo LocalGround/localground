@@ -5,7 +5,7 @@ define([
     "marionette",
     "collections/forms",
     "apps/gallery/views/create-form",
-    "apps/gallery/views/create-media",
+    "views/create-media",
     "apps/gallery/views/form-list",
     "lib/modals/modal",
     "text!../templates/toolbar-dataview.html"

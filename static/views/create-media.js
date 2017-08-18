@@ -5,8 +5,8 @@ define([
     "handlebars",
     "models/photo",
     "models/audio",
-    "text!../templates/create-media.html",
-    "text!../templates/new-media.html",
+    "text!templates/create-media.html",
+    "text!templates/new-media.html",
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
