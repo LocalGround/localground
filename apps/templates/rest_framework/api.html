@@ -8,18 +8,16 @@
 
 {% block style_links %}
 
-    <!-- link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap-tweaks.css" %}"/ -->
-    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
-    <!-- link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/ -->
-    <link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
-    <link href="/static/css/themes/bootstrap/jquery-ui-1.8.16.custom.css" type="text/css" media="all" rel="stylesheet" />
-    <link href="/static/scripts/thirdparty/selectize/selectize.css" type="text/css" media="all" rel="stylesheet" />
-    <link href="/static/css/themes/bootstrap/timepicker.css" type="text/css" media="all" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{% static "deprecate/rest_framework/css/prettify.css" %}"/>
+    <link href="/static/deprecate/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="/static/deprecate/css/themes/bootstrap/jquery-ui-1.8.16.custom.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="/static/deprecate/thirdparty/selectize/selectize.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="/static/deprecate/css/themes/bootstrap/timepicker.css" type="text/css" media="all" rel="stylesheet" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 {% endblock %}
 {% block extra_styles %}
     body{
-        background: url("/static/rest_framework/img/grid.png") repeat-x;
+        background: url("/static/deprecate/rest_framework/img/grid.png") repeat-x;
         background-attachment: fixed;
     }
     body, .navbar .navbar-inner .container-fluid {
@@ -53,15 +51,15 @@
 {% endblock %}
 
 {% block script_links %}
-    <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
+    <script src="{% static "deprecate/rest_framework/js/prettify-min.js" %}"></script>
     <script src="{{ JQUERY_UI_PATH }}"></script>
-    <script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
-    <script type="text/javascript" src="/static/scripts/thirdparty/selectize/selectize.min.js"></script>
-    <script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
-    <script type="text/javascript" src="/static/scripts/helpers/filtermenu.js"></script>
+    <script type="text/javascript" src="/static/deprecate/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
+    <script type="text/javascript" src="/static/deprecate/thirdparty/selectize/selectize.min.js"></script>
+    <script type="text/javascript" src="/static/deprecate/thirdparty/jquery.ui.timepicker.js"></script>
+    <script type="text/javascript" src="/static/deprecate/helpers/filtermenu.js"></script>
 {% endblock %}
 {% block pageload_scripts %}
-    prettyPrint();                       
+    prettyPrint();
     $('a[data-toggle="tab"]:first').on('shown', function (e) {
         $(e.target).parents('.tabbable').addClass('first-tab-active');
     });
@@ -140,7 +138,7 @@
                 </fieldset>
             </form>
         {% endif %}
-        
+
         {% if delete_form %}
             <form class="button-form pull-right" style="margin-right:5px;" action="{{ request.get_full_path }}" method="POST" class="pull-right">
                 <fieldset>
@@ -194,7 +192,7 @@
                             <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal">
                                 <fieldset>
                                     {{ post_form }}
-                                    
+
                                     <div class="form-actions">
                                         <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
                                     </div>
@@ -208,7 +206,7 @@
                             <form action="{{ request.get_full_path }}" enctype="multipart/form-data" method="POST" class="form-horizontal">
                                 <fieldset>
                                     {% include "rest_framework/raw_data_form.html" %}
-                                    
+
                                     <div class="form-actions">
                                         <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
                                     </div>
@@ -235,7 +233,7 @@
                             <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal">
                                 <fieldset>
                                     {{ put_form }}
-                                    
+
                                     <div class="form-actions">
                                         <button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>
                                     </div>
@@ -273,13 +271,13 @@
     <!-- END Content -->
 
     <div id="push"></div>
-    
+
     <ul class="breadcrumb">
         <li>For more information on how to use the API, take a look at the
             <a href="/static/docs/api/samples/index.html">documentation</a>.
         </li>
     </ul>
-    
+
 
 
 {% endblock %}
