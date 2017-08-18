@@ -1,5 +1,5 @@
 require.config({
-    baseUrl: "/static/redesign",
+    baseUrl: "/static",
     paths: {
         'backbone': 'external/backbone-min',
         'backbone-bootstrap-modal': 'external/backbone.bootstrap-modal',
