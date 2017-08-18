@@ -74,7 +74,7 @@ define([
             it("Renders HTML successfully", function () {
                 /*
                  * Documentation: https://github.com/velesin/jasmine-jquery
-                 * NOTE: this setTimeout + done function is needed to give the 
+                 * NOTE: this setTimeout + done function is needed to give the
                  * CSS a little extra time to load, since it's asynchronous
                  */
                 fixture = setFixtures('<div></div>').append(audioPlayer.$el);
@@ -82,7 +82,7 @@ define([
                 expect(fixture).toContainElement(".play-ctrls");
                 expect(fixture).toContainElement(".play");
                 expect(fixture.find('source')).toHaveAttr('src', audioPlayer.model.get("file_path"));
-                expect(fixture.find('.play').class().toHaveClass('class', 'fa-play'));
+                expect(fixture.find('.play').hasClass('fa-play')).toBeTruthy();
             });
 
             it("Listens for play / pause click events", genericTests.listensForPlayPauseClickEvents);
