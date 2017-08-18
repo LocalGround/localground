@@ -477,7 +477,7 @@ nav .selected{
     text-align: left;
 }
 
-.form-reorder, {
+.form-reorder, {G
     cursor: move;
 }
 
@@ -1911,7 +1911,7 @@ td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o, .fa-plus-square-o {
 /********************************/
 .carouselbox.audio {
     height: 180px;
-    
+
 }
 
 .carouselbox .audio-detail {
