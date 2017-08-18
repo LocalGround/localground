@@ -97,9 +97,11 @@ define([
             var data;
             try {
                 data = this.dataManager.getData(this.dataType);
+                console.log("Check data type");
             } catch (e) {
                 this.dataType = "markers";
                 data = this.dataManager.getData(this.dataType);
+                console.log("Data type error");
             }
             this.spreadsheetView = new SpreadsheetView({
                 app: this,
@@ -119,9 +121,11 @@ define([
             var data;
             try {
                 data = this.dataManager.getData(this.dataType);
+                console.log("Check data type");
             } catch (e) {
                 this.dataType = "markers";
                 data = this.dataManager.getData(this.dataType);
+                console.log("Data type error");
             }
             this.galleryView = new GalleryView({
                 app: this,
