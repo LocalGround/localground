@@ -216,5 +216,6 @@
     display: flex;
     height: calc(100vh - 109px);
     width: 100%;
+    margin-top: 5px;
+    margin-bottom: 30px;
 }
-

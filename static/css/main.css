@@ -1188,7 +1188,7 @@ tbody .failure-message, tbody .success-message {
 
 .main-panel {
     height: calc(100% - 111px);
-    top: 111px;
+    top: 111px
     display: flex;
     position: absolute;
     min-width: 100%;
