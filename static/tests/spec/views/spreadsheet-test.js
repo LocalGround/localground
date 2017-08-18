@@ -458,15 +458,33 @@ define([
             });
 
             it ("Sucessfully switch between different video providers from drop-down", function(){
-                /*
-                Check the following:
 
-                Make sure that there is a video provider and video id column
-                There should be a drop-down option at the "Provider" column
+                var vidCols = newSpreadsheet.getColumnHeaders();
+                //console.log(vidCols);
+                expect(vidCols[6]).toEqual("Video ID");
+                expect(vidCols[7]).toEqual("Provider");
 
-                After switching th e provider, the whole table should re-render
-                and a new video icon should be displayed
-                */
+                var providerRow = newSpreadsheet.table.getDataAtRow(0)
+                var targetCell = newSpreadsheet.table.getDataAtCell(0, 7);
+
+                newSpreadsheet.table.render();
+
+                var $targetHOTRow = $(fixture.find(".htCore").find("tbody").find("tr")[0]);
+                var $targetHOTCell = $($targetHOTRow.find("td")[5]);
+
+                expect(newSpreadsheet.table.getDataAtCell(0, 5)).toEqual(targetCell);
+                expect(targetCell).toEqual('youtube');
+                expect($targetHOTCell.html()).toHaveClass('fa-youtube');
+
+                newSpreadsheet.table.setDataAtCell(0, 7, "vimeo");
+
+                var changedCell = newSpreadsheet.table.getDataAtCell(0, 5);
+                expect(newSpreadsheet.table.getDataAtCell(0, 7)).toEqual(changedCell);
+                expect(changedCell).toEqual('vimeo');
+                expect($targetHOTCell.html()).toHaveClass('fa-vimeo');
+
+                $targetHOTRow = $(fixture.find(".htCore").find("tbody").find("tr")[0]);
+                $targetHOTCell = $($targetHOTRow.find("td")[5]);
             });
         });
 
