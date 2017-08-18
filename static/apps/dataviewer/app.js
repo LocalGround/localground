@@ -37,6 +37,8 @@ define([
 
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'show-list', this.showGallery);
+            this.listenTo(this.vent, 'show-gallery', this.showGallery);
+            this.listenTo(this.vent, 'show-table', this.showSpreadsheet);
             this.addMessageListeners();
             console.log('starting!!');
         },
@@ -88,6 +90,9 @@ define([
 
         showSpreadsheet: function (dataType) {
             this.dataType = dataType;
+            this.screenType = "spreadsheet";
+            this.toolbarDataView.render();
+            this.mainRegion.$el.addClass("spreadsheet-main-panel");
             this.saveAppState();
             var data;
             try {
@@ -105,10 +110,10 @@ define([
 
         },
         showGallery: function (dataType) {
-            //
-            //
-            //
             this.dataType = dataType;
+            this.screenType = "gallery";
+            this.toolbarDataView.render();
+            this.mainRegion.$el.removeClass("spreadsheet-main-panel")
             this.saveAppState();
 
             var data;

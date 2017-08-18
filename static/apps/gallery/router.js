@@ -8,8 +8,9 @@ define([
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
             ':dataType/new': 'dataDetail',
+            ':dataType/new': 'dataDetail',
             ':dataType/:id': 'dataDetail',
-            ':dataType': 'dataList'
+            'gallery': 'showGallery'
         },
         initialize: function (options) {
             this.controller = new Controller({

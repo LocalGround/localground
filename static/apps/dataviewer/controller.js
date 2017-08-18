@@ -13,6 +13,12 @@ define([
         },
         dataList: function (dataType) {
             this.app.vent.trigger("show-list", dataType);
+        },
+        showGallery: function () {
+            this.app.vent.trigger("show-gallery");
+        },
+        showTable: function () {
+            this.app.vent.trigger("show-table");
         }
     });
 });
