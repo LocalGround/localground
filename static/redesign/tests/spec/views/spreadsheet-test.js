@@ -478,6 +478,8 @@ define([
                 var targetCell = newSpreadsheet.table.getDataAtCell(0, 7);
                 console.log(targetCell);
                 newSpreadsheet.table.setDataAtCell(0, 7, "vimeo");
+                console.log(newSpreadsheet.table.getDataAtCell(0, 7));
+
                 var changedCell = newSpreadsheet.table.getDataAtCell(0, 5);
                 expect(newSpreadsheet.table.getDataAtCell(0, 7)).toEqual(changedCell);
 
