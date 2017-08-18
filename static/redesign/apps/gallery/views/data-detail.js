@@ -13,7 +13,8 @@ define([
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form",
-    "touchPunch"
+    "touchPunch",
+    "panel-snap"
 ], function ($, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
         MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
@@ -32,7 +33,10 @@ define([
             "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView',
             "click #open-full": 'openMobileDetail',
-            "click .thumbnail-play-circle": 'playAudio'
+            "click .thumbnail-play-circle": 'playAudio',
+            'scroll': function ()  {
+                console.log("scolling");
+            }
         },
         getTemplate: function () {
             console.log(this.dataType);
@@ -59,6 +63,15 @@ define([
             $('#marker-detail-panel').addClass('mobile-minimize');
             $(window).on("resize", _.bind(this.screenSize, this));
             this.isMobile();
+            $(function($) {
+                $('#marker-detail-panel').panelSnap({
+                    onSnapStart: function(){console.log("on snap start")},
+                    onActivate: function(){console.log("on activate")},
+                    directionThreshold: 50,
+                    slideSpeed: 200,
+                });
+                
+              });
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
@@ -89,6 +102,8 @@ define([
                 $('[data-scroll-speed]').moveIt();
             });
         },
+
+        
 
         initDraggable: function () {
             return;
