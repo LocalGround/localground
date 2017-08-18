@@ -1220,7 +1220,7 @@ tbody .failure-message, tbody .success-message {
     margin-bottom: 180px;
 }
 
-.spreadsheet-tab-panel {
+.spreadsheet-tab-panel, .tab-panel {
     border-top: solid 1px #CCC;
     background-color: #fafafc;
     height: 30px;
@@ -1935,7 +1935,7 @@ td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o, .fa-plus-square-o {
 /********************************/
 .carouselbox.audio {
     height: 180px;
-    
+
 }
 
 .carouselbox .audio-detail {
