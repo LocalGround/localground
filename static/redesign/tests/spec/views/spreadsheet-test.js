@@ -474,17 +474,15 @@ define([
                 expect(vidCols[7]).toEqual("Provider");
 
                 var providerRow = newSpreadsheet.table.getDataAtRow(0)
-                console.log(providerRow);
                 var targetCell = newSpreadsheet.table.getDataAtCell(0, 7);
-                console.log(targetCell);
+
+                expect(newSpreadsheet.table.getDataAtCell(0, 5)).toEqual(targetCell);
+                expect(targetCell).toEqual('youtube');
                 newSpreadsheet.table.setDataAtCell(0, 7, "vimeo");
-                console.log(newSpreadsheet.table.getDataAtCell(0, 7));
 
                 var changedCell = newSpreadsheet.table.getDataAtCell(0, 5);
                 expect(newSpreadsheet.table.getDataAtCell(0, 7)).toEqual(changedCell);
-                console.log(changedCell, newSpreadsheet.table.getDataAtCell(0, 7));
-
-                expect(1).toEqual(0);
+                expect(changedCell).toEqual('vimeo');
             });
         });
 
