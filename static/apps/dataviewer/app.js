@@ -8,14 +8,17 @@ define([
     "lib/data/dataManager",
     "apps/spreadsheet/views/main",
     "apps/spreadsheet/views/tabs",
+    "apps/gallery/views/data-list",
+    "apps/gallery/views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (_, Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
-             DataManager, SpreadsheetView, TabView, appUtilities) {
+             DataManager, SpreadsheetView, TabView,
+             GalleryView, GalleryDetail, appUtilities) {
     "use strict";
     var SpreadsheetApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
-            spreadsheetRegion: ".main-panel",
+            mainRegion: ".main-panel",
             toolbarMainRegion: "#toolbar-main",
             toolbarDataViewRegion: "#toolbar-dataview",
             tabViewRegion: "#tab-panel"
@@ -23,7 +26,7 @@ define([
 
         currentCollection: null,
         dataType: "markers",
-        screenType: "spreadsheet",
+        screenType: "gallery",
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
@@ -33,7 +36,7 @@ define([
             Backbone.history.start();
 
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
-            this.listenTo(this.vent, 'show-list', this.showSpreadsheet);
+            this.listenTo(this.vent, 'show-list', this.showGallery);
             this.addMessageListeners();
             console.log('starting!!');
         },
@@ -66,6 +69,12 @@ define([
                 collection: data.collection,
                 fields: data.fields
             });
+
+            this.galleryView = new GalleryView({
+                app: this,
+                collection: data.collection,
+                fields: data.fields
+            });
             this.tabView = new TabView({
                 app: this
             });
@@ -73,7 +82,7 @@ define([
             //load views into regions:
             this.toolbarMainRegion.show(this.toolbarView);
             this.toolbarDataViewRegion.show(this.toolbarDataView);
-            this.spreadsheetRegion.show(this.spreadsheetView);
+            this.mainRegion.show(this.galleryView);
             this.tabViewRegion.show(this.tabView);
         },
 
@@ -92,8 +101,29 @@ define([
                 collection: data.collection,
                 fields: data.fields
             });
-            this.spreadsheetRegion.show(this.spreadsheetView);
+            this.mainRegion.show(this.spreadsheetView);
 
+        },
+        showGallery: function (dataType) {
+            //
+            //
+            //
+            this.dataType = dataType;
+            this.saveAppState();
+
+            var data;
+            try {
+                data = this.dataManager.getData(this.dataType);
+            } catch (e) {
+                this.dataType = "markers";
+                data = this.dataManager.getData(this.dataType);
+            }
+            this.galleryView = new GalleryView({
+                app: this,
+                collection: data.collection,
+                fields: data.fields
+            });
+            this.mainRegion.show(this.galleryView);
         },
         saveAppState: function () {
             this.saveState("dataView", {

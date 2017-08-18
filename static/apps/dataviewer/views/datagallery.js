@@ -1,11 +1,11 @@
 define(["marionette",
         "handlebars",
-        "views/media_browser",
-        "views/create-media",
-        "text!templates/media-browser-layout.html",
+        "apps/gallery/views/data-list",
+        "apps/gallery/views/data-detail",
+        "text!templates/gallery-layout.html",
         "models/layer"
     ],
-    function (Marionette, Handlebars, MediaBrowserView, UploaderView, AddMediaModalTemplate)  {
+    function (Marionette, Handlebars, GalleryListView, GalleryDetail, AddMediaModalTemplate)  {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var AddMediaModal = Marionette.LayoutView.extend({
@@ -22,8 +22,8 @@ define(["marionette",
             },
 
             regions: {
-                uploaderRegion: "#uploader",
-                mediaBrowserRegion: "#media_browser"
+                listRegion: '.gallery-panel',
+                detailRegion: '.side-panel'
             },
             onRender: function () {
                 // only load views after the LayoutView has
