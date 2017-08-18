@@ -467,6 +467,21 @@ define([
                 After switching th e provider, the whole table should re-render
                 and a new video icon should be displayed
                 */
+
+                var vidCols = newSpreadsheet.getColumnHeaders();
+                //console.log(vidCols);
+                expect(vidCols[6]).toEqual("Video ID");
+                expect(vidCols[7]).toEqual("Provider");
+
+                var providerRow = newSpreadsheet.table.getDataAtRow(0)
+                console.log(providerRow);
+                var targetCell = newSpreadsheet.table.getDataAtCell(0, 7);
+                console.log(targetCell);
+                newSpreadsheet.table.setDataAtCell(0, 7, "vimeo");
+                var changedCell = newSpreadsheet.table.getDataAtCell(0, 5);
+                expect(newSpreadsheet.table.getDataAtCell(0, 7)).toEqual(changedCell);
+
+                expect(1).toEqual(0);
             });
         });
 
