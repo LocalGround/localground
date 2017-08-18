@@ -2338,9 +2338,9 @@ span.plus {
 
 .parallax {
     background: #EEE;
-    height: 100vh;
+    height: 68vh;
     position: absolute;
-    top: 90vh;
+    top: calc(100vh - 120px);
     width: 100%;
 }
 
