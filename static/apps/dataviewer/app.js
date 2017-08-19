@@ -8,7 +8,7 @@ define([
     "lib/data/dataManager",
     "apps/spreadsheet/views/main",
     "apps/spreadsheet/views/tabs",
-    "apps/dataviewer/views/datagallery",
+    "apps/dataviewer/gallery/views/datagallery",
     "apps/gallery/views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
