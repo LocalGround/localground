@@ -16,10 +16,10 @@ define(["marionette",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.template = Handlebars.compile(GalleryLayoutTemplate),
-                this.render();
+                this.template = Handlebars.compile(GalleryLayoutTemplate);
             },
             onRender: function () {
+              console.log('rendering...');
               this.galleryListView = new GalleryListView({
                   app: this.app,
                   collection: this.collection,

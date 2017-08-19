@@ -8,7 +8,7 @@ define([
     "lib/data/dataManager",
     "apps/spreadsheet/views/main",
     "apps/spreadsheet/views/tabs",
-    "apps/dataviewer/gallery/views/datagallery",
+    "apps/dataviewer/gallery/views/gallery-layout-view",
     "apps/gallery/views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
@@ -47,35 +47,15 @@ define([
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
-            console.log("initialize");
         },
         loadRegions: function () {
-            //initialize toobar view
-            console.log("Loading Regions");
             this.restoreAppState();
-            var data;
-            try {
-                data = this.dataManager.getData(this.dataType);
-            } catch (e) {
-                this.dataType = "markers";
-                data = this.dataManager.getData(this.dataType);
-            }
+            var data = this.getData();
             this.toolbarView = new ToolbarGlobal({
                 app: this
             });
             this.toolbarDataView = new ToolbarDataView({
                 app: this
-            });
-            this.spreadsheetView = new SpreadsheetView({
-                app: this,
-                collection: data.collection,
-                fields: data.fields
-            });
-
-            this.galleryView = new GalleryView({
-                app: this,
-                collection: data.collection,
-                fields: data.fields
             });
             this.tabView = new TabView({
                 app: this
@@ -84,8 +64,8 @@ define([
             //load views into regions:
             this.toolbarMainRegion.show(this.toolbarView);
             this.toolbarDataViewRegion.show(this.toolbarDataView);
-            this.mainRegion.show(this.galleryView);
             this.tabViewRegion.show(this.tabView);
+            this.showViewMode();
         },
 
         showSpreadsheet: function (dataType) {
@@ -96,44 +76,46 @@ define([
             this.showViewMode(dataType, "gallery");
         },
 
-        showViewMode: function (dataType, mode) {
-            if (dataType) {
-              this.dataType = dataType;
-            }
-            if (mode) {
-              this.screenType = mode;
-            }
-
-            console.log(this.screenType, this.dataType, dataType, mode);
-            this.toolbarDataView.render();
-            this.saveAppState();
-
+        getData: function () {
             var data;
             try {
                 data = this.dataManager.getData(this.dataType);
-                console.log("Check data type");
             } catch (e) {
                 this.dataType = "markers";
                 data = this.dataManager.getData(this.dataType);
-                console.log("Data type error");
+                console.error("Data type error");
             }
-            console.log(this.screenType, this.dataType, dataType, mode);
-            if (this.screenType == 'spreadsheet') {
-                this.mainRegion.$el.addClass("spreadsheet-main-panel");
-                this.spreadsheetView = new SpreadsheetView({
-                    app: this,
-                    collection: data.collection,
-                    fields: data.fields
-                });
-                this.mainRegion.show(this.spreadsheetView);
-            } else {
-              this.mainRegion.$el.removeClass("spreadsheet-main-panel");
-                this.galleryView = new GalleryView({
-                    app: this,
-                    collection: data.collection,
-                    fields: data.fields
-                });
-                this.mainRegion.show(this.galleryView);
+            return data;
+        },
+        showViewMode: function (dataType, mode) {
+            if (dataType) {
+                this.dataType = dataType;
+            }
+            if (mode) {
+                this.screenType = mode;
+            }
+            this.toolbarDataView.render();
+            this.saveAppState();
+            var data = this.getData();
+            switch (this.screenType) {
+                case 'spreadsheet':
+                    this.mainRegion.$el.addClass("spreadsheet-main-panel");
+                    this.spreadsheetView = new SpreadsheetView({
+                        app: this,
+                        collection: data.collection,
+                        fields: data.fields
+                    });
+                    this.mainRegion.show(this.spreadsheetView);
+                    break;
+                default:
+                    this.mainRegion.$el.removeClass("spreadsheet-main-panel");
+                    this.galleryView = new GalleryView({
+                        app: this,
+                        collection: data.collection,
+                        fields: data.fields
+                    });
+                    this.mainRegion.show(this.galleryView);
+                    break;
             }
         },
         saveAppState: function () {
