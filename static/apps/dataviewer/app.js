@@ -34,9 +34,9 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
-
-            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
-            this.listenTo(this.vent, 'show-list', this.showViewMode);
+            this.loadFastRegions();
+            this.listenTo(this.vent, 'data-loaded', this.loadMainRegion);
+            this.listenTo(this.vent, 'show-list', this.initMainView);
             this.listenTo(this.vent, 'show-gallery', this.showGallery);
             this.listenTo(this.vent, 'show-table', this.showSpreadsheet);
             this.addMessageListeners();
@@ -48,9 +48,7 @@ define([
             this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
         },
-        loadRegions: function () {
-            this.restoreAppState();
-            var data = this.getData();
+        loadFastRegions: function () {
             this.toolbarView = new ToolbarGlobal({
                 app: this
             });
@@ -60,63 +58,53 @@ define([
             this.tabView = new TabView({
                 app: this
             });
-
-            //load views into regions:
             this.toolbarMainRegion.show(this.toolbarView);
             this.toolbarDataViewRegion.show(this.toolbarDataView);
             this.tabViewRegion.show(this.tabView);
-            this.showViewMode();
+        },
+        loadMainRegion: function () {
+            this.initMainView();
+            this.mainRegion.show(this.mainView);
         },
 
         showSpreadsheet: function (dataType) {
-            this.showViewMode(dataType, "spreadsheet");
+            this.initMainView(dataType, "spreadsheet");
 
         },
         showGallery: function (dataType) {
-            this.showViewMode(dataType, "gallery");
+            this.initMainView(dataType, "gallery");
         },
-
-        getData: function () {
-            var data;
-            try {
-                data = this.dataManager.getData(this.dataType);
-            } catch (e) {
-                this.dataType = "markers";
-                data = this.dataManager.getData(this.dataType);
-                console.error("Data type error");
-            }
-            return data;
-        },
-        showViewMode: function (dataType, mode) {
-            if (dataType) {
-                this.dataType = dataType;
-            }
-            if (mode) {
-                this.screenType = mode;
-            }
+        initMainView: function (dataType, mode) {
+            this.dataType = dataType || this.dataType;
+            this.screenType = mode || this.screenType;
             this.toolbarDataView.render();
             this.saveAppState();
-            var data = this.getData();
+            var data = this.getData(),
+                opts = {
+                    app: this,
+                    collection: data.collection,
+                    fields: data.fields
+                };
             switch (this.screenType) {
                 case 'spreadsheet':
                     this.mainRegion.$el.addClass("spreadsheet-main-panel");
-                    this.spreadsheetView = new SpreadsheetView({
-                        app: this,
-                        collection: data.collection,
-                        fields: data.fields
-                    });
-                    this.mainRegion.show(this.spreadsheetView);
+                    this.mainView = new SpreadsheetView(opts);
                     break;
                 default:
                     this.mainRegion.$el.removeClass("spreadsheet-main-panel");
-                    this.galleryView = new GalleryView({
-                        app: this,
-                        collection: data.collection,
-                        fields: data.fields
-                    });
-                    this.mainRegion.show(this.galleryView);
+                    this.mainView = new GalleryView(opts);
                     break;
             }
+            this.mainRegion.show(this.mainView);
+        },
+        getData: function () {
+            try {
+                return this.dataManager.getData(this.dataType);
+            } catch (e) {
+                this.dataType = "markers";
+                return this.dataManager.getData(this.dataType);
+            }
+            console.error("Data type error:", this.dataType);
         },
         saveAppState: function () {
             this.saveState("dataView", {
