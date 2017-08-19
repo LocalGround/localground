@@ -69,11 +69,12 @@ define([
 
         showSpreadsheet: function (dataType) {
             this.initMainView(dataType, "spreadsheet");
-
         },
+
         showGallery: function (dataType) {
             this.initMainView(dataType, "gallery");
         },
+
         initMainView: function (dataType, mode) {
             this.dataType = dataType || this.dataType;
             this.screenType = mode || this.screenType;
@@ -97,6 +98,7 @@ define([
             }
             this.mainRegion.show(this.mainView);
         },
+
         getData: function () {
             try {
                 return this.dataManager.getData(this.dataType);
@@ -106,11 +108,13 @@ define([
             }
             console.error("Data type error:", this.dataType);
         },
+
         saveAppState: function () {
             this.saveState("dataView", {
                 dataType: this.dataType
             }, true);
         },
+
         restoreAppState: function () {
             var state = this.restoreState("dataView");
             if (state) {
