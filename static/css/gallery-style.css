@@ -210,12 +210,10 @@
 
  /************************************ Main area for databases ************************************/
 .dataview {
-    top: 110px;
-    position: absolute;
+    /*top: 110px;
+    position: absolute;*/
     background-color: #f0f1f5;
     display: flex;
-    height: calc(100vh - 109px);
+    height: calc(100vh - 140px);
     width: 100%;
-    margin-top: 5px;
-    margin-bottom: 30px;
 }
