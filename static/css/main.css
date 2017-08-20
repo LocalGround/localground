@@ -208,6 +208,7 @@ nav .selected{
     background-color: #fafafc;
     margin: 0;
     border-bottom: 1px solid #e4e5eb;
+    position: relative;
 }
 
 #toolbar-dataview h3 {
@@ -1156,7 +1157,7 @@ tbody .failure-message, tbody .success-message {
 
     /* Position the tooltip text */
     position: absolute;
-    z-index: 1;
+    z-index: 1000;
     top: 125%;
     left: 50%;
     margin-left: -80px;
@@ -1190,7 +1191,7 @@ tbody .failure-message, tbody .success-message {
     height: calc(100% - 111px);
     top: 111px
     display: flex;
-    position: absolute;
+    /*position: absolute;*/
     min-width: 100%;
 }
 
@@ -1330,7 +1331,7 @@ tbody .failure-message, tbody .success-message {
     height: initial;
     order: 2;
     background-color: rgb(246, 246, 249);
-    border: 1px solid rgb(217, 220, 229);
+    border-left: 1px solid rgb(217, 220, 229);
     overflow: scroll;
 }
 
