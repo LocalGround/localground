@@ -104,6 +104,7 @@ define([
                     break;
             }
             this.mainRegion.show(this.mainView);
+            this.adjustLayout();
         },
 
         getData: function () {
@@ -122,6 +123,14 @@ define([
             }, true);
         },
 
+        adjustLayout: function () {
+            if (this.screenType === 'map') {
+                this.tabViewRegion.$el.hide();
+            } else {
+                this.tabViewRegion.$el.show();
+            }
+        },
+
         restoreAppState: function () {
             var state = this.restoreState("dataView");
             if (state) {
@@ -129,7 +138,6 @@ define([
             } else if (this.dataManager) {
                 this.dataType = this.dataManager.getDataSources()[1].value;
             }
-            //console.log('restored', this.dataType);
         }
     }));
     return DataApp;

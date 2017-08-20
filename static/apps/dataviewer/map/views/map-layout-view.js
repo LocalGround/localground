@@ -57,8 +57,8 @@ define(["marionette",
                 } else if (this.showRight) {
                     className = "right";
                 }
-                this.$el.removeClass("left right none both");
-                this.$el.addClass(className);
+                $('.main-panel').removeClass("left right none both");
+                $('.main-panel').addClass(className);
                 //wait 'til CSS animation completes before redrawing map
                 //setTimeout(this.basemapView.redraw, 220);
             }
