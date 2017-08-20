@@ -1,6 +1,7 @@
 define([
-    "marionette"
-], function (Marionette) {
+    "marionette",
+    "apps/gallery/views/data-detail",
+], function (Marionette, DataDetail) {
     "use strict";
     return Marionette.Controller.extend({
         initialize: function (options) {
@@ -13,6 +14,15 @@ define([
         },
         dataList: function (dataType) {
             this.app.vent.trigger("show-list", dataType);
+        },
+        dataDetail: function (dataType, id) {
+            var collection = this.app.getData().collection,
+                model = collection.get(id),
+                detailView = new DataDetail({
+                    model: model,
+                    app: this.app
+                });
+            this.app.vent.trigger("show-detail", detailView, false);
         },
         showGallery: function () {
             this.app.vent.trigger("show-gallery");

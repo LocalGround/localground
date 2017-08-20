@@ -7,10 +7,9 @@ define([
     "use strict";
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
+            ':dataType': 'dataList',
             ':dataType/new': 'dataDetail',
-            ':dataType/new': 'dataDetail',
-            ':dataType/:id': 'dataDetail',
-            'gallery': 'showGallery'
+            ':dataType/:id': 'dataDetail'
         },
         initialize: function (options) {
             this.controller = new Controller({

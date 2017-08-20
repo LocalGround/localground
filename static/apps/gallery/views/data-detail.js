@@ -50,6 +50,11 @@ define([
         featuredImageID: null,
         initialize: function (opts) {
             _.extend(this, opts);
+            if (this.app.dataType == "markers" || this.app.dataType.indexOf("form_") != -1) {
+                if (this.model.get("id") && !this.model.get("children")) {
+                    this.model.fetch({"reset": true});
+                }
+            }
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
@@ -133,6 +138,10 @@ define([
             $(window).mousemove(mm.start.bind(mm));
             $follower.click(mm.stop);
             this.app.vent.trigger("add-new-marker", this.model);
+        },
+        onShow: function () {
+            console.log('showing...');
+            this.render();
         },
 
         deleteMarker: function () {
@@ -238,7 +247,7 @@ define([
             var c,
                 photos = this.getPhotos(),
                 videos = this.getVideos(),
-                audio = this.getAudio(), 
+                audio = this.getAudio(),
                 that = this;
                 console.log(audio);
             if (this.panelStyles) {
@@ -285,7 +294,7 @@ define([
                         className: "audio-detail"
                     });
                     that.$el.find(".carousel-audio").append(c.$el);
-                });                
+                });
             }
         },
         editRender: function () {

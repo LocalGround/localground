@@ -200,7 +200,8 @@
 /* ALSO IN style.css */
 .save-options{
     position: fixed;
-    bottom: 0;width: 372px;
+    bottom: 30;
+    width: 372px;
     z-index: 100;
     background-color: white;
     border-top: 1px solid #e4e5eb;

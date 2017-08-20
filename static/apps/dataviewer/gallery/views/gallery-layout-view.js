@@ -1,15 +1,15 @@
 define(["marionette",
         "handlebars",
-        "apps/gallery/views/data-list",
-        "apps/gallery/views/data-detail",
+        "apps/dataviewer/gallery/views/data-list",
         "text!../templates/gallery-layout.html",
         "models/layer"
     ],
-    function (Marionette, Handlebars, GalleryListView, GalleryDetail, GalleryLayoutTemplate)  {
+    function (Marionette, Handlebars, DataList, GalleryLayoutTemplate)  {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var AddMediaModal = Marionette.LayoutView.extend({
             className: 'dataview',
+            currentCollection: null,
             regions: {
                 listRegion: '.gallery-panel',
                 detailRegion: '.side-panel'
@@ -17,10 +17,10 @@ define(["marionette",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.template = Handlebars.compile(GalleryLayoutTemplate);
+                this.listenTo(this.app.vent, 'show-detail', this.showDataDetail);
             },
             onRender: function () {
-              console.log('rendering...');
-              this.galleryListView = new GalleryListView({
+              this.galleryListView = new DataList({
                   app: this.app,
                   collection: this.collection,
                   fields: this.fields
@@ -28,9 +28,34 @@ define(["marionette",
               this.listRegion.show(this.galleryListView);
             },
 
-            events: {
-                'click #upload-tab' : 'showUploader',
-                'click #database-tab' : 'showDatabase'
+            createNewModelFromCurrentCollection: function () {
+                //TODO: move to dataManager
+                var Model = this.currentCollection.model,
+                    model = new Model();
+                model.collection = this.currentCollection;
+                // If we get the form, pass in the custom field
+                if (this.dataType.indexOf("form_") != -1) {
+                    model.set("fields", this.mainView.fields.toJSON());
+                }
+                model.set("project_id", this.selectedProjectID);
+                return model;
+            },
+
+            showDataDetail: function (view) {
+                this.detailRegion.show(view);
+            },
+            saveAppState: function () {
+                this.saveState("dataView", {
+                    dataType: this.dataType
+                }, true);
+            },
+            restoreAppState: function () {
+                var state = this.restoreState("dataView");
+                if (state) {
+                    this.dataType = state.dataType;
+                } else if (this.dataManager) {
+                    this.dataType = this.dataManager.getDataSources()[1].value;
+                }
             }
 
         });

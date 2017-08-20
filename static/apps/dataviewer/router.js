@@ -11,6 +11,7 @@ define([
             'gallery': 'showGallery',
             'map': 'showMap',
             ':dataType': 'dataList',
+            ':dataType/:id': 'dataDetail',
             ':dataType/new': 'addRow'
         },
         initialize: function (options) {

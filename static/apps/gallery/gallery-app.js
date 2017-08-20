@@ -2,7 +2,7 @@ define([
     "marionette",
     "backbone",
     "apps/gallery/router",
-    "apps/gallery/views/data-list",
+    "apps/dataviewer/gallery/views/data-list",
     "apps/gallery/views/data-detail",
     "views/toolbar-global",
     "apps/gallery/views/toolbar-dataview",

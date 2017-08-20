@@ -21,6 +21,7 @@ define(["marionette",
                 this.template = Handlebars.compile(MapLayoutTemplate);
                 this.render();
                 this.showBasemap();
+                this.listenTo(this.app.vent, 'show-detail', this.showDataDetail);
             },
             onRender: function () {
                 //this.showBasemap();
@@ -33,6 +34,9 @@ define(["marionette",
                     mapID: "map",
                     minZoom: 1 // added for rosa parks pilot
                 });
+            },
+            showDataDetail: function (view) {
+                this.rightRegion.show(view);
             },
             onShow: function () {
                 this.mapRegion.show(this.basemapView);

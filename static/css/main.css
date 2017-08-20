@@ -1238,6 +1238,7 @@ tbody .failure-message, tbody .success-message {
     bottom: 0px;
     width: 100%;
     box-shadow: 0 -1px -1px 1px rgba(53, 76, 122, 0.06);
+    z-index: 1000;
 }
 
 .tab {

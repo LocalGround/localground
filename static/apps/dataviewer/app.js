@@ -28,6 +28,7 @@ define([
         currentCollection: null,
         dataType: "markers",
         screenType: "gallery",
+        mode: "edit",
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
