@@ -50,8 +50,8 @@ define([
         featuredImageID: null,
         initialize: function (opts) {
             _.extend(this, opts);
-            if (this.app.dataType == "markers" || this.app.dataType.indexOf("form_") != -1) {
-                if (this.model.get("id") && !this.model.get("children")) {
+            if (this.model.get("id") && this.model.get("overlay_type") == "marker" || this.model.get("overlay_type").indexOf("form_") != -1) {
+                if (!this.model.get("children")) {
                     this.model.fetch({"reset": true});
                 }
             }

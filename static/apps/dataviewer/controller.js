@@ -16,6 +16,7 @@ define([
             this.app.vent.trigger("show-list", dataType);
         },
         dataDetail: function (dataType, id) {
+            this.app.dataType = dataType;
             var collection = this.app.getData().collection,
                 model = collection.get(id),
                 detailView = new DataDetail({
