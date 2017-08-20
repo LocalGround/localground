@@ -19,6 +19,9 @@ define([
         },
         showTable: function () {
             this.app.vent.trigger("show-table");
+        },
+        showMap: function () {
+            this.app.vent.trigger("show-map");
         }
     });
 });

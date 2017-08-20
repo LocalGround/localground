@@ -9,12 +9,13 @@ define([
     "apps/spreadsheet/views/main",
     "apps/spreadsheet/views/tabs",
     "apps/dataviewer/gallery/views/gallery-layout-view",
+    "apps/dataviewer/map/views/map-layout-view",
     "apps/gallery/views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (_, Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
              DataManager, SpreadsheetView, TabView,
-             GalleryView, GalleryDetail, appUtilities) {
+             GalleryView, MapView, GalleryDetail, appUtilities) {
     "use strict";
     var DataApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -39,6 +40,7 @@ define([
             this.listenTo(this.vent, 'show-list', this.initMainView);
             this.listenTo(this.vent, 'show-gallery', this.showGallery);
             this.listenTo(this.vent, 'show-table', this.showSpreadsheet);
+            this.listenTo(this.vent, 'show-map', this.showMap);
             this.addMessageListeners();
             console.log('starting!!');
         },
@@ -71,6 +73,10 @@ define([
             this.initMainView(dataType, "spreadsheet");
         },
 
+        showMap: function (dataType) {
+            this.initMainView(dataType, "map");
+        },
+
         showGallery: function (dataType) {
             this.initMainView(dataType, "gallery");
         },
@@ -88,12 +94,13 @@ define([
                 };
             switch (this.screenType) {
                 case 'spreadsheet':
-                    this.mainRegion.$el.addClass("spreadsheet-main-panel");
                     this.mainView = new SpreadsheetView(opts);
                     break;
-                default:
-                    this.mainRegion.$el.removeClass("spreadsheet-main-panel");
+                case 'gallery':
                     this.mainView = new GalleryView(opts);
+                    break;
+                case 'map':
+                    this.mainView = new MapView(opts);
                     break;
             }
             this.mainRegion.show(this.mainView);

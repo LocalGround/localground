@@ -9,6 +9,7 @@ define([
         appRoutes: {
             'table': 'showTable',
             'gallery': 'showGallery',
+            'map': 'showMap',
             ':dataType': 'dataList',
             ':dataType/new': 'addRow'
         },
