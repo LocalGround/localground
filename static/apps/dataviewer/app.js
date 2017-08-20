@@ -66,7 +66,6 @@ define([
         },
         loadMainRegion: function () {
             this.initMainView();
-            this.mainRegion.show(this.mainView);
         },
 
         showSpreadsheet: function (dataType) {
@@ -100,7 +99,7 @@ define([
                     this.mainView = new GalleryView(opts);
                     break;
                 case 'map':
-                    this.mainView = new MapView(opts);
+                    this.mainView = new MapView({app: this});
                     break;
             }
             this.mainRegion.show(this.mainView);
