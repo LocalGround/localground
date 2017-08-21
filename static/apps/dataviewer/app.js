@@ -94,12 +94,15 @@ define([
                 };
             switch (this.screenType) {
                 case 'spreadsheet':
+                    this.mainRegion.$el.addClass('spreadsheet-main-panel');
                     this.mainView = new SpreadsheetView(opts);
                     break;
                 case 'gallery':
+                    this.mainRegion.$el.removeClass('spreadsheet-main-panel');
                     this.mainView = new GalleryView(opts);
                     break;
                 case 'map':
+                    this.mainRegion.$el.removeClass('spreadsheet-main-panel');
                     this.mainView = new MapView({app: this});
                     break;
             }
