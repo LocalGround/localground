@@ -40,7 +40,6 @@ require.config({
         'kernel': 'external/kernel.min',
         'mapplication': './mapplication',
         'palette': 'external/palette',
-        'panel-snap': 'external/jquery.panelSnap',
         'print_base': "./print_base",
         //'marionette': 'https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/3.1.0/backbone.marionette.min',
         'marionette': 'external/backbone.marionette',
@@ -130,8 +129,7 @@ require.config({
         },
         'socketio': {
             exports: 'io'
-        }, 
-        'panel-snap': ['jquery']
+        }
     },
     urlArgs: "bust=" + (new Date()).getTime()
 });

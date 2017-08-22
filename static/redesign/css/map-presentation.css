@@ -53,6 +53,7 @@ ul{
 }
 #marker-detail-panel {
     overflow-y: auto;
+    position: absolute;
 }
 
 
@@ -66,25 +67,25 @@ ul{
     width: calc(100% - 400px);
     transition: 0s;
 }
-
+/*
 .left #marker-detail-panel {
     order: 0;
     border-right: 1px solid #e4e5eb;
     box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
     width: 400px;
     background-color: #fafafc;
-    z-index: 40; 
     flex: none;
     overflow: scroll;
     height:100%;
     padding-top: 80px;
     border: none !important;
-    -webkit-transform: translate3d(1,1,1);
+    float: left;
 }
-
+*/
 @media (max-width: 900px) {
     .left #marker-detail-panel {
-   /*     border-right: 1px solid #e4e5eb;
+        border-right: 1px solid #e4e5eb;
+        /*
         box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
         width: 400px;
         background: rgba(0, 0, 0, 0.71);
@@ -95,14 +96,13 @@ ul{
         max-height: 120px; 
         padding-top: 0px; 
         border: none !important;
-        bottom: 0px;
-        position: fixed; 
         float: right;
         width: 100%;
       /*  -webkit-transition: width .5s, height .5s, max-height .5s;; /* Safari */
     /*    transition: .6s; */
-        width: 0px;
+        width: 100%;
         height: 0px;
+        position: static;
     }
 }
 
@@ -277,8 +277,10 @@ svg, .fa-question-circle {
 @media (max-width: 900px) {
 
     .min-thumbnail {
-        height: 150px;
-        width: 150px;
+       /* height: 150px;
+        width: 150px; */
+        height: 120px;
+        width: 120px;
     }
     
     .mobile-toggle {
@@ -328,10 +330,8 @@ svg, .fa-question-circle {
 
     .mobile-minimize .thumbnail-play {
         opacity: .7;   
-        top: 19%;
-        left: 21%;
-        bottom: 34%;
-        right: 34%;
+        bottom: 28%;
+        right: 12%;
         color: white;
         position: relative;
         display: inline-block;
@@ -342,15 +342,14 @@ svg, .fa-question-circle {
     }
 
     .mobile-minimize .thumbnail-play-circle {
-        top: 30%;
-        bottom: 34%;
+        top: 24%;
         position: relative;
         background-color: rgba(255, 255, 255, 0);
         border: 2px solid rgba(255, 255, 255, .7);
         border-radius: 50%;
-        width: 70px;
-        height: 70px;
-        left: 30%;
+        width: 40px;
+        height: 40px;
+        left: 23%;
         display: inline-block;
     }
 
@@ -383,6 +382,31 @@ svg, .fa-question-circle {
 
     .mobile-minimize .preview-properties {
         display: none;
+    }
+
+    .parallax {
+        background: #EEE;
+        height: 68vh;
+        position: absolute;
+        top: calc(100vh - 120px);
+        width: 100%;
+        -webkit-transform: translate3d(2,2,2);
+        z-index: 1;
+    }
+    
+    .parallax.black {
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 0;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+}
+
+@media (min-width: 901px) {
+    .parallax {
+        position: static;
     }
 }
 
@@ -428,6 +452,7 @@ Separate Mobile CSS
     height: 20vw;
     min-height: 50px;
 }
+
 
 
 

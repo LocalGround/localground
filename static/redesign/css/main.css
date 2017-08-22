@@ -2338,15 +2338,4 @@ span.plus {
     color: #888;
 }
 
-.parallax {
-    background: #EEE;
-    height: 68vh;
-    position: absolute;
-    top: calc(100vh - 120px);
-    width: 100%;
-    -webkit-transform: translate3d(2,2,2);
-}
 
-.parallax.black {
-    background: rgba(0, 0, 0, 0.4);
-}

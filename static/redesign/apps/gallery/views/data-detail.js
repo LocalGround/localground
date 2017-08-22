@@ -13,8 +13,7 @@ define([
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form",
-    "touchPunch",
-    "panel-snap"
+    "touchPunch"
 ], function ($, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
         MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
@@ -33,10 +32,7 @@ define([
             "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView',
             "click #open-full": 'openMobileDetail',
-            "click .thumbnail-play-circle": 'playAudio',
-            'scroll': function ()  {
-                console.log("scolling");
-            }
+            "click .thumbnail-play-circle": 'playAudio'
         },
         getTemplate: function () {
             console.log(this.dataType);
@@ -62,18 +58,35 @@ define([
             Marionette.ItemView.prototype.initialize.call(this);
             $('#marker-detail-panel').addClass('mobile-minimize');
             $(window).on("resize", _.bind(this.screenSize, this));
+           // $(window).scroll(this.detectScroll);
+            $(window).on("scroll",  _.bind(this.detectScroll, this))
             this.isMobile();
-            $(function($) {
-                $('#marker-detail-panel').panelSnap({
-                    onSnapStart: function(){console.log("on snap start")},
-                    onActivate: function(){console.log("on activate")},
-                    directionThreshold: 50,
-                    slideSpeed: 200,
-                });
-                
-              });
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
+        },
+
+        detectScroll: function (event) {
+            console.log("scrolling");
+            var oldTranslateY = $('#parallax-body').css("transform"),
+            dragEl = document.getElementById("parallax-body"),
+            translateY = this.getComputedTranslateY(document.getElementById("parallax-body"));
+
+            console.log(oldTranslateY, this.getComputedTranslateY(dragEl), translateY);
+            if (translateY < -70) {
+                console.log("trigger stop!");
+               // $(window).scrollTop(screen.height/2.5);
+            }
+           // if (this.$el.find(".parallax."))
+        },
+
+        getComputedTranslateY: function(object) {
+            if(!window.getComputedStyle) return;
+            var style = getComputedStyle(object),
+                transform = style.transform;
+            var mat = transform.match(/^matrix3d\((.+)\)$/);
+            if(mat) return parseFloat(mat[1].split(', ')[13]);
+            mat = transform.match(/^matrix\((.+)\)$/);
+            return mat ? parseFloat(mat[1].split(', ')[5]) : 0;
         },
 
         initParallax: function () {
@@ -472,7 +485,9 @@ define([
             }
             // setTimeout necessary to register DOM element
             setTimeout(this.initDraggable.bind(this), 50);
-            this.initParallax();
+            if ($(window).width() < 900) {
+                this.initParallax();
+            }
         },
 
         rotatePhoto: function (e) {
@@ -555,6 +570,7 @@ define([
             this.$el.find('.streetview').html('Show Street View');
         },
         openMobileDetail: function () {
+            
             console.log("init darggable", $( ".body-section" ));
             if ($('#marker-detail-panel').hasClass('mobile-minimize')) {
 
@@ -580,6 +596,7 @@ define([
             }
             
             console.log("mobile toggle");
+            
         },
 
         playAudio: function () {

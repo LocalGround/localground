@@ -1,10 +1,62 @@
 <!-- VIEW MODE -->
-<section>
 {{#ifequal mode "view"}}
-    {{#compare screenType "presentation" operator="!="}}
-        <h4>Preview</h4>
-    {{/compare}}
+{{#compare screenType "presentation" operator="!="}}
+<h4>Preview</h4>
+{{/compare}}
     {{#if mobileMode}}
+    <div class="parallax black" data-scroll-speed="1.9">
+        <div class="top-section">
+        {{#if photo_count }}
+            <div class="mobile-carousel carousel-photo"></div>
+        {{/if}}
+        </div>
+    </div>
+    <div class="parallax body" id="parallax-body" data-scroll-speed="4">
+        <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
+        <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}})">
+            {{#if hasAudio}}
+            <div class="thumbnail-play-circle">
+                <i class="fa fa-play fa-3x thumbnail-play" aria-hidden="true"></i>
+            </div>
+            {{/if}}
+        </div>
+        
+        <div class="header-info">
+            <h3 id="drag-header" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
+        </div>
+        {{#if fields }}
+        <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
+        {{#each fields}}
+            <tr>
+                <td>{{ this.col_alias }}:</td>
+                <td>{{ this.val }}</td>
+            </tr>
+        {{/each}}
+        {{#if tags}}
+            <tr>
+                <td></td>
+                <td>
+                    {{#each tags}}
+                        <a class="tag"> {{this}} </a>
+                    {{/each}}
+                </td>
+            </tr>
+        {{/if}}
+        </table>
+        {{else}}
+        <div class="tag-container">
+            {{#each tags}}
+            <a class="tag"> {{this}} </a>
+            {{/each}}
+        </div>
+        {{/if}}
+        <div class="section">
+            {{#if audio_count }}
+            <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}">     
+            </div>
+            {{/if}}
+        </div>
+    </div>
     {{else}}
         <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
         <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}})">
@@ -113,58 +165,4 @@
     <div class="show-hide hide"></div>
 {{/ifequal}}
 
-<!-- This only works in non-mobile mode after you've clicked on a marker -->
-<div class="parallax black" data-scroll-speed="1">
-    <div class="top-section">
-    {{#if photo_count }}
-    <div class="mobile-carousel carousel-photo"></div>
-    {{/if}}
-</div></div>
-<div class="parallax" data-scroll-speed="4">
-        <div >
-                <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
-                <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}})">
-                   {{#if hasAudio}}
-                   <div class="thumbnail-play-circle">
-                       <i class="fa fa-play fa-3x thumbnail-play" aria-hidden="true"></i>
-                   </div>
-                   {{/if}}
-               </div>
-       
-               <div class="header-info">
-                   <h3 id="drag-header" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
-               </div>
-               {{#if fields }}
-                   <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
-                   {{#each fields}}
-                       <tr>
-                           <td>{{ this.col_alias }}:</td>
-                           <td>{{ this.val }}</td>
-                       </tr>
-                   {{/each}}
-                   {{#if tags}}
-                       <tr>
-                           <td></td>
-                           <td>
-                               {{#each tags}}
-                                   <a class="tag"> {{this}} </a>
-                               {{/each}}
-                           </td>
-                       </tr>
-                   {{/if}}
-                   </table>
-               {{else}}
-                   <div class="tag-container">
-                   {{#each tags}}
-                       <a class="tag"> {{this}} </a>
-                   {{/each}}
-                   </div>
-               {{/if}}
-               <div class="section">
-                   {{#if audio_count }}
-                    <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}"></div>
-                   {{/if}}
-               </div>
-           </div>
-</div>
-</section>
+
