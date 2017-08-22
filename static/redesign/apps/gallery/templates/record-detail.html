@@ -1,5 +1,27 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
+    {{#compare screenType "presentation" operator="!="}}
+        <h4>Preview</h4>
+    {{/compare}}
+
+    <div class="section">
+        <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
+
+        {{#if featuredImage}}
+            <img class="photo featured-photo" src='{{featuredImage.path_medium}}'>
+        {{/if}}
+        {{#if caption }}
+            <p style="font-style: italic">{{ caption }}</p>
+        {{/if}}
+
+        {{#if video_photo_count }}
+            <div class="carousel carousel-videos-photos" style="background-color: #{{paragraph.backgroundColor}}"></div>
+        {{/if}}
+
+        {{#if audio_count }}
+            <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}"></div>
+        {{/if}}
+    </section>
 {{#compare screenType "presentation" operator="!="}}
 <h4>Preview</h4>
 {{/compare}}
@@ -7,7 +29,7 @@
     <div class="parallax black" data-scroll-speed="1.9">
         <div class="top-section">
         {{#if photo_count }}
-            <div class="mobile-carousel carousel-photo"></div>
+            <div class="mobile-carousel carousel-videos-photos"></div>
         {{/if}}
         </div>
     </div>
