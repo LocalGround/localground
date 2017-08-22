@@ -26,14 +26,14 @@
 <h4>Preview</h4>
 {{/compare}}
     {{#if mobileMode}}
-    <div class="parallax black" data-scroll-speed="0.35">
+    <div class="parallax black" data-scroll-speed="0.35" data-target-top="100">
         <div class="top-section">
         {{#if photo_count }}
             <div class="mobile-carousel carousel-videos-photos"></div>
         {{/if}}
         </div>
     </div>
-    <div class="parallax body" id="parallax-body" data-scroll-speed="4">
+    <div class="parallax body" id="parallax-body" data-scroll-speed="10" data-target-top="50">
         <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
         <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}})">
             {{#if hasAudio}}
@@ -81,7 +81,7 @@
             {{/if}}
             <div class="section">
                 {{#if audio_count }}
-                <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}">     
+                <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}">
                 </div>
                 {{/if}}
             </div>
