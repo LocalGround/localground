@@ -185,6 +185,7 @@ define(["marionette",
                     scrollwheel: false,
                     minZoom: this.minZoom,
                     streetViewControl: true,
+                    fullscreenControl: false,
                     //scaleControl: true,
                     panControl: false,
                     zoomControlOptions: this.zoomControlOptions || {

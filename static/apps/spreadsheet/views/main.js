@@ -20,6 +20,7 @@ define(["jquery",
                 return Handlebars.compile(SpreadsheetTemplate);
             },
             table: null,
+            className: 'main-panel',
             currentModel: null,
             show_hide_deleteColumn: true,
             events: {

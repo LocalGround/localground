@@ -1201,7 +1201,7 @@ tbody .failure-message, tbody .success-message {
     overflow: auto;
 }
 
-.main-panel > div {
+.main-panel {
     width:100%;
 }
 

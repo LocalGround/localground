@@ -19,7 +19,7 @@ define([
     "use strict";
     var DataApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
-            mainRegion: ".main-panel",
+            mainRegion: "main",
             toolbarMainRegion: "#toolbar-main",
             toolbarDataViewRegion: "#toolbar-dataview",
             tabViewRegion: "#tab-panel"
@@ -108,19 +108,19 @@ define([
         },
 
         adjustLayout: function () {
-            this.mainRegion.$el.removeClass('spreadsheet gallery map');
+            this.mainView.$el.removeClass('spreadsheet gallery map');
             switch (this.screenType) {
                 case 'spreadsheet':
                     this.tabViewRegion.$el.show();
-                    this.mainRegion.$el.addClass('spreadsheet');
+                    this.mainView.$el.addClass('spreadsheet');
                     break;
                 case 'gallery':
                     this.tabViewRegion.$el.show();
-                    this.mainRegion.$el.addClass('gallery');
+                    this.mainView.$el.addClass('gallery');
                     break;
                 case 'map':
                     this.tabViewRegion.$el.hide();
-                    this.mainRegion.$el.addClass('map');
+                    this.mainView.$el.addClass('map');
                     break;
             }
         },

@@ -25,7 +25,7 @@
     <div id="toolbar-dataview" class="filter data">
         <!-- dataview toolbar -->
     </div>
-    <main class="main-panel">
+    <main>
         <!-- Spreadsheet and Gallery goes here -->
     </main>
     <aside id="tab-panel" class="tab-panel"></aside>
@@ -33,13 +33,15 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places,drawing"></script>
     {% if DEBUG %}
         <script>
-            var configPath = '../';
+            var configPath = '../',
+                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
         </script>
         <script data-main="/static/apps/dataviewer/kickoff.js" src="/static/external/require.js"></script>
     {% else %}
        <!-- Use minified, concatenated code -->
         <script>
-            var configPath = '../apps/';
+            var configPath = '../apps/',
+                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';;
         </script>
         <script data-main="/static/build/dataviewer.min.js" src="/static/external/require.js"></script>
     {% endif %}

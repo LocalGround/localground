@@ -8,7 +8,7 @@ define(["marionette",
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var AddMediaModal = Marionette.LayoutView.extend({
-            className: 'dataview',
+            className: 'main-panel dataview',//className: 'dataview',
             currentCollection: null,
             regions: {
                 listRegion: '.gallery-panel',

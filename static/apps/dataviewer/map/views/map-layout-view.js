@@ -8,7 +8,7 @@ define(["marionette",
     function (Marionette, Handlebars, MarkerListingManager, Basemap, DataDetail, MapLayoutTemplate)  {
         'use strict';
         var MapLayout = Marionette.LayoutView.extend({
-            //className: 'main-panel',
+            className: 'main-panel',
             showLeft: true,
             showRight: false,
             regions: {
@@ -46,6 +46,8 @@ define(["marionette",
             showDetail: function (view) {
                 this.rightRegion.show(view);
                 this.unhideDetail();
+                view.model.set("active", true);
+                this.app.vent.trigger('highlight-marker', view.model);
             },
             onShow: function () {
                 this.mapRegion.show(this.basemapView);
@@ -70,10 +72,10 @@ define(["marionette",
                 } else if (this.showRight) {
                     className = "right";
                 }
-                $('.main-panel').removeClass("left right none both");
-                $('.main-panel').addClass(className);
+                this.$el.removeClass("left right none both");
+                this.$el.addClass(className);
                 //wait 'til CSS animation completes before redrawing map
-                //setTimeout(this.basemapView.redraw, 220);
+                setTimeout(this.basemapView.redraw, 220);
             },
 
             hideDetail: function () {
