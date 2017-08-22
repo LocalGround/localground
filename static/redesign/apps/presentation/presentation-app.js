@@ -114,7 +114,7 @@ define([
                 }
             });
             setTimeout(function () {
-                $("#map").css({"position": "fixed", 
+                $("#map").css({"position": "fixed",
             'z-index': '0'});
             }, 500);
             this.mapRegion.show(this.basemapView);
@@ -187,7 +187,7 @@ define([
                 console.log(paragraph.color);
                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
             }
-        
+
             this.sideRegion.show(this.detailView);
             this.unhideDetail();
         },

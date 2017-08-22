@@ -1,6 +1,7 @@
 define([
     "jquery",
     "underscore",
+    "backbone",
     "handlebars",
     "marionette",
     "collections/photos", "collections/audio", "collections/videos",
@@ -14,7 +15,8 @@ define([
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form",
     "touchPunch"
-], function ($, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
+], function ($, _, Backbone, Handlebars, Marionette, Photos, Audio, Videos,
+        PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
         MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
@@ -116,17 +118,17 @@ define([
             });
         },
 
-        
+
 
         initDraggable: function () {
             return;
             var that = this;
-            
+
             $( '#marker-detail-panel' ).draggable({
                // handle: '.body-section',
                 axis: 'y',
                 handle: '.body-section',
-                
+
                 drag: function (event, ui) {
                     if  (ui.position.top <= 0) {
                         console.log("stop");
@@ -137,7 +139,7 @@ define([
                         //var top = parseFloat($('.body-section').css('top'));
                         var top =  screen.height - ui.position.top;
                         console.log("dragging", top, screen.height, ui.position.top);
-                        
+
                         $('#marker-detail-panel').css({
                             'height':'auto',
                             'max-height': 'auto',
@@ -145,7 +147,7 @@ define([
 
                         $('.body-section').css({
                             'height': top
-                                    
+
                         });
 
                         $('.top-section').css({
@@ -353,7 +355,8 @@ define([
                 audio_count: this.getAudio().length,
                 video_count: this.getVideos().length,
                 mobileMode: this.mobileMode,
-                hasAudio: this.getAudio().length
+                hasAudio: this.getAudio().length,
+                video_photo_count: this.getVideos().length + this.getPhotos().length
             };
         },
 
@@ -405,44 +408,32 @@ define([
             var c,
                 photos = this.getPhotos(),
                 videos = this.getVideos(),
-                audio = this.getAudio(), 
-                that = this;
-                console.log(audio);
+                audio = this.getAudio(),
+                that = this,
+                panelStyles,
+                genericList,
+                i;
             if (this.panelStyles) {
-                var panelStyles = this.panelStyles;
+                panelStyles = this.panelStyles;
             }
 
-            if (photos.length > 0) {
-                c = new Carousel({
-                    model: this.model,
-                    app: this.app,
-                    featuredImage: this.getFeaturedImage(),
-                    mode: "photos",
-                    collection: photos,
-                    panelStyles: panelStyles
-                });
-                this.$el.find(".carousel-photo").append(c.$el);
-            }
-            if (videos.length > 0) {
+            if (photos.length > 0 || videos.length > 0) {
+                genericList = [];
+                genericList = genericList.concat(photos.toJSON());
+                genericList = genericList.concat(videos.toJSON());
+                for (i = 0; i < genericList.length; i++) {
+                    genericList[i].id = (i + 1);
+                }
                 c = new Carousel({
                     model: this.model,
                     app: this.app,
                     mode: "videos",
-                    collection: videos,
+                    collection: new Backbone.Collection(genericList),
                     panelStyles: panelStyles
                 });
-                this.$el.find(".carousel-video").append(c.$el);
+                this.$el.find(".carousel-videos-photos").append(c.$el);
             }
             if (audio.length > 0) {
-                /*
-                c = new Carousel({
-                    model: this.model,
-                    app: this.app,
-                    mode: "audio",
-                    collection: audio,
-                    panelStyles: panelStyles
-                });
-                */
                 audio.forEach(function (audioTrack) {
                     c = new AudioPlayer({
                         model: audioTrack,
@@ -452,7 +443,7 @@ define([
                         className: "audio-detail"
                     });
                     that.$el.find(".carousel-audio").append(c.$el);
-                });                
+                });
             }
         },
         editRender: function () {
@@ -570,7 +561,7 @@ define([
             this.$el.find('.streetview').html('Show Street View');
         },
         openMobileDetail: function () {
-            
+
             console.log("init darggable", $( ".body-section" ));
             if ($('#marker-detail-panel').hasClass('mobile-minimize')) {
 
@@ -594,9 +585,9 @@ define([
                 $('#presentation-title').addClass('mobile-minimize-title');
                 $('#presentation-title').removeClass('mobile-full-title');
             }
-            
+
             console.log("mobile toggle");
-            
+
         },
 
         playAudio: function () {
