@@ -52,7 +52,7 @@
 /************************************ Article Typography ************************************/
 	.article h1 {
 	    font-weight: 300;
-	    padding: 40px 0px 44px;
+	    padding: 0px 0px 44px;
 	    font-size: 40px;
 	    letter-spacing: 2px;
 	}
@@ -142,12 +142,3 @@
 .project-card {
 	cursor: pointer;
 }
-
-
-
-
-
-
-
-
-

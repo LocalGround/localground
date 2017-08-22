@@ -27,7 +27,7 @@ define([
 
         currentCollection: null,
         dataType: "markers",
-        screenType: "gallery",
+        screenType: "map",
         mode: "edit",
         start: function (options) {
             // declares any important global functionality;

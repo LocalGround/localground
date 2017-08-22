@@ -102,7 +102,7 @@
 
 .article h1 {
     font-weight: 300;
-    padding: 30px 40px;
+    padding: 0px 40px 30px;
     font-size: 40px;
     letter-spacing: 2px;
     color: #3d3d3d;
@@ -126,4 +126,3 @@
 .table-of-contents ul {
     list-style: none;
 }
-

@@ -101,18 +101,18 @@ li:hover .fa-eye  {
     display: block;
 }
 
-.highlight {
+.marker-container .highlight {
     background: rgb(123, 155, 225);
     color: white;
 }
-.hover-highlight, .marker-container li:hover {
+.marker-container .hover-highlight, .marker-container li:hover {
     background: #EEE;
     color: #444;
 }
-.highlight a {
+.marker-container .highlight a {
     color: white;
 }
-.highlight a p {
+.marker-container .highlight a p {
     color: white;
 }
 

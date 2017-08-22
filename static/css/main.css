@@ -1213,9 +1213,10 @@ tbody .failure-message, tbody .success-message {
     width: 100%;
 }
 
-.home-main-panel {
+.home {
     height: calc(100% - 211px);
     top: 211px;
+    display: inherit;
 }
 .spreadsheet-tab-panel, .tab-panel {
     border-top: solid 1px #CCC;

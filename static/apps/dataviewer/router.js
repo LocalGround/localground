@@ -11,7 +11,7 @@ define([
             ':mode/:dataType': 'dataList',
 
             'map': 'showMap',
-            //'map/:dataType': 'dataList',
+            'map/:dataType': 'dataList',
             'map/:dataType/:id': 'dataDetail',
             'map/:dataType/new': 'addRow',
 
@@ -20,7 +20,7 @@ define([
             'table/:dataType/new': 'addRow',
 
             'gallery': 'showGallery',
-            //'gallery/:dataType': 'dataList',
+            'gallery/:dataType': 'dataList',
             'gallery/:dataType/:id': 'dataDetail',
             'gallery/:dataType/new': 'addRow'
         },
