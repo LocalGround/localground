@@ -94,20 +94,35 @@ define([
                 };
             switch (this.screenType) {
                 case 'spreadsheet':
-                    this.mainRegion.$el.addClass('spreadsheet-main-panel');
                     this.mainView = new SpreadsheetView(opts);
                     break;
                 case 'gallery':
-                    this.mainRegion.$el.removeClass('spreadsheet-main-panel');
                     this.mainView = new GalleryView(opts);
                     break;
                 case 'map':
-                    this.mainRegion.$el.removeClass('spreadsheet-main-panel');
                     this.mainView = new MapView({app: this});
                     break;
             }
             this.mainRegion.show(this.mainView);
             this.adjustLayout();
+        },
+
+        adjustLayout: function () {
+            this.mainRegion.$el.removeClass('spreadsheet gallery map');
+            switch (this.screenType) {
+                case 'spreadsheet':
+                    this.tabViewRegion.$el.show();
+                    this.mainRegion.$el.addClass('spreadsheet');
+                    break;
+                case 'gallery':
+                    this.tabViewRegion.$el.show();
+                    this.mainRegion.$el.addClass('gallery');
+                    break;
+                case 'map':
+                    this.tabViewRegion.$el.hide();
+                    this.mainRegion.$el.addClass('map');
+                    break;
+            }
         },
 
         getData: function () {
@@ -124,14 +139,6 @@ define([
             this.saveState("dataView", {
                 dataType: this.dataType
             }, true);
-        },
-
-        adjustLayout: function () {
-            if (this.screenType === 'map') {
-                this.tabViewRegion.$el.hide();
-            } else {
-                this.tabViewRegion.$el.show();
-            }
         },
 
         restoreAppState: function () {

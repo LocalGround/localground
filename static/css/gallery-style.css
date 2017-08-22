@@ -198,7 +198,7 @@
 /************************************ Side Panel ************************************/
 
 /* ALSO IN style.css */
-.save-options{
+.gallery .save-options{
     position: fixed;
     bottom: 30;
     width: 372px;

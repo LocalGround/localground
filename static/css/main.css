@@ -1186,16 +1186,22 @@ tbody .failure-message, tbody .success-message {
 /*                                      MAIN PANELS                                   */
 /****************************************************************************************/
 
+.map.main-panel {
+    height: calc(100vh - 103px);
+}
 
 .main-panel {
-    height: calc(100% - 111px);
-    top: 111px
     display: flex;
     /*position: absolute;*/
     min-width: 100%;
+    height: calc(100vh - 133px);
+    /* top: 111px; */
+    padding: 0;
+    z-index: 0;
+    overflow: auto;
 }
 
-.main-panel > div{
+.main-panel > div {
     width:100%;
 }
 
@@ -1211,25 +1217,6 @@ tbody .failure-message, tbody .success-message {
     height: calc(100% - 211px);
     top: 211px;
 }
-
-/*.spreadsheet-main-panel {
-    display: flex;
-    height: calc(100vh - 111px);
-    top: 111px;
-    padding:0;
-    z-index: 0;
-    margin-bottom: 180px;
-}*/
-.spreadsheet-main-panel {
-    /* display: flex; */
-    height: calc(100vh - 143px);
-    /* top: 111px; */
-    padding: 0;
-    z-index: 0;
-    /* margin-bottom: 180px; */
-    overflow: auto;
-}
-
 .spreadsheet-tab-panel, .tab-panel {
     border-top: solid 1px #CCC;
     background-color: #fafafc;

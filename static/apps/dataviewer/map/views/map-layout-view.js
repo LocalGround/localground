@@ -21,11 +21,19 @@ define(["marionette",
                 this.template = Handlebars.compile(MapLayoutTemplate);
                 this.render();
                 this.showBasemap();
-                this.listenTo(this.app.vent, 'show-detail', this.showDataDetail);
+                this.listenTo(this.app.vent, 'show-detail', this.showDetail);
+                this.listenTo(this.app.vent, 'hide-detail', this.hideDetail);
+                this.listenTo(this.app.vent, 'unhide-detail', this.unhideDetail);
+                this.listenTo(this.app.vent, 'unhide-list', this.unhideList);
+                this.listenTo(this.app.vent, 'hide-list', this.hideList);
             },
-            onRender: function () {
-                //this.showBasemap();
-                //this.showMarkerListManager();
+            hideList: function () {
+                this.showLeft = false;
+                this.updateDisplay();
+            },
+            unhideList: function () {
+                this.showLeft = true;
+                this.updateDisplay();
             },
             showBasemap: function () {
                 this.basemapView = new Basemap({
@@ -35,8 +43,9 @@ define(["marionette",
                     minZoom: 1 // added for rosa parks pilot
                 });
             },
-            showDataDetail: function (view) {
+            showDetail: function (view) {
                 this.rightRegion.show(view);
+                this.unhideDetail();
             },
             onShow: function () {
                 this.mapRegion.show(this.basemapView);
@@ -65,6 +74,16 @@ define(["marionette",
                 $('.main-panel').addClass(className);
                 //wait 'til CSS animation completes before redrawing map
                 //setTimeout(this.basemapView.redraw, 220);
+            },
+
+            hideDetail: function () {
+                this.showRight = false;
+                this.updateDisplay();
+            },
+
+            unhideDetail: function () {
+                this.showRight = true;
+                this.updateDisplay();
             }
 
         });
