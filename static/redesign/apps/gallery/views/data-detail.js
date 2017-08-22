@@ -70,7 +70,7 @@ define([
             var oldTranslateY = $('#parallax-body').css("transform"),
             dragEl = document.getElementById("parallax-body"),
             translateY = this.getComputedTranslateY(document.getElementById("parallax-body"));
-
+            $('.min-thumbnail').remove();
             console.log(oldTranslateY, this.getComputedTranslateY(dragEl), translateY);
             if (translateY < -70) {
                 console.log("trigger stop!");
@@ -92,7 +92,7 @@ define([
         initParallax: function () {
             var MoveItItem = function (el) {
                 this.el = $(el);
-                this.speed = parseInt(this.el.attr('data-scroll-speed'), 10);
+                this.speed = parseFloat(this.el.attr('data-scroll-speed'), 10);
                 this.update = function (scrollTop) {
                     this.el.css('transform', 'translateY(' + -(scrollTop / this.speed) + 'px)');
                 };

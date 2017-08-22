@@ -4,7 +4,7 @@
 <h4>Preview</h4>
 {{/compare}}
     {{#if mobileMode}}
-    <div class="parallax black" data-scroll-speed="1.9">
+    <div class="parallax black" data-scroll-speed="0.35">
         <div class="top-section">
         {{#if photo_count }}
             <div class="mobile-carousel carousel-photo"></div>
@@ -24,38 +24,41 @@
         <div class="header-info">
             <h3 id="drag-header" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
         </div>
-        {{#if fields }}
-        <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
-        {{#each fields}}
-            <tr>
-                <td>{{ this.col_alias }}:</td>
-                <td>{{ this.val }}</td>
-            </tr>
-        {{/each}}
-        {{#if tags}}
-            <tr>
-                <td></td>
-                <td>
-                    {{#each tags}}
-                        <a class="tag"> {{this}} </a>
-                    {{/each}}
-                </td>
-            </tr>
-        {{/if}}
-        </table>
-        {{else}}
-        <div class="tag-container">
-            {{#each tags}}
-            <a class="tag"> {{this}} </a>
+        <section>
+                <p>text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text</p>
+            {{#if fields }}
+            <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
+            {{#each fields}}
+                <tr>
+                    <td>{{ this.col_alias }}:</td>
+                    <td>{{ this.val }}</td>
+                </tr>
             {{/each}}
-        </div>
-        {{/if}}
-        <div class="section">
-            {{#if audio_count }}
-            <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}">     
+            {{#if tags}}
+                <tr>
+                    <td></td>
+                    <td>
+                        {{#each tags}}
+                            <a class="tag"> {{this}} </a>
+                        {{/each}}
+                    </td>
+                </tr>
+            {{/if}}
+            </table>
+            {{else}}
+            <div class="tag-container">
+                {{#each tags}}
+                <a class="tag"> {{this}} </a>
+                {{/each}}
             </div>
             {{/if}}
-        </div>
+            <div class="section">
+                {{#if audio_count }}
+                <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}">     
+                </div>
+                {{/if}}
+            </div>
+        </section>
     </div>
     {{else}}
         <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>

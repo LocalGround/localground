@@ -388,7 +388,7 @@ svg, .fa-question-circle {
         background: #EEE;
         height: 68vh;
         position: absolute;
-        top: calc(100vh - 120px);
+        top: calc(100vh - 160px);
         width: 100%;
         -webkit-transform: translate3d(2,2,2);
         z-index: 1;
@@ -397,6 +397,11 @@ svg, .fa-question-circle {
     .parallax.black {
         background: rgba(0, 0, 0, 0.4);
         z-index: 0;
+    }
+
+    .parallax.body section {
+        height: 50vh;
+        overflow-y: scroll;
     }
 
     body {
