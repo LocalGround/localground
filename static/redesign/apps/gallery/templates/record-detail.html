@@ -1,5 +1,27 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
+    {{#compare screenType "presentation" operator="!="}}
+        <h4>Preview</h4>
+    {{/compare}}
+
+    <div class="section">
+        <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
+
+        {{#if featuredImage}}
+            <img class="photo featured-photo" src='{{featuredImage.path_medium}}'>
+        {{/if}}
+        {{#if caption }}
+            <p style="font-style: italic">{{ caption }}</p>
+        {{/if}}
+
+        {{#if video_photo_count }}
+            <div class="carousel carousel-videos-photos" style="background-color: #{{paragraph.backgroundColor}}"></div>
+        {{/if}}
+
+        {{#if audio_count }}
+            <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}"></div>
+        {{/if}}
+    </section>
 {{#compare screenType "presentation" operator="!="}}
 <h4>Preview</h4>
 {{/compare}}
@@ -7,7 +29,7 @@
     <div class="parallax black" data-scroll-speed="0.35">
         <div class="top-section">
         {{#if photo_count }}
-            <div class="mobile-carousel carousel-photo"></div>
+            <div class="mobile-carousel carousel-videos-photos"></div>
         {{/if}}
         </div>
     </div>
@@ -20,7 +42,7 @@
             </div>
             {{/if}}
         </div>
-        
+
         <div class="header-info">
             <h3 id="drag-header" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
         </div>
@@ -50,6 +72,11 @@
                 {{#each tags}}
                 <a class="tag"> {{this}} </a>
                 {{/each}}
+        </div>
+        {{/if}}
+        <div class="section">
+            {{#if audio_count }}
+            <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}">
             </div>
             {{/if}}
             <div class="section">
@@ -72,9 +99,9 @@
         <div class="header-info">
             <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
         </div>
-        
+
         <div class="section">
-            
+
             {{#if featuredImage}}
                 <img class="photo featured-photo" src='{{featuredImage.path_medium}}'>
             {{/if}}
@@ -126,9 +153,9 @@
                 <button class="edit-mode button-tertiary">Edit</button>
             </div>
         {{/compare}}
-        
+
     {{/if}}
-   
+
 {{/ifequal}}
 
 
@@ -167,5 +194,3 @@
 {{#ifequal screenType "map"}}
     <div class="show-hide hide"></div>
 {{/ifequal}}
-
-

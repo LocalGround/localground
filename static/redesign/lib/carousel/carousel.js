@@ -1,11 +1,9 @@
 define(["jquery", "underscore", "marionette", "handlebars",
-        "lib/audio/audio-player",
         "text!../carousel/carousel-container.html",
-        "text!../carousel/carousel-container-audio.html",
         "text!../carousel/carousel-video-item.html",
         "text!../carousel/carousel-photo-item.html"],
-    function ($, _, Marionette, Handlebars, AudioPlayer,
-              CarouselContainerTemplate, CarouselContainerAudioTemplate, VideoItemTemplate, PhotoItemTemplate) {
+    function ($, _, Marionette, Handlebars,
+              CarouselContainerTemplate, VideoItemTemplate, PhotoItemTemplate) {
         'use strict';
         var Carousel = Marionette.CompositeView.extend({
             events: {
@@ -17,10 +15,10 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
             counter: 0,
             className: "active-slide",
-            mode: "photos",
             childViewContainer: ".carousel-content",
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this);
                 if (this.mode == "photos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
                 } else if (this.mode == "videos") {
@@ -29,17 +27,10 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     this.template = Handlebars.compile(CarouselContainerAudioTemplate);
                 }
                 this.render();
-                //this.$el.addClass('active-slide');
-                if (this.collection.length == 1 && this.mode !== "audio") {
-                    this.$el.addClass('short');
-                }
                 this.navigate(0);
             },
 
             showArrows: function () {
-                if (this.mode === "audio" || this.collection.length === 1) {
-                    return;
-                }
                 var $leftArrow, $rightArrow;
                 if (this.timeout) {
                     clearTimeout(this.timeout);
@@ -51,9 +42,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 }
             },
             hideArrows: function () {
-                if (this.mode === "audio" || this.collection.length === 1) {
-                    return;
-                }
                 var that = this;
                 this.timeout = setTimeout(function () {
                     that.$el.find('.fa-chevron-left, .fa-chevron-right').remove();
@@ -62,7 +50,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
             childViewOptions: function () {
                 return {
-                    mode: this.mode,
                     app: this.app,
                     num_children: this.collection.length,
                     parent: this,
@@ -73,12 +60,10 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        if (this.mode == "photos") {
+                        if (this.model.get("overlay_type") == "photo") {
                             this.template = Handlebars.compile(PhotoItemTemplate);
-                        } else if (this.mode == "videos") {
+                        } else if (this.model.get("overlay_type") == "video") {
                             this.template = Handlebars.compile(VideoItemTemplate);
-                        } else {
-                            this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
                         }
                     },
                     templateHelpers: function () {
@@ -88,22 +73,10 @@ define(["jquery", "underscore", "marionette", "handlebars",
                         }
                         return {
                             num_children: this.num_children,
-                            mode: this.mode, 
                             paragraph: paragraph
                         };
                     },
-                    tagName: "li",
-                    onRender: function () {
-                        if (this.mode == "audio") {
-                            var player = new AudioPlayer({
-                                model: this.model,
-                                audioMode: "detail",
-                                app: this.app,
-                                panelStyles: this.panelStyles
-                            });
-                            this.$el.find('.player-container').append(player.$el);
-                        }
-                    }
+                    tagName: "li"
                 });
             },
 
@@ -120,9 +93,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
 
             navigate: function () {
-                if (this.mode == "audio") {
-                    this.app.vent.trigger('audio-carousel-advanced');
-                }
                 var $items = this.$el.find('.carousel-content li'),
                     amount = this.collection.length;
                 $items.removeClass('current').hide();
