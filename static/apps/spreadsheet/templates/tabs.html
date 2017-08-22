@@ -1,10 +1,10 @@
 <div id="tab-view">
-    <a href="#/photos" data-value="photos" class="tab {{#ifequal dataType "photos"}}tab-selected{{/ifequal}}">Photos</a>
-    <a href="#/audio" data-value="audio" class="tab {{#ifequal dataType "audio"}}tab-selected{{/ifequal}}">Audio</a>
-    <a href="#/videos" data-value="videos" class="tab {{#ifequal dataType "videos"}}tab-selected{{/ifequal}}">Videos</a>
-    <a href="#/markers" data-value="markers" class="tab {{#ifequal dataType "markers"}}tab-selected{{/ifequal}}">Sites</a>
+    <a href="#/{{screenType}}/photos" data-value="photos" class="tab {{#ifequal dataType "photos"}}tab-selected{{/ifequal}}">Photos</a>
+    <a href="#/{{screenType}}/audio" data-value="audio" class="tab {{#ifequal dataType "audio"}}tab-selected{{/ifequal}}">Audio</a>
+    <a href="#/{{screenType}}/videos" data-value="videos" class="tab {{#ifequal dataType "videos"}}tab-selected{{/ifequal}}">Videos</a>
+    <a href="#/{{screenType}}/markers" data-value="markers" class="tab {{#ifequal dataType "markers"}}tab-selected{{/ifequal}}">Sites</a>
     {{#each forms}}
-    <a href="#/{{this.instance_type}}" data-value="{{ this.instance_type }}" class="tab {{#ifequal ../dataType this.instance_type}}tab-selected{{/ifequal}}">{{ this.name }}</a>
+    <a href="#/{{../screenType}}/{{this.instance_type}}" data-value="{{ this.instance_type }}" class="tab {{#ifequal ../dataType this.instance_type}}tab-selected{{/ifequal}}">{{ this.name }}</a>
     {{/each}}
 </div>
 

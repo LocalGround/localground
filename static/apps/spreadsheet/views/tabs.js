@@ -21,11 +21,12 @@ define([
                 this.listenTo(this.forms, "reset", this.render);
             }
             this.listenTo(this.forms, "reset", this.render);
+            this.listenTo(this.app.vent, "render-tabs", this.render);
         },
 
         switchTab: function (e) {
             this.app.dataType = $(e.target).attr("data-value");
-            this.render();
+            //this.render();
         },
 
         templateHelpers: function () {
@@ -34,7 +35,8 @@ define([
             });
             return {
                 forms: this.forms.toJSON(),
-                dataType: this.app.dataType
+                dataType: this.app.dataType,
+                screenType: this.app.screenType
             };
         }
 

@@ -70,18 +70,18 @@ define([
         },
 
         showSpreadsheet: function (dataType) {
-            this.initMainView(dataType, "spreadsheet");
+            this.initMainView("spreadsheet", dataType);
         },
 
         showMap: function (dataType) {
-            this.initMainView(dataType, "map");
+            this.initMainView("map", dataType);
         },
 
         showGallery: function (dataType) {
-            this.initMainView(dataType, "gallery");
+            this.initMainView("gallery", dataType);
         },
 
-        initMainView: function (dataType, mode) {
+        initMainView: function (mode, dataType) {
             this.dataType = dataType || this.dataType;
             this.screenType = mode || this.screenType;
             this.toolbarDataView.render();
@@ -105,6 +105,7 @@ define([
             }
             this.mainRegion.show(this.mainView);
             this.adjustLayout();
+            this.tabView.render();
         },
 
         adjustLayout: function () {

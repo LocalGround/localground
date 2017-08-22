@@ -7,12 +7,22 @@ define([
     "use strict";
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
-            'table': 'showTable',
-            'gallery': 'showGallery',
+            '': 'showMap',
+            ':mode/:dataType': 'dataList',
+
             'map': 'showMap',
-            ':dataType': 'dataList',
-            ':dataType/:id': 'dataDetail',
-            ':dataType/new': 'addRow'
+            //'map/:dataType': 'dataList',
+            'map/:dataType/:id': 'dataDetail',
+            'map/:dataType/new': 'addRow',
+
+            'table': 'showTable',
+            'table/:dataType/:id': 'dataDetail',
+            'table/:dataType/new': 'addRow',
+
+            'gallery': 'showGallery',
+            //'gallery/:dataType': 'dataList',
+            'gallery/:dataType/:id': 'dataDetail',
+            'gallery/:dataType/new': 'addRow'
         },
         initialize: function (options) {
             this.controller = new Controller({
