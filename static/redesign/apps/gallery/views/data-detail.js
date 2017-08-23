@@ -67,7 +67,7 @@ define([
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
 
-        detectScroll: function (event) {
+        /*detectScroll: function (event) {
             console.log("scrolling");
             var oldTranslateY = $('#parallax-body').css("transform"),
             dragEl = document.getElementById("parallax-body"),
@@ -89,18 +89,33 @@ define([
             if(mat) return parseFloat(mat[1].split(', ')[13]);
             mat = transform.match(/^matrix\((.+)\)$/);
             return mat ? parseFloat(mat[1].split(', ')[5]) : 0;
-        },
+        },*/
 
         initParallax: function () {
             var MoveItItem = function (el) {
-                this.el = $(el);
-                this.maxHeight = parseFloat(this.el.attr('data-target-top'), 10) / 100 * $(window).height();
-                this.className = this.el.attr('class');
-                this.speed = parseFloat(this.el.attr('data-scroll-speed'), 10);
+                this.initialPosition = $(el).position().top;
+                this.$el = $(el).css({
+                    position: "fixed",
+                    top: this.initialPosition
+                });
+                this.targetTop = this.$el.attr('data-target-top').replace("%", "");
+                this.finalPosition = parseFloat(this.targetTop, 10) * $(window).height() / 100;
+                this.distance = this.initialPosition - this.finalPosition;
+                this.scrollDistance = Math.abs($(window).height() - $(document).height());
+                this.speed = this.distance / this.scrollDistance;
+                /*
+                // FOR DEBUGGING:
+                this.className = this.$el.attr('class');
+                console.log("--------------------");
+                console.log("className", this.className);
+                console.log("initialPosition", this.initialPosition);
+                console.log("finalPosition", this.finalPosition);
+                console.log("scrollDistance", this.scrollDistance);
+                console.log("distance", this.distance);
+                console.log("speed", this.speed);
+                */
                 this.update = function (scrollTop) {
-                    var y = (scrollTop - 160) / this.speed;
-                    console.log(this.className, this.speed, scrollTop, y, this.maxHeight);
-                    this.el.css('transform', 'translateY(' + -(y) + 'px)');
+                    this.$el.css('top', this.initialPosition - scrollTop * this.speed);
                 };
             };
             $.fn.moveIt = function () {
@@ -118,13 +133,14 @@ define([
                 };
             };
             $(function () {
+                $(window).scrollTop(0);
                 $('.parallax').moveIt();
             });
         },
 
 
 
-        initDraggable: function () {
+        /*initDraggable: function () {
             return;
             var that = this;
 
@@ -168,23 +184,7 @@ define([
                     }
                 }
             });
-            /*
-            $( '.body-section' ).draggable({
-                axis: 'y',
-                drag: function (event, ui) {
-                    var top =  screen.height - ui.position.top;
-                    $('#marker-detail-panel').css({
-                        'max-height': 'none',
-                        'height': 'auto',
-                    });
-                    $('.body-section').css({
-                        'max-height': '50%',
-                        'height': 'auto'
-                    });
-                }
-            });
-            */
-        },
+        },*/
 
         isMobile: function () {
             if ($(window).width() >= 900) {
@@ -479,7 +479,7 @@ define([
                 this.$el.find(".player-container").append(player.$el);
             }
             // setTimeout necessary to register DOM element
-            setTimeout(this.initDraggable.bind(this), 50);
+            //setTimeout(this.initDraggable.bind(this), 50);
             if ($(window).width() < 900) {
                 this.initParallax();
             }
