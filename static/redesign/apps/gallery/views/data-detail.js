@@ -10,6 +10,7 @@ define([
     "text!../templates/video-detail.html",
     "text!../templates/record-detail.html",
     "text!../templates/map-image-detail.html",
+    "text!../templates/mobile-expand.html",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
@@ -17,7 +18,7 @@ define([
     "touchPunch"
 ], function ($, _, Backbone, Handlebars, Marionette, Photos, Audio, Videos,
         PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
-        MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
+        MapImageTemplate, MobileExpandTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -50,10 +51,14 @@ define([
             if (this.dataType == "map_images") {
                 return Handlebars.compile(MapImageTemplate);
             }
+            if (this.mobileView == "expanded") {
+                return Handlebars.compile(MobileExpandTemplate);
+            }
             return Handlebars.compile(SiteTemplate);
         },
         featuredImageID: null,
         initialize: function (opts) {
+            this.mobileView = null;
             _.extend(this, opts);
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
@@ -61,10 +66,19 @@ define([
             $('#marker-detail-panel').addClass('mobile-minimize');
             $(window).on("resize", _.bind(this.screenSize, this));
            // $(window).scroll(this.detectScroll);
-            $(window).on("scroll",  _.bind(this.detectScroll, this))
+            $(window).on("scroll",  _.bind(this.detectScroll, this));
+           // $(document).on('scrollstart', _.bind(this.detectScroll, this));
+           
             this.isMobile();
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
+        },
+
+        expandMobile: function () {
+            console.log("render new template", this);
+            this.mobileView = "expanded";
+            this.getTemplate();
+            this.render();
         },
 
         detectScroll: function (event) {
@@ -74,8 +88,9 @@ define([
             translateY = this.getComputedTranslateY(document.getElementById("parallax-body"));
             $('.min-thumbnail').remove();
             console.log(oldTranslateY, this.getComputedTranslateY(dragEl), translateY);
-            if (translateY < -70) {
-                console.log("trigger stop!");
+            if (translateY < -3 && this.mobileView !== "expanded") {
+                console.log("expand!");
+                this.expandMobile();
                // $(window).scrollTop(screen.height/2.5);
             }
            // if (this.$el.find(".parallax."))

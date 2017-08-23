@@ -402,11 +402,16 @@ svg, .fa-question-circle {
     .parallax.body section {
         height: 50vh;
         overflow-y: scroll;
+        display: inline-block;
     }
 
-    body {
+    html, body {
         overflow-x: hidden;
+        width:100%;
     }
+   /* body {
+        position: relative;
+    } */
 }
 
 @media (min-width: 901px) {
@@ -414,6 +419,18 @@ svg, .fa-question-circle {
         position: static;
     }
 }
+
+.parallax {
+    animation: fadein 0.5s;
+}
+
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+
 
 /**********************
 Separate Mobile CSS
