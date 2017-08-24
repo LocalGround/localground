@@ -438,7 +438,8 @@ define(["jquery",
                 var row_idx = $(e.target).attr("row-index");
                 this.currentModel = this.collection.at(parseInt(row_idx));
                 var mediaBrowser = new MediaBrowser({
-                    app: this.app
+                    app: this.app,
+                    parentModel: this.currentModel
                 });
                 this.app.vent.trigger("show-modal", {
                     title: 'Media Browser',
