@@ -5,6 +5,7 @@ define(["jquery",
         "views/media_browser",
         "models/record",
         "models/marker",
+        "collections/photos",
         "apps/spreadsheet/views/create-field",
         "handsontable",
         "text!../templates/spreadsheet.html",
@@ -12,7 +13,7 @@ define(["jquery",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser,
-        Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate,
+        Record, Marker, Photos, CreateFieldView, Handsontable, SpreadsheetTemplate,
         AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
@@ -351,19 +352,19 @@ define(["jquery",
             },
 
             carouselPhoto: function(e){
-
                 var that = this;
-
                 var row_idx = $(e.target).attr("row-index");
                 this.currentModel = this.collection.at(parseInt(row_idx));
                 //any extra view logic. Carousel functionality goes here
                 this.currentModel.fetch({success: function(){
+                    console.log(new Photos(that.currentModel.get("children").photos));
                     var c = new Carousel({
                         model: that.currentModel,
                         mode: "photos",
                         app: that.app,
-                        collection: this.collection
+                        collection: new Photos(that.currentModel.get("children").photos.data)
                     });
+                    console.log(c.$el);
 
                     $("#carouselModal").empty();
                     $("#carouselModal").append(c.$el);
@@ -375,9 +376,7 @@ define(["jquery",
 
                     // Get the modal
                     var modal = document.getElementById('carouselModal');
-
                     modal.style.display = "block";
-
                 }});
             },
 

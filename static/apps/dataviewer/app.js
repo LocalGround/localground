@@ -26,7 +26,7 @@ define([
         },
 
         currentCollection: null,
-        dataType: "photos",
+        dataType: "markers",
         screenType: "spreadsheet",
         mode: "edit",
         start: function (options) {

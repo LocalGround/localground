@@ -30,16 +30,20 @@
     </main>
     <aside id="tab-panel" class="tab-panel"></aside>
 
+    <!-- modal for photos -->
     <div id="mediaModal" class="modal">
+          <span class="close big" onclick="document.getElementById('mediaModal').style.display='none'">
+              &times;
+          </span>
+          <img class="modal-content" id="img01">
+          <div id="caption"></div>
+    </div>
 
-      <!--Close Button-->
-      <span class="close big" onclick="document.getElementById('mediaModal').style.display='none'">
-        &times;
-      </span>
-      <!--Modal Content (Image)-->
-      <img class="modal-content" id="img01">
-      <!--Modal Caption (Image Text)-->
-      <div id="caption"></div>
+    <!-- modal for carousel -->
+    <div id="carouselModal" class="carousel-modal spreadsheet">
+        <span class="close big" onclick="document.getElementById('carouselModal').style.display='none'">
+            &times;
+        </span>
     </div>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places,drawing"></script>
