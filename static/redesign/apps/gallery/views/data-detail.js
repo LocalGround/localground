@@ -79,11 +79,11 @@ define([
             $(window).on("resize", _.bind(this.screenSize, this));
            // $(window).scroll(this.detectScroll);
             $(window).on("scroll",  _.bind(this.detectScroll, this));
-           // $(document).on('scrollstart', _.bind(this.detectScroll, this));           
+           // $(document).on('scrollstart', _.bind(this.detectScroll, this));
             //$(window).on("scroll",  _.bind(this.detectScroll, this))
             this.isMobile();
 
-           
+
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
@@ -133,6 +133,7 @@ define([
         },
 
         initParallax: function () {
+            var that = this;
             var MoveItItem = function (el) {
                 this.initialPosition = $(el).position().top;
                 this.calculateDimensions = function () {
@@ -168,6 +169,11 @@ define([
                     if (direction == "up" && scrollTop >= 200) {
                         that.$el.find('.expanded').show();
                         that.$el.find('.contracted').hide();
+                        that.$el.find('.expanded').get(0).innerHTML = "";
+                        //add some dummy text:
+                        for(var i = 0; i < 50; i++) {
+                            that.$el.find('.expanded').get(0).innerHTML += "text text text";
+                        }
                         this.calculateDimensions();
                         console.log("showBigTemplate", that.distance);
                     }
