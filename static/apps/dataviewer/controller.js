@@ -13,9 +13,11 @@ define([
             }, false);
         },
         dataList: function (dataType) {
+            console.log('dataList:', dataType);
             this.app.vent.trigger("show-list", dataType);
         },
         dataDetail: function (dataType, id) {
+            console.log('dataDetail:', dataType, id);
             this.app.dataType = dataType;
             var collection = this.app.getData().collection,
                 model = collection.get(id),

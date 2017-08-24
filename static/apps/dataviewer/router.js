@@ -8,6 +8,7 @@ define([
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
             '': 'showMap',
+            //':dataType/:id': 'dataDetail',
             ':mode/:dataType': 'dataList',
 
             'map': 'showMap',
@@ -25,6 +26,9 @@ define([
             'gallery/:dataType/:id': 'dataDetail'
         },
         initialize: function (options) {
+            //add additional regex routes on initialize
+            //this.route(/^markers\/2$/, "dataDetail");
+            //this.route(/^(\w+)\/^(\w+)$/, "dataList");
             this.controller = new Controller({
                 app: options.app
             });

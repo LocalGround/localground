@@ -6,6 +6,8 @@ define(["jquery",
         "models/record",
         "models/marker",
         "collections/photos",
+        "collections/audio",
+        "collections/videos",
         "apps/spreadsheet/views/create-field",
         "handsontable",
         "text!../templates/spreadsheet.html",
@@ -13,7 +15,7 @@ define(["jquery",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser,
-        Record, Marker, Photos, CreateFieldView, Handsontable, SpreadsheetTemplate,
+        Record, Marker, Photos, Audio, Videos, CreateFieldView, Handsontable, SpreadsheetTemplate,
         AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
@@ -244,59 +246,21 @@ define(["jquery",
                 return this.collection.get(modelID);
             },
             thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-
-                /*
-                // Have to make a new Carousel that stores only the targeted photo
-                // Also need to make a new collection that adds only one photo
-                // Need to replace existing functionality with carousel to reduce number of needed modals to one
-                */
-
-                // this.carouselPhoto(e); // aimed for simplest solution, but target is undefined
-
-
                 var that = this,
                     img = document.createElement('IMG'),
-                    model,
-                    modalImg,
-                    captionText,
-                    modal,
-                    span;
+                    model = this.collection.at(rowIndex),
+                    carousel = new Carousel({
+                        model: model,
+                        mode: "photos",
+                        app: that.app,
+                        collection: new Photos(model)
+                    });
                 img.src = value;
-
-                var c = new Carousel({
-                    model: that.currentModel,
-                    mode: "photos",
-                    app: that.app,
-                    collection: new Photos(that.currentModel)
-                });
-
-                img.onclick = function () {
-
-                    this.carouselPhoto(e, c);
-
-                    /*
-                    model = that.getModelFromCell(instance, rowIndex);
-                    // Get the modal
-                    modal = document.getElementById('mediaModal');
-
-                    // Get the image and insert it inside the modal - use its "alt" text as a caption
-                    //var img = document.getElementById('myImg');
-                    modalImg = document.getElementById("img01");
-                    captionText = document.getElementById("caption");
-                    modal.style.display = "block";
-                    modalImg.src = model.get("path_medium");
-
-                    // Get the <span> element that closes the modal
-                    span = document.getElementsByClassName("close")[0];
-
-                    // When the user clicks on <span> (x), close the modal
-                    span.onclick = function () {
-                        modal.style.display = "none";
-                    };
-                    //*/
+                img.onclick = function (e) {
+                    that.showModal(carousel);
                 };
-                //Handsontable.Dom.empty(td);
-                //td.appendChild(img);
+                Handsontable.Dom.empty(td);
+                td.appendChild(img);
 
                 return td;
             },
@@ -317,16 +281,27 @@ define(["jquery",
 
             videoRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
                 var that = this,
+                    img = document.createElement('IMG'),
                     model = this.getModelFromCell(instance, rowIndex),
-                    i = document.createElement('i');
-
+                    i = document.createElement('i'),
+                    carousel = new Carousel({
+                        model: model,
+                        mode: "videos",
+                        app: that.app,
+                        collection: new Videos(model)
+                    });
                 if (model.get('video_provider') === "vimeo") {
                     i.className = "fa fa-3x fa-vimeo";
                 } else {
                     i.className = "fa fa-3x fa-youtube";
                 }
                 i.onclick = function () {
-                    that.showVideoModal(model);
+                    that.showModal(carousel);
+                    $("#carouselModal").find("iframe").get(0).className = "modal-content spreadsheet";
+                    $("#carouselModal").find("iframe").css({
+                        width: "70%",
+                        height: "480px"
+                    });
                 };
                 Handsontable.Dom.empty(td);
                 td.appendChild(i);
@@ -374,98 +349,57 @@ define(["jquery",
                 }
 
             },
+            showModal: function(carousel) {
+                $("#carouselModal").empty();
+                $("#carouselModal").append(carousel.$el);
+                var $span = $("<span class='close big'>&times;</span>");
+                $span.click(function () {
+                    $("#carouselModal").hide();
+                })
+                $("#carouselModal").append($span);
+                var modal = document.getElementById('carouselModal');
+                modal.style.display = "block";
+            },
 
-            carouselPhoto: function(e, c){
-                var that = this;
-                var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                //any extra view logic. Carousel functionality goes here
-                this.currentModel.fetch({success: function(){
-                    console.log(new Photos(that.currentModel.get("children").photos));
-                    var c = new Carousel({
-                        model: that.currentModel,
-                        mode: "photos",
-                        app: that.app,
-                        collection: new Photos(that.currentModel.get("children").photos.data)
-                    });
-                    console.log(c.$el);
+            makeCarousel: function (e, mode) {
+                var that = this,
+                    rowIndex = $(e.target).attr("row-index"),
+                    collection;
+                this.currentModel = this.collection.at(parseInt(rowIndex));
+                this.currentModel.fetch({
+                    success: function () {
+                        switch (mode) {
+                            case "photos":
+                                collection = new Photos(that.currentModel.get("children").photos.data);
+                                break;
+                            case "audio":
+                                collection = new Audio(that.currentModel.get("children").audio.data);
+                                break;
+                            case "videos":
+                                collection = new Videos(that.currentModel.get("children").videos.data);
+                                break;
+                        }
+                        var carousel = new Carousel({
+                            model: that.currentModel,
+                            mode: mode,
+                            app: that.app,
+                            collection: collection
+                        });
+                        that.showModal(carousel);
+                    }
+                });
+            },
 
-                    $("#carouselModal").empty();
-                    $("#carouselModal").append(c.$el);
-                    var $span = $("<span class='close big'>&times;</span>");
-                    $span.click(function () {
-                        $("#carouselModal").hide();
-                    })
-                    $("#carouselModal").append($span);
-
-                    // Get the modal
-                    var modal = document.getElementById('carouselModal');
-                    modal.style.display = "block";
-                }});
+            carouselPhoto: function (e) {
+                this.makeCarousel(e, "photos");
             },
 
             carouselAudio: function(e){
-
-                var that = this;
-
-                var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                //any extra view logic. Carousel functionality goes here
-                this.currentModel.fetch({success: function(){
-                    var c = new Carousel({
-                        model: that.currentModel,
-                        mode: "audio",
-                        app: that.app
-                    });
-                    //that.$el.find(".carousel").append(c.$el);
-
-                    $("#carouselModal").empty();
-                    $("#carouselModal").append(c.$el);
-                    var $span = $("<span class='close big'>&times;</span>");
-                    $span.click(function () {
-                        $("#carouselModal").hide();
-                        //document.getElementById("carouselModal").style.display='none';
-                    })
-                    $("#carouselModal").append($span);
-
-                    // Get the modal
-                    var modal = document.getElementById('carouselModal');
-
-                    modal.style.display = "block";
-                }});
+                this.makeCarousel(e, "audio");
             },
 
-
-
             carouselVideo: function(e){
-
-                var that = this;
-
-                var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                //any extra view logic. Carousel functionality goes here
-                this.currentModel.fetch({success: function(){
-                    var c = new Carousel({
-                        model: that.currentModel,
-                        mode: "videos",
-                        app: that.app
-                    });
-                    //that.$el.find(".carousel").append(c.$el);
-
-                    $("#carouselModal").empty();
-                    $("#carouselModal").append(c.$el);
-                    var $span = $("<span class='close big'>&times;</span>");
-                    $span.click(function () {
-                        $("#carouselModal").hide();
-                        //document.getElementById("carouselModal").style.display='none';
-                    })
-                    $("#carouselModal").append($span);
-
-                    // Get the modal
-                    var modal = document.getElementById('carouselModal');
-
-                    modal.style.display = "block";
-                }});
+                this.makeCarousel(e, "videos");
             },
 
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
