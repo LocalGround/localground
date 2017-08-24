@@ -308,23 +308,6 @@ define(["jquery",
                 return td;
             },
 
-            showVideoModal: function(model){
-                var modal = document.getElementById("videoModal");
-                var captionText = document.getElementById("caption");
-                var videoFrame = document.getElementById("video-iframe");
-                videoFrame.src = ""
-                if (model.get("video_provider") == "vimeo"){
-                    // Vimeo
-                    videoFrame.src = "https://player.vimeo.com/video/" + model.get("video_id");
-                } else {
-                    // Youtube
-                    videoFrame.src = "https://www.youtube.com/embed/" +
-                    model.get("video_id") + "?ecver=1";
-                }
-
-                modal.style.display = "block";
-            },
-
             mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
                 var model = this.getModelFromCell(instance, row),
                     photoCount = model.get("photo_count") || 0,
