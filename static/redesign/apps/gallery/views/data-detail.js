@@ -51,11 +51,22 @@ define([
             if (this.dataType == "map_images") {
                 return Handlebars.compile(MapImageTemplate);
             }
-            if (this.mobileView == "expanded") {
+            /*if (this.mobileView == "expanded") {
                 console.log("compile mobile expand");
                 return Handlebars.compile(MobileExpandTemplate);
-            }
-            return Handlebars.compile(SiteTemplate);
+            }*/
+            return Handlebars.compile("<div class='parallax black' data-target-top='0%'> \
+                <div class='top-section'> \
+                {{#if photo_count }} \
+                    <div class='mobile-carousel carousel-videos-photos'></div> \
+                {{/if}} \
+                </div> \
+            </div> \
+            <div class='parallax body' id='parallax-body' data-target-top='50%' style='\
+                color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}'> \
+                <div class='expanded' style='display:none;'>Expanded</div> \
+                <div class='contracted'>Contracted</div> \
+            </div>");
         },
         featuredImageID: null,
         initialize: function (opts) {
@@ -148,13 +159,17 @@ define([
                         console.log('switch');
                     }
                     if (direction == "down" && scrollTop <= 50) {
+                        that.$el.find('.expanded').hide();
+                        that.$el.find('.contracted').show();
                         this.calculateDimensions();
                         console.log(that.distance);
                         console.log("showSmallTemplate", that.distance);
                     }
 
                     if (direction == "up" && scrollTop >= 200) {
-                        this.calculateDimensions();                        //console.log(that.distance);
+                        that.$el.find('.expanded').show();
+                        that.$el.find('.contracted').hide();
+                        this.calculateDimensions();
                         console.log("showBigTemplate", that.distance);
                     }
                     this.$el.css('top', this.initialPosition - scrollTop * this.speed);

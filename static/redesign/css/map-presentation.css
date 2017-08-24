@@ -93,8 +93,8 @@ ul{
         flex: none;
         overflow: hidden;
         height: 20vw;
-        max-height: 120px; 
-        padding-top: 0px; 
+        max-height: 120px;
+        padding-top: 0px;
         border: none !important;
         float: right;
         width: 100%;
@@ -112,7 +112,7 @@ ul{
 #map {
     width: 100%;
     height: 100%;
-}    
+}
 
 .main-panel {
     height: calc(100%);
@@ -145,7 +145,7 @@ ul{
 }
 
 #toolbar-main > div{
-    display:flex;    
+    display:flex;
 }
 
 .list-header {
@@ -266,7 +266,7 @@ svg, .fa-question-circle {
     height: 0px;
     width: 0px;
     background: #4e70d4;
-  /*  -webkit-transition: width .5s, height .5s; /* Safari */ 
+  /*  -webkit-transition: width .5s, height .5s; /* Safari */
 /*    transition: width .5s, height .5s; */}
 
 .mobile-toggle, .thumbnail-play, .thumbnail-play-circle {
@@ -282,7 +282,7 @@ svg, .fa-question-circle {
         height: 120px;
         width: 120px;
     }
-    
+
     .mobile-toggle {
         display: inline-block;
         float: right;
@@ -291,7 +291,7 @@ svg, .fa-question-circle {
 
     .mobile-full {
         height: 100% !important;
-        max-height: 100% !important; 
+        max-height: 100% !important;
     }
 
     .mobile-minimize {
@@ -328,7 +328,7 @@ svg, .fa-question-circle {
     }
 
     .mobile-minimize .thumbnail-play {
-        opacity: .7;   
+        opacity: .7;
         bottom: 28%;
         right: 12%;
         color: white;
@@ -354,7 +354,7 @@ svg, .fa-question-circle {
 
     .mobile-full .thumbnail-play-circle {
         display: none;
-    } 
+    }
     .mobile-full #presentation-title {
         top: -150px;
     }
@@ -392,7 +392,7 @@ svg, .fa-question-circle {
         -webkit-transform: translate3d(2,2,2);
         z-index: 1;
     }
-    
+
     .parallax.black {
         background: rgba(0, 0, 0, 0.4);
         z-index: 0;
@@ -446,7 +446,7 @@ Separate Mobile CSS
     height: 120px;
     background: #e8e8e8;
     z-index: 2;
-    position: absolute; 
+    position: absolute;
     bottom: 0;
   /*  transition: .5s; */
 }
@@ -483,7 +483,7 @@ Separate Mobile CSS
 
 .mobile-wrapper {
     width: 100%;
-  
+
     box-sizing: border-box;
 }
 
@@ -519,7 +519,7 @@ Separate Mobile CSS
     box-shadow: 3px 3px 1px 1px rgba(53, 76, 122, 0.06);
     border-radius: 6px;
     width: 180px;
-    padding: 10px 20px; 
+    padding: 10px 20px;
     transition: 0.5s;
     overflow-y: hidden;
 
@@ -535,7 +535,7 @@ Separate Mobile CSS
 }
 
 .legend-toggle {
-    margin-top: 4px; 
+    margin-top: 4px;
     float: right;
 }
 
@@ -633,3 +633,11 @@ Separate Mobile CSS
     }
 }
 
+.expanded {
+	height: 800px;
+	background: yellow;
+}
+.contracted {
+	height: 300px;
+	background: red;
+}
