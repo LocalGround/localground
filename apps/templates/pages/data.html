@@ -30,6 +30,18 @@
     </main>
     <aside id="tab-panel" class="tab-panel"></aside>
 
+    <div id="mediaModal" class="modal">
+
+      <!--Close Button-->
+      <span class="close big" onclick="document.getElementById('mediaModal').style.display='none'">
+        &times;
+      </span>
+      <!--Modal Content (Image)-->
+      <img class="modal-content" id="img01">
+      <!--Modal Caption (Image Text)-->
+      <div id="caption"></div>
+    </div>
+
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places,drawing"></script>
     {% if DEBUG %}
         <script>

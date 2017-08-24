@@ -254,7 +254,7 @@ define(["jquery",
                 img.onclick = function () {
                     model = that.getModelFromCell(instance, rowIndex);
                     // Get the modal
-                    modal = document.getElementById('myModal');
+                    modal = document.getElementById('mediaModal');
 
                     // Get the image and insert it inside the modal - use its "alt" text as a caption
                     //var img = document.getElementById('myImg');
@@ -361,7 +361,8 @@ define(["jquery",
                     var c = new Carousel({
                         model: that.currentModel,
                         mode: "photos",
-                        app: that.app
+                        app: that.app,
+                        collection: this.collection
                     });
 
                     $("#carouselModal").empty();
