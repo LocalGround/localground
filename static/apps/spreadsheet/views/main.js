@@ -244,6 +244,16 @@ define(["jquery",
                 return this.collection.get(modelID);
             },
             thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
+
+                /*
+                // Have to make a new Carousel that stores only the targeted photo
+                // Also need to make a new collection that adds only one photo
+                // Need to replace existing functionality with carousel to reduce number of needed modals to one
+                */
+
+                // this.carouselPhoto(e); // aimed for simplest solution, but target is undefined
+
+
                 var that = this,
                     img = document.createElement('IMG'),
                     model,
@@ -252,7 +262,19 @@ define(["jquery",
                     modal,
                     span;
                 img.src = value;
+
+                var c = new Carousel({
+                    model: that.currentModel,
+                    mode: "photos",
+                    app: that.app,
+                    collection: new Photos(that.currentModel)
+                });
+
                 img.onclick = function () {
+
+                    this.carouselPhoto(e, c);
+
+                    /*
                     model = that.getModelFromCell(instance, rowIndex);
                     // Get the modal
                     modal = document.getElementById('mediaModal');
@@ -271,9 +293,11 @@ define(["jquery",
                     span.onclick = function () {
                         modal.style.display = "none";
                     };
+                    //*/
                 };
-                Handsontable.Dom.empty(td);
-                td.appendChild(img);
+                //Handsontable.Dom.empty(td);
+                //td.appendChild(img);
+
                 return td;
             },
             audioRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
