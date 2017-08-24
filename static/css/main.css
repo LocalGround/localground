@@ -1921,7 +1921,7 @@ i.fa.fa-star-o.featured, i.fa.fa-star.featured {
     border-left: 1px solid #ededed;
 }
 
-td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o, .fa-plus-square-o {
+td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o, td i.fa.fa-file-video-o, .fa-plus-square-o {
     margin: 5px 5px 0px 0px;
     color: #BBB;
     font-size: 24px;
@@ -2377,5 +2377,3 @@ span.plus {
     font-size: 12px;
     color: #888;
 }
-
-
