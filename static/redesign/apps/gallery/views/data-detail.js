@@ -161,20 +161,15 @@ define([
                     if (direction == "down" && scrollTop <= 50) {
                         that.$el.find('.expanded').hide();
                         that.$el.find('.contracted').show();
-                        this.calculateDimensions();
-                        console.log(that.distance);
+                        /*this.calculateDimensions();
+                        console.log(that.distance);*/
                         console.log("showSmallTemplate", that.distance);
                     }
 
                     if (direction == "up" && scrollTop >= 200) {
                         that.$el.find('.expanded').show();
                         that.$el.find('.contracted').hide();
-                        that.$el.find('.expanded').get(0).innerHTML = "";
-                        //add some dummy text:
-                        for(var i = 0; i < 50; i++) {
-                            that.$el.find('.expanded').get(0).innerHTML += "text text text";
-                        }
-                        this.calculateDimensions();
+                        //this.calculateDimensions();
                         console.log("showBigTemplate", that.distance);
                     }
                     this.$el.css('top', this.initialPosition - scrollTop * this.speed);
