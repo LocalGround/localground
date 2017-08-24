@@ -27,6 +27,7 @@ define([
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this.parentModel);
                 Marionette.CompositeView.prototype.initialize.call(this);
                 this.template = Handlebars.compile(ParentTemplate);
                 this.displayMedia();
@@ -121,7 +122,11 @@ define([
                         selectedModels.push(model);
                     }
                 });
+                console.log(this.parentModel, selectedModels);
+                //for gallery:
                 this.parentModel.trigger('add-models-to-marker', selectedModels);
+                //for spreadsheet:
+                this.app.vent.trigger('add-models-to-marker', selectedModels);
             }
 
         });

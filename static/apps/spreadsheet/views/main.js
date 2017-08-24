@@ -437,6 +437,7 @@ define(["jquery",
             showMediaBrowser: function (e) {
                 var row_idx = $(e.target).attr("row-index");
                 this.currentModel = this.collection.at(parseInt(row_idx));
+                console.log(this.currentModel);
                 var mediaBrowser = new MediaBrowser({
                     app: this.app,
                     parentModel: this.currentModel

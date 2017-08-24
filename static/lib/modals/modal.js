@@ -77,6 +77,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts.deleteButtonText = opts.deleteButtonText || "Delete";
                 opts.printButtonText = opts.printButtonText || "Print";
                 _.extend(this, opts);
+                //this.saveFunction = function () {alert("hello!");}
+                console.log(this.saveFunction);
                 this.attachEvents();
                 this.render();
                 this.delegateEvents();
