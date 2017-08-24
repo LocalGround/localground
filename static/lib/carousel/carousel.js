@@ -1,9 +1,12 @@
 define(["jquery", "underscore", "marionette", "handlebars",
+        "lib/audio/audio-player",
         "text!../carousel/carousel-container.html",
         "text!../carousel/carousel-video-item.html",
-        "text!../carousel/carousel-photo-item.html"],
-    function ($, _, Marionette, Handlebars,
-              CarouselContainerTemplate, VideoItemTemplate, PhotoItemTemplate) {
+        "text!../carousel/carousel-photo-item.html",
+        "text!../carousel/carousel-container-audio.html"
+    ],
+    function ($, _, Marionette, Handlebars, AudioPlayer,
+              CarouselContainerTemplate, VideoItemTemplate, PhotoItemTemplate, CarouselContainerAudioTemplate) {
         'use strict';
         var Carousel = Marionette.CompositeView.extend({
             events: {
@@ -64,6 +67,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                             this.template = Handlebars.compile(PhotoItemTemplate);
                         } else if (this.model.get("overlay_type") == "video") {
                             this.template = Handlebars.compile(VideoItemTemplate);
+                        } else if (this.model.get("overlay_type") == "audio"){
+                            this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
                         }
                     },
                     templateHelpers: function () {
@@ -76,7 +81,18 @@ define(["jquery", "underscore", "marionette", "handlebars",
                             paragraph: paragraph
                         };
                     },
-                    tagName: "li"
+                    tagName: "li",
+                    onRender: function () {
+                        if (this.model.get("overlay_type") == "audio") {
+                            var player = new AudioPlayer({
+                                model: this.model,
+                                audioMode: "detail",
+                                app: this.app,
+                                panelStyles: this.panelStyles
+                            });
+                            this.$el.find('.player-container').append(player.$el);
+                        }
+                    }
                 });
             },
 
