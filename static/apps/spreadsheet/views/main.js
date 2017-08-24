@@ -375,7 +375,7 @@ define(["jquery",
 
             },
 
-            carouselPhoto: function(e){
+            carouselPhoto: function(e, c){
                 var that = this;
                 var row_idx = $(e.target).attr("row-index");
                 this.currentModel = this.collection.at(parseInt(row_idx));
