@@ -37,7 +37,6 @@ define([
             "click .thumbnail-play-circle": 'playAudio'
         },
         getTemplate: function () {
-            console.log(this.dataType);
             if (this.dataType == "photos") {
                 return Handlebars.compile(PhotoTemplate);
             }
@@ -296,7 +295,6 @@ define([
             this.app.vent.trigger("add-new-marker", this.model);
         },
         onShow: function () {
-            console.log('showing...');
             this.render();
         },
 
@@ -350,7 +348,6 @@ define([
                 this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
-            console.log("featured image: ", this.getFeaturedImage());
             console.log(this.mobileMode);
 
             return {
@@ -377,9 +374,9 @@ define([
             if (this.getFeaturedImage()) {
                 return this.getFeaturedImage();
             } else if (!_.isEmpty(this.model.get("children"))) {
-                console.log(this.model.get("children"));
-                var photoData = this.model.get("children").photos.data;
-                return photoData[0];
+                if (this.model.get("children").photos) {
+                    return this.model.get("children").photos.data[0];
+                }
             } else {
                 return null;
             }
@@ -472,14 +469,12 @@ define([
         },
 
         onRender: function () {
-            console.log(this.dataType, "On Render");
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {
                 this.editRender();
             }
             if (this.dataType == "audio") {
-                console.log("Audio player initialized")
                 var player = new AudioPlayer({
                     model: this.model,
                     audioMode: "detail",
@@ -539,7 +534,6 @@ define([
             }
             this.model.destroy({
                 success: function () {
-                    console.log("about to hide details'")
                     //trigger an event that clears out the deleted model's detail:
                     that.app.vent.trigger('hide-detail');
                 }

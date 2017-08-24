@@ -8,31 +8,35 @@ define([
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
             '': 'showMap',
-            //':dataType/:id': 'dataDetail',
-            ':mode/:dataType': 'dataList',
-
             'map': 'showMap',
-            'map/:dataType': 'dataList',
-            'map/:dataType/new': 'addRow',
-            'map/:dataType/:id': 'dataDetail',
-
             'table': 'showTable',
-            'table/:dataType/new': 'addRow',
-            'table/:dataType/:id': 'dataDetail',
-
-            'gallery': 'showGallery',
-            'gallery/:dataType': 'dataList',
-            'gallery/:dataType/new': 'addRow',
-            'gallery/:dataType/:id': 'dataDetail'
+            'gallery': 'showGallery'
         },
         initialize: function (options) {
-            //add additional regex routes on initialize
-            //this.route(/^markers\/2$/, "dataDetail");
-            //this.route(/^(\w+)\/^(\w+)$/, "dataList");
             this.controller = new Controller({
                 app: options.app
             });
             Marionette.AppRouter.prototype.initialize.apply(this, [options]);
+
+            //Add regex expressions
+            this.route.apply(this, [
+                //e.g. #/table/photos
+                /^(\w+)\/([a-z]+_*[0-9]*)$/,
+                'dataList',
+                this.controller.dataList.bind(this.controller)
+            ]);
+            this.route.apply(this, [
+                //e.g. #/table/photos/new
+                /^(\w+)\/([a-z]+_*[0-9]*)\/new$/,
+                'addRow',
+                this.controller.addRow.bind(this.controller)
+            ]);
+            this.route.apply(this, [
+                //e.g. #/table/photos/23
+                /^(\w+)\/([0-9]+)$/,
+                'dataDetail',
+                this.controller.dataDetail.bind(this.controller)
+            ]);
             this.applyRoutingHacks();
         },
         applyRoutingHacks: function () {
