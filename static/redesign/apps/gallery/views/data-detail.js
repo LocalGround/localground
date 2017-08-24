@@ -78,12 +78,12 @@ define([
             $('#marker-detail-panel').addClass('mobile-minimize');
             $(window).on("resize", _.bind(this.screenSize, this));
            // $(window).scroll(this.detectScroll);
-         //   $(window).on("scroll",  _.bind(this.detectScroll, this));
-           // $(document).on('scrollstart', _.bind(this.detectScroll, this));
+            $(window).on("scroll",  _.bind(this.detectScroll, this));
+           // $(document).on('scrollstart', _.bind(this.detectScroll, this));           
             //$(window).on("scroll",  _.bind(this.detectScroll, this))
             this.isMobile();
-            this.listenTo(this.app.vent, 'show-min-screen', this.contractMobile);
-            this.listenTo(this.app.vent, 'show-max-screen', this.expandMobile);
+
+           
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
@@ -133,7 +133,6 @@ define([
         },
 
         initParallax: function () {
-            var that = this;
             var MoveItItem = function (el) {
                 this.initialPosition = $(el).position().top;
                 this.calculateDimensions = function () {
