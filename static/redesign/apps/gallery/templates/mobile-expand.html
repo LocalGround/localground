@@ -1,5 +1,5 @@
 
-<div class="parallax black" data-scroll-speed="0.35">
+<div class="parallax black" data-target-top="0%">
     <div class="top-section">
     {{#if video_photo_count }}
         <div class="mobile-carousel carousel-videos-photos"></div>
@@ -7,13 +7,18 @@
     </div>
 </div>
 
-<div class="parallax body" id="parallax-body" data-scroll-speed="4">
-        <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
-        <div class="header-info">
-            <h3 id="drag-header" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
-        </div>
-        <section>
-                <p>text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text</p>
+<div class="parallax body" id="parallax-body" data-target-top="50%" style="color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}">
+    <div class="mobile-wrapper">
+        <section class="first mobile-section">
+            <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
+            <div class="header-info">
+                <h3 id="drag-header" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
+            </div>
+        </section>
+        <section class="second mobile-section">
+            <p>
+                text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text 
+            </p>
             {{#if fields }}
             <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
             {{#each fields}}
@@ -47,3 +52,4 @@
             {{/if}}
         </div>
     </div>
+</div>

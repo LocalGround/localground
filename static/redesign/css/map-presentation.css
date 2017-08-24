@@ -318,7 +318,6 @@ svg, .fa-question-circle {
 
     .mobile-minimize .header-info {
         float: left;
-        margin: 0 20px;
     }
 
     .mobile-full .header-info {
@@ -399,10 +398,17 @@ svg, .fa-question-circle {
         z-index: 0;
     }
 
-    .parallax.body section {
-        height: 50vh;
+    .second.mobile-section {
+        height: calc(48vh);
         overflow-y: scroll;
         display: inline-block;
+    }
+
+    .mobile-section {
+        display: inline-block;
+        margin-bottom: 15px;
+        padding-left: 20px;
+        padding-right: 20px;
     }
 
     html, body {
@@ -475,6 +481,12 @@ Separate Mobile CSS
     min-height: 50px;
 }
 
+.mobile-wrapper {
+    width: 100%;
+  
+    box-sizing: border-box;
+}
+
 
 
 
@@ -529,7 +541,7 @@ Separate Mobile CSS
 
 #presentation-title {
     /*background-color: #354c7a;*/
-    position: fixed;
+    position: absolute;
     width: 401px;
     box-shadow: 0 3px 0 0 rgba(53, 76, 122, 0.08);
     z-index: 100;
@@ -584,17 +596,20 @@ Separate Mobile CSS
     #presentation-title {
         width: 100%;
     }
+    /*
     .carousel {
         margin-top: 5px;
         max-width: 400px;
         margin: 0 auto;
-    }
+    } */
 
     #marker-detail-panel .section {
         margin: 0 auto;
-        max-width: 400px;
-        padding: 0px 10px;
+/*      max-width: 400px;
+        padding: 0px 10px; */
         clear: both;
+        padding-bottom: 40px;
+        margin-bottom: 40px;
     }
 
     table.preview-properties {
@@ -602,6 +617,10 @@ Separate Mobile CSS
         max-width: 400px;
         margin: 10 auto;
         padding: 0px 10px;
+    }
+
+    .audio-container {
+        padding: 20px 0px !important;
     }
 
 }
