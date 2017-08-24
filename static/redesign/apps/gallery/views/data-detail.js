@@ -71,13 +71,21 @@ define([
            // $(document).on('scrollstart', _.bind(this.detectScroll, this));           
             //$(window).on("scroll",  _.bind(this.detectScroll, this))
             this.isMobile();
+
+           
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
 
         expandMobile: function () {
-            console.log("render new template", this);
+            console.log("render expandMobile", this);
             this.mobileView = "expanded";
+            this.getTemplate();
+            this.render();
+        },
+        contractMobile: function () {
+            console.log("render contractMobile", this);
+            this.mobileView = null;
             this.getTemplate();
             this.render();
         },
@@ -86,7 +94,7 @@ define([
             console.log("scrolling");
             var triggerHeight = screen.height - (screen.height/3),
             scrollHeight = parseInt(this.$el.find('#parallax-body').css('top'), 10);
-            
+
             /*
             var oldTranslateY = $('#parallax-body').css("transform"),
             dragEl = document.getElementById("parallax-body"),
@@ -116,28 +124,43 @@ define([
         initParallax: function () {
             var MoveItItem = function (el) {
                 this.initialPosition = $(el).position().top;
+                this.calculateDimensions = function () {
+                    this.targetTop = this.$el.attr('data-target-top').replace("%", "");
+                    this.finalPosition = parseFloat(this.targetTop, 10) * $(window).height() / 100;
+                    that.distance = this.initialPosition - this.finalPosition;
+                    this.scrollDistance = Math.abs($(window).height() - $(document).height());
+                    this.speed = that.distance / this.scrollDistance;
+                };
                 this.$el = $(el).css({
                     position: "fixed",
                     top: this.initialPosition
                 });
-                this.targetTop = this.$el.attr('data-target-top').replace("%", "");
-                this.finalPosition = parseFloat(this.targetTop, 10) * $(window).height() / 100;
-                this.distance = this.initialPosition - this.finalPosition;
-                this.scrollDistance = Math.abs($(window).height() - $(document).height());
-                this.speed = this.distance / this.scrollDistance;
-                /*
-                // FOR DEBUGGING:
-                this.className = this.$el.attr('class');
-                console.log("--------------------");
-                console.log("className", this.className);
-                console.log("initialPosition", this.initialPosition);
-                console.log("finalPosition", this.finalPosition);
-                console.log("scrollDistance", this.scrollDistance);
-                console.log("distance", this.distance);
-                console.log("speed", this.speed);
-                */
+
+                this.calculateDimensions();
+
+                this.lastDirection = "up";
+                this.lastScrollTop = 0;
+
                 this.update = function (scrollTop) {
+                    var direction = (scrollTop > this.lastScrollTop) ? "up": "down";
+                    if (direction !== this.lastDirection) {
+                        console.log('switch');
+                    }
+                    if (direction == "down" && scrollTop <= 50) {
+                        this.calculateDimensions();
+                        console.log(that.distance);
+                        console.log("showSmallTemplate", that.distance);
+                    }
+
+                    if (direction == "up" && scrollTop >= 200) {
+                        this.calculateDimensions();                        //console.log(that.distance);
+                        console.log("showBigTemplate", that.distance);
+                    }
                     this.$el.css('top', this.initialPosition - scrollTop * this.speed);
+
+                    //remember last values:
+                    this.lastDirection = direction;
+                    this.lastScrollTop = scrollTop;
                 };
             };
             $.fn.moveIt = function () {
