@@ -31,6 +31,7 @@ class ProjectMixin(GroupMixin):
                 select={
                     'photo_count': sql.format('photo'),
                     'audio_count': sql.format('audio'),
+                    'video_count': sql.format('video'),
                     'processed_maps_count': sql.format('mapimage'),
                     'marker_count': sql.format('marker'),
                     'shared_with': 'select shared_with from v_projects_shared_with WHERE v_projects_shared_with.id = site_project.id'
@@ -39,7 +40,7 @@ class ProjectMixin(GroupMixin):
         if ordering_field:
             q = q.order_by(ordering_field)
         return q  # self.populate_tags_for_queryset(q)
-    
+
 
     def to_dict_list(self):
         # does this need to be implemented, or can we just rely on
@@ -52,7 +53,7 @@ class ProjectQuerySet(QuerySet, ProjectMixin):
 
 
 class ProjectManager(models.GeoManager, ProjectMixin):
-    
+
     def get_queryset(self):
         return ProjectQuerySet(self.model, using=self._db)
 
@@ -147,7 +148,7 @@ class FormMixin(GroupMixin):
 
 
 class FormQuerySet(QuerySet, FormMixin):
-    
+
     def delete(self):
         # ensure that the model's overrided delete method is called here
         for m in list(self):
@@ -155,7 +156,7 @@ class FormQuerySet(QuerySet, FormMixin):
 
 
 class FormManager(models.GeoManager, FormMixin):
-    
+
     def get_queryset(self):
         return FormQuerySet(self.model, using=self._db)
 
@@ -194,7 +195,7 @@ class PresentationManager(models.GeoManager, PresentationMixin):
     #    return PresentationQuerySet(self.model, using=self._db)
     pass
 
-    
+
 class LayerMixin(GroupMixin):
     prefetch_fields = []
 
