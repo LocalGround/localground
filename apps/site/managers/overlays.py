@@ -43,7 +43,7 @@ class MarkerMixin():
         #raise Exception(table_name)
         #raise Exception(suffix)
 
-        child_classes = [models.Photo, models.Audio, models.MapImage]
+        child_classes = [models.Photo, models.Audio, models.MapImage, models.Video]
 
         # build a custom query that includes child counts:
         select = {}
@@ -69,7 +69,7 @@ class MarkerMixin():
             content_type_id,
             table_name
         )
-        return q.extra(select)    
+        return q.extra(select)
 
     def get_objects_public_with_counts(
             self,
@@ -81,7 +81,7 @@ class MarkerMixin():
             access_key=access_key,
             ordering_field=ordering_field)
         return self.append_extras(q, "count", project=project, forms=forms)
-    
+
     def get_objects_public_with_lists(
             self,
             forms=None,
@@ -107,7 +107,3 @@ class MarkerManager(GeoManager, ObjectMixin, MarkerMixin):
     #def get_queryset(self):
     #    return MarkerQuerySet(self.model, using=self._db)
     pass
-
-    
-    
-    
