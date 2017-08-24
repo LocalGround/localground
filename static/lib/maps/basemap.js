@@ -205,6 +205,9 @@ define(["marionette",
 
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.mapID),
                     mapOptions);
+                //setTimeout(function () {
+                //    $("#map").css({"position": "fixed"});
+                //s}, 500);                
                 this.initTileManager();
             },
             showStreetView: function (model) {

@@ -89,6 +89,7 @@ define([
             } else {
                 this.showLegend();
             }
+        //    $('#marker-detail-panel').addClass('parallax').attr('data-scroll-speed', '1');
         },
 
         showBasemap: function () {
@@ -112,6 +113,10 @@ define([
                     position: google.maps.ControlPosition.LEFT_BOTTOM
                 }
             });
+            setTimeout(function () {
+                $("#map").css({"position": "fixed",
+            'z-index': '0'});
+            }, 500);
             this.mapRegion.show(this.basemapView);
         },
 
@@ -178,11 +183,11 @@ define([
 
 
             var paragraph = this.model.get('panel_styles').paragraph;
-            if (paragraph) {
+            if (paragraph && $(window).width() >= 900) {
                 console.log(paragraph.color);
                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
             }
-        
+
             this.sideRegion.show(this.detailView);
             this.unhideDetail();
         },

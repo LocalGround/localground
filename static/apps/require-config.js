@@ -30,6 +30,7 @@ require.config({
         'jquery': '//code.jquery.com/jquery-1.8.0.min',
         'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
         'jquery.ui': '//code.jquery.com/ui/1.12.1/jquery-ui.min',
+        'touchPunch': 'external/jquery.ui.touch-punch.min',
         'jquery.ui.widget': 'external/jquery.ui.widget',
         //new uploader
         'jquery.fileupload-ip': 'external/jquery.fileupload-ip',
@@ -67,6 +68,7 @@ require.config({
             deps: ['jquery']
         },
         'jquery.ui': ['jquery'],
+        'touchPunch': ['jquery.ui'],
         'jquery.ui.widget': ['jquery.ui'],
         'jquery.fileupload': ['jquery.ui.widget'],
         'backgrid': {

@@ -1,6 +1,7 @@
 define([
     "jquery",
     "underscore",
+    "backbone",
     "handlebars",
     "marionette",
     "collections/photos", "collections/audio", "collections/videos",
@@ -12,8 +13,10 @@ define([
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
-    "lib/forms/backbone-form"
-], function ($, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
+    "lib/forms/backbone-form",
+    "touchPunch"
+], function ($, _, Backbone, Handlebars, Marionette, Photos, Audio, Videos,
+        PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
         MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
@@ -29,7 +32,9 @@ define([
             "click #add-geometry": "activateMarkerTrigger",
             "click #delete-geometry": "deleteMarker",
             "click #add-rectangle": "activateRectangleTrigger",
-            "click .streetview": 'showStreetView'
+            "click .streetview": 'showStreetView',
+            "click #open-full": 'openMobileDetail',
+            "click .thumbnail-play-circle": 'playAudio'
         },
         getTemplate: function () {
             console.log(this.dataType);
@@ -58,9 +63,160 @@ define([
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
+            $('#marker-detail-panel').addClass('mobile-minimize');
+            $(window).on("resize", _.bind(this.screenSize, this));
+           // $(window).scroll(this.detectScroll);
+            //$(window).on("scroll",  _.bind(this.detectScroll, this))
+            this.isMobile();
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
-            this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
+            this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
+
+        /*detectScroll: function (event) {
+            console.log("scrolling");
+            var oldTranslateY = $('#parallax-body').css("transform"),
+            dragEl = document.getElementById("parallax-body"),
+            translateY = this.getComputedTranslateY(document.getElementById("parallax-body"));
+            $('.min-thumbnail').remove();
+            console.log(oldTranslateY, this.getComputedTranslateY(dragEl), translateY);
+            if (translateY < -70) {
+                console.log("trigger stop!");
+               // $(window).scrollTop(screen.height/2.5);
+            }
+           // if (this.$el.find(".parallax."))
+        },
+
+        getComputedTranslateY: function(object) {
+            if(!window.getComputedStyle) return;
+            var style = getComputedStyle(object),
+                transform = style.transform;
+            var mat = transform.match(/^matrix3d\((.+)\)$/);
+            if(mat) return parseFloat(mat[1].split(', ')[13]);
+            mat = transform.match(/^matrix\((.+)\)$/);
+            return mat ? parseFloat(mat[1].split(', ')[5]) : 0;
+        },*/
+
+        initParallax: function () {
+            var MoveItItem = function (el) {
+                this.initialPosition = $(el).position().top;
+                this.$el = $(el).css({
+                    position: "fixed",
+                    top: this.initialPosition
+                });
+                this.targetTop = this.$el.attr('data-target-top').replace("%", "");
+                this.finalPosition = parseFloat(this.targetTop, 10) * $(window).height() / 100;
+                this.distance = this.initialPosition - this.finalPosition;
+                this.scrollDistance = Math.abs($(window).height() - $(document).height());
+                this.speed = this.distance / this.scrollDistance;
+                /*
+                // FOR DEBUGGING:
+                this.className = this.$el.attr('class');
+                console.log("--------------------");
+                console.log("className", this.className);
+                console.log("initialPosition", this.initialPosition);
+                console.log("finalPosition", this.finalPosition);
+                console.log("scrollDistance", this.scrollDistance);
+                console.log("distance", this.distance);
+                console.log("speed", this.speed);
+                */
+                this.update = function (scrollTop) {
+                    this.$el.css('top', this.initialPosition - scrollTop * this.speed);
+                };
+            };
+            $.fn.moveIt = function () {
+                var $window = $(window),
+                    instances = [];
+                $(this).each(function () {
+                    instances.push(new MoveItItem($(this)));
+                });
+
+                window.onscroll = function () {
+                    var scrollTop = $window.scrollTop();
+                    instances.forEach(function (inst) {
+                        inst.update(scrollTop);
+                    });
+                };
+            };
+            $(function () {
+                $(window).scrollTop(0);
+                $('.parallax').moveIt();
+            });
+        },
+
+
+
+        /*initDraggable: function () {
+            return;
+            var that = this;
+
+            $( '#marker-detail-panel' ).draggable({
+               // handle: '.body-section',
+                axis: 'y',
+                handle: '.body-section',
+
+                drag: function (event, ui) {
+                    if  (ui.position.top <= 0) {
+                        console.log("stop");
+                    } else {
+                        $('#marker-detail-panel').css('max-height', 'none');
+                        $('.body-section').css('max-height', '50%');
+                    //  $('.top-section').css('height', 'auto');
+                        //var top = parseFloat($('.body-section').css('top'));
+                        var top =  screen.height - ui.position.top;
+                        console.log("dragging", top, screen.height, ui.position.top);
+
+                        $('#marker-detail-panel').css({
+                            'height':'auto',
+                            'max-height': 'auto',
+                        });
+
+                        $('.body-section').css({
+                            'height': top
+
+                        });
+
+                        $('.top-section').css({
+                            'height': screen.height - ui.position.top
+                        })
+
+                        $('#presentation-title').css({
+                            'opacity': 0
+                        })
+
+                        $('#legend').css({
+                            'opacity': 0
+                        })
+                    }
+                }
+            });
+        },*/
+
+        isMobile: function () {
+            if ($(window).width() >= 900) {
+                this.mobileMode = false;
+            } else if ($(window).width() <= 900) {
+                this.mobileMode = true;
+            }
+        },
+
+        screenSize: function () {
+            if (this.oldWidth) {
+                if (this.oldWidth < 900 && $(window).width() > 900) {
+                    this.mobileMode = false;
+                    this.render();
+                } else if (this.oldWidth > 900 && $(window).width() < 900) {
+                    this.mobileMode = true;
+                    this.render();
+                } else {
+                    return;
+                }
+            } else {
+                this.oldWidth = $(window).width();
+                this.screenSize();
+            }
+            this.oldWidth = $(window).width();
+        },
+
         activateRectangleTrigger: function () {
             $('body').css({ cursor: 'crosshair' });
             this.app.vent.trigger("add-new-marker", this.model);
@@ -194,6 +350,8 @@ define([
                 this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
+            console.log("featured image: ", this.getFeaturedImage());
+            console.log(this.mobileMode);
 
             return {
                 mode: this.app.mode,
@@ -205,10 +363,26 @@ define([
                 lng: lng,
                 paragraph: paragraph,
                 featuredImage: this.getFeaturedImage(),
+                thumbnail: this.getThumbnail(),
                 photo_count: this.getPhotos().length,
                 audio_count: this.getAudio().length,
                 video_count: this.getVideos().length,
+                mobileMode: this.mobileMode,
+                hasAudio: this.getAudio().length,
+                video_photo_count: this.getVideos().length + this.getPhotos().length
             };
+        },
+
+        getThumbnail: function () {
+            if (this.getFeaturedImage()) {
+                return this.getFeaturedImage();
+            } else if (!_.isEmpty(this.model.get("children"))) {
+                console.log(this.model.get("children"));
+                var photoData = this.model.get("children").photos.data;
+                return photoData[0];
+            } else {
+                return null;
+            }
         },
 
         getFeaturedImage: function () {
@@ -248,43 +422,31 @@ define([
                 photos = this.getPhotos(),
                 videos = this.getVideos(),
                 audio = this.getAudio(),
-                that = this;
-                console.log(audio);
+                that = this,
+                panelStyles,
+                genericList,
+                i;
             if (this.panelStyles) {
-                var panelStyles = this.panelStyles;
+                panelStyles = this.panelStyles;
             }
 
-            if (photos.length > 0) {
-                c = new Carousel({
-                    model: this.model,
-                    app: this.app,
-                    featuredImage: this.getFeaturedImage(),
-                    mode: "photos",
-                    collection: photos,
-                    panelStyles: panelStyles
-                });
-                this.$el.find(".carousel-photo").append(c.$el);
-            }
-            if (videos.length > 0) {
+            if (photos.length > 0 || videos.length > 0) {
+                genericList = [];
+                genericList = genericList.concat(photos.toJSON());
+                genericList = genericList.concat(videos.toJSON());
+                for (i = 0; i < genericList.length; i++) {
+                    genericList[i].id = (i + 1);
+                }
                 c = new Carousel({
                     model: this.model,
                     app: this.app,
                     mode: "videos",
-                    collection: videos,
+                    collection: new Backbone.Collection(genericList),
                     panelStyles: panelStyles
                 });
-                this.$el.find(".carousel-video").append(c.$el);
+                this.$el.find(".carousel-videos-photos").append(c.$el);
             }
             if (audio.length > 0) {
-                /*
-                c = new Carousel({
-                    model: this.model,
-                    app: this.app,
-                    mode: "audio",
-                    collection: audio,
-                    panelStyles: panelStyles
-                });
-                */
                 audio.forEach(function (audioTrack) {
                     c = new AudioPlayer({
                         model: audioTrack,
@@ -325,7 +487,11 @@ define([
                 });
                 this.$el.find(".player-container").append(player.$el);
             }
-
+            // setTimeout necessary to register DOM element
+            //setTimeout(this.initDraggable.bind(this), 50);
+            if ($(window).width() < 900) {
+                this.initParallax();
+            }
         },
 
         rotatePhoto: function (e) {
@@ -406,6 +572,50 @@ define([
         },
         updateStreetViewButton: function () {
             this.$el.find('.streetview').html('Show Street View');
+        },
+        openMobileDetail: function () {
+
+            console.log("init darggable", $( ".body-section" ));
+            if ($('#marker-detail-panel').hasClass('mobile-minimize')) {
+
+                $('#marker-detail-panel').addClass('mobile-full');
+                $('#marker-detail-panel').removeClass('mobile-minimize');
+
+                $('#legend').addClass('mobile-full-legend');
+                $('#legend').removeClass('mobile-minimize-legend');
+
+                $('#presentation-title').addClass('mobile-full-title');
+                $('#presentation-title').removeClass('mobile-minimize-title');
+
+            } else if ($('#marker-detail-panel').hasClass('mobile-full')) {
+
+                $('#marker-detail-panel').addClass('mobile-minimize');
+                $('#marker-detail-panel').removeClass('mobile-full');
+
+                $('#legend').addClass('mobile-minimize-legend');
+                $('#legend').removeClass('mobile-full-legend');
+
+                $('#presentation-title').addClass('mobile-minimize-title');
+                $('#presentation-title').removeClass('mobile-full-title');
+            }
+
+            console.log("mobile toggle");
+
+        },
+
+        playAudio: function () {
+            var audio = this.$el.find(".audio").first().get(0);
+            if (this.$el.find('.thumbnail-play').hasClass('fa-play')) {
+                this.$el.find('.thumbnail-play').addClass("fa-pause");
+                this.$el.find('.thumbnail-play').removeClass("fa-play");
+                console.log("play audio");
+                audio.play();
+            } else {
+                this.$el.find('.thumbnail-play').addClass("fa-play");
+                this.$el.find('.thumbnail-play').removeClass("fa-pause");
+                console.log("pause audio");
+                audio.pause();
+            }
         }
     });
     return MediaEditor;
