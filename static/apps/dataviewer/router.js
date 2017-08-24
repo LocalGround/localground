@@ -12,17 +12,17 @@ define([
 
             'map': 'showMap',
             'map/:dataType': 'dataList',
-            'map/:dataType/:id': 'dataDetail',
             'map/:dataType/new': 'addRow',
+            'map/:dataType/:id': 'dataDetail',
 
             'table': 'showTable',
-            'table/:dataType/:id': 'dataDetail',
             'table/:dataType/new': 'addRow',
+            'table/:dataType/:id': 'dataDetail',
 
             'gallery': 'showGallery',
             'gallery/:dataType': 'dataList',
-            'gallery/:dataType/:id': 'dataDetail',
-            'gallery/:dataType/new': 'addRow'
+            'gallery/:dataType/new': 'addRow',
+            'gallery/:dataType/:id': 'dataDetail'
         },
         initialize: function (options) {
             this.controller = new Controller({

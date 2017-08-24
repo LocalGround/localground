@@ -93,8 +93,11 @@ define([
             e.preventDefault();
         },
         triggerAddNew: function (e) {
-            var mediaType = this.$el.find('.media-type').val(),
-                url = "//" + mediaType + "/new";
+            var mediaType = this.app.dataType,
+                screenType = this.app.screenType,
+                url;
+            screenType = (screenType === "spreadsheet") ? "table" : screenType;
+            url = "//" + screenType + "/" + mediaType + "/new"
             if (mediaType === 'photos' || mediaType === 'audio') {
                 this.createMediaUploadModal();
             } else if (mediaType === 'map_images') {
