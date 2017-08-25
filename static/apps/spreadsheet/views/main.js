@@ -152,8 +152,9 @@ define(["jquery",
                 }
 
                 if (this.collection.length == 0) {
+                    // Render spreadsheet should be called after every removal of rows
                     this.$el.find('#grid').html('<div class="empty-message">' +
-                        'No ' + this.app.dataType + ' have been added yet.' +
+                        'No rows have been added yet.' +
                         '</div>');
                     return;
                 }
@@ -408,6 +409,10 @@ define(["jquery",
                     // from H.O.T. to easily alter the table
                     // by removing the target row
                     instance.alter("remove_row", row);
+
+                    if(that.collection.length == 0){
+                        that.renderSpreadsheet();
+                    }
 
                     // Now there is no trace of any deleted data,
                     // especially when the user refreshes the page
