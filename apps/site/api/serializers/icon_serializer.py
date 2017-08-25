@@ -9,7 +9,7 @@ from PIL import Image, ImageOps
 
 class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'png', 'svg']
-    icon = serializers.CharField(
+    icon_file = serializers.CharField(
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
@@ -106,7 +106,7 @@ class IconSerializerList(IconSerializerBase):
     class Meta:
         model = models.Icon
         read_only_fields = ('width', 'height', 'anchor_x', 'anchor_y', 'file_type')
-        fields = ('url', 'id', 'name', 'icon', 'file_type', 'file_path',
+        fields = ('url', 'id', 'name', 'icon_file', 'file_type', 'file_path',
                   'owner', 'project_id', 'size', 'width', 'height', 'anchor_x', 'anchor_y')
         depth = 0
         
@@ -164,6 +164,6 @@ class IconSerializerUpdate(IconSerializerBase):
     class Meta:
         model = models.Icon
         read_only_fields = ('width', 'height', 'project_id', 'file_type')
-        fields = ('url', 'id', 'name', 'icon', 'file_type', 'file_path',
+        fields = ('url', 'id', 'name', 'icon_file', 'file_type', 'file_path',
                   'owner', 'size', 'width', 'height', 'project_id', 'anchor_x', 'anchor_y')
         depth = 0

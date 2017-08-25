@@ -443,6 +443,20 @@ class ModelMixin(object):
         photo.save()
         return photo
 
+    def create_icon(self, user, project, icon_file='icon.jpg', name='test_icon', size=100, anchor_x=30, anchor_y=50):
+        from localground.apps.site import models
+        icon = models.Icon(
+            project=project,
+            owner=user,
+            icon_file=icon_file,
+            name=name,
+            size=size,
+            anchor_x=anchor_x,
+            anchor_y=anchor_y
+        )
+        icon.save()
+        return icon
+
     def create_video(self, user, project, name='Video Name',
                  provider='youtube', video_id='4232534',
                  point=None, tags=[]):
