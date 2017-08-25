@@ -91,11 +91,6 @@ define([
             Marionette.ItemView.prototype.initialize.call(this);
             $('#marker-detail-panel').addClass('mobile-minimize');
             $(window).on("resize", _.bind(this.screenSize, this));
-            //$(window).on("resize", _.bind(this.screenSize, this));
-           // $(window).scroll(this.detectScroll);
-            //$(window).on("scroll",  _.bind(this.detectScroll, this));
-           // $(document).on('scrollstart', _.bind(this.detectScroll, this));
-            //$(window).on("scroll",  _.bind(this.detectScroll, this))
             this.isMobile();
 
 
@@ -563,6 +558,7 @@ define([
                         model.trigger('saved');
                     } else {
                         model.collection.add(model);
+                        that.render();
                     }
                 },
                 error: function (model, response) {

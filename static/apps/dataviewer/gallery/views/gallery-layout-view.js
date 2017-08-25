@@ -16,7 +16,8 @@ define(["marionette",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.template = Handlebars.compile(GalleryLayoutTemplate);
-                this.listenTo(this.app.vent, 'show-detail', this.showDataDetail);
+                this.listenTo(this.app.vent, 'show-detail', this.showMediaDetail);
+                this.listenTo(this.app.vent, 'hide-detail', this.hideMediaDetail);
             },
             onRender: function () {
               this.galleryListView = new DataList({
@@ -43,6 +44,29 @@ define(["marionette",
             showDataDetail: function (view) {
                 this.detailRegion.show(view);
             },
+
+
+            showMediaList: function (dataType) {
+                var data = this.dataManager.getData(dataType);
+                this.dataType = dataType;
+                this.saveAppState();
+                this.currentCollection = data.collection;
+                this.mainView = new DataList({
+                    app: this,
+                    collection: this.currentCollection,
+                    fields: data.fields
+                });
+                this.galleryRegion.show(this.mainView);
+                this.hideMediaDetail();
+            },
+
+
+            hideMediaDetail: function () {
+                if (this.detailView) {
+                    this.detailView.doNotDisplay();
+                }
+            },
+
             saveAppState: function () {
                 this.saveState("dataView", {
                     dataType: this.dataType
