@@ -29,14 +29,14 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 'click .save-modal-form': 'saveFunction',
                 'click .delete-modal': 'deleteFunction'
             },
-            deleteFunction: function () {
-                alert("blah");
-            },
             template: Handlebars.compile(ModalTemplate),
             initialize: function (opts) {
                 opts = opts || {};
                 _.extend(this, opts);
-                this.saveFunction = opts.saveFunction;
+                this.saveFunction = function () {
+                    opts.saveFunction();
+                    this.render();
+                }
                 if (!$(".modal").get(0)) {
                     this.render();
                     $('body').append(this.$el);
@@ -77,8 +77,11 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts.deleteButtonText = opts.deleteButtonText || "Delete";
                 opts.printButtonText = opts.printButtonText || "Print";
                 _.extend(this, opts);
-                //this.saveFunction = function () {alert("hello!");}
-                console.log(this.saveFunction);
+                this.saveFunction = function () {
+                    opts.saveFunction();
+                    // calls render to clear out running multimedia objects
+                    this.render();
+                };
                 this.attachEvents();
                 this.render();
                 this.delegateEvents();
@@ -86,7 +89,6 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             },
 
             updateSaveButton: function (opts) {
-                console.log('updateSaveButton');
                 this.$el.find('.save-modal-form').css(opts);
                 if (opts.printButtonText) {
                     this.$el.find('.save-modal-form').html(opts.printButtonText);
