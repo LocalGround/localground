@@ -107,6 +107,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             },
             hide: function () {
                 this.$el.find('.modal').hide();
+                this.render();
             }
         });
         return Modal;

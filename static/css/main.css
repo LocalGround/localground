@@ -1579,6 +1579,7 @@ tbody .failure-message, tbody .success-message {
     font-size: 14px;
     width: 100%;
     height: 300px;
+    margin: auto;
     position: relative;
     box-sizing: border-box;
 }
@@ -1591,19 +1592,8 @@ tbody .failure-message, tbody .success-message {
     margin: 0;
     padding: 0;
     font-size: 14px;
-/*    width: 100%;
-    position: relative;*/
     box-sizing: border-box;
 }
-
-/*
-.side-panel .carousel-content {
-    max-height: 300px;
-}
-
-.carousel-modal .carousel-content {
-    max-height: 300px;
-}*/
 
 .carousel-content li {
     margin: 0;
@@ -1630,6 +1620,9 @@ tbody .failure-message, tbody .success-message {
     background: none;
 }
 
+.carousel-modal, .spreadsheet .carousel-caption-wrapper {
+    margin-top: 50px;
+}
 
 .carousel-photo .active-slide, .carousel-video .active-slide {
     min-height: 370px;
@@ -1746,13 +1739,8 @@ i.fa.fa-star-o.featured, i.fa.fa-star.featured {
     cursor: pointer;
 }
 
-.carouselbox.prev{
-    left: 8px;
-}
-
-
-.carouselbox.next{
-    left: 408px;
+.carouselbox .next, .carouselbox .prev{
+    margin: auto;
 }
 
 #rotate-icon {
@@ -1864,6 +1852,8 @@ i.fa.fa-star-o.featured, i.fa.fa-star.featured {
 .spreadsheet .carouselbox, .spreadsheet .active-slide {
     min-height: 500px;
     height: auto !important;
+    width: 600px;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 .spreadsheet .carousel-buttons {
     margin-top: -500px;

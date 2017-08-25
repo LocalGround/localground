@@ -64,36 +64,10 @@ define([
             Marionette.ItemView.prototype.initialize.call(this);
             $('#marker-detail-panel').addClass('mobile-minimize');
             $(window).on("resize", _.bind(this.screenSize, this));
-           // $(window).scroll(this.detectScroll);
-            //$(window).on("scroll",  _.bind(this.detectScroll, this))
             this.isMobile();
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
-
-        /*detectScroll: function (event) {
-            console.log("scrolling");
-            var oldTranslateY = $('#parallax-body').css("transform"),
-            dragEl = document.getElementById("parallax-body"),
-            translateY = this.getComputedTranslateY(document.getElementById("parallax-body"));
-            $('.min-thumbnail').remove();
-            console.log(oldTranslateY, this.getComputedTranslateY(dragEl), translateY);
-            if (translateY < -70) {
-                console.log("trigger stop!");
-               // $(window).scrollTop(screen.height/2.5);
-            }
-           // if (this.$el.find(".parallax."))
-        },
-
-        getComputedTranslateY: function(object) {
-            if(!window.getComputedStyle) return;
-            var style = getComputedStyle(object),
-                transform = style.transform;
-            var mat = transform.match(/^matrix3d\((.+)\)$/);
-            if(mat) return parseFloat(mat[1].split(', ')[13]);
-            mat = transform.match(/^matrix\((.+)\)$/);
-            return mat ? parseFloat(mat[1].split(', ')[5]) : 0;
-        },*/
 
         initParallax: function () {
             var MoveItItem = function (el) {
@@ -107,17 +81,6 @@ define([
                 this.distance = this.initialPosition - this.finalPosition;
                 this.scrollDistance = Math.abs($(window).height() - $(document).height());
                 this.speed = this.distance / this.scrollDistance;
-                /*
-                // FOR DEBUGGING:
-                this.className = this.$el.attr('class');
-                console.log("--------------------");
-                console.log("className", this.className);
-                console.log("initialPosition", this.initialPosition);
-                console.log("finalPosition", this.finalPosition);
-                console.log("scrollDistance", this.scrollDistance);
-                console.log("distance", this.distance);
-                console.log("speed", this.speed);
-                */
                 this.update = function (scrollTop) {
                     this.$el.css('top', this.initialPosition - scrollTop * this.speed);
                 };
@@ -141,54 +104,6 @@ define([
                 $('.parallax').moveIt();
             });
         },
-
-
-
-        /*initDraggable: function () {
-            return;
-            var that = this;
-
-            $( '#marker-detail-panel' ).draggable({
-               // handle: '.body-section',
-                axis: 'y',
-                handle: '.body-section',
-
-                drag: function (event, ui) {
-                    if  (ui.position.top <= 0) {
-                        console.log("stop");
-                    } else {
-                        $('#marker-detail-panel').css('max-height', 'none');
-                        $('.body-section').css('max-height', '50%');
-                    //  $('.top-section').css('height', 'auto');
-                        //var top = parseFloat($('.body-section').css('top'));
-                        var top =  screen.height - ui.position.top;
-                        console.log("dragging", top, screen.height, ui.position.top);
-
-                        $('#marker-detail-panel').css({
-                            'height':'auto',
-                            'max-height': 'auto',
-                        });
-
-                        $('.body-section').css({
-                            'height': top
-
-                        });
-
-                        $('.top-section').css({
-                            'height': screen.height - ui.position.top
-                        })
-
-                        $('#presentation-title').css({
-                            'opacity': 0
-                        })
-
-                        $('#legend').css({
-                            'opacity': 0
-                        })
-                    }
-                }
-            });
-        },*/
 
         isMobile: function () {
             if ($(window).width() >= 900) {
@@ -311,7 +226,6 @@ define([
             var i, f;
             if (this.model.get("overlay_type").indexOf("form_") != -1) {
                 for (i = 0; i < this.model.get("fields").length; i++) {
-                    /* https://github.com/powmedia/backbone-forms */
                     f = this.model.get("fields")[i];
                     f.val = this.model.get(f.col_name);
                 }
@@ -415,6 +329,7 @@ define([
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
+            console.log("Calling View Render");
             var c,
                 photos = this.getPhotos(),
                 videos = this.getVideos(),

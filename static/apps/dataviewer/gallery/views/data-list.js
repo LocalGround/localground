@@ -24,12 +24,10 @@ define(["jquery",
                         'change': 'render'
                     },
                     events: {
-                        "click .card-img-preview" : "selectedClass",
-                        "click .card-site-field" : "selectedClass",
-                        "click #audio-card" : "selectedClass",
-                        "click .video-simple" : "selectedClass"
+                        "click" : "selectedClass"
                     },
                     selectedClass : function () {
+                        console.log("Selecting class");
                         $(".column").removeClass("selected-card");
                         this.$el.toggleClass("selected-card");
                     },

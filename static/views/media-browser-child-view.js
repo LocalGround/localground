@@ -20,9 +20,7 @@ define ([
                 return Handlebars.compile(TableTemplate);
             },
             events: {
-                'click .card-img-preview' : 'doSelection',
-                'click .audio-simple' : 'doSelection',
-                'click .video-simple' : 'doSelection',
+                'click' : 'doSelection',
                 'click td' : "doSelection"
             },
 
