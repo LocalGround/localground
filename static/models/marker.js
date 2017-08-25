@@ -13,7 +13,8 @@ define(["models/base",
     var Marker = Base.extend({
         urlRoot: '/api/0/markers/',
 		defaults: _.extend({}, Base.prototype.defaults, {
-			color: "CCCCCC" // rough draft color
+			color: "CCCCCC",
+			overlay_type: "marker" // rough draft color
 		}),
         schema: {
             name: { type: 'TextArea', title: "Name" },

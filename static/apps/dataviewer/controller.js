@@ -8,6 +8,7 @@ define([
             this.app = options.app;
         },
         addRow: function (dataType) {
+            alert('add row');
             this.app.vent.trigger("add-row", {
                 dataType: dataType
             }, false);
@@ -16,16 +17,22 @@ define([
             console.log('dataList:', dataType);
             this.app.vent.trigger("show-list", dataType);
         },
+        addNew: function (screenType, dataType, id) {
+            this.dataDetail(dataType);
+        },
         dataDetail: function (dataType, id) {
-            console.log('dataDetail:', dataType, id);
             this.app.dataType = dataType;
-            var collection = this.app.getData().collection,
-                model = collection.get(id),
-                detailView = new DataDetail({
-                    model: model,
-                    app: this.app
-                });
+            //for gallery and map:
+            var detailView = new DataDetail({
+                model: this.app.dataManager.getModel(dataType, id) ,
+                app: this.app
+            });
             this.app.vent.trigger("show-detail", detailView, false);
+
+            //for spreadsheet:
+            this.app.vent.trigger("add-row", {
+                dataType: dataType
+            }, false);
         },
         showGallery: function () {
             this.app.vent.trigger("show-gallery");

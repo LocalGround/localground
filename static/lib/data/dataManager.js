@@ -121,15 +121,40 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     return null;
                 }
             },
+            getModel: function (dataType, id) {
+                var entry = this.getData(dataType),
+                    collection = entry.collection,
+                    fields = entry.fields,
+                    model,
+                    ModelClass;
+                if (id) {
+                    return collection.get(id);
+                }
+                ModelClass = collection.model,
+                model = new ModelClass();
+                model.collection = collection;
+                model.set("overlay_type", collection.key);
+                model.set("project_id", this.projectID);
+
+                // If we get the form, pass in the custom field
+                if (collection.key.indexOf("form_") != -1) {
+                    model.set("fields", fields.toJSON());
+                }
+                return model;
+            },
+            attachFieldsToRecord: function (record, fields) {
+                fields.each(function (field) {
+                    field.set("val", record.get(field.get("col_name")));
+                });
+                record.set('fields', fields.toJSON());
+            },
             attachFieldsToRecords: function (records, fields) {
                 // some extra post-processing for custom datatypes so that
                 // it's easier to loop through fields and output corresponding
                 // values
+                var that = this;
                 records.each(function (record) {
-                    fields.each(function (field) {
-                        field.set("val", record.get(field.get("col_name")));
-                    });
-                    record.set('fields', fields.toJSON());
+                    that.attachFieldsToRecord(record, fields);
                 });
             }
         });
