@@ -7,6 +7,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
             dataDictionary: {},
             formColors: ['#60C7CC', '#CF2045', '#A3A737', '#F27CA5'],
             colorCounter: 0,
+            dataLoaded: false,
             template: false,
             isEmpty: function () {
                 return Object.keys(this.dataDictionary).length === 0;
@@ -36,6 +37,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     _.extend(that.dataDictionary[key], extras);
                     delete entry.data;
                 });
+                this.dataLoaded = true;
                 this.vent.trigger('data-loaded');
             },
             getDataSources: function () {
