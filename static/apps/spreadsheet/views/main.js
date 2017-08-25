@@ -311,8 +311,6 @@ define(["jquery",
                     audioCount = model.get("audio_count") || 0,
                     videoCount = model.get("video_count") || 0,
                     i;
-                //for whatever reason, the first row renders twice. Weird:
-                //console.log("mediaCountRenderer:", model.id, photoCount, audioCount, videoCount);
 
                 td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
                 for (i = 0; i < photoCount; ++i) {
@@ -342,6 +340,10 @@ define(["jquery",
             },
 
             makeCarousel: function (e) {
+                /*
+                  Make sure all carousels are initalized
+                  Need that to be called for each and every row upon rendering spreadsheet
+                */
                 var that = this,
                     rowIndex = $(e.target).attr("row-index"),
                     collection;
