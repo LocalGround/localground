@@ -5,9 +5,6 @@ define(["jquery",
         "views/media_browser",
         "models/record",
         "models/marker",
-        "collections/photos",
-        "collections/audio",
-        "collections/videos",
         "apps/spreadsheet/views/create-field",
         "handsontable",
         "text!../templates/spreadsheet.html",
@@ -15,7 +12,7 @@ define(["jquery",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser,
-        Record, Marker, Photos, Audio, Videos, CreateFieldView, Handsontable, SpreadsheetTemplate,
+        Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate,
         AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
@@ -30,9 +27,8 @@ define(["jquery",
                 'click #addColumn': 'showCreateFieldForm',
                 'click .addMedia': 'showMediaBrowser',
                 'click .delete_column' : 'deleteField',
-                'click .carousel-photo': 'carouselPhoto',
-                'click .carousel-audio': 'carouselAudio',
-                'click .carousel-video': 'carouselVideo'
+                'click .carousel-media': 'carouselMedia'
+
             },
             foo: "bar",
             initialize: function (opts) {
@@ -320,15 +316,15 @@ define(["jquery",
 
                 td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
                 for (i = 0; i < photoCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
+                    td.innerHTML += "<a class = 'carousel-media' row-index = '"+row+"' col-index = '"+col+"'>\
                     <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
                 for (i = 0; i < audioCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
+                    td.innerHTML += "<a class = 'carousel-media' row-index = '"+row+"' col-index = '"+col+"'>\
                     <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
                 for (i = 0; i < videoCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-video' row-index = '"+row+"' col-index = '"+col+"'>\
+                    td.innerHTML += "<a class = 'carousel-media' row-index = '"+row+"' col-index = '"+col+"'>\
                     <i class='fa fa-file-video-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
 
@@ -345,27 +341,20 @@ define(["jquery",
                 modal.style.display = "block";
             },
 
-            makeCarousel: function (e, mode) {
+            makeCarousel: function (e) {
                 var that = this,
                     rowIndex = $(e.target).attr("row-index"),
                     collection;
                 this.currentModel = this.collection.at(parseInt(rowIndex));
                 this.currentModel.fetch({
                     success: function () {
-                        switch (mode) {
-                            case "photos":
-                                collection = new Photos(that.currentModel.get("children").photos.data);
-                                break;
-                            case "audio":
-                                collection = new Audio(that.currentModel.get("children").audio.data);
-                                break;
-                            case "videos":
-                                collection = new Videos(that.currentModel.get("children").videos.data);
-                                break;
-                        }
+                        collection = new Backbone.Collection();
+                        collection.add(that.currentModel.get("children").photos.data);
+                        collection.add(that.currentModel.get("children").audio.data);
+                        collection.add(that.currentModel.get("children").videos.data);
+
                         var carousel = new Carousel({
                             model: that.currentModel,
-                            mode: mode,
                             app: that.app,
                             collection: collection
                         });
@@ -374,16 +363,8 @@ define(["jquery",
                 });
             },
 
-            carouselPhoto: function (e) {
-                this.makeCarousel(e, "photos");
-            },
-
-            carouselAudio: function(e){
-                this.makeCarousel(e, "audio");
-            },
-
-            carouselVideo: function(e){
-                this.makeCarousel(e, "videos");
+            carouselMedia: function(e){
+                this.makeCarousel(e);
             },
 
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
