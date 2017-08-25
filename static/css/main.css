@@ -1630,6 +1630,9 @@ tbody .failure-message, tbody .success-message {
     background: none;
 }
 
+.carousel-modal, .spreadsheet .carousel-caption-wrapper {
+    margin-top: 50px;
+}
 
 .carousel-photo .active-slide, .carousel-video .active-slide {
     min-height: 370px;
