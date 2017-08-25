@@ -1,0 +1,55 @@
+
+<div class="parallax black" data-target-top="0%">
+    <div class="top-section">
+    {{#if video_photo_count }}
+        <div class="mobile-carousel carousel-videos-photos"></div>
+    {{/if}}
+    </div>
+</div>
+
+<div class="parallax body" id="parallax-body" data-target-top="50%" style="color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}">
+    <div class="mobile-wrapper">
+        <section class="first mobile-section">
+            <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
+            <div class="header-info">
+                <h3 id="drag-header" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
+            </div>
+        </section>
+        <section class="second mobile-section">
+            <p>
+                text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text 
+            </p>
+            {{#if fields }}
+            <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
+            {{#each fields}}
+                <tr>
+                    <td>{{ this.col_alias }}:</td>
+                    <td>{{ this.val }}</td>
+                </tr>
+            {{/each}}
+            {{#if tags}}
+                <tr>
+                    <td></td>
+                    <td>
+                        {{#each tags}}
+                            <a class="tag"> {{this}} </a>
+                        {{/each}}
+                    </td>
+                </tr>
+            {{/if}}
+            </table>
+            {{else}}
+            <div class="tag-container">
+                {{#each tags}}
+                <a class="tag"> {{this}} </a>
+                {{/each}}
+        </div>
+        {{/if}}
+        <div class="section">
+            {{#if audio_count }}
+            <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}">
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</div>
