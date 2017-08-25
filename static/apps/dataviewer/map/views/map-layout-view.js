@@ -2,10 +2,9 @@ define(["marionette",
         "handlebars",
         "apps/map/views/marker-listing-manager",
         "lib/maps/basemap",
-        "apps/gallery/views/data-detail",
         "text!../templates/map-layout.html"
     ],
-    function (Marionette, Handlebars, MarkerListingManager, Basemap, DataDetail, MapLayoutTemplate)  {
+    function (Marionette, Handlebars, MarkerListingManager, Basemap, MapLayoutTemplate)  {
         'use strict';
         var MapLayout = Marionette.LayoutView.extend({
             className: 'main-panel',

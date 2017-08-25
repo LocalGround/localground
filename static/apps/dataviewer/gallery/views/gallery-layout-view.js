@@ -1,8 +1,7 @@
 define(["marionette",
         "handlebars",
         "apps/dataviewer/gallery/views/data-list",
-        "text!../templates/gallery-layout.html",
-        "models/layer"
+        "text!../templates/gallery-layout.html"
     ],
     function (Marionette, Handlebars, DataList, GalleryLayoutTemplate)  {
         'use strict';
