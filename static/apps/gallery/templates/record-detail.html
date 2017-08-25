@@ -182,7 +182,9 @@
     <div class = "save-options">
         <button class="save-model button-primary pull-right">Save</button>
         <button class="view-mode button-tertiary" id="preview">Preview</button>
+        {{#if id}}
         <button class="button-tertiary button-warning delete-model" id="delete">Delete</button>
+        {{/if}}
     </div>
 {{/ifequal}}
 
