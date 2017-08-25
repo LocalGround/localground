@@ -16,7 +16,7 @@ define(["marionette",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.template = Handlebars.compile(GalleryLayoutTemplate);
-                this.listenTo(this.app.vent, 'show-detail', this.showMediaDetail);
+                this.listenTo(this.app.vent, 'show-detail', this.showDataDetail);
                 this.listenTo(this.app.vent, 'hide-detail', this.hideMediaDetail);
             },
             onRender: function () {
@@ -42,6 +42,7 @@ define(["marionette",
             },
 
             showDataDetail: function (view) {
+                this.detailView = view;
                 this.detailRegion.show(view);
             },
 
