@@ -219,7 +219,7 @@
 }
 
 #add-data-type {
-    
+
 }
 
 .single-photo {
@@ -231,7 +231,7 @@
 }
 
 table.preview-properties {
-    border: 1px solid #e4e5eb; 
+    border: 1px solid #e4e5eb;
     margin: 20px 40px;
     font-weight: 600;
     font-size: 12px;
@@ -275,10 +275,10 @@ table.preview-properties td:first-child {
 }
 
 .print-layout-left {
-    width: 450px;   
+    width: 450px;
 }
 .print-layout-right {
-    width: 520px;   
+    width: 520px;
 }
 .print-layout-left, .print-layout-right{
     display: inline-block;
@@ -357,5 +357,3 @@ table.preview-properties td:first-child {
 input.fieldname {
     margin-left: 4px;
 }
-
-
