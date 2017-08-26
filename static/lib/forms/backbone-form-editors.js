@@ -235,8 +235,8 @@ define([
             });
             this.app.vent.trigger("show-modal", {
                 title: 'Media Browser',
-                width: 1100,
-                height: 400,
+                //width: 1100,
+                //height: 400,
                 view: addMediaLayoutView,
                 saveButtonText: "Add",
                 showSaveButton: true,

@@ -1623,6 +1623,9 @@ tbody .failure-message, tbody .success-message {
 .carousel-modal, .spreadsheet .carousel-caption-wrapper {
     margin-top: 50px;
 }
+.carousel-modal.spreadsheet {
+    margin-top: 0px;
+}
 
 .carousel-photo .active-slide, .carousel-video .active-slide {
     min-height: 370px;
@@ -1853,7 +1856,7 @@ i.fa.fa-star-o.featured, i.fa.fa-star.featured {
     min-height: 500px;
     height: auto !important;
     width: 600px;
-    background-color: rgba(255, 255, 255, 0.1);
+    /*background-color: rgba(255, 255, 255, 0.1);*/
 }
 .spreadsheet .carousel-buttons {
     margin-top: -500px;

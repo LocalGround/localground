@@ -297,7 +297,7 @@ define(["jquery",
                     $("#carouselModal").find("iframe").get(0).className = "modal-content spreadsheet";
                     $("#carouselModal").find("iframe").css({
                         width: "70%",
-                        height: "480px"
+                        //height: "480px"
                     });
                 };
                 Handsontable.Dom.empty(td);
@@ -431,7 +431,7 @@ define(["jquery",
                 this.app.vent.trigger("show-modal", {
                     title: 'Media Browser',
                     width: 1100,
-                    height: 400,
+                    //height: 400,
                     view: mediaBrowser,
                     saveButtonText: "Add",
                     showSaveButton: true,

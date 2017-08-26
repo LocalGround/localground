@@ -195,8 +195,8 @@ define([
             this.modal.update({
                 view: uploadMediaForm,
                 title: 'Upload Media',
-                width: 800,
-                height: 350,
+                //width: 800,
+                //height: 350,
                 closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false
@@ -214,8 +214,8 @@ define([
             this.modal.update({
                 view: uploadMediaForm,
                 title: 'Upload Map Images',
-                width: 800,
-                height: 350,
+                //width: 800,
+                //height: 350,
                 closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false
@@ -227,12 +227,8 @@ define([
 
         showModal: function (opts) {
             //generic function that displays a view in a modal
-            var params = {},
-                defaults = {
-                    width: 500,
-                    height: 200
-                };
-            _.extend(params, defaults, opts);
+            var params = {};
+            _.extend(params, opts);
             _.extend(params, {
                 showSaveButton: opts.saveFunction ? true : false,
                 showDeleteButton: opts.deleteFunction ? true : false,

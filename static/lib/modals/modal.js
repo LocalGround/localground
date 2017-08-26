@@ -11,8 +11,9 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
         var Modal = Marionette.LayoutView.extend({
             view: null,
             title: null,
-            width: 800,
-            height: 200,
+            width: "90vw",
+            height: "70vh",
+            margin: "auto",
             showCloseButton: true,
             closeButtonText: "Cancel",
             saveButtonText: "Save",
@@ -52,6 +53,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     title: this.title,
                     width: this.width,
                     height: this.height,
+                    //margin: this.margin,
                     showSaveButton: this.showSaveButton,
                     showDeleteButton: this.showDeleteButton,
                     closeButtonText: this.closeButtonText,
@@ -97,7 +99,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
 
             setSize: function () {
                 this.$el.find('.modal-content').css('width', this.width);
-                this.$el.find('.modal-body').css('min-height', this.height);
+                this.$el.find('.modal-body').css('height', this.height);
+                //this.$el.find('.modal-body').css('margin', this.margin);
             },
             createModal: function () {
                 this.$el = $(this.template({ title: this.title }));
