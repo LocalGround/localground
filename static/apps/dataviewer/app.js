@@ -36,12 +36,6 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
-            this.loadFastRegions();
-            this.listenTo(this.vent, 'data-loaded', this.loadMainRegion);
-            this.listenTo(this.vent, 'show-list', this.initMainView);
-            this.listenTo(this.vent, 'show-gallery', this.showGallery);
-            this.listenTo(this.vent, 'show-table', this.showSpreadsheet);
-            this.listenTo(this.vent, 'show-map', this.showMap);
             this.addMessageListeners();
             console.log('starting!!');
         },
@@ -50,6 +44,9 @@ define([
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+            this.loadFastRegions();
+            this.listenTo(this.vent, 'data-loaded', this.loadMainRegion);
+            this.listenTo(this.vent, 'show-list', this.initMainView);
         },
         loadFastRegions: function () {
             this.toolbarView = new ToolbarGlobal({
@@ -69,23 +66,14 @@ define([
             this.initMainView();
         },
 
-        showSpreadsheet: function (dataType) {
-            this.initMainView("spreadsheet", dataType);
-        },
-
-        showMap: function (dataType) {
-            this.initMainView("map", dataType);
-        },
-
-        showGallery: function (dataType) {
-            this.initMainView("gallery", dataType);
-        },
-
         initMainView: function (mode, dataType) {
             this.dataType = dataType || this.dataType;
             this.screenType = mode || this.screenType;
             this.toolbarDataView.render();
             this.saveAppState();
+            if (!this.isDataLoaded()) {
+                return;
+            }
             var data = this.getData(),
                 opts = {
                     app: this,
@@ -125,11 +113,15 @@ define([
                     break;
             }
         },
+        isDataLoaded: function () {
+            return this.dataManager.dataLoaded;
+        },
 
         getData: function () {
             try {
                 return this.dataManager.getData(this.dataType);
             } catch (e) {
+                console.warn("error retrieving:", this.dataType, "switching to markers...");
                 this.dataType = "markers";
                 return this.dataManager.getData(this.dataType);
             }

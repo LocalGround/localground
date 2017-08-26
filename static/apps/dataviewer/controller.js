@@ -35,13 +35,14 @@ define([
             }, false);
         },
         showGallery: function () {
-            this.app.vent.trigger("show-gallery");
+            this.app.vent.trigger("show-list", "gallery");
         },
         showTable: function () {
-            this.app.vent.trigger("show-table");
+            this.app.vent.trigger("show-list", "spreadsheet");
         },
         showMap: function () {
-            this.app.vent.trigger("show-map");
+            console.log("showing map...");
+            this.app.vent.trigger("show-list", "map");
         }
     });
 });
