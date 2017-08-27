@@ -39,6 +39,7 @@ require.config({
         'canvas-to-blob': 'external/canvas-to-blob.min',
         'kernel': 'external/kernel.min',
         'mapplication': './mapplication',
+        'modernizr': 'external/modernizr-custom',
         'palette': 'external/palette',
         'print_base': "./print_base",
         //'marionette': 'https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/3.1.0/backbone.marionette.min',

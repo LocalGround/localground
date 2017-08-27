@@ -441,6 +441,9 @@ svg, .fa-question-circle {
 /**********************
 Separate Mobile CSS
 **************/
+
+
+
 .body-section {
     width: 100%;
     height: 120px;
@@ -633,6 +636,7 @@ Separate Mobile CSS
     }
 }
 
+/*
 .expanded {
 	height: 800px;
 	background: yellow;
@@ -640,4 +644,15 @@ Separate Mobile CSS
 .contracted {
 	height: 300px;
 	background: red;
+}
+*/
+
+body, html {
+    /* Allows content to fill the viewport and go beyond the bottom */
+height: 100%;
+
+/* Allows you to scroll below the viewport; default value is visible */
+overflow-y: scroll;
+
+/* To smooth any scrolling behavior */
 }

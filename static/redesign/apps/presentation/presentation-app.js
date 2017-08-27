@@ -101,6 +101,8 @@ define([
                     lat: this.model.get("center").coordinates[1],
                     lng: this.model.get("center").coordinates[0]
                 },
+                showDropdownControl: false,
+                showFullscreenControl: false,
                 showSearchControl: false,
                 zoomControlOptions: {
                     style: google.maps.ZoomControlStyle.SMALL,

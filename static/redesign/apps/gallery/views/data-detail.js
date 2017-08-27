@@ -15,10 +15,12 @@ define([
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form",
-    "touchPunch"
+    "touchPunch",
+    "modernizr"
+
 ], function ($, _, Backbone, Handlebars, Marionette, Photos, Audio, Videos,
         PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
-        MapImageTemplate, MobileExpandTemplate, AudioPlayer, Carousel, Icon, DataForm) {
+        MapImageTemplate, MobileExpandTemplate, AudioPlayer, Carousel, Icon, DataForm, TouchPunch, Modernizr) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -35,7 +37,8 @@ define([
             "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView',
             "click #open-full": 'openMobileDetail',
-            "click .thumbnail-play-circle": 'playAudio'
+            "click .thumbnail-play-circle": 'playAudio',
+            'click .parallax': 'clickParallax'
         },
         getTemplate: function () {
             console.log(this.dataType, this.mobileView );
@@ -55,6 +58,8 @@ define([
                 console.log("compile mobile expand");
                 return Handlebars.compile(MobileExpandTemplate);
             }*/
+            return Handlebars.compile(SiteTemplate);
+            /*
             return Handlebars.compile("<div class='parallax black' data-target-top='0%'> \
                 <div class='top-section'> \
                 {{#if photo_count }} \
@@ -66,11 +71,13 @@ define([
                 color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}'> \
                 <div class='expanded' style='display:none;'>Expanded</div> \
                 <div class='contracted'>Contracted</div> \
-            </div>");
+            </div>");*/
+            
         },
         featuredImageID: null,
         initialize: function (opts) {
             this.mobileView = null;
+            this.clickNum = 1;
             _.extend(this, opts);
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
@@ -78,15 +85,39 @@ define([
             $('#marker-detail-panel').addClass('mobile-minimize');
             $(window).on("resize", _.bind(this.screenSize, this));
            // $(window).scroll(this.detectScroll);
-            $(window).on("scroll",  _.bind(this.detectScroll, this));
+         //   $(window).on("scroll",  _.bind(this.detectScroll, this));
            // $(document).on('scrollstart', _.bind(this.detectScroll, this));
             //$(window).on("scroll",  _.bind(this.detectScroll, this))
             this.isMobile();
-
+        
+            console.log(Modernizr);
+            /*
+            if (Modernizr.touchevents) {
+                return;
+              } else {
+                $('.parallax').click(function () {
+                    $('.parallax').click();
+                })
+              }
+              */
 
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
+
+        clickParallax: function (event) {
+            console.log(this.clickNum, event.type);
+            console.log("parallax click");
+         //   alert("hover registered");
+         //   $('.parallax').css('background-color', 'red');
+         //   $('.parallax').scroll();
+            if ($(window).scrollTop() < 1000) {
+                $(window).scrollTop(1000);
+            } else {
+                $(window).scrollTop(0)
+            }
+        },
+
 
         expandMobile: function () {
             console.log("render expandMobile", this);
@@ -114,11 +145,13 @@ define([
             console.log(oldTranslateY, this.getComputedTranslateY(dragEl), translateY);
             */
             console.log(scrollHeight, triggerHeight, scrollHeight < triggerHeight, this.mobileView !== "expanded", "this.mobileview = " + this.mobileView );
+            /*
             if (scrollHeight < triggerHeight && this.mobileView !== "expanded") {
                 console.log("expand!");
                 this.expandMobile();
                // $(window).scrollTop(screen.height/2.5);
             }
+            */
            // if (this.$el.find(".parallax."))
         },
 
