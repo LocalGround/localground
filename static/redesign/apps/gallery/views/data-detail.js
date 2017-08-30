@@ -38,7 +38,7 @@ define([
             "click .streetview": 'showStreetView',
             "click #open-full": 'openMobileDetail',
             "click .thumbnail-play-circle": 'playAudio',
-           // 'click .parallax': 'clickParallax',
+            'click .circle': 'openExpanded',
             'hover .parallax': 'bindClick'
         },
         getTemplate: function () {
@@ -117,17 +117,24 @@ define([
             $('.parallax').click();
         },
 
-        clickParallax: function (event) {
+        openExpanded: function (event) {
             console.log(this.clickNum, event.type);
             console.log("parallax click");
          //   alert("hover registered");
          //   $('.parallax').css('background-color', 'red');
          //   $('.parallax').scroll();
-            if ($(window).scrollTop() < 1000) {
-                $(window).scrollTop(1000);
+            console.log($(window).scrollTop());
+            if ($(window).scrollTop() < 140) {
+                //$(window).scrollTop(1000);
+                $("html, body").animate({ scrollTop: "160" }, 600);
+                this.$el.find(".circle-icon").addClass("icon-rotate");
+                console.log($(window).scrollTop());
             } else {
-                $(window).scrollTop(0)
+               // $(window).scrollTop(0)
+               $("html, body").animate({ scrollTop: "0" }, 600);
+               this.$el.find(".circle-icon").removeClass("icon-rotate");
             }
+            console.log($(window).scrollTop());
         },
 
 
@@ -213,6 +220,7 @@ define([
                         }); */
                         that.$el.find('.parallax').removeClass('parallax-expanded');
                         that.$el.find('.parallax').addClass('parallax-contracted');
+                        this.$el.find(".circle-icon").removeClass("icon-rotate");
                         /*this.calculateDimensions();
                         console.log(that.distance);*/
                         console.log("showSmallTemplate", that.distance);
@@ -224,6 +232,7 @@ define([
                      //   that.$el.find('.parallax').css('height', '68vh');
                         that.$el.find('.parallax').removeClass('parallax-contracted');
                         that.$el.find('.parallax').addClass('parallax-expanded');
+                        this.$el.find(".circle-icon").addClass("icon-rotate");
                         //this.calculateDimensions();
                         console.log("showBigTemplate", that.distance);
                     }

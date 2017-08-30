@@ -53,7 +53,7 @@ ul{
 }
 #marker-detail-panel {
     overflow-y: auto;
-    position: absolute;
+  /*  position: absolute; */
 }
 
 
@@ -83,9 +83,15 @@ ul{
 }
 */
 
+
+.presentation-main-panel #map-panel {
+    order: 1;
+}
+
 .presentation-main-panel #marker-detail-panel {
     height: 100vh;
     padding-top: 80px;
+    order: 0;
 }
 
 @media (max-width: 900px) {
@@ -110,6 +116,7 @@ ul{
         height: 0px;
         position: static;
         padding-top: 0px;
+        order: 2;
     }
 }
 
@@ -429,10 +436,11 @@ svg, .fa-question-circle {
         padding-right: 20px;
         padding-bottom: 10px;
         padding-top: 12px;
+        box-sizing: border-box;
     }
 
     .first.mobile-section {
-        width: 95%;
+        width: 100%;
     }
 
     #drag-header {
@@ -444,6 +452,63 @@ svg, .fa-question-circle {
         padding: 10px 0px 17px 0px;
     }
 
+    /* material design circle */
+    .circle-wrapper {
+        position: absolute;
+        top: 0%;
+        left: 85%;
+        -webkit-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        z-index: 1;
+      }
+      
+      .circle {
+        border: none;
+        outline: none;
+        position: relative;
+        padding: 0;
+        z-index: 98;
+        margin: 0 auto;
+        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+        height: 60px;
+        width: 60px;
+        background-color: #3F51B5;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-transition: 0.2s;
+        transition: 0.2s;
+        text-align: center;
+      }
+      .circle i {
+        margin: auto;
+        width: 40px;
+        height: 40px;
+        -webkit-transition: 0.5s;
+        transition: 0.5s;
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+      }
+      .circle .icon-rotate {
+        -webkit-transform: rotate(180deg);
+                transform: rotate(180deg);
+      }
+      .circle:hover, .circle:focus {
+        cursor: pointer;
+        background-color: #606fc7;
+        box-shadow: 0 8px 15px 0 rgba(0, 0, 0, 0.3);
+      }
+      .circle:hover {
+        cursor: pointer;
+        background-color: #606fc7;
+        box-shadow: 0 8px 15px 0 rgba(0, 0, 0, 0.3);
+      }
+    /* end circle css */
+
+    
     html, body {
         overflow-x: hidden;
         width:100%;
@@ -696,11 +761,11 @@ Separate Mobile CSS
     }
 }
 
-/*
+
 .expanded {
-	height: 800px;
-	background: yellow;
+	z-index: 0;
 }
+/*
 .contracted {
 	height: 300px;
 	background: red;

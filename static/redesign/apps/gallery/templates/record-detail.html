@@ -4,7 +4,6 @@
 <h4>Preview</h4>
 {{/compare}}
     {{#if mobileMode}}
-
         <div class='parallax black touchevents parallax-contracted' data-target-top='0%'>
             <div class="top-section">
                 {{#if video_photo_count }}
@@ -14,8 +13,13 @@
         </div>
         
         <div class="parallax body no-touchevents parallax-contracted" id="parallax-body" data-target-top="50%" style="color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}">
+            <div class="circle-wrapper">
+                <button class="circle">
+                    <i class="fa fa-angle-up fa-3x circle-icon" style="color: #{{paragraph.backgroundColor}}" aria-hidden="true"></i>
+                </button>
+            </div>
             <div class="contracted">
-                <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
+               <!-- <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>  -->
                     {{#if hasPhotoOrAudio}}
                         <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}}); background-color: {{paragraph.color}}">
                             {{#if hasAudio}}
