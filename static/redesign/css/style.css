@@ -253,6 +253,7 @@ table.preview-properties {
 table.preview-properties td:first-child {
     text-align: right;
     width: 33%;
+    min-width: 80px;
     padding-right: 6px;
     font-weight: 500;
 }

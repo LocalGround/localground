@@ -2094,7 +2094,7 @@ audio {
 }
 
 .audio-simple .audio-progress, .audio-detail .audio-progress {
-    padding: 10px 0px 17px 0px;
+    padding: 10px 20px 17px 20px;;
     position: relative;
 }
 .audio-simple .audio-labels, .audio-detail .audio-labels {

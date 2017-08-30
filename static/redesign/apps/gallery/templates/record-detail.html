@@ -5,7 +5,7 @@
 {{/compare}}
     {{#if mobileMode}}
 
-        <div class='parallax black touchevents' data-target-top='0%'>
+        <div class='parallax black touchevents parallax-contracted' data-target-top='0%'>
             <div class="top-section">
                 {{#if video_photo_count }}
                     <div class="mobile-carousel carousel-videos-photos"></div>
@@ -13,32 +13,31 @@
             </div>
         </div>
         
-        <div class="parallax body no-touchevents" id="parallax-body" data-target-top="50%" style="color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}">
+        <div class="parallax body no-touchevents parallax-contracted" id="parallax-body" data-target-top="50%" style="color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}">
             <div class="contracted">
                 <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
-                <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}})">
-                    {{#if hasAudio}}
-                        <div class="thumbnail-play-circle">
-                            <i class="fa fa-play fa-3x thumbnail-play" aria-hidden="true"></i>
+                    {{#if hasPhotoOrAudio}}
+                        <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}}); background-color: {{paragraph.color}}">
+                            {{#if hasAudio}}
+                                <div class="thumbnail-play-circle">
+                                    <i class="fa fa-play fa-3x thumbnail-play" aria-hidden="true"></i>
+                                </div>
+                            {{/if}}
                         </div>
                     {{/if}}
-                </div>
                 <div class="header-info">
                     <h3 id="drag-header" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
                 </div>
             </div>
             <div class="expanded" style='display:none;'>
                 <div class="mobile-wrapper">
-                        <section class="first mobile-section">
+                        <section class="first mobile-section" style="color: #{{title.color}}; background-color: #{{title.backgroundColor}}">
                             <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
                             <div class="header-info">
-                                <h3 id="drag-header" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
+                                <h3 id="drag-header" style="color: #{{title.color}}; font-family: {{title.font}}">{{ name }}</h3>
                             </div>
                         </section>
                         <section class="second mobile-section">
-                            <p>
-                                text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text 
-                            </p>
                             {{#if fields }}
                             <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
                             {{#each fields}}

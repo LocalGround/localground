@@ -38,7 +38,8 @@ define([
             "click .streetview": 'showStreetView',
             "click #open-full": 'openMobileDetail',
             "click .thumbnail-play-circle": 'playAudio',
-            'click .parallax': 'clickParallax'
+           // 'click .parallax': 'clickParallax',
+            'hover .parallax': 'bindClick'
         },
         getTemplate: function () {
             console.log(this.dataType, this.mobileView );
@@ -103,6 +104,17 @@ define([
 
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
+        },
+
+        /*
+        (for mobile safari)
+        when the user initiaztes a touchmove event (on mobile), we want to automatically 
+        trigger the first click because scroll is not enabled until the second click
+        */
+        bindClick: function (event) {
+            event.preventDefault();
+            console.log('touchmove triggered');
+            $('.parallax').click();
         },
 
         clickParallax: function (event) {
@@ -176,8 +188,9 @@ define([
                     this.scrollDistance = Math.abs($(window).height() - $(document).height());
                     this.speed = that.distance / this.scrollDistance;
                 };
+                console.log(this.initialPosition, $(window).height());
                 this.$el = $(el).css({
-                    position: "fixed",
+                    position: "absolute",
                     top: this.initialPosition
                 });
 
@@ -191,17 +204,26 @@ define([
                     if (direction !== this.lastDirection) {
                         console.log('switch');
                     }
-                    if (direction == "down" && scrollTop <= 50) {
+                    if (direction == "down" && scrollTop <= 10) {
                         that.$el.find('.expanded').hide();
                         that.$el.find('.contracted').show();
+                      /*  that.$el.find('.parallax').css({
+                            'height': '90px',
+                            'bottom': 0
+                        }); */
+                        that.$el.find('.parallax').removeClass('parallax-expanded');
+                        that.$el.find('.parallax').addClass('parallax-contracted');
                         /*this.calculateDimensions();
                         console.log(that.distance);*/
                         console.log("showSmallTemplate", that.distance);
                     }
 
-                    if (direction == "up" && scrollTop >= 200) {
+                    if (direction == "up" && scrollTop >= 10) {
                         that.$el.find('.expanded').show();
                         that.$el.find('.contracted').hide();
+                     //   that.$el.find('.parallax').css('height', '68vh');
+                        that.$el.find('.parallax').removeClass('parallax-contracted');
+                        that.$el.find('.parallax').addClass('parallax-expanded');
                         //this.calculateDimensions();
                         console.log("showBigTemplate", that.distance);
                     }
@@ -424,7 +446,7 @@ define([
             this.render();
         },
         templateHelpers: function () {
-            var lat, lng, paragraph;
+            var lat, lng, paragraph, title;
             if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
                 lat =  this.model.get("geometry").coordinates[1].toFixed(4);
                 lng =  this.model.get("geometry").coordinates[0].toFixed(4);
@@ -432,6 +454,7 @@ define([
 
             if (this.panelStyles) {
                 paragraph = this.panelStyles.paragraph;
+                title = this.panelStyles.title;
                 this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
@@ -447,6 +470,8 @@ define([
                 lat: lat,
                 lng: lng,
                 paragraph: paragraph,
+                title: title,
+                hasPhotoOrAudio: this.getPhotos().length > 0 || this.getAudio().length > 0,
                 featuredImage: this.getFeaturedImage(),
                 thumbnail: this.getThumbnail(),
                 photo_count: this.getPhotos().length,
@@ -462,9 +487,13 @@ define([
             if (this.getFeaturedImage()) {
                 return this.getFeaturedImage();
             } else if (!_.isEmpty(this.model.get("children"))) {
-                console.log(this.model.get("children"));
-                var photoData = this.model.get("children").photos.data;
-                return photoData[0];
+                if (this.model.get("children").photos) {
+                    console.log(this.model.get("children"));
+                    var photoData = this.model.get("children").photos.data;
+                    return photoData[0];
+                } else {
+                    return null;
+                }
             } else {
                 return null;
             }
