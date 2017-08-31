@@ -13,6 +13,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 "click .next": "next",
                 "click .prev": "prev",
                 "click .show-slide": "jump",
+                "click .close": "closeCarousel",
                 'mouseover .carouselbox': 'showArrows',
                 'mouseout .carouselbox': 'hideArrows'
             },
@@ -50,6 +51,14 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     that.$el.find('.fa-chevron-left, .fa-chevron-right').remove();
                     that.timeout = null;
                 }, 100);
+            },
+            closeCarousel: function(){
+                // The problem is that the current item is still active upon closure
+                // it can be only erased when calling the new carousel by opening it again...
+                console.log("Close carousel called");
+                resetCurrentFrame();
+                var $items = this.$el.find('.carousel-content li');
+                $items.removeClass('current').hide();
             },
             childViewOptions: function () {
                 return {
@@ -123,7 +132,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
 
             resetCurrentFrame: function () {
-                //needed to stop playing iFrame videos:
+                //needed to stop playing media
                 this.children.findByIndex(this.counter).render();
             },
 

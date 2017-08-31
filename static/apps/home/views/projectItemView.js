@@ -26,8 +26,7 @@ define(["marionette",
 
             template: Handlebars.compile(ItemTemplate),
             events: {
-                'click .action': 'shareModal'//,
-                //'click #delete_project': 'deleteProjectView'
+                'click .action': 'shareModal'
             },
 
 
@@ -80,7 +79,7 @@ define(["marionette",
                 if (diffDays > 29){
                     diffMonths = 1;
                 }
-                
+
                 if (diffYears > 0){
                     addPlural = diffYears > 1 ? "s" : "";
                     lastEditString = diffYears + " Year" + addPlural + " ago";

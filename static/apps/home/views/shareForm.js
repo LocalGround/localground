@@ -99,6 +99,7 @@ define(["jquery",
                     tags = this.$el.find('#tags').val(),
                     that = this;
                 if (this.blankInputs()) {
+                    console.log("required items not filled: Need Name, Owner, and User");
                     return;
                 }
                 console.log(this.model.collection);
@@ -110,13 +111,15 @@ define(["jquery",
                 this.model.set('owner', owner);
                 this.model.save(null, {
                     success:function(model, response){
+                        console.log("Project Saved / Created");
                         that.createNewProjectUsers();
                         that.slugError = null;
                         that.render();
                         that.app.vent.trigger('success-message', "Project Saved.");
-                        that.app.vent.trigger('hide-modal');
+                        //that.app.vent.trigger('hide-modal');
                     },
                     error: function (model, response){
+                        console.log("Project Not Saved / Created");
                         that.app.vent.trigger('error-message', "Project Not Saved. Errors detected.");
                         var messages = JSON.parse(response.responseText);
                         if (messages.slug && messages.slug.length > 0) {

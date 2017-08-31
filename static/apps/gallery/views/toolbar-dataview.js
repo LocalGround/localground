@@ -73,6 +73,7 @@ define([
         },
 
         hideMenus: function (e) {
+            // Maybe this is responsible for hiding the add button?
             var $el = $(e.target);
             if (!$el.hasClass('add') &&
                     !$el.parent().hasClass('add') &&
@@ -113,10 +114,6 @@ define([
         },
 
         triggerAddNewMap: function (e) {
-            /*
-            This is where it might begin the creation of a new
-            field with the add marker
-            */
             var mediaType = $(e.target).attr('data-value'),
                 url = "//" + mediaType + "/new";
             if (mediaType === 'photos' || mediaType === 'audio') {
@@ -129,6 +126,7 @@ define([
                     forceReload: true
                 });
             }
+            console.log("Does this hide the add button in map mode?");
             e.preventDefault();
         },
         changeMode: function () {
