@@ -78,6 +78,7 @@ define([
         featuredImageID: null,
         initialize: function (opts) {
             this.mobileView = null;
+            this.expanded = false;
             this.clickNum = 1;
             _.extend(this, opts);
             this.bindFields();
@@ -186,6 +187,10 @@ define([
 
         initParallax: function () {
             var that = this;
+            //get color values for switching upon open/close
+            var bgColor = that.$el.find('.circle').css('background-color');
+            var mainColor = that.$el.find('.circle-icon').css('color');
+            console.log(bgColor, mainColor);
             var MoveItItem = function (el) {
                 this.initialPosition = $(el).position().top;
                 this.calculateDimensions = function () {
@@ -208,6 +213,7 @@ define([
 
                 this.update = function (scrollTop) {
                     var direction = (scrollTop > this.lastScrollTop) ? "up": "down";
+
                     if (direction !== this.lastDirection) {
                         console.log('switch');
                     }
@@ -220,7 +226,11 @@ define([
                         }); */
                         that.$el.find('.parallax').removeClass('parallax-expanded');
                         that.$el.find('.parallax').addClass('parallax-contracted');
-                        this.$el.find(".circle-icon").removeClass("icon-rotate");
+                        that.$el.find(".circle-icon").removeClass("icon-rotate");
+                        
+                        // swap colors
+                        that.$el.find('.circle').css('background-color', bgColor);
+                        that.$el.find('.circle-icon').css('color', mainColor);
                         /*this.calculateDimensions();
                         console.log(that.distance);*/
                         console.log("showSmallTemplate", that.distance);
@@ -232,7 +242,11 @@ define([
                      //   that.$el.find('.parallax').css('height', '68vh');
                         that.$el.find('.parallax').removeClass('parallax-contracted');
                         that.$el.find('.parallax').addClass('parallax-expanded');
-                        this.$el.find(".circle-icon").addClass("icon-rotate");
+                        that.$el.find('.circle-icon').addClass("icon-rotate");
+                        
+                        // swap colors
+                        that.$el.find('.circle').css('background-color', mainColor);
+                        that.$el.find('.circle-icon').css('color', bgColor);
                         //this.calculateDimensions();
                         console.log("showBigTemplate", that.distance);
                     }
@@ -243,6 +257,8 @@ define([
                     this.lastScrollTop = scrollTop;
                 };
             };
+
+            
             $.fn.moveIt = function () {
                 var $window = $(window),
                     instances = [];
@@ -261,6 +277,12 @@ define([
                 $(window).scrollTop(0);
                 $('.parallax').moveIt();
             });
+        },
+
+        remove: function () {
+            console.log("destroying...");
+            window.removeEventListener('scroll', this.scrollEventListener);
+            Backbone.View.prototype.remove.call(this);
         },
 
 
@@ -480,6 +502,7 @@ define([
                 lng: lng,
                 paragraph: paragraph,
                 title: title,
+                expanded: this.expanded,
                 hasPhotoOrAudio: this.getPhotos().length > 0 || this.getAudio().length > 0,
                 featuredImage: this.getFeaturedImage(),
                 thumbnail: this.getThumbnail(),
