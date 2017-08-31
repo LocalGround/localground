@@ -228,6 +228,11 @@ define([
                 that.$el.find('.parallax').moveIt();
             });
         },
+        remove: function () {
+            console.log("destroying...");
+            window.removeEventListener("scroll", this.scrollEventListener);
+            Backbone.View.prototype.remove.call(this);
+        },
 
         isMobile: function () {
             if ($(window).width() >= 900) {
