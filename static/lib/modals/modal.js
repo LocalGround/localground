@@ -81,8 +81,6 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 _.extend(this, opts);
                 this.saveFunction = function () {
                     opts.saveFunction();
-                    // calls render to clear out running multimedia objects
-                    this.render();
                 };
                 this.attachEvents();
                 this.render();
