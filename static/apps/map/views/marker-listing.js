@@ -62,6 +62,8 @@ define(["marionette",
                     typePlural: this.typePlural,
                     key: this.collection.key,
                     isShowing: this.isShowing,
+                    dataType: this.collection.key,
+                    screenType: this.app.screenType,
                     displayOverlays: this.displayOverlays
                 };
             },
@@ -96,8 +98,7 @@ define(["marionette",
                 return _.extend({
                     'click .zoom-to-extents': 'zoomToExtents',
                     'click .list-header > .fa-eye': 'hideMarkers',
-                    'click .list-header > .fa-eye-slash': 'showMarkers',
-                    'click .add-new': 'triggerAddNewMap'
+                    'click .list-header > .fa-eye-slash': 'showMarkers'
                 }, PanelVisibilityExtensions.events);
             },
 
@@ -155,17 +156,6 @@ define(["marionette",
                     _icon: this.icon,
                     displayOverlays: this.displayOverlays
                 });
-            },
-
-            // This might also be the candidate for adding a new cell in the exisitng form
-            // without putting having the overlay_type assigned
-            triggerAddNewMap: function (e) {
-                var target = this.$el.find('.add-new');
-                this.app.vent.trigger('add-new-item-to-map', {
-                    target: target,
-                    preventDefault: function () {}
-                });
-                e.preventDefault();
             },
 
             doSearch: function (term) {

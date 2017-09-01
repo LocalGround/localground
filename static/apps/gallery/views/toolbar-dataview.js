@@ -5,11 +5,10 @@ define([
     "marionette",
     "collections/forms",
     "apps/gallery/views/create-form",
-    "views/create-media",
     "apps/gallery/views/form-list",
     "lib/modals/modal",
     "text!../templates/toolbar-dataview.html"
-], function (_, $, Handlebars, Marionette, Forms, CreateForm, CreateMedia,
+], function (_, $, Handlebars, Marionette, Forms, CreateForm,
              FormList, Modal, ToolbarTemplate) {
     "use strict";
     var ToolbarDataView = Marionette.ItemView.extend({
@@ -178,24 +177,6 @@ define([
                 view: formList,
                 title: 'List of Forms',
                 width: 800,
-                showSaveButton: false,
-                showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
-            });
-            this.modal.show();
-        },
-
-        createMediaUploadModal: function () {
-            var uploadMediaForm = new CreateMedia({
-                app: this.app
-            });
-            this.modal.update({
-                view: uploadMediaForm,
-                title: 'Upload Media',
-                //width: 800,
-                //height: 350,
-                closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false
                 // bind the scope of the save function to the source view:

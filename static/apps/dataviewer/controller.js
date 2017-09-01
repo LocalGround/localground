@@ -1,7 +1,9 @@
 define([
     "marionette",
     "apps/gallery/views/data-detail",
-], function (Marionette, DataDetail) {
+    "views/create-media",
+    "lib/modals/modal",
+], function (Marionette, DataDetail, CreateMedia, Modal) {
     "use strict";
     return Marionette.Controller.extend({
         initialize: function (options) {
@@ -18,14 +20,14 @@ define([
             console.log("loading data Type")
             this.app.vent.trigger("show-list", screenType, dataType);
         },
-        addNew: function (arg1, arg2) {
-            var dataType;
-            if (arg1 && arg2) {
-                dataType = arg2
+        addNew: function (screenType, dataType) {
+            // if datatype is photo, audio, or videos, trigger a new uploader modal
+            if (dataType == "photos" || dataType == "audio" || dataType == "videos"){
+                this.createMediaUploadModal();
             } else {
-                dataType = arg1
+                this.dataDetail(screenType, dataType);
             }
-            this.dataDetail(dataType);
+
         },
         dataDetail: function (screenType, dataType, id) {
             this.app.screenType = screenType;
@@ -51,6 +53,25 @@ define([
                 dataType: dataType
             }, false);
         },
+
+        createMediaUploadModal: function () {
+            var uploadMediaForm = new CreateMedia({
+                app: this.app
+            });
+            this.modal.update({
+                view: uploadMediaForm,
+                title: 'Upload Media',
+                //width: 800,
+                //height: 350,
+                closeButtonText: "Done",
+                showSaveButton: false,
+                showDeleteButton: false
+                // bind the scope of the save function to the source view:
+                //saveFunction: createForm.saveFormSettings.bind(createForm)
+            });
+            this.modal.show();
+        },
+
         showGallery: function () {
             this.app.vent.trigger("show-list", "gallery");
         },
