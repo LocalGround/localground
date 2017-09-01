@@ -98,12 +98,18 @@ define(["marionette",
                 return _.extend({
                     'click .zoom-to-extents': 'zoomToExtents',
                     'click .list-header > .fa-eye': 'hideMarkers',
-                    'click .list-header > .fa-eye-slash': 'showMarkers'
+                    'click .list-header > .fa-eye-slash': 'showMarkers',
+                    'click .add-new': 'route'
                 }, PanelVisibilityExtensions.events);
             },
 
             removeHideIcon: function () {
                 this.$el.find('.list-header > .fa-eye-slash').removeClass('fa-eye-slash').addClass('fa-eye');
+            },
+            route: function (e) {
+                console.log('routing', e);
+                this.app.vent.trigger('route', e);
+                e.preventDefault();
             },
 
             showHideIcon: function () {

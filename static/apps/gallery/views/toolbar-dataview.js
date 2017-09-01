@@ -23,6 +23,7 @@ define([
             'click .add-data' : 'showFormList',
             'click #show-media-type' : 'showMediaTypeForm',
             'click #add-row' : 'triggerAddRow',
+            'click .dropdown-menu a': 'route',
             'click .add': 'toggleMenu'
         },
         modal: null,
@@ -40,6 +41,12 @@ define([
                 forms: this.forms.toJSON()
             };
         },
+        route: function (e) {
+            console.log($(e.target));
+            var route = $(e.target).attr("href").replace("#", "/");
+            this.app.router.navigate(route, { trigger: true });
+            e.preventDefault();
+        },
 
         initialize: function (opts) {
             _.extend(this, opts);
@@ -56,6 +63,8 @@ define([
             this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
             this.listenTo(this.app.vent, 'show-list', this.updateNewObejctRoute);
             this.listenTo(this.app.vent, 'add-new-item-to-map', this.triggerAddNewMap);
+            this.listenTo(this.app.vent, 'route', this.route);
+
             $('body').click(this.hideMenus);
             this.modal = new Modal();
             this.forms = new Forms();
@@ -87,45 +96,7 @@ define([
             this.app.vent.trigger('add-row');
             e.preventDefault();
         },
-        /*
-        triggerAddNew: function (e) {
-            var mediaType = this.app.dataType,
-                screenType = this.app.screenType,
-                url;
-            screenType = (screenType === "spreadsheet") ? "table" : screenType;
-            url = "//" + screenType + "/" + mediaType + "/new"
-            if (mediaType === 'photos' || mediaType === 'audio') {
-                this.app.router.navigate(url, {trigger : true});
-            } else if (mediaType === 'map_images') {
-                this.createMapImageUploadModal();
-            } else {
-                this.app.router.navigate(url, {
-                    trigger: true,
-                    forceReload: true
-                });
-            }
-            e.preventDefault();
-        },
-        //*/
 
-        //*
-        triggerAddNewMap: function (e) {
-            var mediaType = $(e.target).attr('data-value'),
-                url = "//" + mediaType + "/new";
-            if (mediaType === 'photos' || mediaType === 'audio') {
-                this.app.router.navigate(url, {trigger : true});
-            } else if (mediaType === 'map_images') {
-                this.createMapImageUploadModal();
-            } else {
-                this.app.router.navigate(url, {
-                    trigger: true,
-                    forceReload: true
-                });
-            }
-            console.log("Does this hide the add button in map mode?");
-            e.preventDefault();
-        },
-        //*/
         changeMode: function () {
             this.renderAndRoute();
         },

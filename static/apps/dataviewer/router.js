@@ -21,7 +21,7 @@ define([
             //Add regex expressions
             this.route.apply(this, [
                 //e.g. #/table/photos
-                /^(\w+)\/([a-z]+_*[0-9]*)$/,
+                /^(\w+)\/([a-z]+_*[0-9]*[a-z]*)$/,
                 'dataList',
                 this.controller.dataList.bind(this.controller)
             ]);
@@ -33,14 +33,14 @@ define([
             ]);
             this.route.apply(this, [
                 //e.g. #/table/photos/new
-                /^(\w+)\/([a-z]+_*[0-9]*)\/new$/,
+                /^(\w+)\/([a-z]+_*[0-9]*[a-z]*)\/new$/,
                 'addNew',
                 this.controller.addNew.bind(this.controller)
             ]);
             this.route.apply(this, [
                 //e.g. #/table/photos/23
                 ///^(\w+)\/([0-9]+)$/,
-                /^(\w+)\/([a-z]+_*[0-9]*)\/([0-9]+)$/,
+                /^(\w+)\/([a-z]+_*[0-9]*[a-z]*)\/([0-9]+)$/,
                 'dataDetail',
                 this.controller.dataDetail.bind(this.controller)
             ]);

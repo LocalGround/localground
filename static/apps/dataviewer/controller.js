@@ -22,7 +22,7 @@ define([
         },
         addNew: function (screenType, dataType) {
             // if datatype is photo, audio, or videos, trigger a new uploader modal
-            console.log(dataType);
+            console.log(screenType, dataType);
             if (dataType == "photos" || dataType == "audio") {
                 this.createMediaUploadModal();
             } else if (dataType == "map_images") {
