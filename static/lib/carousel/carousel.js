@@ -22,7 +22,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
             childViewContainer: ".carousel-content",
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this);
                 if (this.mode == "photos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
                 } else if (this.mode == "videos") {

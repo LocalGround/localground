@@ -5,6 +5,9 @@ define(["jquery",
         "views/media_browser",
         "models/record",
         "models/marker",
+        "collections/photos",
+        "collections/audio",
+        "collections/videos",
         "apps/spreadsheet/views/create-field",
         "handsontable",
         "text!../templates/spreadsheet.html",
@@ -12,7 +15,7 @@ define(["jquery",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser,
-        Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate,
+        Record, Marker, Photos, Audio, Videos, CreateFieldView, Handsontable, SpreadsheetTemplate,
         AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
