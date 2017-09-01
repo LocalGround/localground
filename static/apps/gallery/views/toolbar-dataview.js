@@ -19,15 +19,11 @@ define([
         events: {
             'click #toolbar-search': 'doSearch',
             'click #toolbar-clear': 'clearSearch',
-            'change .media-type': 'changeDisplay',
+            //'change .media-type': 'changeDisplay',
             'click .add-data' : 'showFormList',
             'click #show-media-type' : 'showMediaTypeForm',
             'click #add-row' : 'triggerAddRow',
-            'click .add-media': 'createMediaUploadModal',
-            'click .add-map-image': 'createMapImageUploadModal',
-            'click .add': 'toggleMenu',
-            'click #add-new': 'triggerAddNew',
-            'click .add-new': 'triggerAddNewMap'
+            'click .add': 'toggleMenu'
         },
         modal: null,
         forms: null,
@@ -164,10 +160,10 @@ define([
 
         //*/
 
-        changeDisplay: function (e) {
+        /*changeDisplay: function (e) {
             var dataType =  $(e.currentTarget).val();
             this.app.router.navigate('//' + dataType, { trigger: true });
-        },
+        },*/
 
         showFormList: function () {
             var formList = new FormList({

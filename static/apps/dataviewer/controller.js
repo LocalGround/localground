@@ -23,12 +23,13 @@ define([
         },
         addNew: function (screenType, dataType) {
             // if datatype is photo, audio, or videos, trigger a new uploader modal
-            if (dataType == "photos" || dataType == "audio" || dataType == "map_images"){
+            if (dataType == "photos" || dataType == "audio") {
                 this.createMediaUploadModal();
+            } else if (dataType == "map_images") {
+                this.createMapImageUploadModal();
             } else {
                 this.dataDetail(screenType, dataType);
             }
-
         },
         dataDetail: function (screenType, dataType, id) {
             this.app.screenType = screenType;
