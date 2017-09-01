@@ -52,8 +52,20 @@ define([
                 return Handlebars.compile(MapImageTemplate);
             }
             return Handlebars.compile(SiteTemplate);
-           
-            
+            /*return Handlebars.compile("<div class='parallax black hello world' data-target-top='0%'> \
+                <div class='top-section'> \
+                {{#if photo_count }} \
+                    <div class='mobile-carousel carousel-videos-photos'></div> \
+                {{/if}} \
+                </div> \
+            </div> \
+            <div class='parallax body' id='parallax-body' data-target-top='50%' style='\
+                color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}'> \
+                <div class='expanded' style='display:none;'>Expanded</div> \
+                <div class='contracted'>Contracted</div> \
+            </div>");*/
+
+
         },
         featuredImageID: null,
         initialize: function (opts) {
@@ -66,7 +78,7 @@ define([
             Marionette.ItemView.prototype.initialize.call(this);
             $('#marker-detail-panel').addClass('mobile-minimize');
             $(window).on("resize", _.bind(this.screenSize, this));
-        
+
             this.isMobile();
 
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
@@ -75,7 +87,7 @@ define([
 
         /*
         (for mobile safari)
-        when the user initiates a touchmove event (on mobile), we want to automatically 
+        when the user initiates a touchmove event (on mobile), we want to automatically
         trigger the first click because scroll is not enabled until the second click
         */
         bindClick: function (event) {
@@ -96,33 +108,58 @@ define([
         },
 
         initParallax: function () {
-            var that = this;
-            //get color values for switching upon open/close
-            var bgColor = that.$el.find('.circle').css('background-color');
-            var mainColor = that.$el.find('.circle-icon').css('color');
+            console.log("initParallax");
+            var bgColor = this.$el.find('.circle').css('background-color');
+            var mainColor = this.$el.find('.circle-icon').css('color');
             console.log(bgColor, mainColor);
-            var MoveItItem = function (el) {
-                this.initialPosition = $(el).position().top;
-                this.calculateDimensions = function () {
+            var that = this;
+            var MoveItItem = function ($el) {
+                this.$el = $el;
+                this.initialPosition = 490;
+
+                this.initPosition = function () {
                     this.targetTop = this.$el.attr('data-target-top').replace("%", "");
                     this.finalPosition = parseFloat(this.targetTop, 10) * $(window).height() / 100;
                     that.distance = this.initialPosition - this.finalPosition;
                     this.scrollDistance = Math.abs($(window).height() - $(document).height());
                     this.speed = that.distance / this.scrollDistance;
+                    this.className = this.$el.get(0).className;
+                    this.lastDirection = "up";
+                    this.lastScrollTop = 0;
+                     console.log("--------------------");
+                     console.log("className", this.className);
+                     console.log("initialPosition", this.initialPosition);
+                     console.log("finalPosition", this.finalPosition);
+                     console.log("scrollDistance", this.scrollDistance);
+                     console.log("distance", that.distance);
+                     console.log("speed", this.speed);
                 };
-                console.log(this.initialPosition, $(window).height());
-                this.$el = $(el).css({
-                    position: "absolute",
-                    top: this.initialPosition
+                this.$el.css({
+                    position: "absolute"//, //"fixed",
+                    //top: this.initialPosition
                 });
 
-                this.calculateDimensions();
-
-                this.lastDirection = "up";
-                this.lastScrollTop = 0;
+                this.initPosition();
 
                 this.update = function (scrollTop) {
+                    //console.log(this.className, scrollTop);
+                    //this.calculateDimensions();
                     var direction = (scrollTop > this.lastScrollTop) ? "up": "down";
+                    /*if (direction !== this.lastDirection) {
+                        console.log('switch');
+                    }
+                    if (direction == "down" && scrollTop <= 50) {
+                        that.$el.find('.expanded').hide();
+                        that.$el.find('.contracted').show();
+                        console.log("showSmallTemplate", that.distance);
+                    }
+
+                    if (direction == "up" && scrollTop >= 200) {
+                        that.$el.find('.expanded').show();
+                        that.$el.find('.contracted').hide();
+                        //this.initPosition();
+                        console.log("showBigTemplate", that.distance);
+                    }*/
 
                     if (direction !== this.lastDirection) {
                         console.log('switch');
@@ -137,7 +174,7 @@ define([
                         that.$el.find('.parallax').removeClass('parallax-expanded');
                         that.$el.find('.parallax').addClass('parallax-contracted');
                         that.$el.find(".circle-icon").removeClass("icon-rotate");
-                        
+
                         // swap colors
                         that.$el.find('.circle').css('background-color', bgColor);
                         that.$el.find('.circle-icon').css('color', mainColor);
@@ -153,13 +190,14 @@ define([
                         that.$el.find('.parallax').removeClass('parallax-contracted');
                         that.$el.find('.parallax').addClass('parallax-expanded');
                         that.$el.find('.circle-icon').addClass("icon-rotate");
-                        
+
                         // swap colors
                         that.$el.find('.circle').css('background-color', mainColor);
                         that.$el.find('.circle-icon').css('color', bgColor);
                         //this.calculateDimensions();
                         console.log("showBigTemplate", that.distance);
                     }
+
                     this.$el.css('top', this.initialPosition - scrollTop * this.speed);
 
                     //remember last values:
@@ -167,32 +205,40 @@ define([
                     this.lastScrollTop = scrollTop;
                 };
             };
-
-            
             $.fn.moveIt = function () {
+                if (that.scrollEventListener) {
+                    console.log('removing...');
+                    window.removeEventListener("scroll", that.scrollEventListener);
+                }
                 var $window = $(window),
-                    instances = [];
+                    instances = [],
+                    moveItem;
+                console.log('THIS', $(this));
                 $(this).each(function () {
-                    instances.push(new MoveItItem($(this)));
+                    console.log('looping through selector...');
+                    moveItem = new MoveItItem($(this));
+                    moveItem.initPosition();
+                    instances.push(moveItem);
                 });
-
-                window.onscroll = function () {
+                console.log("initializing scrollEventListener...");
+                that.scrollEventListener = function () {
                     var scrollTop = $window.scrollTop();
                     instances.forEach(function (inst) {
                         inst.update(scrollTop);
                     });
                 };
+                window.addEventListener("scroll", that.scrollEventListener);
             };
             $(function () {
-                $(window).scrollTop(0);
-                $('.parallax').moveIt();
+                that.$el.find('.parallax').moveIt();
             });
         },
 
+
         remove: function () {
-                console.log("destroying...");
-                window.removeEventListener('scroll', this.scrollEventListener);
-                Backbone.View.prototype.remove.call(this);
+            console.log("destroying scrollEventListener...");
+            window.removeEventListener('scroll', this.scrollEventListener);
+            Backbone.View.prototype.remove.call(this);
         },
 
         isMobile: function () {
@@ -422,6 +468,7 @@ define([
             return children.videos ? new Videos(children.videos.data) : new Videos([]);
         },
         viewRender: function () {
+            //return;
             //any extra view logic. Carousel functionality goes here
             var c,
                 photos = this.getPhotos(),
@@ -495,7 +542,7 @@ define([
             // setTimeout necessary to register DOM element
             //setTimeout(this.initDraggable.bind(this), 50);
             if ($(window).width() < 900) {
-                this.initParallax();
+                setTimeout(this.initParallax.bind(this), 50);
             }
         },
 
