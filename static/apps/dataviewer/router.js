@@ -39,7 +39,8 @@ define([
             ]);
             this.route.apply(this, [
                 //e.g. #/table/photos/23
-                /^(\w+)\/([0-9]+)$/,
+                ///^(\w+)\/([0-9]+)$/,
+                /^(\w+)\/([a-z]+_*[0-9]*)\/([0-9]+)$/,
                 'dataDetail',
                 this.controller.dataDetail.bind(this.controller)
             ]);

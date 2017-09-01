@@ -27,7 +27,8 @@ define([
             }
             this.dataDetail(dataType);
         },
-        dataDetail: function (dataType, id) {
+        dataDetail: function (screenType, dataType, id) {
+            this.app.screenType = screenType;
             this.app.dataType = dataType;
             var dm = this.app.dataManager,
                 detailView;

@@ -57,6 +57,7 @@ define(["jquery",
             templateHelpers: function () {
                 var opts = {
                     dataType: this.model.getDataTypePlural(),
+                    screenType: this.app.screenType,
                     icon: this.icon,
                     name: this.model.get("name") || this.model.get("display_name"),
                     displayOverlay: this.displayOverlay
