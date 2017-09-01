@@ -1,5 +1,5 @@
 {{#ifequal dataType "photos"}}
-    <a href="#/{{ dataType }}/{{id}}">
+    <a href="#/{{screenType}}/{{dataType}}/{{id}}">
         <div class="card-img-preview" style="background-image: url('{{ path_medium }}');" />
     </a>
     <h1>
@@ -14,7 +14,7 @@
 {{/ifequal}}
 
 {{#ifequal dataType "audio"}}
-<a href="#/{{ dataType }}/{{id}}" id="audio-card">
+<a href="#/{{screenType}}/{{dataType}}/{{id}}" id="audio-card">
     <div class="player-container audio-simple">
 
     </div>
@@ -31,7 +31,7 @@
 
 
 {{#ifequal dataType "videos"}}
-<a href="#/{{ dataType }}/{{id}}" class="video-simple">
+<a href="#/{{screenType}}/{{dataType}}/{{id}}" class="video-simple">
     <div class="video-simple">
         {{#ifequal video_provider "vimeo"}}
             <iframe src="https://player.vimeo.com/video/{{video_id}}"
@@ -62,7 +62,7 @@
 {{#ifcontains dataType "markers"}}
     <div class="card-site-field">
 
-        <a href="#/{{ dataType }}/{{id}}">
+        <a href="#/{{screenType}}/{{dataType}}/{{id}}">
 
             <table>
                    <tr>
@@ -100,7 +100,7 @@
 {{#ifcontains dataType "form_"}}
     <div class="card-site-field">
 
-        <a href="#/{{ dataType }}/{{id}}">
+        <a href="#/{{screenType}}/{{dataType}}/{{id}}">
             <table>
 
                 {{#each fields}}

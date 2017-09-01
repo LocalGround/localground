@@ -47,8 +47,6 @@ define([
             this.template = Handlebars.compile(ToolbarTemplate);
 
             // Collection of listeners
-            this.listenTo(this.app.vent, 'add-media', this.createMediaUploadModal);
-            this.listenTo(this.app.vent, 'add-map-image', this.createMapImageUploadModal);
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
             this.listenTo(this.app.vent, 'show-media-type', this.showMediaTypeForm);
             this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
@@ -89,6 +87,7 @@ define([
             this.app.vent.trigger('add-row');
             e.preventDefault();
         },
+        /*
         triggerAddNew: function (e) {
             var mediaType = this.app.dataType,
                 screenType = this.app.screenType,
@@ -107,7 +106,9 @@ define([
             }
             e.preventDefault();
         },
+        //*/
 
+        //*
         triggerAddNewMap: function (e) {
             var mediaType = $(e.target).attr('data-value'),
                 url = "//" + mediaType + "/new";
@@ -124,6 +125,7 @@ define([
             console.log("Does this hide the add button in map mode?");
             e.preventDefault();
         },
+        //*/
         changeMode: function () {
             this.renderAndRoute();
         },

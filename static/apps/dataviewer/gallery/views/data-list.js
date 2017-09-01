@@ -49,7 +49,8 @@ define(["jquery",
                     className: "column",
                     templateHelpers: function () {
                         var context = {
-                                dataType: this.app.dataType
+                                dataType: this.app.dataType,
+                                screenType: this.app.screenType
                             },
                             that = this;
                         /*  If this is a dynamic form, then set each field's val to

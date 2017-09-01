@@ -18,11 +18,11 @@ define([
             } else {
                 screenType = arg1
             }
-            console.log("loading data Type")
             this.app.vent.trigger("show-list", screenType, dataType);
         },
         addNew: function (screenType, dataType) {
             // if datatype is photo, audio, or videos, trigger a new uploader modal
+            console.log(dataType);
             if (dataType == "photos" || dataType == "audio") {
                 this.createMediaUploadModal();
             } else if (dataType == "map_images") {

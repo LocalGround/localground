@@ -110,7 +110,8 @@ define ([
                     className: "column",
                     templateHelpers: function () {
                         return {
-                            dataType: this.currentMedia
+                            dataType: this.currentMedia,
+                            screenType: this.app.screenType
                         };
                     }
                 });
