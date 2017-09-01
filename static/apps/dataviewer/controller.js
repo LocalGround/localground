@@ -8,10 +8,15 @@ define([
             this.app = options.app;
         },
         dataList: function (dataType) {
-            console.log('dataList:', dataType);
             this.app.vent.trigger("show-list", dataType);
         },
-        addNew: function (screenType, dataType, id) {
+        addNew: function (arg1, arg2) {
+            var dataType;
+            if (arg1 && arg2) {
+                dataType = arg2
+            } else {
+                dataType = arg1
+            }
             this.dataDetail(dataType);
         },
         dataDetail: function (dataType, id) {
@@ -41,7 +46,6 @@ define([
             this.app.vent.trigger("show-list", "spreadsheet");
         },
         showMap: function () {
-            console.log("showing map...");
             this.app.vent.trigger("show-list", "map");
         }
     });

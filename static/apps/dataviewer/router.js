@@ -27,6 +27,12 @@ define([
             ]);
             this.route.apply(this, [
                 //e.g. #/table/photos/new
+                /^([a-z]+_*[0-9]*)\/new$/,
+                'addNew',
+                this.controller.addNew.bind(this.controller)
+            ]);
+            this.route.apply(this, [
+                //e.g. #/table/photos/new
                 /^(\w+)\/([a-z]+_*[0-9]*)\/new$/,
                 'addNew',
                 this.controller.addNew.bind(this.controller)
