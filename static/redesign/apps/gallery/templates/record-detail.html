@@ -121,15 +121,17 @@
         </div>
     {{else}}
         <i class="fa fa-angle-up mobile-toggle" id="open-full" aria-hidden="true"></i>
-        <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}})">
-            {{#if hasAudio}}
-            <div class="thumbnail-play-circle">
-                <i class="fa fa-play fa-3x thumbnail-play" aria-hidden="true"></i>
+        <div class="section">
+            <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}})">
+                {{#if hasAudio}}
+                <div class="thumbnail-play-circle">
+                    <i class="fa fa-play fa-3x thumbnail-play" aria-hidden="true"></i>
+                </div>
+                {{/if}}
             </div>
-            {{/if}}
-        </div>
-        <div class="header-info">
-            <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
+            <div class="header-info">
+                <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
+            </div>
         </div>
 
         <div class="section">
@@ -168,29 +170,31 @@
         </div>
     -->
         {{#if fields }}
-            <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
-            {{#each fields}}
-                <tr>
-                    <td>{{ this.col_alias }}:</td>
-                    <td>{{ this.val }}</td>
-                </tr>
-            {{/each}}
-            {{#if tags}}
-                <tr>
-                    <td></td>
-                    <td>
-                        {{#each tags}}
-                            <a class="tag"> {{this}} </a>
-                        {{/each}}
-                    </td>
-                </tr>
-            {{/if}}
-            </table>
-        {{else}}
-            <div class="tag-container">
-            {{#each tags}}
-                <a class="tag"> {{this}} </a>
-            {{/each}}
+            <div class="section">
+                <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
+                {{#each fields}}
+                    <tr>
+                        <td>{{ this.col_alias }}:</td>
+                        <td>{{ this.val }}</td>
+                    </tr>
+                {{/each}}
+                {{#if tags}}
+                    <tr>
+                        <td></td>
+                        <td>
+                            {{#each tags}}
+                                <a class="tag"> {{this}} </a>
+                            {{/each}}
+                        </td>
+                    </tr>
+                {{/if}}
+                </table>
+            {{else}}
+                <div class="tag-container">
+                {{#each tags}}
+                    <a class="tag"> {{this}} </a>
+                {{/each}}
+                </div>
             </div>
         {{/if}}
         <button class="button button-tertiary streetview">Show Street View</button>

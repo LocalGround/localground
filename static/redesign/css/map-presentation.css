@@ -94,6 +94,15 @@ ul{
     order: 0;
 }
 
+.presentation-main-panel .audio-container {
+    padding: 20px 0px;
+}
+
+.presentation-main-panel .audio-detail .audio-progress {
+    padding: 10px 0px 17px 0px;
+    position: relative;
+}
+
 @media (max-width: 900px) {
     .left #marker-detail-panel {
         border-right: 1px solid #e4e5eb;

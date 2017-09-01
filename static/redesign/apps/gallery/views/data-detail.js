@@ -280,9 +280,9 @@ define([
         },
 
         remove: function () {
-            console.log("destroying...");
-            window.removeEventListener('scroll', this.scrollEventListener);
-            Backbone.View.prototype.remove.call(this);
+                console.log("destroying...");
+                window.removeEventListener('scroll', this.scrollEventListener);
+                Backbone.View.prototype.remove.call(this);
         },
 
 
@@ -486,7 +486,7 @@ define([
             if (this.panelStyles) {
                 paragraph = this.panelStyles.paragraph;
                 title = this.panelStyles.title;
-                this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
+                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
             console.log("featured image: ", this.getFeaturedImage());
