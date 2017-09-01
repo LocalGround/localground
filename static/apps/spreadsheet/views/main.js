@@ -30,7 +30,7 @@ define(["jquery",
                 'click #addColumn': 'showCreateFieldForm',
                 'click .addMedia': 'showMediaBrowser',
                 'click .delete_column' : 'deleteField',
-                'click .carousel-media': 'carouselMedia'
+                'click .carousel-media': 'carouselMedia',
 
             },
             foo: "bar",
