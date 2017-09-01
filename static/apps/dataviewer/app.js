@@ -94,6 +94,11 @@ define([
             this.mainRegion.show(this.mainView);
             this.adjustLayout();
             this.tabView.render();
+            if (this.deferredModelID) {
+                this.router.navigate("//" + this.screenType + "/" + this.dataType
+                + "/" + this.deferredModelID, {trigger: true});
+                delete this.deferredModelID;
+            }
         },
 
         adjustLayout: function () {

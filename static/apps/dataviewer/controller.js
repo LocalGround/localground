@@ -33,14 +33,17 @@ define([
             var dm = this.app.dataManager,
                 detailView;
             if (!dm.dataLoaded) {
+                // stash the model id, and then display once the
+                // data has been loaded:
+                this.app.deferredModelID = id;
                 return;
             }
 
             //1. for gallery and map:
             detailView = new DataDetail({
-                    model: this.app.dataManager.getModel(dataType, id),
-                    app: this.app
-                });
+                model: this.app.dataManager.getModel(dataType, id),
+                app: this.app
+            });
             this.app.vent.trigger("show-detail", detailView, false);
 
             //2. for spreadsheet:
