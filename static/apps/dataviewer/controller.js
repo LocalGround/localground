@@ -7,8 +7,16 @@ define([
         initialize: function (options) {
             this.app = options.app;
         },
-        dataList: function (dataType) {
-            this.app.vent.trigger("show-list", dataType);
+        dataList: function (arg1, arg2) {
+            var dataType, screenType;
+            if (arg1 && arg2) {
+                screenType = arg1
+                dataType = arg2
+            } else {
+                screenType = arg1
+            }
+            console.log("loading data Type")
+            this.app.vent.trigger("show-list", screenType, dataType);
         },
         addNew: function (arg1, arg2) {
             var dataType;
