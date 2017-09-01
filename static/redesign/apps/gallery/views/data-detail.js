@@ -115,14 +115,14 @@ define([
             var that = this;
             var MoveItItem = function ($el) {
                 this.$el = $el;
-                this.initialPosition = 490;
+                this.initialPosition = $el.position().top;
 
                 this.initPosition = function () {
                     this.targetTop = this.$el.attr('data-target-top').replace("%", "");
                     this.finalPosition = parseFloat(this.targetTop, 10) * $(window).height() / 100;
                     that.distance = this.initialPosition - this.finalPosition;
-                    this.scrollDistance = Math.abs($(window).height() - $(document).height());
-                    this.speed = that.distance / this.scrollDistance;
+                    that.scrollDistance = Math.abs($(window).height() - $(document).height());
+                    this.speed = that.distance / that.scrollDistance;
                     this.className = this.$el.get(0).className;
                     this.lastDirection = "up";
                     this.lastScrollTop = 0;
@@ -130,7 +130,7 @@ define([
                      console.log("className", this.className);
                      console.log("initialPosition", this.initialPosition);
                      console.log("finalPosition", this.finalPosition);
-                     console.log("scrollDistance", this.scrollDistance);
+                     console.log("scrollDistance", that.scrollDistance);
                      console.log("distance", that.distance);
                      console.log("speed", this.speed);
                 };
