@@ -316,23 +316,9 @@ svg, .fa-question-circle {
         float: right;
         margin-top: 2px;
     }
+   
 
-    .mobile-full {
-        height: 100% !important;
-        max-height: 100% !important;
-    }
-
-    .mobile-minimize {
-        min-height: 50px;
-     /*   max-height: 150px; */
-    }
-
-    .mobile-full .min-thumbnail {
-        width: 0px;
-        height: 0px;
-    }
-
-    .mobile-minimize .min-thumbnail {
+    .min-thumbnail {
         height: 140px;
         max-height: 140px;
         min-height: 50px;
@@ -354,14 +340,9 @@ svg, .fa-question-circle {
         
     }
 
-    .mobile-full .header-info {
-        float: auto;
-        margin: 0 auto;
-        max-width: 400px;
-        padding: 0px 10px;
-    }
+    
 
-    .mobile-minimize .thumbnail-play {
+    .thumbnail-play {
         opacity: .7;
         bottom: 28%;
         right: 12%;
@@ -370,11 +351,8 @@ svg, .fa-question-circle {
         display: inline-block;
     }
 
-    .mobile-full .thumbnail-play {
-        display: none;
-    }
 
-    .mobile-minimize .thumbnail-play-circle {
+    .thumbnail-play-circle {
         top: 24%;
         position: relative;
         background-color: rgba(255, 255, 255, 0);
@@ -385,34 +363,6 @@ svg, .fa-question-circle {
         left: 23%;
         display: inline-block;
     }
-
-    .mobile-full .thumbnail-play-circle {
-        display: none;
-    }
-    .mobile-full #presentation-title {
-        top: -150px;
-    }
-
-    .mobile-full-legend {
-        top: -150px !important;
-    }
-
-    .mobile-minimize-legend {
-        top: 10px;
-    }
-
-    .mobile-full-title {
-        top: -150px !important;
-    }
-
-    .mobile-minimize-title {
-        top: auto;
-    }
-
-    .mobile-full .preview-properties {
-        display: auto;
-    }
-
 
     .parallax {
         background: #EEE;
@@ -548,7 +498,7 @@ svg, .fa-question-circle {
         height: 90px;
     }
 
-    .mobile-minimize .min-thumbnail {
+    .min-thumbnail {
         height: 90px;
         width: 90px;
     }
@@ -601,22 +551,11 @@ Separate Mobile CSS
 /*    transition: width .5s, height .5s; */
 }
 
-.mobile-full .top-section {
-    height: 100%;
-}
-
-.mobile-full .body-section {
-    height: 340px;
-    max-height: 50%;
-    min-height: auto;
-    overflow: scroll;
-}
-
-.mobile-minimize .top-section {
+.top-section {
  /*   height: 120px;  */
 }
 
-.mobile-minimize .body-section {
+.body-section {
     max-height: 120px;
     height: 20vw;
     min-height: 50px;

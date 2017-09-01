@@ -10,17 +10,14 @@ define([
     "text!../templates/video-detail.html",
     "text!../templates/record-detail.html",
     "text!../templates/map-image-detail.html",
-    "text!../templates/mobile-expand.html",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form",
-    "touchPunch",
-    "modernizr"
-
+    "touchPunch"
 ], function ($, _, Backbone, Handlebars, Marionette, Photos, Audio, Videos,
         PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
-        MapImageTemplate, MobileExpandTemplate, AudioPlayer, Carousel, Icon, DataForm, TouchPunch, Modernizr) {
+        MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm, TouchPunch) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -38,8 +35,7 @@ define([
             "click .streetview": 'showStreetView',
             "click #open-full": 'openMobileDetail',
             "click .thumbnail-play-circle": 'playAudio',
-            'click .circle': 'openExpanded',
-            'hover .parallax': 'bindClick'
+            'click .circle': 'openExpanded'
         },
         getTemplate: function () {
             console.log(this.dataType, this.mobileView );
@@ -55,24 +51,8 @@ define([
             if (this.dataType == "map_images") {
                 return Handlebars.compile(MapImageTemplate);
             }
-            /*if (this.mobileView == "expanded") {
-                console.log("compile mobile expand");
-                return Handlebars.compile(MobileExpandTemplate);
-            }*/
             return Handlebars.compile(SiteTemplate);
-            /*
-            return Handlebars.compile("<div class='parallax black' data-target-top='0%'> \
-                <div class='top-section'> \
-                {{#if photo_count }} \
-                    <div class='mobile-carousel carousel-videos-photos'></div> \
-                {{/if}} \
-                </div> \
-            </div> \
-            <div class='parallax body' id='parallax-body' data-target-top='50%' style='\
-                color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}'> \
-                <div class='expanded' style='display:none;'>Expanded</div> \
-                <div class='contracted'>Contracted</div> \
-            </div>");*/
+           
             
         },
         featuredImageID: null,
@@ -86,22 +66,8 @@ define([
             Marionette.ItemView.prototype.initialize.call(this);
             $('#marker-detail-panel').addClass('mobile-minimize');
             $(window).on("resize", _.bind(this.screenSize, this));
-           // $(window).scroll(this.detectScroll);
-         //   $(window).on("scroll",  _.bind(this.detectScroll, this));
-           // $(document).on('scrollstart', _.bind(this.detectScroll, this));
-            //$(window).on("scroll",  _.bind(this.detectScroll, this))
-            this.isMobile();
         
-            console.log(Modernizr);
-            /*
-            if (Modernizr.touchevents) {
-                return;
-              } else {
-                $('.parallax').click(function () {
-                    $('.parallax').click();
-                })
-              }
-              */
+            this.isMobile();
 
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
@@ -109,7 +75,7 @@ define([
 
         /*
         (for mobile safari)
-        when the user initiaztes a touchmove event (on mobile), we want to automatically 
+        when the user initiates a touchmove event (on mobile), we want to automatically 
         trigger the first click because scroll is not enabled until the second click
         */
         bindClick: function (event) {
@@ -119,70 +85,14 @@ define([
         },
 
         openExpanded: function (event) {
-            console.log(this.clickNum, event.type);
-            console.log("parallax click");
-         //   alert("hover registered");
-         //   $('.parallax').css('background-color', 'red');
-         //   $('.parallax').scroll();
-            console.log($(window).scrollTop());
             if ($(window).scrollTop() < 140) {
-                //$(window).scrollTop(1000);
                 $("html, body").animate({ scrollTop: "160" }, 600);
                 this.$el.find(".circle-icon").addClass("icon-rotate");
                 console.log($(window).scrollTop());
             } else {
-               // $(window).scrollTop(0)
                $("html, body").animate({ scrollTop: "0" }, 600);
                this.$el.find(".circle-icon").removeClass("icon-rotate");
             }
-            console.log($(window).scrollTop());
-        },
-
-
-        expandMobile: function () {
-            console.log("render expandMobile", this);
-            this.mobileView = "expanded";
-            this.getTemplate();
-            this.render();
-        },
-        contractMobile: function () {
-            console.log("render contractMobile", this);
-            this.mobileView = null;
-            this.getTemplate();
-            this.render();
-        },
-
-        detectScroll: function (event) {
-            console.log("scrolling");
-            var triggerHeight = screen.height - (screen.height/3),
-            scrollHeight = parseInt(this.$el.find('#parallax-body').css('top'), 10);
-
-            /*
-            var oldTranslateY = $('#parallax-body').css("transform"),
-            dragEl = document.getElementById("parallax-body"),
-            translateY = this.getComputedTranslateY(document.getElementById("parallax-body"));
-            $('.min-thumbnail').remove();
-            console.log(oldTranslateY, this.getComputedTranslateY(dragEl), translateY);
-            */
-            console.log(scrollHeight, triggerHeight, scrollHeight < triggerHeight, this.mobileView !== "expanded", "this.mobileview = " + this.mobileView );
-            /*
-            if (scrollHeight < triggerHeight && this.mobileView !== "expanded") {
-                console.log("expand!");
-                this.expandMobile();
-               // $(window).scrollTop(screen.height/2.5);
-            }
-            */
-           // if (this.$el.find(".parallax."))
-        },
-
-        getComputedTranslateY: function(object) {
-            if(!window.getComputedStyle) return;
-            var style = getComputedStyle(object),
-                transform = style.transform;
-            var mat = transform.match(/^matrix3d\((.+)\)$/);
-            if(mat) return parseFloat(mat[1].split(', ')[13]);
-            mat = transform.match(/^matrix\((.+)\)$/);
-            return mat ? parseFloat(mat[1].split(', ')[5]) : 0;
         },
 
         initParallax: function () {
@@ -284,54 +194,6 @@ define([
                 window.removeEventListener('scroll', this.scrollEventListener);
                 Backbone.View.prototype.remove.call(this);
         },
-
-
-
-        /*initDraggable: function () {
-            return;
-            var that = this;
-
-            $( '#marker-detail-panel' ).draggable({
-               // handle: '.body-section',
-                axis: 'y',
-                handle: '.body-section',
-
-                drag: function (event, ui) {
-                    if  (ui.position.top <= 0) {
-                        console.log("stop");
-                    } else {
-                        $('#marker-detail-panel').css('max-height', 'none');
-                        $('.body-section').css('max-height', '50%');
-                    //  $('.top-section').css('height', 'auto');
-                        //var top = parseFloat($('.body-section').css('top'));
-                        var top =  screen.height - ui.position.top;
-                        console.log("dragging", top, screen.height, ui.position.top);
-
-                        $('#marker-detail-panel').css({
-                            'height':'auto',
-                            'max-height': 'auto',
-                        });
-
-                        $('.body-section').css({
-                            'height': top
-
-                        });
-
-                        $('.top-section').css({
-                            'height': screen.height - ui.position.top
-                        })
-
-                        $('#presentation-title').css({
-                            'opacity': 0
-                        })
-
-                        $('#legend').css({
-                            'opacity': 0
-                        })
-                    }
-                }
-            });
-        },*/
 
         isMobile: function () {
             if ($(window).width() >= 900) {
@@ -489,8 +351,6 @@ define([
                 $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
-            console.log("featured image: ", this.getFeaturedImage());
-            console.log(this.mobileMode);
 
             return {
                 mode: this.app.mode,
@@ -520,7 +380,6 @@ define([
                 return this.getFeaturedImage();
             } else if (!_.isEmpty(this.model.get("children"))) {
                 if (this.model.get("children").photos) {
-                    console.log(this.model.get("children"));
                     var photoData = this.model.get("children").photos.data;
                     return photoData[0];
                 } else {

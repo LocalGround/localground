@@ -465,5 +465,9 @@ table.color-properties td:first-child {
 }
 
 .style-reset {
-    margin: 2px 10px;
+    float: right;
+    font-size: 11px;
+    text-decoration: underline;
+    cursor: pointer;
+    color: #666;
 }
