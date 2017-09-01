@@ -8,6 +8,7 @@ define([
     return Marionette.Controller.extend({
         initialize: function (options) {
             this.app = options.app;
+            this.modal = new Modal();
         },
         dataList: function (arg1, arg2) {
             var dataType, screenType;
