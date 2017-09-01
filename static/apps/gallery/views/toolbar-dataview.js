@@ -100,7 +100,7 @@ define([
             screenType = (screenType === "spreadsheet") ? "table" : screenType;
             url = "//" + screenType + "/" + mediaType + "/new"
             if (mediaType === 'photos' || mediaType === 'audio') {
-                this.createMediaUploadModal();
+                this.app.router.navigate(url, {trigger : true});
             } else if (mediaType === 'map_images') {
                 this.createMapImageUploadModal();
             } else {
@@ -116,7 +116,7 @@ define([
             var mediaType = $(e.target).attr('data-value'),
                 url = "//" + mediaType + "/new";
             if (mediaType === 'photos' || mediaType === 'audio') {
-                this.createMediaUploadModal();
+                this.app.router.navigate(url, {trigger : true});
             } else if (mediaType === 'map_images') {
                 this.createMapImageUploadModal();
             } else {
@@ -177,25 +177,6 @@ define([
                 view: formList,
                 title: 'List of Forms',
                 width: 800,
-                showSaveButton: false,
-                showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
-            });
-            this.modal.show();
-        },
-
-        createMapImageUploadModal: function () {
-            var uploadMediaForm = new CreateMedia({
-                app: this.app,
-                dataType: 'map_images'
-            });
-            this.modal.update({
-                view: uploadMediaForm,
-                title: 'Upload Map Images',
-                //width: 800,
-                //height: 350,
-                closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false
                 // bind the scope of the save function to the source view:

@@ -23,7 +23,7 @@ define([
         },
         addNew: function (screenType, dataType) {
             // if datatype is photo, audio, or videos, trigger a new uploader modal
-            if (dataType == "photos" || dataType == "audio" || dataType == "videos"){
+            if (dataType == "photos" || dataType == "audio" || dataType == "map_images"){
                 this.createMediaUploadModal();
             } else {
                 this.dataDetail(screenType, dataType);
@@ -55,20 +55,33 @@ define([
             }, false);
         },
 
-        createMediaUploadModal: function () {
+        createMediaUploadModal: function (title, dataType) {
+            var modalTitle = title != null ? title : "Upload Media";
+            var setDatType = dataType != null ? dataType : "default";
             var uploadMediaForm = new CreateMedia({
                 app: this.app
             });
             this.modal.update({
                 view: uploadMediaForm,
                 title: 'Upload Media',
-                //width: 800,
-                //height: 350,
                 closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
+            });
+            this.modal.show();
+        },
+
+        createMapImageUploadModal: function () {
+            var uploadMediaForm = new CreateMedia({
+                app: this.app,
+                dataType: 'map_images'
+            });
+            this.modal.update({
+                view: uploadMediaForm,
+                title: 'Upload Map Images',
+                closeButtonText: "Done",
+                showSaveButton: false,
+                showDeleteButton: false
             });
             this.modal.show();
         },
