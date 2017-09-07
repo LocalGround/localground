@@ -44,8 +44,10 @@ define([
             }
 
             //1. for gallery and map:
+            var model = this.app.dataManager.getModel(dataType, parseInt(id));
+            console.log(model, dataType, parseInt(id));
             detailView = new DataDetail({
-                model: this.app.dataManager.getModel(dataType, id),
+                model: this.app.dataManager.getModel(dataType, parseInt(id)),
                 app: this.app
             });
             this.app.vent.trigger("show-detail", detailView, false);

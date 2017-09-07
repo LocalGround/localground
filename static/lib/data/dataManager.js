@@ -46,7 +46,14 @@ define(["underscore", "marionette", "models/project", "collections/photos",
 
             deleteCollection: function(key) {
                 delete this.dataDictionary[key];
+                this.vent.trigger('datamanager-modified');
             },
+
+            addNewRecordsCollection: function (key) {
+                this.dataDictionary[key] = this.createRecordsCollection(key);
+                this.vent.trigger('datamanager-modified');
+            },
+
             createRecordsCollection: function (key, data, fieldCollection) {
                 var that = this,
                     formID = key.split("_")[1],
@@ -73,9 +80,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     fields: fields,
                     overlay_type: "record"
                 };
-            },
-            addNewRecordsCollection: function (key) {
-                this.dataDictionary[key] = this.createRecordsCollection(key);
             },
 
             getDataSources: function () {
@@ -130,7 +134,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 default:
                     // in addition to defining the collection, also define the fields:
                     if (key.indexOf("form_") != -1) {
-                        var entry = this.createRecordsCollection(key),
+                        var entry = this.createRecordsCollection(key, data, fieldCollection),
                             records = entry.records,
                             fields = entry.fields;
                         return {
