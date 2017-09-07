@@ -27,6 +27,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 }
                 this.tilesets = new TileSets();
                 this.tilesets.fetch({reset: 'true'});
+                this.listenTo(this.vent, "delete-collection", this.deleteCollection);
             },
             setCollections: function () {
                 var that = this,
@@ -40,6 +41,12 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 this.dataLoaded = true;
                 this.vent.trigger('data-loaded');
             },
+
+            deleteCollection: function(key){
+                delete this.dataDictionary[key];
+                console.log("Deleted collection");
+            },
+
             getDataSources: function () {
                 var dataSources = [
                     { value: "markers", name: "Sites" }

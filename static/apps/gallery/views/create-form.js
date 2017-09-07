@@ -166,12 +166,15 @@ define([
 
         deleteForm: function () {
             var that = this;
+            var key = "form_" + this.model.id;
             if (!confirm("Are you sure you want to delete this form? This will delete all data associated with this form and cannot be undone.")) {
                 return;
             }
             this.model.destroy({
                 success: function () {
                     that.backToList();
+                    that.app.vent.trigger("delete-collection", key);
+
                 }
             });
         },
