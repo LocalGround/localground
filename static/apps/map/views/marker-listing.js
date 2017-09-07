@@ -16,7 +16,8 @@ define(["marionette",
             title: null,
             collectionEvents: {
                 'show-marker': 'removeHideIcon',
-                'hide-marker': 'showHideIcon'
+                'hide-marker': 'showHideIcon',
+                //'destroy': 'removeIt'
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -135,6 +136,10 @@ define(["marionette",
                 this.collection.trigger('hide-markers');
                 this.saveState();
                 this.render();
+            },
+            removeIt: function () {
+                alert("remove listing");
+                this.remove();
             },
             showMarkers: function () {
                 this.displayOverlays = true;

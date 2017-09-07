@@ -42,7 +42,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 this.vent.trigger('data-loaded');
             },
 
-            deleteCollection: function(key){
+            deleteCollection: function(key) {
                 delete this.dataDictionary[key];
                 console.log("Deleted collection");
             },

@@ -25,6 +25,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'unhide-detail', this.unhideDetail);
                 this.listenTo(this.app.vent, 'unhide-list', this.unhideList);
                 this.listenTo(this.app.vent, 'hide-list', this.hideList);
+                this.listenTo(this.app.vent, 'delete-collection', this.showMarkerListManager);
             },
             hideList: function () {
                 this.showLeft = false;
@@ -56,10 +57,9 @@ define(["marionette",
             showMarkerListManager: function () {
                 this.showLeft = true;
                 this.updateDisplay();
-                this.markerListManager = new MarkerListingManager({
+                this.leftRegion.show(new MarkerListingManager({
                     app: this.app
-                });
-                this.leftRegion.show(this.markerListManager);
+                }));
             },
 
             updateDisplay: function () {
