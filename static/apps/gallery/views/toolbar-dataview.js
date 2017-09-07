@@ -1,3 +1,4 @@
+var t;
 define([
     "underscore",
     "jquery",
@@ -42,10 +43,11 @@ define([
             };
         },
         route: function (e) {
-            console.log($(e.target));
-            var route = $(e.target).attr("href").replace("#", "/");
+            if (!e) {
+                return;
+            }
+            var route = $(e.currentTarget).attr("href").replace("#", "/");
             this.app.router.navigate(route, { trigger: true });
-            e.preventDefault();
         },
 
         initialize: function (opts) {

@@ -29,7 +29,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 this.tilesets.fetch({reset: 'true'});
                 this.listenTo(this.vent, "delete-collection", this.deleteCollection);
                 // This.seetCollections is the closest to gettign desired behavior
-                this.listenTo(this.vent, "create-collection", this.getCollection);
+                this.listenTo(this.vent, "create-collection", this.addNewRecordsCollection);
             },
             setCollections: function () {
                 var that = this,
@@ -46,6 +46,36 @@ define(["underscore", "marionette", "models/project", "collections/photos",
 
             deleteCollection: function(key) {
                 delete this.dataDictionary[key];
+            },
+            createRecordsCollection: function (key, data, fieldCollection) {
+                var that = this,
+                    formID = key.split("_")[1],
+                    recordsURL = '/api/0/forms/' + formID + '/data/',
+                    fieldsURL = '/api/0/forms/' + formID + '/fields/',
+                    records = new Records(data, {
+                        url: recordsURL,
+                        key: 'form_' + formID,
+                        overlay_type: "record"
+                    }),
+                    fields = fieldCollection || new Fields(null, {url: fieldsURL });
+                records.fillColor = this.formColors[this.colorCounter++];
+                if (fields.length == 0) {
+                    fields.fetch({ reset: true, success: function () {
+                        that.attachFieldsToRecords(records, fields);
+                    }});
+                } else {
+                    this.attachFieldsToRecords(records, fields);
+                }
+                return {
+                    id: key,
+                    name: key,
+                    records: records,
+                    fields: fields,
+                    overlay_type: "record"
+                };
+            },
+            addNewRecordsCollection: function (key) {
+                this.dataDictionary[key] = this.createRecordsCollection(key);
             },
 
             getDataSources: function () {
@@ -92,7 +122,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     return { collection: new Videos(data) };
                 case "markers":
                     return {
-                        collection: new Markers(data),
+                        collection: new Markers(key, data, fieldCollection),
                         isSite: true
                     };
                 case "map_images":
@@ -100,24 +130,9 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 default:
                     // in addition to defining the collection, also define the fields:
                     if (key.indexOf("form_") != -1) {
-                        var formID = key.split("_")[1],
-                            recordsURL = '/api/0/forms/' + formID + '/data/',
-                            fieldsURL = '/api/0/forms/' + formID + '/fields/',
-                            records = new Records(data, {
-                                url: recordsURL,
-                                key: 'form_' + formID,
-                                overlay_type: overlay_type
-                            }),
-                            fields = fieldCollection || new Fields(null, {url: fieldsURL }),
-                            that = this;
-                        records.fillColor = this.formColors[this.colorCounter++];
-                        if (fields.length == 0) {
-                            fields.fetch({ reset: true, success: function () {
-                                that.attachFieldsToRecords(records, fields);
-                            }});
-                        } else {
-                            this.attachFieldsToRecords(records, fields);
-                        }
+                        var entry = this.createRecordsCollection(key),
+                            records = entry.records,
+                            fields = entry.fields;
                         return {
                             collection: records,
                             fields: fields,
