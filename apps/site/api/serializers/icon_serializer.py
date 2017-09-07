@@ -153,7 +153,7 @@ class IconSerializerUpdate(IconSerializerBase):
     anchor_y = serializers.IntegerField(allow_null=True, max_value=IconSerializerBase.size_max, min_value=0)
     width = serializers.IntegerField(read_only=True)
     height = serializers.IntegerField(read_only=True)
-    icon = serializers.CharField(source='file_name_orig', required=False, read_only=True)
+    icon_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
     project_id = serializers.SerializerMethodField()
 
     def get_project_id(self, obj):
