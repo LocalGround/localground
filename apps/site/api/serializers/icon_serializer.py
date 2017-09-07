@@ -57,6 +57,12 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
         #check for case where resizing by scale ratio would make icon_max too large
         if scale_ratio > self.size_max / icon_max:
             scale_ratio = self.size_max / icon_max
+#code to look at
+#function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
+#    var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+#   return {width: srcWidth * ratio, height: srcHeight * ratio};
+# }
+
         #raise Exception(size, scale_ratio)
         #resize icon if needed
         if scale_ratio != 1.0:
@@ -99,13 +105,13 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
 
 
 class IconSerializerList(IconSerializerBase):
-    anchor_x = serializers.IntegerField(read_only=True)
-    anchor_y = serializers.IntegerField(read_only=True)
+    anchor_x = serializers.IntegerField(read_only=False, required=False)
+    anchor_y = serializers.IntegerField(read_only=False, required=False)
     width = serializers.IntegerField(read_only=True)
     height = serializers.IntegerField(read_only=True)   
     class Meta:
         model = models.Icon
-        read_only_fields = ('width', 'height', 'anchor_x', 'anchor_y', 'file_type')
+        read_only_fields = ('width', 'height', 'file_type')
         fields = ('url', 'id', 'name', 'icon_file', 'file_type', 'file_path',
                   'owner', 'project_id', 'size', 'width', 'height', 'anchor_x', 'anchor_y')
         depth = 0

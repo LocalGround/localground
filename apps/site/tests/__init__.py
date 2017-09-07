@@ -443,14 +443,18 @@ class ModelMixin(object):
         photo.save()
         return photo
 
-    def create_icon(self, user, project, icon_file='icon.jpg', name='test_icon', size=100, anchor_x=30, anchor_y=50):
+    def create_icon(self, user, project, icon_file='icon.jpg', name='test_icon', file_type='jpg', size=100, width=100, height=100, anchor_x=30, anchor_y=50):
         from localground.apps.site import models
         icon = models.Icon(
             project=project,
             owner=user,
-            icon_file=icon_file,
+            last_updated_by=user,
+            file_name_orig=icon_file,
             name=name,
+            file_type=file_type,
             size=size,
+            width=width,
+            height=height,
             anchor_x=anchor_x,
             anchor_y=anchor_y
         )
