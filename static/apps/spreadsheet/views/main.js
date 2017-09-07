@@ -3,6 +3,7 @@ define(["jquery",
         "underscore",
         "handlebars",
         "views/media_browser",
+        "views/create-media",
         "models/record",
         "models/marker",
         "collections/photos",
@@ -14,7 +15,7 @@ define(["jquery",
         "lib/audio/audio-player",
         "lib/carousel/carousel"
     ],
-    function ($, Marionette, _, Handlebars, MediaBrowser,
+    function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
         Record, Marker, Photos, Audio, Videos, CreateFieldView, Handsontable, SpreadsheetTemplate,
         AudioPlayer, Carousel) {
         'use strict';
@@ -427,8 +428,10 @@ define(["jquery",
 
             showMediaBrowser: function (e) {
                 var row_idx = $(e.target).attr("row-index");
-                this.currentModel = this.collection.at(parseInt(row_idx));
-                console.log(this.currentModel);
+                if (row_idx != undefined){
+                    this.currentModel = this.collection.at(parseInt(row_idx));
+                    console.log(this.currentModel);
+                }
                 var mediaBrowser = new MediaBrowser({
                     app: this.app,
                     parentModel: this.currentModel
@@ -441,6 +444,24 @@ define(["jquery",
                     saveButtonText: "Add",
                     showSaveButton: true,
                     saveFunction: mediaBrowser.addModels.bind(mediaBrowser)
+                });
+            },
+
+
+
+            showMediaUploader: function (e) {
+
+                var mediaUploader = new MediaUploader({
+                    app: this.app,
+                });
+                this.app.vent.trigger("show-modal", {
+                    title: 'Media Uploader',
+                    width: 1100,
+                    //height: 400,
+                    view: mediaUploader,
+                    saveButtonText: "Add",
+                    showSaveButton: true,
+                    saveFunction: mediaUploader.addModels.bind(mediaUploader)
                 });
             },
 
@@ -716,9 +737,16 @@ define(["jquery",
                 var that = this;
                 var projectID = this.app.getProjectID();
                 var rec;
+                console.log(dataType);
+                console.log(this.app.dataType);
+                dataType = dataType != undefined ? dataType : this.app.dataType;
+                console.log(dataType);
 
                 if (dataType == "markers"){
                     rec = new Marker({project_id: projectID});
+                } else if (dataType == "audio" || dataType == "photos" || dataType == "videos"){
+                    console.log("Media Uploader called");
+                    this.showMediaUploader();
                 } else {
                     rec = new Record ({project_id: projectID});
                 }
