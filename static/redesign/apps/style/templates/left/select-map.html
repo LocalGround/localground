@@ -8,10 +8,20 @@
 {{#if noItems}}
     <p class="map-none-message">Click the plus sign to create a new map</p>
 {{else}}
-<select class="style-wide-select" id="map-select">
+<div class="selected-map">
+    <div class="map-item" data-value="{{ map.id }}">
+        <p class="map-select-option" value="{{ map.id }}">{{ map.name }}</p>
+        <p class="map-edit">edit</p>
+    </div>
+</div>
+
+<div class="style-wide-select" id="map-select">
     {{#each items}}
-    <option class="map-select-option" value="{{ this.id }}">{{ this.name }}</option>
+    <div class="map-item" data-value="{{ this.id }}">
+        <p class="map-select-option" value="{{ this.id }}">{{ this.name }}</p>
+        <p class="map-edit">edit</p>
+    </div>
     {{/each}}
-</select>
+</div>
 
 {{/if}}

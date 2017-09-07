@@ -18,7 +18,8 @@ define(["jquery",
             template: Handlebars.compile(MapTemplate),
             templateHelpers: function() {
                 return {
-                    noItems: (this.collection.length === 0)
+                    noItems: (this.collection.length === 0),
+                    map: this.activeMap
                 }
             },
 
@@ -34,6 +35,7 @@ define(["jquery",
 
             initialize: function (opts) {
                 var that = this;
+                this.setActiveMap;
                 _.extend(this, opts);
                 if (!this.collection) {
                     // /api/0/maps/ API Endpoint gets built:
@@ -164,9 +166,10 @@ define(["jquery",
                 if (this.collection.length == 0) {
                     return;
                 }
-                var id = this.$el.find('#map-select').val(),
+                var id = this.$el.find('.map-item').eq( 2 ).data('value'),
                     that = this,
                     selectedMapModel = this.collection.get(id);
+                    this.activeMap = selectedMapModel;
                 //re-fetch map from server so that it also returns the layers:
                 selectedMapModel.fetch({ success: function () {
                     that.setCenterZoom(selectedMapModel);

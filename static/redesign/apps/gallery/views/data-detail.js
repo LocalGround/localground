@@ -33,7 +33,6 @@ define([
             "click #delete-geometry": "deleteMarker",
             "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView',
-            "click #open-full": 'openMobileDetail',
             "click .thumbnail-play-circle": 'playAudio',
             'click .circle': 'openExpanded'
         },
@@ -85,22 +84,48 @@ define([
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
 
-        /*
-        (for mobile safari)
-        when the user initiates a touchmove event (on mobile), we want to automatically
-        trigger the first click because scroll is not enabled until the second click
-        */
-        bindClick: function (event) {
-            event.preventDefault();
-            console.log('touchmove triggered');
-            $('.parallax').click();
+        templateHelpers: function () {
+            var lat, lng, paragraph, title;
+            if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
+                lat =  this.model.get("geometry").coordinates[1].toFixed(4);
+                lng =  this.model.get("geometry").coordinates[0].toFixed(4);
+            }
+
+            if (this.panelStyles) {
+                paragraph = this.panelStyles.paragraph;
+                title = this.panelStyles.title;
+                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
+                this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
+            }
+
+            return {
+                mode: this.app.mode,
+                dataType: this.dataType,
+                audioMode: "detail",
+                name: this.model.get("name") || this.model.get("display_name"),
+                screenType: this.app.screenType,
+                lat: lat,
+                lng: lng,
+                paragraph: paragraph,
+                title: title,
+                expanded: this.expanded,
+                hasPhotoOrAudio: this.getPhotos().length > 0 || this.getAudio().length > 0,
+                featuredImage: this.getFeaturedImage(),
+                thumbnail: this.getThumbnail(),
+                photo_count: this.getPhotos().length,
+                audio_count: this.getAudio().length,
+                video_count: this.getVideos().length,
+                mobileMode: this.mobileMode,
+                hasAudio: this.getAudio().length,
+                hasPhotos: this.getPhotos().length,
+                video_photo_count: this.getVideos().length + this.getPhotos().length
+            };
         },
 
         openExpanded: function (event) {
-            if ($(window).scrollTop() < 140) {
-                $("html, body").animate({ scrollTop: "160" }, 600);
+            if ($(window).scrollTop() < 40) {
+                $("html, body").animate({ scrollTop: this.scrollDistance - 60}, 600);
                 this.$el.find(".circle-icon").addClass("icon-rotate");
-                console.log($(window).scrollTop());
             } else {
                $("html, body").animate({ scrollTop: "0" }, 600);
                this.$el.find(".circle-icon").removeClass("icon-rotate");
@@ -135,36 +160,23 @@ define([
                      console.log("speed", this.speed);
                 };
                 this.$el.css({
-                    position: "absolute"//, //"fixed",
-                    //top: this.initialPosition
+                    position: "absolute"
                 });
 
                 this.initPosition();
 
                 this.update = function (scrollTop) {
-                    //console.log(this.className, scrollTop);
-                    //this.calculateDimensions();
+                    
                     var direction = (scrollTop > this.lastScrollTop) ? "up": "down";
-                    /*if (direction !== this.lastDirection) {
-                        console.log('switch');
-                    }
-                    if (direction == "down" && scrollTop <= 50) {
-                        that.$el.find('.expanded').hide();
-                        that.$el.find('.contracted').show();
-                        console.log("showSmallTemplate", that.distance);
-                    }
 
-                    if (direction == "up" && scrollTop >= 200) {
-                        that.$el.find('.expanded').show();
-                        that.$el.find('.contracted').hide();
-                        //this.initPosition();
-                        console.log("showBigTemplate", that.distance);
-                    }*/
-
+                    var initialDivHeight = 90;
+                    var endScroll = that.scrollDistance - initialDivHeight;
+                    console.log(that.scrollDistance , initialDivHeight, endScroll, $('.black').css('top'), $('.body').css('top'), scrollTop);
+                    
                     if (direction !== this.lastDirection) {
                         console.log('switch');
                     }
-                    if (direction == "down" && scrollTop <= 10) {
+                    if (direction == "down" && scrollTop <= 2) {
                         that.$el.find('.expanded').hide();
                         that.$el.find('.contracted').show();
                       /*  that.$el.find('.parallax').css({
@@ -183,7 +195,7 @@ define([
                         console.log("showSmallTemplate", that.distance);
                     }
 
-                    if (direction == "up" && scrollTop >= 10) {
+                    if (direction == "up" && (scrollTop >= 2 && scrollTop <= 40))  {
                         that.$el.find('.expanded').show();
                         that.$el.find('.contracted').hide();
                      //   that.$el.find('.parallax').css('height', '68vh');
@@ -197,8 +209,13 @@ define([
                         //this.calculateDimensions();
                         console.log("showBigTemplate", that.distance);
                     }
-
+                    
                     this.$el.css('top', this.initialPosition - scrollTop * this.speed);
+                   // console.log($('.black').css('top'));
+                   if (parseInt($('.black').css('top'), 10) < endScroll + 20) {
+                       console.log("end scroll, setting css top");
+                        $('.black').css('top', endScroll + 25);
+                    }
 
                     //remember last values:
                     this.lastDirection = direction;
@@ -384,42 +401,6 @@ define([
             this.app.mode = "add";
             this.render();
         },
-        templateHelpers: function () {
-            var lat, lng, paragraph, title;
-            if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
-                lat =  this.model.get("geometry").coordinates[1].toFixed(4);
-                lng =  this.model.get("geometry").coordinates[0].toFixed(4);
-            }
-
-            if (this.panelStyles) {
-                paragraph = this.panelStyles.paragraph;
-                title = this.panelStyles.title;
-                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
-                this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
-            }
-
-            return {
-                mode: this.app.mode,
-                dataType: this.dataType,
-                audioMode: "detail",
-                name: this.model.get("name") || this.model.get("display_name"),
-                screenType: this.app.screenType,
-                lat: lat,
-                lng: lng,
-                paragraph: paragraph,
-                title: title,
-                expanded: this.expanded,
-                hasPhotoOrAudio: this.getPhotos().length > 0 || this.getAudio().length > 0,
-                featuredImage: this.getFeaturedImage(),
-                thumbnail: this.getThumbnail(),
-                photo_count: this.getPhotos().length,
-                audio_count: this.getAudio().length,
-                video_count: this.getVideos().length,
-                mobileMode: this.mobileMode,
-                hasAudio: this.getAudio().length,
-                video_photo_count: this.getVideos().length + this.getPhotos().length
-            };
-        },
 
         getThumbnail: function () {
             if (this.getFeaturedImage()) {
@@ -542,7 +523,7 @@ define([
             // setTimeout necessary to register DOM element
             //setTimeout(this.initDraggable.bind(this), 50);
             if ($(window).width() < 900) {
-                setTimeout(this.initParallax.bind(this), 50);
+                setTimeout(this.initParallax.bind(this), 10);
             }
         },
 
@@ -624,35 +605,6 @@ define([
         },
         updateStreetViewButton: function () {
             this.$el.find('.streetview').html('Show Street View');
-        },
-        openMobileDetail: function () {
-
-            console.log("init darggable", $( ".body-section" ));
-            if ($('#marker-detail-panel').hasClass('mobile-minimize')) {
-
-                $('#marker-detail-panel').addClass('mobile-full');
-                $('#marker-detail-panel').removeClass('mobile-minimize');
-
-                $('#legend').addClass('mobile-full-legend');
-                $('#legend').removeClass('mobile-minimize-legend');
-
-                $('#presentation-title').addClass('mobile-full-title');
-                $('#presentation-title').removeClass('mobile-minimize-title');
-
-            } else if ($('#marker-detail-panel').hasClass('mobile-full')) {
-
-                $('#marker-detail-panel').addClass('mobile-minimize');
-                $('#marker-detail-panel').removeClass('mobile-full');
-
-                $('#legend').addClass('mobile-minimize-legend');
-                $('#legend').removeClass('mobile-full-legend');
-
-                $('#presentation-title').addClass('mobile-minimize-title');
-                $('#presentation-title').removeClass('mobile-full-title');
-            }
-
-            console.log("mobile toggle");
-
         },
 
         playAudio: function () {

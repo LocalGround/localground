@@ -179,6 +179,19 @@
 }
 */
 
+.map-item {
+    padding: 4px 8px;
+}
+
+.map-item p {
+    display: inline-block
+}
+
+.map-edit {
+    float: right;
+    cursor: pointer;
+}
+
 .map-none-message {
     margin-left: 15px;
     margin-top: 10px;

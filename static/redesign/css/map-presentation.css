@@ -342,10 +342,19 @@ svg, .fa-question-circle {
 
     
 
-    .thumbnail-play {
+    .thumbnail-play.fa-play {
         opacity: .7;
-        bottom: 28%;
-        right: 12%;
+        bottom: 22%;
+        right: 6%;
+        color: white;
+        position: relative;
+        display: inline-block;
+    }
+
+    .thumbnail-play.fa-pause {
+        opacity: .7;
+        bottom: 22%;
+        right: 20%;
         color: white;
         position: relative;
         display: inline-block;
@@ -353,14 +362,14 @@ svg, .fa-question-circle {
 
 
     .thumbnail-play-circle {
-        top: 24%;
+        top: 27%;
         position: relative;
         background-color: rgba(255, 255, 255, 0);
         border: 2px solid rgba(255, 255, 255, .7);
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        left: 23%;
+        width: 44px;
+        height: 44px;
+        left: 24%;
         display: inline-block;
     }
 
@@ -396,6 +405,7 @@ svg, .fa-question-circle {
         padding-bottom: 10px;
         padding-top: 12px;
         box-sizing: border-box;
+        width: 100%;
     }
 
     .first.mobile-section {
@@ -502,10 +512,46 @@ svg, .fa-question-circle {
         height: 90px;
         width: 90px;
     }
+
+        .thumbnail-play.fa-play {
+        opacity: .7;
+        bottom: 22%;
+        right: 6%;
+        color: white;
+        position: relative;
+        display: inline-block;
+    }
+
+    .thumbnail-play.fa-pause {
+        opacity: .7;
+        bottom: 21%;
+        right: 20%;
+        color: white;
+        position: relative;
+        display: inline-block;
+    }
+
+
+    .thumbnail-play-circle {
+        top: 13%;
+        position: relative;
+        background-color: rgba(255, 255, 255, 0);
+        border: 2px solid rgba(255, 255, 255, .7);
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        left: 10%;
+        display: inline-block;
+    }
 }
 
-.parallax-expanded {
-    height: 68vh;
+.parallax-expanded.body {
+    height: 62vh;
+    bottom: 0px;
+}
+
+.parallax-expanded.black {
+    height: 350px;
     bottom: 0px;
 }
 
@@ -552,7 +598,7 @@ Separate Mobile CSS
 }
 
 .top-section {
- /*   height: 120px;  */
+    height: 300px;
 }
 
 .body-section {

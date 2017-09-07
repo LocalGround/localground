@@ -23,6 +23,7 @@ define([
             mapRegion: "#map-panel",
             sideRegion: "#marker-detail-panel"
         },
+
         screenType: "presentation",
         showLeft: false,
         mode: "view",

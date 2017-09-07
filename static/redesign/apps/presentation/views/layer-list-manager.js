@@ -14,7 +14,7 @@ define(["marionette",
                 console.log("Layer List Manager Called");
             },
             events: {
-                'click .legend-toggle': 'toggleLegend',
+                'click .legend-top': 'toggleLegend',
                 'click this': 'toggleLegend'
             },
             childViewOptions: function () {
@@ -27,7 +27,7 @@ define(["marionette",
             toggleLegend: function () {
                 console.log("toggle legend", $('#legend').css('height'));
                 if ($('#legend').css('height') == '20px') {
-                    $('#legend').css({'height': 'auto', 'width': 'auto'});
+                    $('#legend').css({'height': 'auto', 'min-width': 'auto'});
                 } else {
                     $('#legend').css({'height': '20px', 'width': '90px'});
                 }
