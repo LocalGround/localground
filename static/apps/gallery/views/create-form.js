@@ -109,7 +109,9 @@ define([
         saveFormSettings: function () {
             var formName = this.$el.find('.formName').val(),
                 caption = this.$el.find('.caption').val(),
-                that = this;
+                that = this,
+                key = "form_" + this.model.id;
+
             this.model.set('name', formName);
             this.model.set('caption', caption);
             this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
@@ -117,6 +119,9 @@ define([
             this.model.save(null, {
                 success: function () {
                     that.saveFields();
+                    // Not quite there yet
+                    //key = "form_" + this.model.id;
+                    //that.app.vent.trigger("create-collection", key);
                     that.app.vent.trigger('success-message', "The form was saved successfully");
                     that.app.vent.trigger('hide-modal');
                 },

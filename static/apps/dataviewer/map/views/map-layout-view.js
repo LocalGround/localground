@@ -26,6 +26,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'unhide-list', this.unhideList);
                 this.listenTo(this.app.vent, 'hide-list', this.hideList);
                 this.listenTo(this.app.vent, 'delete-collection', this.showMarkerListManager);
+                this.listenTo(this.app.vent, 'create-collection', this.showMarkerListManager);
             },
             hideList: function () {
                 this.showLeft = false;

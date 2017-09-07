@@ -28,6 +28,8 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 this.tilesets = new TileSets();
                 this.tilesets.fetch({reset: 'true'});
                 this.listenTo(this.vent, "delete-collection", this.deleteCollection);
+                // This.seetCollections is the closest to gettign desired behavior
+                this.listenTo(this.vent, "create-collection", this.getCollection);
             },
             setCollections: function () {
                 var that = this,
@@ -44,7 +46,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
 
             deleteCollection: function(key) {
                 delete this.dataDictionary[key];
-                console.log("Deleted collection");
             },
 
             getDataSources: function () {
