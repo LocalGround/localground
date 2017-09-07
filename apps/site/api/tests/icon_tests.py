@@ -19,7 +19,7 @@ def get_metadata():
         "file_path": {"type": "field", "required": False, "read_only": True},
         "owner": {"type": "field", "required": False, "read_only": True},
         "project_id": {"type": "field", "required": True, "read_only": False},
-        "size": {"type": "integer", "required": True, "read_only": False},
+        "size": {"type": "integer", "required": False, "read_only": False},
 #why are width and height integers (as returned by options) but listed as FloatField in icon.py
         "width": {"type": "integer", "required": False, "read_only": True},
         "height": {"type": "integer", "required": False, "read_only": True},
@@ -48,30 +48,54 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(r2.get("name"), 'test_icon_2')
         self.assertEqual(len(results), 2)
 
-    def test_post_creates_icons_only_when_required_params_included(self, **kwargs):
-        response = self.client_user.post(self.url,
-                                            data=urllib.urlencode({
-                                                'owner': self.user,
-                                                'project_id': self.project.id,
-                                                'icon_file': 'icon1.jpg',
-                                                'name': 'test_icon1a'
-                                                #'size': 150,
-                                                #'anchor_x': 0,
-                                                #'anchor_y': 0
-                                            }),
-                                            HTTP_X_CSRFTOKEN=self.csrf_token,
-                                            content_type="application/x-www-form-urlencoded"
-                                            )
-        #print response.data
-        #self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-#Tests to add
-#api instance test
-#   update using put
-#   update using patch
-#   delete
-#   if user enters size, icon properly sized
-#   if user doesn't enter size, and icon max size is greater than 
-#   too small
-#   anchor point(s) ouside width and height
-#   incorrect file type
+    def create_temp_file(self, w, h):
+        from PIL import Image
+        import tempfile
+        image = Image.new('RGB', (w, h))
+        tmp_file = tempfile.NamedTemporaryFile(suffix='.jpeg')
+        image.save(tmp_file)
+        return tmp_file
+
+    def test_jpeg_to_jpg(self, **kwargs):
+        tmp_file = self.create_temp_file(30, 30)
+        with open(tmp_file.name, 'rb') as binaryImage:
+            response = self.client_user.post(
+                self.urls[0],
+                {
+                    'icon_file' : binaryImage,
+                    'project_id': self.project.id,
+                    'owner': self.user
+                },
+                HTTP_X_CSRFTOKEN=self.csrf_token)
+            self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+            self.assertEqual(response.data["file_type"], "jpg")
+
+    def test_check_if_size_bigger_than_max_then_error(self, **kwargs):
+        tmp_file = self.create_temp_file(30, 30)
+        with open(tmp_file.name, 'rb') as binaryImage:
+            response = self.client_user.post(
+                self.urls[0],
+                {
+                    'icon_file' : binaryImage,
+                    'project_id': self.project.id,
+                    'owner': self.user,
+                    'size': 400
+                },
+                HTTP_X_CSRFTOKEN=self.csrf_token)
+            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+            self.assertEqual(response.data["size"][0], u"Ensure this value is less than or equal to 250.0.")
+
+    def test_check_if_size_smaller_than_min_then_error(self, **kwargs):
+        tmp_file = self.create_temp_file(30, 30)
+        with open(tmp_file.name, 'rb') as binaryImage:
+            response = self.client_user.post(
+                self.urls[0],
+                {
+                    'icon_file' : binaryImage,
+                    'project_id': self.project.id,
+                    'owner': self.user,
+                    'size': 5
+                },
+                HTTP_X_CSRFTOKEN=self.csrf_token)
+            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+            self.assertEqual(response.data["size"][0], u"Ensure this value is greater than or equal to 10.0.")
