@@ -120,8 +120,8 @@ define([
                 success: function () {
                     that.saveFields();
                     // Not quite there yet
-                    //key = "form_" + this.model.id;
-                    //that.app.vent.trigger("create-collection", key);
+                    key = "form_" + that.model.id;
+                    that.app.vent.trigger("create-collection", key);
                     that.app.vent.trigger('success-message', "The form was saved successfully");
                     that.app.vent.trigger('hide-modal');
                 },

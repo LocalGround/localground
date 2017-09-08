@@ -49,9 +49,10 @@ define(["marionette",
 
             showMediaList: function (dataType) {
                 var data = this.dataManager.getData(dataType);
+                console.log(data);
                 this.dataType = dataType;
                 this.saveAppState();
-                this.currentCollection = data.collection;
+                this.currentCollection = data.getCollection();
                 this.mainView = new DataList({
                     app: this,
                     collection: this.currentCollection,

@@ -51,6 +51,7 @@ define(["marionette",
             },
             onShow: function () {
                 this.mapRegion.show(this.basemapView);
+                console.log(this.app.dataManager.dataDictionary);
                 this.showMarkerListManager();
             },
 

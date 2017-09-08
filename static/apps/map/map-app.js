@@ -132,7 +132,7 @@ define([
             var dataType = opts.dataType,
                 dataEntry = this.dataManager.getData(dataType),
                 model = null;
-            this.currentCollection = dataEntry.collection;
+            this.currentCollection = dataEntry.getCollection();
             if (opts.id) {
                 model = this.currentCollection.get(opts.id);
                 if (dataType == "markers" || dataType.indexOf("form_") != -1) {

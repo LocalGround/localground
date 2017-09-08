@@ -414,9 +414,9 @@ define([
                 sourceCollection = null;
             model.set(attributes);
             if (model.get("overlay_type") == "photo") {
-                sourceCollection = this.app.dataManager.getData("photos").collection;
+                sourceCollection = this.app.dataManager.getCollection("photos");
             } else {
-                sourceCollection = this.app.dataManager.getData("audio").collection;
+                sourceCollection = this.app.dataManager.getCollection("audio");
             }
             model.urlRoot = sourceCollection.url;
             delete model.attributes.data;
@@ -427,9 +427,7 @@ define([
         addModels: function () {
             var selectedModels = [];
             this.collection.each(function (model) {
-                // if (model.get("isSelected")) {
-                    selectedModels.push(model);
-                // }
+                selectedModels.push(model);
             });
             this.parentModel.trigger('add-models-to-marker', selectedModels);
         }

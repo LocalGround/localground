@@ -77,7 +77,7 @@ define([
             var data = this.getData(),
                 opts = {
                     app: this,
-                    collection: data.collection,
+                    collection: data.getCollection(),
                     fields: data.fields
                 };
             switch (this.screenType) {

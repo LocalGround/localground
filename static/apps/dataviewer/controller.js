@@ -44,6 +44,7 @@ define([
             }
 
             //1. for gallery and map:
+            console.log(this.app.dataManager.dataDictionary);
             var model = this.app.dataManager.getModel(dataType, parseInt(id));
             console.log(model, dataType, parseInt(id));
             detailView = new DataDetail({

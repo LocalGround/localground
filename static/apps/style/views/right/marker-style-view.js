@@ -52,7 +52,7 @@ define(["jquery",
                 // builds correct palette on-load
                // this.buildPalettes(this.getCatInfo().list.length);
                this.createCorrectSymbols();
-             
+
                 $('body').click(this.hideColorRamp);
 
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
@@ -175,7 +175,7 @@ define(["jquery",
             buildGenericColumnList: function(list) {
                 for (var i=0;i<list.length;i++) {
                     this.categoricalList.push({
-                        text: list[i], 
+                        text: list[i],
                         value:list[i],
                         hasData: true
                     });
@@ -186,7 +186,7 @@ define(["jquery",
                 var that = this;
                 dataEntry.fields.models.forEach(function(log) {
                     var field = log.get("col_name");
-    
+
                     if (log.get("data_type") === "text" || log.get("data_type") === "choice") {
                         that.categoricalList.push({
                             text: log.get("col_alias"),
@@ -198,14 +198,14 @@ define(["jquery",
                             text: log.get("col_alias"),
                             value: log.get("col_name"),
                             hasData: that.columnHasData(dataEntry, field)
-                        });  
+                        });
                     }
                 });
             },
 
             columnHasData: function (dataEntry, field) {
                 var hasData = [];
-                dataEntry.collection.models.forEach(function(d) {
+                dataEntry.getCollection().models.forEach(function(d) {
                     if (d.get(field)){
                         hasData.push(true);
                     } else {
@@ -253,13 +253,13 @@ define(["jquery",
                 this.setSymbols(this.buildContinuousSymbols(this.getContInfo()));
             },
 
-            catData: function() { 
-                console.log("catData triggered"); 
+            catData: function() {
+                console.log("catData triggered");
                 var cssId = "#cat-prop";
                 this.setSelectedProp(cssId);
                 var catInfo = this.getCatInfo();
                 this.buildPalettes(catInfo.list.length);
-             
+
                 this.setSymbols(this.buildCategoricalSymbols(catInfo));
                 this.model.get("metadata").catBuilt = true;
             },
@@ -291,7 +291,7 @@ define(["jquery",
             manageDefault: function (input) {
                 console.log(input);
                 var output;
-                if (input == undefined || NaN) { 
+                if (input == undefined || NaN) {
                     output = 1;
                 } else {
                     output = parseFloat(input);
@@ -317,7 +317,7 @@ define(["jquery",
                         "shape": that.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + that.selectedColorPalette[paletteCounter > 7 ? paletteCounter = 0 : paletteCounter],
                         "strokeColor": that.model.get("metadata").strokeColor,
-                        "id": idCounter, 
+                        "id": idCounter,
                         "instanceCount": cat.instanceCount[item]
                     });
 
@@ -336,7 +336,7 @@ define(["jquery",
                 console.log(selected);
                 var buckets = this.model.get("metadata").buckets;
                 this.continuousData = [];
-                var key = this.model.get('data_source'); 
+                var key = this.model.get('data_source');
                 var dataEntry = this.app.dataManager.getData(key);
 
                 dataEntry.collection.models.forEach(function(d) {
@@ -359,7 +359,7 @@ define(["jquery",
             getCatInfo: function () {
                 var key = this.model.get('data_source'),
                 cat = {
-                   list: [], 
+                   list: [],
                    instanceCount: {},
                 },
                 selected = this.selectedProp,
@@ -371,15 +371,15 @@ define(["jquery",
                         cat.instanceCount[d.get(selected)] = 1;
                     } else {
                         cat.instanceCount[d.get(selected)]++;
-                    }                  
+                    }
                 });
-                return cat; 
+                return cat;
             },
 
 
 
             simpleData: function () {
-                console.log("simpleData triggered", this.model); 
+                console.log("simpleData triggered", this.model);
                 this.setSymbols(this.buildSimpleSymbols(this.model.get('data_source')));
             },
 
@@ -405,7 +405,7 @@ define(["jquery",
             setSelectedProp: function (cssId) {
                 if (this.$el.find(cssId).val()) {
                     this.model.get('metadata').currentProp = this.$el.find(cssId).val();
-                } 
+                }
                 this.selectedProp = this.model.get('metadata').currentProp;
                 console.log('changing selected proprty', this.$el.find(cssId).val(), this.selectedProp);
             },
@@ -420,7 +420,7 @@ define(["jquery",
                 this.updateMap();
                 this.render();
             },
-            
+
 
             delayExecution: function (timeoutVar, func, millisecs) {
                 /*
@@ -501,7 +501,7 @@ define(["jquery",
                     opacity = 1;
                 } else if (opacity < 0 ) {
                     opacity = 0;
-                } 
+                }
                 this.updateMetadata("fillOpacity", opacity);
                 this.updateMap();
                 //this.render();
@@ -531,7 +531,7 @@ define(["jquery",
                         opacity = 1;
                     } else if (opacity < 0 ) {
                         opacity = 0;
-                    } 
+                    }
                 this.updateMetadata("strokeOpacity", opacity);
                 this.updateMap();
             },
@@ -553,7 +553,7 @@ define(["jquery",
                 } else if (this.dataType == "continuous") {
                     this.contData();
                 }
-            }, 
+            },
 
             showPalettes: function () {
                 this.$el.find(".palette-wrapper").css({display: 'block'});
@@ -567,8 +567,8 @@ define(["jquery",
                 var localMeta = this.model.get("metadata") || {},
                     that = this;
                 localMeta[newKey] = newValue;
-                this.model.set("metadata", localMeta); 
-                
+                this.model.set("metadata", localMeta);
+
                 console.log("b.", this.collection.length, this.model.getSymbols().length);
                 this.collection.each(function(symbol) {
                     console.log(symbol.id, that.model.getSymbols().length);
@@ -577,7 +577,7 @@ define(["jquery",
                 });
                 this.app.layerHasBeenAltered = true;
                 this.app.layerHasBeenSaved = false;
-                
+
                 console.log("c.", this.collection.length, this.model.getSymbols().length);
             }
 

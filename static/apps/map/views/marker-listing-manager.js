@@ -25,28 +25,24 @@ define(["marionette",
             },
 
             addMarkerListingsToUI: function () {
-                var i = 0,
-                    key,
+                var that = this,
                     data,
                     selector,
                     overlayView,
-                    dm = this.app.dataManager,
-                    dataSources = dm.getDataSources();
-                for (i = 0; i < dataSources.length; i++) {
-                    key = dataSources[i].value;
-                    data =  dm.getData(key);
+                    dm = this.app.dataManager;
+                dm.each(function (entry) {
                     overlayView = new MarkerListing({
-                        collection: data.collection,
-                        fields: data.fields,
-                        app: this.app,
-                        title: dataSources[i].name
+                        collection: entry.getCollection(),
+                        fields: entry.getFields(),
+                        app: that.app,
+                        title: entry.getTitle()
                     });
-                    this.overlayViews.push(overlayView);
-                    selector = key + '-list';
-                    this.$el.append($('<div id="' + selector + '"></div>'));
-                    this.addRegion(key, '#' + selector);
-                    this[key].show(overlayView);
-                }
+                    that.overlayViews.push(overlayView);
+                    selector = entry.getDataType() + '-list';
+                    that.$el.append($('<div id="' + selector + '"></div>'));
+                    that.addRegion( entry.getDataType(), '#' + selector);
+                    that[ entry.getDataType()].show(overlayView);
+                });
                 this.zoomToExtents();
             },
             zoomToExtents: function () {
@@ -61,6 +57,8 @@ define(["marionette",
                 }
             },
             onShow: function () {
+
+                console.log(this.app.dataManager.dataDictionary);
                 this.addMarkerListingsToUI();
             },
             hidePanel: function (e) {
