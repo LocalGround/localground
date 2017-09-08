@@ -19,9 +19,7 @@ define([
 ],
     function (Handlebars, Spreadsheet, Form, Photos, Audio,
               Markers, Records, Carousel, DataDetail, AudioPlayer, Icon) {
-        //
-        //
-        //
+
         'use strict';
         var fixture, newDataDetail, setupDataDetail, initSpies, lat, lng;
 

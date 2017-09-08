@@ -24,6 +24,7 @@ require(['boot'], function () {
         // VIEWS
         //'spec/views/spreadsheet-app-test.js',
         'spec/views/global-toolbar-test.js',
+        'spec/views/dataviewer-app-test.js',
         'spec/views/data-manager-test.js',
         'spec/views/audio-player-new-test.js',
         'spec/views/audio-player-test.js',

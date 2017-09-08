@@ -1,7 +1,7 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
 {{#compare screenType "presentation" operator="!="}}
-<h4>Preview</h4>
+<h4>Preview {{ title }} </h4>
 {{/compare}}
     {{#if mobileMode}}
 
@@ -156,7 +156,7 @@
 
 <!-- EDIT MODE -->
 {{#ifequal mode "edit"}}
-    <h4>{{#if id}}Edit{{else}}Add New{{/if}}</h4>
+    <h4>{{#if id}}Edit{{else}}Add New{{/if}} {{ title }}</h4>
 
     {{#ifequal screenType "map"}}
         {{#if geometry}}

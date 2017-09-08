@@ -394,8 +394,10 @@ define([
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
             console.log(this.mobileMode);
+            console.log(this.collection);
 
             return {
+                title: this.model.collection.getTitle(),
                 mode: this.app.mode,
                 dataType: this.dataType,
                 audioMode: "detail",
