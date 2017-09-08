@@ -12,18 +12,18 @@ define(["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.dataSource = this.app.dataManager.getDataSources();
+                //this.dataSource = this.app.dataManager.getDataSources();
             },
-            
-            
+
+
             events: {
                 "change .layer-title": "updateTitle",
                 "change .selected-data-source" : "changeDataSource"
             },
-            
+
             templateHelpers: function () {
                 return {
-                    dataSource: this.dataSource,
+                    dataSource: this.app.dataManager.getLookup(),
                     currentDataSource: this.model.attributes.data_source
                 };
             },
@@ -34,14 +34,14 @@ define(["marionette",
                 this.app.vent.trigger('update-data-source');
             },
 
-            
+
             updateTitle: function () {
                 var title = this.$el.find('.layer-title').val();
                 this.model.set("title", title);
                 console.log(title);
                 this.app.vent.trigger("update-title", title);
             }
-            
+
         });
         return DataSourceView;
     });

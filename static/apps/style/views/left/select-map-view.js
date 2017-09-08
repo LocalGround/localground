@@ -84,74 +84,48 @@ define(["jquery",
             },
 
             setMapAndRender: function () {
-                var that = this;
+                var that = this,
+                    dm = this.app.dataManager;
                 this.collection.add(this.map);
-                var dataSources = this.app.dataManager.getDataSources();
-                this.modal.hide();               
+                this.modal.hide();
                 this.render();
                 this.$el.find('#map-select').val(this.map.id);
-                
+
                 var layers = new Layers(null, {mapID: this.map.get("id")});
                 this.map.set("layers", layers);
-
-                dataSources.forEach(function(dataSource) {
-                    var collection = that.app.dataManager.getCollection(dataSource.value);
-                    if (collection.length < 1) {return;}
-                        if (dataSource.value === "markers") {
-                            var layer = new Layer({
-                                map_id: that.map.id,
-                                data_source: dataSource.value, 
-                                layer_type: "basic",
-                                filters: {},
-                                symbols: [{
-                                    "fillColor": collection.fillColor,
-                                    "width": 20,
-                                    "rule": "*",
-                                    "title": dataSource.name
-                                }],
-                                metadata: {
-                                    buckets: 4,
-                                    paletteId: 0,
-                                    fillOpacity: 1,
-                                    width: 20,
-                                    fillColor: collection.fillColor,
-                                    strokeColor: "#ffffff",
-                                    strokeWeight: 1,
-                                    strokeOpacity: 1,
-                                    shape: "circle"
-                                },
-                                title: "Sites"
-                            });
-                            layers.add(layer);
-                            layer.save();
-                        } else if (dataSource.value.includes("form_")){
-                            var layer = new Layer({
-                                map_id: that.map.id,
-                                data_source: dataSource.value, 
-                                layer_type: "basic",
-                                filters: {},
-                                symbols: [{
-                                    "fillColor": collection.fillColor,
-                                    "width": 20,
-                                    "rule": "*",
-                                    "title": dataSource.name
-                                }],
-                                metadata: {
-                                    buckets: 4,
-                                    paletteId: 0,
-                                    fillOpacity: 1,
-                                    width: 20,
-                                    fillColor: collection.fillColor,
-                                    strokeColor: "#ffffff",
-                                    strokeWeight: 1,
-                                    strokeOpacity: 1,
-                                    shape: "circle"
-                                },
-                                title: dataSource.name
-                            });
-                            layers.add(layer);
-                            layer.save();
-                        }});
+                dm.each(function (entry) {
+                    var collection = entry.getCollection(); //that.app.dataManager.getCollection(dataSource.value);
+                    if (collection.length < 1) {
+                        return;
+                    }
+                    if (entry.getIsSite()) {
+                        var layer = new Layer({
+                            map_id: that.map.id,
+                            data_source: entry.getDataType(),
+                            layer_type: "basic",
+                            filters: {},
+                            symbols: [{
+                                "fillColor": collection.fillColor,
+                                "width": 20,
+                                "rule": "*",
+                                "title": entry.getTitle()
+                            }],
+                            metadata: {
+                                buckets: 4,
+                                paletteId: 0,
+                                fillOpacity: 1,
+                                width: 20,
+                                fillColor: collection.fillColor,
+                                strokeColor: "#ffffff",
+                                strokeWeight: 1,
+                                strokeOpacity: 1,
+                                shape: "circle"
+                            },
+                            title: entry.getTitle()
+                        });
+                        layers.add(layer);
+                        layer.save();
+                    }});
                 this.app.vent.trigger("change-map", this.map);
             },
 
@@ -185,7 +159,7 @@ define(["jquery",
                     view: createMapModel,
                     title: 'Add Map',
                     width: 400,
-                    height: 0,
+                    height: 130,
                     closeButtonText: "Done",
                     showSaveButton: true,
                     saveFunction: createMapModel.saveMap.bind(createMapModel),

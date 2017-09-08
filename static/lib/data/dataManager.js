@@ -64,6 +64,17 @@ define(["underscore", "marionette", "models/project", "collections/tilesets", "l
                 };
             },
 
+            getLookup: function () {
+                var lookup = [];
+                this.each(function (entry) {
+                    lookup.push({
+                        id: entry.getDataType(),
+                        name: entry.getTitle()
+                    });
+                });
+                return lookup;
+            },
+
             getData: function (key) {
                 var entry = this.dataDictionary[key];
                 if (entry) {

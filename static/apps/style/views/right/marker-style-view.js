@@ -184,7 +184,7 @@ define(["jquery",
 
             buildCustomColumnList: function (dataEntry) {
                 var that = this;
-                dataEntry.fields.models.forEach(function(log) {
+                dataEntry.getFields().models.forEach(function(log) {
                     var field = log.get("col_name");
 
                     if (log.get("data_type") === "text" || log.get("data_type") === "choice") {
@@ -339,7 +339,7 @@ define(["jquery",
                 var key = this.model.get('data_source');
                 var dataEntry = this.app.dataManager.getData(key);
 
-                dataEntry.collection.models.forEach(function(d) {
+                dataEntry.getCollection().models.forEach(function(d) {
                     that.continuousData.push(d.get(selected));
                 });
                 var cont = {};

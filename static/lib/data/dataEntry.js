@@ -13,7 +13,7 @@ define(["underscore", "marionette", "models/project",
                 jsonData = opts.data,
                 fieldData = opts.fieldData,
                 overlayType = opts.overlay_type,
-                title = opts.title,
+                title = opts.name,
                 collection,
                 fields,
                 isSite = false,
@@ -74,6 +74,8 @@ define(["underscore", "marionette", "models/project",
                     recordsURL = '/api/0/forms/' + formID + '/data/',
                     fieldsURL = '/api/0/forms/' + formID + '/fields/';
                 fields = new Fields(fieldData, {url: fieldsURL });
+                isCustomType = true;
+                isSite = true;
                 collection = new Records(jsonData, {
                     url: recordsURL,
                     key: key,
@@ -107,6 +109,12 @@ define(["underscore", "marionette", "models/project",
             };
             this.getFields = function () {
                 return fields
+            };
+            this.getIsCustomType = function () {
+                return isCustomType;
+            };
+            this.getIsSite = function () {
+                return isSite;
             };
             this.getIsCustomType = function () {
                 return isCustomType;

@@ -2,7 +2,7 @@
 <h5>Data Source</h5>
 <select class="selected-data-source">
     {{#each dataSource}}
-    <option value="{{this.value}}" {{#ifequal this.value ../currentDataSource }}SELECTED{{/ifequal}}>{{this.name}}</option>
+    <option value="{{this.id}}" {{#ifequal this.id ../currentDataSource }}SELECTED{{/ifequal}}>{{this.name}}</option>
     {{/each}}
-    
+
 </div>
