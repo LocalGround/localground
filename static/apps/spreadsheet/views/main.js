@@ -744,7 +744,7 @@ define(["jquery",
 
                 if (dataType == "markers"){
                     rec = new Marker({project_id: projectID});
-                } else if (dataType == "audio" || dataType == "photos" || dataType == "videos"){
+                } else if (dataType == "audio" || dataType == "photos"){ // Unsure on using the following: || dataType == "videos"
                     console.log("Media Uploader called");
                     this.showMediaUploader();
                 } else {
