@@ -132,6 +132,7 @@
     min-height: 15px;
     border-bottom: 1px solid #e4e5eb;
     font: 11px;
+    position: relative;
 }
   
 .style-section-header-wrapper {
@@ -179,17 +180,44 @@
 }
 */
 
-.map-item {
+.map-item, .selected-map-item {
     padding: 4px 8px;
 }
 
-.map-item p {
+.map-item p, .selected-map-item p {
     display: inline-block
 }
 
 .map-edit {
     float: right;
     cursor: pointer;
+}
+
+.map-list {
+    display: none;
+    box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
+    position: absolute;
+    top: 49px;
+    width: 248px;
+    font-size: 12px;
+    background: white;
+    z-index: 100;
+}
+
+.map-item:hover, .map-item:hover p {
+    background: #4e70d4;;
+    color: white;
+    font-weight: 400;
+}
+
+.map-item:hover {
+    background: #4e70d4;;
+    color: white;
+}
+
+.selected-map {
+    font-size: 12px;
+    background: white;
 }
 
 .map-none-message {
@@ -255,7 +283,7 @@
 }
 
 .map-select-option {
-    font-weight: 300;
+    font-weight: 400;
 }
 
 

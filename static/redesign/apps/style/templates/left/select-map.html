@@ -9,17 +9,17 @@
     <p class="map-none-message">Click the plus sign to create a new map</p>
 {{else}}
 <div class="selected-map">
-    <div class="map-item" data-value="{{ map.id }}">
-        <p class="map-select-option" value="{{ map.id }}">{{ map.name }}</p>
+    <div class="selected-map-item" data-value="{{ map.id }}">
+        <p class="map-select-option" value="{{ map.id }}">{{ name }}</p>
         <p class="map-edit">edit</p>
     </div>
 </div>
 
-<div class="style-wide-select" id="map-select">
+<div class="map-list" id="map-select">
     {{#each items}}
     <div class="map-item" data-value="{{ this.id }}">
-        <p class="map-select-option" value="{{ this.id }}">{{ this.name }}</p>
-        <p class="map-edit">edit</p>
+        <p class="map-name" data-value="{{ this.id }}">{{ this.name }}</p>
+        <p class="map-edit" data-value="{{ this.id }}">edit</p>
     </div>
     {{/each}}
 </div>

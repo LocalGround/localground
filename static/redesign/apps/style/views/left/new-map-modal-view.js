@@ -14,14 +14,29 @@ define ([
                 this.template = Handlebars.compile(NewMapModalTemplate);
             },
 
+            onRender: function () {
+                if (this.mode == 'editExistingMap') {
+                    this.populateFields()
+                }
+            },
+
             events: {
                 "change #new-map-name" : "generateSlug"
             },
             slugError: null,
             templateHelpers: function () {
+                var name, slug, description;
+                if (this.mode == 'editExistingMap') {
+                    name = this.map.get('name');
+                    slug = this.map.get('slug');
+                    description = this.map.get('description');
+                }
                 var helpers = {
                     slugError: this.slugError,
-                    generalError: this.generalError
+                    generalError: this.generalError, 
+                    name: name,
+                    slug: slug,
+                    description: description
                 };
                 return helpers; 
             },
@@ -30,7 +45,19 @@ define ([
                 var mapAttrs = {};
                 mapAttrs.name = this.$el.find("#new-map-name").val();
                 mapAttrs.slug = this.$el.find('#new-map-slug').val();
-                this.app.vent.trigger("create-new-map", mapAttrs);
+                mapAttrs.description = this.$el.find('#new-map-description').val();
+
+                if (this.mode == 'editExistingMap') {
+                    this.map.set({
+                        name: this.$el.find("#new-map-name").val(),
+                        slug: this.$el.find("#new-map-slug").val(),
+                        description: this.$el.find("#new-map-description").val(),
+
+                    });
+                    this.app.vent.trigger("update-map", this.map);
+                } else if (this.mode == 'createNewMap') {
+                    this.app.vent.trigger("create-new-map", mapAttrs);
+                }
             },
            
             generateSlug: function () {
@@ -49,6 +76,12 @@ define ([
                     this.slugError = null;
                 }
                 this.render();
+            },
+
+            populateFields: function () {
+              //  this.$el.find("#new-map-name").val(this.map.get('name'));
+               // this.$el.find('#new-map-slug').val(this.map.get('slug'));
+               // this.$el.find('#new-map-description').val(this.map.get('description'));
             }
 
         });

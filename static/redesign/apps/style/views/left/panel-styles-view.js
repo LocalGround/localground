@@ -96,7 +96,6 @@ define(["marionette",
             },
 
             showFonts: function () {
-                console.log(this.model);
                 this.$el.find('#font-div').show();
             },
 

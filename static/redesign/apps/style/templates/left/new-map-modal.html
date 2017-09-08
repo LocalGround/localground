@@ -7,6 +7,10 @@
     <label>Friendly URL:</label>
     <input type="text" placeholder="enter name or leave blank for autofill" id="new-map-slug" value="{{slug}}">
 </div>
+<div class = "inline-form">
+    <label>Description:</label>
+    <input type="text" placeholder="map description" id="new-map-description" value="{{description}}">
+</div>
 {{#if slugError}}
 <p class="errorMessage">{{slugError}}</p>
 {{/if}}

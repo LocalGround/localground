@@ -543,6 +543,10 @@ svg, .fa-question-circle {
         left: 10%;
         display: inline-block;
     }
+
+    li.current .photo {
+        background-size: cover !important;
+    }
 }
 
 .parallax-expanded.body {
