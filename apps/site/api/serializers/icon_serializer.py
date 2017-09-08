@@ -24,6 +24,7 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
     def resize_icon(self, owner, file_name_new, validated_data):
         file_name, ext = os.path.splitext(file_name_new)
         file_type = ext.replace('.', '').lower()
+        scale_ratio = 1.0
         if file_type == 'jpeg':
             file_type = 'jpg'
         file_name_resized = file_name + '_resized.' + file_type
@@ -42,34 +43,35 @@ class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
             size = validated_data.get('size')
         elif icon_max > self.size_max:
             size = self.size_max
-        elif icon_min < self.size_min:
+        elif icon_max < self.size_min:
             size = self.size_min
         else:
             size = icon_max
+        
 
         #calculate scale_ratio
-        if icon_max > size:
+        if icon_max != size and icon_min > self.size_min:
             scale_ratio = size / icon_max
-        elif icon_min < size:
-            scale_ratio = size / icon_min
+        elif icon_min < self.size_min:
+            scale_ratio = self.size_min / icon_min
         else:
             scale_ratio = 1.0
-
+        #print (size, icon_max, icon_min, scale_ratio) 
         #check for case where resizing by scale ratio would make icon_max too large
+        #in this case, make icon small side as large as possible while keeping icon big side in range
         if scale_ratio > self.size_max / icon_max:
             scale_ratio = self.size_max / icon_max
-#code to look at
-#function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
-#    var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
-#   return {width: srcWidth * ratio, height: srcHeight * ratio};
-# }
-
+            size = size * scale_ratio
+        
         #raise Exception(size, scale_ratio)
         #resize icon if needed
+        new_x = im.size[0]
+        new_y = im.size[1]  
         if scale_ratio != 1.0:
             new_x = int (round ((im.size)[0] * scale_ratio))
             new_y = int (round ((im.size)[1] * scale_ratio))
-            im.thumbnail((new_x, new_y), Image.ANTIALIAS)
+            im=im.resize((new_x, new_y), Image.ANTIALIAS)
+            #im.thumbnail((new_x, new_y), Image.ANTIALIAS)
             abs_path = '%s/%s' % (media_path, file_name_resized)
             im.save(abs_path)
         #set anchor point center of icon or user entered coordinates

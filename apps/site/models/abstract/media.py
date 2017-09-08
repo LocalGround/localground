@@ -60,7 +60,11 @@ class BaseMediaMixin(object):
     def can_edit(self, user):
         return self.project.can_edit(user) or \
             self.owner == user
-    
+
+    def can_manage(self, user):
+        return self.project.can_manage(user) or \
+            self.owner == user
+
 class BaseMedia(BaseMediaMixin, BaseAudit):
 
     '''
