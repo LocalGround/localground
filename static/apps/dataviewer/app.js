@@ -41,12 +41,15 @@ define([
         },
 
         initialize: function (options) {
+            _.extend(this, options);
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = this.getProjectID();
-            this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+            if (!this.dataManager){
+                this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+            }
             this.loadFastRegions();
             this.listenTo(this.vent, 'data-loaded', this.loadMainRegion);
-            this.listenTo(this.vent, 'show-list', this.initMainView);
+            this.listenTo(this.vent, 'show-list', this.initMainView); // This is the cause of error
         },
         loadFastRegions: function () {
             this.toolbarView = new ToolbarGlobal({
@@ -80,6 +83,7 @@ define([
                     collection: data.collection,
                     fields: data.fields
                 };
+                console.log(opts);
             switch (this.screenType) {
                 case 'spreadsheet':
                     this.mainView = new SpreadsheetView(opts);
