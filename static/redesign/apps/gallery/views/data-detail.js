@@ -13,11 +13,12 @@ define([
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
+    "apps/gallery/views/parallax",
     "lib/forms/backbone-form",
     "touchPunch"
 ], function ($, _, Backbone, Handlebars, Marionette, Photos, Audio, Videos,
         PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
-        MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm, TouchPunch) {
+        MapImageTemplate, AudioPlayer, Carousel, Icon, MoveItItem, DataForm, TouchPunch) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -132,124 +133,7 @@ define([
             }
         },
 
-        initParallax: function () {
-            console.log("initParallax");
-            var bgColor = this.$el.find('.circle').css('background-color');
-            var mainColor = this.$el.find('.circle-icon').css('color');
-            console.log(bgColor, mainColor);
-            var that = this;
-            var MoveItItem = function ($el) {
-                this.$el = $el;
-                this.initialPosition = $el.position().top;
 
-                this.initPosition = function () {
-                    this.targetTop = this.$el.attr('data-target-top').replace("%", "");
-                    this.finalPosition = parseFloat(this.targetTop, 10) * $(window).height() / 100;
-                    that.distance = this.initialPosition - this.finalPosition;
-                    that.scrollDistance = Math.abs($(window).height() - $(document).height());
-                    this.speed = that.distance / that.scrollDistance;
-                    this.className = this.$el.get(0).className;
-                    this.lastDirection = "up";
-                    this.lastScrollTop = 0;
-                     console.log("--------------------");
-                     console.log("className", this.className);
-                     console.log("initialPosition", this.initialPosition);
-                     console.log("finalPosition", this.finalPosition);
-                     console.log("scrollDistance", that.scrollDistance);
-                     console.log("distance", that.distance);
-                     console.log("speed", this.speed);
-                };
-                this.$el.css({
-                    position: "absolute"
-                });
-
-                this.initPosition();
-
-                this.update = function (scrollTop) {
-                    
-                    var direction = (scrollTop > this.lastScrollTop) ? "up": "down";
-
-                    var initialDivHeight = 90;
-                    var endScroll = that.scrollDistance - initialDivHeight;
-                    console.log(that.scrollDistance , initialDivHeight, endScroll, $('.black').css('top'), $('.body').css('top'), scrollTop);
-                    
-                    if (direction !== this.lastDirection) {
-                        console.log('switch');
-                    }
-                    if (direction == "down" && scrollTop <= 2) {
-                        that.$el.find('.expanded').hide();
-                        that.$el.find('.contracted').show();
-                      /*  that.$el.find('.parallax').css({
-                            'height': '90px',
-                            'bottom': 0
-                        }); */
-                        that.$el.find('.parallax').removeClass('parallax-expanded');
-                        that.$el.find('.parallax').addClass('parallax-contracted');
-                        that.$el.find(".circle-icon").removeClass("icon-rotate");
-
-                        // swap colors
-                        that.$el.find('.circle').css('background-color', bgColor);
-                        that.$el.find('.circle-icon').css('color', mainColor);
-                        /*this.calculateDimensions();
-                        console.log(that.distance);*/
-                        console.log("showSmallTemplate", that.distance);
-                    }
-
-                    if (direction == "up" && (scrollTop >= 2 && scrollTop <= 40))  {
-                        that.$el.find('.expanded').show();
-                        that.$el.find('.contracted').hide();
-                     //   that.$el.find('.parallax').css('height', '68vh');
-                        that.$el.find('.parallax').removeClass('parallax-contracted');
-                        that.$el.find('.parallax').addClass('parallax-expanded');
-                        that.$el.find('.circle-icon').addClass("icon-rotate");
-
-                        // swap colors
-                        that.$el.find('.circle').css('background-color', mainColor);
-                        that.$el.find('.circle-icon').css('color', bgColor);
-                        //this.calculateDimensions();
-                        console.log("showBigTemplate", that.distance);
-                    }
-                    
-                    this.$el.css('top', this.initialPosition - scrollTop * this.speed);
-                   // console.log($('.black').css('top'));
-                   if (parseInt($('.black').css('top'), 10) < endScroll + 20) {
-                       console.log("end scroll, setting css top");
-                        $('.black').css('top', endScroll + 25);
-                    }
-
-                    //remember last values:
-                    this.lastDirection = direction;
-                    this.lastScrollTop = scrollTop;
-                };
-            };
-            $.fn.moveIt = function () {
-                if (that.scrollEventListener) {
-                    console.log('removing...');
-                    window.removeEventListener("scroll", that.scrollEventListener);
-                }
-                var $window = $(window),
-                    instances = [],
-                    moveItem;
-                console.log('THIS', $(this));
-                $(this).each(function () {
-                    console.log('looping through selector...');
-                    moveItem = new MoveItItem($(this));
-                    moveItem.initPosition();
-                    instances.push(moveItem);
-                });
-                console.log("initializing scrollEventListener...");
-                that.scrollEventListener = function () {
-                    var scrollTop = $window.scrollTop();
-                    instances.forEach(function (inst) {
-                        inst.update(scrollTop);
-                    });
-                };
-                window.addEventListener("scroll", that.scrollEventListener);
-            };
-            $(function () {
-                that.$el.find('.parallax').moveIt();
-            });
-        },
 
 
         remove: function () {
@@ -525,6 +409,30 @@ define([
             if ($(window).width() < 900) {
                 setTimeout(this.initParallax.bind(this), 10);
             }
+        },
+        initParallax: function () {
+            var that = this;
+            $.fn.moveIt = function () {
+                if (that.scrollEventListener) {
+                    console.log('removing...');
+                    window.removeEventListener("scroll", that.scrollEventListener);
+                }
+                var $window = $(window),
+                    instances = [],
+                    moveItem;
+                $(this).each(function () {
+                    moveItem = new MoveItItem($(this), that);
+                    moveItem.initPosition();
+                    instances.push(moveItem);
+                });
+                window.addEventListener("scroll", function () {
+                    var scrollTop = $window.scrollTop();
+                    instances.forEach(function (inst) {
+                        inst.update(scrollTop);
+                    });
+                });
+            };
+            that.$el.find('.parallax').moveIt();
         },
 
         rotatePhoto: function (e) {

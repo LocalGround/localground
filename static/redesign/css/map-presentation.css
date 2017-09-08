@@ -316,7 +316,7 @@ svg, .fa-question-circle {
         float: right;
         margin-top: 2px;
     }
-   
+
 
     .min-thumbnail {
         height: 140px;
@@ -337,10 +337,10 @@ svg, .fa-question-circle {
     .contracted .header-info {
         padding-left: 15px;
         padding-top: 15px;
-        
+
     }
 
-    
+
 
     .thumbnail-play.fa-play {
         opacity: .7;
@@ -432,7 +432,7 @@ svg, .fa-question-circle {
         height: 60px;
         z-index: 1;
       }
-      
+
       .circle {
         border: none;
         outline: none;
@@ -481,7 +481,7 @@ svg, .fa-question-circle {
       }
     /* end circle css */
 
-    
+
     html, body {
         overflow-x: hidden;
         width:100%;
@@ -503,7 +503,7 @@ svg, .fa-question-circle {
 }
 
 @media (max-width: 600px) {
-    
+
     .parallax-contracted {
         height: 90px;
     }
@@ -562,6 +562,10 @@ svg, .fa-question-circle {
 .first.mobile-section, .header-info h3,
 .expanded, .contracted {
     animation: fadein 0.5s;
+	height: 300px;
+}
+.first.mobile-section {
+	height: 50px;
 }
 
 
@@ -609,7 +613,7 @@ Separate Mobile CSS
 
 .mobile-wrapper {
     width: 100%;
-
+    background: #f9f9f9;
     box-sizing: border-box;
 }
 
