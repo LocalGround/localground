@@ -225,7 +225,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["size"], 10)
             self.assertEqual(response.data["anchor_x"], 8)
             self.assertEqual(response.data["anchor_y"], 5)
-            
+
 #case below tests as written.  Sarah asked to rewrite to give error
     def test_if_no_size_icon_too_small_one_side_then_scale_set_anchors(self, **kwargs):
         tmp_file = self.create_temp_file(5, 200)
@@ -245,30 +245,24 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["anchor_x"], 3)
             self.assertEqual(response.data["anchor_y"], 125)
 
-    def test_access_denied_if_no_project_permisison(self, **kwargs):
+    def test_cannot_create_icon_if_no_project_permissison_or_no_project_defined(self, **kwargs):
         random_user=self.create_user(username="Rando")
-        #random_project=self.create_project(random_user, name='Random Project')
-        import random 
-        from localground.apps.site import models
-        slug = ''.join(random.sample(
-            '0123456789abcdefghijklmnopqrstuvwxyz', 16))
-        random_project = models.Project(
-            name='Random Project',
-            owner=random_user,
-            last_updated_by=random_user,
-            access_authority=models.ObjectAuthority.objects.get(
-                id=1),
-            slug=slug)
-        random_project.save()
-        tmp_file = self.create_temp_file(5, 200)
-        with open(tmp_file.name, 'rb') as binaryImage:
-            response = self.client_user.post(
-                self.urls[0],
-                {
-                    'icon_file': binaryImage,
-                    'project_id': random_project.id,
-                    'owner': random_user
-                },
-                HTTP_X_CSRFTOKEN=self.csrf_token)
-            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
-        print response.data
+        random_project=self.create_project(random_user, name='Random Project')
+        project_ids = [random_project.id, 999999999]
+        for project_id in project_ids:
+            tmp_file = self.create_temp_file(5, 200)
+            with open(tmp_file.name, 'rb') as binaryImage:
+                response = self.client_user.post(
+                    self.urls[0],
+                    {
+                        'icon_file': binaryImage,
+                        'project_id': project_id,
+                        'owner': random_user
+                    },
+                    HTTP_X_CSRFTOKEN=self.csrf_token)
+                self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+                self.assertEqual(
+                    response.data['project_id'],
+                    [u'Invalid pk "%s" - object does not exist.' % project_id]
+                )
+    
