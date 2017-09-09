@@ -65,13 +65,22 @@ define(["underscore", "marionette", "models/project", "collections/tilesets", "l
             },
 
             getLookup: function () {
-                var lookup = [];
+                var lookup = [
+                    { id: "markers", name: "Sites" }
+                ];
                 this.each(function (entry) {
+                    if (entry.getIsCustomType())
                     lookup.push({
                         id: entry.getDataType(),
                         name: entry.getTitle()
                     });
                 });
+                lookup.push.apply(lookup, [
+                    { id: "photos", name: "Photos" },
+                    { id: "audio", name: "Audio" },
+                    { id: "videos", name: "Videos" },
+                    { id: "map_images", name: "Map Images" }
+                ])
                 return lookup;
             },
 

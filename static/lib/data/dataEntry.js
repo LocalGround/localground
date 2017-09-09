@@ -102,7 +102,7 @@ define(["underscore", "marionette", "models/project",
                 return key;
             };
             this.getModelType = function () {
-                return key;
+                return overlayType;
             };
             this.getCollection = function () {
                 return collection
@@ -118,6 +118,9 @@ define(["underscore", "marionette", "models/project",
             };
             this.getIsCustomType = function () {
                 return isCustomType;
+            };
+            this.getIsMedia = function () {
+                return isMedia;
             };
             this.getModel = function (id) {
                 var model = collection.get(id);

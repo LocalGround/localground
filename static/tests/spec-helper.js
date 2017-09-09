@@ -95,8 +95,8 @@ define(
 
             // SAFETY MEASURES: makes sure that nothing interacts w/database.
             spyOn(Backbone, 'sync').and.callFake(function (method, model, opts, error) {
-                console.log("Backbone sync intercepted")
-                console.log(method, model, opts, error);
+                //console.log("Backbone sync intercepted")
+                //console.log(method, model, opts, error);
                 if (opts && opts.success) {
                     opts.success({ foo: 'fake' });
                 }
@@ -551,9 +551,9 @@ define(
                             data: this.audioFiles.toJSON()
                         },
                         map_images: {
-                            name: "Map-Images",
-                            id: "map-images",
-                            overlay_type: "map-image",
+                            name: "Map Images",
+                            id: "map_images",
+                            overlay_type: "map_image",
                             data: this.map_images.toJSON()
                         },
                         markers: {

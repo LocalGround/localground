@@ -24,12 +24,14 @@ require(['boot'], function () {
         // VIEWS
         //'spec/views/spreadsheet-app-test.js',
         'spec/views/global-toolbar-test.js',
-        'spec/views/dataviewer-app-test.js',
-        'spec/views/data-manager-test.js',
         'spec/views/audio-player-new-test.js',
         'spec/views/audio-player-test.js',
+        'spec/lib/data-manager-test.js',
+        'spec/lib/data-entry-test.js',
 
         //presentation app:
+        /*
+        'spec/views/dataviewer-app-test.js',
         'spec/views/presentation-app-test.js',
         'spec/views/presentation-legend-symbol-test.js',
         'spec/views/presentation-legend-layer-entry-test.js',
@@ -42,6 +44,7 @@ require(['boot'], function () {
         'spec/views/style-left-layer-list-child-view-test.js',
         'spec/views/style-left-panel-styles-view-test.js',
         'spec/views/style-left-new-map-modal-view-test.js',
+
 
         //style app right panel
         'spec/views/style-right-panel-test.js',
@@ -77,6 +80,7 @@ require(['boot'], function () {
         'spec/lib/form-field-choice-test.js',
         'spec/lib/form-field-rating-test.js',
         'spec/lib/form-field-add-media-test.js'
+        */
     ];
 
     require(specs, function () {

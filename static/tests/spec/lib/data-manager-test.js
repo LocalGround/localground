@@ -18,7 +18,6 @@ define([
             // add spies for all relevant objects and initialize dataManager:
             spyOn(DataManager.prototype, 'initialize').and.callThrough();
             spyOn(DataManager.prototype, 'setCollections').and.callThrough();
-            spyOn(DataManager.prototype, 'attachFieldsToRecords').and.callThrough();
             spyOn(Project.prototype, 'fetch').and.callThrough();
             spyOn(Fields.prototype, 'fetch').and.callThrough();
             spyOn(that.app.vent, 'trigger');
@@ -34,7 +33,6 @@ define([
 
             it("Initialization methods called successfully w/model", function () {
                 spyOn(DataManager.prototype, 'initialize').and.callThrough();
-                spyOn(DataManager.prototype, 'setCollections').and.callThrough();
                 spyOn(Project.prototype, 'fetch').and.callThrough();
                 spyOn(Fields.prototype, 'fetch').and.callThrough();
                 spyOn(this.app.vent, 'trigger');
@@ -46,7 +44,6 @@ define([
                 });
                 expect(dataManager).toEqual(jasmine.any(DataManager));
                 expect(dataManager.initialize).toHaveBeenCalled();
-                expect(dataManager.setCollections).toHaveBeenCalled();
                 expect(dataManager.model.fetch).toHaveBeenCalled();
                 expect(dataManager.vent.trigger).toHaveBeenCalledWith('data-loaded');
             });
@@ -87,18 +84,18 @@ define([
             });
 
             it("Sets data sources as expected", function () {
-                expect(dataManager.getDataSources()).toEqual([
-                    { value: 'markers', name: 'Sites' },
-                    { value: 'form_1', name: 'Team Members' },
-                    { value: 'photos', name: 'Photos' },
-                    { value: 'audio', name: 'Audio' },
-                    { value: 'videos', name: 'Videos' },
-                    { value: 'map_images', name: 'Map Images' }
+                expect(dataManager.getLookup()).toEqual([
+                    { id: 'markers', name: 'Sites' },
+                    { id: 'form_1', name: 'Team Members' },
+                    { id: 'photos', name: 'Photos' },
+                    { id: 'audio', name: 'Audio' },
+                    { id: 'videos', name: 'Videos' },
+                    { id: 'map_images', name: 'Map Images' }
                 ]);
             });
 
             it("Gets a data entry associated with the correct key and returns expected values", function () {
-                var d, entry, dm_entry, key;
+                var d, entry, jsonData, key;
                 d = {
                     markers: Markers,
                     form_1: Records,
@@ -107,40 +104,15 @@ define([
                     map_images: MapImages
                 };
                 for (key in d) {
-                    dm_entry = dataManager.getData(key);
-                    entry = dataManager.model.get("children")[key];
-                    expect(entry.id).toEqual(dm_entry.id);
-                    expect(entry.overlay_type).toEqual(dm_entry.overlay_type);
-                    expect(entry.name).toEqual(dm_entry.name);
-                    expect(dm_entry.collection).toEqual(jasmine.any(d[key]));
+                    entry = dataManager.getData(key);
+                    console.log(entry);
+                    jsonData = dataManager.model.get("children")[key];
+                    expect(entry.getDataType()).toEqual(jsonData.id);
+                    expect(entry.getModelType()).toEqual(jsonData.overlay_type);
+                    expect(entry.getTitle()).toEqual(jsonData.name);
+                    expect(entry.getCollection()).toEqual(jasmine.any(d[key]));
                 }
             });
 
-            it("Sets fields property for custom data types in data entry", function () {
-                var entry = dataManager.getData('form_1');
-                expect(entry.fields).toEqual(jasmine.any(Fields));
-                expect(entry.fields.length).toEqual(5);
-                expect(DataManager.prototype.attachFieldsToRecords).toHaveBeenCalledTimes(1);
-                //expect(entry.fields.fetch).toHaveBeenCalled();
-                expect(entry.isSite).toBeTruthy();
-                expect(entry.isCustomType).toBeTruthy();
-            });
-
-            it("Gets a collection associated with the correct key and returns expected values", function () {
-                var d, collection, key;
-                d = {
-                    markers: Markers,
-                    form_1: Records,
-                    photos: Photos,
-                    audio: Audio,
-                    map_images: MapImages
-                };
-                for (key in d) {
-                    collection = dataManager.getCollection(key);
-                    expect(collection).toEqual(jasmine.any(d[key]));
-                    expect(collection.length).toEqual(dataManager.model.get("children")[key].collection.length);
-                    expect(collection).toEqual(dataManager.model.get("children")[key].collection);
-                }
-            });
         });
     });
