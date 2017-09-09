@@ -5,11 +5,10 @@ define([
 ], function (_, BackbonePageable, BaseMixin) {
     "use strict";
     var PageableCollection = BackbonePageable.extend({
-        getDataType: function () {
-            return this.key;
-        },
-        getTitle: function () {
-            return this.name || "Sites";
+        initialize: function (recs, opts) {
+            opts = opts || {};
+            _.extend(this, opts);
+            BackbonePageable.prototype.initialize.apply(this, arguments);
         },
         fillColor: "#ed867d",
         size: 23,

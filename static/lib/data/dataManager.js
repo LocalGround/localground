@@ -1,5 +1,10 @@
-define(["underscore", "marionette", "models/project", "collections/tilesets", "lib/data/dataEntry"],
-    function (_, Marionette, Project, TileSets, DataEntry) {
+define(["underscore", "marionette", "models/project",
+            "collections/photos", "collections/audio", "collections/videos",
+            "collections/mapimages", "collections/markers",
+            "collections/records", "collections/fields",
+            "collections/tilesets"],
+    function (_, Marionette, Project, Photos, Audio, Videos, MapImages, Markers,
+                Records, Fields, TileSets) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
@@ -25,56 +30,154 @@ define(["underscore", "marionette", "models/project", "collections/tilesets", "l
             initProject: function () {
                 if (!this.model) {
                     this.model = new Project({ id: this.projectID });
-                    this.model.fetch({ success: this.setCollections.bind(this) });
+                    this.model.fetch({ success: this.initCollections.bind(this) });
                 } else {
-                    this.setCollections();
+                    this.initCollections();
                 }
             },
+
             initTilesets: function () {
                 this.tilesets = new TileSets();
                 this.tilesets.fetch({reset: 'true'});
             },
-            setCollections: function () {
-                var that = this,
-                    extras;
-                _.each(this.model.get("children"), function (entry, key) {
-                    entry.key = key;
-                    entry.projectID = that.projectID;
-                    that.dataDictionary[key] = new DataEntry(entry);
-                    delete entry.data;
-                });
+
+            initCollections: function () {
+                var opts, dataType, jsonData, collection;
+                for (dataType in this.model.get("children")) {
+                    opts = this.model.get("children")[dataType];
+                    jsonData = opts.data;
+                    delete opts.data;
+                    _.extend(opts, {
+                        title: opts.name,
+                        overlayType: opts.overlay_type,
+                        isSite: false,
+                        isCustomType: false,
+                        isMedia: false,
+                        dataType: dataType,
+                        projectID: this.projectID
+                    });
+                    collection = this.initCollection(opts, jsonData);
+                    this.dataDictionary[dataType] = collection;
+                }
                 this.dataLoaded = true;
                 this.vent.trigger('data-loaded');
             },
+            initCollection: function (opts, jsonData) {
+                var collection;
+                switch (opts.dataType) {
+                    case "photos":
+                        opts.isMedia = true;
+                        collection = new Photos(jsonData, opts);
+                        break;
+                    case "audio":
+                        opts.isMedia = true;
+                        collection = new Audio(jsonData, opts);
+                        break;
+                    case "videos":
+                        opts.isMedia = true;
+                        collection = new Videos(jsonData, opts);
+                        break;
+                    case "markers":
+                        opts.isSite = true;
+                        collection = new Markers(jsonData, opts);
+                        break;
+                    case "map_images":
+                        opts.isMedia = true;
+                        collection = new MapImages(jsonData, opts);
+                        break;
+                    default:
+                        console.log(opts.dataType)
+                        if (opts.dataType.includes("form_")) {
+                            collection = this.createRecordsCollection(jsonData, opts);
+                        } else {
+                            throw new Error("case not handled");
+                        }
+                        break;
+                }
+                return collection;
+            },
 
-            deleteCollection: function (key) {
-                delete this.dataDictionary[key];
+            attachFieldsToRecord: function (fields, record) {
+                fields.each(function (field) {
+                    field.set("val", record.get(field.get("col_name")));
+                });
+                record.set('fields', fields.toJSON());
+            },
+
+            attachFieldsToRecords:  function (fields, records) {
+                // some extra post-processing for custom datatypes so that
+                // it's easier to loop through fields and output corresponding
+                // values
+                records.each((record) => {
+                    this.attachFieldsToRecord(fields, record);
+                });
+            },
+
+            createRecordsCollection:  function (jsonData, opts) {
+                var fieldsURL,
+                    collection;
+                opts.formID = parseInt(opts.dataType.split("_")[1]);
+                opts.url = '/api/0/forms/' + opts.formID + '/data/';
+                fieldsURL = '/api/0/forms/' + opts.formID + '/fields/';
+                _.extend(opts, {
+                    fillColor: this.getMarkerColor(),
+                    fields: new Fields(null, { baseURL: fieldsURL }),
+                    isCustomType: true,
+                    isSite: true,
+                    key: opts.dataType
+                });
+                collection = new Records(jsonData, opts);
+                if (opts.fields.length == 0) {
+                    opts.fields.fetch({ reset: true, success: () => {
+                        this.attachFieldsToRecords(opts.fields, collection);
+                    }});
+                } else {
+                    this.attachFieldsToRecords(opts.fields, collection);
+                }
+                return collection
+            },
+
+            getMarkerColor: function () {
+                var index = this.colorCounter++ % this.formColors.length;
+                return this.formColors[index];
+            },
+
+            deleteCollection: function (dataType) {
+                delete this.dataDictionary[dataType];
                 this.vent.trigger('datamanager-modified');
             },
 
-            addNewRecordsCollection: function (key) {
-                this.dataDictionary[key] = this.createRecordsCollection(key);
+            /*addNewRecordsCollection: function (dataType) {
+                this.dataDictionary[dataType] = this.createRecordsCollection(dataType);
                 this.vent.trigger('datamanager-modified');
-            },
+            },*/
 
             each: function (f) {
-                var key;
-                for (key in this.dataDictionary) {
-                    f(this.dataDictionary[key]);
-                };
+                this.getLookup().forEach((obj) => {
+                    f(this.getCollection(obj.id));
+                });
             },
 
             getLookup: function () {
-                var lookup = [
-                    { id: "markers", name: "Sites" }
-                ];
-                this.each(function (entry) {
-                    if (entry.getIsCustomType())
-                    lookup.push({
-                        id: entry.getDataType(),
-                        name: entry.getTitle()
-                    });
-                });
+                /*
+                Because order matters, returns a list of
+                id / name pairs in the correct order. First
+                sites, then custom data types, then media.
+                */
+                var collection,
+                    dataType,
+                    lookup = [
+                        { id: "markers", name: "Sites" }
+                    ];
+                for (dataType in this.dataDictionary) {
+                    collection = this.dataDictionary[dataType];
+                    if (collection.getIsCustomType()) {
+                        lookup.push({
+                            id: collection.getDataType(),
+                            name: collection.getTitle()
+                        });
+                    }
+                };
                 lookup.push.apply(lookup, [
                     { id: "photos", name: "Photos" },
                     { id: "audio", name: "Audio" },
@@ -84,20 +187,19 @@ define(["underscore", "marionette", "models/project", "collections/tilesets", "l
                 return lookup;
             },
 
-            getData: function (key) {
-                var entry = this.dataDictionary[key];
-                if (entry) {
-                    return entry;
+            getCollection: function (dataType) {
+                if (!this.dataDictionary[dataType]) {
+                    throw new Error("No collection found for " + dataType);
                 }
-                throw new Error("No entry found for " + key);
+                return this.dataDictionary[dataType];
             },
 
-            getCollection: function (key) {
-                return this.getData(key).getCollection();
+            getModel: function (dataType, id) {
+                return this.dataDictionary[dataType].getModel(id);
             },
 
-            getModel: function (key, id) {
-                return this.dataDictionary[key].getModel(id);
+            getCollections: function () {
+                return Object.entries(this.dataDictionary);
             }
         });
         return DataManager;

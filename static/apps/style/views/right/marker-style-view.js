@@ -160,14 +160,14 @@ define(["jquery",
                 var photoAudioList = ["id", "name", "caption", "tags", "owner", "attribution"],
                 markerList = ["name", "caption", "tags", "owner"];
                 var key = this.model.get('data_source'),
-                    dataEntry = this.app.dataManager.getData(key);
+                    collection = this.app.dataManager.getCollection(key);
                 //still need to account for map-images below...
                 if (key == "photos" || key == "audio") {
                     this.buildGenericColumnList(photoAudioList);
                 } else if (key == "markers") {
                     this.buildGenericColumnList(markerList);
                 } else if (key.includes("form_")) {
-                    this.buildCustomColumnList(dataEntry);
+                    this.buildCustomColumnList(collection);
                 }
                 return [this.categoricalList, this.continuousList];
             },
@@ -182,30 +182,30 @@ define(["jquery",
                 }
             },
 
-            buildCustomColumnList: function (dataEntry) {
+            buildCustomColumnList: function (collection) {
                 var that = this;
-                dataEntry.getFields().models.forEach(function(log) {
+                collection.getFields().models.forEach(function(log) {
                     var field = log.get("col_name");
 
                     if (log.get("data_type") === "text" || log.get("data_type") === "choice") {
                         that.categoricalList.push({
                             text: log.get("col_alias"),
                             value: log.get("col_name"),
-                            hasData: that.columnHasData(dataEntry, field)
+                            hasData: that.columnHasData(collection, field)
                         });
                     } else if (log.get("data_type") === "integer" || log.get("data_type") === "rating"){
                         that.continuousList.push({
                             text: log.get("col_alias"),
                             value: log.get("col_name"),
-                            hasData: that.columnHasData(dataEntry, field)
+                            hasData: that.columnHasData(collection, field)
                         });
                     }
                 });
             },
 
-            columnHasData: function (dataEntry, field) {
+            columnHasData: function (collection, field) {
                 var hasData = [];
-                dataEntry.getCollection().models.forEach(function(d) {
+                collection.models.forEach(function(d) {
                     if (d.get(field)){
                         hasData.push(true);
                     } else {
@@ -331,16 +331,14 @@ define(["jquery",
              * for defining a layer's continuous 'buckets'
             */
             getContInfo: function () {
-                var that = this,
-                selected = this.selectedProp;
-                console.log(selected);
-                var buckets = this.model.get("metadata").buckets;
-                this.continuousData = [];
-                var key = this.model.get('data_source');
-                var dataEntry = this.app.dataManager.getData(key);
+                var selected = this.selectedProp,
+                    buckets = this.model.get("metadata").buckets,
+                    key = this.model.get('data_source'),
+                    collection = this.app.dataManager.getCollection(key);
 
-                dataEntry.getCollection().models.forEach(function(d) {
-                    that.continuousData.push(d.get(selected));
+                this.continuousData = [];
+                collection.models.forEach((d) => {
+                    this.continuousData.push(d.get(selected));
                 });
                 var cont = {};
                 cont.min = Math.min(...this.continuousData);
@@ -363,9 +361,9 @@ define(["jquery",
                    instanceCount: {},
                 },
                 selected = this.selectedProp,
-                categoricalData = this.app.dataManager.getData(key);
+                collection = this.app.dataManager.getCollection(key);
                 console.log("get catInfo: $selected", selected, this.model.get('metadata'), this.selectedProp);
-                categoricalData.collection.models.forEach(function(d) {
+                collection.models.forEach(function(d) {
                     if (!cat.list.includes(d.get(selected)) && d.get(selected)) {
                         cat.list.push(d.get(selected));
                         cat.instanceCount[d.get(selected)] = 1;
@@ -384,7 +382,7 @@ define(["jquery",
             },
 
             buildSimpleSymbols: function (key) {
-                name = this.app.dataManager.getData(key).name;
+                name = this.app.dataManager.getCollection(key).getTitle();
 
                // if (this.model.getSymbols().length > 0) {
                //     this.layerDraft.simple = this.model.getSymbols();

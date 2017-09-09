@@ -24,8 +24,8 @@ define(["models/field", "collections/basePageable"], function (Field, BasePageab
             return this.find(function (model) { return model.get(key) === val; });
         },
         initialize: function (recs, opts) {
-            if (opts.url) {
-                this.baseURL = opts.url;
+            if (opts.baseURL) {
+                this.baseURL = opts.baseURL;
             } else if (opts.id) {
                 this.baseURL = '/api/0/forms/' + opts.id + '/fields/';
             } else if (opts.form) {

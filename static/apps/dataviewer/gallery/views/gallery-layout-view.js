@@ -28,35 +28,20 @@ define(["marionette",
               this.listRegion.show(this.galleryListView);
             },
 
-            createNewModelFromCurrentCollection: function () {
-                //TODO: move to dataManager
-                var Model = this.currentCollection.model,
-                    model = new Model();
-                model.collection = this.currentCollection;
-                // If we get the form, pass in the custom field
-                if (this.dataType.indexOf("form_") != -1) {
-                    model.set("fields", this.mainView.fields.toJSON());
-                }
-                model.set("project_id", this.selectedProjectID);
-                return model;
-            },
-
             showDataDetail: function (view) {
                 this.detailView = view;
                 this.detailRegion.show(view);
             },
 
-
             showMediaList: function (dataType) {
-                var data = this.dataManager.getData(dataType);
-                console.log(data);
+                var collection = this.dataManager.getCollection(dataType);
                 this.dataType = dataType;
                 this.saveAppState();
-                this.currentCollection = data.getCollection();
+                this.currentCollection = collection;
                 this.mainView = new DataList({
                     app: this,
                     collection: this.currentCollection,
-                    fields: data.fields
+                    fields: collection.fields
                 });
                 this.galleryRegion.show(this.mainView);
                 this.hideMediaDetail();

@@ -80,7 +80,6 @@ define(["jquery", "lib/sqlParser", "underscore", "backbone"], function ($, SqlPa
                 type: 'OPTIONS',
                 data: { _method: 'OPTIONS' },
                 success: function (data) {
-                    console.log("success");
                     that.generateFilterSchema(data.filters);
                 }
             });
@@ -101,6 +100,58 @@ define(["jquery", "lib/sqlParser", "underscore", "backbone"], function ($, SqlPa
                 }
             }
             this.trigger("filter-form-updated", this.filterSchema);
+        },
+        /*getCollection: function () {
+            return this;
+        },*/
+        getTitle: function () {
+            return this.title;
+        },
+        getDataType: function () {
+            return this.dataType;
+        },
+        getModelType: function () {
+            return this.overlayType;
+        },
+        getCollection: function () {
+            return this.collection;
+        },
+        getFields: function () {
+            return this.fields;
+        },
+        getIsCustomType: function () {
+            return this.isCustomType;
+        },
+        getIsSite: function () {
+            return this.isSite;
+        },
+        getIsCustomType: function () {
+            return this.isCustomType;
+        },
+        getIsMedia: function () {
+            return this.isMedia;
+        },
+        getModel: function (id) {
+            console.log(id);
+            var model = this.get(id);
+            if (!model) {
+                model = this.createNewModel();
+            }
+            console.log(model);
+            return model;
+        },
+        createNewModel: function () {
+            var ModelClass = this.model,
+                model = new ModelClass();
+            model.collection = this;
+            model.set("overlay_type", this.getModelType());
+            model.set("project_id", this.projectID);
+
+            // If we get the form, pass in the custom field
+            if (this.isCustomType) {
+                model.set("fields", this.fields.toJSON());
+            }
+            return model;
         }
     };
 });

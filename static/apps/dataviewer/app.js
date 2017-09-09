@@ -77,11 +77,11 @@ define([
             if (!this.isDataLoaded()) {
                 return;
             }
-            var entry = this.getData(),
+            var collection = this.getCollection(),
                 opts = {
                     app: this,
-                    collection: entry.getCollection(),
-                    fields: entry.getFields()
+                    collection: collection,
+                    fields: collection.getFields()
                 };
             switch (this.screenType) {
                 case 'spreadsheet':
@@ -125,13 +125,13 @@ define([
             return this.dataManager.dataLoaded;
         },
 
-        getData: function () {
+        getCollection: function () {
             try {
-                return this.dataManager.getData(this.dataType);
+                return this.dataManager.getCollection(this.dataType);
             } catch (e) {
                 console.warn("error retrieving:", this.dataType, "switching to markers...");
                 this.dataType = "markers";
-                return this.dataManager.getData(this.dataType);
+                return this.dataManager.getCollection(this.dataType);
             }
             console.error("Data type error:", this.dataType);
         },

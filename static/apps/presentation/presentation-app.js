@@ -160,8 +160,7 @@ define([
             });
         },
         showMediaDetail: function (opts) {
-            var dataEntry = this.dataManager.getData(opts.dataType),
-                collection = dataEntry.collection,
+            var collection = this.dataManager.getCollection(opts.dataType),
                 model = collection.get(opts.id);
             if (opts.dataType == "markers" || opts.dataType.indexOf("form_") != -1) {
                 if (!model.get("children")) {
@@ -169,11 +168,10 @@ define([
                 }
             }
             if (opts.dataType.indexOf("form_") != -1) {
-                model.set("fields", dataEntry.fields.toJSON());
+                model.set("fields", collection.fields.toJSON());
             }
             model.set("active", true);
             this.vent.trigger('highlight-marker', model);
-            console.log(opts, opts.dataType, dataEntry, this.model);
             this.detailView = new DataDetail({
                 model: model,
                 app: this,

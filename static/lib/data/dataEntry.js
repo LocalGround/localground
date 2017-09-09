@@ -8,20 +8,21 @@ define(["underscore", "marionette", "models/project",
             /**************************************************/
             /* PRIVATE VARIABLES / METHODS                    */
             /**************************************************/
-            var key = opts.key,
+            var dataType = opts.dataType,
                 projectID = opts.projectID,
                 jsonData = opts.data,
                 fieldData = opts.fieldData,
                 overlayType = opts.overlay_type,
+                fillColor = opts.fillColor,
                 title = opts.name,
-                collection,
-                fields,
                 isSite = false,
                 isCustomType = false,
-                isMedia = false;
+                isMedia = false,
+                collection,
+                fields;
 
             var initialize = function (opts) {
-                switch (key) {
+                switch (dataType) {
                     case "photos":
                         isMedia = true;
                         collection = new Photos(jsonData);
@@ -43,7 +44,7 @@ define(["underscore", "marionette", "models/project",
                         collection = new MapImages(jsonData);
                         break;
                     default:
-                        if (key.indexOf("form_") != -1) {
+                        if (dataType.indexOf("form_") != -1) {
                             return createRecordsCollection();
                         }
                         throw new Error("case not handled");
@@ -51,45 +52,7 @@ define(["underscore", "marionette", "models/project",
                 }
             };
 
-            var attachFieldsToRecord = function (record) {
-                fields.each(function (field) {
-                    field.set("val", record.get(field.get("col_name")));
-                });
-                record.set('fields', fields.toJSON());
-            };
-
-            var attachFieldsToRecords = function () {
-                // some extra post-processing for custom datatypes so that
-                // it's easier to loop through fields and output corresponding
-                // values
-                var that = this;
-                collection.each(function (record) {
-                    attachFieldsToRecord(record);
-                });
-            };
-
-            var createRecordsCollection = function () {
-                var that = this,
-                    formID = key.split("_")[1],
-                    recordsURL = '/api/0/forms/' + formID + '/data/',
-                    fieldsURL = '/api/0/forms/' + formID + '/fields/';
-                fields = new Fields(fieldData, {url: fieldsURL });
-                isCustomType = true;
-                isSite = true;
-                collection = new Records(jsonData, {
-                    url: recordsURL,
-                    key: key,
-                    overlay_type: overlayType
-                });
-                collection.fillColor = "#CCCCCC";//this.formColors[this.colorCounter++];
-                if (fields.length == 0) {
-                    fields.fetch({ reset: true, success: function () {
-                        attachFieldsToRecords();
-                    }});
-                } else {
-                    attachFieldsToRecords();
-                }
-            };
+            
 
             /**************************************************/
             /* PUBLIC METHODS                                 */
@@ -99,7 +62,7 @@ define(["underscore", "marionette", "models/project",
                 return title;
             };
             this.getDataType = function () {
-                return key;
+                return dataType;
             };
             this.getModelType = function () {
                 return overlayType;
@@ -133,11 +96,11 @@ define(["underscore", "marionette", "models/project",
                 var ModelClass = collection.model,
                 model = new ModelClass();
                 model.collection = collection;
-                model.set("overlay_type", collection.key);
+                model.set("overlay_type", overlayType);
                 model.set("project_id", projectID);
 
                 // If we get the form, pass in the custom field
-                if (collection.key.indexOf("form_") != -1) {
+                if (isCustomType) {
                     model.set("fields", fields.toJSON());
                 }
                 return model;
