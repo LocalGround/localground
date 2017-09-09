@@ -496,9 +496,9 @@ define(["jquery",
                         cols = ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Media", "Delete"];
                         return cols;
                     default:
-                        if (!this.fields){
+                        if (!this.fields) {
                             return null;
-                        }//*/
+                        }
                         cols = ["ID", "Lat", "Lng"];
 
                         for (var i = 0; i < this.fields.length; ++i) {
@@ -606,15 +606,15 @@ define(["jquery",
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                        ];
                     default:
-                        if (!this.fields){
+                        if (!this.fields) {
                             return null;
-                        }//*/
+                        }
                         var cols = [
                             { data: "id", readOnly: true },
                             { data: "lat", type: "numeric", format: '0.00000' },
                             { data: "lng", type: "numeric", format: '0.00000' }
                         ];
-                        for (var i = 0; i < this.fields.length; ++i){
+                        for (var i = 0; i < this.fields.length; ++i) {
                             // Make sure to add in the "-" symbol after field name to delete column
                             var type = this.fields.at(i).get("data_type").toLowerCase();
                             var field_format = "";
@@ -733,20 +733,17 @@ define(["jquery",
 
             },
             addRow: function (dataType) {
-
-                var that = this;
-                var projectID = this.app.getProjectID();
-                var rec;
-                console.log(dataType);
-                console.log(this.app.dataType);
+                var that = this,
+                    projectID = this.app.getProjectID(),
+                    rec;
                 dataType = dataType != undefined ? dataType : this.app.dataType;
-                console.log(dataType);
-
-                if (dataType == "markers"){
-                    rec = new Marker({project_id: projectID});
-                } else if (dataType == "audio" || dataType == "photos"){ // Unsure on using the following: || dataType == "videos"
-                    console.log("Media Uploader called");
+                if (dataType == "audio" || dataType == "photos") { // Unsure on using the following: || dataType == "videos"
                     this.showMediaUploader();
+                    return;
+                } else if (dataType == "markers"){
+                    rec = new Marker({project_id: projectID});
+                } else if (dataType == "videos") {
+                    rec = new Videos({project_id: projectID});
                 } else {
                     rec = new Record ({project_id: projectID});
                 }
@@ -759,9 +756,7 @@ define(["jquery",
                         that.renderSpreadsheet();
                     }
                 });
-
             }
-
         });
         return Spreadsheet;
     });

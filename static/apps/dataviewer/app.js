@@ -77,13 +77,12 @@ define([
             if (!this.isDataLoaded()) {
                 return;
             }
-            var data = this.getData(),
+            var entry = this.getData(),
                 opts = {
                     app: this,
-                    collection: data.getCollection(),
-                    fields: data.fields
+                    collection: entry.getCollection(),
+                    fields: entry.getFields()
                 };
-                console.log(opts);
             switch (this.screenType) {
                 case 'spreadsheet':
                     this.mainView = new SpreadsheetView(opts);
