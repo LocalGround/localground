@@ -113,9 +113,6 @@ define(["jquery", "lib/sqlParser", "underscore", "backbone"], function ($, SqlPa
         getModelType: function () {
             return this.overlayType;
         },
-        getCollection: function () {
-            return this.collection;
-        },
         getFields: function () {
             return this.fields;
         },
@@ -124,9 +121,6 @@ define(["jquery", "lib/sqlParser", "underscore", "backbone"], function ($, SqlPa
         },
         getIsSite: function () {
             return this.isSite;
-        },
-        getIsCustomType: function () {
-            return this.isCustomType;
         },
         getIsMedia: function () {
             return this.isMedia;

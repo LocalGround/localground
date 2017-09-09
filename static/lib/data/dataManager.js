@@ -12,11 +12,7 @@ define(["underscore", "marionette", "models/project",
             colorCounter: 0,
             dataLoaded: false,
             template: false,
-            isEmpty: function () {
-                return Object.keys(this.dataDictionary).length === 0;
-            },
             initialize: function (opts) {
-                //todo: remove app dependency and pass in projectID and vent
                 _.extend(this, opts);
                 if (typeof this.projectID === 'undefined') {
                     window.location = '/';
@@ -26,6 +22,9 @@ define(["underscore", "marionette", "models/project",
                 this.initTilesets();
                 this.listenTo(this.vent, "delete-collection", this.deleteCollection);
                 this.listenTo(this.vent, "create-collection", this.addNewRecordsCollection);
+            },
+            isEmpty: function () {
+                return Object.keys(this.dataDictionary).length === 0;
             },
             initProject: function () {
                 if (!this.model) {
@@ -54,7 +53,7 @@ define(["underscore", "marionette", "models/project",
                         isCustomType: false,
                         isMedia: false,
                         dataType: dataType,
-                        projectID: this.projectID
+                        projectID: this.model.id
                     });
                     collection = this.initCollection(opts, jsonData);
                     this.dataDictionary[dataType] = collection;
@@ -86,7 +85,6 @@ define(["underscore", "marionette", "models/project",
                         collection = new MapImages(jsonData, opts);
                         break;
                     default:
-                        console.log(opts.dataType)
                         if (opts.dataType.includes("form_")) {
                             collection = this.createRecordsCollection(jsonData, opts);
                         } else {

@@ -197,7 +197,7 @@ define(["jquery", "lib/truthStatement", "tests/spec-helper"], function ($, Truth
                 expect(matches).toEqual(0);
             });
         });
-    
+
         for (key in match_dictionary) {
             it(match_dictionary[key] + " photo(s) match query \"" + key + "\"", function () {
                 s.parseStatement(key, "and");
@@ -207,7 +207,6 @@ define(["jquery", "lib/truthStatement", "tests/spec-helper"], function ($, Truth
                         ++matches;
                     }
                 });
-                console.log(key, matches, match_dictionary[key]);
                 expect(matches).toEqual(match_dictionary[key]);
             });
         }

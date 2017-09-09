@@ -56,7 +56,6 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             this.buildSymbolMap();
         },
         buildSymbolMap: function () {
-            console.log('building symbol map...', this.get("symbols"));
             //set the basic flag:
             if (this.get("symbols").length == 1) {
                 this.basic = true;

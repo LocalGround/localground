@@ -1,3 +1,7 @@
+/*
+TODO John: finish tests
+*/
+
 define([], function () {
     'use strict';
     var collection;
@@ -7,7 +11,7 @@ define([], function () {
      */
     return {
         genericChecks: function (opts) {
-            describe("Collection: Check if variables exist", function () {
+            describe("Collection: BaseMixin Methods", function () {
                 it("Testing + if inherits from PageableCollection", function () {
                     collection = this.getModelByOverlayType(opts.overlay_type).collection;
                     expect(collection.state).toBeDefined();
@@ -37,6 +41,47 @@ define([], function () {
                     collection.clearFilter();
                     expect(collection.getVisibleModels().length).toBe(3);
                 });
+
+                it("getTitle returns title", function () {
+                    expect(1).toEqual(1);
+                });
+
+                it("getDataType returns data_type of collection (plural)", function () {
+                    expect(1).toEqual(1);
+                });
+
+                it("getModelType returns data_type of model in collection (singular)", function () {
+                    expect(1).toEqual(1);
+                });
+
+                it("getFields returns fields collection (if custom type)", function () {
+                    expect(1).toEqual(1);
+                });
+
+                it("getIsCustomType returns true if custom type, false otherwise", function () {
+                    expect(1).toEqual(1);
+                });
+
+                it("getIsCustomType returns true if markers", function () {
+                    expect(1).toEqual(1);
+                });
+
+                it("getIsCustomType returns true if custom type, false otherwise", function () {
+                    expect(1).toEqual(1);
+                });
+
+                it("getIsMedia returns true if collection is photos, audio, videos, or map_images", function () {
+                    expect(1).toEqual(1);
+                });
+
+                it("getModel gets the selected model from the collection or creates a new one if it doesn't exist", function () {
+                    expect(1).toEqual(1);
+                });
+
+                it("createNewModel creates a new model", function () {
+                    expect(1).toEqual(1);
+                });
+
             });
         }
     };

@@ -78,7 +78,6 @@ define([
                 expect(leftPanel.model).toEqual(this.testMap);
 
                 //has correct child (region) templates
-                console.log(fixture.html());
                 expect(fixture).not.toContainElement('#map-select');
                 expect(fixture).toContainText('Click the plus sign to create a new map');
                 expect(fixture).toContainElement('.bordered-section');

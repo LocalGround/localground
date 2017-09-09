@@ -25,7 +25,7 @@ define([
                 spyOn(AudioPlayer.prototype, 'showPauseButton').and.callThrough();
                 spyOn(window, 'setTimeout').and.callThrough();
                 spyOn(AudioPlayer.prototype, 'initDraggable');
-            }, 
+            },
             dragTest = function () {
                 var event = jQuery.Event( "click", {
                     pageX: 300,
@@ -38,8 +38,8 @@ define([
 
         describe("Audio Player: Basic Initialization Tests", function () {
             beforeEach(function () {
-                initSpies(); 
-               
+                initSpies();
+
             });
 
             it("Initialization methods called successfully", function () {
@@ -100,7 +100,7 @@ define([
             });
 
             it("Drag function works", dragTest);
-            
+
             it("Is in the correct mode", function () {
                 expect(audioPlayer.audioMode).toEqual("simple");
             });
@@ -108,7 +108,7 @@ define([
             it("Has correct html", function () {
                 expect(fixture).toContainElement("audio");
                 expect(fixture).toContainElement("source");
-                
+
                 var actual = fixture.find("source").attr("src");
                 var expected = audioPlayer.model.get("file_path");
                 expect(expected).toEqual(actual);
@@ -119,8 +119,8 @@ define([
                 expect(audioPlayer.togglePlay).toHaveBeenCalledTimes(0);
                 fixture.find('.play').trigger('click');
                 expect(audioPlayer.togglePlay).toHaveBeenCalledTimes(1);
-                
-                
+
+
 
             });
         });

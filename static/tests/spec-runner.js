@@ -29,12 +29,14 @@ require(['boot'], function () {
         'spec/lib/data-manager-test.js',
         'spec/lib/data-entry-test.js',
 
+        //data viewer app:
+        //'spec/views/dataviewer-app-test.js',
+
         //presentation app:
-        /*
-        'spec/views/dataviewer-app-test.js',
         'spec/views/presentation-app-test.js',
         'spec/views/presentation-legend-symbol-test.js',
         'spec/views/presentation-legend-layer-entry-test.js',
+
 
         //style app left panel
         'spec/views/style-left-panel-test.js',
@@ -52,7 +54,7 @@ require(['boot'], function () {
         'spec/views/style-right-marker-style-view-test.js',
         'spec/views/style-right-marker-style-view-child-test.js',
         'spec/views/style-right-source-code-style-view-test.js',
-
+/*
         'spec/views/project-item-test.js',
         'spec/views/share-form-test.js',
         'spec/views/project-user-test.js',

@@ -151,9 +151,8 @@ define([
             });
 
             it("getSymbolsJSON returns the correct JSON (removing the unserializable icon)", function () {
-                console.log(layer);
                 expect(layer.getSymbolsJSON()).toEqual([  
-                {  
+                {
                     "rule": "test_integer >= 4 and test_integer <= 7",
                     "title":"between 4 and 7",
                     "fillOpacity":1,
@@ -167,7 +166,7 @@ define([
                     "height":20,
                     "isShowing": false
                 },
-                {  
+                {
                     "rule": "test_integer >= 7 and test_integer <= 9",
                     "title":"between 7 and 9",
                     "fillOpacity":1,
@@ -181,7 +180,7 @@ define([
                     "height":20,
                     "isShowing": false
                 },
-                {  
+                {
                     "rule": "test_integer >= 9 and test_integer <= 12",
                     "title":"between 9 and 12",
                     "fillOpacity":1,

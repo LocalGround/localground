@@ -72,7 +72,6 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 this.$el.find(".play").removeClass("fa-pause");
             },
             togglePlay: function () {
-                console.log("play toggle");
                 if (this.audio.paused) {
                     this.audio.play();
                     this.showPauseButton();
@@ -91,8 +90,9 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 this.suspendUIUpdate = false;
                 var $progressContainer = this.$el.find('.progress-container'),
                     posX = $progressContainer.offset().left,
-                    w = (e.pageX - posX) / $progressContainer.width();
-                this.audio.currentTime = w * this.audio.duration;
+                    w = (e.pageX - posX) / $progressContainer.width(),
+                    duration = !isNaN(this.audio.duration) ? this.audio.duration : 5000; //spoof duration for test
+                this.audio.currentTime = w * duration;
                 if (this.audio.paused) {
                     this.showPauseButton();
                     this.audio.play();

@@ -12,7 +12,6 @@ define(["underscore", "models/base"], function (_, Base) {
             checked: false
         }),
         initialize: function (data, opts) {
-            console.log(data, opts);
             // This had to be made dynamic because there are different users
             // for each project
             if (this.collection && this.collection.url) {
@@ -33,8 +32,6 @@ define(["underscore", "models/base"], function (_, Base) {
             // needed to override the destroy method because the ProjectUser
             // endpoint doesn't have an ID, which Backbone requires:
             var opts = _.extend({url: this.urlRoot + this.get("user") + "/"}, options || {});
-            console.log(this.get("user"));
-            console.log(opts);
             return Backbone.Model.prototype.destroy.call(this, opts);
         }
     });
