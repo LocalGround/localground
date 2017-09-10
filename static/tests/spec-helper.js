@@ -448,22 +448,58 @@ define(
                 new Photo({ id: 1, name: "Cat", tags: ['animal', 'cat', 'cute', 'tag1'], project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", attribution: "Owner1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_medium_sm: '//:0', path_marker_sm: "//:0" }),
                 new Photo({id: 2, name: "Dog", tags: ['animal', 'dog'], project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_medium: '//:0', path_small: '//:0', path_marker_sm: "//:0" }),
                 new Photo({id: 3, name: "Frog", tags: ['animal', 'amphibian', 'cute', 'frog'], project_id: 2, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_marker_sm: '//:0' })
-            ]);
+            ], {
+                title: "Photos",
+                overlayType: "photo",
+                isSite: false,
+                isCustomType: false,
+                isMedia: true,
+                dataType: "photos",
+                projectID: 1,
+                key: "photos"
+            });
             this.audioFiles = new AudioFiles([
                 new Audio({ id: 1, name: "Nirvana", tags: ['90s', 'grunge'], project_id: 1, overlay_type: "audio", caption: "Caption1", file_path: "/static/tests/spec/javascripts/fixtures/sample-audio.mp3", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
                 new Audio({id: 2, name: "Duran Duran", tags: ['80s', 'amazing', 'tag1'], project_id: 1, overlay_type: "audio", caption: "caption 2", file_path: "/static/tests/spec/javascripts/fixtures/sample-audio.mp3" }),
                 new Audio({id: 3, name: "Flo Rida", tags: ['florida', 'hip hop'], project_id: 2, overlay_type: "audio", caption: "caption 3", file_path: "/static/tests/spec/javascripts/fixtures/sample-audio.mp3" })
-            ]);
+            ], {
+                title: "Audio",
+                overlayType: "audio",
+                isSite: false,
+                isCustomType: false,
+                isMedia: true,
+                dataType: "audio",
+                projectID: 1,
+                key: "audio"
+            });
             this.videos = new Videos([
                 new Video({id: 1, name: "Rihanna Gibbons", caption: "caption 1", tags: [], video_id: "DVrTf5yOW5s", video_provider: "youtube", geometry: { type: "Point", coordinates: [-122.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"}),
                 new Video({id: 2, name: "Silver Lining", caption: "caption 2", tags: [], video_id: "DKL4X0PZz7M", video_provider: "youtube", geometry: { type: "Point", coordinates: [-121.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"}),
                 new Video({id: 3, name: "How to recount your dreams", caption: "caption 1", tags: [], video_id: "225222634", video_provider: "vimeo", geometry: { type: "Point", coordinates: [-120.298, 37.897]}, project_id: 7, owner: "tester", overlay_type: "video"})
-            ]);
+            ], {
+                title: "Videos",
+                overlayType: "video",
+                isSite: false,
+                isCustomType: false,
+                isMedia: true,
+                dataType: "videos",
+                projectID: 1,
+                key: "videos"
+            });
             this.map_images = new MapImages([
                 new MapImage({ id: 1, name: "Map 1", tags: ['parks', 'oakland'], project_id: 1, caption: "Caption1", overlay_type: "map-image", geometry: { type: "Polygon", coordinates: [[[ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ]]]} }),
                 new MapImage({id: 2, name: "Map 2", tags: ['parks', 'berkeley', 'tag1'], project_id: 1, overlay_type: "map-image" }),
                 new MapImage({id: 3, name: "Map 3", tags: ['emeryville'], project_id: 2, overlay_type: "map-image" })
-            ]);
+            ], {
+                title: "Map Images",
+                overlayType: "map_image",
+                isSite: false,
+                isCustomType: false,
+                isMedia: true,
+                dataType: "map_images",
+                projectID: 1,
+                key: "map_images"
+            });
             this.prints = new Prints([
                 new Print({ id: 1, name: "Print 1", tags: ['parks', 'oakland'], project_id: 1, caption: "Caption1", overlay_type: "print", geometry: { type: "Polygon", coordinates: [[[ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ]]]} }),
                 new Print({id: 2, name: "Print 2", tags: ['parks', 'berkeley', 'tag1'], project_id: 1, overlay_type: "print" }),
@@ -473,13 +509,34 @@ define(
                 new Marker({ id: 1, name: "POI 1", tags: ['my house'], project_id: 1, overlay_type: "marker", caption: "Caption1", color: "FF0000", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, extras: {featured_image: 1} }),
                 new Marker({id: 2, name: "POI 2", tags: ['friend\'s house', 'tag1'], project_id: 1, overlay_type: "marker", extras: {featured_image: 20}}),
                 new Marker({id: 3, name: "POI 3", tags: ['coffee shop', 'tag1'], project_id: 2, overlay_type: "marker" })
-            ]);
+            ], {
+                title: "Markers",
+                overlayType: "marker",
+                isSite: true,
+                isCustomType: false,
+                isMedia: false,
+                dataType: "markers",
+                projectID: 1,
+                key: "markers"
+            });
 
             this.form_1 = new Records([
                 new Record({id: 1, name: "Blue Team", caption: "Blue Team Caption", test_text: "Blue team", test_integer: 4, test_rating: 3, test_choice: "Red", test_boolean: true, fields: this.form.fields.toJSON(), display_name: "Blue team", tags: ['my house'], project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, photo_count: 3, audio_count: 1, video_count: 2 }),
                 new Record({id: 2, name: "Green Team", caption: "Green Team Caption", test_text: "Green team", fields: this.form.fields.toJSON(), tags: ['friend\'s house', 'tag1'], test_integer: 8, project_id: 1, overlay_type: "form_1", photo_count: 1, audio_count: 2, video_count: 2 }),
                 new Record({id: 3, name: "Red Team", caption: "Red Team Caption",  test_text: "Red team", fields: this.form.fields.toJSON(), tags: ['coffee shop'], test_integer: 12, project_id: 2, overlay_type: "form_1", photo_count: 2, audio_count: 3, video_count: 2 })
-            ], { 'url': 'dummy/url' });
+            ], {
+                title: "Test Form",
+                overlayType: "record",
+                isSite: true,
+                isCustomType: true,
+                isMedia: false,
+                dataType: "form_1",
+                projectID: 1,
+                url: 'dummy/url',
+                fillColor: "#CCCCCC",
+                fields: new Fields(this.form.fields.toJSON(), { baseURL: 'dummy/url' }),
+                key: "form_1"
+            });
             this.form_2 = new Records([
                 new Record({ id: 2,
                     overlay_type: "form_2",
@@ -505,7 +562,19 @@ define(
                     photo_count: 0,
                     audio_count: 0
                 }),
-            ], { 'url': 'dummy/url' });
+            ], {
+                title: "Test Form 2",
+                overlayType: "record",
+                isSite: true,
+                isCustomType: true,
+                isMedia: false,
+                dataType: "form_2",
+                projectID: 1,
+                url: 'dummy/url',
+                fillColor: "#CCCCCC",
+                fields: new Fields(this.form2.fields.toJSON(), { baseURL: 'dummy/url' }),
+                key: "form_2"
+            });
 
             this.fields = this.form.fields;
 
@@ -573,7 +642,7 @@ define(
                             id: "form_1",
                             overlay_type: "form_1",
                             data: this.form_1.toJSON(),
-                            fields: this.fields
+                            fields: this.fields.toJSON()
                         }
                     }}),
                 new Project({
@@ -651,6 +720,26 @@ define(
                 }
             });
             this.marker_1.set("children", {
+                photos: {
+                    name: "Photos",
+                    id: "photos",
+                    overlay_type: "photo",
+                    data: this.photos.toJSON()
+                },
+                audio: {
+                    name: "Audio",
+                    id: "audio",
+                    overlay_type: "audio",
+                    data: this.audioFiles.toJSON()
+                },
+                videos: {
+                    name: "Videos",
+                    id: "videos",
+                    overlay_type: "video",
+                    data: this.videos.toJSON()
+                }
+            });
+            this.form_1.at(0).set("children", {
                 photos: {
                     name: "Photos",
                     id: "photos",

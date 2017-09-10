@@ -91,7 +91,7 @@ define(["marionette",
 
             showBasemap: function () {
                 var that = this;
-                // Used timeout to delay map rendering until modal completely 
+                // Used timeout to delay map rendering until modal completely
                 // opens. Otherwise, the map doesn't center correctly.
                 setTimeout(function () {
                     that.basemapView = new Basemap({

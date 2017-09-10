@@ -25,7 +25,6 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
         },
         getScale: function () {
             var scale = this.width / this.baseWidth;
-            //console.log(scale);
             return scale;
         },
         generateGoogleIcon: function () {

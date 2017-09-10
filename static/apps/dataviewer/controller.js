@@ -91,7 +91,7 @@ define([
             this.app.vent.trigger("show-list", "gallery");
         },
         showTable: function () {
-            this.app.vent.trigger("show-list", "spreadsheet");
+            this.app.vent.trigger("show-list", "table");
         },
         showMap: function () {
             this.app.vent.trigger("show-list", "map");

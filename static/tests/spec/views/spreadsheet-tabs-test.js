@@ -16,6 +16,7 @@ function(Handlebars, Spreadsheet, SpreadsheetTabs, Form){
         spyOn(scope.app.vent, 'trigger').and.callThrough();
         spyOn(SpreadsheetTabs.prototype, "switchTab").and.callThrough();
         spyOn(SpreadsheetTabs.prototype, "render").and.callThrough();
+        scope.app.screenType = "table";
         newSpreadsheetTabs = new SpreadsheetTabs({
             app: scope.app,
             forms: scope.forms
@@ -44,12 +45,12 @@ function(Handlebars, Spreadsheet, SpreadsheetTabs, Form){
             expect(tabs[3].innerHTML).toEqual("Sites");
             expect(tabs[4].innerHTML).toEqual("Test Form");
             expect(tabs[5].innerHTML).toEqual("Animals");
-            expect(tabs[0]).toHaveAttr("href", "#/photos");
-            expect(tabs[1]).toHaveAttr("href", "#/audio");
-            expect(tabs[2]).toHaveAttr("href", "#/videos");
-            expect(tabs[3]).toHaveAttr("href", "#/markers");
-            expect(tabs[4]).toHaveAttr("href", "#/form_1");
-            expect(tabs[5]).toHaveAttr("href", "#/form_2");
+            expect(tabs[0]).toHaveAttr("href", "#/table/photos");
+            expect(tabs[1]).toHaveAttr("href", "#/table/audio");
+            expect(tabs[2]).toHaveAttr("href", "#/table/videos");
+            expect(tabs[3]).toHaveAttr("href", "#/table/markers");
+            expect(tabs[4]).toHaveAttr("href", "#/table/form_1");
+            expect(tabs[5]).toHaveAttr("href", "#/table/form_2");
             expect(fixture.find(".tab-selected").length).toEqual(1);
         });
 

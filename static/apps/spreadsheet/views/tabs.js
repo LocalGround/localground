@@ -26,7 +26,7 @@ define([
 
         switchTab: function (e) {
             this.app.dataType = $(e.target).attr("data-value");
-            //this.render();
+            this.render();
         },
 
         templateHelpers: function () {

@@ -43,7 +43,7 @@ define(["jquery",
             },
 
             createLayer: function (layer, collection) {
-                console.log("right panel createLayer() triggered. 1. layer, 2. collection", layer, collection);
+                //console.log("right panel createLayer() triggered. 1. layer, 2. collection", layer, collection);
                 this.triggerShowPanel();
                 this.model = layer;
                 this.collection = collection;
@@ -101,33 +101,33 @@ define(["jquery",
                 var that = this;
                 var title = this.$el.find(".layer-title").val(),
                     dataSource = this.$el.find(".selected-data-source").val(),
-                    layerType = this.$el.find("#data-type-select").val(), 
+                    layerType = this.$el.find("#data-type-select").val(),
                     buckets = this.$el.find("#bucket").val();
                 if (this.model.get("filters") === null) {
-                    console.log("accounting for no filters");
+                    //console.log("accounting for no filters");
                     this.model.set("filters", { 'tag' : 'nothing' });
                 }
                 if (!this.model.get('symbols').length) {
-                    console.log("Layer will not save because symbols do not exist");
+                    //console.log("Layer will not save because symbols do not exist");
                     this.app.vent.trigger('update-data-source');
                 }
                // this.model.set("title", title);
                // this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
-                console.log("saveLayer() triggered", this.model.toJSON());
-                console.log(this.model.urlRoot);
+                //console.log("saveLayer() triggered", this.model.toJSON());
+                //console.log(this.model.urlRoot);
 
                 this.model.save(null, {
                     error: function (model, response) {
                         var messages = JSON.parse(response.responseText);
-                        console.log('error', messages);
+                        //console.log('error', messages);
                         if (messages.non_field_errors) {
                             alert("You have already used the title '" + that.model.get("title") +
                             "' for another layer. Please choose a different title.");
                         }
                     },
                     success: function () {
-                        console.log('success', that.model.get("metadata"));
+                        //console.log('success', that.model.get("metadata"));
                         that.collection.add(that.model);
                         that.app.layerHasBeenSaved = true;
                         that.app.layerHasBeenAltered = false;

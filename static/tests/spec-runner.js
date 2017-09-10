@@ -27,7 +27,6 @@ require(['boot'], function () {
         'spec/views/audio-player-new-test.js',
         'spec/views/audio-player-test.js',
         'spec/lib/data-manager-test.js',
-        'spec/lib/data-entry-test.js',
 
         //data viewer app:
         //'spec/views/dataviewer-app-test.js',
@@ -54,7 +53,7 @@ require(['boot'], function () {
         'spec/views/style-right-marker-style-view-test.js',
         'spec/views/style-right-marker-style-view-child-test.js',
         'spec/views/style-right-source-code-style-view-test.js',
-/*
+
         'spec/views/project-item-test.js',
         'spec/views/share-form-test.js',
         'spec/views/project-user-test.js',
@@ -81,8 +80,8 @@ require(['boot'], function () {
         'spec/lib/form-field-date-time-test.js',
         'spec/lib/form-field-choice-test.js',
         'spec/lib/form-field-rating-test.js',
-        'spec/lib/form-field-add-media-test.js'
-        */
+        //'spec/lib/form-field-add-media-test.js'
+
     ];
 
     require(specs, function () {

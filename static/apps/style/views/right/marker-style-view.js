@@ -44,7 +44,7 @@ define(["jquery",
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log('initialize', this.model.get('symbols'), this.collection);
+                //console.log('initialize', this.model.get('symbols'), this.collection);
                 this.dataType = this.model.get('layer_type');
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
                 this.collection = new Symbols(this.model.get("symbols"));
@@ -67,18 +67,18 @@ define(["jquery",
                 this.$el.find('#stroke-color-picker').ColorPicker({
 
                     onShow: function (colpkr) {
-                        console.log("colorPicker show");
+                        //console.log("colorPicker show");
                         $(colpkr).fadeIn(500);
                         return false;
                     },
                     onHide: function (colpkr) {
-                        console.log("colorPicker hide");
+                        //console.log("colorPicker hide");
                         that.updateStrokeColor(color);
                         $(colpkr).fadeOut(500);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
-                        console.log("colorPicker changed");
+                        //console.log("colorPicker changed");
                         color = "#" + hex;
                     }
                 });
@@ -246,7 +246,7 @@ define(["jquery",
             },
 
             contData: function() {
-                console.log("cont change registered");
+                //console.log("cont change registered");
                 this.buildPalettes();
                 var cssId = "#cont-prop";
                 this.setSelectedProp(cssId);
@@ -254,7 +254,7 @@ define(["jquery",
             },
 
             catData: function() {
-                console.log("catData triggered");
+                //console.log("catData triggered");
                 var cssId = "#cat-prop";
                 this.setSelectedProp(cssId);
                 var catInfo = this.getCatInfo();
@@ -283,7 +283,7 @@ define(["jquery",
                     });
                     counter++;
                     cont.currentFloor = Math.round((cont.currentFloor + cont.segmentSize)*100)/100;
-                    console.log(cont.currentFloor);
+                    //console.log(cont.currentFloor);
                 }
                 return this.layerDraft.continuous;
             },
@@ -301,7 +301,7 @@ define(["jquery",
             },
 */
             buildCategoricalSymbols: function (cat) {
-                console.log(cat);
+                //console.log(cat);
                 var that = this,
                 idCounter = 1,
                 paletteCounter = 0;
@@ -362,7 +362,7 @@ define(["jquery",
                 },
                 selected = this.selectedProp,
                 collection = this.app.dataManager.getCollection(key);
-                console.log("get catInfo: $selected", selected, this.model.get('metadata'), this.selectedProp);
+                //console.log("get catInfo: $selected", selected, this.model.get('metadata'), this.selectedProp);
                 collection.models.forEach(function(d) {
                     if (!cat.list.includes(d.get(selected)) && d.get(selected)) {
                         cat.list.push(d.get(selected));
@@ -377,7 +377,7 @@ define(["jquery",
 
 
             simpleData: function () {
-                console.log("simpleData triggered", this.model);
+                //console.log("simpleData triggered", this.model);
                 this.setSymbols(this.buildSimpleSymbols(this.model.get('data_source')));
             },
 
@@ -405,7 +405,7 @@ define(["jquery",
                     this.model.get('metadata').currentProp = this.$el.find(cssId).val();
                 }
                 this.selectedProp = this.model.get('metadata').currentProp;
-                console.log('changing selected proprty', this.$el.find(cssId).val(), this.selectedProp);
+                //console.log('changing selected proprty', this.$el.find(cssId).val(), this.selectedProp);
             },
 
             setSymbols: function (symbs) {
@@ -454,7 +454,7 @@ define(["jquery",
             },
 
             buildPalettes: function (itemCount) {
-                console.log("building palette, count = ", count);
+                //console.log("building palette, count = ", count);
                 var count = itemCount;
                 if (count > 8) { count = 8; }
                 var seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8;
@@ -486,7 +486,7 @@ define(["jquery",
             },
 
             updateMap: function () {
-                console.log('updateMap');
+                //console.log('updateMap');
                 var that = this;
                 this.delayExecution("mapTimer", function () {
                     that.model.trigger('rebuild-markers')
@@ -561,22 +561,22 @@ define(["jquery",
             //convenience function
             updateMetadata: function(newKey, newValue) {
                 var that = this;
-                console.log("a.", this.collection.length, this.model.getSymbols().length);
+                //console.log("a.", this.collection.length, this.model.getSymbols().length);
                 var localMeta = this.model.get("metadata") || {},
                     that = this;
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta);
 
-                console.log("b.", this.collection.length, this.model.getSymbols().length);
+                //console.log("b.", this.collection.length, this.model.getSymbols().length);
                 this.collection.each(function(symbol) {
-                    console.log(symbol.id, that.model.getSymbols().length);
+                    //console.log(symbol.id, that.model.getSymbols().length);
                     symbol.set(newKey, newValue);
-                    console.log(symbol.id, that.model.getSymbols().length);
+                    //console.log(symbol.id, that.model.getSymbols().length);
                 });
                 this.app.layerHasBeenAltered = true;
                 this.app.layerHasBeenSaved = false;
 
-                console.log("c.", this.collection.length, this.model.getSymbols().length);
+                //console.log("c.", this.collection.length, this.model.getSymbols().length);
             }
 
         });

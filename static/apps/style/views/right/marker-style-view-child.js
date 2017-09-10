@@ -20,11 +20,11 @@ define(["jquery",
             modelEvents: {
                 'change': 'updateLayerSymbols'
             },
-                
+
             tagName: "tr",
             className: "table-row",
             templateHelpers: function () {
-                console.log("child helpers", this);
+                //console.log("child helpers", this);
                 return {
                     dataType: this.dataType,
                     icons: IconLookup.getIcons(),
@@ -36,8 +36,8 @@ define(["jquery",
                 var that = this,
                     color = this.model.get('fillColor'),
                     id = this.model.get('id');
-                
-                //new color picker is added to the dom each time the icon is clicked, 
+
+                //new color picker is added to the dom each time the icon is clicked,
                 //so we remove the previous color picker with each additional click.
                 //for this reason, each marker's picker needs to be uniquely identified
                 $(".marker-child-color-picker" + id).remove();
@@ -68,7 +68,7 @@ define(["jquery",
             },
             updateLayerSymbols: function () {
                 this.layer.setSymbol(this.model);
-                this.render(); 
+                this.render();
             },
             updateSymbolOpacity: function (opacity) {
                 this.model.set("fillOpacity", opacity);

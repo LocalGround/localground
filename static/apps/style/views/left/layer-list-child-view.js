@@ -38,7 +38,7 @@ define(["jquery",
             sendCollection: function () {
                // this.$el.addClass('selected-layer');
                 this.$el.attr('id', this.model.id);
-                console.log(this.model, this.model.id);
+                //console.log(this.model, this.model.id);
                 this.app.vent.trigger('handle-selected-layer', this.model.id);
                 this.app.vent.trigger("edit-layer", this.model, this.collection);
             },
@@ -47,13 +47,13 @@ define(["jquery",
                 if (!confirm("Are you sure you want to delete this layer?")) {
                     return;
                 }
-                console.log("deleteLayer()", this.model);
-                console.log("collection before delete: ", this.collection);
+                //console.log("deleteLayer()", this.model);
+                //console.log("collection before delete: ", this.collection);
                 this.model.destroy();
                 this.collection.remove(this.model);
                 this.deleteOverlays();
                 //this.hideOverlays();
-                console.log("collection after delete: ", this.collection);
+                //console.log("collection after delete: ", this.collection);
                 this.app.vent.trigger('update-layer-list');
                 this.app.vent.trigger("hide-right-panel");
             },
@@ -64,8 +64,8 @@ define(["jquery",
             },
 
             updateMapOverlays: function () {
-                console.log('rebuilding map overlays');
-                console.log(this.model.getSymbols());
+                //console.log('rebuilding map overlays');
+                //console.log(this.model.getSymbols());
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
                 this.initMapOverlays();
@@ -84,11 +84,11 @@ define(["jquery",
                     dataSource = this.model.get("data_source"),
                     data = this.app.dataManager.getCollection(dataSource),
                     symbols = this.model.getSymbols();
-                    console.log(this.model.getSymbols());
+                    //console.log(this.model.getSymbols());
                 symbols.each(function (symbol) {
                     matchedCollection = new data.constructor(null, { url: "dummy" });
                     data.each(function (model) {
-                        console.log("symbol looped once", symbol.checkModel(model));
+                        //console.log("symbol looped once", symbol.checkModel(model));
                         if (symbol.checkModel(model)) {
                             matchedCollection.add(model);
                         }
@@ -101,7 +101,7 @@ define(["jquery",
                     });
                     that.markerOverlayList.push(overlays);
                 });
-                console.log(this.markerOverlayList);
+                //console.log(this.markerOverlayList);
             },
 
             showOverlays: function () {
@@ -117,9 +117,9 @@ define(["jquery",
             },
 
             deleteOverlays: function () {
-                console.log("deleteOverlays() called")
+                //console.log("deleteOverlays() called")
               //  this.$el.find('.gmnoprint').remove();
-                
+
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.remove();
                 });

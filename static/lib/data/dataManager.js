@@ -119,7 +119,7 @@ define(["underscore", "marionette", "models/project",
                 fieldsURL = '/api/0/forms/' + opts.formID + '/fields/';
                 _.extend(opts, {
                     fillColor: this.getMarkerColor(),
-                    fields: new Fields(null, { baseURL: fieldsURL }),
+                    fields: new Fields(opts.fields, { baseURL: fieldsURL }),
                     isCustomType: true,
                     isSite: true,
                     key: opts.dataType

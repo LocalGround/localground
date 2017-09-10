@@ -30,7 +30,7 @@ define(["marionette",
             },
 
             trackChanges: function () {
-                console.log("source code has changed");
+                ("source code has changed");
                 // for efficiency: will only apply "updatedModel" code if
                 // something has actually changed in the textbox:
                 this.hasChanged = true;
@@ -45,7 +45,7 @@ define(["marionette",
             },
 
             updateModel: function () {
-                console.log('updateModel: sourceCode', this.$el.find(".source-code").val());
+                //console.log('updateModel: sourceCode', this.$el.find(".source-code").val());
                 // if nothing has changed, exit this function
                 if (!this.hasChanged) {
                     return;

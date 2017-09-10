@@ -1,7 +1,7 @@
 var rootDir = "../../";
 define([
     "jquery",
-    rootDir + "apps/style/views/right/marker-style-view", 
+    rootDir + "apps/style/views/right/marker-style-view",
     rootDir + "models/layer"
 ],
     function ($, MarkerStyleView, Layer) {
@@ -41,7 +41,7 @@ define([
 
 
             },
-            
+
             initContinuousView = function (that) {
                 // initialize continuous MarkerStyleView object:
                 continuousMarkerStyleView = new MarkerStyleView({
@@ -56,7 +56,7 @@ define([
 
                 //global property
                 continuousMarkerStyleView.selectedProp = "test_integer";
-              
+
             },
 
             initCategoricalView = function (that) {
@@ -75,7 +75,7 @@ define([
                 categoricalMarkerStyleView.selectedProp = "test_text";
 
                 //spies
-                spyOn(categoricalMarkerStyleView, 'updateMetadata').and.callThrough(); 
+                spyOn(categoricalMarkerStyleView, 'updateMetadata').and.callThrough();
             };
 
 
@@ -119,12 +119,12 @@ define([
 
             it("should set correct data type", function () {
                 expect(categoricalMarkerStyleView.selectDataType).toHaveBeenCalledTimes(0);
-                
+
                 $(categoricalFixture.find("#data-type-select option[value='continuous']").change());
                 expect(categoricalMarkerStyleView.selectDataType).toHaveBeenCalledTimes(1);
                 expect(MarkerStyleView.prototype.contData).toHaveBeenCalled();
                 expect(categoricalMarkerStyleView.dataType).toEqual("continuous");
-                
+
                 $(categoricalFixture.find("#data-type-select").val("categorical")).change();
                 expect(categoricalMarkerStyleView.selectDataType).toHaveBeenCalledTimes(2);
                 expect(categoricalMarkerStyleView.dataType).toEqual("categorical");
@@ -191,7 +191,7 @@ define([
 
             it("should select correct color palette", function () {
                 $(categoricalFixture.find('#palette_3').click());
-                expect(categoricalMarkerStyleView.model.get("metadata").paletteId).toEqual(3);      
+                expect(categoricalMarkerStyleView.model.get("metadata").paletteId).toEqual(3);
             });
 
             it("should execute catData", function () {
@@ -246,13 +246,13 @@ define([
 
             it("should build correct palette list", function () {
                 categoricalMarkerStyleView.buildPalettes(3);
-                expect(categoricalMarkerStyleView.model.get("metadata").paletteId).toEqual(3); 
-                expect(categoricalMarkerStyleView.model.get("metadata").buckets).toEqual(3);  
+                expect(categoricalMarkerStyleView.model.get("metadata").paletteId).toEqual(3);
+                expect(categoricalMarkerStyleView.model.get("metadata").buckets).toEqual(3);
                 expect(categoricalMarkerStyleView.selectedColorPalette).toEqual(["fbb4ae", "b3cde3", "ccebc5"]);
             });
 
             it("showPalettes function should display and hide list of palettes", function() {
-            
+
                 $(categoricalFixture.find('.palette-wrapper')).css('display', 'none');
                 expect(categoricalFixture.find(".palette-wrapper").css('display')).toEqual('none');
 
@@ -282,8 +282,8 @@ define([
                 //sets model to a continuous layer
                 $(continuousFixture.find('#bucket').change().val("7"));
                 jasmine.clock().tick(600);
-                expect(continuousMarkerStyleView.model.get("metadata").buckets).toEqual(7);      
-            }); 
+                expect(continuousMarkerStyleView.model.get("metadata").buckets).toEqual(7);
+            });
 
             it(" 'updateStrokeColor()' should update stroke color ", function () {
                 //open the color picker:
@@ -317,23 +317,23 @@ define([
                     { text: "Test Rating", value: "test_rating", hasData: true }
                 ]);
 
-                
+
                 expect(continuousFixture.find("#cont-prop").find("option:eq(0)").val()).toEqual("test_integer");
                 expect(continuousFixture.find("#cont-prop").find("option:eq(1)").val()).toEqual("test_rating");
             });
 
             it("should select correct color palette", function () {
                 $(continuousFixture.find('#palette_3').click());
-                expect(continuousMarkerStyleView.model.get("metadata").paletteId).toEqual(3);      
+                expect(continuousMarkerStyleView.model.get("metadata").paletteId).toEqual(3);
             });
 
             it("should execute contData", function () {
                 expect(continuousMarkerStyleView.contData).toHaveBeenCalledTimes(1);
                 $(continuousFixture.find('#cont-prop').change().val("test_integer"));
                 expect(continuousMarkerStyleView.contData).toHaveBeenCalledTimes(2);
-            
+
                 expect(continuousMarkerStyleView.setSelectedProp).toHaveBeenCalledWith("#cont-prop");
-                
+
                 expect(continuousMarkerStyleView.getContInfo).toHaveBeenCalledTimes(2);
                 expect(continuousMarkerStyleView.buildContinuousSymbols).toHaveBeenCalledTimes(2);
                 expect(continuousMarkerStyleView.setSymbols).toHaveBeenCalledTimes(2);
@@ -352,8 +352,8 @@ define([
             it("buildContinuousSymbols() should return list of symbols", function() {
                 var info = continuousMarkerStyleView.getContInfo();
                 var symbolsList = continuousMarkerStyleView.buildContinuousSymbols(info);
-                console.log(info, symbolsList, symbolsList.length,  continuousMarkerStyleView.model.get("metadata").buckets);
-                console.log(symbolsList);
+                //console.log(info, symbolsList, symbolsList.length,  continuousMarkerStyleView.model.get("metadata").buckets);
+                //console.log(symbolsList);
                 var json = symbolsList.toJSON();
                 json.forEach(function (symbol) {
                     delete symbol.icon;
@@ -362,8 +362,8 @@ define([
                 b.forEach(function (symbol) {
                     delete symbol.icon;
                 });
-                console.log(json);
-                console.log( this.continuousSymbols);
+                //console.log(json);
+                //console.log( this.continuousSymbols);
                 //console.log(this.testMap.get("layers").at(0).get("symbols"));
                 //$$$ leaving this fialing test in until that i can configure the appropriate test data
                 expect(json).toEqual(this.continuousSymbols);
@@ -384,13 +384,13 @@ define([
 
             it("should build correct palette list", function () {
                 continuousMarkerStyleView.buildPalettes();
-                expect(continuousMarkerStyleView.model.get("metadata").paletteId).toEqual(2); 
-                expect(continuousMarkerStyleView.model.get("metadata").buckets).toEqual(3);  
+                expect(continuousMarkerStyleView.model.get("metadata").paletteId).toEqual(2);
+                expect(continuousMarkerStyleView.model.get("metadata").buckets).toEqual(3);
                 expect(continuousMarkerStyleView.selectedColorPalette).toEqual(["f0f0f0", "bdbdbd", "636363"]);
             });
 
             it("showPalettes function should display and hide list of palettes", function() {
-            
+
                 $(continuousFixture.find('.palette-wrapper')).css('display', 'none');
                 expect(continuousFixture.find(".palette-wrapper").css('display')).toEqual('none');
 

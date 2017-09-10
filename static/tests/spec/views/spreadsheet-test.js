@@ -46,7 +46,6 @@ define([
             spyOn(Spreadsheet.prototype, 'addRow').and.callThrough();
             spyOn(Spreadsheet.prototype, 'attachModels').and.callThrough();
 
-
             // functions involving renderers
             spyOn(Spreadsheet.prototype, "thumbnailRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "audioRenderer").and.callThrough();
@@ -54,7 +53,7 @@ define([
             spyOn(Spreadsheet.prototype, "buttonRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "mediaCountRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "ratingRenderer").and.callThrough();
-            spyOn(Spreadsheet.prototype, "showVideoModal").and.callThrough();
+            spyOn(Spreadsheet.prototype, "showModal").and.callThrough();
 
             // column functions
             spyOn(Spreadsheet.prototype, "getColumns").and.callThrough();
@@ -66,9 +65,8 @@ define([
             spyOn(Spreadsheet.prototype, "showCreateFieldForm").and.callThrough();
             spyOn(Spreadsheet.prototype, "showMediaBrowser").and.callThrough();
             spyOn(Spreadsheet.prototype, "deleteField").and.callThrough();
-            spyOn(Spreadsheet.prototype, "carouselAudio").and.callThrough();
-            spyOn(Spreadsheet.prototype, "carouselPhoto").and.callThrough();
-            spyOn(Spreadsheet.prototype, "carouselVideo").and.callThrough();
+            spyOn(Spreadsheet.prototype, "makeCarousel").and.callThrough();
+            spyOn(Spreadsheet.prototype, "carouselMedia").and.callThrough();
 
             // Carousel to catch initalize
             spyOn(Carousel.prototype, "initialize");
@@ -160,7 +158,7 @@ define([
                 });
                 it("Successfully calls doSearch", function () {
 
-                    newSpreadsheet.app.vent.trigger("search-requested");
+                    newSpreadsheet.app.vent.trigger("search-requested", "blah");
                     expect(Spreadsheet.prototype.doSearch).toHaveBeenCalledTimes(1);
                 });
 
@@ -337,40 +335,16 @@ define([
 
             });
 
-            var triggerCarouselAudio = function(){
+            var triggerCarousel = function(){
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 newSpreadsheet.renderSpreadsheet();
-                expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(0);
-                newSpreadsheet.$el.find('.carousel-audio').trigger('click');
-                expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(6);
-            };
-
-            var triggerCarouselPhoto = function(){
-                fixture.find('.main-panel').append(newSpreadsheet.$el);
-                newSpreadsheet.renderSpreadsheet();
-                expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(0);
-                newSpreadsheet.$el.find('.carousel-photo').trigger('click');
-                expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(6);
-            };
-
-            var triggerCarouselVideo = function(){
-                fixture.find('.main-panel').append(newSpreadsheet.$el);
-                newSpreadsheet.renderSpreadsheet();
-                expect(Spreadsheet.prototype.carouselVideo).toHaveBeenCalledTimes(0);
-                newSpreadsheet.$el.find('.carousel-video').trigger('click');
-                expect(Spreadsheet.prototype.carouselVideo).toHaveBeenCalledTimes(6);
+                expect(Spreadsheet.prototype.carouselMedia).toHaveBeenCalledTimes(0);
+                $(document.querySelector('.carousel-media')).trigger('click');
+                expect(Spreadsheet.prototype.carouselMedia).toHaveBeenCalledTimes(1);
             };
 
             it("Shows the Carousel Audio", function(){
-                triggerCarouselAudio();
-            });
-
-            it("Shows the Carousel Photo", function(){
-                triggerCarouselPhoto();
-            });
-
-            it("Shows the Carousel Video", function(){
-                triggerCarouselVideo();
+                triggerCarousel();
             });
         });
 
@@ -378,72 +352,70 @@ define([
 
             beforeEach(function(){
                 setupSpreadsheetTest(this);
-                newSpreadsheet = new Spreadsheet({
+                /*newSpreadsheet = new Spreadsheet({
                     app: this.app
-                });
+                });*/
             });
 
             it("Go through the Button renderer", function(){
+                this.app.dataType = "markers";
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app,
+                    collection: this.markers
+                });
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
-                newSpreadsheet.collection = this.form_1;
-                newSpreadsheet.fields = this.fields;
-                newSpreadsheet.renderSpreadsheet();
+                newSpreadsheet.render();
+                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(newSpreadsheet.collection.length);
                 expect(Spreadsheet.prototype.buttonRenderer).toHaveBeenCalledTimes(newSpreadsheet.collection.length);
             });
 
             it("Go through the Thumbnail renderer", function() {
+                this.app.dataType = "photos";
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app,
+                    collection: this.photos
+                });
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
-                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(0);
-                newSpreadsheet.collection = this.photos;
                 newSpreadsheet.renderSpreadsheet();
-                expect(Spreadsheet.prototype.thumbnailRenderer).toHaveBeenCalledTimes(6);
+                expect(Spreadsheet.prototype.thumbnailRenderer)
+                    .toHaveBeenCalledTimes(newSpreadsheet.collection.length * 2);
             });
 
             it("Go through the Audio renderer", function () {
+                this.app.dataType = "audio";
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app,
+                    collection: this.audioFiles,
+                });
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
-                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(0);
-                newSpreadsheet.collection = this.audioFiles;
                 newSpreadsheet.renderSpreadsheet();
-                expect(Spreadsheet.prototype.audioRenderer).toHaveBeenCalledTimes(6);
+                expect(Spreadsheet.prototype.audioRenderer)
+                    .toHaveBeenCalledTimes(newSpreadsheet.collection.length * 2);
             });
 
             it("Go through the Video renderer", function () {
+                this.app.dataType = "videos";
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app,
+                    collection: this.videos,
+                });
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
-                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(0);
-                newSpreadsheet.collection = this.videos;
-                newSpreadsheet.renderSpreadsheet();
-                expect(Spreadsheet.prototype.videoRenderer).toHaveBeenCalledTimes(6);
-            });
-
-            it("Successfully displays the video from clicking on icon", function(){
-                fixture.find('.main-panel').append(newSpreadsheet.$el);
-                newSpreadsheet.collection = this.videos;
-                newSpreadsheet.renderSpreadsheet();
-                expect(Spreadsheet.prototype.showVideoModal).toHaveBeenCalledTimes(0);
-                var $testTumbnailYT = $(fixture.find("i.fa-vimeo, i.fa-youtube").get(0));
-                $testTumbnailYT.trigger('click');
-                expect(Spreadsheet.prototype.showVideoModal).toHaveBeenCalledTimes(1);
-
-                //expect(1).toEqual(-1);
-            });
-
-            it("Go through the Media Count renderer", function () {
-                fixture.find('.main-panel').append(newSpreadsheet.$el);
-                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(0);
-                newSpreadsheet.fields = this.fields;
-                newSpreadsheet.collection = this.form_1;
-                newSpreadsheet.renderSpreadsheet();
-                //these counts don't make sense. TODO: revisit.
-                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(4);
+                newSpreadsheet.render();
+                expect(Spreadsheet.prototype.videoRenderer)
+                    .toHaveBeenCalledTimes(newSpreadsheet.collection.length * 2);
             });
 
             it("Go through the Rating renderer", function () {
+                this.app.dataType = "form_1";
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app,
+                    collection: this.form_1,
+                    fields: this.fields
+                });
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
-                expect(Spreadsheet.prototype.ratingRenderer).toHaveBeenCalledTimes(0);
-                newSpreadsheet.fields = this.fields;
-                newSpreadsheet.collection = this.form_2;
-                newSpreadsheet.renderSpreadsheet();
-                expect(Spreadsheet.prototype.ratingRenderer).toHaveBeenCalledTimes(2);
+                newSpreadsheet.render();
+                expect(Spreadsheet.prototype.ratingRenderer)
+                    .toHaveBeenCalledTimes(4);
             });
         });
 

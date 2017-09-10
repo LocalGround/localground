@@ -32,13 +32,12 @@ define([
             initGlobals = function (that) {
                 dataEntries = [
                     { collection: that.markers },
-                    { collection: that.form_1, fields: that.fields },
+                    { collection: that.form_1 },
                     { collection: that.photos },
                     { collection: that.audioFiles },
                     { collection: that.map_images }
                 ];
                 dataEntry = dataEntries[entryCounter];
-                console.log(entryCounter);
             },
             getIcon = function () {
                 var collection = dataEntry.collection;

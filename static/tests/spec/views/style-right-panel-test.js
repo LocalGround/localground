@@ -16,8 +16,8 @@ define([
                 model: scope.layer,
                 collection: scope.layer.getSymbols()
             });
-            console.log(scope.layer.get("symbols"));
-            console.log(scope.layer.getSymbols());
+            //console.log(scope.layer.get("symbols"));
+            //console.log(scope.layer.getSymbols());
 
             // 3) set fixture:
             fixture = setFixtures('<div></div>').append(rightPanel.$el);

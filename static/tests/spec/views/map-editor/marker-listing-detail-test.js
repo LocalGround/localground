@@ -41,11 +41,10 @@ define([
                     that.map_images.at(0)
                 ];
                 model = models[modelCounter];
-                console.log(modelCounter);
             },
             getIcon = function () {
                 icon = new Icon({
-                    shape: model.getDataTypePlural(),
+                    shape: model.collection.getDataType(),
                     fillColor: model.collection.fillColor,
                     width: model.collection.size,
                     height: model.collection.size
@@ -53,6 +52,7 @@ define([
                 return icon;
             },
             initMarkerView = function (that) {
+                that.app.screenType = "map";
                 markerView = new MarkerView({
                     app: that.app,
                     icon: getIcon(),
@@ -78,7 +78,7 @@ define([
                 initGlobals(this);
             });
 
-            // Note: this tests all 5 data types. All generic functionality to 
+            // Note: this tests all 5 data types. All generic functionality to
             // be tested across models should be done here:
             for (i = 0; i < 5; i++) {
                 it("initializes startup params successfully", function () {
@@ -189,7 +189,7 @@ define([
                     expect(fixture).toContainElement("a");
                     expect(fixture.find("a")).toContainElement("p");
                     expect(fixture.find("a")).toContainElement("i");
-                    expect($a.attr("href")).toEqual("#/" + model.getDataTypePlural() + "/" + model.id);
+                    expect($a.attr("href")).toEqual("#/" + this.app.screenType + "/" + model.getDataTypePlural() + "/" + model.id);
 
                     //ensure that the icon (svg) has been drawn correctly:
                     if (model.get("overlay_type") !== "map-image") {

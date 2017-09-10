@@ -23,7 +23,7 @@ define([
 
         currentCollection: null,
         dataType: "markers",
-        screenType: "spreadsheet",
+        screenType: "table",
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run

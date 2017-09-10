@@ -27,7 +27,7 @@ define([
 
         currentCollection: null,
         dataType: "markers",
-        screenType: "spreadsheet",
+        screenType: "table",
         mode: "edit",
         start: function (options) {
             // declares any important global functionality;
@@ -84,7 +84,7 @@ define([
                     fields: collection.getFields()
                 };
             switch (this.screenType) {
-                case 'spreadsheet':
+                case 'table':
                     this.mainView = new SpreadsheetView(opts);
                     break;
                 case 'gallery':
@@ -107,7 +107,7 @@ define([
         adjustLayout: function () {
             this.mainView.$el.removeClass('spreadsheet gallery map');
             switch (this.screenType) {
-                case 'spreadsheet':
+                case 'table':
                     this.tabViewRegion.$el.show();
                     this.mainView.$el.addClass('spreadsheet');
                     break;

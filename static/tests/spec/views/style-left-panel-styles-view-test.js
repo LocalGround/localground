@@ -11,7 +11,7 @@ define([
         var panelStyleView, fixture;
 
         function initView(scope) {
-            console.log("layer list test working");
+            //console.log("layer list test working");
             // 1) add spies for all relevant objects:
             spyOn(PanelStylesView.prototype, 'initialize').and.callThrough();
             spyOn(PanelStylesView.prototype, 'updateType').and.callThrough();
@@ -28,7 +28,7 @@ define([
                 model: scope.testMap
             });
             panelStyleView.render();
-            
+
             // 3) set fixture:
             fixture.append(panelStyleView.$el);
         };
@@ -48,7 +48,7 @@ define([
             });
 
             it("should have correct html", function () {
-                expect(fixture).toContainElement('.bordered-section');    
+                expect(fixture).toContainElement('.bordered-section');
             });
 
             it(": model should be correct", function () {

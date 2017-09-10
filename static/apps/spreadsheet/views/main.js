@@ -145,7 +145,7 @@ define(["jquery",
                 // When the spreadsheet is made without a defined collection
                 // Alert that there is no collection
                 // for the sole purpose of unit testing
-
+                //console.log(this.collection.length);
                 if (!this.collection) {
                     this.$el.find('#grid').html("Collection is not defined");
                     return;
@@ -177,6 +177,12 @@ define(["jquery",
                     }
                     data.push(rec);
                 });
+
+                /*console.log(this.getColumns())
+                console.log(this.getColumnHeaders())
+                console.log(this.getColumnWidths())
+                console.log(data)*/
+
                 this.table = new Handsontable(grid, {
                     data: data,
                     fixedRowsTop: 0,
@@ -352,6 +358,7 @@ define(["jquery",
                     rowIndex = $(e.target).attr("row-index"),
                     collection;
                 this.currentModel = this.collection.at(parseInt(rowIndex));
+                console.log(rowIndex, this.currentModel);
                 this.currentModel.fetch({
                     success: function () {
                         collection = new Backbone.Collection();
@@ -485,7 +492,7 @@ define(["jquery",
 
             getColumnHeaders: function () {
                 var cols;
-                switch (this.collection.key) {
+                switch (this.collection.getDataType()) {
                     case "audio":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"];
                     case "photos":
@@ -513,7 +520,7 @@ define(["jquery",
                 }
             },
             getColumnWidths: function () {
-                switch(this.collection.key){
+                switch(this.collection.getDataType()){
                     case "audio":
                         return [30, 80, 80, 200, 400, 300, 200, 100, 80, 100];
                     case "photos":
@@ -538,7 +545,7 @@ define(["jquery",
             doSearch: function (term) {
 
                 // If form exist, do search with 3 parameters, otherwise, do search with two parameters]
-                if (this.collection.key.indexOf("form_")){
+                if (this.collection.getIsCustomType()){
                     this.collection.doSearch(term, this.app.getProjectID(), this.fields);
                 } else {
                     this.collection.doSearch(term, this.app.getProjectID());
@@ -551,7 +558,7 @@ define(["jquery",
             },
 
             getColumns: function () {
-                switch (this.collection.key) {
+                switch (this.collection.getDataType()) {
                     case "audio":
                         return [
                             { data: "id", readOnly: true},
