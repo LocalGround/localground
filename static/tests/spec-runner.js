@@ -22,14 +22,13 @@ require(['boot'], function () {
         'spec/truth-statement-test.js',
 
         // VIEWS
-        //'spec/views/spreadsheet-app-test.js',
         'spec/views/global-toolbar-test.js',
         'spec/views/audio-player-new-test.js',
         'spec/views/audio-player-test.js',
         'spec/lib/data-manager-test.js',
 
         //data viewer app:
-        //'spec/views/dataviewer-app-test.js',
+        'spec/views/dataviewer-app-test.js',
 
         //presentation app:
         'spec/views/presentation-app-test.js',
@@ -80,7 +79,7 @@ require(['boot'], function () {
         'spec/lib/form-field-date-time-test.js',
         'spec/lib/form-field-choice-test.js',
         'spec/lib/form-field-rating-test.js',
-        //'spec/lib/form-field-add-media-test.js'
+        'spec/lib/form-field-add-media-test.js'
 
     ];
 

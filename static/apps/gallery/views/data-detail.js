@@ -38,7 +38,7 @@ define([
             "click .thumbnail-play-circle": 'playAudio'
         },
         getTemplate: function () {
-            console.log(this.dataType, this.mobileView);
+            //console.log(this.dataType, this.mobileView);
             if (this.dataType == "photos") {
                 return Handlebars.compile(PhotoTemplate);
             }
@@ -101,20 +101,20 @@ define([
         },
 
         expandMobile: function () {
-            console.log("render expandMobile", this);
+            //console.log("render expandMobile", this);
             this.mobileView = "expanded";
             this.getTemplate();
             this.render();
         },
         contractMobile: function () {
-            console.log("render contractMobile", this);
+            //console.log("render contractMobile", this);
             this.mobileView = null;
             this.getTemplate();
             this.render();
         },
 
         detectScroll: function (event) {
-            console.log("scrolling");
+            //console.log("scrolling");
             var triggerHeight = screen.height - (screen.height/3),
             scrollHeight = parseInt(this.$el.find('#parallax-body').css('top'), 10);
 
@@ -186,14 +186,14 @@ define([
                         that.$el.find('.contracted').show();
                         /*this.initPosition();
                         console.log(that.distance);*/
-                        console.log("showSmallTemplate", that.distance);
+                        //console.log("showSmallTemplate", that.distance);
                     }
 
                     if (direction == "up" && scrollTop >= 200) {
                         that.$el.find('.expanded').show();
                         that.$el.find('.contracted').hide();
                         //this.initPosition();
-                        console.log("showBigTemplate", that.distance);
+                        //console.log("showBigTemplate", that.distance);
                     }
                     this.$el.css('top', this.initialPosition - scrollTop * this.speed);
 
@@ -204,20 +204,20 @@ define([
             };
             $.fn.moveIt = function () {
                 if (that.scrollEventListener) {
-                    console.log('removing...');
+                    //console.log('removing...');
                     window.removeEventListener("scroll", that.scrollEventListener);
                 }
                 var $window = $(window),
                     instances = [],
                     moveItem;
-                console.log('THIS', $(this));
+                //console.log('THIS', $(this));
                 $(this).each(function () {
                     console.log('looping through selector...');
                     moveItem = new MoveItItem($(this));
                     moveItem.initPosition();
                     instances.push(moveItem);
                 });
-                console.log("initializing...");
+                //console.log("initializing...");
                 that.scrollEventListener = function () {
                     var scrollTop = $window.scrollTop();
                     instances.forEach(function (inst) {
@@ -231,7 +231,7 @@ define([
             });
         },
         remove: function () {
-            console.log("destroying...");
+            //console.log("destroying...");
             window.removeEventListener("scroll", this.scrollEventListener);
             Backbone.View.prototype.remove.call(this);
         },
@@ -393,8 +393,8 @@ define([
                 this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
-            console.log(this.mobileMode);
-            console.log(this.collection);
+            //console.log(this.mobileMode);
+            //console.log(this.collection);
 
             return {
                 title: this.model.collection.getTitle(),
@@ -462,7 +462,7 @@ define([
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
-            console.log("Calling View Render");
+            //console.log("Calling View Render");
             var c,
                 photos = this.getPhotos(),
                 videos = this.getVideos(),
@@ -619,7 +619,7 @@ define([
         },
         openMobileDetail: function () {
 
-            console.log("init darggable", $( ".body-section" ));
+            //console.log("init draggable", $( ".body-section" ));
             if ($('#marker-detail-panel').hasClass('mobile-minimize')) {
 
                 $('#marker-detail-panel').addClass('mobile-full');
@@ -643,7 +643,7 @@ define([
                 $('#presentation-title').removeClass('mobile-full-title');
             }
 
-            console.log("mobile toggle");
+            //console.log("mobile toggle");
 
         },
 
@@ -652,12 +652,12 @@ define([
             if (this.$el.find('.thumbnail-play').hasClass('fa-play')) {
                 this.$el.find('.thumbnail-play').addClass("fa-pause");
                 this.$el.find('.thumbnail-play').removeClass("fa-play");
-                console.log("play audio");
+                //console.log("play audio");
                 audio.play();
             } else {
                 this.$el.find('.thumbnail-play').addClass("fa-play");
                 this.$el.find('.thumbnail-play').removeClass("fa-pause");
-                console.log("pause audio");
+                //console.log("pause audio");
                 audio.pause();
             }
         }

@@ -41,7 +41,7 @@ define([
             spyOn(DataViewerApp.prototype, "initialize").and.callThrough();
             spyOn(DataViewerApp.prototype, "loadFastRegions").and.callThrough();
             spyOn(DataViewerApp.prototype, "loadMainRegion").and.callThrough();
-            spyOn(DataViewerApp.prototype, "initMainView").and.callThrough();
+            spyOn(DataViewerApp.prototype, "initMainView"); // don't call through
             spyOn(DataViewerApp.prototype, "adjustLayout").and.callThrough();
             spyOn(DataViewerApp.prototype, "isDataLoaded").and.callThrough();
             spyOn(DataViewerApp.prototype, "getData").and.callThrough();

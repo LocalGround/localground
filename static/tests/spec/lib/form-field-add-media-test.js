@@ -196,6 +196,7 @@ define([
                 expect(audioSource[1]).toHaveAttr("src", "http://localhost:7777/profile/audio/L3VzZXJkYXRhL21lZGlhL3ZhbndhcnMvYXVkaW8vdG1waW80ZmxmXzE0OTcyOTc5MzMubXAzIzE0OTcyOTc5NDc=/");
             });
 
+
             it("Render AudioPlayer gets executed", function () {
                 expect(MediaEditor.prototype.renderAudioPlayers).toHaveBeenCalledTimes(0);
                 initForm(this, markerAudio);
@@ -238,26 +239,10 @@ define([
             it("showMediaBrowser triggers the opening of the modal window correctly", function () {
                 initForm(this, markerPlain);
                 expect(AddMedia.prototype.initialize).toHaveBeenCalledTimes(0);
-                expect(this.app.vent.trigger).not.toHaveBeenCalledWith('show-modal', {
-                    title: 'Media Browser',
-                    width: 1100,
-                    //height: 400,
-                    view: jasmine.any(Object),
-                    saveButtonText: "Add",
-                    showSaveButton: true,
-                    saveFunction: jasmine.any(Function)
-                });
+                expect(this.app.vent.trigger).not.toHaveBeenCalledWith('show-modal', jasmine.any(Object));
                 fixture.find("#add-media-button").trigger('click');
                 expect(AddMedia.prototype.initialize).toHaveBeenCalledTimes(1);
-                expect(this.app.vent.trigger).toHaveBeenCalledWith('show-modal', {
-                    title: 'Media Browser',
-                    width: 1100,
-                    //height: 400,
-                    view: jasmine.any(Object),
-                    saveButtonText: "Add",
-                    showSaveButton: true,
-                    saveFunction: jasmine.any(Function)
-                });
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('show-modal', jasmine.any(Object));
             });
 
         });
@@ -269,15 +254,14 @@ define([
             });
 
             it("Executes attachModels successfully", function(){
-                /*
-                 * Assume that the add button is clicked and a few models will be added from the helper file
+                // Assume that the add button is clicked and a few models will be added from the helper file
 
-                 form.attachModels (the two models provided);
+                // form.attachModels (the two models provided);
 
-                 then check the following:
-                 new length is two more than previous
-                 form re-renders with two more
-                */
+                // then check the following:
+                // new length is two more than previous
+                // form re-renders with two more
+
                 initForm(this, markerPlain);
                 expect(MediaEditor.prototype.render).toHaveBeenCalledTimes(1);
                 expect(this.app.vent.trigger).not.toHaveBeenCalledWith('hide-modal');
@@ -287,11 +271,8 @@ define([
             });
 
             it("Executes detachModel successfully", function(){
-                /*
-                * Search for the one existing media to detach,
-                * then check that detach model has been called
-                *
-                */
+                // Search for the one existing media to detach,
+                // then check that detach model has been called
                 initForm(this, markerPhotos);
                 spyOn(markerPhotos, 'detach').and.callThrough();
                 var mediaContainer = fixture.find(".attached-media-container");
