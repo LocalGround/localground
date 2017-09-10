@@ -23,7 +23,8 @@ define(["marionette",
                         'change #font-size': 'updateFontSize',
                         'click #font': 'showFonts',
                         'click .font-wrapper div': 'updateFont',
-                        'click .legend-checkbox': 'updateLegend'
+                        'click .legend-checkbox': 'updateLegend',
+                        'click .style-reset': 'resetStyles'
                     },
                     PanelVisibilityExtensions.events
                 );
@@ -33,6 +34,20 @@ define(["marionette",
                 _.extend(this, opts);
                 this.restoreState();
                 $('body').click(this.hideFonts);
+            },
+
+            resetStyles: function () {
+
+                if (!confirm("Are you sure you want to reset map styles to their default?")) {
+                    return;
+                }
+
+                var panelStyleDefaults = this.model.defaults().panel_styles;
+                this.model.get("panel_styles").title.color = panelStyleDefaults.title.color;
+                this.model.get("panel_styles").title.backgroundColor = panelStyleDefaults.title.backgroundColor;
+                this.model.get("panel_styles").paragraph.color = panelStyleDefaults.paragraph.color;
+                this.model.get("panel_styles").paragraph.backgroundColor = panelStyleDefaults.paragraph.backgroundColor;
+                this.render();
             },
             
             onRender: function () {

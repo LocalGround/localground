@@ -105,6 +105,40 @@ define([
             });
         });
 
+        describe("Data Detail: Open Expanded", function(){
+            beforeEach(function(){
+                jasmine.clock().install();
+                initSpies(this);
+            });
+
+            afterEach(function () {
+                jasmine.clock().uninstall();
+            });
+
+            it("Makes sure the openExpanded functions calls correctly", function(){
+                setupDataDetail(this, {
+                    model: this.marker,
+                    mode: "view",
+                    dataType: "markers"
+                });
+
+                newDataDetail.render();
+                fixture.append(newDataDetail.$el);
+
+                jasmine.clock().tick(600);
+
+                console.log($('html, body').scrollTop());
+                fixture.find('.circle').trigger('click');
+
+                jasmine.clock().tick(100);
+
+                expect(fixture.find('.circle-icon')).toHaveClass('icon-rotate');
+
+                // would be good to write tests dealing with scrollTop() values,
+                // but so far unable to set these values within the fixture
+            });
+        });
+
         describe("Data Detail: Featured Image", function(){
             beforeEach(function(){
                 initSpies(this);
@@ -118,7 +152,7 @@ define([
                 });
                 expect(DataDetail.prototype.getFeaturedImage).toHaveBeenCalledTimes(0);
                 newDataDetail.render();
-                expect(DataDetail.prototype.getFeaturedImage).toHaveBeenCalledTimes(2);
+                expect(DataDetail.prototype.getFeaturedImage).toHaveBeenCalledTimes(7);
 
             });
 
@@ -217,7 +251,9 @@ define([
                 expect(DataDetail.prototype.viewRender).toHaveBeenCalledTimes(0);
                 newDataDetail.render();
                 expect(DataDetail.prototype.viewRender).toHaveBeenCalledTimes(1);
-                expect(Carousel.prototype.initialize).toHaveBeenCalledTimes(2);
+
+                // only 1 carousel, combined photo/video
+                expect(Carousel.prototype.initialize).toHaveBeenCalledTimes(1);
             });
 
             it("Successfully renders video YouTube", function () {
@@ -348,8 +384,7 @@ define([
                 // 3. ensure photo render correctly:
                 expect(fixture.find("h4").html().includes("Preview")).toBeTruthy();
                 expect(fixture.html()).toContain("section");
-                expect(fixture.html()).toContain("carousel-video");
-                expect(fixture.html()).toContain("carousel-photo");
+                expect(fixture.html()).toContain("carousel-videos-photos");
                 expect(fixture.html()).toContain("carousel-audio");
                 expect(fixture.find("h3").html()).toEqual(this.record_test.get("name"));
                 expect(fixture.find("p").html()).toEqual(this.record_test.get("caption"));
@@ -371,8 +406,7 @@ define([
                 // 3. ensure photo render correctly:
                 expect(fixture.find("h4").html().includes("Preview")).toBeTruthy();
                 expect(fixture.html()).toContain("section");
-                expect(fixture.html()).not.toContain("carousel-video");
-                expect(fixture.html()).not.toContain("carousel-photo");
+                expect(fixture.html()).not.toContain("carousel-videos-photos");
                 expect(fixture.html()).not.toContain("carousel-audio");
                 expect(fixture.find("h3").html()).toEqual(this.record_test.get("name"));
                 expect(fixture.find("p").html()).toEqual(this.record_test.get("caption"));
@@ -393,8 +427,7 @@ define([
                 // 3. ensure photo render correctly:
                 expect(fixture.find("h4").html().includes("Preview")).toBeTruthy();
                 expect(fixture.html()).toContain("section");
-                expect(fixture.html()).toContain("carousel-video");
-                expect(fixture.html()).toContain("carousel-photo");
+                expect(fixture.html()).toContain("carousel-videos-photos");
                 expect(fixture.html()).toContain("carousel-audio");
                 expect(fixture.find("h3").html()).toEqual(this.marker.get("name"));
                 expect(fixture.find("p").html()).toEqual(this.marker.get("caption"));

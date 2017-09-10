@@ -53,7 +53,7 @@ ul{
 }
 #marker-detail-panel {
     overflow-y: auto;
-    position: absolute;
+  /*  position: absolute; */
 }
 
 
@@ -82,6 +82,27 @@ ul{
     float: left;
 }
 */
+
+
+.presentation-main-panel #map-panel {
+    order: 1;
+}
+
+.presentation-main-panel #marker-detail-panel {
+    height: 100vh;
+    padding-top: 80px;
+    order: 0;
+}
+
+.presentation-main-panel .audio-container {
+    padding: 20px 0px;
+}
+
+.presentation-main-panel .audio-detail .audio-progress {
+    padding: 10px 0px 17px 0px;
+    position: relative;
+}
+
 @media (max-width: 900px) {
     .left #marker-detail-panel {
         border-right: 1px solid #e4e5eb;
@@ -103,6 +124,8 @@ ul{
         width: 100%;
         height: 0px;
         position: static;
+        padding-top: 0px;
+        order: 2;
     }
 }
 
@@ -269,9 +292,14 @@ svg, .fa-question-circle {
   /*  -webkit-transition: width .5s, height .5s; /* Safari */
 /*    transition: width .5s, height .5s; */}
 
-.mobile-toggle, .thumbnail-play, .thumbnail-play-circle {
+.thumbnail-play, .thumbnail-play-circle {
     display: none;
     padding: 10px;
+}
+
+.mobile-toggle {
+    display: none;
+    padding: 0px 10px;
 }
 
 @media (max-width: 900px) {
@@ -286,111 +314,77 @@ svg, .fa-question-circle {
     .mobile-toggle {
         display: inline-block;
         float: right;
-        margin-top: 10px;
+        margin-top: 2px;
     }
 
-    .mobile-full {
-        height: 100% !important;
-        max-height: 100% !important;
-    }
 
-    .mobile-minimize {
+    .min-thumbnail {
+        height: 140px;
+        max-height: 140px;
         min-height: 50px;
-     /*   max-height: 150px; */
-    }
-
-    .mobile-full .min-thumbnail {
-        width: 0px;
-        height: 0px;
-    }
-
-    .mobile-minimize .min-thumbnail {
-        height: 20vw;
-        max-height: 120px;
-        min-height: 50px;
-        width: 20vw;
-        max-width: 120px;
+        width: 140px;
+        max-width: 140px;
         min-width: 50px;
         float: left;
         background-size: cover;
         background-position: center;
     }
 
-    .mobile-minimize .header-info {
+  .header-info {
         float: left;
     }
 
-    .mobile-full .header-info {
-        float: auto;
-        margin: 0 auto;
-        max-width: 400px;
-        padding: 0px 10px;
+    .contracted .header-info {
+        padding-left: 15px;
+        padding-top: 15px;
+
     }
 
-    .mobile-minimize .thumbnail-play {
+
+
+    .thumbnail-play.fa-play {
         opacity: .7;
-        bottom: 28%;
-        right: 12%;
+        bottom: 22%;
+        right: 6%;
         color: white;
         position: relative;
         display: inline-block;
     }
 
-    .mobile-full .thumbnail-play {
-        display: none;
+    .thumbnail-play.fa-pause {
+        opacity: .7;
+        bottom: 22%;
+        right: 20%;
+        color: white;
+        position: relative;
+        display: inline-block;
     }
 
-    .mobile-minimize .thumbnail-play-circle {
-        top: 24%;
+
+    .thumbnail-play-circle {
+        top: 27%;
         position: relative;
         background-color: rgba(255, 255, 255, 0);
         border: 2px solid rgba(255, 255, 255, .7);
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        left: 23%;
+        width: 44px;
+        height: 44px;
+        left: 24%;
         display: inline-block;
-    }
-
-    .mobile-full .thumbnail-play-circle {
-        display: none;
-    }
-    .mobile-full #presentation-title {
-        top: -150px;
-    }
-
-    .mobile-full-legend {
-        top: -150px !important;
-    }
-
-    .mobile-minimize-legend {
-        top: 10px;
-    }
-
-    .mobile-full-title {
-        top: -150px !important;
-    }
-
-    .mobile-minimize-title {
-        top: auto;
-    }
-
-    .mobile-full .preview-properties {
-        display: auto;
-    }
-
-    .mobile-minimize .preview-properties {
-        display: none;
     }
 
     .parallax {
         background: #EEE;
-        height: 68vh;
+     /*   height: 68vh; */
         position: absolute;
-        top: calc(100vh - 160px);
+     /*   top: calc(100vh - 160px); */
         width: 100%;
         -webkit-transform: translate3d(2,2,2);
         z-index: 1;
+    }
+
+    .parallax-contracted {
+        height: 140px;
     }
 
     .parallax.black {
@@ -406,10 +400,87 @@ svg, .fa-question-circle {
 
     .mobile-section {
         display: inline-block;
-        margin-bottom: 15px;
         padding-left: 20px;
         padding-right: 20px;
+        padding-bottom: 10px;
+        padding-top: 12px;
+        box-sizing: border-box;
+        width: 100%;
     }
+
+    .first.mobile-section {
+        width: 100%;
+    }
+
+    #drag-header {
+        padding-bottom: 0px;
+        margin-top: 0px;
+    }
+
+    .parallax .audio-detail .audio-progress {
+        padding: 10px 0px 17px 0px;
+    }
+
+    /* material design circle */
+    .circle-wrapper {
+        position: absolute;
+        top: 0%;
+        left: 85%;
+        -webkit-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        z-index: 1;
+      }
+
+      .circle {
+        border: none;
+        outline: none;
+        position: relative;
+        padding: 0;
+        z-index: 98;
+        margin: 0 auto;
+        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+        height: 60px;
+        width: 60px;
+        background-color: #3F51B5;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-transition: 0.2s;
+        transition: 0.2s;
+        text-align: center;
+      }
+      .circle i {
+        margin: auto;
+        width: 40px;
+        height: 40px;
+        -webkit-transition: 0.5s;
+        transition: 0.5s;
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+        color: white;
+        background-color: rgba(255, 255, 255, 0);
+      }
+      .circle .icon-rotate {
+        -webkit-transform: rotate(180deg);
+                transform: rotate(180deg);
+        color: #3F51B5;
+        background-color: rgba(255, 255, 255, 0);
+      }
+      .circle:hover, .circle:focus {
+        cursor: pointer;
+        background-color: #606fc7;
+        box-shadow: 0 8px 15px 0 rgba(0, 0, 0, 0.3);
+      }
+      .circle:hover {
+        cursor: pointer;
+        background-color: #606fc7;
+        box-shadow: 0 8px 15px 0 rgba(0, 0, 0, 0.3);
+      }
+    /* end circle css */
+
 
     html, body {
         overflow-x: hidden;
@@ -427,7 +498,74 @@ svg, .fa-question-circle {
 }
 
 .parallax {
+  /*  height: 90px;  */
+    bottom: 0;
+}
+
+@media (max-width: 600px) {
+
+    .parallax-contracted {
+        height: 90px;
+    }
+
+    .min-thumbnail {
+        height: 90px;
+        width: 90px;
+    }
+
+        .thumbnail-play.fa-play {
+        opacity: .7;
+        bottom: 22%;
+        right: 6%;
+        color: white;
+        position: relative;
+        display: inline-block;
+    }
+
+    .thumbnail-play.fa-pause {
+        opacity: .7;
+        bottom: 21%;
+        right: 20%;
+        color: white;
+        position: relative;
+        display: inline-block;
+    }
+
+
+    .thumbnail-play-circle {
+        top: 13%;
+        position: relative;
+        background-color: rgba(255, 255, 255, 0);
+        border: 2px solid rgba(255, 255, 255, .7);
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        left: 10%;
+        display: inline-block;
+    }
+}
+
+.parallax-expanded.body {
+    height: 62vh;
+    bottom: 0px;
+}
+
+.parallax-expanded.black {
+    height: 350px;
+    bottom: 0px;
+}
+
+.parallax {
     animation: fadein 0.5s;
+}
+
+.first.mobile-section, .header-info h3,
+.expanded, .contracted {
+    animation: fadein 0.5s;
+	height: 300px;
+}
+.first.mobile-section {
+	height: 50px;
 }
 
 
@@ -441,6 +579,9 @@ svg, .fa-question-circle {
 /**********************
 Separate Mobile CSS
 **************/
+
+
+
 .body-section {
     width: 100%;
     height: 120px;
@@ -460,22 +601,11 @@ Separate Mobile CSS
 /*    transition: width .5s, height .5s; */
 }
 
-.mobile-full .top-section {
-    height: 100%;
+.top-section {
+    height: 300px;
 }
 
-.mobile-full .body-section {
-    height: 340px;
-    max-height: 50%;
-    min-height: auto;
-    overflow: scroll;
-}
-
-.mobile-minimize .top-section {
- /*   height: 120px;  */
-}
-
-.mobile-minimize .body-section {
+.body-section {
     max-height: 120px;
     height: 20vw;
     min-height: 50px;
@@ -483,7 +613,7 @@ Separate Mobile CSS
 
 .mobile-wrapper {
     width: 100%;
-
+    background: #f9f9f9;
     box-sizing: border-box;
 }
 
@@ -633,11 +763,23 @@ Separate Mobile CSS
     }
 }
 
+
 .expanded {
-	height: 800px;
-	background: yellow;
+	z-index: 0;
 }
+/*
 .contracted {
 	height: 300px;
 	background: red;
+}
+*/
+
+body, html {
+    /* Allows content to fill the viewport and go beyond the bottom */
+height: 100%;
+
+/* Allows you to scroll below the viewport; default value is visible */
+overflow-y: scroll;
+
+/* To smooth any scrolling behavior */
 }

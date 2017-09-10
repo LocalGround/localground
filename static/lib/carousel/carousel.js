@@ -39,9 +39,11 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     clearTimeout(this.timeout);
                     this.timeout = null;
                 } else {
-                    $leftArrow = $('<i class="fa fa-chevron-left prev"></i>');
-                    $rightArrow = $('<i class="fa fa-chevron-right next"></i>');
-                    this.$el.find('.carouselbox').append($leftArrow).append($rightArrow);
+                    if (this.collection.length > 1) {
+                        $leftArrow = $('<i class="fa fa-chevron-left prev"></i>');
+                        $rightArrow = $('<i class="fa fa-chevron-right next"></i>');
+                        this.$el.find('.carouselbox').append($leftArrow).append($rightArrow);
+                    }
                 }
             },
             hideArrows: function () {

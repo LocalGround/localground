@@ -10,15 +10,15 @@ define([
     "text!../templates/video-detail.html",
     "text!../templates/record-detail.html",
     "text!../templates/map-image-detail.html",
-    //"text!../templates/mobile-expand.html",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
+    "lib/parallax",
     "lib/forms/backbone-form",
     "touchPunch"
 ], function ($, _, Backbone, Handlebars, Marionette, Photos, Audio, Videos,
         PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
-        MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
+        MapImageTemplate, AudioPlayer, Carousel, Icon, MoveItItem, DataForm, TouchPunch) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -34,11 +34,11 @@ define([
             "click #delete-geometry": "deleteMarker",
             "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView',
-            "click #open-full": 'openMobileDetail',
-            "click .thumbnail-play-circle": 'playAudio'
+            "click .thumbnail-play-circle": 'playAudio',
+            'click .circle': 'openExpanded'
         },
         getTemplate: function () {
-            //console.log(this.dataType, this.mobileView);
+            console.log(this.dataType, this.mobileView );
             if (this.dataType == "photos") {
                 return Handlebars.compile(PhotoTemplate);
             }
@@ -51,188 +51,94 @@ define([
             if (this.dataType == "map_images") {
                 return Handlebars.compile(MapImageTemplate);
             }
-            else {
-                if (this.mobileMode) {
-                    return Handlebars.compile("<div class='parallax black' data-target-top='0%'> \
-                        <div class='top-section'> \
-                        {{#if photo_count }} \
-                            <div class='mobile-carousel carousel-videos-photos'></div> \
-                        {{/if}} \
-                        </div> \
-                    </div> \
-                    <div class='parallax body' id='parallax-body' data-target-top='50%' style='\
-                        color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}'> \
-                        <div class='expanded' style='display:none;'>Expanded</div> \
-                        <div class='contracted'>Contracted</div> \
-                    </div>");
-                } else {
-                    return Handlebars.compile(SiteTemplate);
-                }
-            }
-            /*if (this.mobileView == "expanded") {
-                console.log("compile mobile expand");
-                return Handlebars.compile(MobileExpandTemplate);
-            }*/
+            return Handlebars.compile(SiteTemplate);
+            /*return Handlebars.compile("<div class='parallax black hello world' data-target-top='0%'> \
+                <div class='top-section'> \
+                {{#if photo_count }} \
+                    <div class='mobile-carousel carousel-videos-photos'></div> \
+                {{/if}} \
+                </div> \
+            </div> \
+            <div class='parallax body' id='parallax-body' data-target-top='50%' style='\
+                color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}'> \
+                <div class='expanded' style='display:none;'>Expanded</div> \
+                <div class='contracted'>Contracted</div> \
+            </div>");*/
+
 
         },
         featuredImageID: null,
         initialize: function (opts) {
-            if (!this.model) {
-                alert("ERROR!");
-            }
-            $(window).scrollTop(0);
             this.mobileView = null;
+            this.expanded = false;
+            this.clickNum = 1;
             _.extend(this, opts);
-            if (this.model && this.model.get("id") && this.model.get("overlay_type") == "marker" || this.model.get("overlay_type").indexOf("form_") != -1) {
-                if (!this.model.get("children")) {
-                    this.model.fetch({"reset": true});
-                }
-            }
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
             $('#marker-detail-panel').addClass('mobile-minimize');
             $(window).on("resize", _.bind(this.screenSize, this));
+
             this.isMobile();
 
-
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
-            this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
+            this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
         },
 
-        expandMobile: function () {
-            //console.log("render expandMobile", this);
-            this.mobileView = "expanded";
-            this.getTemplate();
-            this.render();
-        },
-        contractMobile: function () {
-            //console.log("render contractMobile", this);
-            this.mobileView = null;
-            this.getTemplate();
-            this.render();
-        },
+        templateHelpers: function () {
+            var lat, lng, paragraph, title;
+            if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
+                lat =  this.model.get("geometry").coordinates[1].toFixed(4);
+                lng =  this.model.get("geometry").coordinates[0].toFixed(4);
+            }
 
-        detectScroll: function (event) {
-            //console.log("scrolling");
-            var triggerHeight = screen.height - (screen.height/3),
-            scrollHeight = parseInt(this.$el.find('#parallax-body').css('top'), 10);
+            if (this.panelStyles) {
+                paragraph = this.panelStyles.paragraph;
+                title = this.panelStyles.title;
+                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
+                this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
+            }
 
-            /*
-            var oldTranslateY = $('#parallax-body').css("transform"),
-            dragEl = document.getElementById("parallax-body"),
-            translateY = this.getComputedTranslateY(document.getElementById("parallax-body"));
-            $('.min-thumbnail').remove();
-            console.log(oldTranslateY, this.getComputedTranslateY(dragEl), translateY);
-            */
-            console.log(scrollHeight, triggerHeight, scrollHeight < triggerHeight, this.mobileView !== "expanded", "this.mobileview = " + this.mobileView );
-            /*if (scrollHeight < triggerHeight && this.mobileView !== "expanded") {
-                console.log("expand!");
-                this.expandMobile();
-               // $(window).scrollTop(screen.height/2.5);
-           }*/
-           // if (this.$el.find(".parallax."))
-        },
-
-        getComputedTranslateY: function(object) {
-            if(!window.getComputedStyle) return;
-            var style = getComputedStyle(object),
-                transform = style.transform;
-            var mat = transform.match(/^matrix3d\((.+)\)$/);
-            if(mat) return parseFloat(mat[1].split(', ')[13]);
-            mat = transform.match(/^matrix\((.+)\)$/);
-            return mat ? parseFloat(mat[1].split(', ')[5]) : 0;
-        },
-
-        initParallax: function () {
-            console.log("initParallax");
-            var that = this;
-            var MoveItItem = function (el) {
-                this.initialPosition = $(el).position().top;
-
-                this.initPosition = function () {
-                    this.targetTop = this.$el.attr('data-target-top').replace("%", "");
-                    this.finalPosition = parseFloat(this.targetTop, 10) * $(window).height() / 100;
-                    that.distance = this.initialPosition - this.finalPosition;
-                    this.scrollDistance = Math.abs($(window).height() - $(document).height());
-                    this.speed = that.distance / this.scrollDistance;
-                    this.className = this.$el.get(0).className;
-                    this.lastDirection = "up";
-                    this.lastScrollTop = 0;
-                     console.log("--------------------");
-                     console.log("className", this.className);
-                     console.log("initialPosition", this.initialPosition);
-                     console.log("finalPosition", this.finalPosition);
-                     console.log("scrollDistance", this.scrollDistance);
-                     console.log("distance", that.distance);
-                     console.log("speed", this.speed);
-                };
-                this.$el = $(el).css({
-                    position: "fixed",
-                    top: this.initialPosition
-                });
-
-                this.initPosition();
-
-                this.update = function (scrollTop) {
-                    //console.log(this.className, scrollTop);
-                    //this.calculateDimensions();
-                    var direction = (scrollTop > this.lastScrollTop) ? "up": "down";
-                    if (direction !== this.lastDirection) {
-                        console.log('switch');
-                    }
-                    if (direction == "down" && scrollTop <= 50) {
-                        that.$el.find('.expanded').hide();
-                        that.$el.find('.contracted').show();
-                        /*this.initPosition();
-                        console.log(that.distance);*/
-                        //console.log("showSmallTemplate", that.distance);
-                    }
-
-                    if (direction == "up" && scrollTop >= 200) {
-                        that.$el.find('.expanded').show();
-                        that.$el.find('.contracted').hide();
-                        //this.initPosition();
-                        //console.log("showBigTemplate", that.distance);
-                    }
-                    this.$el.css('top', this.initialPosition - scrollTop * this.speed);
-
-                    //remember last values:
-                    this.lastDirection = direction;
-                    this.lastScrollTop = scrollTop;
-                };
+            return {
+                mode: this.app.mode,
+                dataType: this.dataType,
+                audioMode: "detail",
+                name: this.model.get("name") || this.model.get("display_name"),
+                screenType: this.app.screenType,
+                lat: lat,
+                lng: lng,
+                paragraph: paragraph,
+                title: title,
+                expanded: this.expanded,
+                hasPhotoOrAudio: this.getPhotos().length > 0 || this.getAudio().length > 0,
+                featuredImage: this.getFeaturedImage(),
+                thumbnail: this.getThumbnail(),
+                photo_count: this.getPhotos().length,
+                audio_count: this.getAudio().length,
+                video_count: this.getVideos().length,
+                mobileMode: this.mobileMode,
+                hasAudio: this.getAudio().length,
+                hasPhotos: this.getPhotos().length,
+                video_photo_count: this.getVideos().length + this.getPhotos().length
             };
-            $.fn.moveIt = function () {
-                if (that.scrollEventListener) {
-                    //console.log('removing...');
-                    window.removeEventListener("scroll", that.scrollEventListener);
-                }
-                var $window = $(window),
-                    instances = [],
-                    moveItem;
-                //console.log('THIS', $(this));
-                $(this).each(function () {
-                    console.log('looping through selector...');
-                    moveItem = new MoveItItem($(this));
-                    moveItem.initPosition();
-                    instances.push(moveItem);
-                });
-                //console.log("initializing...");
-                that.scrollEventListener = function () {
-                    var scrollTop = $window.scrollTop();
-                    instances.forEach(function (inst) {
-                        inst.update(scrollTop);
-                    });
-                };
-                window.addEventListener("scroll", that.scrollEventListener);
-            };
-            $(function () {
-                that.$el.find('.parallax').moveIt();
-            });
         },
+
+        openExpanded: function (event) {
+            if ($(window).scrollTop() < 40) {
+                $("html, body").animate({ scrollTop: this.scrollDistance - 60}, 600);
+                this.$el.find(".circle-icon").addClass("icon-rotate");
+            } else {
+               $("html, body").animate({ scrollTop: "0" }, 600);
+               this.$el.find(".circle-icon").removeClass("icon-rotate");
+            }
+        },
+
+
+
+
         remove: function () {
-            //console.log("destroying...");
-            window.removeEventListener("scroll", this.scrollEventListener);
+            console.log("destroying scrollEventListener...");
+            window.removeEventListener('scroll', this.scrollEventListener);
             Backbone.View.prototype.remove.call(this);
         },
 
@@ -340,9 +246,6 @@ define([
             $follower.click(mm.stop);
             this.app.vent.trigger("add-new-marker", this.model);
         },
-        onShow: function () {
-            this.render();
-        },
 
         deleteMarker: function () {
             this.model.set("geometry", null);
@@ -357,6 +260,7 @@ define([
             var i, f;
             if (this.model.get("overlay_type").indexOf("form_") != -1) {
                 for (i = 0; i < this.model.get("fields").length; i++) {
+                    /* https://github.com/powmedia/backbone-forms */
                     f = this.model.get("fields")[i];
                     f.val = this.model.get(f.col_name);
                 }
@@ -381,48 +285,16 @@ define([
             this.app.mode = "add";
             this.render();
         },
-        templateHelpers: function () {
-            var lat, lng, paragraph;
-            if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
-                lat =  this.model.get("geometry").coordinates[1].toFixed(4);
-                lng =  this.model.get("geometry").coordinates[0].toFixed(4);
-            }
-
-            if (this.panelStyles) {
-                paragraph = this.panelStyles.paragraph;
-                this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
-                this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
-            }
-            //console.log(this.mobileMode);
-            //console.log(this.collection);
-
-            return {
-                title: this.model.collection.getTitle(),
-                mode: this.app.mode,
-                dataType: this.dataType,
-                audioMode: "detail",
-                name: this.model.get("name") || this.model.get("display_name"),
-                screenType: this.app.screenType,
-                lat: lat,
-                lng: lng,
-                paragraph: paragraph,
-                featuredImage: this.getFeaturedImage(),
-                thumbnail: this.getThumbnail(),
-                photo_count: this.getPhotos().length,
-                audio_count: this.getAudio().length,
-                video_count: this.getVideos().length,
-                mobileMode: this.mobileMode,
-                hasAudio: this.getAudio().length,
-                video_photo_count: this.getVideos().length + this.getPhotos().length
-            };
-        },
 
         getThumbnail: function () {
             if (this.getFeaturedImage()) {
                 return this.getFeaturedImage();
             } else if (!_.isEmpty(this.model.get("children"))) {
                 if (this.model.get("children").photos) {
-                    return this.model.get("children").photos.data[0];
+                    var photoData = this.model.get("children").photos.data;
+                    return photoData[0];
+                } else {
+                    return null;
                 }
             } else {
                 return null;
@@ -461,8 +333,8 @@ define([
             return children.videos ? new Videos(children.videos.data) : new Videos([]);
         },
         viewRender: function () {
+            //return;
             //any extra view logic. Carousel functionality goes here
-            //console.log("Calling View Render");
             var c,
                 photos = this.getPhotos(),
                 videos = this.getVideos(),
@@ -517,12 +389,14 @@ define([
         },
 
         onRender: function () {
+            console.log(this.dataType, "On Render");
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {
                 this.editRender();
             }
             if (this.dataType == "audio") {
+                console.log("Audio player initialized")
                 var player = new AudioPlayer({
                     model: this.model,
                     audioMode: "detail",
@@ -533,9 +407,32 @@ define([
             // setTimeout necessary to register DOM element
             //setTimeout(this.initDraggable.bind(this), 50);
             if ($(window).width() < 900) {
-                this.isMobile();
-                this.initParallax();
+                setTimeout(this.initParallax.bind(this), 10);
             }
+        },
+        initParallax: function () {
+            var that = this;
+            $.fn.moveIt = function () {
+                if (that.scrollEventListener) {
+                    console.log('removing...');
+                    window.removeEventListener("scroll", that.scrollEventListener);
+                }
+                var $window = $(window),
+                    instances = [],
+                    moveItem;
+                $(this).each(function () {
+                    moveItem = new MoveItItem($(this), that);
+                    moveItem.initPosition();
+                    instances.push(moveItem);
+                });
+                window.addEventListener("scroll", function () {
+                    var scrollTop = $window.scrollTop();
+                    instances.forEach(function (inst) {
+                        inst.update(scrollTop);
+                    });
+                });
+            };
+            that.$el.find('.parallax').moveIt();
         },
 
         rotatePhoto: function (e) {
@@ -567,7 +464,6 @@ define([
                         model.trigger('saved');
                     } else {
                         model.collection.add(model);
-                        that.render();
                     }
                 },
                 error: function (model, response) {
@@ -584,6 +480,7 @@ define([
             }
             this.model.destroy({
                 success: function () {
+                    console.log("about to hide details'")
                     //trigger an event that clears out the deleted model's detail:
                     that.app.vent.trigger('hide-detail');
                 }
@@ -617,47 +514,18 @@ define([
         updateStreetViewButton: function () {
             this.$el.find('.streetview').html('Show Street View');
         },
-        openMobileDetail: function () {
-
-            //console.log("init draggable", $( ".body-section" ));
-            if ($('#marker-detail-panel').hasClass('mobile-minimize')) {
-
-                $('#marker-detail-panel').addClass('mobile-full');
-                $('#marker-detail-panel').removeClass('mobile-minimize');
-
-                $('#legend').addClass('mobile-full-legend');
-                $('#legend').removeClass('mobile-minimize-legend');
-
-                $('#presentation-title').addClass('mobile-full-title');
-                $('#presentation-title').removeClass('mobile-minimize-title');
-
-            } else if ($('#marker-detail-panel').hasClass('mobile-full')) {
-
-                $('#marker-detail-panel').addClass('mobile-minimize');
-                $('#marker-detail-panel').removeClass('mobile-full');
-
-                $('#legend').addClass('mobile-minimize-legend');
-                $('#legend').removeClass('mobile-full-legend');
-
-                $('#presentation-title').addClass('mobile-minimize-title');
-                $('#presentation-title').removeClass('mobile-full-title');
-            }
-
-            //console.log("mobile toggle");
-
-        },
 
         playAudio: function () {
             var audio = this.$el.find(".audio").first().get(0);
             if (this.$el.find('.thumbnail-play').hasClass('fa-play')) {
                 this.$el.find('.thumbnail-play').addClass("fa-pause");
                 this.$el.find('.thumbnail-play').removeClass("fa-play");
-                //console.log("play audio");
+                console.log("play audio");
                 audio.play();
             } else {
                 this.$el.find('.thumbnail-play').addClass("fa-play");
                 this.$el.find('.thumbnail-play').removeClass("fa-pause");
-                //console.log("pause audio");
+                console.log("pause audio");
                 audio.pause();
             }
         }

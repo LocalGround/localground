@@ -23,6 +23,7 @@ define([
             mapRegion: "#map-panel",
             sideRegion: "#marker-detail-panel"
         },
+
         screenType: "presentation",
         showLeft: false,
         mode: "view",
@@ -101,6 +102,8 @@ define([
                     lat: this.model.get("center").coordinates[1],
                     lng: this.model.get("center").coordinates[0]
                 },
+                showDropdownControl: false,
+                showFullscreenControl: false,
                 showSearchControl: false,
                 zoomControlOptions: {
                     style: google.maps.ZoomControlStyle.SMALL,

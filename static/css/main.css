@@ -1687,10 +1687,12 @@ tbody .failure-message, tbody .success-message {
 .carousel-caption {
     display: none;
     color: #999;
+    
 }
 
 .carousel-caption-wrapper {
     margin-top: 28px;
+    min-height: 12px;
 }
 
 .current .carousel-caption {
@@ -2126,10 +2128,16 @@ audio {
     text-align: left;
 }
 
-.audio-simple .audio-progress, .audio-detail .audio-progress {
-    padding: 10px 0px 17px 0px;
+.audio-simple .audio-progress {
+    padding: 10px 20px 17px 20px;;
     position: relative;
 }
+
+.audio-detail .audio-progress {
+    padding: 10px 0px 17px 0px;;
+    position: relative;
+}
+
 .audio-simple .audio-labels, .audio-detail .audio-labels {
     font-size: 12px;
     color: #7a7a7a;
@@ -2206,7 +2214,7 @@ audio {
 }
 
 .audio-detail .play {
-    margin: -4px 10px 5px 5px;
+    margin: -4px 10px 5px 0px;
     float: left;
 }
 
@@ -2215,7 +2223,7 @@ audio {
     float: left;
     text-align: left;
     font-size: 12px;
-    font-weight: bold;
+  /*  font-weight: bold; */
 }
 
 .audio-caption {
