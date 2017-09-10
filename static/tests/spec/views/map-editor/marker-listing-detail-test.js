@@ -1,7 +1,7 @@
 var rootDir = "../../../";
 define([
     "jquery",
-    rootDir + "apps/map/views/marker-listing-detail",
+    rootDir + "apps/dataviewer/map/views/marker-listing-detail",
     rootDir + "lib/maps/overlays/icon",
     rootDir + "models/base",
     rootDir + "collections/basePageable",

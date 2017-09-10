@@ -12,7 +12,7 @@ define([
     rootDir + "collections/markers",
     rootDir + "collections/records",
     rootDir + "lib/carousel/carousel",
-    rootDir + "apps/gallery/views/data-detail",
+    rootDir + "views/data-detail",
     rootDir + "lib/audio/audio-player",
     rootDir + "lib/maps/overlays/icon",
     "tests/spec-helper"

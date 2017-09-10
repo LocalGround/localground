@@ -4,7 +4,7 @@ define(["marionette",
         "lib/maps/overlays/icon",
         "lib/maps/marker-overlays",
         "apps/style/visibility-mixin",
-        "apps/map/views/marker-listing-detail",
+        "./marker-listing-detail",
         "text!../templates/list.html"],
     function (Marionette, _, Handlebars, Icon, MarkerOverlays, PanelVisibilityExtensions, MarkerListingDetail, ListTemplate) {
         'use strict';

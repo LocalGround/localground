@@ -1,6 +1,6 @@
 var rootDir = "../../../";
 define([
-    rootDir + "apps/map/views/marker-listing",
+    rootDir + "apps/dataviewer/map/views/marker-listing",
     rootDir + "lib/maps/overlays/icon",
     rootDir + "lib/maps/overlays/infobubbles/base",
     rootDir + "models/base",

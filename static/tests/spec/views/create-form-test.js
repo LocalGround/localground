@@ -1,7 +1,7 @@
 var rootDir = "../../";
 define([
     "jquery",
-    rootDir + "apps/gallery/views/create-form",
+    rootDir + "views/create-form",
     rootDir + "models/form",
     rootDir + "models/field",
     "tests/spec-helper"

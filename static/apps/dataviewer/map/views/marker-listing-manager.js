@@ -2,7 +2,7 @@ define(["marionette",
         "underscore",
         "handlebars",
         "jquery",
-        "apps/map/views/marker-listing"
+        "./marker-listing"
     ],
     function (Marionette, _, Handlebars, $, MarkerListing) {
         'use strict';

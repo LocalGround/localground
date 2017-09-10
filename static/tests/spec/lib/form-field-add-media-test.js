@@ -15,7 +15,7 @@ var rootDir = "../../";
 define([
     "backbone",
     "models/marker",
-    "apps/gallery/views/add-media",
+    "views/add-media",
     rootDir + "lib/forms/backbone-form",
     "tests/spec-helper"
 ],

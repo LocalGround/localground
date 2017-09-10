@@ -1,6 +1,6 @@
 define(["marionette",
         "handlebars",
-        "apps/map/views/marker-listing-manager",
+        "./marker-listing-manager",
         "lib/maps/basemap",
         "text!../templates/map-layout.html"
     ],
