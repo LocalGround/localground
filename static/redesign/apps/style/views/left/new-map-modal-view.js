@@ -14,12 +14,6 @@ define ([
                 this.template = Handlebars.compile(NewMapModalTemplate);
             },
 
-            onRender: function () {
-                if (this.mode == 'editExistingMap') {
-                    this.populateFields()
-                }
-            },
-
             events: {
                 "change #new-map-name" : "generateSlug"
             },
@@ -29,7 +23,7 @@ define ([
                 if (this.mode == 'editExistingMap') {
                     name = this.map.get('name');
                     slug = this.map.get('slug');
-                    description = this.map.get('description');
+                    description = this.map.get('caption');
                 }
                 var helpers = {
                     slugError: this.slugError,
@@ -51,7 +45,7 @@ define ([
                     this.map.set({
                         name: this.$el.find("#new-map-name").val(),
                         slug: this.$el.find("#new-map-slug").val(),
-                        description: this.$el.find("#new-map-description").val(),
+                        caption: this.$el.find("#new-map-description").val(),
 
                     });
                     this.app.vent.trigger("update-map", this.map);
@@ -76,14 +70,7 @@ define ([
                     this.slugError = null;
                 }
                 this.render();
-            },
-
-            populateFields: function () {
-              //  this.$el.find("#new-map-name").val(this.map.get('name'));
-               // this.$el.find('#new-map-slug').val(this.map.get('slug'));
-               // this.$el.find('#new-map-description').val(this.map.get('description'));
             }
-
         });
         return NewMap;
 
