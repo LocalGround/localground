@@ -4,7 +4,7 @@ define([
     "handlebars",
     "models/association",
     "models/audio",
-    "apps/gallery/views/add-media",
+    "views/add-media",
     "lib/audio/audio-player",
     "external/pikaday-forked",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",

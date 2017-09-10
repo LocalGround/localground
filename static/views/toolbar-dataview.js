@@ -5,8 +5,8 @@ define([
     "handlebars",
     "marionette",
     "collections/forms",
-    "apps/gallery/views/create-form",
-    "apps/gallery/views/form-list",
+    "views/create-form",
+    "views/form-list",
     "lib/modals/modal",
     "text!../templates/toolbar-dataview.html"
 ], function (_, $, Handlebars, Marionette, Forms, CreateForm,

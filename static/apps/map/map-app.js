@@ -7,7 +7,7 @@ define([
     "lib/data/dataManager",
     "apps/map/views/marker-listing-manager",
     "lib/maps/basemap",
-    "apps/gallery/views/data-detail",
+    "views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,

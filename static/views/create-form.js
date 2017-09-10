@@ -7,7 +7,7 @@ define([
     "models/form",
     "models/field",
     "collections/fields",
-    "apps/gallery/views/field-child-view",
+    "views/field-child-view",
     "jquery.ui"
 ], function ($, _, Handlebars, Marionette, CreateFormTemplate, Form, Field, Fields, FieldChildView) {
     'use strict';

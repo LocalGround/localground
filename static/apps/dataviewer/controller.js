@@ -1,6 +1,6 @@
 define([
     "marionette",
-    "apps/gallery/views/data-detail",
+    "views/data-detail",
     "views/create-media",
     "lib/modals/modal",
 ], function (Marionette, DataDetail, CreateMedia, Modal) {

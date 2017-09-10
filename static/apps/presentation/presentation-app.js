@@ -9,7 +9,7 @@ define([
     //"apps/presentation/views/marker-overlays",
     "apps/presentation/views/layer-list-manager",
     "apps/presentation/views/map-header",
-    "apps/gallery/views/data-detail",
+    "views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, Basemap, DataManager, Map, Layers,
