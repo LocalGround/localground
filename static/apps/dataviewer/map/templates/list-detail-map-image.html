@@ -1,0 +1,9 @@
+<a href="#/{{screenType}}/{{dataType}}/{{id}}" {{#if active }}class="highlight"{{/if}}
+    {{#ifnot displayOverlay}}style="opacity: 0.50"{{/ifnot}}>
+<p>{{truncate name 30}}</p>
+{{#if displayOverlay}}
+    <i class="fa fa-eye toggle-visibility"></i>
+{{else}}
+    <i class="fa fa-eye-slash toggle-visibility"></i>
+{{/if}}
+</a>

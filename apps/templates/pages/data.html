@@ -1,0 +1,58 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-8">
+    <title>Local Ground Spreadsheet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel=stylesheet type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.31.2/handsontable.full.css">
+    <link rel=stylesheet type="text/css" href="/static/css/style.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/main.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/gallery-style.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/map.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/modal_new_project.css" />
+
+    <style>
+      img{
+          display: block;
+          vertical-align: middle;
+      }
+    </style>
+</head>
+<body>
+    <div id="toolbar-main" class="data-toolbar-main">
+        <!-- global toolbar moved to static/templates/toolbar-global.html -->
+    </div>
+    <div id="toolbar-dataview" class="filter data">
+        <!-- dataview toolbar -->
+    </div>
+    <main>
+        <!-- Spreadsheet and Gallery goes here -->
+    </main>
+    <aside id="tab-panel" class="tab-panel"></aside>
+
+    <!-- modal for carousel -->
+    <!-- Ommitted from span close class: onclick="document.getElementById('carouselModal').style.display='none'" -->
+    <div id="carouselModal" class="carousel-modal spreadsheet">
+        <span class="close big" >
+            &times;
+        </span>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places,drawing"></script>
+    {% if DEBUG %}
+        <script>
+            var configPath = '../',
+                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
+        </script>
+        <script data-main="/static/apps/dataviewer/kickoff.js" src="/static/external/require.js"></script>
+    {% else %}
+       <!-- Use minified, concatenated code -->
+        <script>
+            var configPath = '../apps/',
+                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';;
+        </script>
+        <script data-main="/static/build/dataviewer.min.js" src="/static/external/require.js"></script>
+    {% endif %}
+
+</body>
+</html>

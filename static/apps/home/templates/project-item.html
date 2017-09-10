@@ -1,0 +1,23 @@
+<div class="project-overview" >
+    <a href="/data/?project_id={{ id }}#/map">
+
+        <h2 class="map-title" >{{ name }}</h2>
+        <span class = "owner">Owner: {{ owner }}</span>
+        <p>{{ caption }}</p>
+        <a class="action">
+            <i class="fa fa-edit"></i> Edit
+        </a>
+    </a>
+    <div class="project-detail">
+        <a class="tag action">
+            {{#ifequal access_authority 1}}
+                <i class="fa fa-lock"></i>
+                Private
+            {{ else }}
+                <i class="fa fa-globe"></i>
+                Public
+            {{/ifequal}}
+        </a>
+        <span class="time-stamp"><i class="fa fa-clock-o" aria-hidden="true"></i> {{timeAgo}}</span>
+    </div>
+</div>

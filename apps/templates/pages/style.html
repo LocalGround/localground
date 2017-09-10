@@ -4,12 +4,12 @@
     <title>Local Ground Map Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/style.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/modal_new_project.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/style-map.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/external/colorpicker/css/colorpicker.css" />
-   <!-- <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" /> -->
+    <link rel=stylesheet type="text/css" href="/static/css/style.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/main.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/modal_new_project.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/style-map.css" />
+    <link rel=stylesheet type="text/css" href="/static/external/colorpicker/css/colorpicker.css" />
+   <!-- <link rel=stylesheet type="text/css" href="/static/css/main.css" /> -->
     
 </head>
 <body>
@@ -32,14 +32,14 @@
             var configPath = '../',
                 MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
         </script>
-        <script data-main="/static/redesign/apps/style/kickoff.js" src="/static/redesign/external/require.js"></script>
+        <script data-main="/static/apps/style/kickoff.js" src="/static/external/require.js"></script>
     {% else %}
        <!-- Use minified, concatenated code -->
         <script>
             var configPath = '../apps/',
                 MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
         </script>
-        <script data-main="/static/redesign/build/style.js" src="/static/redesign/external/require.js"></script>
+        <script data-main="/static/build/style.js" src="/static/external/require.js"></script>
     {% endif %}
 </body>
 </html>

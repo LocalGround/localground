@@ -1,0 +1,42 @@
+<div class = "project-detail">
+
+    {{#ifequal screenType "map"}}
+    <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</button>
+    <div class="dropdown-menu" id="add-data-type" style="display: none;">
+
+        <a href="#/{{screenType}}/photos/new">Media</a>
+        <a href="#/{{screenType}}/map_images/new">Map Image</a>
+        <hr>
+        <a href="#/{{screenType}}/markers/new">Site</a>
+        {{#each forms}}
+        <a href="#/{{../screenType}}/form_{{this.id}}/new">{{ this.name }}</a>
+        {{/each}}
+        <hr>
+        <a href="#" class="add-data">Edit Site Types</a>
+    </div>
+    {{/ifequal}}
+
+
+    {{#ifequal activeTab "data"}}
+
+        {{#ifequal screenType "table"}}
+            <a id="add-row" class="button-tertiary" href="#/{{screenType}}/{{dataType}}"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Row</a>
+        {{/ifequal}}
+        {{#ifequal screenType "gallery"}}
+            <a href="#/{{screenType}}/{{dataType}}/new" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</a>
+        {{/ifequal}}
+	{{/ifequal}}
+</div>
+<div class="main-search">
+	<form class="search-form" value="Search Media">
+		<input id="searchTerm" type="text" value="" placeholder="Filter data and media">
+		<button id="toolbar-search"><i class="fa fa-search" aria-hidden="true"></i></button>
+	</form>
+</div>
+<button id="toolbar-clear" style = "display:none;">Clear</button>
+
+<div class="view-options">
+    <a href="#/map" id="map-link" class="database-view-buttons tooltip {{#ifequal screenType "map"}}active{{/ifequal}}"><i class="fa fa-map" aria-hidden="true"><span class="tooltiptext">Map View</span></i></a>
+    <a href="#/gallery" class="database-view-buttons tooltip {{#ifequal screenType "gallery"}}active{{/ifequal}}"><i class="fa fa-th" aria-hidden="true"><span class="tooltiptext">Card View</span></i></a>
+    <a href="#/table" class="database-view-buttons tooltip {{#ifequal screenType "table"}}active{{/ifequal}}"><i class="fa fa-bars" aria-hidden="true"><span class="tooltiptext">Table View</span></i></a>
+</div>
