@@ -1,8 +1,8 @@
 var rootDir = "../../";
 define([
     "handlebars",
-    rootDir + "apps/spreadsheet/views/main",
-    rootDir + "apps/spreadsheet/views/tabs",
+    rootDir + "apps/dataviewer/spreadsheet/views/main",
+    rootDir + "apps/dataviewer/spreadsheet/views/tabs",
     rootDir + "models/form",
     "tests/spec-helper"
 ],
