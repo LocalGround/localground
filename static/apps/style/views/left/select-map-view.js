@@ -58,7 +58,7 @@ define(["jquery",
                 this.modal = new Modal();
                 this.listenTo(this.collection, 'reset', this.setInitialModel);
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
-                this.listenTo(this.app.vent, "update-map", this.updateMap);
+                this.listenTo(this.app.vent, "edit-map", this.updateMap);
                 this.listenTo(this.app.vent, 'update-map-list', this.setInitialModel);
             },
 

@@ -48,7 +48,7 @@ define ([
                         caption: this.$el.find("#new-map-description").val(),
 
                     });
-                    this.app.vent.trigger("update-map", this.map);
+                    this.app.vent.trigger("edit-map", this.map);
                 } else if (this.mode == 'createNewMap') {
                     this.app.vent.trigger("create-new-map", mapAttrs);
                 }
