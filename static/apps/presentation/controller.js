@@ -6,7 +6,7 @@ define([
         initialize: function (options) {
             this.app = options.app;
         },
-        dataDetail: function (dataType, id) {
+        dataDetail: function (screenType, dataType, id) {
             this.app.vent.trigger("show-detail", {
                 id: id,
                 dataType: dataType

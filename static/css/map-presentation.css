@@ -566,8 +566,8 @@ svg, .fa-question-circle {
 .first.mobile-section, .header-info h3,
 .expanded, .contracted {
     animation: fadein 0.5s;
-	height: 300px;
 }
+
 .first.mobile-section {
 	height: 50px;
 }
