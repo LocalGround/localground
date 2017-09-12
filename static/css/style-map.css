@@ -191,6 +191,19 @@
 .map-edit {
     float: right;
     cursor: pointer;
+    padding-top: 2px;
+}
+
+.map-preview {
+    float: right;
+    padding: 2px 20px;
+    cursor: pointer;
+}
+
+.map-dropdown {
+    float: left;
+    padding-top: 4px;
+    padding-right: 5px;
 }
 
 .map-list {

@@ -19,6 +19,7 @@ define ([
             },
             slugError: null,
             templateHelpers: function () {
+                console.log(this);
                 var name, slug, description;
                 if (this.mode == 'editExistingMap') {
                     name = this.map.get('name');

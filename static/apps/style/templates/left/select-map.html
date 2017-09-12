@@ -11,10 +11,14 @@
 <div class="selected-map">
     <div class="selected-map-item" data-value="{{ map.id }}">
         <p class="map-select-option" data-value="{{ map.id }}">{{ name }}</p>
-        <i class="fa fa-angle-down"></i>
-        <p>preview</p>
-        <p class="map-edit" data-value="{{ map.id }}"><i class="fa fa-pencil" aria-hidden="true"></i>
+        <i class="fa fa-angle-down map-dropdown"></i>
+        
+        <p class="map-edit" data-value="{{ map.id }}"><i class="fa fa-pencil map-edit" data-value="{{ map.id }}" aria-hidden="true"></i>
         </p>
+        <a href="/presentation#/{{previewURL}}" target="_blank" style="color: white;">
+            <p class="map-preview"><i class="fa fa-eye" aria-hidden="true"></i>
+            </p>
+        </a>
     </div>
 </div>
 

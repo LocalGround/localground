@@ -33,9 +33,12 @@ define(["jquery",
                         'change #map-select': 'setActiveMap',
                         'click .add-map': 'showAddMapModal',
                         'click .selected-map': 'showMapList',
+                        'click .map-select-option': 'showMapList',
+                        'click .map-dropdown': 'showMapList',
                         'click .map-item': 'handleItemClicks',
-                        'click': 'hideMapList'//, 
-                        //'click .map-edit': 'editMap'
+                        'click .selected-map-item': 'handleItemClicks'
+                        //'click': 'hideMapList'//, 
+                       // 'click .map-edit': 'editMap'
                     }
                 );
             },
@@ -53,7 +56,7 @@ define(["jquery",
                     this.drawOnce();
                 }
                 
-                $('body').click(this.hideFonts);
+                $('body').click(this.hideMapList.bind(this));
 
                 this.modal = new Modal();
                 this.listenTo(this.collection, 'reset', this.setInitialModel);
@@ -197,7 +200,7 @@ define(["jquery",
             // from clicking within the '.map-item' div. this is necessary because a click on just the
             // '.edit-map' button also triggers a click on its parent, the '.map-item' div
             handleItemClicks: function () {
-                console.log($(event.target).attr('class'));
+                console.log($(event.target), $(event.target).data('value'));
                 var id = $(event.target).data('value'),
                 map = this.collection.get(id);
                 
@@ -239,7 +242,7 @@ define(["jquery",
                     view: createMapModel,
                     title: 'Edit Map',
                     width: 400,
-                    height: 0,
+                    height: 150,
                     closeButtonText: "Done",
                     showSaveButton: true,
                     saveFunction: createMapModel.saveMap.bind(createMapModel),
@@ -265,7 +268,7 @@ define(["jquery",
 
             hideMapList: function(e) {
                 var $el = $(e.target);   
-                if (!$el.hasClass('selected-map-item') && !$el.hasClass('map-name') && !$el.hasClass('map-edit')) {
+                if (!$el.hasClass('selected-map-item') && !$el.hasClass('map-name') && !$el.hasClass('map-edit') && !$el.hasClass('map-select-option') && !$el.hasClass('map-dropdown')) {
                     this.$el.find('.map-list').hide();
                 }
             },
