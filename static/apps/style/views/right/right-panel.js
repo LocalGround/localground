@@ -43,7 +43,7 @@ define(["jquery",
             },
 
             createLayer: function (layer, collection) {
-                //console.log("right panel createLayer() triggered. 1. layer, 2. collection", layer, collection);
+                console.log("right panel createLayer() triggered. 1. layer, 2. collection", layer, collection);
                 this.triggerShowPanel();
                 this.model = layer;
                 this.collection = collection;

@@ -19,6 +19,7 @@ define(["jquery",
                 this.app = opts.app;
                 this.render();
                 this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
+                this.listenTo(this.app.vent, 'route-map', this.routeMap);
             },
             events: {
                 'click #new-layer-options a' : 'createNewLayer',
@@ -42,6 +43,7 @@ define(["jquery",
                 this.menu.show(this.sv);
                 this.skins.show(skv);
             },
+
             handleNewMap: function (model) {
                 // is 'this.app.model' necessary?
                 var ps = new PanelStylesView({

@@ -11,6 +11,7 @@ define(["jquery",
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
+               // this.listenTo(this.app.vent, "route-layer", this.routerSendCollection);
                 this.initMapOverlays();
                 if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
@@ -21,7 +22,7 @@ define(["jquery",
             className: "layer-column",
             templateHelpers: function () {
                 return {
-                    isChecked: this.model.get("metadata").isShowing
+                    isChecked: this.model.get("metadata").isShowing,
                 };
             },
             markerOverlayList: null,
@@ -36,11 +37,27 @@ define(["jquery",
             },
 
             sendCollection: function () {
-               // this.$el.addClass('selected-layer');
                 this.$el.attr('id', this.model.id);
-                //console.log(this.model, this.model.id);
-                this.app.vent.trigger('handle-selected-layer', this.model.id);
+
+                // This just adds css to indicate the selected layer, via the parent view 
+                this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
+
+                // This event actually triggers the 'createLayer()' function in right-panel.js layoutview
                 this.app.vent.trigger("edit-layer", this.model, this.collection);
+            },
+
+            childRouterSendCollection: function (mapId, layerId) {
+
+                if (this.model.id == layerId) {
+                    console.log("condition met, show layer", this);
+
+                    // This event actually triggers the 'createLayer()' function in right-panel.js layoutview
+                    this.app.vent.trigger("edit-layer", this.model, this.collection);
+
+                    // This just adds css to indicate the selected layer, via the parent view 
+                    // only triggers after the layer has been sent to right-panel
+                    this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
+                }
             },
 
             deleteLayer: function () {

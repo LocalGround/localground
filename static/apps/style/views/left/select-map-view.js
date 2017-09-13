@@ -63,6 +63,13 @@ define(["jquery",
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
                 this.listenTo(this.app.vent, "edit-map", this.updateMap);
                 this.listenTo(this.app.vent, 'update-map-list', this.setInitialModel);
+                this.listenTo(this.app.vent, 'route-map', this.getSelectedMap);
+                this.listenTo(this.app.vent, 'route-new-map', this.showAddMapModal);
+            },
+
+            getSelectedMap: function(mapId) {
+                var map = this.collection.get(mapId);
+                this.setActiveMap(map);
             },
 
             setInitialModel: function () {
