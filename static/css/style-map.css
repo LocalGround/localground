@@ -512,3 +512,47 @@ table.color-properties td:first-child {
     cursor: pointer;
     color: #666;
 }
+
+.selected-symbol-div {
+    padding: 2px 4px;
+    width: 30px;
+    background-color: white;
+}
+
+.selected-symbol-div:hover {
+    border: 1px solid #c7c7c7;
+    box-shadow: 0 2px 0px 0 rgba(0,0,0,.02);
+}
+
+.selected-symbol-div .fa-angle-down {
+    font-size: 11px;
+}
+
+.table-row {
+    height: 26px;
+}
+
+.symbols-layout-container {
+    min-width: 150px;
+    min-height: 150px;
+    background: white;
+    position: absolute;
+    text-align: left;
+    left: 127px;
+    top: 125px;
+}
+
+.symbol-menu-tabs {
+    display: inline-block;
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 2px 15px;
+}
+
+.inactive-tab {
+    color: white;
+    background: #a2a2a2;
+}

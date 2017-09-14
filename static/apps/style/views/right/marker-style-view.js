@@ -4,12 +4,13 @@ define(["jquery",
         "handlebars",
         "lib/maps/icon-lookup",
         "apps/style/views/right/marker-style-view-child",
+        "apps/style/views/symbols/symbol-selection-layout-view",
         "text!../../templates/right/marker-style.html",
         "collections/symbols",
         'color-picker-eyecon',
         "palette"
     ],
-    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, MarkerStyleTemplate, Symbols) {
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, SymbolSelectionLayoutView, MarkerStyleTemplate, Symbols) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
@@ -139,8 +140,18 @@ define(["jquery",
                 'change #stroke-opacity': 'updateStrokeOpacity',
                 'click .selected-palette-wrapper': 'showPalettes',
                 'click .palette-list': 'selectPalette',
-                'click .palette-list *': 'selectPalette'
+                'click .palette-list *': 'selectPalette',
+                'click #global-symbol': 'showSymbols'
             },
+
+            showSymbols: function (e) {
+                this.symbolsView = new SymbolSelectionLayoutView({
+                    app: this
+                });
+                console.log(e);
+                this.$el.append(this.symbolsView.$el);
+              //  this.symbolsView.$el.show();
+            },  
 
             selectDataType: function (e) {
                 this.dataType = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
