@@ -282,7 +282,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
             'icon_file': {'type': 'string', 'required': False, 'read_only': True},
             'project_id': {'read_only': True, 'required': False, 'type': 'field'}
         })
-    
+
     def tearDown(self):
         #delete method also removes files from file system:
         for icon in models.Icon.objects.all():
@@ -302,7 +302,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
         return models.Icon.objects.get(id=response.data.get('id'))
-    
+
     #put/patch - update
     #set anchor and size, not anything else
     def test_required_params_and_resize_using_put(self, **kwargs):
@@ -353,14 +353,17 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
 
     def test_delete_icon_no_permission(self, **kwargs):
         random_user = self.create_user(username="Rando")
-        
+
+        # now, random_user is logged into Local Ground (instead of tester)
+        client_user = self.get_client_user(random_user)
+
         icon_id = self.icon1.id
 
         # ensure icon exists:
         models.Icon.objects.get(id=icon_id)
 
         # delete icon:
-        response = random_user.delete(self.url,
+        response = client_user.delete(self.url,
                                       HTTP_X_CSRFTOKEN=self.csrf_token
                                      )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
