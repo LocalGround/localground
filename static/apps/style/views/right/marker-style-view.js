@@ -54,7 +54,7 @@ define(["jquery",
                // this.buildPalettes(this.getCatInfo().list.length);
                this.createCorrectSymbols();
 
-                $('body').click(this.hideColorRamp);
+                $('body').click($.proxy(this.hideColorRamp, this));
 
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
                 this.listenTo(this.app.vent, 'update-data-source', this.render);
@@ -89,12 +89,22 @@ define(["jquery",
             hideColorRamp: function (e) {
                 var $el = $(e.target);
                 if (!$el.hasClass('palette-wrapper') &&
-                        !$el.hasClass('selected-palette-list') &&
-                        !$el.hasClass('selected-palette-wrapper') &&
-                        !$el.hasClass('selected-ul') &&
-                        !$el.hasClass('palette-item')
-                        ) {
+                !$el.hasClass('selected-palette-list') &&
+                !$el.hasClass('selected-palette-wrapper') &&
+                !$el.hasClass('selected-ul') &&
+                !$el.hasClass('palette-item') ) {
                     $(".palette-wrapper").hide();
+                }
+
+                if (!$el.hasClass('symbol-menu-tabs') &&
+                !$el.hasClass('symbols-layout-container')  &&
+                !$el.hasClass('native-symbols-region') &&
+                !$el.hasClass('custom-symbols-region') &&
+                !$el.hasClass('global-symbol-dropdown') &&
+                !$el.hasClass('selected-symbol-div') &&
+                !$el.hasClass('fa-circle') &&
+                !$el.hasClass('fa-angle-down') ) {   
+                    $(".symbols-layout-container").hide();
                 }
             },
 /*
@@ -146,11 +156,12 @@ define(["jquery",
 
             showSymbols: function (e) {
                 this.symbolsView = new SymbolSelectionLayoutView({
-                    app: this
+                    app: this,
+                    el: $('#global-symbol-dropdown')
                 });
-                console.log(e);
-                this.$el.append(this.symbolsView.$el);
-              //  this.symbolsView.$el.show();
+                console.log(this.symbolsView);
+              //  this.$el.append(this.symbolsView.$el);
+              //  this.symbolsView.$el.show(); 
             },  
 
             selectDataType: function (e) {
@@ -566,7 +577,6 @@ define(["jquery",
 
             showPalettes: function () {
                 this.$el.find(".palette-wrapper").css({display: 'block'});
-                this.$el.find(".palette-wrapper").addClass("okok");
             },
 
             //convenience function
