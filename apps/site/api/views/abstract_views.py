@@ -37,7 +37,7 @@ class QueryableListAPIView(generics.ListAPIView):
         except:
             pass
         return ret
-    
+
 class QueryableRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def metadata(self, request):
         # extend the existing metadata method in the parent class by adding a
@@ -71,3 +71,16 @@ class MediaInstance(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return self.model.objects.select_related('owner').all()
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        if instance.can_edit(self.request.user, self.kwargs.get("authority")):
+            serializer.save()
+        else:
+            raise exceptions.PermissionDenied(detail="You do not have manager permissions on project id=%s" % self.kwargs.get('project_id'))
+
+    def perform_destroy(self, instance):
+        if instance.can_delete(self.request.user):
+            instance.delete()
+        else:
+            raise exceptions.PermissionDenied(detail="You do not have permission to delete this instance id=%s" % instance.id)
