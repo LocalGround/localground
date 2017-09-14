@@ -209,7 +209,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["size"], 250)
             self.assertEqual(response.data["anchor_x"], 125)
 
-#case below tests as written.  Sarah asked to rewrite to give error
+    #case below tests as written.  Sarah asked to rewrite to give error
     def test_check_if_no_size_icon_too_small_then_use_min_size_set_anchors(self, **kwargs):
         tmp_file = self.create_temp_file(8, 5)
         with open(tmp_file.name, 'rb') as binaryImage:
@@ -226,7 +226,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["anchor_x"], 8)
             self.assertEqual(response.data["anchor_y"], 5)
 
-#case below tests as written.  Sarah asked to rewrite to give error
+    #case below tests as written.  Sarah asked to rewrite to give error
     def test_if_no_size_icon_too_small_one_side_then_scale_set_anchors(self, **kwargs):
         tmp_file = self.create_temp_file(5, 200)
         with open(tmp_file.name, 'rb') as binaryImage:
@@ -265,4 +265,61 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                     response.data['project_id'],
                     [u'Invalid pk "%s" - object does not exist.' % project_id]
                 )
-    
+
+
+class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
+
+
+    def setUp(self):
+        ViewMixinAPI.setUp(self, load_fixtures=False)
+        self.icon1=self.create_icon(self.user, self.project, icon_file='icon1.jpg',
+                         name='test_icon_1', size=100, anchor_x=30, anchor_y=20)
+        self.icon2=self.create_icon(self.user, self.project, icon_file='icon2.jpg',
+                         name='test_icon_2', size=200, anchor_x=100, anchor_y=100)
+        self.url = '/api/0/icons/%s/' % self.icon1.id
+        self.urls = [self.url]
+        self.view = views.IconInstance.as_view()
+        self.metadata = get_metadata()
+        self.metadata.update({
+            'icon_file': {'type': 'string', 'required': False, 'read_only': True},
+            'project_id': {'read_only': True, 'required': False, 'type': 'field'}
+        })
+    '''
+    def tearDown(self):
+        #delete method also removes files from file system:
+        for photo in models.Photo.objects.all():
+            photo.delete()
+        if os.path.exists('test.jpg'):
+            os.remove('test.jpg')
+
+
+
+
+
+    '''
+    #put/patch - update
+    #set anchor and size, not anything else
+
+    def test_required_params_using_put(self, **kwargs):
+        response = self.client_user.put(self.url,
+                                        data=urllib.urlencode({
+                                            'name': 'icon_new',
+                                            'size': 40,
+                                            'anchor_x': 10,
+                                            'anchor_y': 15
+                                        }),
+                                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                                        content_type="application/x-www-form-urlencoded"
+                                        )
+        print response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_icon = models.Icon.objects.get(id=self.icon.id)
+        self.assertEqual(updated_icon.name, 'icon_new')
+        self.assertEqual(updated_icon.size, 40)
+        self.assertEqual(updated_icon.anchor_x, 10)
+        self.assertEqual(updated_icon.anchor_y, 15)
+        self.assertEqual(updated_icon.last_updated_by, self.user)
+
+#get - query
+
+#delete
