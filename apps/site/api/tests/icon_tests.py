@@ -26,6 +26,14 @@ def get_metadata():
         "anchor_y": {"type": "integer", "required": False, "read_only": False},
     }
 
+def create_temp_file(w, h):
+    from PIL import Image
+    import tempfile
+    image = Image.new('RGB', (w, h))
+    tmp_file = tempfile.NamedTemporaryFile(suffix='.jpeg')
+    image.save(tmp_file)
+    return tmp_file
+
 class ApiIconListTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
@@ -47,16 +55,8 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(r2.get("name"), 'test_icon_2')
         self.assertEqual(len(results), 2)
 
-    def create_temp_file(self, w, h):
-        from PIL import Image
-        import tempfile
-        image = Image.new('RGB', (w, h))
-        tmp_file = tempfile.NamedTemporaryFile(suffix='.jpeg')
-        image.save(tmp_file)
-        return tmp_file
-
     def test_jpeg_to_jpg(self, **kwargs):
-        tmp_file = self.create_temp_file(30, 30)
+        tmp_file = create_temp_file(30, 30)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
                 self.urls[0],
@@ -70,7 +70,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["file_type"], "jpg")
 
     def test_check_if_size_bigger_than_max_then_error(self, **kwargs):
-        tmp_file = self.create_temp_file(30, 30)
+        tmp_file = create_temp_file(30, 30)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
                 self.urls[0],
@@ -85,7 +85,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["size"][0], u"Ensure this value is less than or equal to 250.0.")
 
     def test_check_if_size_smaller_than_min_then_error(self, **kwargs):
-        tmp_file = self.create_temp_file(30, 30)
+        tmp_file = create_temp_file(30, 30)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
                 self.urls[0],
@@ -100,7 +100,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["size"][0], u"Ensure this value is greater than or equal to 10.0.")
 
     def test_check_user_size_no_anchors_set_anchors(self, **kwargs):
-        tmp_file = self.create_temp_file(20, 24)
+        tmp_file = create_temp_file(20, 24)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
                 self.urls[0],
@@ -118,7 +118,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["anchor_y"], 60)
 
     def test_check_user_size_user_2_anchors(self, **kwargs):
-        tmp_file = self.create_temp_file(22, 14)
+        tmp_file = create_temp_file(22, 14)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
                 self.urls[0],
@@ -139,7 +139,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
 
     def test_check_user_size_user_1_anchors(self, **kwargs):
     #uses anchor given, calculates other at midpoint of icon
-        tmp_file = self.create_temp_file(32, 20)
+        tmp_file = create_temp_file(32, 20)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
                 self.urls[0],
@@ -159,7 +159,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
 
     def test_check_user_size_user_bad_anchors(self, **kwargs):
         #if anchors are outside of icon, calculates anchors at midpoint of icon
-        tmp_file = self.create_temp_file(32, 20)
+        tmp_file = create_temp_file(32, 20)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
                 self.urls[0],
@@ -179,7 +179,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["anchor_y"], 5)
 
     def test_check_if_no_size_then_use_icon_size_set_anchors(self, **kwargs):
-        tmp_file = self.create_temp_file(200, 244)
+        tmp_file = create_temp_file(200, 244)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
                 self.urls[0],
@@ -195,7 +195,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["anchor_y"], 122)
 
     def test_check_if_no_size_icon_too_big_then_use_max_size_set_anchors(self, **kwargs):
-        tmp_file = self.create_temp_file(260, 100)
+        tmp_file = create_temp_file(260, 100)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
                 self.urls[0],
@@ -211,7 +211,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
 
     #case below tests as written.  Sarah asked to rewrite to give error
     def test_check_if_no_size_icon_too_small_then_use_min_size_set_anchors(self, **kwargs):
-        tmp_file = self.create_temp_file(8, 5)
+        tmp_file = create_temp_file(8, 5)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
                 self.urls[0],
@@ -228,7 +228,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
 
     #case below tests as written.  Sarah asked to rewrite to give error
     def test_if_no_size_icon_too_small_one_side_then_scale_set_anchors(self, **kwargs):
-        tmp_file = self.create_temp_file(5, 200)
+        tmp_file = create_temp_file(5, 200)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
                 self.urls[0],
@@ -250,7 +250,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
         random_project=self.create_project(random_user, name='Random Project')
         project_ids = [random_project.id, 999999999]
         for project_id in project_ids:
-            tmp_file = self.create_temp_file(5, 200)
+            tmp_file = create_temp_file(5, 200)
             with open(tmp_file.name, 'rb') as binaryImage:
                 response = self.client_user.post(
                     self.urls[0],
@@ -272,10 +272,8 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=False)
-        self.icon1=self.create_icon(self.user, self.project, icon_file='icon1.jpg',
-                         name='test_icon_1', size=100, anchor_x=30, anchor_y=20)
-        self.icon2=self.create_icon(self.user, self.project, icon_file='icon2.jpg',
-                         name='test_icon_2', size=200, anchor_x=100, anchor_y=100)
+        self.icon1=self.create_icon_post()
+        self.icon2=self.create_icon_post()
         self.url = '/api/0/icons/%s/' % self.icon1.id
         self.urls = [self.url]
         self.view = views.IconInstance.as_view()
@@ -284,23 +282,30 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
             'icon_file': {'type': 'string', 'required': False, 'read_only': True},
             'project_id': {'read_only': True, 'required': False, 'type': 'field'}
         })
-    '''
+    
     def tearDown(self):
         #delete method also removes files from file system:
-        for photo in models.Photo.objects.all():
-            photo.delete()
-        if os.path.exists('test.jpg'):
-            os.remove('test.jpg')
+        for icon in models.Icon.objects.all():
+            icon.delete()
+        if os.path.exists('icon1.jpg'):
+            os.remove('icon1.jpg')
 
-
-
-
-
-    '''
+    def create_icon_post(self):
+        tmp_file = create_temp_file(30, 30)
+        with open(tmp_file.name, 'rb') as binaryImage:
+            response = self.client_user.post(
+                '/api/0/icons/',
+                {
+                    'icon_file': binaryImage,
+                    'project_id': self.project.id,
+                    'owner': self.user
+                },
+                HTTP_X_CSRFTOKEN=self.csrf_token)
+        return models.Icon.objects.get(id=response.data.get('id'))
+    
     #put/patch - update
     #set anchor and size, not anything else
-
-    def test_required_params_using_put(self, **kwargs):
+    def test_required_params_and_resize_using_put(self, **kwargs):
         response = self.client_user.put(self.url,
                                         data=urllib.urlencode({
                                             'name': 'icon_new',
@@ -313,13 +318,59 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         )
         print response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        updated_icon = models.Icon.objects.get(id=self.icon.id)
+        updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon_new')
         self.assertEqual(updated_icon.size, 40)
         self.assertEqual(updated_icon.anchor_x, 10)
         self.assertEqual(updated_icon.anchor_y, 15)
         self.assertEqual(updated_icon.last_updated_by, self.user)
 
-#get - query
+    #get - query
 
-#delete
+
+    def test_delete_icon(self, **kwargs):
+        icon_id = self.icon1.id
+
+        # ensure icon exists:
+        models.Icon.objects.get(id=icon_id)
+
+        # delete icon:
+        response = self.client_user.delete(self.url,
+                                           HTTP_X_CSRFTOKEN=self.csrf_token
+                                           )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # check to make sure it's gone:
+        try:
+            models.Icon.objects.get(id=icon_id)
+            # throw assertion error if photo still in database
+            print 'Icon not deleted'
+            self.assertEqual(1, 0)
+        except models.Icon.DoesNotExist:
+            # trigger assertion success if photo is removed
+            self.assertEqual(1, 1)
+
+
+    def test_delete_icon_no_permission(self, **kwargs):
+        random_user = self.create_user(username="Rando")
+        
+        icon_id = self.icon1.id
+
+        # ensure icon exists:
+        models.Icon.objects.get(id=icon_id)
+
+        # delete icon:
+        response = random_user.delete(self.url,
+                                      HTTP_X_CSRFTOKEN=self.csrf_token
+                                     )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # check to make sure it's still there:
+        try:
+            models.Icon.objects.get(id=icon_id)
+            # throw assertion error if photo still in database
+            print 'Icon deleted'
+            self.assertEqual(1, 1)
+        except models.Icon.DoesNotExist:
+            # trigger assertion success if photo is not deleted
+            self.assertEqual(1, 0)
