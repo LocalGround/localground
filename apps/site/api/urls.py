@@ -72,17 +72,17 @@ urlpatterns += format_suffix_patterns(patterns('',
     url(r'^presentations/$',
         views.PresentationList.as_view(),
         name='presentation-list'),
-    #url(
-    #    r'^layers/(?P<pk>[0-9]+)/$',
-    #    views.LayerInstance.as_view(),
-    #    name='layer-detail'),
+    url(
+        r'^layers/(?P<pk>[0-9]+)/$',
+        views.LayerInstance.as_view(),
+        name='layer-detail'),
     #url(r'^layers/$',
     #    views.LayerList.as_view(),
     #    name='layer-list'),
-    url(
-        r'^maps/(?P<map_id>[0-9]+)/layers/(?P<pk>[0-9]+)/$',
-        views.LayerInstance.as_view(),
-        name='layer-detail'),
+    #url(
+    #    r'^icons/(?P<pk>[0-9]+)/$',
+    #    views.IconInstance.as_view(),
+    #   name='icon-detail'),
     url(
         r'^maps/(?P<map_id>[0-9]+)/layers/$',
         views.LayerList.as_view(),
@@ -115,10 +115,14 @@ urlpatterns += format_suffix_patterns(patterns('',
     url(
         r'^icons/(?P<pk>[0-9]+)/$',
         views.IconInstance.as_view(),
-        name='icon-detail'),
-    url(r'^icons/$',
-        views.IconList.as_view(),
-        name='icon-list'), 
+       name='icon-detail'),
+    #url(
+    #    r'^projects/(?P<project_id>[0-9]+)/icons/(?P<id>[0-9]+)/$',
+    #    views.IconInstance.as_view(),
+    #    name='icon-detail'),
+    url(
+        r'^projects/(?P<project_id>[0-9]+)/icons/$',
+        views.IconList.as_view()),
     url(
         r'^map-images/(?P<map_id>[0-9]+)/overlays/$',
         views.MapImageOverlayList.as_view(),

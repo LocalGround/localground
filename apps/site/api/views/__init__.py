@@ -44,7 +44,8 @@ def api_root(request, format=None, **kwargs):
     d['audio'] = reverse('audio-list', request=request, format=format)
     d['forms'] = reverse('form-list', request=request, format=format)
     d['groups'] = reverse('group-list', request=request, format=format)
-    d['icons'] = reverse('icon-list', request=request, format=format)
+    #d['icons'] = reverse('icon-list', request=request, format=format) 
+    #to access icons, use this url: /api/0/projects/<project_id>/icons
     d['layouts'] = reverse('layout-list', request=request, format=format)
     d['data-types'] = reverse('datatype-list', request=request, format=format)
     d['markers'] = reverse('marker-list', request=request, format=format)

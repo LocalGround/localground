@@ -38,7 +38,9 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.urls = ['/api/0/icons/']
+        #self.urls = ['/api/0/icons/']
+        self.urls = ['/api/0/projects/%s/icons/' % self.project.id]
+        print self.urls
         self.url = self.urls[0]
         self.create_icon(self.user, self.project, icon_file='icon1.jpg', name='test_icon_1', size=100, anchor_x=30, anchor_y=20)
         self.create_icon(self.user, self.project, icon_file='icon2.jpg', name='test_icon_2', size=200, anchor_x=100, anchor_y=100)
@@ -275,6 +277,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
         self.icon1=self.create_icon_post()
         self.icon2=self.create_icon_post()
         self.url = '/api/0/icons/%s/' % self.icon1.id
+        #self.url = ['/api/0/projects/%s/icons/%y' % {'s': self.project.id, 'y' : self.icon1.id}]
         self.urls = [self.url]
         self.view = views.IconInstance.as_view()
         self.metadata = get_metadata()
@@ -293,12 +296,16 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
     def create_icon_post(self):
         tmp_file = create_temp_file(30, 30)
         with open(tmp_file.name, 'rb') as binaryImage:
+            #new_url = ['/api/0/projects/%s/icons/' % self.project.id]
+            #print new_url
             response = self.client_user.post(
                 '/api/0/icons/',
+                #new_url,
                 {
                     'icon_file': binaryImage,
                     'project_id': self.project.id,
-                    'owner': self.user
+                    'owner': self.user,
+                    'name': 'icon1'
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
         return models.Icon.objects.get(id=response.data.get('id'))
@@ -316,7 +323,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        print response.data
+        #print response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon_new')
@@ -325,7 +332,37 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_icon.anchor_y, 15)
         self.assertEqual(updated_icon.last_updated_by, self.user)
 
-    #get - query
+    def test_patch_name(self, **kwargs):
+        response = self.client_user.patch(self.url,
+                                        data=urllib.urlencode({
+                                            'name': 'icon_patch',
+                                        }),
+                                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                                        content_type="application/x-www-form-urlencoded"
+                                        )
+        #print response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_icon = models.Icon.objects.get(id=self.icon1.id)
+        self.assertEqual(updated_icon.name, 'icon_patch')
+        self.assertEqual(updated_icon.size, 30)
+        self.assertEqual(updated_icon.last_updated_by, self.user)
+
+    def test_patch_resize(self, **kwargs):
+        response = self.client_user.patch(self.url,
+                                        data=urllib.urlencode({
+                                            'size': 50,
+                                        }),
+                                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                                        content_type="application/x-www-form-urlencoded"
+                                        )
+        #print response.data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_icon = models.Icon.objects.get(id=self.icon1.id)
+        self.assertEqual(updated_icon.name, 'icon1')
+        self.assertEqual(updated_icon.size, 50)
+        self.assertEqual(updated_icon.width, 50)
+        self.assertEqual(updated_icon.height, 50)
+        self.assertEqual(updated_icon.last_updated_by, self.user) #get - query
 
 
     def test_delete_icon(self, **kwargs):
@@ -356,24 +393,34 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
 
         # now, random_user is logged into Local Ground (instead of tester)
         client_user = self.get_client_user(random_user)
-
         icon_id = self.icon1.id
-
         # ensure icon exists:
         models.Icon.objects.get(id=icon_id)
-
         # delete icon:
         response = client_user.delete(self.url,
                                       HTTP_X_CSRFTOKEN=self.csrf_token
                                      )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         # check to make sure it's still there:
         try:
             models.Icon.objects.get(id=icon_id)
             # throw assertion error if photo still in database
-            print 'Icon deleted'
             self.assertEqual(1, 1)
         except models.Icon.DoesNotExist:
             # trigger assertion success if photo is not deleted
             self.assertEqual(1, 0)
+
+    def test_get_deny_no_permission(self, **kwargs):
+        random_user = self.create_user(username="Rando")
+
+        # now, random_user is logged into Local Ground (instead of tester)
+        client_user = self.get_client_user(random_user)
+        icon_id = self.icon1.id
+        # ensure icon exists:
+        models.Icon.objects.get(id=icon_id)
+        # query icon:
+        response = client_user.get(self.url,
+                                      HTTP_X_CSRFTOKEN=self.csrf_token
+                                      )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+

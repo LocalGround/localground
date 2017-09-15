@@ -109,12 +109,12 @@ class ModelMixin(object):
         return self._client_user
 
     def get_client_user(self, user):
-        if self._client_user is None:
-            self._client_user = Client(enforce_csrf_checks=True)
-            self._client_user.login(
-                username=user.username,
-                password=self.user_password)
-            self._client_user.cookies['csrftoken'] = self.csrf_token
+        #if self._client_user is None:
+        self._client_user = Client(enforce_csrf_checks=True)
+        self._client_user.login(
+            username=user.username,
+            password=self.user_password)
+        self._client_user.cookies['csrftoken'] = self.csrf_token
         return self._client_user
 
     @property

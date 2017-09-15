@@ -4,6 +4,9 @@ from localground.apps.site.api.views.abstract_views import MediaList, MediaInsta
 
 
 class IconList(MediaList):
+    def get_queryset(self):
+        project_id = self.kwargs.get('project_id') #comes from the url path
+        return models.Icon.objects.filter(project__id=project_id)
     serializer_class = IconSerializerList
     model = models.Icon
 
