@@ -25,9 +25,9 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         db_column='fk_provider',
         related_name='prints_print_tilesets')
     layout = models.ForeignKey('Layout')
-    northeast = models.PointField(null=True)		
-    southwest = models.PointField(null=True)		
-    center = models.PointField(null=True)		
+    northeast = models.PointField(null=True)
+    southwest = models.PointField(null=True)
+    center = models.PointField(null=True)
     zoom = models.IntegerField(null=True)
     map_width = models.IntegerField()
     map_height = models.IntegerField()
@@ -35,12 +35,12 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
     pdf_path = models.CharField(max_length=255)
     preview_image_path = models.CharField(max_length=255)
     deleted = models.BooleanField(default=False)
-    
+
     filter_fields = BaseMedia.filter_fields + ('name', 'description', 'tags', 'uuid')
 
     objects = PrintManager()
 
-   
+
     @classmethod
     def inline_form(cls, user):
         from localground.apps.site.forms import get_inline_form_with_tags
@@ -150,7 +150,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         import os
         path = self.get_abs_directory_path()
         if os.path.exists(path):
-            dest = '%s/deleted/%s' % (settings.MEDIA_ROOT, self.uuid)
+            dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
             if os.path.exists(dest):
                 from localground.apps.lib.helpers import generic
                 dest = dest + '.dup.' + generic.generateID()
@@ -244,7 +244,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         m = StaticMap()
         map_width = self.layout.map_width_pixels
         map_height = self.layout.map_height_pixels
-        path = settings.MEDIA_ROOT + '/prints/' + self.uuid
+        path = settings.USER_MEDIA_ROOT + '/prints/' + self.uuid
         os.mkdir(path)  # create new directory
         file_name = 'Print_' + self.uuid + '.pdf'
 
@@ -262,7 +262,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         border_width = self.layout.border_width
 
         '''
-        
+
         #TODO: Replace w/new acetate layer functionality:
         overlay_image = m.get_map(
             layers,
@@ -274,7 +274,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
             show_north_arrow=True)
         map_image.paste(overlay_image, (0, 0), overlay_image)
         '''
-        
+
         a = AcetateLayer(
             file_path=path,
             center=self.center,

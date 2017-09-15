@@ -3,7 +3,7 @@ from django.conf import settings
 from pwd import getpwnam
 from rest_framework import exceptions
 from localground.apps.lib.helpers import generic
-    
+
 '''
 Utility File Path Methods
 '''
@@ -45,13 +45,13 @@ def generate_relative_path(owner, model_name_plural, uuid=None):
 def generate_absolute_path(owner, model_name_plural, uuid=None):
     if uuid is None:
         return '%s/media/%s/%s/' % (
-            settings.MEDIA_ROOT,
+            settings.USER_MEDIA_ROOT,
             owner.username,
             model_name_plural
         )
     else:
         return '%s/media/%s/%s/%s/' % (
-            settings.MEDIA_ROOT,
+            settings.USER_MEDIA_ROOT,
             owner.username,
             model_name_plural,
             uuid

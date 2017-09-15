@@ -29,7 +29,7 @@ class MapImage(BaseUploadedMedia):
     processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
     directory_name = 'map-images'
     objects = MapImageManager()
-    
+
     class Meta:
         app_label = 'site'
         ordering = ['id']
@@ -46,7 +46,7 @@ class MapImage(BaseUploadedMedia):
 
     def get_abs_directory_path(self):
         return '%s/%s' % (settings.FILE_ROOT, self.virtual_path)
-    
+
 
     def original_image_filesystem(self):
         return '%s/%s' % (self.get_abs_directory_path(), self.file_name_new)
@@ -93,7 +93,7 @@ class MapImage(BaseUploadedMedia):
         path = self.get_abs_directory_path()
         #raise Exception(path)
         if os.path.exists(path):
-            dest = '%s/deleted/%s' % (settings.MEDIA_ROOT, self.uuid)
+            dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
             if os.path.exists(dest):
                 from localground.apps.lib.helpers import generic
                 dest = dest + '.dup.' + generic.generateID()
@@ -113,7 +113,7 @@ class ImageOpts(BaseExtents, BaseMedia):
     source_mapimage = models.ForeignKey(MapImage)
     opacity = models.FloatField(default=1)
     name = models.CharField(max_length=255, null=True, blank=True)
-    
+
     def can_view(self, user, access_key=None):
         return self.source_mapimage.can_view(user, access_key)
 

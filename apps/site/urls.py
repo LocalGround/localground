@@ -32,6 +32,4 @@ urlpatterns = patterns('',
     url(r'^api/0/', include('localground.apps.site.api.urls'))
 )
 if settings.DEBUG is True:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.USER_MEDIA_ROOT)
