@@ -18,12 +18,14 @@ define(["jquery",
             template: Handlebars.compile(MapTemplate),
             templateHelpers: function() {
                 if (this.activeMap) {
-                    var name = this.activeMap.get('name');
+                    var name = this.activeMap.get('name'),
+                    slug = this.activeMap.get('slug')
                 }
                 return {
                     noItems: (this.collection.length === 0),
                     map: this.activeMap,
-                    name: name
+                    name: name, 
+                    previewURL: slug
                 }
             },
 
@@ -33,12 +35,8 @@ define(["jquery",
                         'change #map-select': 'setActiveMap',
                         'click .add-map': 'showAddMapModal',
                         'click .selected-map': 'showMapList',
-                        'click .map-select-option': 'showMapList',
-                        'click .map-dropdown': 'showMapList',
-                        'click .map-item': 'handleItemClicks',
-                        'click .selected-map-item': 'handleItemClicks'
-                        //'click': 'hideMapList'//, 
-                       // 'click .map-edit': 'editMap'
+                        'click .map-item': 'selectMap',  
+                        'click .map-edit': 'editMap'
                     }
                 );
             },
@@ -114,18 +112,6 @@ define(["jquery",
                         that.render();
                     }
                 });
-              /*  this.map.save(null, {
-                    success: this.setMapAndRender.bind(this),
-                    error: function (model, response){
-                        var messages = JSON.parse(response.responseText);
-                        console.log(messages);
-                        if (messages.slug && messages.slug.length > 0) {
-                            that.slugError = messages.slug[0];
-                            console.log("should have error message", that.slugError);
-                        }
-                        that.app.vent.trigger("send-modal-error", that.slugError);
-                    }
-                });  */
             },
 
             setMapAndRender: function () {
@@ -175,6 +161,7 @@ define(["jquery",
             },
 
             drawOnce: function () {
+                console.log('draw once');
                 this.render();
                 this.setActiveMap();
             },
@@ -196,19 +183,10 @@ define(["jquery",
                 }}); 
             },
 
-            // function is needed to handle the different two different events that eminate 
-            // from clicking within the '.map-item' div. this is necessary because a click on just the
-            // '.edit-map' button also triggers a click on its parent, the '.map-item' div
-            handleItemClicks: function () {
-                console.log($(event.target), $(event.target).data('value'));
+            selectMap: function () {
                 var id = $(event.target).data('value'),
                 map = this.collection.get(id);
-                
-                if ($(event.target).hasClass('map-edit')) {
-                    this.editMap(map);
-                } else if ($(event.target).hasClass('map-item') || $(event.target).hasClass('map-name')){
-                    this.setActiveMap(map);
-                }
+                this.setActiveMap(map);
             },
 
             showAddMapModal: function () {
@@ -268,12 +246,14 @@ define(["jquery",
 
             hideMapList: function(e) {
                 var $el = $(e.target);   
-                if (!$el.hasClass('selected-map-item') && !$el.hasClass('map-name') && !$el.hasClass('map-edit') && !$el.hasClass('map-select-option') && !$el.hasClass('map-dropdown')) {
+                if (!$el.hasClass('selected-map-item') && !$el.hasClass('map-name') && !$el.hasClass('map-edit') && !$el.hasClass('selected-map-name') && !$el.hasClass('map-dropdown')) {
                     this.$el.find('.map-list').hide();
                 }
             },
 
-            editMap: function (map) {
+            editMap: function () {
+                var id = $(event.target).data('value'),
+                map = this.collection.get(id);
                 this.showEditMapModal(map);
             }
 
