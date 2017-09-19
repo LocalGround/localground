@@ -22,7 +22,7 @@ define([
 
         displayLayer: function(mapId, layerId) {
             console.log(mapId, layerId);
-            //this.displayMap(mapId);
+            this.displayMap(mapId);
             this.app.vent.trigger('route-layer', mapId, layerId);
         },
 
