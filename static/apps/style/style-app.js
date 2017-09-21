@@ -49,6 +49,7 @@ define([
             this.addMessageListeners();
         },
         loadRegions: function () {
+            let that = this;
             this.showRightLayout();
             this.showLeftLayout();
         },
