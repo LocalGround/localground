@@ -12,8 +12,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = 'vagrant.host'
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "ubuntu/trusty64"
-  config.vm.provision :shell, path: "deploy_tools/bootstrap.sh"
+  config.vm.box = "ubuntu/xenial64"
+  config.vm.provision :shell, path: "deploy_tools/setup.sh"
   #config.vm.network :forwarded_port, host: 4567, guest: 80
   
   # Disable automatic box update checking. If you disable this, then
@@ -25,9 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:7777" will access port 80 on the guest machine.
   config.vm.network "forwarded_port", guest: 80, host: 7777
-  config.vm.network "forwarded_port", guest: 5555, host: 5555
-  config.vm.network "forwarded_port", guest: 8000, host: 7778
-  # config.vm.network :forwarded_port, guest: 5432, host: 1234
+  config.vm.network "forwarded_port", guest: 443, host: 44300
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
