@@ -19,7 +19,7 @@ SERVER_URL = '%s://%s' % (PROTOCOL, SERVER_HOST)
 FILE_ROOT = '/localground'
 STATIC_ROOT = '%s/%s' % (FILE_ROOT, STATIC_MEDIA_DIR)
 APPS_ROOT = '%s/apps' % FILE_ROOT
-MEDIA_ROOT = '%s/%s' % (FILE_ROOT, USER_MEDIA_DIR)
+USER_MEDIA_ROOT = '%s/%s' % (FILE_ROOT, USER_MEDIA_DIR)
 FONT_ROOT = '%s/css/fonts/' % STATIC_ROOT
 TEMP_DIR = '%s/tmp/' % FILE_ROOT
 QR_READER_PATH = '%s/lib/barcodereader' % APPS_ROOT
@@ -47,11 +47,11 @@ DATABASE = 'lg_test_database'	        #Your Database Name
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis', #Code works w/PostGIS
-        'NAME': DATABASE, 
+        'NAME': DATABASE,
         'USER': USERNAME,
         'PASSWORD': PASSWORD,
         'HOST': HOST,
-        'PORT': PORT, 
+        'PORT': PORT,
     }
 }
 
