@@ -64,11 +64,13 @@ define(["jquery",
             },
 
             setInitialModel: function () {
-                this.render();
+                console.log('set intial map');
 
                 // on initialize, pass the first model in the collection 
                 // to be set as the active map
                 this.setActiveMap(this.collection.at(0));
+
+                this.render();
             },
 
             newMap: function (mapAttrs) {
@@ -117,29 +119,32 @@ define(["jquery",
             setMapAndRender: function () {
                 var that = this,
                     dm = this.app.dataManager;
+                   // dm = this.app.dataManager.model.attributes.children;
                 this.collection.add(this.map);
                 this.modal.hide();
                 this.render();
+
+                // sets newly created map as the selected map
                 this.$el.find('#map-select').val(this.map.id);
 
                 var layers = new Layers(null, {mapID: this.map.get("id")});
                 this.map.set("layers", layers);
-                dm.each(function (entry) {
-                    var collection = entry.getCollection(); //that.app.dataManager.getCollection(dataSource.value);
-                    if (collection.length < 1) {
+             
+                dm.each(function (collection) {
+                   if (collection.length < 1) {
                         return;
                     }
-                    if (entry.getIsSite()) {
+                    if (collection.getIsSite()) {
                         var layer = new Layer({
                             map_id: that.map.id,
-                            data_source: entry.getDataType(),
+                            data_source: collection.getDataType(),
                             layer_type: "basic",
                             filters: {},
                             symbols: [{
                                 "fillColor": collection.fillColor,
                                 "width": 20,
                                 "rule": "*",
-                                "title": entry.getTitle()
+                                "title": collection.getTitle()
                             }],
                             metadata: {
                                 buckets: 4,
@@ -152,12 +157,14 @@ define(["jquery",
                                 strokeOpacity: 1,
                                 shape: "circle"
                             },
-                            title: entry.getTitle()
+                            title: collection.getTitle()
                         });
                         layers.add(layer);
                         layer.save();
                     }});
                 this.app.vent.trigger("change-map", this.map);
+                this.setActiveMap(this.map);
+                this.render();
             },
 
             drawOnce: function () {
