@@ -65,6 +65,7 @@ define(["jquery",
 
                 //replace the LayerListView:
                 this.layers.show(this.lv);
+                this.app.vent.trigger('ready-for-routing');
             },
             hidePanel: function (e) {
                 $(e.target).removeClass("hide").addClass("show");

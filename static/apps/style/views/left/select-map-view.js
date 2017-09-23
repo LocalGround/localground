@@ -192,7 +192,7 @@ define(["jquery",
                 }
 
                 var selectedMapModel = map,
-                that = this;
+                    that = this;
                 this.activeMap = map;
                 selectedMapModel.fetch({ success: function () {
                     that.setCenterZoom(selectedMapModel);

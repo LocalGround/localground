@@ -39,7 +39,7 @@ define(["jquery",
             sendCollection: function () {
                 this.$el.attr('id', this.model.id);
 
-                // This just adds css to indicate the selected layer, via the parent view 
+                // This just adds css to indicate the selected layer, via the parent view
                 this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
 
                 // This event actually triggers the 'createLayer()' function in right-panel.js layoutview
@@ -54,7 +54,7 @@ define(["jquery",
                     // This event actually triggers the 'createLayer()' function in right-panel.js layoutview
                     this.app.vent.trigger("edit-layer", this.model, this.collection);
 
-                    // This just adds css to indicate the selected layer, via the parent view 
+                    // This just adds css to indicate the selected layer, via the parent view
                     // only triggers after the layer has been sent to right-panel
                     this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
                 }

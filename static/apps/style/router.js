@@ -9,9 +9,8 @@ define([
         appRoutes: {
             'new': 'newMap',
             ':mapId': 'displayMap',
-            ':mapId/layers/:layerId': 'displayLayer',
             ':mapId/layers/new':'newLayer',
-            '': 'index'
+            ':mapId/layers/:layerId': 'displayLayer'
         },
         initialize: function (options) {
             this.controller = new Controller({

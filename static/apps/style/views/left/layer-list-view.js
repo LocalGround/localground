@@ -49,7 +49,7 @@ define(["marionette",
 
             routerSendCollection: function (mapId, layerId) {
                 var active;
-                
+
                 // loops through children and send the matching child to the right panel
                 this.children.forEach(function(item) {
                     if (item.model.get('id') == layerId) {
@@ -64,8 +64,8 @@ define(["marionette",
                 this.$el.find('#' + id).addClass('selected-layer');
                 console.log(this.childView);
             },
-            
-            createNewLayer: function (e) {
+
+            createNewLayer: function (mapID) {
                 console.log("Altered?: ", this.app.layerHasBeenAltered)
                 console.log("Saved?: ", this.app.layerHasBeenSaved)
                 var continueAction = true;
