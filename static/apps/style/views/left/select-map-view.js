@@ -160,7 +160,13 @@ define(["jquery",
                             title: collection.getTitle()
                         });
                         layers.add(layer);
-                        layer.save();
+                        layer.save(null, {
+                            success: console.log('layers saved successfully'),
+                            error: function (model, response){
+                                var messages = JSON.parse(response.responseText);
+                                console.log(messages);                                
+                            }
+                        });;
                     }});
                 this.app.vent.trigger("change-map", this.map);
                 this.setActiveMap(this.map);

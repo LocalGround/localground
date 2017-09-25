@@ -104,6 +104,12 @@
                 </td>
             </tr>
             <tr>
+                <td>Opacity</td>
+                <td>
+                     <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">
+                </td>
+            </tr>
+            <tr>
                 <td>Width</td>
                 <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>
             </tr>
@@ -227,6 +233,8 @@
                 <td>
                      <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">
                 </td>
+            </tr>
+            <tr>
                 <td>Width</td>
                 <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>
             </tr>
@@ -275,6 +283,12 @@
                         <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
                     {{/each}}
                     </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Opacity</td>
+                <td>
+                     <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">
                 </td>
             </tr>
             <tr>

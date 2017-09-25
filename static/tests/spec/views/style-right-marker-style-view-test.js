@@ -18,7 +18,7 @@ define([
 
                 spyOn(MarkerStyleView.prototype, 'initialize').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'buildPalettes').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'buildColumnList').and.callThrough();
+                spyOn(MarkerStyleView.prototype, 'buildPropertiesList').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'hideColorRamp').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'selectDataType').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'contData').and.callThrough();
@@ -179,7 +179,7 @@ define([
             });
 
             it("should build the correct column list", function () {
-                categoricalMarkerStyleView.buildColumnList();
+                categoricalMarkerStyleView.buildPropertiesList();
                 expect(categoricalMarkerStyleView.categoricalList).toEqual([
                     { text: "Test Text", value: "test_text", hasData: true },
                     { text: 'Test Choice', value: 'test_choice', hasData: true }
@@ -311,7 +311,7 @@ define([
             });
 
             it("should build the correct column list", function () {
-                continuousMarkerStyleView.buildColumnList();
+                continuousMarkerStyleView.buildPropertiesList();
                 expect(continuousMarkerStyleView.continuousList).toEqual([
                     { text: "Test Integer", value: "test_integer", hasData: true },
                     { text: "Test Rating", value: "test_rating", hasData: true }
