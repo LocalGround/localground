@@ -44,7 +44,8 @@ define(["jquery",
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                //console.log('initialize', this.model.get('symbols'), this.collection);
+                console.log('MARKER STYLE VIEW INITIALIZE');
+                console.log(this.model);
                 this.dataType = this.model.get('layer_type');
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
                 this.collection = new Symbols(this.model.get("symbols"));
@@ -52,16 +53,26 @@ define(["jquery",
                 console.log("dataType: " + this.dataType);
                 console.log("collection: ");
                 console.log(this.collection);
-                // builds correct palette on-load
-               // this.buildPalettes(this.getCatInfo().list.length);
-               this.createCorrectSymbols();
+
+                this.selectedProp = this.model.get('metadata').currentProp;
+                console.log(this.selectedProp);
+
+                // important to render before createCorrectSymbol because createCorrectSymbol
+                // depends on info in the DOM (e.g. what property is selected)
+                this.render();
+                this.createCorrectSymbols();
 
                 $('body').click(this.hideColorRamp);
 
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
-                this.listenTo(this.app.vent, 'update-data-source', this.initialize);
+            //    this.listenTo(this.app.vent, 'update-data-source', this.initialize);
                 this.listenTo(this.app.vent, 'update-map', this.updateMap);
             },
+            modelEvents: {
+         //       'change:data_source': 'initialize'
+            },
+            
+
 
             onRender: function () {
                 var that = this,
@@ -149,7 +160,22 @@ define(["jquery",
                 this.dataType = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
                 console.log(this.dataType);
                 this.model.set("layer_type", this.dataType);
-                this.render();
+                //this.selectedProp = this.model.get('metadata').currentProp;
+                console.log(this.selectedProp);
+           //     this.render();
+                
+                if (this.dataType == 'continuous') {
+                    this.selectedProp = this.continuousList[0].value;
+                    this.model.get('metadata').currentProp = this.continuousList[0].value;
+                    console.log('its continuous; SELECTED PROP: ',  this.selectedProp);
+                }
+
+                if (this.dataType == 'categorical') {
+                    this.selectedProp = this.categoricalList[0].value;
+                    this.model.get('metadata').currentProp = this.categoricalList[0].value;
+                    console.log('its categorical; SELECTED PROP: ', this.selectedProp);
+                }
+
                 this.createCorrectSymbols();
             },
 
@@ -240,7 +266,9 @@ define(["jquery",
             },
 
             createCorrectSymbols: function () {
+                console.log(this.dataType);
                 if (this.dataType == "continuous") {
+                    console.log('calling contData()');
                     this.contData();
                 } else if (this.dataType == "categorical") {
                     this.catData();
@@ -265,16 +293,17 @@ define(["jquery",
             },
 
             contData: function() {
-                //console.log("cont change registered");
                 this.buildPalettes();
                 var cssId = "#cont-prop";
                 this.setSelectedProp(cssId);
+                console.log(this.buildContinuousSymbols(this.getContInfo()));
                 this.setSymbols(this.buildContinuousSymbols(this.getContInfo()));
             },
 
             catData: function() {
                 //console.log("catData triggered");
                 var cssId = "#cat-prop";
+                console.log('this is the selected property: ' + cssId);
                 this.setSelectedProp(cssId);
                 var catInfo = this.getCatInfo();
                 this.buildPalettes(catInfo.list.length);
@@ -355,9 +384,10 @@ define(["jquery",
                     buckets = this.model.get("metadata").buckets,
                     key = this.model.get('data_source'),
                     collection = this.app.dataManager.getCollection(key);
-
+                console.log(selected, buckets, key, collection);
                 this.continuousData = [];
                 collection.models.forEach((d) => {
+                    console.log(d.get(selected));
                     this.continuousData.push(d.get(selected));
                 });
                 var cont = {};
@@ -366,6 +396,7 @@ define(["jquery",
                 cont.range = cont.max - cont.min;
                 cont.segmentSize = cont.range / buckets;
                 cont.currentFloor = cont.min;
+                console.log(cont);
                 return cont;
             },
 
@@ -381,7 +412,9 @@ define(["jquery",
                    instanceCount: {},
                 },
                 selected = this.selectedProp,
+               // selected = this.$el.find('#cat-prop').val(),
                 collection = this.app.dataManager.getCollection(key);
+                console.log("selected " + selected);
                 //console.log("get catInfo: $selected", selected, this.model.get('metadata'), this.selectedProp);
                 collection.models.forEach(function(d) {
                     if (!cat.list.includes(d.get(selected)) && d.get(selected)) {
@@ -427,11 +460,12 @@ define(["jquery",
             // gets and sets user-selected property from the dom
             //this.selectedProp is global so it can be used in template helper
             setSelectedProp: function (cssId) {
-                if (this.$el.find(cssId).val()) {
-                    this.model.get('metadata').currentProp = this.$el.find(cssId).val();
-                }
+            //    if (this.$el.find(cssId).val()) {
+            //        this.model.get('metadata').currentProp = this.$el.find(cssId).val();
+            //    }
+                console.log(this.selectedProp, this.model.get('metadata').currentProp);
                 this.selectedProp = this.model.get('metadata').currentProp;
-                //console.log('changing selected proprty', this.$el.find(cssId).val(), this.selectedProp);
+                console.log('changing selected proprty', this.selectedProp);
             },
 
             setSymbols: function (symbs) {
