@@ -204,17 +204,27 @@ define([
 
             if (!this.model.errorFieldName && !this.model.errorFieldType &&
                 this.validateRating() && this.validateChoice()){
-                console.log('saving...');
                 this.model.save(null, {
                     success: function () {
-                    that.app.vent.trigger('success-message', "Child field has been saved.");
-                        that.parent.renderWithSaveMessages();
+                        if (that.parent) {
+                            //if we're in the "Edit Site Types View"
+                            that.app.vent.trigger('success-message', "Child field has been saved.");
+                            that.parent.renderWithSaveMessages();
+                        } else {
+                            //if we're in the spreadsheet "Add Field" view
+                            that.fields.add(that.model);
+                            that.app.vent.trigger('success-message', "New Field added");
+                            that.app.vent.trigger("render-spreadsheet");
+                            that.app.vent.trigger("hide-modal");
+                        }
 
                     },
                     error: function (model, response) {
                         messages = JSON.parse(response.responseText);
                         that.model.serverErrorMessage = messages.detail;
-                        that.parent.renderWithSaveMessages();
+                        if (that.parent) {
+                            that.parent.renderWithSaveMessages();
+                        }
                         that.app.vent.trigger('error-message', "Child field has not been saved.");
                     }
                 });

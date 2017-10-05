@@ -9,14 +9,15 @@ define(["jquery",
         "collections/photos",
         "collections/audio",
         "collections/videos",
-        "./create-field",
+        "views/field-child-view",
+        "models/field",
         "handsontable",
         "text!../templates/spreadsheet.html",
         "lib/audio/audio-player",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
-        Record, Marker, Photos, Audio, Videos, CreateFieldView, Handsontable, SpreadsheetTemplate,
+        Record, Marker, Photos, Audio, Videos, CreateFieldView, Field, Handsontable, SpreadsheetTemplate,
         AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
@@ -713,15 +714,18 @@ define(["jquery",
                 * into one unified file to create and update fields
                 * alone or grouped under the form
                 */
+                var formID = this.app.dataType.split("_")[1];
                 var fieldView = new CreateFieldView({
-                    formID: this.app.dataType.split("_")[1],
+                    formID: formID,
                     fields: this.fields,
-                    app: this.app
+                    app: this.app,
+                    model: new Field(null, { id: formID }) //,
+                    //template: Handlebars.compile(OtherTemplate)
                 });
                 this.app.vent.trigger('show-modal', {
                     title: "Create New Column",
                     view: fieldView,
-                    saveFunction: fieldView.saveToDatabase,
+                    saveFunction: fieldView.saveField,
                     width: 400,
                     height: 300
                 });
