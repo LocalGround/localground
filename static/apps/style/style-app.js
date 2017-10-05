@@ -46,13 +46,14 @@ define([
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
+            this.listenTo(this.vent, 'edit-layer', this.showRightLayout);
             this.listenToOnce(this.vent, 'ready-for-routing', this.rerouteIfNeeded);
             this.addMessageListeners();
         },
         loadRegions: function () {
             let that = this;
-            this.showRightLayout();
             this.showLeftLayout();
+        //    this.showRightLayout();
         },
         rerouteIfNeeded: function (milliseconds) {
             // this function give the app some time to load before it proceeds
@@ -74,11 +75,13 @@ define([
             this.leftRegion.show(this.leftPanelView);
         },
 
-        showRightLayout: function () {
-            this.rightPanelView = new RightPanel({
-                app: this
+        showRightLayout: function (layer, collection) {
+            var rightPanelView = new RightPanel({
+                app: this,
+                model: layer,
+                collection: collection
             });
-            this.rightRegion.show(this.rightPanelView);
+            this.rightRegion.show(rightPanelView);
         },
 
         showGlobalToolbar: function () {

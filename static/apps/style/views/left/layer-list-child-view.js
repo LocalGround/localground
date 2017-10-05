@@ -38,6 +38,16 @@ define(["jquery",
 
             sendCollection: function () {
                 this.$el.attr('id', this.model.id);
+                //console.log(this.model, this.model.id);
+                //this.$el.find('input').prop('checked', true);
+
+                // click input to display icons if not already displaying
+                if (this.$el.find('input').prop('checked', false)) {
+                    this.$el.find('input').click();
+                }
+
+               // this.showHideOverlays();
+                this.app.vent.trigger('handle-selected-layer', this.model.id);
 
                 // This just adds css to indicate the selected layer, via the parent view
                 this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
@@ -122,6 +132,7 @@ define(["jquery",
             },
 
             showOverlays: function () {
+                console.log('show overlays');
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.showAll();
                 });
@@ -143,6 +154,7 @@ define(["jquery",
             },
 
             showHideOverlays: function () {
+                console.log('showHide has been triggered');
                 this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
                 if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
