@@ -27,7 +27,7 @@ define([
                         title: 'Data Type',
                         type: 'Select',
                         options: { text: 'Text', integer: 'Integer', decimal: "Decimal", boolean: 'Boolean',
-                                   choice: 'Choice', rating: 'Rating', datetime: "Date / Time"  }
+                                   choice: 'Choice', rating: 'Rating', "date-time": "Date / Time"  }
                     }
                 }
             }).render();

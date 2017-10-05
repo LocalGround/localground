@@ -1,1 +1,49 @@
-<div id="model-form"></div>
+<div id="model-form">
+
+    <!-- Cannot work this way -->
+    {{#ifequal data_type "rating"}}
+    <!-- Make this list the new extras list to reduce confusion for users -->
+        <span class ="extras">
+            <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
+            <table>
+                {{#each extraList}}
+                <tr class="rating-row">
+                    <td>
+                        <input type="text" class="rating-value" placeholder="Type rating value" value="{{this.value}}" />
+                        {{#if this.errorRatingValue}}<span class="ratingError">Must Be a Number</span>{{/if}}
+                    </td>
+                    <td>
+                        <input type="text" class="rating-name" placeholder="Type new rating" value="{{this.name}}" />
+                        {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
+                    </td>
+                    <td>
+                        <a href="#" class="remove-rating">&times;</a>
+                    </td>
+                </tr>
+                {{/each}}
+            </table>
+        </span>
+
+    {{/ifequal}}
+
+    {{#ifequal data_type "choice"}}
+        <span class="extras">
+            <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>
+            <table>
+                {{#each extraList}}
+                <tr class="choice-row">
+                    <td>
+                        <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
+                        {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
+                    </td>
+                    <td>
+                        <a href="#" class="remove-choice">&times;</a>
+                    </td>
+                </tr>
+                {{/each}}
+            </table>
+        </span>
+    {{/ifequal}}
+
+
+</div>
