@@ -207,6 +207,7 @@ define([
                             that.parent.renderWithSaveMessages();
                         } else {
                             //if we're in the spreadsheet "Add Field" view
+                            that.model.set("ordering", that.fields.length);
                             that.fields.add(that.model);
                             that.app.vent.trigger('success-message', "New Field added");
                             that.app.vent.trigger("render-spreadsheet");
