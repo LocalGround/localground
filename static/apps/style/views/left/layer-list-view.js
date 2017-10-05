@@ -33,8 +33,10 @@ define(["marionette",
                 this.model = opts.model;
 
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
-                this.listenTo(this.app.vent, 'handle-selected-layer', this.handleSelectedLayer);
-                this.listenTo(this.app.vent, 'create-new-layer', this.createNewLayer);
+                this.listenTo(this.app.vent, 'route-layer', this.routerSendCollection);
+                this.listenTo(this.app.vent, 'add-css-to-selected-layer', this.addCssToSelectedLayer);
+                this.listenTo(this.app.vent, 'route-new-layer', this.createNewLayer);
+                console.log(this.model);
             },
 
             events: function () {
@@ -45,12 +47,25 @@ define(["marionette",
                 this.$el.find("#new-layer-options").toggle();
             },
 
-            handleSelectedLayer: function (id) {
+            routerSendCollection: function (mapId, layerId) {
+                var active;
+
+                // loops through children and send the matching child to the right panel
+                this.children.forEach(function(item) {
+                    if (item.model.get('id') == layerId) {
+                        item.childRouterSendCollection(mapId, layerId);
+                    }
+                });
+            },
+
+            // this just adds some css to indicate the selected layer
+            addCssToSelectedLayer: function (id) {
                 this.$el.find('.layer-column').removeClass('selected-layer');
                 this.$el.find('#' + id).addClass('selected-layer');
+                console.log(this.childView);
             },
-            
-            createNewLayer: function (e) {
+
+            createNewLayer: function (mapID) {
                 console.log("Altered?: ", this.app.layerHasBeenAltered)
                 console.log("Saved?: ", this.app.layerHasBeenSaved)
                 var continueAction = true;
@@ -78,11 +93,6 @@ define(["marionette",
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);
                 //this.showSection();
-                /*
-                if (e) {
-                    e.preventDefault();
-                }
-                */
             }
 
         }));

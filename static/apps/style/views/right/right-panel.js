@@ -19,7 +19,7 @@ define(["jquery",
                 }
                 console.log("right panel",this.model);
                 this.render();
-                
+
               //  this.render();
               //  this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
                 this.listenTo(this.app.vent, 'show-right-regions', this.createLayer);
@@ -62,18 +62,11 @@ define(["jquery",
                 this.getRegion('markerStyle').show(msv);
             },
 
-            createDSV: function () {
-                var dsv = new DataSourceView({
-                    app: this.app,
-                    model: this.model
-                });
-            },
-
 
             // this need to moved to the style app and passed into the right hand panel
             // and RHP should be created only when the user pressed 'edit' or 'add layer'
             // model and lyaer will be created like:
-            // 
+            //
             createLayer: function (layer, collection) {
                 this.triggerShowPanel();
               //  this.model = layer;

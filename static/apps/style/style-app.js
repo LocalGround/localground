@@ -33,7 +33,7 @@ define([
             // kicks off any objects and processes that need to run
             Marionette.Application.prototype.start.apply(this, [options]);
             this.initAJAX(options);
-            this.router = new Router({ app: this});
+            this.router = new Router({ app: this });
             Backbone.history.start();
         },
         initialize: function (options) {
@@ -47,13 +47,26 @@ define([
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
             this.listenTo(this.vent, 'edit-layer', this.showRightLayout);
+            this.listenToOnce(this.vent, 'ready-for-routing', this.rerouteIfNeeded);
             this.addMessageListeners();
         },
         loadRegions: function () {
+            let that = this;
             this.showLeftLayout();
         //    this.showRightLayout();
         },
-
+        rerouteIfNeeded: function (milliseconds) {
+            // this function give the app some time to load before it proceeds
+            // with routing. Definitely a better way to do this, but works for
+            // now, and is the simplest way I can think to do it:
+            const that = this;
+            const route = window.location.hash.replace('#', '/');
+            setTimeout(function () {
+                if (route.length > 0) {
+                    that.router.navigate(route, {trigger: true});
+                }
+            }, 500);
+        },
         showLeftLayout: function () {
             //load view into left region:
             this.leftPanelView = new LeftPanel({
@@ -64,7 +77,7 @@ define([
 
         showRightLayout: function (layer, collection) {
             var rightPanelView = new RightPanel({
-                app: this, 
+                app: this,
                 model: layer,
                 collection: collection
             });

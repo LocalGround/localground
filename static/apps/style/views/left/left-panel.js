@@ -14,11 +14,12 @@ define(["jquery",
             template: Handlebars.compile(LeftPanelLayoutTemplate),
 
             initialize: function (opts) {
-                /*This Layout View relies on a Map model which gets set from the change-map event, 
+                /*This Layout View relies on a Map model which gets set from the change-map event,
                 which is triggered from the select-map-view.js */
                 this.app = opts.app;
                 this.render();
                 this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
+                //this.listenTo(this.app.vent, 'route-map', this.routeMap);
             },
             events: {
                 'click #new-layer-options a' : 'createNewLayer',
@@ -42,6 +43,7 @@ define(["jquery",
                 this.menu.show(this.sv);
                 this.skins.show(skv);
             },
+
             handleNewMap: function (model) {
                 // is 'this.app.model' necessary?
                 var ps = new PanelStylesView({
@@ -63,6 +65,7 @@ define(["jquery",
 
                 //replace the LayerListView:
                 this.layers.show(this.lv);
+                this.app.vent.trigger('ready-for-routing');
             },
             hidePanel: function (e) {
                 $(e.target).removeClass("hide").addClass("show");
@@ -94,10 +97,10 @@ define(["jquery",
                 if (!confirm("Are you sure you want to delete this map?")) {
                     return;
                 }
-                
+
                 // delete marker overlays from selected map's layers
                 this.lv.children.call("deleteOverlays");
-                
+
                 // delete selected map's layers
                 var listModel;
                 while (listModel = this.lv.collection.first()) {
@@ -109,14 +112,14 @@ define(["jquery",
 
                 // re-render menu region
                 this.menu.show(this.sv, {forceShow: true});
-            
+
                 //rerender layers
                 //this.app.vent.trigger('update-layer-list');
-                
+
                 // resets the map list so the correct layers are displayed
                 this.app.vent.trigger('update-map-list');
 
-                // hide the right panel if it is open; 
+                // hide the right panel if it is open;
                 //necessary so the user cannot edit a non-existent layer
                 this.app.vent.trigger("hide-right-panel");
             }

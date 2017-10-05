@@ -24,7 +24,7 @@ define(["jquery",
                 return {
                     noItems: (this.collection.length === 0),
                     map: this.activeMap,
-                    name: name, 
+                    name: name,
                     previewURL: slug
                 }
             },
@@ -35,8 +35,12 @@ define(["jquery",
                         'change #map-select': 'setActiveMap',
                         'click .add-map': 'showAddMapModal',
                         'click .selected-map': 'showMapList',
-                        'click .map-item': 'selectMap',  
-                        'click .map-edit': 'editMap'
+                        'click .map-item': 'selectMap',
+                        'click .map-edit': 'editMap',
+                        'click .map-select-option': 'showMapList',
+                        'click .map-dropdown': 'showMapList'
+                        //'click': 'hideMapList'//,
+                       // 'click .map-edit': 'editMap'
                     }
                 );
             },
@@ -53,7 +57,7 @@ define(["jquery",
                 } else {
                     this.drawOnce();
                 }
-                
+
                 $('body').click(this.hideMapList.bind(this));
 
                 this.modal = new Modal();
@@ -61,12 +65,19 @@ define(["jquery",
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
                 this.listenTo(this.app.vent, "edit-map", this.updateMap);
                 this.listenTo(this.app.vent, 'update-map-list', this.setInitialModel);
+                this.listenTo(this.app.vent, 'route-map', this.getSelectedMap);
+                this.listenTo(this.app.vent, 'route-new-map', this.showAddMapModal);
+            },
+
+            getSelectedMap: function(mapId) {
+                var map = this.collection.get(mapId);
+                this.setActiveMap(map);
             },
 
             setInitialModel: function () {
                 console.log('set intial map');
 
-                // on initialize, pass the first model in the collection 
+                // on initialize, pass the first model in the collection
                 // to be set as the active map
                 this.setActiveMap(this.collection.at(0));
 
@@ -110,7 +121,7 @@ define(["jquery",
                 this.map = map;
                 this.map.save(null, {
                     success: function () {
-                        that.modal.hide();               
+                        that.modal.hide();
                         that.render();
                     }
                 });
@@ -129,7 +140,7 @@ define(["jquery",
 
                 var layers = new Layers(null, {mapID: this.map.get("id")});
                 this.map.set("layers", layers);
-             
+
                 dm.each(function (collection) {
                    if (collection.length < 1) {
                         return;
@@ -164,7 +175,7 @@ define(["jquery",
                             success: console.log('layers saved successfully'),
                             error: function (model, response){
                                 var messages = JSON.parse(response.responseText);
-                                console.log(messages);                                
+                                console.log(messages);
                             }
                         });;
                     }});
@@ -183,9 +194,9 @@ define(["jquery",
                 if (this.collection.length == 0) {
                     return;
                 }
-        
-                var selectedMapModel = map, 
-                that = this;
+
+                var selectedMapModel = map,
+                    that = this;
                 this.activeMap = map;
                 selectedMapModel.fetch({ success: function () {
                     that.setCenterZoom(selectedMapModel);
@@ -193,7 +204,7 @@ define(["jquery",
                     that.app.vent.trigger("change-map", selectedMapModel);
                     that.app.vent.trigger("hide-right-panel");
                     that.render();
-                }}); 
+                }});
             },
 
             selectMap: function () {
@@ -227,7 +238,7 @@ define(["jquery",
                     mode: 'editExistingMap',
                     map: map
                 });
-                
+
                 this.modal.update({
                     class: "add-map",
                     view: createMapModel,
@@ -255,11 +266,11 @@ define(["jquery",
 
             showMapList: function() {
                 this.$el.find('.map-list').show();
-            }, 
+            },
 
             hideMapList: function(e) {
-                var $el = $(e.target);   
-                if (!$el.hasClass('selected-map-item') && !$el.hasClass('map-name') && !$el.hasClass('map-edit') && !$el.hasClass('selected-map-name') && !$el.hasClass('map-dropdown')) {
+                var $el = $(e.target);
+                if (!$el.hasClass('selected-map-item') && !$el.hasClass('map-name') && !$el.hasClass('map-edit') && !$el.hasClass('map-select-option') && !$el.hasClass('map-dropdown')) {
                     this.$el.find('.map-list').hide();
                 }
             },
