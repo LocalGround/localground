@@ -431,6 +431,10 @@ table.color-properties td:first-child {
     border-radius: 0 6px 6px 0;
 }
 
+.palette-item:only-child {
+    border-radius: 6px 6px 6px 6px;
+}
+
 .palette-wrapper {
     width: 200px;
     flex: 1;

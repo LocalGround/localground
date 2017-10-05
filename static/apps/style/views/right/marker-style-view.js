@@ -46,7 +46,24 @@ define(["jquery",
                 _.extend(this, opts);
                 console.log('MARKER STYLE VIEW INITIALIZE');
                 console.log(this.model);
+
+                /* reset layer type to 'basic' on initialize
+                 this is the easiest way to prevent the view from being initialized 
+                 as continuous or categorical when no such cont. or cat. data is available
+                 e.g. in case the user switches from a data source that has continuous data to one that doesn't
+                */
+                
+                var propertiesList = this.buildPropertiesList();
+                if (
+                    (propertiesList[1].length === 0 && this.model.get('layer_type') === 'continuous') || 
+                    (propertiesList[0].length === 0 && this.model.get('layer_type') === 'categorical')
+                ) {
+                    this.model.set('layer_type', 'basic'); 
+                }
+                
+                // and set the variable 
                 this.dataType = this.model.get('layer_type');
+
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
                 this.collection = new Symbols(this.model.get("symbols"));
                 console.log("data_source: " + this.data_source);
@@ -55,7 +72,7 @@ define(["jquery",
                 console.log(this.collection);
 
                 this.selectedProp = this.model.get('metadata').currentProp;
-                console.log(this.selectedProp);
+                console.log(this.model.get('layer_type'));
 
                 // important to render before createCorrectSymbol because createCorrectSymbol
                 // depends on info in the DOM (e.g. what property is selected)
@@ -68,11 +85,6 @@ define(["jquery",
             //    this.listenTo(this.app.vent, 'update-data-source', this.initialize);
                 this.listenTo(this.app.vent, 'update-map', this.updateMap);
             },
-            modelEvents: {
-         //       'change:data_source': 'initialize'
-            },
-            
-
 
             onRender: function () {
                 var that = this,
@@ -160,7 +172,7 @@ define(["jquery",
                 this.dataType = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
                 console.log(this.dataType);
                 this.model.set("layer_type", this.dataType);
-                //this.selectedProp = this.model.get('metadata').currentProp;
+                //this.selectedProp = this.model.get('metadata').currentProp; 
                 console.log(this.selectedProp);
            //     this.render();
                 
@@ -226,8 +238,8 @@ define(["jquery",
                 var that = this;
                 collection.getFields().models.forEach(function(log) {
                     var field = log.get("col_name");
-
-                    if (log.get("data_type") === "text" || log.get("data_type") === "choice") {
+                    console.log('fields: ', log);
+                    if (log.get("data_type") === "text" || log.get("data_type") === "choice" || log.get("data_type") === "boolean") {
                         that.categoricalList.push({
                             text: log.get("col_alias"),
                             value: log.get("col_name"),
@@ -293,10 +305,10 @@ define(["jquery",
             },
 
             contData: function() {
+                
                 this.buildPalettes();
                 var cssId = "#cont-prop";
                 this.setSelectedProp(cssId);
-                console.log(this.buildContinuousSymbols(this.getContInfo()));
                 this.setSymbols(this.buildContinuousSymbols(this.getContInfo()));
             },
 
@@ -460,9 +472,9 @@ define(["jquery",
             // gets and sets user-selected property from the dom
             //this.selectedProp is global so it can be used in template helper
             setSelectedProp: function (cssId) {
-            //    if (this.$el.find(cssId).val()) {
-            //        this.model.get('metadata').currentProp = this.$el.find(cssId).val();
-            //    }
+                if (this.$el.find(cssId).val()) {
+                    this.model.get('metadata').currentProp = this.$el.find(cssId).val();
+                }
                 console.log(this.selectedProp, this.model.get('metadata').currentProp);
                 this.selectedProp = this.model.get('metadata').currentProp;
                 console.log('changing selected proprty', this.selectedProp);

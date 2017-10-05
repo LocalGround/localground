@@ -12,6 +12,7 @@ define(["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log("filters initialized");
             }
 
         });

@@ -32,7 +32,7 @@ define(["marionette",
                 var dataSource = this.$el.find(".selected-data-source").val();
                 this.model.set("data_source", dataSource);
                 console.log(this.model);
-                this.app.vent.trigger('update-data-source');
+            //    this.app.vent.trigger('update-data-source');
             },
 
 

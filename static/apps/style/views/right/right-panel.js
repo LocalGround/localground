@@ -14,9 +14,17 @@ define(["jquery",
             template: Handlebars.compile(RightPanelLayoutTemplate),
             initialize: function (opts) {
                 _.extend(this, opts);
+                if (!this.model) {
+                    alert('a model is required');
+                }
+                console.log("right panel",this.model);
                 this.render();
-                this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
+                
+              //  this.render();
+              //  this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
+                this.listenTo(this.app.vent, 'show-right-regions', this.createLayer);
                 this.listenTo(this.app.vent, 'hide-right-panel', this.hidePanel);
+                this.listenTo(this.app.vent, 'update-data-source', this.initialize);
             },
 
             events: {
@@ -25,6 +33,10 @@ define(["jquery",
                 "click .style-basic-tab" : "showMarkerStyleRegion",
                 'click .hide': 'hidePanel',
                 'click .show': 'showPanel'
+            },
+
+            modelEvents: {
+                'change:data_source': 'createMSV'
             },
 
             regions: {
@@ -36,35 +48,50 @@ define(["jquery",
             onRender: function () {
                 // only load views after the LayoutView has
                 // been rendered to the screen:
-
+                this.createLayer();
                 var frv = new FilterRulesView({ app: this.app });
                 this.filterRules.show(frv);
 
             },
 
-            createLayer: function (layer, collection) {
-                //console.log("right panel createLayer() triggered. 1. layer, 2. collection", layer, collection);
-                this.triggerShowPanel();
-                this.model = layer;
-                this.collection = collection;
+            createMSV: function () {
+                var msv = new MarkerStyleView({
+                    app: this.app,
+                    model: this.model
+                });
+                this.getRegion('markerStyle').show(msv);
+            },
+
+            createDSV: function () {
                 var dsv = new DataSourceView({
                     app: this.app,
                     model: this.model
                 });
-                this.msv = new MarkerStyleView({
+            },
+
+
+            // this need to moved to the style app and pased into the right hand panel
+            // and RHP should be created only when the user pressed 'edit' or 'add layer'
+            // model and lyaer will be created like:
+            // 
+            createLayer: function (layer, collection) {
+                this.triggerShowPanel();
+              //  this.model = layer;
+              //  this.collection = collection;
+                var dsv = new DataSourceView({
                     app: this.app,
                     model: this.model
                 });
-                this.frv = new FilterRulesView({
+                var frv = new FilterRulesView({
                     app: this.app,
                     model: this.model
                 });
+                
                 this.dataSource.show(dsv);
-                this.markerStyle.show(this.msv);
-                this.filterRules.show(this.frv);
-                this.app.vent.trigger("re-render");
+                this.filterRules.show(frv);
+                this.createMSV();
                 this.updateSourceCode();
-                this.saveLayer();
+              //  this.saveLayer();
             },
 
             updateSourceCode: function () {

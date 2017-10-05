@@ -39,6 +39,15 @@ define(["jquery",
                // this.$el.addClass('selected-layer');
                 this.$el.attr('id', this.model.id);
                 //console.log(this.model, this.model.id);
+                //this.$el.find('input').prop('checked', true);
+
+                // click input to display icons if not already displaying
+                if (this.$el.find('input').prop('checked', false)) {
+                    this.$el.find('input').click();
+                }
+                
+               // this.showHideOverlays();
+                console.log(this.$el.find('input'));
                 this.app.vent.trigger('handle-selected-layer', this.model.id);
                 this.app.vent.trigger("edit-layer", this.model, this.collection);
             },
@@ -105,6 +114,7 @@ define(["jquery",
             },
 
             showOverlays: function () {
+                console.log('show overlays');
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.showAll();
                 });
@@ -126,6 +136,7 @@ define(["jquery",
             },
 
             showHideOverlays: function () {
+                console.log('showHide has been triggered');
                 this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
                 if (this.model.get("metadata").isShowing) {
                     this.showOverlays();

@@ -65,7 +65,7 @@ define(["marionette",
                 console.log("createNewLayer triggered", this.app.selectedMapModel);
                 var layer = new Layer({
                     map_id: this.app.selectedMapModel.id,
-                    data_source: "photos", //default
+                    data_source: "markers", //default
                     layer_type: "basic",
                     filters: {},
                     symbols: [{
@@ -77,7 +77,7 @@ define(["marionette",
                     title: "Layer 1"
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);
-                this.showSection();
+                //this.showSection();
                 /*
                 if (e) {
                     e.preventDefault();
