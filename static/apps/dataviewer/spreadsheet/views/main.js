@@ -13,12 +13,13 @@ define(["jquery",
         "models/field",
         "handsontable",
         "text!../templates/spreadsheet.html",
+        "text!../templates/create-field.html",
         "lib/audio/audio-player",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
-        Record, Marker, Photos, Audio, Videos, CreateFieldView, Field, Handsontable, SpreadsheetTemplate,
-        AudioPlayer, Carousel) {
+        Record, Marker, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
+        SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -703,24 +704,13 @@ define(["jquery",
             },
 
             showCreateFieldForm: function () {
-                // see the apps/gallery/views/toolbar-dataview.js function
-                // to pass the appropriate arguments:
-
-                /*
-                * It appears that the field child view
-                * has all the necessary functions and variables that it works
-                * the create field has no real functionality besides labels
-                * will need to merge the tweo seperate things
-                * into one unified file to create and update fields
-                * alone or grouped under the form
-                */
                 var formID = this.app.dataType.split("_")[1];
                 var fieldView = new CreateFieldView({
                     formID: formID,
                     fields: this.fields,
                     app: this.app,
-                    model: new Field(null, { id: formID }) //,
-                    //template: Handlebars.compile(OtherTemplate)
+                    model: new Field(null, { id: formID }),
+                    template: Handlebars.compile(CreateFieldTemplate)
                 });
                 this.app.vent.trigger('show-modal', {
                     title: "Create New Column",

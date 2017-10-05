@@ -1,49 +1,73 @@
-<div id="model-form">
+<table>
+    <tr id="field-name">
+        <td>
+            Field Name
+        </td>
+        <td>
+            <input type="text" class="fieldname" placeholder="field name" value="{{ col_alias }}">
+            {{#if errorFieldName}}<span>Field Name Missing</span>{{/if}}
+            {{#if serverErrorMessage}}<span>{{serverErrorMessage}}</span>{{/if}}
+        </td>
+    </tr>
+    <tr id="field-data-type">
+        <td>
+            Field Data Type
+        </td>
+        <td>
+            <select class="fieldType">
+                <option value="-1">Select One</option>
+                <option value="text" {{#ifequal data_type "text"}} SELECTED {{/ifequal}}>Text</option>
+                <option value="integer"{{#ifequal data_type "integer"}} SELECTED {{/ifequal}}>Integer</option>
+                <option value="boolean"{{#ifequal data_type "boolean"}} SELECTED {{/ifequal}}>Yes/No</option>
+                <option value="decimal" {{#ifequal data_type "decimal"}} SELECTED {{/ifequal}}>Decimal</option>
+                <option value="date-time"{{#ifequal data_type "date-time"}} SELECTED {{/ifequal}}>Date / Time</option>
+                <option value="rating"{{#ifequal data_type "rating"}} SELECTED {{/ifequal}}>Rating</option>
+                <option value="choice"{{#ifequal data_type "choice"}} SELECTED {{/ifequal}}>Choice</option>
+            </select>
 
-    <!-- Cannot work this way -->
-    {{#ifequal data_type "rating"}}
-    <!-- Make this list the new extras list to reduce confusion for users -->
-        <span class ="extras">
-            <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
-            <table>
-                {{#each extraList}}
-                <tr class="rating-row">
-                    <td>
-                        <input type="text" class="rating-value" placeholder="Type rating value" value="{{this.value}}" />
-                        {{#if this.errorRatingValue}}<span class="ratingError">Must Be a Number</span>{{/if}}
-                    </td>
-                    <td>
-                        <input type="text" class="rating-name" placeholder="Type new rating" value="{{this.name}}" />
-                        {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
-                    </td>
-                    <td>
-                        <a href="#" class="remove-rating">&times;</a>
-                    </td>
-                </tr>
-                {{/each}}
-            </table>
-        </span>
+            {{#ifequal data_type "rating"}}
+            <!-- Make this list the new extras list to reduce confusion for users -->
+                <span class ="extras">
+                    <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
+                    <table>
+                        {{#each extraList}}
+                        <tr class="rating-row">
+                            <td>
+                                <input type="text" class="rating-value" placeholder="Type rating value" value="{{this.value}}" />
+                                {{#if this.errorRatingValue}}<span class="ratingError">Must Be a Number</span>{{/if}}
+                            </td>
+                            <td>
+                                <input type="text" class="rating-name" placeholder="Type new rating" value="{{this.name}}" />
+                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
+                            </td>
+                            <td>
+                                <a href="#" class="remove-rating">&times;</a>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </table>
+                </span>
 
-    {{/ifequal}}
+            {{/ifequal}}
 
-    {{#ifequal data_type "choice"}}
-        <span class="extras">
-            <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>
-            <table>
-                {{#each extraList}}
-                <tr class="choice-row">
-                    <td>
-                        <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
-                        {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
-                    </td>
-                    <td>
-                        <a href="#" class="remove-choice">&times;</a>
-                    </td>
-                </tr>
-                {{/each}}
-            </table>
-        </span>
-    {{/ifequal}}
-
-
-</div>
+            {{#ifequal data_type "choice"}}
+                <span class="extras">
+                    <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>
+                    <table>
+                        {{#each extraList}}
+                        <tr class="choice-row">
+                            <td>
+                                <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
+                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
+                            </td>
+                            <td>
+                                <a href="#" class="remove-choice">&times;</a>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </table>
+                </span>
+            {{/ifequal}}
+        </td>
+    </tr>
+</table>
