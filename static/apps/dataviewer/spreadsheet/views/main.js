@@ -716,7 +716,7 @@ define(["jquery",
                     title: "Create New Column",
                     view: fieldView,
                     saveFunction: fieldView.saveField,
-                    width: 400,
+                    width: 600,
                     height: 300
                 });
             },

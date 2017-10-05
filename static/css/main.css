@@ -1687,7 +1687,7 @@ tbody .failure-message, tbody .success-message {
 .carousel-caption {
     display: none;
     color: #999;
-    
+
 }
 
 .carousel-caption-wrapper {
@@ -2354,6 +2354,19 @@ span.plus {
 
 .fieldTable > tbody > tr, .fieldTable > thead > tr {
     border-bottom: solid 1px #F0F0F0 !important;
+}
+
+.create-field-label{
+    font-size: 16;
+}
+
+.create-field-table{
+    padding: 15px 5px 15px 5px;
+}
+
+.create-field-table > tr > td{
+    padding: 15px 5px 15px 5px;
+    flex: 2;
 }
 /*
   Ratings
