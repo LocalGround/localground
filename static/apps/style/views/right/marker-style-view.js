@@ -170,22 +170,16 @@ define(["jquery",
 
             selectDataType: function (e) {
                 this.dataType = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
-                console.log(this.dataType);
                 this.model.set("layer_type", this.dataType);
-                //this.selectedProp = this.model.get('metadata').currentProp; 
-                console.log(this.selectedProp);
-           //     this.render();
                 
                 if (this.dataType == 'continuous') {
                     this.selectedProp = this.continuousList[0].value;
                     this.model.get('metadata').currentProp = this.continuousList[0].value;
-                    console.log('its continuous; SELECTED PROP: ',  this.selectedProp);
                 }
 
                 if (this.dataType == 'categorical') {
                     this.selectedProp = this.categoricalList[0].value;
                     this.model.get('metadata').currentProp = this.categoricalList[0].value;
-                    console.log('its categorical; SELECTED PROP: ', this.selectedProp);
                 }
 
                 this.createCorrectSymbols();
@@ -238,7 +232,6 @@ define(["jquery",
                 var that = this;
                 collection.getFields().models.forEach(function(log) {
                     var field = log.get("col_name");
-                    console.log('fields: ', log);
                     if (log.get("data_type") === "text" || log.get("data_type") === "choice" || log.get("data_type") === "boolean") {
                         that.categoricalList.push({
                             text: log.get("col_alias"),
@@ -336,8 +329,8 @@ define(["jquery",
                         "strokeWeight": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-weight").val()), 1),
                         "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
                         "width": this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
-                        "shape": this.$el.find(".global-marker-shape").val(),
-                        "fillColor": "#" + this.selectedColorPalette[counter],
+                        "shape": this.model.get('symbols')[counter].shape || this.$el.find(".global-marker-shape").val(),
+                        "fillColor": this.model.get('symbols')[counter].color || "#" + this.selectedColorPalette[counter],
                         "strokeColor": this.model.get("metadata").strokeColor,
                         "id": (counter + 1)
                     });

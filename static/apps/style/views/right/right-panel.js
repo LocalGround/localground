@@ -70,7 +70,7 @@ define(["jquery",
             },
 
 
-            // this need to moved to the style app and pased into the right hand panel
+            // this need to moved to the style app and passed into the right hand panel
             // and RHP should be created only when the user pressed 'edit' or 'add layer'
             // model and lyaer will be created like:
             // 
@@ -141,7 +141,7 @@ define(["jquery",
                // this.model.set("title", title);
                // this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
-                //console.log("saveLayer() triggered", this.model.toJSON());
+                console.log("saveLayer() triggered", this.model);
                 //console.log(this.model.urlRoot);
 
                 this.model.save(null, {
@@ -154,7 +154,7 @@ define(["jquery",
                         }
                     },
                     success: function () {
-                        //console.log('success', that.model.get("metadata"));
+                        console.log('success', that.model);
                         that.collection.add(that.model);
                         that.app.layerHasBeenSaved = true;
                         that.app.layerHasBeenAltered = false;
