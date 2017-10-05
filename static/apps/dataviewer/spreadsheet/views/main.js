@@ -704,6 +704,15 @@ define(["jquery",
             showCreateFieldForm: function () {
                 // see the apps/gallery/views/toolbar-dataview.js function
                 // to pass the appropriate arguments:
+
+                /*
+                * It appears that the field child view
+                * has all the necessary functions and variables that it works
+                * the create field has no real functionality besides labels
+                * will need to merge the tweo seperate things
+                * into one unified file to create and update fields
+                * alone or grouped under the form
+                */
                 var fieldView = new CreateFieldView({
                     formID: this.app.dataType.split("_")[1],
                     fields: this.fields,
@@ -713,8 +722,8 @@ define(["jquery",
                     title: "Create New Column",
                     view: fieldView,
                     saveFunction: fieldView.saveToDatabase,
-                    width: 300,
-                    height: 100
+                    width: 400,
+                    height: 300
                 });
             },
 
