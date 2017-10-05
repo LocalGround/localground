@@ -166,14 +166,9 @@ define([
 
         setDataType: function () {
             this.model.set("data_type", this.$el.find(".fieldType").val());
-            if (this.model.get("data_type") == "rating") {
-                this.render();
-            } else if (this.model.get("data_type") == "choice") {
-                this.render();
-            }
+            this.render();
         },
         saveRatingsToModel: function () {
-
             this.model.set("extras", this.ratingsList);
         },
 

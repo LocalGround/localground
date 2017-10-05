@@ -710,7 +710,8 @@ define(["jquery",
                     fields: this.fields,
                     app: this.app,
                     model: new Field(null, { id: formID }),
-                    template: Handlebars.compile(CreateFieldTemplate)
+                    template: Handlebars.compile(CreateFieldTemplate),
+                    tagName: "div"
                 });
                 this.app.vent.trigger('show-modal', {
                     title: "Create New Column",
