@@ -170,14 +170,13 @@ define([
                 childView = that.children.findByModel(model);
                 console.log(childView);
                 success = success && childView.validateField(i + 1);
-                if (!success) return;
-                that.wait(100);
+                if (!success) break;
             });
+            return success
 
         },
 
         saveFields: function () {
-            var success = true;
             this.initCollection();
             var that = this,
                 $rows = this.$el.find("#fieldList > tr"),
@@ -189,8 +188,7 @@ define([
                 model = that.collection.getModelByAttribute('temp_id', tempID);
                 childView = that.children.findByModel(model);
                 console.log(childView);
-                success = success && childView.saveField(i + 1);
-                if (!success) return;
+                childView.saveField(i + 1);
                 that.wait(100);
             });
         },
