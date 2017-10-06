@@ -197,6 +197,34 @@ define([
                 this.saveChoicesToModel();
             }
 
+            this.model.save(null, {
+                success: function () {
+                    if (that.parent) {
+                        //if we're in the "Edit Site Types View"
+                        that.app.vent.trigger('success-message', "Child field has been saved.");
+                        that.parent.renderWithSaveMessages();
+                    } else {
+                        //if we're in the spreadsheet "Add Field" view
+                        that.model.set("ordering", that.fields.length);
+                        that.fields.add(that.model);
+                        that.app.vent.trigger('success-message', "New Field added");
+                        that.app.vent.trigger("render-spreadsheet");
+                        that.app.vent.trigger("hide-modal");
+                    }
+
+                },
+                error: function (model, response) {
+                    messages = JSON.parse(response.responseText);
+                    that.model.serverErrorMessage = messages.detail;
+                    if (that.parent) {
+                        that.parent.renderWithSaveMessages();
+                    }
+                    that.app.vent.trigger('error-message', "Child field has not been saved.");
+                }
+            });
+            this.render();
+
+            /*
             if (!this.model.errorFieldName && !this.model.errorFieldType &&
                 this.validateRating() && this.validateChoice()){
                 this.model.save(null, {
@@ -228,6 +256,12 @@ define([
                 console.log('rendering...');
                 this.render();
             }
+            //*/
+
+            /*
+                console.log('rendering...');
+                this.render();
+            */
         },
         validate: function (fieldName, fieldType) {
             this.model.errorFieldName = this.model.errorFieldType = false;
@@ -238,6 +272,22 @@ define([
             if (fieldType === "-1") {
                 this.model.errorFieldType = true;
             }
+            if (this.model.errorFieldName){
+                return "Cannot have empty field name."
+            }
+
+            if (this.model.errorFieldType){
+                return "Need to select a data type."
+            }
+
+            if (!this.validateRating()){
+                return "Both rating name and value must be filled."
+            }
+
+            if(this.validateChoice()){
+                return "Need to pick name for all choices."
+            }
+
         },
 
         validateRating: function () {

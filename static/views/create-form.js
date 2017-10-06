@@ -116,10 +116,11 @@ define([
             this.model.set('caption', caption);
             this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
             this.model.set('project_ids', [this.app.getProjectID()]);
+            // Some way, there has to be a condition to
+            // instantly trigger error when zero fields have name
             this.model.save(null, {
                 success: function () {
                     that.saveFields();
-                    // Not quite there yet
                     key = "form_" + that.model.id;
                     that.app.vent.trigger("create-collection", key);
                     that.app.vent.trigger('success-message', "The form was saved successfully");

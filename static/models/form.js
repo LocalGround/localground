@@ -33,6 +33,7 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
                 field.set("data_type", fieldType);
                 field.set("is_display_field", displayField);
                 field.set("ordering", ordering);
+                field.validate();
                 field.save(null, {
                     success: function () {
                         //that.getFields();

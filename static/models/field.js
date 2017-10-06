@@ -26,6 +26,14 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 }
                 return '/api/0/forms/' + this.form.get("id") + '/fields/';
             },
+            validate(){
+                if (this.get('col_alias').trim() === ""){
+                    return "Need to give name for the field";
+                }
+                if (!this.get('data_type')){
+                    return "Need to give data type";
+                }
+            },
             initialize: function (data, opts) {
                 // This had to be made dynamic because there are different Fields
                 // for each form
