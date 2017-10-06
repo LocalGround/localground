@@ -49,12 +49,17 @@ define(["underscore", "collections/dataTypes", "models/base"],
             validate: function (attrs, options) {
                 this.errorFieldName = this.errorFieldType = false;
                 this.serverErrorMessage = null;
+                this.set("errorFieldName", false);
+                this.set("errorFieldType", false);
+                this.set("errorRatingName", false);
+                this.set("errorRatingValue", false);
+
                 if (attrs.col_alias.trim() === "") {
                     this.set("errorFieldName", true);
                     return "Cannot have empty field name."
                 }
                 if (attrs.data_type === "-1") {
-                    this.set("errorFielType", true);
+                    this.set("errorFieldType", true);
                     return "Need to select a data type."
                 }
                 if (!this.validateRating(attrs)) {
