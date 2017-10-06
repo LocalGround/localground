@@ -102,6 +102,8 @@ define(["jquery",
             },
 
             initMapOverlays: function () {
+                console.log('initMapOverlays');
+                console.log(this.model.getSymbols());
                 // create an MarkerOverlays for each symbol in the
                 // layer.
                 this.markerOverlayList = [];
@@ -124,7 +126,7 @@ define(["jquery",
                         collection: matchedCollection,
                         app: that.app,
                         iconOpts: symbol.toJSON(),
-                        isShowing: false
+                        isShowing: true
                     });
                     that.markerOverlayList.push(overlays);
                 });

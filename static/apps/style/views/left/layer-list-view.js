@@ -89,7 +89,8 @@ define(["marionette",
                         "rule": "sculptures > 0",
                         "title": "At least 1 sculpture"
                     }],
-                    title: "Layer 1"
+                    title: "Layer 1", 
+                    newLayer: true
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);
                 //this.showSection();

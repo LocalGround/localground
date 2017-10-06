@@ -134,6 +134,7 @@ define(["jquery",
                // this.model.set("title", title);
                // this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
+                this.model.set('newLayer', false);
                 console.log("saveLayer() triggered", this.model);
                 //console.log(this.model.urlRoot);
 

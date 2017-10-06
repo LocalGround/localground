@@ -66,18 +66,24 @@ define(["jquery",
 
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
                 this.collection = new Symbols(this.model.get("symbols"));
-                console.log("data_source: " + this.data_source);
-                console.log("dataType: " + this.dataType);
-                console.log("collection: ");
-                console.log(this.collection);
 
                 this.selectedProp = this.model.get('metadata').currentProp;
-                console.log(this.model.get('layer_type'));
 
                 // important to render before createCorrectSymbol because createCorrectSymbol
                 // depends on info in the DOM (e.g. what property is selected)
                 this.render();
-                this.createCorrectSymbols();
+               // this.createCorrectSymbols();
+                console.log(this.model.get("symbols"));
+                
+                if (this.collection.at(0).newLayer === true) {
+                    console.log('condition 1, create correct symbol');
+                    this.createCorrectSymbols();
+                } else {
+                    console.log('condition 2, dont create correct symbol, just build palettes');
+                    this.buildPalettes();
+                    this.updateMapAndRender();
+                }
+                
 
                 $('body').click(this.hideColorRamp);
 
@@ -295,6 +301,7 @@ define(["jquery",
                 } else if (this.dataType == "basic") {
                     this.simpleData();
                 }
+                console.log(this.model);
             },
 
             contData: function() {
@@ -320,6 +327,10 @@ define(["jquery",
             buildContinuousSymbols: function (cont) {
                 var counter = 0,
                 selected = this.selectedProp;
+                if (!this.layerDraft.continuous === null) {
+                    this.model.set('symbols', this.layerDraft.continuous);
+                    console.log("resetting symbols", this.model);
+                } 
                 this.layerDraft.continuous = new Symbols();
                 while (cont.currentFloor < cont.max) {
                     this.layerDraft.continuous.add({
@@ -329,16 +340,38 @@ define(["jquery",
                         "strokeWeight": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-weight").val()), 1),
                         "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
                         "width": this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
-                        "shape": this.model.get('symbols')[counter].shape || this.$el.find(".global-marker-shape").val(),
-                        "fillColor": this.model.get('symbols')[counter].color || "#" + this.selectedColorPalette[counter],
+                       // "shape": this.ifIndividualContVals(this.$el.find(".global-marker-shape").val(), 'shape', counter),
+                      //  "fillColor": this.ifIndividualContVals("#" + this.selectedColorPalette[counter], 'fillColor', counter),
+                      //  "shape": this.model.get('symbols')[counter].shape || this.$el.find(".global-marker-shape").val(),
+                      //  "fillColor": this.model.get('symbols')[counter].color || "#" + this.selectedColorPalette[counter],
+                        "shape": this.$el.find(".global-marker-shape").val(),
+                        "fillColor": "#" + this.selectedColorPalette[counter],
                         "strokeColor": this.model.get("metadata").strokeColor,
-                        "id": (counter + 1)
+                        "id": (counter + 1),
+                        "newLayer": false
                     });
                     counter++;
                     cont.currentFloor = Math.round((cont.currentFloor + cont.segmentSize)*100)/100;
                     //console.log(cont.currentFloor);
                 }
                 return this.layerDraft.continuous;
+            },
+
+            /* this function is used to ensure that if unique values exist for individual markers
+                (due to modifications via the marker-style children views), 
+                then they will not be overwritten by the 'global' symbol builder
+            */
+            ifIndividualContVals: function(globalVal, possibleAttr, counter) {
+                console.log(globalVal, possibleAttr, counter);
+                if (this.model.get('symbols')[counter] && this.model.get('symbols').length > 1) {
+                    console.log(this.model.get('symbols')[counter]);
+                    var indVal = this.model.get('symbols')[counter][possibleAttr];
+                    console.log("indVal for " + possibleAttr + ": ", indVal);
+                    return indVal;
+                } else {
+                    console.log("global Val: ", globalVal);
+                    return globalVal;
+                }
             },
 /*
             manageDefault: function (input) {
@@ -372,7 +405,8 @@ define(["jquery",
                         "fillColor": "#" + that.selectedColorPalette[paletteCounter > 7 ? paletteCounter = 0 : paletteCounter],
                         "strokeColor": that.model.get("metadata").strokeColor,
                         "id": idCounter,
-                        "instanceCount": cat.instanceCount[item]
+                        "instanceCount": cat.instanceCount[item],
+                        "newLayer": false
                     });
 
                     idCounter++;
@@ -441,6 +475,7 @@ define(["jquery",
             },
 
             buildSimpleSymbols: function (key) {
+                console.log('build simple');
                 name = this.app.dataManager.getCollection(key).getTitle();
 
                // if (this.model.getSymbols().length > 0) {
@@ -456,7 +491,8 @@ define(["jquery",
                         "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
                         "strokeColor": this.model.get("metadata").strokeColor,
                         'width': this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
-                        "id": 1
+                        "id": 1,
+                        "newLayer": false
                     }]);
               //  }
                 return this.layerDraft.simple;
