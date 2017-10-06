@@ -120,11 +120,13 @@ define([
             // instantly trigger error when zero fields have name
             this.model.save(null, {
                 success: function () {
-                    that.saveFields();
-                    key = "form_" + that.model.id;
-                    that.app.vent.trigger("create-collection", key);
-                    that.app.vent.trigger('success-message', "The form was saved successfully");
-                    that.app.vent.trigger('hide-modal');
+                    var success = that.saveFields();
+                    if (success) {
+                        key = "form_" + that.model.id;
+                        that.app.vent.trigger("create-collection", key);
+                        that.app.vent.trigger('success-message', "The form was saved successfully");
+                        that.app.vent.trigger('hide-modal');
+                    }
                 },
                 error: function () {
                     console.error("The form could not be saved");
@@ -146,6 +148,7 @@ define([
         },
 
         saveFields: function () {
+            var success = true;
             this.initCollection();
             var that = this,
                 $rows = this.$el.find("#fieldList > tr"),
@@ -157,7 +160,7 @@ define([
                 model = that.collection.getModelByAttribute('temp_id', tempID);
                 childView = that.children.findByModel(model);
                 console.log(childView);
-                childView.saveField(i + 1);
+                success = success && childView.saveField(i + 1);
                 that.wait(100);
             });
         },

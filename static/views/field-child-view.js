@@ -35,11 +35,11 @@ define([
         },
         templateHelpers: function () {
             var errorMessages = {
-                errorFieldType: this.model.errorFieldType,
+                /*errorFieldType: this.model.errorFieldType,
                 errorFieldName: this.model.errorFieldName,
+                */
                 serverErrorMessage: this.model.serverErrorMessage,
                 extraList: this.model.get("extras")
-
             };
             return errorMessages;
         },
@@ -55,13 +55,11 @@ define([
 
         setRatingsFromModel: function () {
             if (this.model.get("data_type") != "rating") { return; }
-            console.log("Loading Ratings");
             this.ratingsList = this.model.get("extras") || [];
         },
 
         setChoicesFromModel: function () {
             if (this.model.get("data_type") != "choice") { return; }
-            console.log("Loading Choices");
             this.choicesList = this.model.get("extras") || [];
         },
 
@@ -107,14 +105,11 @@ define([
                 var _rating_value = parseInt($row.find('.rating-value').val());
                 if (isNaN(_rating_value)) _rating_value = original_value;
 
-
-
                 that.ratingsList.push({
                     name: $row.find('.rating-name').val(),
                     value: _rating_value
                 });
             });
-            console.log(this.ratingsList);
             this.saveRatingsToModel();
         },
 
@@ -130,17 +125,10 @@ define([
                 $row;
             $rows.each(function () {
                 $row = $(this);
-
-                console.log($row);
-                console.log($row.find(".choice").val());
-
-                ///*
                 that.choicesList.push({
                     name: $row.find(".choice").val()
                 });
-                //*/
             });
-            console.log(this.choicesList);
             this.saveChoicesToModel();
         },
 
@@ -172,9 +160,7 @@ define([
             this.model.set("extras", this.ratingsList);
         },
 
-
         saveChoicesToModel: function () {
-
             this.model.set("extras", this.choicesList);
         },
         saveField: function () {
@@ -183,7 +169,7 @@ define([
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
                 messages;
-            this.validate(fieldName, fieldType);
+            //this.validate({"fieldName": fieldName, "fieldType": fieldType});
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
 
@@ -193,7 +179,7 @@ define([
 
             if (fieldType == "rating"){
                 this.saveRatingsToModel();
-            } else if (fieldType == "choice"){
+            } else if (fieldType == "choice") {
                 this.saveChoicesToModel();
             }
 
@@ -201,7 +187,6 @@ define([
                 success: function () {
                     if (that.parent) {
                         //if we're in the "Edit Site Types View"
-                        that.app.vent.trigger('success-message', "Child field has been saved.");
                         that.parent.renderWithSaveMessages();
                     } else {
                         //if we're in the spreadsheet "Add Field" view
@@ -218,109 +203,19 @@ define([
                     that.model.serverErrorMessage = messages.detail;
                     if (that.parent) {
                         that.parent.renderWithSaveMessages();
-                    }
-                    that.app.vent.trigger('error-message', "Child field has not been saved.");
-                }
-            });
-            this.render();
-
-            /*
-            if (!this.model.errorFieldName && !this.model.errorFieldType &&
-                this.validateRating() && this.validateChoice()){
-                this.model.save(null, {
-                    success: function () {
-                        if (that.parent) {
-                            //if we're in the "Edit Site Types View"
-                            that.app.vent.trigger('success-message', "Child field has been saved.");
-                            that.parent.renderWithSaveMessages();
-                        } else {
-                            //if we're in the spreadsheet "Add Field" view
-                            that.model.set("ordering", that.fields.length);
-                            that.fields.add(that.model);
-                            that.app.vent.trigger('success-message', "New Field added");
-                            that.app.vent.trigger("render-spreadsheet");
-                            that.app.vent.trigger("hide-modal");
-                        }
-
-                    },
-                    error: function (model, response) {
-                        messages = JSON.parse(response.responseText);
-                        that.model.serverErrorMessage = messages.detail;
-                        if (that.parent) {
-                            that.parent.renderWithSaveMessages();
-                        }
+                    } else {
                         that.app.vent.trigger('error-message', "Child field has not been saved.");
                     }
-                });
+                }
+            });
+            if (!this.model.isValid()) {
+                that.app.vent.trigger('error-message', this.model.validationError);
+                this.render();
+                return false;
             } else {
-                console.log('rendering...');
                 this.render();
+                return true;
             }
-            //*/
-
-            /*
-                console.log('rendering...');
-                this.render();
-            */
-        },
-        validate: function (fieldName, fieldType) {
-            this.model.errorFieldName = this.model.errorFieldType = false;
-            this.model.serverErrorMessage = null;
-            if (fieldName.trim() === "") {
-                this.model.errorFieldName = true;
-            }
-            if (fieldType === "-1") {
-                this.model.errorFieldType = true;
-            }
-            if (this.model.errorFieldName){
-                return "Cannot have empty field name."
-            }
-
-            if (this.model.errorFieldType){
-                return "Need to select a data type."
-            }
-
-            if (!this.validateRating()){
-                return "Both rating name and value must be filled."
-            }
-
-            if(this.validateChoice()){
-                return "Need to pick name for all choices."
-            }
-
-        },
-
-        validateRating: function () {
-            // No need to check if incorrect type
-            if (this.model.get("data_type") != "rating") return true;
-            var errors = false;
-            for (var i = 0; i < this.ratingsList.length; ++i){
-                console.log(this.ratingsList[i]);
-                if (this.ratingsList[i].name.trim() === ""){
-                    this.ratingsList[i].errorRatingName = true;
-                    errors = true;
-                }
-                if (isNaN(parseInt(this.ratingsList[i].value))){
-                    this.ratingsList[i].errorRatingValue = true;
-                    errors = true;
-                }
-            }
-            return !errors;
-        },
-
-
-        validateChoice: function () {
-            // No need to check if incorrect type
-            if (this.model.get("data_type") != "choice") return true;
-            var errors = false;
-            for (var i = 0; i < this.choicesList.length; ++i){
-                console.log(this.choicesList[i]);
-                if (this.choicesList[i].name.trim() === ""){
-                    this.choicesList[i].errorRatingName = true;
-                    errors = true;
-                }
-            }
-            return !errors;
         },
 
         onRender: function () {

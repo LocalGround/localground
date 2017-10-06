@@ -26,14 +26,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 }
                 return '/api/0/forms/' + this.form.get("id") + '/fields/';
             },
-            validate(){
-                if (this.get('col_alias').trim() === ""){
-                    return "Need to give name for the field";
-                }
-                if (!this.get('data_type')){
-                    return "Need to give data type";
-                }
-            },
+
             initialize: function (data, opts) {
                 // This had to be made dynamic because there are different Fields
                 // for each form
@@ -52,14 +45,55 @@ define(["underscore", "collections/dataTypes", "models/base"],
                     this.url = this.urlRoot() + this.get("field") + "/";
                 }
                 Base.prototype.initialize.apply(this, arguments);
-            }/*,
-            toJSON: function () {
-                var json = Base.prototype.toJSON.call(this);
-                if (json.extras !== null) {
-                    json.extras = JSON.stringify(json.extras);
+            },
+            validate: function (attrs, options) {
+                this.errorFieldName = this.errorFieldType = false;
+                this.serverErrorMessage = null;
+                if (attrs.col_alias.trim() === "") {
+                    this.set("errorFieldName", true);
+                    return "Cannot have empty field name."
                 }
-                return json;
-            }*/
+                if (attrs.data_type === "-1") {
+                    this.set("errorFielType", true);
+                    return "Need to select a data type."
+                }
+                if (!this.validateRating(attrs)) {
+                    return "Both rating name and value must be filled."
+                }
+                if (!this.validateChoice(attrs)) {
+                    return "Need to pick name for all choices."
+                }
+            },
+
+            validateRating: function (attrs) {
+                // No need to check if incorrect type
+                if (attrs.data_type !== "rating") return true;
+                if (attrs.extras.length === 0 || !attrs.extras) return false;
+                for (var i = 0; i < attrs.extras.length; ++i) {
+                    if (attrs.extras[i].name.trim() === "") {
+                        this.set("errorRatingName", true);
+                        return false;
+                    }
+                    if (isNaN(parseInt(attrs.extras[i].value))){
+                        this.set("errorRatingValue", true);
+                        return false;
+                    }
+                }
+                return true;
+            },
+
+            validateChoice: function (attrs) {
+                // No need to check if incorrect type
+                if (attrs.data_type !== "choice") return true;
+                if (attrs.extras.length === 0 || !attrs.extras) return false;
+                for (var i = 0; i < attrs.extras.length; ++i) {
+                    if (attrs.extras[i].name.trim() === "") {
+                        this.set("errorRatingName", true);
+                        return false;
+                    }
+                }
+                return true;
+            }
         });
         return Field;
     });
