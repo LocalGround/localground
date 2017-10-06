@@ -163,13 +163,31 @@ define([
         saveChoicesToModel: function () {
             this.model.set("extras", this.choicesList);
         },
+        validateField: function(){
+
+            var that = this,
+                fieldName = this.$el.find(".fieldname").val(),
+                fieldType = this.$el.find(".fieldType").val()
+
+            var invalidField = fieldName.trim() === "" || fieldType == '-1';
+
+
+            if (!this.model.isValid()) {
+                if (!this.parent){
+                    this.app.vent.trigger('error-message', this.model.validationError);
+                }
+                return false;
+            } else {
+                return true;
+            }
+
+        },
         saveField: function () {
             var that = this,
                 fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
                 messages;
-            //this.validate({"fieldName": fieldName, "fieldType": fieldType});
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
 
@@ -208,14 +226,6 @@ define([
                     }
                 }
             });
-            if (!this.model.isValid()) {
-                that.app.vent.trigger('error-message', this.model.validationError);
-                this.render();
-                return false;
-            } else {
-                this.render();
-                return true;
-            }
         },
 
         onRender: function () {

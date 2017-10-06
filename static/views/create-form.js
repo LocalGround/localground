@@ -58,6 +58,9 @@ define([
             'blur .formName': 'setFormName',
             'blur .caption': 'setCaption'
         },
+        modelEvents: {
+            'error-message': 'modelErrorMessage'
+        },
         setFormName: function () {
             this.model.set('name', this.$el.find('.formName').val());
         },
@@ -101,6 +104,9 @@ define([
                 $row.remove();
             }
         },
+        modelErrorMessage(message){
+            this.app.vent.trigger('error-message', message);
+        },
         wait: function (ms) {
             var d = new Date(),
                 d2 = null;
@@ -118,6 +124,7 @@ define([
             this.model.set('project_ids', [this.app.getProjectID()]);
             // Some way, there has to be a condition to
             // instantly trigger error when zero fields have name
+
             this.model.save(null, {
                 success: function () {
                     var success = that.saveFields();
@@ -129,7 +136,8 @@ define([
                     }
                 },
                 error: function () {
-                    console.error("The form could not be saved");
+                    console.log("Error(Correct place) Form does not dave without fields");
+                    that.app.vent.trigger('error-message', "Cannot save with empty form or fields.");
                 }
             });
         },
@@ -147,6 +155,27 @@ define([
             this.collection = this.model.fields;
         },
 
+        validateFields: function(){
+
+            var success = true;
+            this.initCollection();
+            var that = this,
+                $rows = this.$el.find("#fieldList > tr"),
+                tempID,
+                model,
+                childView;
+            $rows.each(function (i) {
+                tempID = $(this).attr("id");
+                model = that.collection.getModelByAttribute('temp_id', tempID);
+                childView = that.children.findByModel(model);
+                console.log(childView);
+                success = success && childView.validateField(i + 1);
+                if (!success) return;
+                that.wait(100);
+            });
+
+        },
+
         saveFields: function () {
             var success = true;
             this.initCollection();
@@ -161,6 +190,7 @@ define([
                 childView = that.children.findByModel(model);
                 console.log(childView);
                 success = success && childView.saveField(i + 1);
+                if (!success) return;
                 that.wait(100);
             });
         },

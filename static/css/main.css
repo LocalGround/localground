@@ -2376,9 +2376,9 @@ span.plus {
 */
 
 .ratingError {
-    background-color: #FFDDDD;
-    color: #D22;
-    font-weight: bold;
+    /*background-color: #FFDDDD; */
+    color: #A22;
+    font-weight: normal;
 }
 
 
