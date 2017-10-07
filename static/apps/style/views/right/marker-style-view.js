@@ -80,7 +80,7 @@ define(["jquery",
                     this.createCorrectSymbols();
                 } else {
                     console.log('condition 2, dont create correct symbol, just build palettes');
-                    this.buildPalettes();
+                    this.buildPalettes(this.model.get('symbols').length);
                     this.updateMapAndRender();
                 }
                 

@@ -9,6 +9,8 @@ define(["jquery",
         var LayerListChild =  Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this);
+                console.log("Layer" + this.model.id + " is checked: " + this.model.get("metadata").isShowing);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
                // this.listenTo(this.app.vent, "route-layer", this.routerSendCollection);
@@ -19,10 +21,10 @@ define(["jquery",
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
-            className: "layer-column",
+         //   className: "layer-column",
             templateHelpers: function () {
                 return {
-                    isChecked: this.model.get("metadata").isShowing,
+                    isChecked: this.model.get("metadata").isShowing
                 };
             },
             markerOverlayList: null,
@@ -31,15 +33,15 @@ define(["jquery",
             },
             events: {
                 //edit event here, pass the this.model to the right panel
-                'click .edit' : 'sendCollection',
+            //    'click .edit' : 'sendCollection',
                 'click .layer-delete' : 'deleteLayer',
                 'change input': 'showHideOverlays'
             },
 
             sendCollection: function () {
                 this.$el.attr('id', this.model.id);
-                //console.log(this.model, this.model.id);
-                //this.$el.find('input').prop('checked', true);
+
+                console.log(this.app);
 
                 // click input to display icons if not already displaying
                 if (this.$el.find('input').prop('checked', false)) {
@@ -56,10 +58,23 @@ define(["jquery",
                 this.app.vent.trigger("edit-layer", this.model, this.collection);
             },
 
+            // triggered from the router
+            checkSelectedItem: function(layerId) {
+                console.log('check selected item', layerId);
+                    this.$el.attr('id', this.model.id);
+
+                    if (this.$el.find('input').prop('checked', false)) {
+                        this.$el.find('input').click();
+                    }
+                
+            },
+
             childRouterSendCollection: function (mapId, layerId) {
 
                 if (this.model.id == layerId) {
                     console.log("condition met, show layer", this);
+
+                    this.checkSelectedItem(layerId);
 
                     // This event actually triggers the 'createLayer()' function in right-panel.js layoutview
                     this.app.vent.trigger("edit-layer", this.model, this.collection);
@@ -102,8 +117,6 @@ define(["jquery",
             },
 
             initMapOverlays: function () {
-                console.log('initMapOverlays');
-                console.log(this.model.getSymbols());
                 // create an MarkerOverlays for each symbol in the
                 // layer.
                 this.markerOverlayList = [];
@@ -126,7 +139,7 @@ define(["jquery",
                         collection: matchedCollection,
                         app: that.app,
                         iconOpts: symbol.toJSON(),
-                        isShowing: true
+                        isShowing: false
                     });
                     that.markerOverlayList.push(overlays);
                 });
@@ -134,13 +147,13 @@ define(["jquery",
             },
 
             showOverlays: function () {
-                console.log('show overlays');
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.showAll();
                 });
             },
 
             hideOverlays: function () {
+                console.log('hide overlays');
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.hideAll();
                 });
@@ -158,6 +171,7 @@ define(["jquery",
             showHideOverlays: function () {
                 console.log('showHide has been triggered');
                 this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
+                console.log(this.model.get("metadata").isShowing);
                 if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
                 } else {

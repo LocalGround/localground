@@ -40,9 +40,17 @@ define(["marionette",
             },
 
             events: function () {
-                return _.extend(
-                    { 'click .add-layer' : 'createNewLayer' }                );
+                return _.extend({ 
+                    //'click .add-layer' : 'createNewLayer' 
+                });
             },
+
+            onRender: function() {
+                var something = '#' + 'layer' + '433';
+                $(something).css('color', 'green');
+                console.log($(something));
+            },
+
             showDropDown: function () {
                 this.$el.find("#new-layer-options").toggle();
             },
@@ -61,8 +69,7 @@ define(["marionette",
             // this just adds some css to indicate the selected layer
             addCssToSelectedLayer: function (id) {
                 this.$el.find('.layer-column').removeClass('selected-layer');
-                this.$el.find('#' + id).addClass('selected-layer');
-                console.log(this.childView);
+                this.$el.find('#' +'layer' + id).addClass('selected-layer');
             },
 
             createNewLayer: function (mapID) {
@@ -77,7 +84,6 @@ define(["marionette",
                     console.log("should exit createLayer()");
                     return;
                 }
-                console.log("createNewLayer triggered", this.app.selectedMapModel);
                 var layer = new Layer({
                     map_id: this.app.selectedMapModel.id,
                     data_source: "markers", //default
@@ -85,15 +91,14 @@ define(["marionette",
                     filters: {},
                     symbols: [{
                         "fillColor": "#7075FF",
-                        "width": 30,
-                        "rule": "sculptures > 0",
+                        "width": 20,
+                        "rule": "*",
                         "title": "At least 1 sculpture"
                     }],
                     title: "Layer 1", 
                     newLayer: true
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);
-                //this.showSection();
             }
 
         }));

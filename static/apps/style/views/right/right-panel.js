@@ -17,12 +17,9 @@ define(["jquery",
                 if (!this.model) {
                     alert('a model is required');
                 }
-                console.log("right panel",this.model);
-                this.render();
-
-              //  this.render();
+                this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
               //  this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
-                this.listenTo(this.app.vent, 'show-right-regions', this.createLayer);
+              //  this.listenTo(this.app.vent, 'show-right-regions', this.createLayer);
                 this.listenTo(this.app.vent, 'hide-right-panel', this.hidePanel);
                 this.listenTo(this.app.vent, 'update-data-source', this.initialize);
             },
@@ -81,10 +78,12 @@ define(["jquery",
                 });
                 
                 this.dataSource.show(dsv);
-                this.filterRules.show(frv);
                 this.createMSV();
                 this.updateSourceCode();
-              //  this.saveLayer();
+                if(!this.model.id) {
+                    console.log('SAVING LAYER INITIALLY');
+                    this.saveLayer();
+                }
             },
 
             updateSourceCode: function () {
@@ -141,7 +140,7 @@ define(["jquery",
                 this.model.save(null, {
                     error: function (model, response) {
                         var messages = JSON.parse(response.responseText);
-                        //console.log('error', messages);
+                        console.log('error', messages);
                         if (messages.non_field_errors) {
                             alert("You have already used the title '" + that.model.get("title") +
                             "' for another layer. Please choose a different title.");
@@ -149,7 +148,10 @@ define(["jquery",
                     },
                     success: function () {
                         console.log('success', that.model);
+                        //that.model.set('highlighted', true);
                         that.collection.add(that.model);
+                        that.app.vent.trigger('add-css-to-selected-layer', that.model.id);
+                        that.app.router.navigate('//' + that.model.get('map_id') + '/layers/' + that.model.id, {trigger: true});
                         that.app.layerHasBeenSaved = true;
                         that.app.layerHasBeenAltered = false;
                     }

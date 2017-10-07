@@ -76,6 +76,7 @@ define([
         },
 
         showRightLayout: function (layer, collection) {
+            console.log('from style app: showRightLayer()');
             var rightPanelView = new RightPanel({
                 app: this,
                 model: layer,

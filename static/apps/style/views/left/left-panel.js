@@ -55,6 +55,7 @@ define(["jquery",
                     model: model,
                     collection: model.getLayers()
                 });
+                console.log('left panel', model);
                 //set active model:
                 this.app.selectedMapModel = model;
                 this.app.model = model;
