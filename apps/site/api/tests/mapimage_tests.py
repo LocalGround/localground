@@ -10,29 +10,21 @@ def get_metadata():
     return {
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
-        'uuid': {'read_only': True, 'required': False, 'type': 'string' },
-        'north': {'read_only': True, 'required': False, 'type': 'field'},
-        'south': {'read_only': True, 'required': False, 'type': 'field'},
-        'east': {'read_only': True, 'required': False, 'type': 'field'},
-        'west': {'read_only': True, 'required': False, 'type': 'field'},
-        'geometry': {'read_only': True, 'required': False, 'type': 'geojson'},
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
-        'media_file': { 'type': 'string', 'required': True, 'read_only': False },
-        'file_path': {'type': 'field', 'required': False, 'read_only': True},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
-        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
-        'zoom': {'read_only': True, 'required': False, 'type': 'field'},
-        'source_print': {'read_only': False, 'required': False, 'type': 'field'},
-        'overlay_path': {'read_only': True, 'required': False, 'type': 'field'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
+        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
+        'source_print': {'read_only': False, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
-        'id': {'read_only': True, 'required': False, 'type': 'integer'},
-        'south': {'read_only': True, 'required': False, 'type': 'field'},
-        'name': {'read_only': False, 'required': False, 'type': 'string'},
+        'geometry': {'read_only': True, 'required': False, 'type': 'geojson'},
+        'overlay_path': {'read_only': True, 'required': False, 'type': 'field'},
+        'media_file': { 'type': 'string', 'required': True, 'read_only': False },
+        'file_path': {'type': 'field', 'required': False, 'read_only': True},
+        'file_name': {'read_only': True, 'required': False, 'type': 'field'},
         'uuid': {'read_only': True, 'required': False, 'type': 'string' },
-        'status': {'read_only': True, 'required': False, 'type': 'field' },
-        'file_name': {'read_only': True, 'required': False, 'type': 'field'}
+        'status': {'read_only': False, 'required': False, 'type': 'field' }
+
     }
 class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
 
@@ -77,7 +69,7 @@ class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
             self.assertNotEqual(path.find('/profile/map-images/'), -1)
             self.assertNotEqual(path.find(new_object.host), -1)
             self.assertTrue(len(path.split('/')[-2]) > 40)
-            
+
             # and also check the file exists in the file system:
             fname = new_object.original_image_filesystem()
             self.assertTrue(fname.find(new_object.uuid) > -1)
@@ -97,7 +89,7 @@ class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):
             "media_file": { "type": "string", "required": False, "read_only": True },
             'status': {'read_only': False, 'required': True, 'type': 'field' }
         })
-        
+
     def test_update_print_using_put(self, **kwargs):
         import os
         if os.environ.get('TRAVIS', False):
@@ -112,7 +104,7 @@ class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):
         # check status is initially "PROCESSED_SUCCESSFULLY"
         self.assertEqual(response.data.get('status'), models.StatusCode.PROCESSED_SUCCESSFULLY)
         self.assertFalse(response.data.get('source_print') == self.source_print.id)
-        
+
         # update status to "READY_FOR_PROCESSING"
         response = self.client_user.put(
             self.url,
@@ -130,4 +122,3 @@ class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):
         mapimage = models.MapImage.objects.get(id=self.mapimage.id)
         self.assertEqual(mapimage.status.id, models.StatusCode.READY_FOR_PROCESSING)
         self.assertEqual(response.data.get('source_print'), self.source_print.id)
-

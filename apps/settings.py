@@ -11,8 +11,8 @@ ADMINS = (
 )
 DEFAULT_FROM_EMAIL = '"Site Support" <%s>' % os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com')
 ADMIN_EMAILS = [os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com'), ]
-EMAIL_HOST = os.environ.get('HOST', '127.0.0.1') 
-EMAIL_PORT = os.environ.get('EMAIL_PORT', '25') 
+EMAIL_HOST = os.environ.get('HOST', '127.0.0.1')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', '25')
 EMAIL_HOST_USER = ''
 LOGIN_REDIRECT_URL = '/'
 EMAIL_HOST_PASSWORD = ''
@@ -32,7 +32,7 @@ PROTOCOL = 'https'
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
 SERVER_URL = '%s//%s' % (PROTOCOL, SERVER_HOST)
 
-FILE_ROOT = os.environ.get('FILE_ROOT', '/home/directory/for/localground') 
+FILE_ROOT = os.environ.get('FILE_ROOT', '/home/directory/for/localground')
 STATIC_MEDIA_DIR = 'static'
 STATIC_URL = '/static/'
 USER_MEDIA_DIR = 'userdata'
@@ -41,7 +41,7 @@ USER_MEDIA_DIR = 'userdata'
 STATIC_ROOT = '%s/%s' % (FILE_ROOT, STATIC_MEDIA_DIR)
 APPS_ROOT = '%s/apps' % FILE_ROOT
 USER_MEDIA_ROOT = '%s/%s' % (FILE_ROOT, USER_MEDIA_DIR)
-FONT_ROOT = '%s/css/fonts/' % STATIC_ROOT
+FONT_ROOT = '%s/assets/fonts/' % STATIC_ROOT
 TEMP_DIR = '%s/tmp/' % FILE_ROOT
 QR_READER_PATH = '%s/lib/barcodereader' % APPS_ROOT
 
@@ -77,11 +77,11 @@ DB_NAME = os.environ.get('DB_NAME', 'DB_NAME')             #Your Database Name
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis', #Code works w/PostGIS
-        'NAME': DB_NAME, 
+        'NAME': DB_NAME,
         'USER': DB_USER,
         'PASSWORD': DB_PASSWORD,
         'HOST': DB_HOST,
-        'PORT': DB_PORT, 
+        'PORT': DB_PORT,
     }
 }
 
@@ -101,7 +101,7 @@ TIME_INPUT_FORMATS = ('%I:%M:%S %p', '%H:%M:%S', '%H:%M')
 DATETIME_INPUT_FORMATS = []
 for date_format in DATE_INPUT_FORMATS:
     for time_format in TIME_INPUT_FORMATS:
-        DATETIME_INPUT_FORMATS.append(date_format + ' ' + time_format)  
+        DATETIME_INPUT_FORMATS.append(date_format + ' ' + time_format)
 DATETIME_INPUT_FORMATS = tuple(DATETIME_INPUT_FORMATS)
 
 # Language code for this installation. All choices can be found here:
@@ -247,7 +247,7 @@ DRAGON_URL='http://sd.localground.org:7777/' #remove port for prod
 #SWAMP_DRAGON_HOST - defaults to localhost
 #SWAMP_DRAGON_REDIS_DB - redis db number, defaults to 0
 #SWAMP_DRAGON - dict exposed to javascript users if you embed
-#                        {% load swampdragon_tags %} in a template with 
+#                        {% load swampdragon_tags %} in a template with
 #                        {% swampdragon_settings %} somewhere in the page
 SWAMP_DRAGON = {'um': 'okay'}
 '''
@@ -275,5 +275,3 @@ except NameError:
         from settings_local import *
     except ImportError:
         pass
-
-

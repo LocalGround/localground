@@ -84,33 +84,33 @@ class BaseGenericRelationMixin(models.Model):
     def photos(self):
         if self._photos is None:
             from localground.apps.site.models.photo import Photo
-            self._photos = self._get_filtered_entities(Photo)
+            self._photos = self.grab(Photo)
         return self._photos
 
     @property
     def audio(self):
         if self._audio is None:
             from localground.apps.site.models.audio import Audio
-            self._audio = self._get_filtered_entities(Audio)
+            self._audio = self.grab(Audio)
         return self._audio
 
     @property
     def videos(self):
         if self._videos is None:
             from localground.apps.site.models.video import Video
-            self._videos = self._get_filtered_entities(Video)
+            self._videos = self.grab(Video)
         return self._videos
 
     @property
     def map_images(self):
         if self._map_images is None:
             from localground.apps.site.models.mapimage import MapImage
-            self._map_images = self._get_filtered_entities(MapImage)
+            self._map_images = self.grab(MapImage)
         return self._map_images
 
     @property
     def markers(self):
         if self._markers is None:
             from localground.apps.site.models.marker import Marker
-            self._markers = self._get_filtered_entities(Marker)
+            self._markers = self.grab(Marker)
         return self._markers

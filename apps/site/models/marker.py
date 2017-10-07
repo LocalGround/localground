@@ -76,7 +76,7 @@ class Marker(ExtrasMixin, BasePointMixin, BaseNamed, BaseGenericRelationMixin):
             self._records_dict = {}
             for form in forms:
                 cls = form.TableModel
-                recs = self._get_filtered_entities(cls)
+                recs = self.grab(cls)
                 if len(recs) > 0:
                     self._records_dict[form] = recs
 

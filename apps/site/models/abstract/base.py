@@ -6,7 +6,7 @@ import operator
 
 class Base(models.Model):
     filter_fields = ('id',)
-    
+
     class Meta:
         app_label = 'site'
         abstract = True
@@ -54,11 +54,11 @@ class Base(models.Model):
                 except:
                     pass
         raise Http404
-    
+
     @classmethod
     def get_filter_fields(cls):
         from localground.apps.lib.helpers import QueryField, FieldTypes
-        
+
         def get_data_type(model_field):
             data_types = {
                 'AutoField': FieldTypes.INTEGER,
@@ -130,14 +130,6 @@ class Base(models.Model):
         '''
         return ContentType.objects.get_for_model(cls, for_concrete_model=False)
 
-    def stash(self, *args, **kwargs):
-        # same as append
-        self.append(*args, **kwargs)
-
-    def grab(self, cls):
-        # same as _get_filtered_entities
-        return self._get_filtered_entities(cls)
-
     def get_form_ids(self):
         from localground.apps.site.models import Photo, Audio, MapImage
         content_ids = [
@@ -151,7 +143,9 @@ class Base(models.Model):
             .exclude(entity_type__in=content_ids)
         )
 
-    def _get_filtered_entities(self, cls):
+
+    # TODO: Move Down to MediaMixin
+    def grab(self, cls):
         """
         Private method that queries the GenericAssociation model for
         references to the current view for a given media type (Photo,
@@ -191,7 +185,7 @@ class Base(models.Model):
         objects = sorted(objects, key=operator.attrgetter('ordering'))
         return objects
 
-    def append(self, item, user, ordering=1, turned_on=False):
+    def stash(self, item, user, ordering=1, turned_on=False):
         '''
         Creates an association between the object and whatever the item specified
         "ordering" and "turned_on" args are optional.
