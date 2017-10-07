@@ -60,6 +60,10 @@ class ExtentsMixin(models.Model):
     class Meta:
         abstract = True
 
+    @property
+    def geometry(self):
+        return self.extents
+
     def remove_extents(self, user):
         try:
             if self.can_edit(user):

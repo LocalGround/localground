@@ -188,7 +188,7 @@ class PhotoUser(ObjectUserPermissions):
         app_label = 'site'
         managed = False
         db_table = 'v_private_photos'
-        
+
 class StyledMapUser(ObjectUserPermissions):
     styled_map = models.ForeignKey(
         'StyledMap',
@@ -287,16 +287,3 @@ class PresentationUser(ObjectUserPermissions):
         managed = False
         db_table = 'v_private_presentations'
         
-'''
-class LayerUser(ObjectUserPermissions):
-    layer = models.ForeignKey(
-        'Layer',
-        db_column='layer_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_layers'
-'''

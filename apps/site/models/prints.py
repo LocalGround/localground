@@ -1,7 +1,8 @@
 from django.contrib.gis.db import models
 from localground.apps.site.managers import PrintManager
 from django.conf import settings
-from localground.apps.site.models.abstract.media import BaseMedia
+from localground.apps.site.models.abstract.audit import BaseAudit
+from localground.apps.site.models.abstract.media import BaseMediaMixin
 from localground.apps.site.models.abstract.mixins import ProjectMixin, BaseGenericRelationMixin
 from localground.apps.site.models.abstract.geometry import ExtentsMixin
 from PIL import Image
@@ -9,7 +10,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.geos import Polygon
 
 
-class Print(ExtentsMixin, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
+class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin, BaseGenericRelationMixin, BaseAudit):
     uuid = models.CharField(unique=True, max_length=8)
     name = models.CharField(
         max_length=255,
@@ -36,7 +37,7 @@ class Print(ExtentsMixin, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
     preview_image_path = models.CharField(max_length=255)
     deleted = models.BooleanField(default=False)
 
-    filter_fields = BaseMedia.filter_fields + ('name', 'description', 'tags', 'uuid')
+    filter_fields = BaseMediaMixin.filter_fields + ('name', 'description', 'tags', 'uuid')
 
     objects = PrintManager()
 

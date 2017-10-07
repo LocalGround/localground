@@ -10,7 +10,7 @@ import os
 import stat
 from rest_framework import exceptions
 
-class BaseMedia(BaseAudit):
+class BaseMediaMixin(models.Model):
 
     '''
     Important:  the "groups" generic relation is needed to ensure cascading
@@ -81,12 +81,12 @@ class BaseMedia(BaseAudit):
         return self.project.can_edit(user)
 
 
-class BaseNamedMedia(BaseMedia, ProjectMixin):
+class BaseNamedMedia(BaseMediaMixin, ProjectMixin, BaseAudit):
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True, verbose_name="caption")
     tags = ArrayField(models.TextField(), default=list)
 
-    filter_fields = BaseMedia.filter_fields + ('name', 'description', 'tags')
+    filter_fields = BaseMediaMixin.filter_fields + ('name', 'description', 'tags')
 
     class Meta:
         app_label = 'site'

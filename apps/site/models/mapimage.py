@@ -3,7 +3,8 @@ from datetime import datetime
 from django.conf import settings
 from localground.apps.site.managers import MapImageManager
 from localground.apps.site.models import (
-    BaseMedia,
+    BaseMediaMixin,
+    BaseAudit,
     StatusCode,
     BaseUploadedMedia,
     UploadSource,
@@ -109,7 +110,7 @@ class MapImage(BaseUploadedMedia):
     def __unicode__(self):
         return 'MapImage #' + self.uuid
 
-class ImageOpts(ExtentsMixin, BaseMedia):
+class ImageOpts(ExtentsMixin, BaseMediaMixin, BaseAudit):
     source_mapimage = models.ForeignKey(MapImage)
     opacity = models.FloatField(default=1)
     name = models.CharField(max_length=255, null=True, blank=True)
