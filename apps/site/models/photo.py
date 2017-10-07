@@ -1,13 +1,13 @@
 from django.contrib.gis.db import models
 from django.conf import settings
 from localground.apps.site.managers import PhotoManager
-from localground.apps.site.models import ExtrasMixin, BasePointMixin, BaseUploadedMedia
+from localground.apps.site.models import ExtrasMixin, PointMixin, BaseUploadedMedia
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
 from swampdragon.models import SelfPublishModel
 from localground.apps.site.api.realtime_serializers import PhotoRTSerializer
 
-class Photo(ExtrasMixin, BasePointMixin, BaseUploadedMedia): #SelfPublishModel
+class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia): #SelfPublishModel
     file_name_large = models.CharField(max_length=255)
     file_name_medium = models.CharField(max_length=255)
     file_name_medium_sm = models.CharField(max_length=255)
@@ -113,7 +113,7 @@ class Photo(ExtrasMixin, BasePointMixin, BaseUploadedMedia): #SelfPublishModel
             new_file_path = '%s_%s_%s%s' % (file_name, s, timestamp, ext)
             im.save('%s%s' % (media_path, new_file_path))
             photo_paths.append(new_file_path)
-            
+
         # 3) delete old, pre-rotated files on file systems:
         file_paths = [
             '%s%s' % (media_path, self.file_name_large),
@@ -126,7 +126,7 @@ class Photo(ExtrasMixin, BasePointMixin, BaseUploadedMedia): #SelfPublishModel
         for f in file_paths:
             if os.path.exists(f) and f.find(settings.USER_MEDIA_DIR) > 0:
                 os.remove(f)
-        
+
         # 4) save pointers to new files in database:
         self.file_name_large = photo_paths[0]
         self.file_name_medium = photo_paths[1]

@@ -3,13 +3,13 @@ from localground.apps.site.managers import PrintManager
 from django.conf import settings
 from localground.apps.site.models.abstract.media import BaseMedia
 from localground.apps.site.models.abstract.mixins import ProjectMixin, BaseGenericRelationMixin
-from localground.apps.site.models.abstract.geometry import BaseExtents
+from localground.apps.site.models.abstract.geometry import ExtentsMixin
 from PIL import Image
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.geos import Polygon
 
 
-class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
+class Print(ExtentsMixin, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
     uuid = models.CharField(unique=True, max_length=8)
     name = models.CharField(
         max_length=255,
@@ -25,9 +25,9 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         db_column='fk_provider',
         related_name='prints_print_tilesets')
     layout = models.ForeignKey('Layout')
-    northeast = models.PointField(null=True)		
-    southwest = models.PointField(null=True)		
-    center = models.PointField(null=True)		
+    northeast = models.PointField(null=True)
+    southwest = models.PointField(null=True)
+    center = models.PointField(null=True)
     zoom = models.IntegerField(null=True)
     map_width = models.IntegerField()
     map_height = models.IntegerField()
@@ -35,12 +35,12 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
     pdf_path = models.CharField(max_length=255)
     preview_image_path = models.CharField(max_length=255)
     deleted = models.BooleanField(default=False)
-    
+
     filter_fields = BaseMedia.filter_fields + ('name', 'description', 'tags', 'uuid')
 
     objects = PrintManager()
 
-   
+
     @classmethod
     def inline_form(cls, user):
         from localground.apps.site.forms import get_inline_form_with_tags
@@ -262,7 +262,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         border_width = self.layout.border_width
 
         '''
-        
+
         #TODO: Replace w/new acetate layer functionality:
         overlay_image = m.get_map(
             layers,
@@ -274,7 +274,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
             show_north_arrow=True)
         map_image.paste(overlay_image, (0, 0), overlay_image)
         '''
-        
+
         a = AcetateLayer(
             file_path=path,
             center=self.center,

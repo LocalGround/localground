@@ -4,10 +4,10 @@ from datetime import datetime
 from localground.apps.site.managers import MarkerManager
 from localground.apps.site.models import BaseUploadedMedia
 from django.contrib.contenttypes import generic
-from localground.apps.site.models import BasePointMixin, ExtrasMixin, BaseNamed, \
+from localground.apps.site.models import PointMixin, ExtrasMixin, BaseNamed, \
     BaseGenericRelationMixin, ReturnCodes
 
-class Marker(ExtrasMixin, BasePointMixin, BaseNamed, BaseGenericRelationMixin):
+class Marker(ExtrasMixin, PointMixin, BaseNamed, BaseGenericRelationMixin):
 
     """
     Markers are association objects with a geometry (either point,
@@ -26,6 +26,12 @@ class Marker(ExtrasMixin, BasePointMixin, BaseNamed, BaseGenericRelationMixin):
     _records_dict = None
     objects = MarkerManager()
     filter_fields = ('id', 'project', 'name', 'description', 'tags',)
+
+    class Meta:
+        verbose_name = 'marker'
+        verbose_name_plural = 'markers'
+        ordering = ['id']
+        app_label = 'site'
 
     @property
     def geometry(self):
@@ -88,11 +94,19 @@ class Marker(ExtrasMixin, BasePointMixin, BaseNamed, BaseGenericRelationMixin):
     def can_edit(self, user):
         return self.project.can_edit(user)
 
-    class Meta:
-        verbose_name = 'marker'
-        verbose_name_plural = 'markers'
-        ordering = ['id']
-        app_label = 'site'
+    def get_form_ids(self):
+        from localground.apps.site.models import Photo, Audio, MapImage, Video
+        from django.contrib.contenttypes.models import ContentType
+        content_ids = [
+            ct.id for ct in
+            ContentType.objects.get_for_models(Photo, Audio, MapImage, Video).values()
+        ]
+        return (
+            self.entities
+            .values_list('entity_type__model', flat=True)
+            .distinct()
+            .exclude(entity_type__in=content_ids)
+        )
 
     def __unicode__(self):
         return str(self.id)
