@@ -1,11 +1,14 @@
-from django import test
+import urllib
+import wave
+import random
+import struct
+import jsonfrom django import test
 from django.conf import settings
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
-import urllib, wave, random, struct
 from rest_framework import status
-import json
+
 
 def get_metadata():
     return {
@@ -15,31 +18,41 @@ def get_metadata():
         "caption": {"type": "memo", "required": False, "read_only": False},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'video_id': {'read_only': False, 'required': True, 'type': 'string'},
-        'video_provider': {'read_only': False, 'required': True, 'type': 'choice'},
+        'video_provider': {'read_only': False, 'required': True,
+                           'type': 'choice'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
         'project_id': {'read_only': False, 'required': True, 'type': 'field'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
-        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
-        "attribution": {"type": "string", "required": False, "read_only": False}
+        'overlay_type': {'read_only': True, 'required': False,
+                         'type': 'field'},
+        "attribution": {"type": "string", "required": False,
+                        "read_only": False}
     }
+
 
 class ApiVideoListTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.urls = ['/api/0/videos/']
-        self.url =self.urls[0]
-        self.create_video(self.user, self.project, name='YT', provider='youtube', video_id='4232534',)
+        self.url = self.urls[0]
+        self.create_video(
+            self.user,
+            self.project,
+            name='YT',
+            provider='youtube',
+            video_id='4232534'
+        )
         self.create_video(self.user, self.project, name='Vim', provider='vimeo', video_id='dasdsadas',)
         self.view = views.VideoList.as_view()
         self.metadata = get_metadata()
-    
+
     '''
     Todo:
         * ensure that POST only creates new videos when required parameters are included
         * ensure that POST updates all DB fields when all params are specified
     '''
-    
+
     def test_video_list_returns_all_videos(self, **kwargs):
         response = self.client_user.get(self.url)
         results = response.data.get("results")
@@ -116,7 +129,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.urls = [self.url]
         self.view = views.VideoInstance.as_view()
         self.metadata = get_metadata()
-    
+
     def test_required_params_using_put(self, **kwargs):
         response = self.client_user.put(self.url,
                         data=urllib.urlencode({
@@ -134,7 +147,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_video.project, self.project)
         self.assertEqual(updated_video.owner, self.user)
         self.assertEqual(updated_video.last_updated_by, self.user)
-        
+
     def test_throws_friendly_error_if_no_video_id_put(self, **kwargs):
         response = self.client_user.put(self.url,
                         data=urllib.urlencode({
@@ -147,7 +160,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         # print response.data
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data.get('video_id')[0], u'This field is required.')
-        
+
     def test_throws_friendly_error_if_no_video_provider_put(self, **kwargs):
         response = self.client_user.put(self.url,
                                         data=urllib.urlencode({
@@ -191,7 +204,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data.get('project_id')
                          [0], u'This field is required.')
-        
+
 
     def test_throws_friendly_error_if_project_id_invalid_type_put(self, **kwargs):
         response = self.client_user.put(self.url,
@@ -298,7 +311,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_video.owner, self.user)
         self.assertEqual(updated_video.last_updated_by, self.user)
 
-  
+
     def test_delete_video(self, **kwargs):
         video_id = self.video.id
 
