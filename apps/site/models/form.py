@@ -1,14 +1,14 @@
 from django.contrib.gis.db import models
 from django.db.models import Q
 from localground.apps.site.managers import FormManager
-from localground.apps.site.models import  BaseNamed, BasePermissions
+from localground.apps.site.models import  BaseNamed, ObjectPermissionsMixin
 from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 
 
 
-class Form(BaseNamed, BasePermissions):
+class Form(BaseNamed, ObjectPermissionsMixin):
     slug = models.SlugField(
         verbose_name="Friendly URL",
         max_length=100,
@@ -21,7 +21,7 @@ class Form(BaseNamed, BasePermissions):
     _model_class = None
     _data_entry_form_class = None
     filter_fields = BaseNamed.filter_fields + ('slug',)
-    
+
     @classmethod
     def get_filter_fields(cls):
         from localground.apps.lib.helpers import QueryField, FieldTypes

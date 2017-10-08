@@ -1,13 +1,16 @@
 from django.contrib.gis.db import models
 from django.conf import settings
 from localground.apps.site.managers import PhotoManager
-from localground.apps.site.models import ExtrasMixin, PointMixin, BaseUploadedMedia
+from localground.apps.site.models import ExtrasMixin
+from localground.apps.site.models import PointMixin
+from localground.apps.site.models import BaseUploadedMedia
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
 from swampdragon.models import SelfPublishModel
 from localground.apps.site.api.realtime_serializers import PhotoRTSerializer
 
-class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia): #SelfPublishModel
+
+class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     file_name_large = models.CharField(max_length=255)
     file_name_medium = models.CharField(max_length=255)
     file_name_medium_sm = models.CharField(max_length=255)
@@ -17,7 +20,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia): #SelfPublishModel
     device = models.CharField(max_length=255, blank=True, null=True)
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
-    #serializer_class = PhotoRTSerializer
 
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.file_name_orig)
@@ -59,7 +61,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia): #SelfPublishModel
     def delete(self, *args, **kwargs):
         # remove images from file system:
         path = self.get_absolute_path()
-        if len(path.split('/')) > 2: #protects against empty file path
+        if len(path.split('/')) > 2:  # protects against empty file path
             file_paths = [
                 self.file_name_orig,
                 self.file_name_new,
@@ -72,22 +74,20 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia): #SelfPublishModel
             ]
             for f in file_paths:
                 p = '%s%s' % (path, f)
-                if (os.path.exists(p) and
-                    f is not None and
-                    len(f) > 0 and
-                    p.find(settings.USER_MEDIA_DIR) > 0):
+                if (os.path.exists(p) and f is not None and
+                        len(f) > 0 and p.find(settings.USER_MEDIA_DIR) > 0):
                     os.remove(p)
 
         # execute default behavior
         super(Photo, self).delete(*args, **kwargs)
 
     def rotate_left(self, user):
-        self._rotate(user, degrees=90)
+        self.__rotate(user, degrees=90)
 
     def rotate_right(self, user):
-        self._rotate(user, degrees=270)
+        self.__rotate(user, degrees=270)
 
-    def _rotate(self, user, degrees):
+    def __rotate(self, user, degrees):
         from PIL import Image, ImageOps
         import time
         timestamp = int(time.time())
@@ -144,7 +144,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia): #SelfPublishModel
         from datetime import datetime
         try:
             info = im._getexif()
-        except:
+        except Exception:
             return {}
         if info is None:
             return {}
@@ -172,7 +172,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia): #SelfPublishModel
                 if lngref == 'W':
                     lng = -lng
                 return_dict['point'] = Point(lng, lat, srid=4326)
-            except:
+            except Exception:
                 pass
         try:
             if d.get('DateTimeOriginal') is not None:
@@ -189,30 +189,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia): #SelfPublishModel
                 )
             if d.get('Model') is not None:
                 return_dict['model'] = d.get('Model')
-        except:
+        except Exception:
             pass
         return return_dict
-
-    def to_dict(self):
-        d = super(Photo, self).to_dict()
-        d.update({
-            'path_orig': self.encrypt_url(self.file_name_orig),
-            'path_large': self.encrypt_url(self.file_name_large),
-            'path_medium': self.encrypt_url(self.file_name_medium),
-            'path_small': self.encrypt_url(self.file_name_small),
-            'path_marker_lg': self.encrypt_url(self.file_name_marker_lg),
-            'path_marker_sm': self.encrypt_url(self.file_name_marker_sm),
-            'caption': self.description
-        })
-        if self.file_name_medium_sm is not None:
-            d.update(
-                {'path_medium_sm': self.encrypt_url(self.file_name_medium_sm)})
-        else:
-            d.update(
-                {'path_medium_sm': self.encrypt_url(self.file_name_small)})
-        if self.point is not None:
-            d.update({
-                'lat': self.point.y,
-                'lng': self.point.x
-            })
-        return d

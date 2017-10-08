@@ -20,12 +20,12 @@ from localground.apps.site.models.overlaytype import OverlayType
 from localground.apps.site.models.tileset import TileSet
 
 # accounts
-#from localground.apps.site.models.base import Base
-from localground.apps.site.models.groups import Group, Project
+# from localground.apps.site.models.base import Base
+from localground.apps.site.models.project import Project
 from localground.apps.site.models.presentation import Presentation
 from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
-    BasePermissions, ObjectUserPermissions, UserAuthorityObject, \
+    ObjectPermissionsMixin, ObjectUserPermissions, UserAuthorityObject, \
     UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser, \
     ProjectUser, VideoUser, MapImageUser, PrintUser, \
     FormUser, PresentationUser

@@ -1,10 +1,11 @@
 from django.contrib.gis.db import models
 from localground.apps.site.models import BaseNamed
 from localground.apps.site.managers import PresentationManager
-from localground.apps.site.models.permissions import BasePermissions
+from localground.apps.site.models.permissions import ObjectPermissionsMixin
 from jsonfield import JSONField
 
-class Presentation(BaseNamed, BasePermissions):
+
+class Presentation(BaseNamed, ObjectPermissionsMixin):
     code = JSONField(blank=True, null=True)
     slug = models.SlugField(
         verbose_name="Friendly URL",

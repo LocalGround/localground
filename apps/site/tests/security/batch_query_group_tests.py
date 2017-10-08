@@ -9,7 +9,7 @@ import urllib
 
 
 class BatchQueryGroupMixin(ModelMixin):
-    model = models.Group
+    model = models.Project
 
     def setUp(self):
         # to set up this test, we'll create 2 forms that that
@@ -27,7 +27,7 @@ class BatchQueryGroupMixin(ModelMixin):
 
         # create 2 groups:
         self._create_groups()
-        
+
     def tearDown(self):
         models.Form.objects.all().delete()
 
@@ -141,11 +141,11 @@ class BatchProjectQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
 
     def setUp(self):
         BatchQueryGroupMixin.setUp(self)
-        
-    
+
+
     def tearDown(self):
         BatchQueryGroupMixin.tearDown(self)
-    
+
 
 
     def _create_groups(self):
@@ -175,7 +175,7 @@ class BatchFormQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
 
     def setUp(self):
         BatchQueryGroupMixin.setUp(self)
-        
+
     def tearDown(self):
         BatchQueryGroupMixin.tearDown(self)
 
