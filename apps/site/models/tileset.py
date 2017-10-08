@@ -1,6 +1,44 @@
 from django.contrib.gis.db import models
 from localground.apps.site.models.abstract.named import BaseNamed
+from localground.apps.site.models.abstract.base import Base
 from jsonfield import JSONField
+'''
+This file contains the following classes:
+* OverlaySource
+* OverlayType
+* TileSet
+'''
+
+
+class OverlaySource(Base):
+    """
+    Stores the source of the overlay
+    (MapBox, Google, Stamen, locally produced, etc.)
+    """
+    name = models.CharField(max_length=255, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        app_label = 'site'
+        verbose_name = 'overlay-source'
+        verbose_name_plural = 'overlay-sources'
+
+
+class OverlayType(Base):
+    FILTER_BY_OWNER = False
+    name = models.CharField(max_length=255, blank=True, editable=False)
+    description = models.TextField(blank=True, editable=False)
+
+    class Meta:
+        app_label = 'site'
+        verbose_name = 'overlay-type'
+        verbose_name_plural = 'overlay-types'
+
+    def __unicode__(self):
+        return self.name
+
 
 class TileSet(BaseNamed):
 
@@ -37,17 +75,15 @@ class TileSet(BaseNamed):
             'max': self.max_zoom,
             'is_printable': self.is_printable
         }
-    
+
     def can_view(self, user, access_key=None):
         return True
-    
+
     def can_edit(self, user):
         return True
-        #return user.is_superuser
 
     def can_manage(self, user):
         return True
-        #return user.is_superuser
 
     def __unicode__(self):
         return '%s. %s (%s)' % (self.id, self.name, self.overlay_source.name)
