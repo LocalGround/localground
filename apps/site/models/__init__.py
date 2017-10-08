@@ -11,7 +11,7 @@ from localground.apps.site.models.layer import Layer
 
 # lookups
 from localground.apps.site.models.lookups import StatusCode, UploadSource, \
-    UploadType, ErrorCode, ObjectTypes, ReturnCode, ReturnCodes
+    UploadType, ErrorCode, ObjectTypes
 
 # overlays
 from localground.apps.site.models.marker import Marker

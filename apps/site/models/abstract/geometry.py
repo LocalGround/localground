@@ -1,6 +1,5 @@
 from django.contrib.gis.db import models
 from localground.apps.site.models.abstract.base import Base
-from localground.apps.site.models.lookups import ReturnCodes
 
 class PointMixin(models.Model):
     point = models.PointField(blank=True, null=True)
@@ -24,28 +23,14 @@ class PointMixin(models.Model):
     def update_latlng(self, lat, lng, user):
         '''Tries to update lat/lng, returns code'''
         from django.contrib.gis.geos import Point
-        try:
-            if self.can_edit(user):
-                self.point = Point(lng, lat, srid=4326)
-                self.last_updated_by = user
-                self.save()
-                return ReturnCodes.SUCCESS
-            else:
-                return ReturnCodes.UNAUTHORIZED
-        except Exception:
-            return ReturnCodes.UNKNOWN_ERROR
+        self.point = Point(lng, lat, srid=4326)
+        self.last_updated_by = user
+        self.save()
 
     def remove_latlng(self, user):
-        try:
-            if self.can_edit(user):
-                self.point = None
-                self.last_updated_by = user
-                self.save()
-                return ReturnCodes.SUCCESS
-            else:
-                return ReturnCodes.UNAUTHORIZED
-        except Exception:
-            return ReturnCodes.UNKNOWN_ERROR
+        self.point = None
+        self.last_updated_by = user
+        self.save()
 
     def __unicode__(self):
         return self.display_coords()
@@ -65,13 +50,6 @@ class ExtentsMixin(models.Model):
         return self.extents
 
     def remove_extents(self, user):
-        try:
-            if self.can_edit(user):
-                self.extents = None
-                self.last_updated_by = user
-                self.save()
-                return ReturnCodes.SUCCESS
-            else:
-                return ReturnCodes.UNAUTHORIZED
-        except Exception:
-            return ReturnCodes.UNKNOWN_ERROR
+        self.extents = None
+        self.last_updated_by = user
+        self.save()

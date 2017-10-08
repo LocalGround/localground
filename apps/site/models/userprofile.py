@@ -80,18 +80,5 @@ def create_profile_on_insert(sender, instance, created, **kwargs):
 
     if created:
         UserProfile.create(instance)
-        '''try:
-            UserProfile.create(instance)
-        except Exception:
-            # Makes sure if the user isn't the very first user created,
-            # a profile object is created immediately.  The very first
-            # user created is exempt from this constraint, to avoid any issues
-            # with the initial install when calling:
-            # $python manage.py syncdb
-            if instance.id != 1:
-                raise Exception('UserProfile not created')
-            pass
-        '''
-
 
 signals.post_save.connect(create_profile_on_insert, sender=User)

@@ -5,7 +5,7 @@ from localground.apps.site.managers import MarkerManager
 from localground.apps.site.models import BaseUploadedMedia
 from django.contrib.contenttypes import generic
 from localground.apps.site.models import PointMixin, ExtrasMixin, BaseNamed, \
-    BaseGenericRelationMixin, ReturnCodes
+    BaseGenericRelationMixin
 
 class Marker(ExtrasMixin, PointMixin, BaseNamed, BaseGenericRelationMixin):
 
@@ -39,20 +39,16 @@ class Marker(ExtrasMixin, PointMixin, BaseNamed, BaseGenericRelationMixin):
 
     @classmethod
     def create_instance(user, project, lat, lng, name=None):
-        try:
-            from django.contrib.gis.geos import Point
-            marker = Marker()
-            marker.project = project
-            marker.owner = user
-            marker.color = 'CCCCCC'
-            marker.last_updated_by = user
-            marker.point = Point(lng, lat, srid=4326)
-            if name is not None:
-                marker.name = name
-            marker.save()
-            return marker, ReturnCodes.SUCCESS
-        except Exception:
-            return None, ReturnCodes.UNKNOWN_ERROR
+        from django.contrib.gis.geos import Point
+        marker = Marker()
+        marker.project = project
+        marker.owner = user
+        marker.color = 'CCCCCC'
+        marker.last_updated_by = user
+        marker.point = Point(lng, lat, srid=4326)
+        if name is not None:
+            marker.name = name
+        marker.save()
 
     def get_name(self):
         if self.name is None or len(self.name) == 0:

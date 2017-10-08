@@ -18,7 +18,7 @@ class BasePermissions(models.Model):
     access_key = models.CharField(max_length=16, null=True, blank=True)
     users = fields.GenericRelation('UserAuthorityObject')
 
-    def _has_user_permissions(self, user, authority_id):
+    def __has_user_permissions(self, user, authority_id):
         # anonymous or null users don't have user-level permissions:
         if user is None or not user.is_authenticated():
             return False
@@ -47,13 +47,13 @@ class BasePermissions(models.Model):
 
         # projects which are accessible by the user are viewable:
         else:
-            return self._has_user_permissions(user, UserAuthority.CAN_VIEW)
+            return self.__has_user_permissions(user, UserAuthority.CAN_VIEW)
 
     def can_edit(self, user):
-        return self._has_user_permissions(user, UserAuthority.CAN_EDIT)
+        return self.__has_user_permissions(user, UserAuthority.CAN_EDIT)
 
     def can_manage(self, user):
-        return self._has_user_permissions(user, UserAuthority.CAN_MANAGE)
+        return self.__has_user_permissions(user, UserAuthority.CAN_MANAGE)
 
     def share_url(self):
         return '/profile/{0}/{1}/share/'.format(
@@ -150,6 +150,31 @@ class UserAuthorityObject(models.Model):
     class Meta:
         app_label = 'site'
 
+
+
+'''
+--------------------------------------------------------------------------------
+TODO: EVERYTHING BELOW THIS LINE NEEDS TO BE DEPRECATED
+--------------------------------------------------------------------------------
+In order for this deprecation to be possible, the following endpoints need to be
+filtered by a project endpoint:
+
+* Audio
+* Photo
+* StyledMap
+* Video
+* Marker
+* Print
+* Project
+* Form
+* Presentation
+
+Q: Which endpoints are available only for logged-in users?
+A: Only StyledMap
+
+Q: Which endpoints aren't filtered by a project?
+A: Project, DataType, TileSet
+'''
 
 class ObjectUserPermissions(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -268,7 +293,6 @@ class FormUser(ObjectUserPermissions):
     form = models.ForeignKey('Form', db_column='form_id',
                              on_delete=models.DO_NOTHING,
                              related_name='authuser')
-
     class Meta:
         app_label = 'site'
         managed = False
@@ -286,4 +310,3 @@ class PresentationUser(ObjectUserPermissions):
         app_label = 'site'
         managed = False
         db_table = 'v_private_presentations'
-        
