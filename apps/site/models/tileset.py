@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-from localground.apps.site.models.abstract.named import BaseNamed
+from localground.apps.site.models.abstract.base import BaseNamed
 from localground.apps.site.models.abstract.base import Base
 from jsonfield import JSONField
 '''

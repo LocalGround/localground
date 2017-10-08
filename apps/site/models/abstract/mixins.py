@@ -1,6 +1,72 @@
 from django.contrib.gis.db import models
 from jsonfield import JSONField
+from django.contrib.contenttypes.fields import GenericRelation
+from localground.apps.lib.helpers import upload_helpers
+
 import operator
+'''
+This file contains the following mixins:
+    * PointMixin
+    * ExtentsMixin
+    * ProjectMixin
+    * ExtrasMixin
+    * BaseGenericRelationMixin
+    * BaseMediaMixin
+'''
+
+
+class PointMixin(models.Model):
+    point = models.PointField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+    @property
+    def geometry(self):
+        return self.point
+
+    def display_coords(self):
+        if self.point is not None:
+            try:
+                return '(%0.4f, %0.4f)' % (self.point.y, self.point.x)
+            except ValueError:
+                return 'String Format Error: (%s, %s)' % (
+                    str(self.point.y), str(self.point.x))
+        return '(?, ?)'
+
+    def update_latlng(self, lat, lng, user):
+        '''Tries to update lat/lng, returns code'''
+        from django.contrib.gis.geos import Point
+        self.point = Point(lng, lat, srid=4326)
+        self.last_updated_by = user
+        self.save()
+
+    def remove_latlng(self, user):
+        self.point = None
+        self.last_updated_by = user
+        self.save()
+
+    def __unicode__(self):
+        return self.display_coords()
+
+
+class ExtentsMixin(models.Model):
+    """
+    abstract class for uploads with lat/lng references.
+    """
+    extents = models.PolygonField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+    @property
+    def geometry(self):
+        return self.extents
+
+    def remove_extents(self, user):
+        self.extents = None
+        self.last_updated_by = user
+        self.save()
 
 
 class ProjectMixin(models.Model):
@@ -65,22 +131,24 @@ class BaseGenericRelationMixin(models.Model):
         if len(stale_references) > 0:
             self.entities.filter(id__in=stale_references).delete()
 
-        #SQL sort doesn't seem to be working, so sorting via python:
+        # SQL sort doesn't seem to be working, so sorting via python:
         objects = sorted(objects, key=operator.attrgetter('ordering'))
         return objects
 
     def stash(self, item, user, ordering=1, turned_on=False):
         '''
-        Creates an association between the object and whatever the item specified
-        "ordering" and "turned_on" args are optional.
+        Creates an association between the object and whatever the item
+        specified "ordering" and "turned_on" args are optional.
         '''
         from localground.apps.site.models import GenericAssociation
-        from localground.apps.site.models.abstract.media import BaseUploadedMedia
+        from localground.apps.site.models.abstract.base import \
+            BaseUploadedMedia
         from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
         if not issubclass(item.__class__, BaseUploadedMedia):
             raise Exception(
-                'Only items of type Photo, Audio, Record, or Map Image can be appended.')
+                'Only items of type Photo, Audio, Record, or Map Image \
+                can be appended.')
 
         assoc = GenericAssociation(
             source_type=self.get_content_type(),
@@ -120,3 +188,75 @@ class BaseGenericRelationMixin(models.Model):
     def markers(self):
         from localground.apps.site.models.marker import Marker
         return self.grab(Marker)
+
+
+class BaseMediaMixin(models.Model):
+    host = models.CharField(max_length=255)
+    virtual_path = models.CharField(max_length=255)
+    file_name_orig = models.CharField(max_length=255)
+    content_type = models.CharField(max_length=50)
+
+    '''
+    Important: The "groups" generic relation is needed to ensure cascading
+    deletes.  For example, if a photo gets deleted, you also want to ensure
+    that its associations w/any markers / views also get deleted.  The reverse
+    relationship needs to be defined here in order for this to occur:
+    http://stackoverflow.com/questions/6803018/why-wont-my-genericforeignkey-cascade-when-deleting
+    '''
+    groups = GenericRelation(
+        'GenericAssociation',
+        content_type_field='entity_type',
+        object_id_field='entity_id',
+        related_query_name="%(app_label)s_%(class)s_related"
+    )
+    filter_fields = ('id', 'project', 'date_created', 'file_name_orig',)
+
+    class Meta:
+        abstract = True
+        app_label = 'site'
+
+    def get_absolute_path(self):
+        return upload_helpers.get_absolute_path(self.virtual_path)
+
+    def absolute_virtual_path(self):
+        return upload_helpers.encrypt_media_path(
+            self.host,
+            self.model_name_plural,
+            self.virtual_path + self.file_name_new
+        )
+
+    def absolute_virtual_path_orig(self):
+        return upload_helpers.encrypt_media_path(
+            self.host,
+            self.model_name_plural,
+            self.virtual_path + self.file_name_orig
+        )
+
+    def generate_relative_path(self):
+        return upload_helpers.generate_relative_path(
+            self.owner, self.model_name_plural
+        )
+
+    def generate_absolute_path(self):
+        return upload_helpers.generate_absolute_path(
+            self.owner, self.model_name_plural
+        )
+
+    def _encrypt_media_path(self, path, host=None):
+        return upload_helpers.encrypt_media_path(
+            self.host, self.model_name_plural, path
+        )
+
+    def encrypt_url(self, file_name):
+        # return self.virtual_path + file_name
+        return self._encrypt_media_path(self.virtual_path + file_name)
+
+    @classmethod
+    def make_directory(cls, path):
+        upload_helpers.make_directory(path)
+
+    def can_view(self, user, access_key=None):
+        return self.project.can_view(user=user, access_key=access_key)
+
+    def can_edit(self, user):
+        return self.project.can_edit(user)

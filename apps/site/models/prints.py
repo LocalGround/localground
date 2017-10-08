@@ -1,12 +1,12 @@
 from django.contrib.gis.db import models
 from localground.apps.site.managers import PrintManager
 from django.conf import settings
-from localground.apps.site.models.abstract.audit import BaseAudit
-from localground.apps.site.models.abstract.media import BaseMediaMixin
+from localground.apps.site.models.abstract.base import BaseAudit
+from localground.apps.site.models.abstract.mixins import BaseMediaMixin
 from localground.apps.site.models.abstract.mixins import ProjectMixin
 from localground.apps.site.models.abstract.mixins import \
     BaseGenericRelationMixin
-from localground.apps.site.models.abstract.geometry import ExtentsMixin
+from localground.apps.site.models.abstract.mixins import ExtentsMixin
 from PIL import Image
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.geos import Polygon

@@ -2,6 +2,18 @@ from django.contrib.gis.db import models
 from django.http import Http404
 from localground.apps.lib.helpers import classproperty
 from django.contrib.contenttypes.models import ContentType
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
+from django.contrib.postgres.fields import ArrayField
+from localground.apps.site.models.abstract.mixins import BaseMediaMixin
+from localground.apps.site.models.abstract.mixins import ProjectMixin
+'''
+This file contains the following abstract classes:
+    * Base
+    * BaseAudit
+    * BaseNamed
+    * BaseNamedMedia
+    * BaseUploadedMedia
+'''
 
 
 class Base(models.Model):
@@ -127,3 +139,70 @@ class Base(models.Model):
         Caching not really working...perhaps use application-level caching?
         '''
         return ContentType.objects.get_for_model(cls, for_concrete_model=False)
+
+
+class BaseAudit(Base):
+    owner = models.ForeignKey('auth.User',)
+    last_updated_by = models.ForeignKey(
+        'auth.User',
+        related_name="%(app_label)s_%(class)s_related")
+    date_created = models.DateTimeField(default=get_timestamp_no_milliseconds)
+    time_stamp = models.DateTimeField(default=get_timestamp_no_milliseconds,
+                                      db_column='last_updated')
+    filter_fields = Base.filter_fields + ('date_created', 'time_stamp')
+
+    @classmethod
+    def get_filter_fields(cls):
+        from localground.apps.lib.helpers import QueryField, FieldTypes
+        query_fields = super(BaseAudit, cls).get_filter_fields()
+        query_fields['owner'] = QueryField(
+            'owner', django_fieldname='owner__username', title='owner',
+            help_text='Username of user who owns the project',
+            data_type=FieldTypes.STRING
+        )
+        # raise Exception(query_fields)
+        return query_fields
+
+    class Meta:
+        app_label = 'site'
+        abstract = True
+
+
+class BaseNamed(BaseAudit):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    tags = ArrayField(models.TextField(), default=list)
+
+    class Meta:
+        app_label = 'site'
+        abstract = True
+
+
+class BaseNamedMedia(BaseMediaMixin, ProjectMixin, BaseAudit):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(
+        null=True, blank=True, verbose_name="caption"
+    )
+    tags = ArrayField(models.TextField(), default=list)
+
+    filter_fields = BaseMediaMixin.filter_fields + \
+        ('name', 'description', 'tags')
+
+    class Meta:
+        app_label = 'site'
+        abstract = True
+
+
+class BaseUploadedMedia(BaseNamedMedia):
+    file_name_new = models.CharField(max_length=255)
+    attribution = models.CharField(
+        max_length=500, blank=True,
+        null=True,
+        verbose_name="Author / Creator",
+        help_text="Name of the person who created the media file (text)"
+    )
+    filter_fields = BaseNamedMedia.filter_fields + ('attribution', 'point')
+
+    class Meta:
+        abstract = True
+        app_label = 'site'
