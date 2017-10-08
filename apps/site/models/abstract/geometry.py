@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from localground.apps.site.models.abstract.base import Base
 
+
 class PointMixin(models.Model):
     point = models.PointField(blank=True, null=True)
 
@@ -34,6 +35,7 @@ class PointMixin(models.Model):
 
     def __unicode__(self):
         return self.display_coords()
+
 
 class ExtentsMixin(models.Model):
 

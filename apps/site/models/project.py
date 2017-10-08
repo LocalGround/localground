@@ -11,8 +11,8 @@ class Project(BaseNamed, BaseGenericRelationMixin, ObjectPermissionsMixin):
         verbose_name="Friendly URL",
         max_length=100,
         db_index=True,
-        help_text='A few words, separated by dashes "-", \
-            to be used as part of the url')
+        help_text='A few words, separated by dashes "-", to be used as part of the url'
+    )
 
     filter_fields = BaseNamed.filter_fields + (
         'slug', 'name', 'description', 'tags', 'owner'

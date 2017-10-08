@@ -9,8 +9,6 @@ from localground.apps.site.api.tests.homepage_tests import *
 #    ApiLayerListTest, ApiLayerInstanceTest
 from localground.apps.site.api.tests.marker_tests import *
 from localground.apps.site.api.tests.print_tests import *
-from localground.apps.site.api.tests.presentation_tests import \
-    ApiPresentationListTest,  ApiPresentationInstanceTest
 from localground.apps.site.api.tests.project_tests import *
 from localground.apps.site.api.tests.photo_tests import *
 from localground.apps.site.api.tests.renderer_tests import *

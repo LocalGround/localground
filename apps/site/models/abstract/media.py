@@ -104,8 +104,7 @@ class BaseUploadedMedia(BaseNamedMedia):
         max_length=500, blank=True,
         null=True,
         verbose_name="Author / Creator",
-        help_text="Name of the person who actually created \
-            the media file (text)"
+        help_text="Name of the person who created the media file (text)"
     )
     filter_fields = BaseNamedMedia.filter_fields + ('attribution', 'point')
 

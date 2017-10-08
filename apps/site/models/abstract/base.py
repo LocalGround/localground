@@ -3,6 +3,7 @@ from django.http import Http404
 from localground.apps.lib.helpers import classproperty
 from django.contrib.contenttypes.models import ContentType
 
+
 class Base(models.Model):
     filter_fields = ('id',)
 
@@ -30,14 +31,14 @@ class Base(models.Model):
                 try:
                     if model_name_plural == m.model_name_plural:
                         return m
-                except:
+                except Exception:
                     pass
         if model_name:
             for m in models:
                 try:
                     if model_name == m.model_name:
                         return m
-                except:
+                except Exception:
                     pass
         raise Http404
 
@@ -103,18 +104,20 @@ class Base(models.Model):
                 'NullBooleanField': FieldTypes.BOOLEAN,
                 'ArrayField': 'list'
             }
-            return data_types.get(model_field.get_internal_type()) or model_field.get_internal_type()
+            return data_types.get(model_field.get_internal_type()) \
+                or model_field.get_internal_type()
+
         query_fields = {}
         for field in cls.filter_fields:
             name = field
-            if name == "description": name = "caption" #hack for API alignment.
+            if name == "description":
+                name = "caption"  # hack for API alignment
             for f in cls._meta.fields:
                 if f.name == field:
                     query_fields[name] = QueryField(
                         name, django_fieldname=f.name, title=f.verbose_name,
                         help_text=f.help_text, data_type=get_data_type(f)
                     )
-        #raise Exception(query_fields)
         return query_fields
 
     @classmethod

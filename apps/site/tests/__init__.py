@@ -178,23 +178,6 @@ class ModelMixin(object):
         l.save()
         return l
 
-    def create_presentation(
-            self,
-            user,
-            name='Test Presentation',
-            authority_id=1):
-        import random
-        slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
-        p = models.Presentation(
-            name=name,
-            owner=user,
-            last_updated_by=user,
-            access_authority=models.ObjectAuthority.objects.get(
-                id=authority_id),
-            slug=slug)
-        p.save()
-        return p
-
     def _add_group_user(self, group, user, authority_id):
         uao = models.UserAuthorityObject(
             object_id=group.id,

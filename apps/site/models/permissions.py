@@ -166,7 +166,6 @@ filtered by a project endpoint:
 * Print
 * Project
 * Form
-* Presentation
 
 Q: Which endpoints are available only for logged-in users?
 A: Only StyledMap
@@ -296,16 +295,3 @@ class FormUser(ObjectUserPermissions):
         app_label = 'site'
         managed = False
         db_table = 'v_private_forms'
-
-
-class PresentationUser(ObjectUserPermissions):
-    presentation = models.ForeignKey(
-        'Presentation',
-        db_column='presentation_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_presentations'

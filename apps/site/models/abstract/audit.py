@@ -12,7 +12,7 @@ class BaseAudit(Base):
     time_stamp = models.DateTimeField(default=get_timestamp_no_milliseconds,
                                       db_column='last_updated')
     filter_fields = Base.filter_fields + ('date_created', 'time_stamp')
-    
+
     @classmethod
     def get_filter_fields(cls):
         from localground.apps.lib.helpers import QueryField, FieldTypes
@@ -22,7 +22,7 @@ class BaseAudit(Base):
             help_text='Username of user who owns the project',
             data_type=FieldTypes.STRING
         )
-        #raise Exception(query_fields)
+        # raise Exception(query_fields)
         return query_fields
 
     class Meta:

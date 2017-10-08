@@ -33,10 +33,6 @@ class Migration(migrations.Migration):
             new_name='tags',
             old_name='newtags'),
         migrations.RenameField(
-            model_name='presentation',
-            new_name='tags',
-            old_name='newtags'),
-        migrations.RenameField(
             model_name='print',
             new_name='tags',
             old_name='newtags'),
