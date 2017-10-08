@@ -3,14 +3,17 @@ from localground.apps.site.managers import PrintManager
 from django.conf import settings
 from localground.apps.site.models.abstract.audit import BaseAudit
 from localground.apps.site.models.abstract.media import BaseMediaMixin
-from localground.apps.site.models.abstract.mixins import ProjectMixin, BaseGenericRelationMixin
+from localground.apps.site.models.abstract.mixins import ProjectMixin
+from localground.apps.site.models.abstract.mixins import \
+    BaseGenericRelationMixin
 from localground.apps.site.models.abstract.geometry import ExtentsMixin
 from PIL import Image
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.geos import Polygon
 
 
-class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin, BaseGenericRelationMixin, BaseAudit):
+class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin,
+            BaseGenericRelationMixin, BaseAudit):
     uuid = models.CharField(unique=True, max_length=8)
     name = models.CharField(
         max_length=255,
@@ -120,11 +123,13 @@ class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin, BaseGenericRelationMixin
         return 'Print #' + self.uuid
 
     @classmethod
-    def insert_print_record(cls, user, project, layout, map_provider, zoom,
-                            center, host, map_title=None, instructions=None, mapimage_ids=None,
-                            do_save=True):
+    def insert_print_record(
+        cls, user, project, layout, map_provider, zoom, center, host,
+            map_title=None,  instructions=None, mapimage_ids=None,
+            do_save=True):
         from localground.apps.site import models
-        from localground.apps.lib.helpers import generic, StaticMap, Extents, AcetateLayer
+        from localground.apps.lib.helpers import generic, StaticMap, \
+            Extents, AcetateLayer
 
         layers, mapimages = None, None
         if mapimage_ids is not None:
@@ -169,7 +174,6 @@ class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin, BaseGenericRelationMixin
         p.southwest = extents.southwest
         p.extents = extents_polygon
         p.virtual_path = p.generate_relative_path()
-        #raise Exception(p.to_dict())
 
         if do_save:
             p.save()
@@ -184,7 +188,8 @@ class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin, BaseGenericRelationMixin
 
     def generate_pdf(self):
         from localground.apps.site import models
-        from localground.apps.lib.helpers import Extents, generic, StaticMap, Report, AcetateLayer
+        from localground.apps.lib.helpers import Extents, generic, StaticMap, \
+            Report, AcetateLayer
         import os
 
         # use static map helper function to calculate additional geometric
