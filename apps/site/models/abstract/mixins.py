@@ -9,6 +9,7 @@ class ProjectMixin(models.Model):
     class Meta:
         abstract = True
 
+
 class ExtrasMixin(models.Model):
     extras = JSONField(blank=True, null=True)
 

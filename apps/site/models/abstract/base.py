@@ -14,7 +14,7 @@ class Base(models.Model):
 
     '''
     ----------------------------------------------------------------------------
-    Private Methods
+    Private Class Methods
     ----------------------------------------------------------------------------
     '''
     @classmethod
@@ -43,9 +43,13 @@ class Base(models.Model):
 
     '''
     ----------------------------------------------------------------------------
-    Public Properties
+    Public Class Properties
     ----------------------------------------------------------------------------
     '''
+    @classproperty
+    def object_type(cls):
+        return cls._meta.verbose_name
+
     @classproperty
     def model_name(cls):
         return cls._meta.verbose_name.replace('-', '_')

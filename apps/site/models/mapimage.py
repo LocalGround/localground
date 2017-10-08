@@ -52,9 +52,6 @@ class MapImage(BaseUploadedMedia):
     def original_image_filesystem(self):
         return '%s/%s' % (self.get_abs_directory_path(), self.file_name_new)
 
-    def get_object_type(self):
-        return 'map-image'
-
     def processed_map_filesystem(self):
         return self.get_abs_directory_path(
         ) + self.processed_image.file_name_orig

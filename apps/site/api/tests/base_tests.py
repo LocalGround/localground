@@ -80,7 +80,7 @@ class ViewMixinAPI(ModelMixin):
             try:
                 fields = response.data['actions'].get('PUT') or \
                          response.data['actions'].get('POST')
-            except (e):
+            except (Exception):
                 # print('no PUT or POST')
                 return
 
@@ -105,7 +105,7 @@ class ViewMixinAPI(ModelMixin):
                         fields[key]['read_only'],
                         self.metadata[key]['read_only']
                     )
-                except(e):
+                except(Exception):
                     raise Exception(
                         self.debug_metadata(
                             key, fields[key], self.metadata[key]

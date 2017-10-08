@@ -37,10 +37,10 @@ class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin, BaseGenericRelationMixin
     preview_image_path = models.CharField(max_length=255)
     deleted = models.BooleanField(default=False)
 
-    filter_fields = BaseMediaMixin.filter_fields + ('name', 'description', 'tags', 'uuid')
+    filter_fields = BaseMediaMixin.filter_fields + \
+        ('name', 'description', 'tags', 'uuid')
 
     objects = PrintManager()
-
 
     @classmethod
     def inline_form(cls, user):
@@ -59,7 +59,6 @@ class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin, BaseGenericRelationMixin
 
     def get_abs_virtual_path(self):
         return '//%s%s' % (self.host, self.virtual_path)
-        #return '%s%s' % (settings.SERVER_URL, self.virtual_path)
 
     def generate_relative_path(self):
         return '/%s/%s/%s/' % (settings.USER_MEDIA_DIR,
@@ -75,10 +74,11 @@ class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin, BaseGenericRelationMixin
             'project_id': self.project.id,
             'map_title': self.name.encode('utf8'),
             'instructions': self.description.encode('utf8'),
-            'mapimage_ids': ','.join([str(s.id) for s in self.embedded_mapimages])
+            'mapimage_ids': ','.join(
+                [str(s.id) for s in self.embedded_mapimages]
+            )
         })
         return '//' + self.host + '/maps/print/?' + data
-        #return settings.SERVER_URL + '/maps/print/?' + data
 
     def thumb(self):
         path = '%s%s' % (self.virtual_path, self.preview_image_path)
@@ -92,59 +92,6 @@ class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin, BaseGenericRelationMixin
         path = '%s%s' % (self.virtual_path, self.pdf_path)
         return self._encrypt_media_path(path)
 
-    def to_dict_slim(self):
-        return {
-            'id': self.id,
-            'map_title': self.map_title
-        }
-
-    def to_dict(self, include_print_users=False, include_map_groups=False,
-                include_processed_maps=False, include_markers=False):
-        dict = {
-            'id': self.uuid,
-            'uuid': self.uuid,
-            'map_title': self.name,
-            'pdf': self.pdf(),
-            'thumbnail': self.thumb(),
-            #'kml': '/' + settings.USER_MEDIA_DIR + '/prints/' + self.id + '/' + self.id + '.kml',
-            'map': self.map(),
-            'mapWidth': self.map_width,
-            'mapHeight': self.map_height,
-            'zoom': self.zoom,
-            'north': self.northeast.y,
-            'south': self.southwest.y,
-            'east': self.northeast.x,
-            'west': self.southwest.x,
-            'center_lat': self.center.y,
-            'center_lng': self.center.x,
-            'time_stamp': self.time_stamp.strftime('%m/%d/%y %I:%M%p'),  # .isoformat(), #m/d/Y
-            #'time_stamp': str(self.time_stamp),
-            'provider': self.map_provider.id,  # ensure select_related
-        }
-        if self.owner is not None:
-            # ensure select_related
-            dict.update({'owner': self.owner.username})
-        if include_print_users:
-            users = self.get_auth_users()
-            dict.update({'print_users': [u.to_dict() for u in users]})
-        if include_map_groups:
-            groups = self.get_map_groups()
-            dict.update({'map_groups': [g.to_dict() for g in groups]})
-        if include_processed_maps:
-            dict.update({'processed_maps': self.get_mapimages(to_dict=True)})
-        if include_markers:
-            dict.update({'markers': self.get_marker_dictionary_list()})
-        return dict
-
-    def get_mapimages(self, to_dict=False):
-        from localground.apps.site.models import MapImage
-        mapimages = list(MapImage.objects.filter(deleted=False)
-                                 .filter(source_print=self)
-                                 .order_by('-time_stamp'))
-        if to_dict:
-            return [s.to_dict() for s in mapimages]
-        return mapimages
-
     def delete(self, *args, **kwargs):
         # first remove directory, then delete from db:
         import shutil
@@ -157,10 +104,10 @@ class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin, BaseGenericRelationMixin
                 dest = dest + '.dup.' + generic.generateID()
             try:
                 shutil.move(path, dest)
-            except:
-                #pass
-                raise Exception('error moving path from %s to %s' % (path, dest))
-
+            except (Exception):
+                raise Exception(
+                    'error moving path from %s to %s' % (path, dest)
+                )
         super(Print, self).delete(*args, **kwargs)
 
     class Meta:
