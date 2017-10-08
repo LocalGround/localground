@@ -45,7 +45,6 @@ FONT_ROOT = '%s/assets/fonts/' % STATIC_ROOT
 TEMP_DIR = '%s/tmp/' % FILE_ROOT
 QR_READER_PATH = '%s/lib/barcodereader' % APPS_ROOT
 
-MAP_FILE = FILE_ROOT + '/mapserver/localground.map'
 TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR
 
 # From Google Developer Console:
