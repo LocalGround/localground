@@ -18,8 +18,6 @@ define(["jquery",
                     alert('a model is required');
                 }
                 this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
-              //  this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
-              //  this.listenTo(this.app.vent, 'show-right-regions', this.createLayer);
                 this.listenTo(this.app.vent, 'hide-right-panel', this.hidePanel);
                 this.listenTo(this.app.vent, 'update-data-source', this.initialize);
             },
@@ -59,11 +57,6 @@ define(["jquery",
                 this.getRegion('markerStyle').show(msv);
             },
 
-
-            // this need to moved to the style app and passed into the right hand panel
-            // and RHP should be created only when the user pressed 'edit' or 'add layer'
-            // model and lyaer will be created like:
-            //
             createLayer: function (layer, collection) {
                 this.triggerShowPanel();
               //  this.model = layer;
@@ -81,7 +74,6 @@ define(["jquery",
                 this.createMSV();
                 this.updateSourceCode();
                 if(!this.model.id) {
-                    console.log('SAVING LAYER INITIALLY');
                     this.saveLayer();
                 }
             },
@@ -123,19 +115,13 @@ define(["jquery",
                     layerType = this.$el.find("#data-type-select").val(),
                     buckets = this.$el.find("#bucket").val();
                 if (this.model.get("filters") === null) {
-                    //console.log("accounting for no filters");
                     this.model.set("filters", { 'tag' : 'nothing' });
                 }
                 if (!this.model.get('symbols').length) {
-                    //console.log("Layer will not save because symbols do not exist");
                     this.app.vent.trigger('update-data-source');
                 }
-               // this.model.set("title", title);
-               // this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
                 this.model.set('newLayer', false);
-                console.log("saveLayer() triggered", this.model);
-                //console.log(this.model.urlRoot);
 
                 this.model.save(null, {
                     error: function (model, response) {
@@ -148,10 +134,9 @@ define(["jquery",
                     },
                     success: function () {
                         console.log('success', that.model);
-                        //that.model.set('highlighted', true);
                         that.collection.add(that.model);
                         that.app.vent.trigger('add-css-to-selected-layer', that.model.id);
-                        that.app.router.navigate('//' + that.model.get('map_id') + '/layers/' + that.model.id, {trigger: true});
+                        that.app.router.navigate('//' + that.model.get('map_id') + '/layers/' + that.model.id);
                         that.app.layerHasBeenSaved = true;
                         that.app.layerHasBeenAltered = false;
                     }

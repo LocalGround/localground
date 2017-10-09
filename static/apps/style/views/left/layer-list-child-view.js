@@ -9,8 +9,6 @@ define(["jquery",
         var LayerListChild =  Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this);
-                console.log("Layer" + this.model.id + " is checked: " + this.model.get("metadata").isShowing);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
                // this.listenTo(this.app.vent, "route-layer", this.routerSendCollection);
@@ -41,8 +39,6 @@ define(["jquery",
             sendCollection: function () {
                 this.$el.attr('id', this.model.id);
 
-                console.log(this.app);
-
                 // click input to display icons if not already displaying
                 if (this.$el.find('input').prop('checked', false)) {
                     this.$el.find('input').click();
@@ -60,7 +56,6 @@ define(["jquery",
 
             // triggered from the router
             checkSelectedItem: function(layerId) {
-                console.log('check selected item', layerId);
                     this.$el.attr('id', this.model.id);
 
                     if (this.$el.find('input').prop('checked', false)) {
@@ -72,8 +67,6 @@ define(["jquery",
             childRouterSendCollection: function (mapId, layerId) {
 
                 if (this.model.id == layerId) {
-                    console.log("condition met, show layer", this);
-
                     this.checkSelectedItem(layerId);
 
                     // This event actually triggers the 'createLayer()' function in right-panel.js layoutview
@@ -89,13 +82,11 @@ define(["jquery",
                 if (!confirm("Are you sure you want to delete this layer?")) {
                     return;
                 }
-                //console.log("deleteLayer()", this.model);
-                //console.log("collection before delete: ", this.collection);
+            
                 this.model.destroy();
                 this.collection.remove(this.model);
                 this.deleteOverlays();
-                //this.hideOverlays();
-                //console.log("collection after delete: ", this.collection);
+        
                 this.app.vent.trigger('update-layer-list');
                 this.app.vent.trigger("hide-right-panel");
             },
@@ -106,8 +97,6 @@ define(["jquery",
             },
 
             updateMapOverlays: function () {
-                //console.log('rebuilding map overlays');
-                //console.log(this.model.getSymbols());
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
                 this.initMapOverlays();
@@ -143,7 +132,6 @@ define(["jquery",
                     });
                     that.markerOverlayList.push(overlays);
                 });
-                //console.log(this.markerOverlayList);
             },
 
             showOverlays: function () {
@@ -153,25 +141,19 @@ define(["jquery",
             },
 
             hideOverlays: function () {
-                console.log('hide overlays');
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.hideAll();
                 });
             },
 
             deleteOverlays: function () {
-                //console.log("deleteOverlays() called")
-              //  this.$el.find('.gmnoprint').remove();
-
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.remove();
                 });
             },
 
             showHideOverlays: function () {
-                console.log('showHide has been triggered');
                 this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
-                console.log(this.model.get("metadata").isShowing);
                 if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
                 } else {

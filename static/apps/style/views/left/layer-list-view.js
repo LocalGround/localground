@@ -36,19 +36,12 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'route-layer', this.routerSendCollection);
                 this.listenTo(this.app.vent, 'add-css-to-selected-layer', this.addCssToSelectedLayer);
                 this.listenTo(this.app.vent, 'route-new-layer', this.createNewLayer);
-                console.log(this.model);
             },
 
             events: function () {
                 return _.extend({ 
                     //'click .add-layer' : 'createNewLayer' 
                 });
-            },
-
-            onRender: function() {
-                var something = '#' + 'layer' + '433';
-                $(something).css('color', 'green');
-                console.log($(something));
             },
 
             showDropDown: function () {
@@ -73,15 +66,11 @@ define(["marionette",
             },
 
             createNewLayer: function (mapID) {
-                console.log("Altered?: ", this.app.layerHasBeenAltered)
-                console.log("Saved?: ", this.app.layerHasBeenSaved)
                 var continueAction = true;
                 if (this.app.layerHasBeenAltered && !this.layerHasBeenSaved) {
-                    console.log("should send save confirmation");
                     continueAction = confirm("You have unsaved changes on your currently selected layer. If you continue, your changes will not be saved. Do you wish to continue?");
                 }
                 if(!continueAction) {
-                    console.log("should exit createLayer()");
                     return;
                 }
                 var layer = new Layer({

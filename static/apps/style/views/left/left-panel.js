@@ -19,7 +19,6 @@ define(["jquery",
                 this.app = opts.app;
                 this.render();
                 this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
-                //this.listenTo(this.app.vent, 'route-map', this.routeMap);
             },
             events: {
                 'click #new-layer-options a' : 'createNewLayer',
@@ -45,7 +44,6 @@ define(["jquery",
             },
 
             handleNewMap: function (model) {
-                // is 'this.app.model' necessary?
                 var ps = new PanelStylesView({
                         app: this.app,
                         model: model
@@ -55,7 +53,6 @@ define(["jquery",
                     model: model,
                     collection: model.getLayers()
                 });
-                console.log('left panel', model);
                 //set active model:
                 this.app.selectedMapModel = model;
                 this.app.model = model;
@@ -83,7 +80,6 @@ define(["jquery",
                 this.model.set("zoom", this.app.getZoom());
                 this.model.set("center", this.app.getCenter());
                 this.model.set("basemap", this.app.getMapTypeId());
-                console.log(JSON.stringify(this.model.toJSON(), null, 2));
                 this.model.save({
                     error: function () {
                         console.log('error');

@@ -75,12 +75,9 @@ define(["jquery",
             },
 
             setInitialModel: function () {
-                console.log('set intial map');
-
                 // on initialize, pass the first model in the collection
                 // to be set as the active map
                 this.setActiveMap(this.collection.at(0));
-
                 this.render();
             },
 
@@ -106,10 +103,8 @@ define(["jquery",
                     success: this.setMapAndRender.bind(this),
                     error: function (model, response){
                         var messages = JSON.parse(response.responseText);
-                        console.log(messages);
                         if (messages.slug && messages.slug.length > 0) {
                             that.slugError = messages.slug[0];
-                            console.log("should have error message", that.slugError);
                         }
                         that.app.vent.trigger("send-modal-error", that.slugError);
                     }
@@ -185,7 +180,6 @@ define(["jquery",
             },
 
             drawOnce: function () {
-                console.log('draw once');
                 this.render();
                 this.setActiveMap();
             },
