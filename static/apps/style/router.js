@@ -29,13 +29,3 @@ define([
     });
     return Router;
 });
-
-
-/*
-/:mapID/new—> create new map
-/:mapID —> switch to that map (done)
-/:mapID/layers/:LayerID —> open that layer on the right
-/:mapID/layers/:new—> create layer
-
-
-*/
