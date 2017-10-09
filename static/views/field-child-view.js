@@ -165,14 +165,13 @@ define([
         },
         validateField: function(){
 
-            var that = this,
-                fieldName = this.$el.find(".fieldname").val(),
-                fieldType = this.$el.find(".fieldType").val()
+            var fieldName = this.$el.find(".fieldname").val();
+            var fieldType = this.$el.find(".fieldType").val();
 
             var invalidField = fieldName.trim() === "" || fieldType == '-1';
 
 
-            if (!this.model.isValid()) {
+            if (!this.model.isValid() || invalidField) {
                 if (!this.parent){
                     this.app.vent.trigger('error-message', this.model.validationError);
                 }

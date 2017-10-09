@@ -116,7 +116,12 @@ define([
             var formName = this.$el.find('.formName').val(),
                 caption = this.$el.find('.caption').val(),
                 that = this,
-                key = "form_" + this.model.id;
+                key = "form_" + this.model.id,
+                fieldsValidated = this.validateFields();
+
+            if (!fieldsValidated){
+                return;
+            }
 
             this.model.set('name', formName);
             this.model.set('caption', caption);
@@ -136,7 +141,6 @@ define([
                     }
                 },
                 error: function () {
-                    console.log("Error(Correct place) Form does not dave without fields");
                     that.app.vent.trigger('error-message', "Cannot save with empty form or fields.");
                 }
             });
@@ -155,8 +159,19 @@ define([
             this.collection = this.model.fields;
         },
 
-        validateFields: function(){
+        /*
+          This shall only have 2 modes when reading and / or writing fields:
 
+          1 - "validate" - check and return true if all fields filled
+                           or false when any field is not filled
+          2 - "save" - after going through validation steps,
+                       simply save all complete fields onto form
+        */
+        fieldViewMode: function(modeName){
+            var modeNameStr = modeName.trim().toLowerCase();
+            if (!(modeNameStr === "save" || modeNameStr === "validate")){
+                return;
+            }
             var success = true;
             this.initCollection();
             var that = this,
@@ -168,29 +183,32 @@ define([
                 tempID = $(this).attr("id");
                 model = that.collection.getModelByAttribute('temp_id', tempID);
                 childView = that.children.findByModel(model);
-                console.log(childView);
-                success = success && childView.validateField(i + 1);
-                if (!success) break;
+                switch(modeNameStr){
+                    case "validate":
+                        success = success && childView.validateField(i + 1);
+                        if (!success) return false;
+                        break;
+                    case "save":
+                        childView.saveField(i + 1);
+                        that.wait(100);
+                        break;
+                }
             });
             return success
+        },
+
+        validateFields: function(){
+            var success = this.fieldViewMode("validate");
+            if (!success){
+                this.app.vent.trigger('error-message', "Cannot save with empty form or fields.");
+            }
+            return success;
 
         },
 
         saveFields: function () {
-            this.initCollection();
-            var that = this,
-                $rows = this.$el.find("#fieldList > tr"),
-                tempID,
-                model,
-                childView;
-            $rows.each(function (i) {
-                tempID = $(this).attr("id");
-                model = that.collection.getModelByAttribute('temp_id', tempID);
-                childView = that.children.findByModel(model);
-                console.log(childView);
-                childView.saveField(i + 1);
-                that.wait(100);
-            });
+            this.fieldViewMode("save");
+
         },
         addFieldButton: function () {
             this.initCollection();
