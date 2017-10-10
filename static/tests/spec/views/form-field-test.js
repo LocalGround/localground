@@ -531,7 +531,6 @@ define([
 
                 for (var i = 0; i < extras.length; ++i){
                     expect($(choice_rows[i]).find(".choice").val()).toEqual(extras[i].name);
-
                     expect($(choice_rows[i]).find(".choice").val()).not.toEqual(original_extras[i].name);
                 }
 

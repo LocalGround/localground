@@ -120,6 +120,7 @@ define([
                 fieldsValidated = this.validateFields();
 
             if (!fieldsValidated){
+                this.render();
                 return;
             }
 
@@ -179,6 +180,11 @@ define([
                 tempID,
                 model,
                 childView;
+            console.log($rows);
+            if($rows.length == 0){
+                this.app.vent.trigger('error-message', "Cannot have an empty form.");
+                return false;
+            }
             $rows.each(function (i) {
                 tempID = $(this).attr("id");
                 model = that.collection.getModelByAttribute('temp_id', tempID);
@@ -186,7 +192,10 @@ define([
                 switch(modeNameStr){
                     case "validate":
                         success = success && childView.validateField(i + 1);
-                        if (!success) return false;
+                        if (!success){
+                            that.app.vent.trigger('error-message', "Cannot have unfilled fields.");
+                            return false;
+                        }
                         break;
                     case "save":
                         childView.saveField(i + 1);
@@ -199,11 +208,7 @@ define([
 
         validateFields: function(){
             var success = this.fieldViewMode("validate");
-            if (!success){
-                this.app.vent.trigger('error-message', "Cannot save with empty form or fields.");
-            }
             return success;
-
         },
 
         saveFields: function () {

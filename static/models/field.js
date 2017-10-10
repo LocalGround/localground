@@ -54,13 +54,14 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 this.set("errorRatingName", false);
                 this.set("errorRatingValue", false);
 
-                if (attrs.col_alias.trim() === "") {
-                    this.set("errorFieldName", true);
-                    return "Cannot have empty field name."
-                }
-                if (attrs.data_type === "-1") {
-                    this.set("errorFieldType", true);
-                    return "Need to select a data type."
+                var emptyName = attrs.col_alias.trim() === "";
+                var unselectedType = attrs.data_type === "" || !attrs.data_type;
+
+                this.set("errorFieldName", emptyName);
+                this.set("errorFieldType", unselectedType);
+
+                if (emptyName || unselectedType){
+                    return "Both Field name and type need to be filled in"
                 }
                 if (!this.validateRating(attrs)) {
                     return "Both rating name and value must be filled."
