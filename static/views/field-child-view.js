@@ -194,6 +194,10 @@ define([
                 this.model.set("data_type", fieldType);
             }
 
+            if (!this.parent){
+                this.validateField();
+            }
+
             if (fieldType == "rating"){
                 this.saveRatingsToModel();
             } else if (fieldType == "choice") {
@@ -225,6 +229,9 @@ define([
                     }
                 }
             });
+            if (!this.parent){
+                this.render();
+            }
         },
 
         onRender: function () {

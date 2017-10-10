@@ -55,7 +55,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 this.set("errorRatingValue", false);
 
                 var emptyName = attrs.col_alias.trim() === "";
-                var unselectedType = attrs.data_type === "" || !attrs.data_type;
+                var unselectedType = attrs.data_type === "-1" || !attrs.data_type;
 
                 this.set("errorFieldName", emptyName);
                 this.set("errorFieldType", unselectedType);

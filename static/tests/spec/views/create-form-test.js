@@ -15,6 +15,8 @@ define([
             spyOn(CreateForm.prototype, 'initModel').and.callThrough();
             spyOn(CreateForm.prototype, 'fetchShareData').and.callThrough();
             spyOn(CreateForm.prototype, 'saveFields').and.callThrough();
+            spyOn(CreateForm.prototype, 'validateFields').and.callThrough();
+            spyOn(CreateForm.prototype, 'fieldViewMode').and.callThrough();
             spyOn(Form.prototype, "getFields").and.callThrough();
 
             //event methods:
