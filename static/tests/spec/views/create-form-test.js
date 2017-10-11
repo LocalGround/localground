@@ -63,7 +63,7 @@ define([
             beforeEach(function () {
                 initSpies();
                 newCreateForm = new CreateForm({
-                    model: this.form //initializes w/three fields
+                    model: this.form
                 });
             });
 
@@ -79,6 +79,8 @@ define([
                 newCreateForm = new CreateForm({
                     model: this.form
                 });
+
+                // Where are the tests for them?
             });
 
         });
@@ -208,8 +210,8 @@ define([
                     expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(0);
                     newCreateForm.saveFormSettings();
 
-                    expect(newCreateForm.model.get('name')).toBe('new form name');
-                    expect(newCreateForm.model.get('caption')).toBe('dummy caption');
+                    expect(newCreateForm.model.get('name')).toEqual('new form name');
+                    expect(newCreateForm.model.get('caption')).toEqual('dummy caption');
 
                     expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(1);
                     expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(1);
@@ -263,6 +265,45 @@ define([
 
 
                 });
+            });
+
+            describe("Validating a New Field", function(){
+
+                it("Successfully passes all validation tests", function(){
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: new Form({id: 5})
+                    });
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
+
+                    //add a new row by triggering the '.new_field_button click'
+                    fixture.find('.new_field_button').trigger('click');
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
+
+                    fixture.find('#formName').val('new form name');
+                    fixture.find('#caption').val('dummy caption');
+                    // We are working with one field from a newly created form
+                    // so it should be easy to find one class of field properties
+
+                    fixture.find('.fieldname').val("Sample Text");
+                    fixture.find('.fieldType').val("text");
+                    fixture.find('.display_field_button').prop("checked");
+
+                    expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.fieldViewMode).toHaveBeenCalledTimes(0);
+
+                    newCreateForm.saveFormSettings();
+
+                    expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.validateFields).toBeTruthy();
+                    expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.fieldViewMode).toHaveBeenCalledTimes(1);
+
+
+                });
+
             });
 
         });

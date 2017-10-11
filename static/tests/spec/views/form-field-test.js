@@ -32,6 +32,7 @@ define([
             spyOn(FieldChildView.prototype, 'saveChoicesToModel').and.callThrough();
 
             spyOn(Field.prototype, 'destroy');
+            spyOn(Field.prototype, 'isValid');
 
         };
 

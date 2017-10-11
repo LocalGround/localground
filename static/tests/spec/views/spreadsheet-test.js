@@ -179,7 +179,7 @@ define([
                 });
 
                 it("Successfully calls attachModels", function(){
-                    // Unforntunately, this one requires digging into oen of the elements
+                    // Unforntunately, this one requires digging into one of the elements
                     // inside field so that it can actually gather the collection of models
                     // for the "added media" column
                     var models = [];
@@ -231,10 +231,6 @@ define([
             it("Successfully calls getColumnWidths", function(){
                 expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(1);
                 expect(Spreadsheet.prototype.getColumnWidths).toHaveBeenCalledTimes(1);
-            });
-
-            describe("Render Spreadsheet: Saving settings", function(){
-
             });
 
         });
