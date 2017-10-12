@@ -28,6 +28,10 @@ define([
             spyOn(Field.prototype, 'save').and.callThrough();
             spyOn(Form.prototype, 'createField').and.callThrough();
             spyOn(Form.prototype, 'destroy').and.callThrough();
+
+            spyOn(Field.prototype, 'validate').and.callThrough();
+            spyOn(Field.prototype, 'validateRating').and.callThrough();
+            spyOn(Field.prototype, 'validateChoice').and.callThrough();
         };
 
         describe("Create Form: Initialization Tests", function () {
@@ -296,12 +300,46 @@ define([
 
                     newCreateForm.saveFormSettings();
 
+                    // Having trouble getting the saveFields to be called
+                    // despite that saveFormSettings does call upon success case
+
                     expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(1);
                     expect(CreateForm.prototype.validateFields).toBeTruthy();
                     expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(1);
                     expect(CreateForm.prototype.fieldViewMode).toHaveBeenCalledTimes(1);
 
 
+                });
+
+                it("Successfully Detects Unfilled Field Error", function(){
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: new Form({id: 5})
+                    });
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
+
+                    //add a new row by triggering the '.new_field_button click'
+                    fixture.find('.new_field_button').trigger('click');
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
+
+                    fixture.find('#formName').val('new form name');
+                    fixture.find('#caption').val('dummy caption');
+                    // We are working with one field from a newly created form
+                    // so it should be easy to find one class of field properties
+
+                    fixture.find('.fieldname').val("");
+                    fixture.find('.fieldType').val("-1");
+
+
+                    expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.fieldViewMode).toHaveBeenCalledTimes(0);
+
+                    newCreateForm.saveFormSettings();
+
+                    expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.validateFields).toBeFalsy();
+                    expect(CreateForm.prototype.fieldViewMode).toHaveBeenCalledTimes(1);
                 });
 
             });

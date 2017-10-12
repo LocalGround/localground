@@ -196,7 +196,8 @@ define([
                 expect(FieldChildView.prototype.validateFields).toHaveBeenCalledTimes(0);
                 fixture = setFixtures("<div></div>").append(fieldView.$el);
                 fixture.find(".fieldname").val("").trigger('blur');
-                fieldView.saveField();
+                fieldView.validateField();
+                //fieldView.saveField();
                 expect(FieldChildView.prototype.validateFields).toHaveBeenCalledTimes(1);
                 expect(fieldView.$el.hasClass("failure-message")).toBeTruthy();
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
@@ -205,7 +206,8 @@ define([
             it("If fieldtype is blank, it shows an error", function () {
                 createNewFieldView(this);
                 fieldView.$el.find("select").val("-1");
-                fieldView.saveField(1);
+                fieldView.validateField(1);
+                //fieldView.saveField(1);
                 expect(fieldView.$el.hasClass("failure-message")).toBeTruthy();
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
                 expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Missing");
