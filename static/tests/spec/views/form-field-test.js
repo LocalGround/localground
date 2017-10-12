@@ -10,7 +10,7 @@ define([
         'use strict';
         var fixture, formView, fieldView, initSpies, createExistingFieldView, createNewFieldView;
 
-        initSpies = function () {
+        initSpies = function (scope) {
             //error catch functions
             spyOn(FieldChildView.prototype, 'initialize').and.callThrough();
             spyOn(FieldChildView.prototype, 'render').and.callThrough();
@@ -33,6 +33,8 @@ define([
 
             spyOn(Field.prototype, 'destroy');
             spyOn(Field.prototype, 'isValid');
+
+            spyOn(scope.app.vent, 'trigger').and.CallThrough();
 
         };
 
@@ -66,7 +68,7 @@ define([
 
         describe("Create Form Fields: Initialization Tests", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
             });
 
             it("Same number of fields successfully created", function () {
@@ -99,7 +101,7 @@ define([
 
         describe("Create Form Fields: Render Tests", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
             });
             it("Renders child HTML", function () {
                 var opts = {}, field = this.form.fields.at(0);
@@ -217,7 +219,7 @@ define([
 
         describe("Create Form Fields: Radio button switch test", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
             });
             it("Renders child HTML", function () {
                 var opts = {}, field = this.form.fields.at(1);
@@ -241,7 +243,7 @@ define([
 
         describe("Create Form Fields: Ratings Test", function(){
             beforeEach(function(){
-                initSpies();
+                initSpies(this);
                 var opts = {}, field = this.form.fields.at(3);
                 _.extend(opts, this.form.toJSON(), {
                     model: field,
@@ -397,7 +399,7 @@ define([
 
         describe("Create Form Fields: Choices Test", function(){
             beforeEach(function(){
-                initSpies();
+                initSpies(this);
                 var opts = {}, field = this.form.fields.at(4);
                 _.extend(opts, this.form.toJSON(), {
                     model: field,

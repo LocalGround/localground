@@ -10,7 +10,7 @@ define([
         'use strict';
         var fixture, newCreateForm, initSpies;
 
-        initSpies = function () {
+        initSpies = function (scope) {
             spyOn(CreateForm.prototype, 'render').and.callThrough();
             spyOn(CreateForm.prototype, 'initModel').and.callThrough();
             spyOn(CreateForm.prototype, 'fetchShareData').and.callThrough();
@@ -32,11 +32,13 @@ define([
             spyOn(Field.prototype, 'validate').and.callThrough();
             spyOn(Field.prototype, 'validateRating').and.callThrough();
             spyOn(Field.prototype, 'validateChoice').and.callThrough();
+
+            spyOn(scope.app.vent, 'trigger').and.callThrough();
         };
 
         describe("Create Form: Initialization Tests", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
             });
 
             it("Form Successfully created", function () {
@@ -65,7 +67,7 @@ define([
 
         describe("Create Form: Initialize model", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
                 newCreateForm = new CreateForm({
                     model: this.form
                 });
@@ -79,7 +81,7 @@ define([
 
         describe("Create Form: Attach Collection Event Handler", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
                 newCreateForm = new CreateForm({
                     model: this.form
                 });
@@ -91,7 +93,7 @@ define([
 
         describe("Create Form: Initialize Model without fields", function () {
             it("Create an empty form without fields and get fields", function () {
-                initSpies();
+                initSpies(this);
                 var emptyForm = new CreateForm({
                     model: new Form()
                 });
@@ -100,7 +102,7 @@ define([
             });
 
             it("Create an empty form with an ID without fields", function () {
-                initSpies();
+                initSpies(this);
                 var emptyForm = new CreateForm({
                     model: new Form({id: 5})
                 });
@@ -111,7 +113,7 @@ define([
 
         describe("Create Form: Parent Events All Fire", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
                 newCreateForm = new CreateForm({
                     model: this.form
                 });
@@ -127,7 +129,7 @@ define([
 
         describe("Create Form: All Methods work", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
             });
 
             describe("Functions that require Form to be empty", function () {
@@ -338,8 +340,10 @@ define([
                     newCreateForm.saveFormSettings();
 
                     expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(1);
-                    expect(CreateForm.prototype.validateFields).toBeFalsy();
+                    expect(CreateForm.prototype.validateFields).toBeFalsy(); // Having trouble gettign this to be false
                     expect(CreateForm.prototype.fieldViewMode).toHaveBeenCalledTimes(1);
+                    // I want the error message to actually be trigger when fields are invalid
+                    expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', jasmine.any(Object));
                 });
 
             });
