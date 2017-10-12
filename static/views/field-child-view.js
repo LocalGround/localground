@@ -164,14 +164,14 @@ define([
             this.model.set("extras", this.choicesList);
         },
         validateField: function(){
-
+            // checks for the "validate-only condition"
             var fieldName = this.$el.find(".fieldname").val();
             var fieldType = this.$el.find(".fieldType").val();
-
             var invalidField = fieldName.trim() === "" || fieldType == '-1';
-
-
-            if (!this.model.isValid() || invalidField) {
+            
+            // this.modelisValid checks for the save-only condition
+            // So, if both have failed, then not valid
+            if (!this.model.isValid() && invalidField) {
                 if (!this.parent){
                     this.app.vent.trigger('error-message', this.model.validationError);
                 }

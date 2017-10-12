@@ -16,7 +16,7 @@ define([
             spyOn(CreateForm.prototype, 'fetchShareData').and.callThrough();
             spyOn(CreateForm.prototype, 'saveFields').and.callThrough();
             spyOn(CreateForm.prototype, 'validateFields').and.callThrough();
-            spyOn(CreateForm.prototype, 'fieldViewMode').and.callThrough();
+            spyOn(CreateForm.prototype, 'checkEachFieldAndPerformAction').and.callThrough();
             spyOn(Form.prototype, "getFields").and.callThrough();
 
             //event methods:
@@ -273,13 +273,15 @@ define([
                 });
             });
 
-            describe("Validating a New Field", function(){
+            describe("Validating a New Field", function() {
+                /*When you add a new field, fill it in, and click save, it works*/
 
-                it("Successfully passes all validation tests", function(){
+                it("Successfully passes all validation tests", function() {
                     newCreateForm = new CreateForm({
                         app: this.app,
-                        model: new Form({id: 5})
+                        model:new Form({id: 5})
                     });
+                    newCreateForm.render();
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
 
@@ -298,7 +300,7 @@ define([
 
                     expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(0);
                     expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(0);
-                    expect(CreateForm.prototype.fieldViewMode).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(0);
 
                     newCreateForm.saveFormSettings();
 
@@ -308,7 +310,7 @@ define([
                     expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(1);
                     expect(CreateForm.prototype.validateFields).toBeTruthy();
                     expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(1);
-                    expect(CreateForm.prototype.fieldViewMode).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(2);
 
 
                 });
@@ -335,13 +337,13 @@ define([
 
 
                     expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(0);
-                    expect(CreateForm.prototype.fieldViewMode).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(0);
 
                     newCreateForm.saveFormSettings();
 
                     expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(1);
                     expect(CreateForm.prototype.validateFields).toBeFalsy(); // Having trouble gettign this to be false
-                    expect(CreateForm.prototype.fieldViewMode).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(1);
                     // I want the error message to actually be triggered when fields are invalid
                     // and how do I specify the message I want to have seen?
                     expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Cannot have unfilled fields');

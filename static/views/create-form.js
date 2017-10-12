@@ -118,8 +118,8 @@ define([
                 that = this,
                 key = "form_" + this.model.id,
                 fieldsValidated = this.validateFields();
-
-            if (!fieldsValidated){
+            console.log(fieldsValidated);
+            if (!fieldsValidated) {
                 this.render();
                 return;
             }
@@ -133,6 +133,7 @@ define([
 
             this.model.save(null, {
                 success: function () {
+                    console.log('saveFields!!!!');
                     var success = that.saveFields();
                     if (success) {
                         key = "form_" + that.model.id;
@@ -168,7 +169,7 @@ define([
           2 - "save" - after going through validation steps,
                        simply save all complete fields onto form
         */
-        fieldViewMode: function(modeName){
+        checkEachFieldAndPerformAction: function (modeName) {
             var modeNameStr = modeName.trim().toLowerCase();
             if (!(modeNameStr === "save" || modeNameStr === "validate")){
                 return;
@@ -180,7 +181,6 @@ define([
                 tempID,
                 model,
                 childView;
-            console.log($rows);
             if($rows.length == 0){
                 this.app.vent.trigger('error-message', "Cannot have an empty form.");
                 return false;
@@ -189,9 +189,10 @@ define([
                 tempID = $(this).attr("id");
                 model = that.collection.getModelByAttribute('temp_id', tempID);
                 childView = that.children.findByModel(model);
+
                 switch(modeNameStr){
                     case "validate":
-                        success = success && childView.validateField(i + 1);
+                        success = success && childView.validateField();
                         if (!success){
                             that.app.vent.trigger('error-message', "Cannot have unfilled fields.");
                             return false;
@@ -207,12 +208,12 @@ define([
         },
 
         validateFields: function(){
-            var success = this.fieldViewMode("validate");
+            var success = this.checkEachFieldAndPerformAction("validate");
             return success;
         },
 
         saveFields: function () {
-            this.fieldViewMode("save");
+            this.checkEachFieldAndPerformAction("save");
 
         },
         addFieldButton: function () {
