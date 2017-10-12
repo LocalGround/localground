@@ -344,7 +344,7 @@ define([
                     expect(CreateForm.prototype.fieldViewMode).toHaveBeenCalledTimes(1);
                     // I want the error message to actually be triggered when fields are invalid
                     // and how do I specify the message I want to have seen?
-                    expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', jasmine.any(Object));
+                    expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Cannot have unfilled fields');
                 });
 
             });
