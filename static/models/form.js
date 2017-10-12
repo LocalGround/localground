@@ -27,7 +27,6 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
             },
 
             validate(attrs, options){
-                console.log("Form -> Validate");
                 if (!this.fields){
                     this.trigger('error-message', "Cannot save with empty form or fields.");
                     return "Form must contain valid fields."

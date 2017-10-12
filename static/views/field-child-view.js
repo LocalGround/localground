@@ -22,7 +22,6 @@ define([
         },
         events: {
             'click .remove-row': 'removeModel',
-            'click .delete-field': 'doDelete',
             'blur input.fieldname': 'setAlias',
             'blur input.rating-value': 'saveNewRating',
             'blur input.rating-name': 'saveNewRating',
@@ -89,10 +88,6 @@ define([
         },
 
         updateRatingList: function () {
-            //if (!this.ratingsList) return;
-            //AN attempt to solve the problem, but this.ratingsList is undefined
-            // despite that it is an empty array, therefore nothing can be pushed
-            //console.log("update ratings list called");
             if (this.$el.find('.rating-row').length == 0) { return; }
             this.ratingsList = [];
             var that = this,
@@ -114,10 +109,6 @@ define([
         },
 
         updateChoiceList: function () {
-            //if (!this.ratingsList) return;
-            //AN attempt to solve the problem, but this.ratingsList is undefined
-            // despite that it is an empty array, therefore nothing can be pushed
-            //console.log("update ratings list called");
             if (this.$el.find('.choice-row').length == 0) { return; }
             this.choicesList = [];
             var that = this,
@@ -168,7 +159,7 @@ define([
             var fieldName = this.$el.find(".fieldname").val();
             var fieldType = this.$el.find(".fieldType").val();
             var invalidField = fieldName.trim() === "" || fieldType == '-1';
-            
+
             // this.modelisValid checks for the save-only condition
             // So, if both have failed, then not valid
             if (!this.model.isValid() && invalidField) {
@@ -257,20 +248,6 @@ define([
         },
         removeModel: function () {
             this.model.destroy();
-        },
-
-        doDelete: function (e) {
-            if (!confirm("Are you sure you want to remove this field from the form?")) {
-                return;
-            }
-            var $elem = $(e.target),
-                $row = $elem.parent().parent();
-            $row.remove();
-
-            this.model.destroy();
-            if (e) {
-                e.preventDefault();
-            }
         }
 
     });

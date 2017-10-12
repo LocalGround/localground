@@ -133,7 +133,6 @@ define([
 
             this.model.save(null, {
                 success: function () {
-                    console.log('saveFields!!!!');
                     var success = that.saveFields();
                     if (success) {
                         key = "form_" + that.model.id;

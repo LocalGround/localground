@@ -14,7 +14,6 @@ define([
             //error catch functions
             spyOn(FieldChildView.prototype, 'initialize').and.callThrough();
             spyOn(FieldChildView.prototype, 'render').and.callThrough();
-            spyOn(FieldChildView.prototype, 'doDelete').and.callThrough();
             spyOn(FieldChildView.prototype, 'validateField').and.callThrough();
 
             spyOn(FieldChildView.prototype, 'setRatingsFromModel').and.callThrough();
@@ -34,7 +33,7 @@ define([
             spyOn(Field.prototype, 'destroy');
             spyOn(Field.prototype, 'isValid');
 
-            spyOn(scope.app.vent, 'trigger').and.CallThrough();
+            spyOn(scope.app.vent, 'trigger').and.callThrough();
 
         };
 
@@ -124,7 +123,6 @@ define([
                 expect(fieldView.$el).toContainElement("input.fieldname");
                 expect(fieldView.$el).toContainElement("td.form-reorder");
                 expect(fieldView.$el).toContainElement("span.fieldType");
-                expect(fieldView.$el).toContainElement("a.delete-field");
                 expect(fieldView.$el).toContainElement(".display-field");
                 expect(fieldView.model.get("is_display_field")).toBe(true);
                 expect(fieldView.$el.find('.display-field').is(":checked")).toBeTruthy();
@@ -151,66 +149,25 @@ define([
                 expect(fieldView.$el.find('.display-field').is(":checked")).toBeFalsy();
             });
 
-            it("Don't delete when user cancels confirm dialog", function () {
-                var opts = {}, field = this.form.fields.at(0);
-                _.extend(opts, this.form.toJSON(), {
-                    model: field,
-                    parent: new CreateForm({
-                        model: this.form,
-                        app: this.app
-                    })
-                });
-                spyOn(window, 'confirm').and.returnValue(false);
-                expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(0);
-                expect(Field.prototype.destroy).toHaveBeenCalledTimes(0);
-                fieldView = new FieldChildView(opts);
-                fieldView.render();
-                fixture = setFixtures('<div></div>').append(fieldView.$el);
-                fieldView.$el.find('a.delete-field').trigger('click');
-                expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(1);
-                expect(Field.prototype.destroy).toHaveBeenCalledTimes(0);
-            });
-
-            it("Delete when user cancels confirm dialog", function () {
-                var opts = {}, field = this.form.fields.at(0);
-                _.extend(opts, this.form.toJSON(), {
-                    model: field,
-                    parent: new CreateForm({
-                        model: this.form,
-                        app: this.app
-                    })
-                });
-                spyOn(window, 'confirm').and.returnValue(true);
-                expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(0);
-                expect(Field.prototype.destroy).toHaveBeenCalledTimes(0);
-                fieldView = new FieldChildView(opts);
-                fieldView.render();
-                fixture = setFixtures('<div></div>').append(fieldView.$el);
-                expect(fieldView.$el).toBeInDOM();
-                fieldView.$el.find('a.delete-field').trigger('click');
-                expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(1);
-                expect(Field.prototype.destroy).toHaveBeenCalledTimes(1);
-                expect(fieldView.$el).not.toBeInDOM();
-            });
-
             it("If fieldname is blank, it shows an error", function () {
                 createExistingFieldView(this);
-                expect(FieldChildView.prototype.validateFields).toHaveBeenCalledTimes(0);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(0);
                 fixture = setFixtures("<div></div>").append(fieldView.$el);
-                fixture.find(".fieldname").val("").trigger('blur');
+                fixture.find(".fieldname").val("");
+                console.log(fixture.find('.fieldname'));
                 fieldView.validateField();
-                //fieldView.saveField();
-                expect(FieldChildView.prototype.validateFields).toHaveBeenCalledTimes(1);
-                expect(fieldView.$el.hasClass("failure-message")).toBeTruthy();
+                console.log(fieldView.$el.html());
+                console.log(fieldView.$el.find('span'));
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
+                expect(fieldView.$el.hasClass("ratingError")).toBeTruthy();
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
             });
 
             it("If fieldtype is blank, it shows an error", function () {
                 createNewFieldView(this);
                 fieldView.$el.find("select").val("-1");
-                fieldView.validateField(1);
-                //fieldView.saveField(1);
-                expect(fieldView.$el.hasClass("failure-message")).toBeTruthy();
+                fieldView.validateField();
+                expect(fieldView.$el.hasClass("ratingError")).toBeTruthy();
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
                 expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Missing");
             });
