@@ -3,9 +3,9 @@
 #description    :LocalGround configuration and installation script
 #author         :brian@newday.host
 #date           :20171011
-#version        :0.1.3
+#version        :0.1.4
 #usage          :./localground.sh
-#notes          : Added case for dev and production flags -d / -p
+#notes          : make symlink
 #bash_version   :4.3.48(1)-release
 #============================================================================
 
@@ -104,7 +104,7 @@ while getopts ":dp" opt; do
 development=true
 domain=localground
 emailaddr=localgrounddev@mailinator.com
-userDir='/var/www/'
+userDir='/'
 rootDir=$domain
 
 USER=localground
@@ -241,7 +241,7 @@ echo "CONFIG: Create Linux user." | tee -a "$log_file"
 	useradd -d /home/$USER $USER
 	sudo mkdir /home/$USER
 	sudo chown $USER:$USER /home/$USER 
-	sudo mkdir $userDir$rootDir
+	sudo mkdir -p $userDir$rootDir
 	sudo chown $USER:$GROUP_ACCOUNT $userDir$rootDir
 echo "✓ SUCCESS: Linux User '$USER' and dirs created" | tee -a "$log_file"
 
@@ -284,7 +284,7 @@ if [ "$development" = false ] ; then
 	## Check if directory exists or not
 	if ! [ -d $userDir$rootDir ]; then
 		### create the directory
-		mkdir $userDir$rootDir
+		mkdir -p $userDir$rootDir
 		### give permission to root dir
 		chmod 755 $userDir$rootDir
 		### Clone  in the new domain dir
@@ -342,6 +342,9 @@ if [ "$development" = true ] ; then
 	ssl_cert="/etc/ssl/certs/cert.pem"
 	ssl_key="/etc/ssl/certs/key.pem"
 	dhparam="/etc/ssl/certs/dhparam.pem"
+
+	## Make sym
+	ln -s  $userDir$rootDir /localground
 fi
 
 ## DEV = False

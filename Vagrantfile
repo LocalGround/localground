@@ -13,8 +13,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "ubuntu/xenial64"
-  config.vm.provision :shell, path: "deploy_tools/setup.sh", args: "-d", privileged: true
-  #config.vm.network :forwarded_port, host: 4567, guest: 80
+  config.vm.provision "shell" do |s|
+	s.path="deploy_tools/setup.sh"
+	s.args = ['-d']
+	s.privileged = true
+   end
+
   
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
