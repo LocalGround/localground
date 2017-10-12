@@ -23,6 +23,7 @@ define([
             spyOn(FieldChildView.prototype, 'addNewRating').and.callThrough();
             spyOn(FieldChildView.prototype, 'saveRatingsToModel').and.callThrough();
 
+            spyOn(FieldChildView.prototype, 'saveField').and.callThrough();
             spyOn(FieldChildView.prototype, 'setChoicesFromModel').and.callThrough();
             spyOn(FieldChildView.prototype, 'saveNewChoice').and.callThrough();
             spyOn(FieldChildView.prototype, 'removeChoice').and.callThrough();
@@ -151,15 +152,13 @@ define([
 
             it("If fieldname is blank, it shows an error", function () {
                 createExistingFieldView(this);
-                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(0);
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(0);
                 fixture = setFixtures("<div></div>").append(fieldView.$el);
                 fixture.find(".fieldname").val("");
-                console.log(fixture.find('.fieldname'));
-                fieldView.validateField();
-                console.log(fieldView.$el.html());
-                console.log(fieldView.$el.find('span'));
-                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
-                expect(fieldView.$el.hasClass("ratingError")).toBeTruthy();
+                fieldView.saveField();
+                fieldView.render();
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
+                expect(fieldView.$el).toContainElement(".ratingError");
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
             });
 
