@@ -164,11 +164,17 @@ define([
 
             it("If fieldtype is blank, it shows an error", function () {
                 createNewFieldView(this);
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(0);
+                fixture = setFixtures("<div></div>").append(fieldView.$el);
                 fieldView.$el.find("select").val("-1");
-                fieldView.validateField();
-                expect(fieldView.$el.hasClass("ratingError")).toBeTruthy();
+                fieldView.saveField();
+                fieldView.render();
+                console.log(fixture);
+                console.log(fieldView);
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
+                expect(fieldView.$el).toContainElement(".ratingError");
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
-                expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Missing");
+                expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Required");
             });
         });
 
