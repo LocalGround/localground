@@ -31,27 +31,8 @@ define(["jquery",
             },
             events: {
                 //edit event here, pass the this.model to the right panel
-            //    'click .edit' : 'sendCollection',
                 'click .layer-delete' : 'deleteLayer',
                 'change input': 'showHideOverlays'
-            },
-
-            sendCollection: function () {
-                this.$el.attr('id', this.model.id);
-
-                // click input to display icons if not already displaying
-                if (this.$el.find('input').prop('checked', false)) {
-                    this.$el.find('input').click();
-                }
-
-               // this.showHideOverlays();
-                this.app.vent.trigger('handle-selected-layer', this.model.id);
-
-                // This just adds css to indicate the selected layer, via the parent view
-                this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
-
-                // This event actually triggers the 'createLayer()' function in right-panel.js layoutview
-                this.app.vent.trigger("edit-layer", this.model, this.collection);
             },
 
             // triggered from the router
@@ -61,7 +42,7 @@ define(["jquery",
                     if (this.$el.find('input').prop('checked', false)) {
                         this.$el.find('input').click();
                     }
-                
+
             },
 
             childRouterSendCollection: function (mapId, layerId) {
@@ -82,11 +63,11 @@ define(["jquery",
                 if (!confirm("Are you sure you want to delete this layer?")) {
                     return;
                 }
-            
+
                 this.model.destroy();
                 this.collection.remove(this.model);
                 this.deleteOverlays();
-        
+
                 this.app.vent.trigger('update-layer-list');
                 this.app.vent.trigger("hide-right-panel");
             },
