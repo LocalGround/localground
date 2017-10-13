@@ -47,7 +47,6 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 Base.prototype.initialize.apply(this, arguments);
             },
             validate: function (attrs, options) {
-                this.serverErrorMessage = null;
                 this.set("errorFieldName", false);
                 this.set("errorFieldType", false);
                 this.set("errorRatingName", false);

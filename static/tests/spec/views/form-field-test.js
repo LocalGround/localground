@@ -8,7 +8,8 @@ define([
 ],
     function ($, CreateForm, FieldChildView, Field) {
         'use strict';
-        var fixture, formView, fieldView, initSpies, createExistingFieldView, createNewFieldView;
+        var fixture, formView, fieldView, initSpies,
+            createExistingFieldView, createNewFieldView, createNewFieldViewNoParent;
 
         initSpies = function (scope) {
             //error catch functions
@@ -64,6 +65,29 @@ define([
                     model: scope.form,
                     app: scope.app
                 })
+            });
+            fieldView = new FieldChildView(opts);
+            fieldView.render();
+        };
+
+        createNewFieldView = function (scope) {
+            var opts = {};
+            _.extend(opts, scope.form.toJSON(), {
+                model: new Field({}, {id: scope.form.id }),
+                parent: new CreateForm({
+                    model: scope.form,
+                    app: scope.app
+                })
+            });
+            fieldView = new FieldChildView(opts);
+            fieldView.render();
+        };
+
+        createNewFieldViewNoParent = function (scope) {
+            var opts = {};
+            _.extend(opts, scope.form.toJSON(), {
+                model: new Field({}, {id: scope.form.id}),
+                app: scope.app
             });
             fieldView = new FieldChildView(opts);
             fieldView.render();
@@ -332,11 +356,6 @@ define([
 
                 expect(field.get('errorRatingName')).toBeTruthy();
                 expect(field.get('errorRatingValue')).toBeTruthy();
-
-                // Looks like those individual error messages are only applied to spreadsheet mode
-                // when field clearly has no parent
-                //expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Both rating name and value must be filled.');
-
             });
 
             it ("Successfully saves the rating list", function(){
@@ -475,7 +494,7 @@ define([
                 var extras = field.get("extras");
                 var choice_rows = fixture.find(".choice-row");
 
-                expect()
+                expect(Field.prototype.validateChoice).toHaveBeenCalledTimes(0);
 
 
                 fieldView.updateChoiceList();
@@ -486,11 +505,9 @@ define([
                 console.log(lastIndexchoice);
                 console.log(extras);
 
+                expect(Field.prototype.validateChoice).toHaveBeenCalledTimes(1);
+
                 expect(field.get('errorRatingName')).toBeTruthy();
-                // Again, this requires the view mode to be in spreadsheet or does not explicitly have parent
-                //expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Need to pick name for all choices.');
-
-
             });
 
             it ("Successfully saves the choice list", function(){
@@ -518,7 +535,75 @@ define([
                     expect($(choice_rows[i]).find(".choice").val()).not.toEqual(original_extras[i].name);
                 }
 
-
             });
         });
+
+        describe("Create Form Fields: Validation Error Messages Without Form", function(){
+            beforeEach(function(){
+                initSpies(this);
+                createNewFieldViewNoParent(this);
+                fixture = setFixtures('<div></div>').append(fieldView.$el);
+            });
+
+            it ("Shows Unfilled Field Name and Type Error", function(){
+                console.log(fieldView.$el.html())
+
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(0);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(0);
+                fixture = setFixtures("<div></div>").append(fieldView.$el);
+                fieldView.saveField();
+                fieldView.render();
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
+                expect(fieldView.$el).toContainElement(".ratingError");
+                expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
+                expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Required");
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Both Field name and type need to be filled in');
+            });
+
+            it ("Shows Unfinished Rating Error", function(){
+                console.log(fieldView.$el.html())
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(0);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(0);
+                expect(Field.prototype.validateRating).toHaveBeenCalledTimes(0);
+                fixture = setFixtures("<div></div>").append(fieldView.$el);
+                fixture.find(".fieldname").val("sample");
+                fieldView.$el.find(".fieldType").val("rating");
+                fixture.find(".add-new-rating").trigger("click");
+                fieldView.saveField();
+                fieldView.render();
+                console.log(fieldView.$el.html())
+                var field = fieldView.model;
+                console.log(field)
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
+                expect(Field.prototype.validateRating).toHaveBeenCalledTimes(1);
+                expect(field.get('errorRatingName')).toBeTruthy();
+                expect(field.get('errorRatingValue')).toBeTruthy();
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Both rating name and value must be filled.');
+            });
+
+            it ("Shows Unfinished Choice Error", function(){
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(0);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(0);
+                expect(Field.prototype.validateChoice).toHaveBeenCalledTimes(0);
+                fixture = setFixtures("<div></div>").append(fieldView.$el);
+                fixture.find(".fieldname").val("sample");
+                fieldView.$el.find("select").val("choice");
+                fixture.find(".add-new-choice").trigger("click");
+                fieldView.saveField();
+                fieldView.render();
+                console.log(fieldView.$el.html())
+                var field = fieldView.model;
+                console.log(field)
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
+                expect(Field.prototype.validateChoice).toHaveBeenCalledTimes(1);
+                expect(field.get('errorRatingName')).toBeTruthy();
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Need to pick name for all choices.');
+            });
+
+
+        });
+
     });
