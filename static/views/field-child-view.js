@@ -34,11 +34,9 @@ define([
         },
         templateHelpers: function () {
             var errorMessages = {
-                /*errorFieldType: this.model.errorFieldType,
-                errorFieldName: this.model.errorFieldName,
-                */
                 serverErrorMessage: this.model.serverErrorMessage,
                 extraList: this.model.get("extras"),
+                errorMessage: this.model.errorMessage
             };
             return errorMessages;
         },

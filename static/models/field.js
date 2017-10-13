@@ -20,6 +20,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 has_snippet_field: 'Hidden',
                 ordering: 'Hidden'
             },
+            errorMessage: null,
             urlRoot: function () {
                 if (this.baseURL) {
                     return this.baseURL;
@@ -71,13 +72,11 @@ define(["underscore", "collections/dataTypes", "models/base"],
                     return "Need to pick name for all choices."
                 }
 
-                console.log("errorFieldName", this.get("errorFieldName"));
-                console.log("errorFieldType", this.get("errorFieldType"));
-                console.log("errorRatingName", this.get("errorRatingName"));
-                console.log("errorRatingValue", this.get("errorRatingValue"));
-                console.log("errorMissingRatings", this.get("errorMissingRatings"));
             },
             getErrorMessage: function (key) {
+                // Use this as the basis for its own template
+                // will eventually cut down uneccessary logic
+                // so that errors will simply be outputted
                 var messages = {
                     "errorFieldName": "A field name is required",
                     "errorFieldType": "A field type is required",

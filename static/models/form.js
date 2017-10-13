@@ -7,6 +7,7 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
                 isVisible: false,
                 checked: false
             }),
+            errorMessage: null,
             urlRoot: '/api/0/forms/',
             initialize: function (data, opts) {
                 if (this.get("id")) {

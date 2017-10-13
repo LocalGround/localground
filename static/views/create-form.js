@@ -39,7 +39,8 @@ define([
             return {
                 showSuccess: this.showSuccess,
                 showError: this.showError,
-                caption: this.model.get("caption")
+                caption: this.model.get("caption"),
+                errorMessage: this.model.errorMessage
             };
         },
 
@@ -251,8 +252,7 @@ define([
             var that = this;
             this.showSuccess = this.showError = false;
             this.collection.each(function (model) {
-                if (model.serverErrorMessage ||
-                        model.errorFieldType || model.errorFieldName) {
+                if (model.errorMessage) {
                     that.showError = true;
                     return;
                 }
