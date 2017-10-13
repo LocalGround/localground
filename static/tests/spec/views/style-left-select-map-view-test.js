@@ -59,8 +59,8 @@ define([
 
             it("select should render correctly", function () {
                 expect(fixture).toContainElement("#map-select");
-                expect(fixture.find('option').length).toEqual(1);
-                expect(fixture.find('option').length).toEqual(this.maps.length);
+                expect(fixture.find('#map-select a').length).toEqual(1);
+                expect(fixture.find('#map-select a').length).toEqual(this.maps.length);
             });
 
             /*it("should have add button", function () {

@@ -70,7 +70,7 @@ define(["jquery",
                 
                 // don't recreate symbols if they already exist
                 // this is so existing unique individual attributes aren't overwritten by global ones
-                if (this.collection.at(0).newLayer === true) {
+                if (this.model.get('newLayer') === true) {
                     this.createCorrectSymbols();
                 } else if (this.dataType === 'basic') {
                     this.createCorrectSymbols();
@@ -317,12 +317,12 @@ define(["jquery",
                         "shape": this.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + this.selectedColorPalette[counter],
                         "strokeColor": this.model.get("metadata").strokeColor,
-                        "id": (counter + 1),
-                        "newLayer": false
+                        "id": (counter + 1)
                     });
                     counter++;
                     cont.currentFloor = Math.round((cont.currentFloor + cont.segmentSize)*100)/100;
                 }
+                this.layerNoLongerNew();
                 return this.layerDraft.continuous;
             },
 
@@ -343,13 +343,13 @@ define(["jquery",
                         "fillColor": "#" + that.selectedColorPalette[paletteCounter > 7 ? paletteCounter = 0 : paletteCounter],
                         "strokeColor": that.model.get("metadata").strokeColor,
                         "id": idCounter,
-                        "instanceCount": cat.instanceCount[item],
-                        "newLayer": false
+                        "instanceCount": cat.instanceCount[item]
                     });
 
                     idCounter++;
                     paletteCounter++;
                 });
+                this.layerNoLongerNew();
                 return that.layerDraft.categorical;
             },
 
@@ -416,9 +416,9 @@ define(["jquery",
                     "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
                     "strokeColor": this.model.get("metadata").strokeColor,
                     'width': this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
-                    "id": 1,
-                    "newLayer": false
+                    "id": 1
                 }]);
+                this.layerNoLongerNew();
                 return this.layerDraft.simple;
             },
 
@@ -576,6 +576,10 @@ define(["jquery",
             showPalettes: function () {
                 this.$el.find(".palette-wrapper").css({display: 'block'});
                 this.$el.find(".palette-wrapper").addClass("okok");
+            },
+
+            layerNoLongerNew: function() {
+                this.model.set('newLayer', false);
             },
 
             //convenience function

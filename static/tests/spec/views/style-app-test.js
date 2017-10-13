@@ -12,11 +12,14 @@ define([
 
             // 1) add spies for all relevant objects:
             spyOn(StyleApp.prototype, 'initialize').and.callThrough();
+            spyOn(StyleApp.prototype, 'loadRegions').and.callThrough();
             spyOn(StyleApp.prototype, 'updateDisplay').and.callThrough();
             spyOn(StyleApp.prototype, 'hideList').and.callThrough();
             spyOn(StyleApp.prototype, 'unhideList').and.callThrough();
             spyOn(StyleApp.prototype, 'hideDetail').and.callThrough();
             spyOn(StyleApp.prototype, 'unhideDetail').and.callThrough();
+            spyOn(StyleApp.prototype, 'showRightLayout').and.callThrough();
+            spyOn(StyleApp.prototype, 'rerouteIfNeeded').and.callThrough();
             spyOn(BaseMapView.prototype, 'renderMap');
             spyOn(BaseMapView.prototype, 'initialize');
             spyOn(BaseMapView.prototype, 'onShow');
@@ -51,6 +54,30 @@ define([
             it("should initialize correctly", function () {
                 expect(styleApp.initialize).toHaveBeenCalledTimes(1);
                 expect(styleApp).toEqual(jasmine.any(StyleApp));
+            });
+        });
+
+        describe("StyleApp: events should trigger corresponding functions", function() {
+            beforeEach(function () {
+                initApp(this);
+            });
+            afterEach(function () {
+                Backbone.history.stop();
+            });
+            it('should call loadRegions', function () {
+                expect(StyleApp.prototype.loadRegions).toHaveBeenCalledTimes(0);
+                styleApp.vent.trigger('data-loaded');
+                expect(StyleApp.prototype.loadRegions).toHaveBeenCalledTimes(1);
+            });
+            it('should call rerouteIfNeeded', function () {
+                expect(StyleApp.prototype.rerouteIfNeeded).toHaveBeenCalledTimes(0);
+                styleApp.vent.trigger('ready-for-routing');
+                expect(StyleApp.prototype.rerouteIfNeeded).toHaveBeenCalledTimes(1);
+            });
+            it('should create RightPanel', function () {
+                expect(StyleApp.prototype.showRightLayout).toHaveBeenCalledTimes(0);
+                styleApp.vent.trigger('edit-layer', this.testMap.get("layers").at(2), "fake collection");
+                expect(StyleApp.prototype.showRightLayout).toHaveBeenCalledTimes(1);
             });
         });
 

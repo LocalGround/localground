@@ -20,7 +20,8 @@ define([
 
             // 2) initialize rightPanel object:
             modalView = new NewMapModal({
-                app: scope.app
+                app: scope.app,
+                mode: 'createNewMap'
             });
             modalView.render();
 
@@ -63,9 +64,10 @@ define([
             });
             it("should save correct information from fields", function() {
                 $("#new-map-name").val("Map 1");
+                $("#new-map-description").val("My new map");
                 modalView.generateSlug();
                 modalView.saveMap();
-                expect(modalView.app.vent.trigger).toHaveBeenCalledWith("create-new-map", {name: "Map 1", slug: "map-1"});
+                expect(modalView.app.vent.trigger).toHaveBeenCalledWith("create-new-map", {name: "Map 1", slug: "map-1", description: "My new map"});
             });
         });
     });
