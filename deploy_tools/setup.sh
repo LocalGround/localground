@@ -223,7 +223,7 @@ echo -e $"AWS_STORAGE_BUCKET_NAME: $AWS_STORAGE_BUCKET_NAME \n" | tee -a "$log_f
       ;;
   esac
 done
-	
+
 
 ##################################
 ##				##
@@ -240,9 +240,14 @@ done
 echo "CONFIG: Create Linux user." | tee -a "$log_file"
 	useradd -d /home/$USER $USER
 	sudo mkdir /home/$USER
-	sudo chown $USER:$USER /home/$USER 
-	sudo mkdir -p $userDir$rootDir
-	sudo chown $USER:$GROUP_ACCOUNT $userDir$rootDir
+	sudo chown $USER:$USER /home/$USER
+	if [ "$development" = false ] ; then
+		sudo mkdir -p $userDir$rootDir
+		sudo chown $USER:$GROUP_ACCOUNT $userDir$rootDir
+	else
+		## Make sym
+		ln -s  /vagrant /localground
+	fi
 echo "✓ SUCCESS: Linux User '$USER' and dirs created" | tee -a "$log_file"
 
 
@@ -263,7 +268,7 @@ if [ ! -f /usr/sbin/nginx ]; then
     echo "NGINX not found, installing ..." | tee -a "$log_file"
 	apt-get update
 	apt install nginx -y
-fi 
+fi
     echo -e $"✓ SUCCESS: NGINX found! \n" | tee -a "$log_file"
     echo "Stopping nginx" | tee -a "$log_file"
 	## Stop Nginx
@@ -342,9 +347,6 @@ if [ "$development" = true ] ; then
 	ssl_cert="/etc/ssl/certs/cert.pem"
 	ssl_key="/etc/ssl/certs/key.pem"
 	dhparam="/etc/ssl/certs/dhparam.pem"
-
-	## Make sym
-	ln -s  $userDir$rootDir /localground
 fi
 
 ## DEV = False
@@ -580,9 +582,9 @@ sudo apt-get -y install openjdk-7-jre
 #######################################
 # Install GDAL, MapServer, Etc. First #
 #######################################
-apt-get install python-software-properties -y 
-apt-get install mapserver-bin -y 
-apt-get install gdal-bin -y 
+apt-get install python-software-properties -y
+apt-get install mapserver-bin -y
+apt-get install gdal-bin -y
 apt-get install cgi-mapserver-y
 apt-get install python-gdal -y
 apt-get install python-mapscript -y
@@ -596,20 +598,20 @@ printf '\n#Google Projection\n<900913> +proj=merc +a=6378137 +b=6378137 +lat_ts=
 ###########################################
 # Then Install PostgreSQL9.5, PostGIS 9.5 #
 ###########################################
-apt-get install postgresql-9.5 -y 
-apt-get install postgresql-client-9.5 -y 
-apt-get install postgresql-server-dev-9.5 -y 
-apt-get install postgresql-plperl-9.5 -y 
-apt-get install postgresql-9.5-postgis-2.2 -y 
-apt-get install postgresql-9.5-postgis-scripts -y 
+apt-get install postgresql-9.5 -y
+apt-get install postgresql-client-9.5 -y
+apt-get install postgresql-server-dev-9.5 -y
+apt-get install postgresql-plperl-9.5 -y
+apt-get install postgresql-9.5-postgis-2.2 -y
+apt-get install postgresql-9.5-postgis-scripts -y
 apt-get install libpq-dev -y
 
 ########################################################################
 # Install Graphics, Miscellaneous Stuff...
-######################################################################## -y 
-apt-get install python-gdal -y 
-apt-get install libcv-dev libopencv-dev python-opencv -y 
-apt-get install python-psycopg2 -y 
+######################################################################## -y
+apt-get install python-gdal -y
+apt-get install libcv-dev libopencv-dev python-opencv -y
+apt-get install python-psycopg2 -y
 apt-get install python-setuptools -y
 apt-get install -y software-properties-common
 apt-add-repository -y universe
