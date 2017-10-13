@@ -51,6 +51,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 this.set("errorFieldType", false);
                 this.set("errorRatingName", false);
                 this.set("errorRatingValue", false);
+                this.set("errorMissingRatings", false);
 
                 var emptyName = attrs.col_alias.trim() === "";
                 var unselectedType = attrs.data_type === "-1" || !attrs.data_type;
@@ -69,23 +70,38 @@ define(["underscore", "collections/dataTypes", "models/base"],
                     console.log("Choice Error Detected");
                     return "Need to pick name for all choices."
                 }
+
+                console.log("errorFieldName", this.get("errorFieldName"));
+                console.log("errorFieldType", this.get("errorFieldType"));
+                console.log("errorRatingName", this.get("errorRatingName"));
+                console.log("errorRatingValue", this.get("errorRatingValue"));
+                console.log("errorMissingRatings", this.get("errorMissingRatings"));
+            },
+            getErrorMessage: function (key) {
+                var messages = {
+                    "errorFieldName": "A field name is required",
+                    "errorFieldType": "A field type is required",
+                    "errorRatingName": "A rating name is required",
+                    "errorRatingValue": "A rating value (integer) is required",
+                    "errorMissingRatings": "One or more ratings are needed for this field"
+                }
+                return messages[key];
             },
 
             validateRating: function (attrs) {
                 // No need to check if incorrect type
                 if (attrs.data_type !== "rating") return true;
-                if (!attrs.extras || attrs.extras.length === 0) return false;
+                if (!attrs.extras || attrs.extras.length === 0) {
+                    this.set("errorMissingRatings", true);
+                    return false;
+                }
                 for (var i = 0; i < attrs.extras.length; ++i) {
                     if (attrs.extras[i].name.trim() === "") {
                         this.set("errorRatingName", true);
+                        return false;
                     }
                     if (isNaN(parseInt(attrs.extras[i].value))){
                         this.set("errorRatingValue", true);
-                    }
-
-
-                    if (this.get("errorRatingName") || this.get("errorRatingValue")){
-                        console.log("Rating Error Caught")
                         return false;
                     }
                 }
@@ -95,7 +111,10 @@ define(["underscore", "collections/dataTypes", "models/base"],
             validateChoice: function (attrs) {
                 // No need to check if incorrect type
                 if (attrs.data_type !== "choice") return true;
-                if (!attrs.extras || attrs.extras.length === 0) return false;
+                if (!attrs.extras || attrs.extras.length === 0) {
+                    this.set("errorMissingRatings", true);
+                    return false;
+                }
                 for (var i = 0; i < attrs.extras.length; ++i) {
                     if (attrs.extras[i].name.trim() === "") {
                         this.set("errorRatingName", true);

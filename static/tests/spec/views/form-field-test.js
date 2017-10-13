@@ -571,7 +571,7 @@ define([
                 fieldView.$el.find(".fieldType").val("rating");
                 fixture.find(".add-new-rating").trigger("click");
                 fieldView.saveField();
-                fieldView.render();
+                //fieldView.render();
                 console.log(fieldView.$el.html())
                 var field = fieldView.model;
                 console.log(field)

@@ -38,7 +38,7 @@ define([
                 errorFieldName: this.model.errorFieldName,
                 */
                 serverErrorMessage: this.model.serverErrorMessage,
-                extraList: this.model.get("extras")
+                extraList: this.model.get("extras"),
             };
             return errorMessages;
         },
@@ -155,7 +155,7 @@ define([
             this.model.set("extras", this.choicesList);
         },
         validateField: function(){
-
+            (this.parent)
             if (!this.model.isValid() ) {
                 if (!this.parent){
                     this.app.vent.trigger('error-message', this.model.validationError);
