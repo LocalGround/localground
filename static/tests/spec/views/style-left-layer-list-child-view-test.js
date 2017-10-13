@@ -80,7 +80,6 @@ define([
                 Backbone.history.stop();
             });
             it("router should trigger controller function", function() {
-                
                 expect(1).toEqual(-1);
             });
             it("initialized 3 OverlayListView objects", function () {

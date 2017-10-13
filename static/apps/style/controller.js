@@ -9,6 +9,7 @@ define([
             this.app = options.app;
         },
         displayMap: function (mapId) {
+            console.log('map route');
             this.app.vent.trigger('route-map', mapId);
         },
 
@@ -17,6 +18,7 @@ define([
         },
 
         newMap: function() {
+            console.log('new map triggered');
             this.app.vent.trigger('route-new-map');
         },
 
