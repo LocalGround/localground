@@ -45,7 +45,6 @@ define(["underscore", "marionette", "models/project",
                 for (dataType in this.model.get("children")) {
                     opts = this.model.get("children")[dataType];
                     jsonData = opts.data;
-                    delete opts.data;
                     _.extend(opts, {
                         title: opts.name,
                         overlayType: opts.overlay_type,
@@ -57,6 +56,7 @@ define(["underscore", "marionette", "models/project",
                     });
                     collection = this.initCollection(opts, jsonData);
                     this.dataDictionary[dataType] = collection;
+                    //delete opts.data;
                 }
                 this.dataLoaded = true;
                 this.vent.trigger('data-loaded');
