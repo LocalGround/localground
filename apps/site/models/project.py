@@ -25,8 +25,8 @@ class Project(BaseNamed, BaseGenericRelationMixin, ObjectPermissionsMixin):
         verbose_name = 'project'
         verbose_name_plural = 'projects'
 
-    @staticmethod
-    def get_users():
+    @classmethod
+    def get_users(cls):
         # Returns a list of user that own or have access to at least one
         # project.
         from django.db.models import Q
@@ -37,7 +37,7 @@ class Project(BaseNamed, BaseGenericRelationMixin, ObjectPermissionsMixin):
         ).order_by('username', )
 
     @classmethod
-    def get_default_project(self, user):
+    def get_default_project(cls, user):
         from django.db.models import Q
 
         return Project.objects.filter(
