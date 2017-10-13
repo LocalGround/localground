@@ -47,7 +47,6 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 Base.prototype.initialize.apply(this, arguments);
             },
             validate: function (attrs, options) {
-                this.errorFieldName = this.errorFieldType = false;
                 this.serverErrorMessage = null;
                 this.set("errorFieldName", false);
                 this.set("errorFieldType", false);
@@ -64,9 +63,11 @@ define(["underscore", "collections/dataTypes", "models/base"],
                     return "Both Field name and type need to be filled in"
                 }
                 if (!this.validateRating(attrs)) {
+                    console.log("Rating Error Detected");
                     return "Both rating name and value must be filled."
                 }
                 if (!this.validateChoice(attrs)) {
+                    console.log("Choice Error Detected");
                     return "Need to pick name for all choices."
                 }
             },
@@ -74,14 +75,18 @@ define(["underscore", "collections/dataTypes", "models/base"],
             validateRating: function (attrs) {
                 // No need to check if incorrect type
                 if (attrs.data_type !== "rating") return true;
-                if (attrs.extras.length === 0 || !attrs.extras) return false;
+                if (!attrs.extras || attrs.extras.length === 0) return false;
                 for (var i = 0; i < attrs.extras.length; ++i) {
                     if (attrs.extras[i].name.trim() === "") {
                         this.set("errorRatingName", true);
-                        return false;
                     }
                     if (isNaN(parseInt(attrs.extras[i].value))){
                         this.set("errorRatingValue", true);
+                    }
+
+
+                    if (this.get("errorRatingName") || this.get("errorRatingValue")){
+                        console.log("Rating Error Caught")
                         return false;
                     }
                 }
@@ -91,7 +96,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
             validateChoice: function (attrs) {
                 // No need to check if incorrect type
                 if (attrs.data_type !== "choice") return true;
-                if (attrs.extras.length === 0 || !attrs.extras) return false;
+                if (!attrs.extras || attrs.extras.length === 0) return false;
                 for (var i = 0; i < attrs.extras.length; ++i) {
                     if (attrs.extras[i].name.trim() === "") {
                         this.set("errorRatingName", true);

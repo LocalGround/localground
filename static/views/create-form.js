@@ -192,6 +192,7 @@ define([
                 switch(modeNameStr){
                     case "validate":
                         success = success && childView.validateField();
+                        console.log(success);
                         if (!success){
                             that.app.vent.trigger('error-message', "Cannot have unfilled fields.");
                             return false;

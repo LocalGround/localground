@@ -32,7 +32,10 @@ define([
             spyOn(FieldChildView.prototype, 'saveChoicesToModel').and.callThrough();
 
             spyOn(Field.prototype, 'destroy');
-            spyOn(Field.prototype, 'isValid');
+            spyOn(Field.prototype, 'isValid').and.callThrough();
+            spyOn(Field.prototype, 'validate').and.callThrough();
+            spyOn(Field.prototype, 'validateRating').and.callThrough();
+            spyOn(Field.prototype, 'validateChoice').and.callThrough();
 
             spyOn(scope.app.vent, 'trigger').and.callThrough();
 
@@ -312,17 +315,27 @@ define([
                 var extras = field.get("extras");
                 var rating_rows = fixture.find(".rating-row");
 
+                expect(Field.prototype.validateRating).toHaveBeenCalledTimes(0);
 
                 fieldView.updateRatingList();
                 fieldView.validateField();
+                fieldView.render();
 
                 extras = field.get("extras");
                 var lastIndexRating = extras[extras.length - 1];
                 console.log(lastIndexRating);
                 console.log(extras);
+                console.log(field);
 
-                expect(lastIndexRating.errorRatingName).toBeTruthy();
-                expect(lastIndexRating.errorRatingValue).toBeTruthy();
+                // Now having trouble detecting the error rating items as HTML attributes
+                expect(Field.prototype.validateRating).toHaveBeenCalledTimes(1);
+
+                expect(field.get('errorRatingName')).toBeTruthy();
+                expect(field.get('errorRatingValue')).toBeTruthy();
+
+                // Looks like those individual error messages are only applied to spreadsheet mode
+                // when field clearly has no parent
+                //expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Both rating name and value must be filled.');
 
             });
 
@@ -462,6 +475,8 @@ define([
                 var extras = field.get("extras");
                 var choice_rows = fixture.find(".choice-row");
 
+                expect()
+
 
                 fieldView.updateChoiceList();
                 fieldView.validateField();
@@ -471,7 +486,9 @@ define([
                 console.log(lastIndexchoice);
                 console.log(extras);
 
-                expect(lastIndexchoice.errorRatingName).toBeTruthy();
+                expect(field.get('errorRatingName')).toBeTruthy();
+                // Again, this requires the view mode to be in spreadsheet or does not explicitly have parent
+                //expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Need to pick name for all choices.');
 
 
             });
@@ -502,12 +519,6 @@ define([
                 }
 
 
-            });
-        });
-
-        describe("Create Form Fields: Validate Field Test", function(){
-            it("Check that all validation passes without errors", function(){
-                expect(1).toEqual(0);
             });
         });
     });
