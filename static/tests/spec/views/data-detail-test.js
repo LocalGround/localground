@@ -105,7 +105,7 @@ define([
             });
         });
 
-        describe("Data Detail: Open Expanded", function(){
+        /*describe("Data Detail: Open Expanded", function(){
             beforeEach(function(){
                 jasmine.clock().install();
                 initSpies(this);
@@ -137,7 +137,7 @@ define([
                 // would be good to write tests dealing with scrollTop() values,
                 // but so far unable to set these values within the fixture
             });
-        });
+        });*/
 
         describe("Data Detail: Featured Image", function(){
             beforeEach(function(){
