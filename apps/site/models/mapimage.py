@@ -13,14 +13,16 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
 from django.contrib.contenttypes import generic
 
+
 class MapImage(BaseUploadedMedia):
     uuid = models.CharField(unique=True, max_length=8)
     source_print = models.ForeignKey('Print', blank=True, null=True)
-    status = models.ForeignKey('StatusCode', default=StatusCode.READY_FOR_PROCESSING) #default to Web Form
+    status = models.ForeignKey('StatusCode',
+                               default=StatusCode.READY_FOR_PROCESSING)
     file_name_thumb = models.CharField(max_length=255, blank=True, null=True)
     file_name_scaled = models.CharField(max_length=255, blank=True, null=True)
     scale_factor = models.FloatField(blank=True, null=True)
-    upload_source = models.ForeignKey('UploadSource', default=1) #default to Web Form
+    upload_source = models.ForeignKey('UploadSource', default=1)
     email_sender = models.CharField(max_length=255, blank=True, null=True)
     email_subject = models.CharField(max_length=500, blank=True, null=True)
     email_body = models.TextField(null=True, blank=True)
@@ -28,7 +30,6 @@ class MapImage(BaseUploadedMedia):
     qr_code = models.CharField(max_length=8, blank=True, null=True)
     map_rect = models.CharField(max_length=255, blank=True, null=True)
     processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
-    directory_name = 'map-images'
     objects = MapImageManager()
 
     class Meta:
@@ -48,7 +49,6 @@ class MapImage(BaseUploadedMedia):
     def get_abs_directory_path(self):
         return '%s/%s' % (settings.FILE_ROOT, self.virtual_path)
 
-
     def original_image_filesystem(self):
         return '%s/%s' % (self.get_abs_directory_path(), self.file_name_new)
 
@@ -67,29 +67,11 @@ class MapImage(BaseUploadedMedia):
         else:
             return None
 
-    def get_records_by_form(self, form_id):
-        from localground.apps.site.models import Form
-        form = Form.objects.get(id=form_id)
-        return form.TableModel.objects.filter(mapimage=self)
-
-    def get_markers(self):
-        # todo:  implement this...
-        return []
-
-    def get_marker_dictionary(self):
-        from localground.apps.site.models import Marker
-        return Marker.objects.get_marker_dict_by_mapimage(mapimage_id=self.id)
-
-    def to_dict(self):
-        from localground.apps.site.api.serializers import MapImageSerializer
-        return MapImageSerializer(self, context={'request': {}}).data
-
     def delete(self, *args, **kwargs):
         # first remove directory, then delete from db:
         import shutil
         import os
         path = self.get_abs_directory_path()
-        #raise Exception(path)
         if os.path.exists(path):
             dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
             if os.path.exists(dest):
@@ -107,16 +89,11 @@ class MapImage(BaseUploadedMedia):
     def __unicode__(self):
         return 'MapImage #' + self.uuid
 
+
 class ImageOpts(ExtentsMixin, BaseMediaMixin, BaseAudit):
     source_mapimage = models.ForeignKey(MapImage)
     opacity = models.FloatField(default=1)
     name = models.CharField(max_length=255, null=True, blank=True)
-
-    def can_view(self, user, access_key=None):
-        return self.source_mapimage.can_view(user, access_key)
-
-    def can_edit(self, user):
-        return self.source_mapimage.can_edit(user)
 
     class Meta:
         app_label = 'site'
@@ -138,13 +115,6 @@ class ImageOpts(ExtentsMixin, BaseMediaMixin, BaseAudit):
              self.file_name),
             host=host)
 
-    def to_dict(self):
-        return {
-            'map_image_id': self.id,
-            'overlay_path': self.processed_map_url_path(),
-            'extents': self.extents
-        }
-
     def save(self, user=None, *args, **kwargs):
         from localground.apps.lib.helpers import generic
         is_new = self.pk is None
@@ -162,7 +132,7 @@ class ImageOpts(ExtentsMixin, BaseMediaMixin, BaseAudit):
         super(ImageOpts, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        # don't want to inadvertently remove the parent mapimage, so adding this
+        # don't want to inadvertently remove the parent mapimage, so adding
         # workaround.  Todo:  update to Django >= 1.3, to configure "cascade
         # delete" settings
         mapimages = MapImage.objects.filter(processed_image=self)
@@ -170,3 +140,9 @@ class ImageOpts(ExtentsMixin, BaseMediaMixin, BaseAudit):
             s.processed_image = None
             s.save()
         super(ImageOpts, self).delete(*args, **kwargs)
+
+    def can_view(self, user, access_key=None):
+        return self.source_mapimage.can_view(user, access_key)
+
+    def can_edit(self, user):
+        return self.source_mapimage.can_edit(user)
