@@ -15,10 +15,6 @@ class Migration(migrations.Migration):
             model_name='form',
             name='projects',
         ),
-        migrations.RemoveField(
-            model_name='layout',
-            name='is_mini_form',
-        ),
         migrations.AddField(
             model_name='form',
             name='project',

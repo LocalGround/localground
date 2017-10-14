@@ -318,8 +318,7 @@ class Migration(migrations.Migration):
                 ('border_width', models.IntegerField()),
                 ('is_active', models.BooleanField(default=True)),
                 ('is_landscape', models.BooleanField(default=False)),
-                ('is_data_entry', models.BooleanField(default=True)),
-                ('is_mini_form', models.BooleanField(default=False)),
+                ('is_data_entry', models.BooleanField(default=True))
             ],
             options={
                 'ordering': ('id',),
