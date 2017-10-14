@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 from django.contrib.gis.db import models
 from localground.apps.site.models.permissions import ObjectPermissionsMixin
-from localground.apps.site.models import BaseNamed, BaseGenericRelationMixin
+from localground.apps.site.models import BaseNamedMixin, \
+    BaseGenericRelationMixin, BaseAudit
 from localground.apps.site.managers import ProjectManager
 
 
-class Project(BaseNamed, BaseGenericRelationMixin, ObjectPermissionsMixin):
+class Project(BaseNamedMixin, BaseGenericRelationMixin,
+              ObjectPermissionsMixin, BaseAudit):
     extents = models.PolygonField(null=True, blank=True)
     slug = models.SlugField(
         verbose_name="Friendly URL",
@@ -14,7 +16,7 @@ class Project(BaseNamed, BaseGenericRelationMixin, ObjectPermissionsMixin):
         help_text='A few words, separated by dashes "-", to be used as part of the url'
     )
 
-    filter_fields = BaseNamed.filter_fields + (
+    filter_fields = BaseAudit.filter_fields + (
         'slug', 'name', 'description', 'tags', 'owner'
     )
     objects = ProjectManager()

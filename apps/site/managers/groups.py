@@ -62,7 +62,7 @@ class FormMixin(GroupMixin):
     # Todo: restrict viewing data to the row-level, based on project
     # permissions.
     related_fields = ['owner', 'last_updated_by']
-    prefetch_fields = ['users__user', 'projects', 'field_set']
+    prefetch_fields = ['users__user', 'field_set']
 
     def my_forms(self, user=None):
         # a form is associated with one or more projects
@@ -133,9 +133,9 @@ class FormMixin(GroupMixin):
         #               has been indirectly shared)
         c2 = (
             (Q(
-                projects__access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK) & Q(
-                projects__access_key=access_key)) | Q(
-                projects__access_authority__id=ObjectAuthority.PUBLIC))
+                project__access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK) & Q(
+                project__access_key=access_key)) | Q(
+                project__access_authority__id=ObjectAuthority.PUBLIC))
 
         q = self.model.objects.distinct().select_related(*self.related_fields)
         q = q.filter(c1 | c2)

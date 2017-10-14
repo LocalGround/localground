@@ -1,9 +1,9 @@
 # abstract
 from localground.apps.site.models.abstract.base import Base, BaseAudit, \
-    BaseNamed, BaseNamedMedia, BaseUploadedMedia
+    BaseNamedMedia, BaseUploadedMedia
 from localground.apps.site.models.abstract.mixins import ExtentsMixin, \
     PointMixin, ExtrasMixin, ProjectMixin, BaseGenericRelationMixin, \
-    BaseMediaMixin
+    BaseMediaMixin, BaseNamedMixin
 
 # layers
 from localground.apps.site.models.layer import Layer

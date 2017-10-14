@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from jsonfield import JSONField
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.postgres.fields import ArrayField
 from localground.apps.lib.helpers import upload_helpers
 
 import operator
@@ -71,6 +72,14 @@ class ExtentsMixin(models.Model):
 
 class ProjectMixin(models.Model):
     project = models.ForeignKey('Project', related_name='%(class)s+')
+
+    def can_view(self, user=None, access_key=None):
+        return self.owner == user or \
+            self.project.can_view(user=user, access_key=access_key)
+
+    def can_edit(self, user):
+        return user == self.owner or \
+            self.project.can_edit(user)
 
     class Meta:
         abstract = True
@@ -190,6 +199,16 @@ class BaseGenericRelationMixin(models.Model):
         return self.grab(Marker)
 
 
+class BaseNamedMixin(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    tags = ArrayField(models.TextField(), default=list)
+
+    class Meta:
+        app_label = 'site'
+        abstract = True
+
+
 class BaseMediaMixin(models.Model):
     host = models.CharField(max_length=255)
     virtual_path = models.CharField(max_length=255)
@@ -254,9 +273,3 @@ class BaseMediaMixin(models.Model):
     @classmethod
     def make_directory(cls, path):
         upload_helpers.make_directory(path)
-
-    def can_view(self, user, access_key=None):
-        return self.project.can_view(user=user, access_key=access_key)
-
-    def can_edit(self, user):
-        return self.project.can_edit(user)

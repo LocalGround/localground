@@ -12,20 +12,10 @@ class Layout(Base):
     is_active = models.BooleanField(default=True)
     is_landscape = models.BooleanField(default=False)
     is_data_entry = models.BooleanField(default=True)
-    is_mini_form = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'site'
         ordering = ('id',)
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'display_name': self.display_name,
-            'map_width': self.map_width_pixels,
-            'map_height': self.map_height_pixels
-        }
 
     def __unicode__(self):
         return '%s. %s' % (self.id, self.display_name)

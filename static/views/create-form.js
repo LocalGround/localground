@@ -114,8 +114,7 @@ define([
 
             this.model.set('name', formName);
             this.model.set('caption', caption);
-            this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
-            this.model.set('project_ids', [this.app.getProjectID()]);
+            this.model.set('project_id', this.app.getProjectID());
             this.model.save(null, {
                 success: function () {
                     that.saveFields();

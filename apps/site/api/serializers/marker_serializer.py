@@ -61,9 +61,8 @@ class MarkerSerializer(MarkerSerializerMixin):
         forms = (
             models.Form.objects.prefetch_related(
                 'field_set',
-                'field_set__data_type',
-                'projects') .filter(
-                projects=obj.project))
+                'field_set__data_type'
+            ).filter(project=obj.project))
         for form in forms:
             candidates.append(form.TableModel)
 

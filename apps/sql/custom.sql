@@ -79,11 +79,6 @@ SELECT v.id as form_id, v.name, v.user_id, max(v.authority_id) AS authority_id
   --form owners:
   SELECT site_form.id, site_form.name, site_form.owner_id AS user_id, 3 AS authority_id
   FROM site_form
-    UNION
-  --users who have been given access to a form via their projects:
-  SELECT fp.form_id as id, p.name, p.user_id, p.authority_id
-  FROM site_form_projects fp, v_private_projects p
-  WHERE fp.project_id = p.project_id
 ) v
 GROUP BY v.id, v.name, v.user_id;
 

@@ -38,7 +38,7 @@ class Report():
     title = None
     qr_size = None
     gutter_size = 10
-    
+
     def __init__(self, path, margin_x=48, margin_y=60, file_name='Untitled.pdf',
                  is_landscape=False, author=None, title=None):
         self.path = path
@@ -48,7 +48,7 @@ class Report():
         self.is_landscape = is_landscape
         self.author = author
         self.title = title
-        
+
         # embeds "Hand of Sean" font:
         afmFile = os.path.join(settings.FONT_ROOT, 'HandOfSean.afm')
         pfbFile = os.path.join(settings.FONT_ROOT, 'HandOfSean.pfb')
@@ -59,19 +59,19 @@ class Report():
         justFont = pdfmetrics.Font('HandSean', faceName, 'WinAnsiEncoding')
         pdfmetrics.registerFont(justFont)
         pdfmetrics.registerFont(TTFont('HandSean', ttfFile))
-        
+
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename=' + self.file_name
-        
+
         self.set_orientation(self.is_landscape)
-        
+
         self.canvas = canvas.Canvas(self.path + '/' + self.file_name,
                                pagesize=(self.page_width, self.page_height))
         if self.author is not None:
             self.canvas.setAuthor(self.author)
         if self.title is not None:
             self.canvas.setTitle(self.title)
-        
+
     def set_orientation(self, is_landscape):
         self.page_width, self.page_height = letter
         if is_landscape:
@@ -80,21 +80,21 @@ class Report():
         self.inner_height = self.page_height - (2 * self.margin_y)
         if self.canvas is not None:
             self.canvas.setPageSize([self.page_width, self.page_height])
-        
+
     def new_page(self):
         self.canvas.showPage()
-        
+
     def save(self):
         self.canvas.showPage()
         self.canvas.save()
-        
-    def add_footer(self, qr_image, uuID, instructions):   
+
+    def add_footer(self, qr_image, uuID, instructions):
         # output QR-code:
         self.qr_size = Units.pixel_to_point(qr_image.size[0])
         x = self.origin_x + self.inner_width - self.qr_size #align right
         self.canvas.drawInlineImage(qr_image, x, self.origin_y, self.qr_size,
                                     self.qr_size)
-        
+
         # output Print ID:
         items = []
         style = ParagraphStyle(name='Helvetica', fontName='Helvetica', fontSize=10)
@@ -103,24 +103,24 @@ class Report():
                       self.qr_size, showBoundary=0, leftPadding=0, bottomPadding=0,
                       rightPadding=0, topPadding=0)
         frame.addFromList(items, self.canvas)
-        
+
         # output default instructions:
         link_text = "When you're done drawing on the map, scan or photograph it and \
                     submit it to our website: http://localground.org/upload, or \
                     email it to localground.apps.uploads@gmail.com."
-        
-        items = [] 
+
+        items = []
         style = ParagraphStyle(
             name='Helvetica', fontName='Helvetica', fontSize=8,
             backColor=colors.HexColor(0xEEEEEE), borderColor=colors.HexColor(0xEEEEEE),
             leftIndent=0, rightIndent=0, spaceBefore=5, spaceAfter=5, borderWidth=5)
         items.append(Paragraph(link_text, style))
-        
+
         padding_x, padding_y = -4, 12
         width, height = self.inner_width - self.qr_size, self.qr_size
         frame = Frame(self.origin_x+padding_x, self.origin_y+3, width, height, showBoundary=0)
         frame.addFromList(items, self.canvas)
-        
+
         # output custom instructions:
         items = []
         style = ParagraphStyle(name='Helvetica', fontName='Helvetica', fontSize=10)
@@ -128,8 +128,8 @@ class Report():
         frame = Frame(self.origin_x+padding_x-2, self.origin_y-padding_y, width,
                       height-15, showBoundary=0)
         frame.addFromList(items, self.canvas)
-        
-    
+
+
     def add_header(self, is_data_entry=True, is_map_page=True):
         x, y = self.origin_x, self.origin_y+self.inner_height-15
         if is_data_entry:
@@ -137,12 +137,12 @@ class Report():
         width = self.inner_width
         self.canvas.setFont('HandSean', 18)
         self.canvas.drawString(x, y, self.title)
-        
+
         if is_data_entry:
             self.canvas.setFont('Helvetica', 10)
             r, spacing = 6, 4
             x = self.origin_x + width - r
-            
+
             if is_map_page:
                 # Color Bubbles:
                 for i in range(0,10):
@@ -151,13 +151,13 @@ class Report():
                 self.canvas.drawRightString(x, y, 'Colors Used:')
             else:
                 x = x - 10*(2*r + spacing)
-                
+
             # Name field:
             y = y+20
             self.canvas.drawRightString(x, y, 'Name:')
-            self.canvas.line(x+5,y, self.origin_x + width, y) 
-        
-    def add_form(self, num_rows, form, print_object, is_mini_form=False):
+            self.canvas.line(x+5,y, self.origin_x + width, y)
+
+    def add_form(self, num_rows, form, print_object):
         cols = print_object.get_form_field_layout()
         field_aliases, field_widths = ['ID'], [5]
         field_aliases.extend([c.field.col_alias for c in cols])
@@ -166,9 +166,7 @@ class Report():
         x, y = self.origin_x, self.origin_y + self.qr_size
         width = self.inner_width
         height = self.inner_height - self.qr_size - 35
-        if is_mini_form:
-            height = Units.pixel_to_point(300) #only render a 300-pixel tall form
-        
+
         data, rowheights, header_flowables = [], [39], []
         style = ParagraphStyle(name='Helvetica', fontName='Helvetica', fontSize=10)
         for a in field_aliases:
@@ -177,7 +175,7 @@ class Report():
         for n in range(0, num_rows):
             data.append(['' for n in field_widths])
             rowheights.append(39)
-    
+
         t=Table(data, field_widths, rowheights)
         GRID_STYLE = TableStyle([
             ('GRID', (0,0), (-1,-1), 0.25, colors.black),
@@ -188,7 +186,7 @@ class Report():
         frame = Frame(x, y, width, height, showBoundary=0, leftPadding=0,
                       bottomPadding=0, rightPadding=0, topPadding=0)
         frame.addFromList([t], self.canvas)
-        
+
     def add_map(self, map_image, is_data_entry=True, has_mini_form=False):
         y = self.origin_y
         map_width, map_height = map_image.size

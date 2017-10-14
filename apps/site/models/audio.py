@@ -6,7 +6,6 @@ import os
 
 
 class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
-    name = name_plural = 'audio'
     objects = AudioManager()
 
     def delete(self, *args, **kwargs):

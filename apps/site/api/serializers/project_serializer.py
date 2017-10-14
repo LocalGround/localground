@@ -62,10 +62,10 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             models.Project,
             models.Marker]
 
-        forms = (models.Form.objects
-                 .prefetch_related('projects', 'field_set', 'field_set__data_type')
-                 .filter(projects=obj)
-                 )
+        forms = models.Form.objects.prefetch_related(
+                'field_set', 'field_set__data_type'
+            ).filter(project=obj)
+
         for form in forms:
             candidates.append(form.TableModel)
 

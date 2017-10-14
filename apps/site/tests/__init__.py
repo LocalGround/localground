@@ -264,24 +264,16 @@ class ModelMixin(object):
                     authority_id=models.ObjectAuthority.PRIVATE,
                     project=None):
 
-        oa = models.ObjectAuthority.objects.get(
-            id=authority_id
-        )
-        import random
-        slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
-        if user is None:
-            user = self.user
         f = models.Form(
-            owner=user,
+            owner=user or self.user,
             name=name,
-            slug=slug,
             description=description,
             last_updated_by=user,
-            access_authority=oa
+            access_authority=models.ObjectAuthority.objects.get(
+                id=authority_id
+            ),
+            project=project or self.project
         )
-        f.save()
-        project = project or self.project
-        f.projects.add(project)
         f.save()
         return f
 

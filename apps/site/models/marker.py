@@ -4,11 +4,12 @@ from datetime import datetime
 from localground.apps.site.managers import MarkerManager
 from localground.apps.site.models import BaseUploadedMedia
 from django.contrib.contenttypes import generic
-from localground.apps.site.models import PointMixin, ExtrasMixin, BaseNamed, \
-    BaseGenericRelationMixin
+from localground.apps.site.models import PointMixin, ExtrasMixin, \
+    BaseNamedMixin, BaseGenericRelationMixin, ProjectMixin, BaseAudit
 
-class Marker(ExtrasMixin, PointMixin, BaseNamed, BaseGenericRelationMixin):
 
+class Marker(ExtrasMixin, PointMixin, ProjectMixin, BaseNamedMixin,
+             BaseGenericRelationMixin, BaseAudit):
     """
     Markers are association objects with a geometry (either point,
     line, or polygon).  Markers can be associated with one or more photos,
@@ -16,7 +17,6 @@ class Marker(ExtrasMixin, PointMixin, BaseNamed, BaseGenericRelationMixin):
     to be re-factored to inherit from account/Group Model, since it's an
     association of other media objects (and should behave like a project or a view).
     """
-    project = models.ForeignKey('Project')
     polyline = models.LineStringField(blank=True, null=True)
     polygon = models.PolygonField(blank=True, null=True)
 
@@ -67,8 +67,8 @@ class Marker(ExtrasMixin, PointMixin, BaseNamed, BaseGenericRelationMixin):
             if forms is None:
                 forms = (models.Form.objects
                          #.select_related('project')
-                         .prefetch_related('field_set', 'field_set__data_type', 'projects')
-                         .filter(projects=obj.project)
+                         .prefetch_related('field_set', 'field_set__data_type')
+                         .filter(project=obj.project)
                          )
                 table_models = [form.TableModel for form in forms]
                 ContentType.objects.get_for_models(
@@ -83,12 +83,6 @@ class Marker(ExtrasMixin, PointMixin, BaseNamed, BaseGenericRelationMixin):
                     self._records_dict[form] = recs
 
         return self._records_dict
-
-    def can_view(self, user, access_key=None):
-        return self.project.can_view(user=user, access_key=access_key)
-
-    def can_edit(self, user):
-        return self.project.can_edit(user)
 
     def get_form_ids(self):
         from localground.apps.site.models import Photo, Audio, MapImage, Video
