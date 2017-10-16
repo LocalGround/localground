@@ -88,6 +88,10 @@ class Base(models.Model):
         Finds the corresponding model class, based on the arguments
         '''
         name = model_name or model_name_plural
+        if name is None:
+            raise Exception(
+                'either model_name or model_name_plural argument is required'
+            )
         if name.find('form_') == -1:
             return cls.__get_model_managed(
                 model_name=model_name,
