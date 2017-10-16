@@ -77,16 +77,13 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 errorMissingRatings = this.get("errorMissingRatings");
                 errorMissingChoices = this.get("errorMissingChoices");
 
-                var errorDetected;
+                if (errorName) return this.getErrorMessage("errorFieldName");
+                if (errorType) return this.getErrorMessage("errorFieldType");
+                if (errorRatingName) return this.getErrorMessage("errorRatingName");
+                if (errorRatingValue) return this.getErrorMessage("errorRatingValue");
+                if (errorMissingRatings) return this.getErrorMessage("errorMissingRatings");
+                if (errorMissingChoices) return this.getErrorMessage("errorMissingChoices");
 
-                switch (errorDetected){
-                    case (errorName): return this.getErrorMessage("errorFieldName");
-                    case (errorType): return this.getErrorMessage("errorFieldType");
-                    case (errorRatingName): return this.getErrorMessage("errorRatingName");
-                    case (errorRatingValue): return this.getErrorMessage("errorRatingValue");
-                    case (errorMissingRatings): return this.getErrorMessage("errorMissingRatings");
-                    case (errorMissingChoices): return this.getErrorMessage("errorMissingChoices");
-                }
 
             },
             getErrorMessage: function (key) {

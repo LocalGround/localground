@@ -153,7 +153,6 @@ define([
             this.model.set("extras", this.choicesList);
         },
         validateField: function(){
-            (this.parent)
             if (!this.model.isValid() ) {
                 if (!this.parent){
                     this.app.vent.trigger('error-message', this.model.validationError);
