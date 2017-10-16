@@ -14,13 +14,16 @@ class BaseAbstractModelClassTest(test.TestCase, ModelMixin):
         Record = form.TableModel
         self.classes_that_inherit_from_base = {
             'project': models.Project,
+            'tileset': models.TileSet,
             'marker': models.Marker,
             'record': Record,
             'print': models.Print,
+            'layout': models.Layout,
             'form': models.Form,
             'field': models.Field,
-            'map-image': models.MapImage,
-            'image-opts': models.ImageOpts,
+            'data_tyoe': models.DataType,
+            'map_image': models.MapImage,
+            'image_opts': models.ImageOpts,
             'photo': models.Photo,
             'video': models.Video,
             'audio': models.Audio,
@@ -33,17 +36,19 @@ class BaseAbstractModelClassTest(test.TestCase, ModelMixin):
 
     def test_classes_all_have_required_class_properties(self, **kwargs):
         count = 0
-        for cls in self.classes_that_inherit_from_base.values():
+        class_list = self.classes_that_inherit_from_base.values()
+        for cls in class_list:
             self.assertTrue(hasattr(cls, 'object_type'))
             self.assertTrue(hasattr(cls, 'model_name'))
             self.assertTrue(hasattr(cls, 'pretty_name'))
             self.assertTrue(hasattr(cls, 'model_name_plural'))
             self.assertTrue(hasattr(cls, 'pretty_name_plural'))
             count += 1
-        self.assertEqual(count, 14)
+        self.assertEqual(count, len(class_list))
 
     '''
     ----------------------------------------------------------------------------
+    CLASS PROPERTIES
     Pick a class that inherits from Base and ensure that all of methods work.
     ----------------------------------------------------------------------------
     '''
@@ -72,9 +77,16 @@ class BaseAbstractModelClassTest(test.TestCase, ModelMixin):
         self.assertEqual(self.Photo.pretty_name_plural, "photos")
         self.assertEqual(self.photo.pretty_name_plural, "photos")
 
+    '''
+    ----------------------------------------------------------------------------
+    CLASS PROPERTIES
+    Pick a class that inherits from Base and ensure that all of methods work.
+    ----------------------------------------------------------------------------
+    '''
     def test_classes_all_have_required_class_methods(self, **kwargs):
         count = 0
-        for cls in self.classes_that_inherit_from_base.values():
+        class_list = self.classes_that_inherit_from_base.values()
+        for cls in class_list:
             import inspect
             self.assertEqual(
                 inspect.getargspec(cls.get_model)[0],
@@ -83,7 +95,7 @@ class BaseAbstractModelClassTest(test.TestCase, ModelMixin):
             self.assertTrue(hasattr(cls, 'get_filter_fields'))
             self.assertTrue(hasattr(cls, 'get_content_type'))
             count += 1
-        self.assertEqual(count, 14)
+        self.assertEqual(count, len(class_list))
 
     def test_get_model_method_returns_model_unless_args_missing(
         self, **kwargs):
