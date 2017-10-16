@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from django.contrib.gis.db import models
-from localground.apps.site.models.permissions import ObjectPermissionsMixin
+from localground.apps.site.models.abstract.mixins import ObjectPermissionsMixin
 from localground.apps.site.models import BaseNamedMixin, \
     BaseGenericRelationMixin, BaseAudit
 from localground.apps.site.managers import ProjectManager

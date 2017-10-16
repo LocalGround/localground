@@ -13,23 +13,47 @@ class BaseAbstractModelClassTest(test.TestCase, ModelMixin):
         form = self.create_form_with_fields()
         Record = form.TableModel
         self.classes_that_inherit_from_base = {
+            # Groupings and Associations
             'project': models.Project,
+            'relation': models.GenericAssociation,
+
+            # Permissions
+            'object_authority': models.ObjectAuthority,
+            'user_authority': models.UserAuthority,
+            'user_object_authority': models.UserAuthorityObject,
+
+            # Presentation-Related
+            'map': models.StyledMap,
+            'layer': models.Layer,
+
+            # Tiles
             'tileset': models.TileSet,
-            'marker': models.Marker,
-            'record': Record,
-            'print': models.Print,
-            'layout': models.Layout,
+            'overlay_source': models.OverlaySource,
+            'overlay_type': models.OverlayType,
+
+            # User-Defined Schemas
             'form': models.Form,
             'field': models.Field,
-            'data_tyoe': models.DataType,
+            'data_type': models.DataType,
+
+            # Sites
+            'marker': models.Marker,
+            'record': Record,
+
+            # Prints
+            'print': models.Print,
+            'layout': models.Layout,
+
+            # Map Image Processing:
             'map_image': models.MapImage,
             'image_opts': models.ImageOpts,
+            'error_code': models.ErrorCode,
+            'status_code': models.StatusCode,
+
+            # Media:
             'photo': models.Photo,
             'video': models.Video,
-            'audio': models.Audio,
-            'relation': models.GenericAssociation,
-            'map': models.StyledMap,
-            'layer': models.Layer
+            'audio': models.Audio
         }
         self.Photo = models.Photo
         self.photo = self.create_photo()
@@ -98,7 +122,7 @@ class BaseAbstractModelClassTest(test.TestCase, ModelMixin):
         self.assertEqual(count, len(class_list))
 
     def test_get_model_method_returns_model_unless_args_missing(
-        self, **kwargs):
+            self, **kwargs):
         from localground.apps.site import models
         self.assertEqual(models.Base.get_model(
             model_name="photo"), models.Photo

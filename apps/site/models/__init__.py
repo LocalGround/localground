@@ -3,7 +3,7 @@ from localground.apps.site.models.abstract.base import Base, BaseAudit, \
     BaseNamedMedia, BaseUploadedMedia
 from localground.apps.site.models.abstract.mixins import ExtentsMixin, \
     PointMixin, ExtrasMixin, ProjectMixin, BaseGenericRelationMixin, \
-    BaseMediaMixin, BaseNamedMixin
+    BaseMediaMixin, BaseNamedMixin, ObjectPermissionsMixin
 
 # layers
 from localground.apps.site.models.layer import Layer
@@ -22,7 +22,7 @@ from localground.apps.site.models.tileset import OverlaySource, \
 from localground.apps.site.models.project import Project
 from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
-    ObjectPermissionsMixin, ObjectUserPermissions, UserAuthorityObject, \
+    ObjectUserPermissions, UserAuthorityObject, \
     UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser, \
     ProjectUser, VideoUser, MapImageUser, PrintUser, \
     FormUser

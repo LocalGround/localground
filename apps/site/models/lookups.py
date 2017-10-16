@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
+from localground.apps.site.models import Base
 
-
-class StatusCode(models.Model):
+class StatusCode(Base):
 
     READY_FOR_PROCESSING = 1
     PROCESSED_SUCCESSFULLY = 2
@@ -29,7 +29,7 @@ class StatusCode(models.Model):
         ordering = ('id',)
 
 
-class UploadSource(models.Model):
+class UploadSource(Base):
     WEB_FORM = 1
     EMAIL = 2
     MANUAL = 3
@@ -47,7 +47,7 @@ class UploadSource(models.Model):
         app_label = 'site'
 
 
-class UploadType(models.Model):
+class UploadType(Base):
     name = models.CharField(max_length=255)
 
     def __unicode__(self):
@@ -57,7 +57,7 @@ class UploadType(models.Model):
         app_label = 'site'
 
 
-class ErrorCode(models.Model):
+class ErrorCode(Base):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=2000, null=True, blank=True)
 

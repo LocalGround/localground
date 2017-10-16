@@ -1,13 +1,13 @@
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
-from localground.apps.site.models import Base
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import fields
 from django.conf import settings
+from localground.apps.site.models.abstract.base import Base
 
 
-class ObjectAuthority(models.Model):
+class ObjectAuthority(Base):
 
     """
     Describes the permissions configuration of any class inheriting from
@@ -27,7 +27,7 @@ class ObjectAuthority(models.Model):
         app_label = 'site'
 
 
-class UserAuthority(models.Model):
+class UserAuthority(Base):
 
     """
     Used in conjunction with ObjectAuthority to assign user-level permissions
@@ -48,7 +48,7 @@ class UserAuthority(models.Model):
         app_label = 'site'
 
 
-class UserAuthorityObject(models.Model):
+class UserAuthorityObject(Base):
 
     """
     Model that assigns a particular User (auth_user) and UserAuthority
@@ -90,63 +90,6 @@ class UserAuthorityObject(models.Model):
         return self.object.can_manage(user) or self.user == user
 
     class Meta:
-        app_label = 'site'
-
-
-class ObjectPermissionsMixin(models.Model):
-    """
-    Abstract base class for media groups (Project and View objects).
-    """
-    access_authority = models.ForeignKey('ObjectAuthority',
-                                         db_column='view_authority',
-                                         verbose_name='Sharing')
-    access_key = models.CharField(max_length=16, null=True, blank=True)
-    users = fields.GenericRelation('UserAuthorityObject')
-
-    def __has_user_permissions(self, user, authority_id):
-        # anonymous or null users don't have user-level permissions:
-        if user is None or not user.is_authenticated():
-            return False
-
-        # object owners have blanket view/edit/manage user-level permissions:
-        if self.owner == user:
-            return True
-
-        # users with privileges which are greater than or equal to
-        # the authority_id have user-level permisisons:
-        return len(self.users
-                   .filter(user=user)
-                   .filter(authority__id__gte=authority_id)
-                   ) > 0
-
-    def can_view(self, user=None, access_key=None):
-        # projects and views marked as public are viewable:
-        if self.access_authority.id == ObjectAuthority.PUBLIC:
-            return True
-
-        # projects and views marked as "PUBLIC_WITH_LINK" that provide
-        # the correct access_key are viewable:
-        elif self.access_authority.id == ObjectAuthority.PUBLIC_WITH_LINK \
-                and self.access_key == access_key:
-            return True
-
-        # projects which are accessible by the user are viewable:
-        else:
-            return self.__has_user_permissions(user, UserAuthority.CAN_VIEW)
-
-    def can_edit(self, user):
-        return self.__has_user_permissions(user, UserAuthority.CAN_EDIT)
-
-    def can_manage(self, user):
-        return self.__has_user_permissions(user, UserAuthority.CAN_MANAGE)
-
-    def share_url(self):
-        return '/profile/{0}/{1}/share/'.format(
-            self.model_name_plural,
-            self.id)
-
-    class Meta:
-        abstract = True
         app_label = 'site'
 
 
