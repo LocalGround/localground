@@ -185,7 +185,7 @@ define([
                 fieldView.saveField();
                 fieldView.render();
                 expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
-                expect(fieldView.$el).toContainElement(".ratingError");
+                expect(fieldView.$el).toContainElement(".errorMessage");
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
             });
 
@@ -199,7 +199,7 @@ define([
                 console.log(fixture);
                 console.log(fieldView);
                 expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
-                expect(fieldView.$el).toContainElement(".ratingError");
+                expect(fieldView.$el).toContainElement(".errorMessage");
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
                 expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Required");
             });
@@ -555,7 +555,7 @@ define([
                 fieldView.render();
                 expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
                 expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
-                expect(fieldView.$el).toContainElement(".ratingError");
+                expect(fieldView.$el).toContainElement(".errorMessage");
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
                 expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Required");
                 expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Both Field name and type need to be filled in');

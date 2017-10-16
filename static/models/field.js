@@ -48,28 +48,42 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 Base.prototype.initialize.apply(this, arguments);
             },
             validate: function (attrs, options) {
+                // These attributes will be transferred
+                // to the error message function so it will be displayed on eachField
                 this.set("errorFieldName", false);
                 this.set("errorFieldType", false);
                 this.set("errorRatingName", false);
                 this.set("errorRatingValue", false);
                 this.set("errorMissingRatings", false);
+                this.set("errorMissingChoices", false);
+
+                // variables to keep track of the errorMessage
+
+                var errorName, errorType,
+                    errorRatingName, errorRatingValue,
+                    errorMissingRatings, errorMissingChoices;
 
                 var emptyName = attrs.col_alias.trim() === "";
                 var unselectedType = attrs.data_type === "-1" || !attrs.data_type;
 
                 this.set("errorFieldName", emptyName);
                 this.set("errorFieldType", unselectedType);
+                this.validateRating(attrs);
+                this.validateChoice(attrs);
+                errorName = this.get("errorFieldName");
+                errorType = this.get("errorFieldType");
+                errorRatingName = this.get("errorRatingName");
+                errorRatingValue = this.get("errorRatingValue");
+                errorMissingRatings = this.get("errorMissingRatings");
+                errorMissingChoices = this.get("errorMissingChoices");
 
-                if (emptyName || unselectedType){
-                    return "Both Field name and type need to be filled in"
-                }
-                if (!this.validateRating(attrs)) {
-                    console.log("Rating Error Detected");
-                    return "Both rating name and value must be filled."
-                }
-                if (!this.validateChoice(attrs)) {
-                    console.log("Choice Error Detected");
-                    return "Need to pick name for all choices."
+                switch (errorDetected){
+                    case (errorName): return getErrorMessage("errorFieldName");
+                    case (errorType): return getErrorMessage("errorFieldType");
+                    case (errorRatingName): return getErrorMessage("errorRatingName");
+                    case (errorRatingValue): return getErrorMessage("errorRatingValue");
+                    case (errorMissingRatings): return getErrorMessage("errorMissingRatings");
+                    case (errorMissingChoices): return getErrorMessage("errorMissingChoices");
                 }
 
             },
@@ -80,11 +94,13 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 var messages = {
                     "errorFieldName": "A field name is required",
                     "errorFieldType": "A field type is required",
-                    "errorRatingName": "A rating name is required",
+                    "errorRatingName": "A rating/choice name is required",
                     "errorRatingValue": "A rating value (integer) is required",
-                    "errorMissingRatings": "One or more ratings are needed for this field"
+                    "errorMissingRatings": "One or more ratings are needed for this field",
+                    "errorMissingChoices": "One or more choices are needed for this field"
                 }
-                return messages[key];
+                this.errorMessage = messages[key];
+                return this.errorMessage;
             },
 
             validateRating: function (attrs) {
@@ -111,7 +127,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 // No need to check if incorrect type
                 if (attrs.data_type !== "choice") return true;
                 if (!attrs.extras || attrs.extras.length === 0) {
-                    this.set("errorMissingRatings", true);
+                    this.set("errorMissingChoices", true);
                     return false;
                 }
                 for (var i = 0; i < attrs.extras.length; ++i) {

@@ -2375,7 +2375,7 @@ span.plus {
   Ratings
 */
 
-.ratingError {
+.errorMessage {
     /*background-color: #FFDDDD; */
     color: #A22;
     font-weight: normal;
