@@ -80,12 +80,12 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 var errorDetected;
 
                 switch (errorDetected){
-                    case (errorName): return getErrorMessage("errorFieldName");
-                    case (errorType): return getErrorMessage("errorFieldType");
-                    case (errorRatingName): return getErrorMessage("errorRatingName");
-                    case (errorRatingValue): return getErrorMessage("errorRatingValue");
-                    case (errorMissingRatings): return getErrorMessage("errorMissingRatings");
-                    case (errorMissingChoices): return getErrorMessage("errorMissingChoices");
+                    case (errorName): return this.getErrorMessage("errorFieldName");
+                    case (errorType): return this.getErrorMessage("errorFieldType");
+                    case (errorRatingName): return this.getErrorMessage("errorRatingName");
+                    case (errorRatingValue): return this.getErrorMessage("errorRatingValue");
+                    case (errorMissingRatings): return this.getErrorMessage("errorMissingRatings");
+                    case (errorMissingChoices): return this.getErrorMessage("errorMissingChoices");
                 }
 
             },
