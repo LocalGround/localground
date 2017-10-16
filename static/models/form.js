@@ -30,7 +30,8 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
             validate(attrs, options){
                 if (!this.fields){
                     this.trigger('error-message', "Cannot save with empty form or fields.");
-                    return "Form must contain valid fields."
+                    this.errorMessage = "Form must contain valid fields.";
+                    return this.errorMessage;
                 }
             },
 

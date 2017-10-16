@@ -77,6 +77,8 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 errorMissingRatings = this.get("errorMissingRatings");
                 errorMissingChoices = this.get("errorMissingChoices");
 
+                var errorDetected;
+
                 switch (errorDetected){
                     case (errorName): return getErrorMessage("errorFieldName");
                     case (errorType): return getErrorMessage("errorFieldType");
