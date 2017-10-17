@@ -2,9 +2,10 @@ var rootDir = "../../";
 define([
     "jquery",
     rootDir + "apps/style/views/right/marker-style-view",
+    rootDir + "apps/style/views/symbols/symbol-selection-layout-view",
     rootDir + "models/layer"
 ],
-    function ($, MarkerStyleView, Layer) {
+    function ($, MarkerStyleView, SymbolSelectionLayoutView, Layer) {
         'use strict';
         var markerStyleView,
             continuousMarkerStyleView,
@@ -130,11 +131,20 @@ define([
                 expect(categoricalMarkerStyleView.dataType).toEqual("categorical");
             });
 
+            /*
             it(" 'updateGlobalShape()' should update marker shape", function () {
                 $(categoricalFixture.find(".global-marker-shape option[value='square']").change());
                 expect(categoricalMarkerStyleView.model.get("metadata").shape).toEqual("square");
                 expect(categoricalMarkerStyleView.updateGlobalShape).toHaveBeenCalledTimes(1);
                 expect(categoricalMarkerStyleView.updateMetadata).toHaveBeenCalledTimes(1);
+            });
+            */
+
+            it(" 'showSymbols()' should create symbol view", function() {
+                expect(categoricalFixture).not.toContainElement('.symbols-layout-container');
+                $(categoricalFixture.find('.selected-symbol-div').click());
+                expect(categoricalMarkerStyleView.symbolsView).toEqual(jasmine.any(SymbolSelectionLayoutView));
+                expect(categoricalFixture).toContainElement('.symbols-layout-container');
             });
 
             it(" 'updateWidth()' should update width", function () {

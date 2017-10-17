@@ -2,10 +2,11 @@ define(["jquery",
         "marionette",
         "handlebars",
         "lib/maps/icon-lookup",
+        "apps/style/views/symbols/symbol-selection-layout-view",
         "text!../../templates/right/marker-style-child.html",
         'color-picker-eyecon'
     ],
-    function ($, Marionette, Handlebars, IconLookup, MarkerStyleChildTemplate) {
+    function ($, Marionette, Handlebars, IconLookup, IndSymbolLayoutView, MarkerStyleChildTemplate) {
         'use strict';
 
         var MarkerStyleChildView = Marionette.ItemView.extend({
@@ -15,7 +16,8 @@ define(["jquery",
             },
             template: Handlebars.compile(MarkerStyleChildTemplate),
             events: {
-                'change .marker-shape': 'updateShape'
+                'change .marker-shape': 'updateShape',
+                'click .selected-symbol-div': 'showSymbols' 
             },
             modelEvents: {
                 'change': 'updateLayerSymbols'
@@ -72,7 +74,15 @@ define(["jquery",
             },
             updateSymbolOpacity: function (opacity) {
                 this.model.set("fillOpacity", opacity);
+            },
+            showSymbols: function() {
+                this.indSymbolsView = new IndSymbolLayoutView({
+                    app: this,
+                    el: this.$el.find('#ind-symbol-dropdown')
+                });
+                console.log(this.symbolsView);
             }
+        
 
         });
         return MarkerStyleChildView;

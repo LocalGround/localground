@@ -58,6 +58,9 @@ require(['boot'], function () {
         'spec/views/project-user-test.js',
         'spec/views/data-detail-test.js',
 
+        //style app symbols selection views
+        'spec/views/style-symbol-selection-layout-view.js',
+
         // PRINT
         'spec/views/generate-print-test.js',
         'spec/views/print-options-test.js',
