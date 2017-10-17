@@ -287,6 +287,14 @@ define([
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
 
+                    /*
+                    Unfortunately, the test itself does not work because
+                    no matter how correct the values are set,
+                    it does not show up in the DOM form the fixtures
+
+                    will return to correcting it after the problem is solved
+                    */
+
                     //add a new row by triggering the '.new_field_button click'
                     fixture.find('.new_field_button').trigger('click');
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
@@ -294,9 +302,21 @@ define([
                     fixture.find('#formName').val('new form name');
                     fixture.find('#caption').val('dummy caption');
 
+                    console.log("Before Setting Changes")
+                    console.log(fixture.find('.fieldname').val());
+                    console.log(fixture.find('.fieldType').val());
+
+
                     fixture.find('.fieldname').val("Sample Text");
                     fixture.find('.fieldType').val("text");
                     fixture.find('.display_field_button').prop("checked");
+
+                    console.log("After Setting Changes")
+                    console.log(fixture.find('.fieldname').val());
+                    console.log(fixture.find('.fieldType').val());
+
+                    console.log(fixture.html());
+                    console.log(newCreateForm.$el.html());
 
                     expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(0);
                     expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(0);

@@ -60,11 +60,12 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 // variables to keep track of the errorMessage
 
                 var errorName, errorType,
-                    errorRatingName, errorRatingValue,
+                    errorRatingName, errorRatingValue, errorChoice,
                     errorMissingRatings, errorMissingChoices;
 
                 var emptyName = attrs.col_alias.trim() === "";
                 var unselectedType = attrs.data_type === "-1" || !attrs.data_type;
+                console.log(attrs);
 
                 this.set("errorFieldName", emptyName);
                 this.set("errorFieldType", unselectedType);
@@ -74,13 +75,18 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 errorType = this.get("errorFieldType");
                 errorRatingName = this.get("errorRatingName");
                 errorRatingValue = this.get("errorRatingValue");
+                errorChoice = this.get("errorChoice");
                 errorMissingRatings = this.get("errorMissingRatings");
                 errorMissingChoices = this.get("errorMissingChoices");
+                console.log(this);
 
+                if (errorName && errorType) return this.getErrorMessage("errorField");
                 if (errorName) return this.getErrorMessage("errorFieldName");
                 if (errorType) return this.getErrorMessage("errorFieldType");
+                if (errorRatingName && errorRatingValue) return this.getErrorMessage("errorRating");
                 if (errorRatingName) return this.getErrorMessage("errorRatingName");
                 if (errorRatingValue) return this.getErrorMessage("errorRatingValue");
+                if (errorChoice) return this.getErrorMessage("errorChoice");
                 if (errorMissingRatings) return this.getErrorMessage("errorMissingRatings");
                 if (errorMissingChoices) return this.getErrorMessage("errorMissingChoices");
 
@@ -91,10 +97,13 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 // will eventually cut down uneccessary logic
                 // so that errors will simply be outputted
                 var messages = {
+                    "errorField": "Both field name and type are required",
                     "errorFieldName": "A field name is required",
                     "errorFieldType": "A field type is required",
-                    "errorRatingName": "A rating/choice name is required",
+                    "errorRating": "Both rating name and value are required",
+                    "errorRatingName": "A rating name is required",
                     "errorRatingValue": "A rating value (integer) is required",
+                    "errorChoice": "A choice name is required",
                     "errorMissingRatings": "One or more ratings are needed for this field",
                     "errorMissingChoices": "One or more choices are needed for this field"
                 }
@@ -109,15 +118,17 @@ define(["underscore", "collections/dataTypes", "models/base"],
                     this.set("errorMissingRatings", true);
                     return false;
                 }
+                var rating_item_blank = false;
                 for (var i = 0; i < attrs.extras.length; ++i) {
                     if (attrs.extras[i].name.trim() === "") {
                         this.set("errorRatingName", true);
-                        return false;
+                        rating_item_blank = true;
                     }
                     if (isNaN(parseInt(attrs.extras[i].value))){
                         this.set("errorRatingValue", true);
-                        return false;
+                        rating_item_blank = true;
                     }
+                    if (rating_item_blank) return false;
                 }
                 return true;
             },
@@ -131,7 +142,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 }
                 for (var i = 0; i < attrs.extras.length; ++i) {
                     if (attrs.extras[i].name.trim() === "") {
-                        this.set("errorRatingName", true);
+                        this.set("errorChoice", true);
                         return false;
                     }
                 }

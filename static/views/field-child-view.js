@@ -154,6 +154,7 @@ define([
         },
         validateField: function(){
             if (!this.model.isValid() ) {
+                console.log("Field Error Detected");
                 if (!this.parent){
                     this.app.vent.trigger('error-message', this.model.validationError);
                 }

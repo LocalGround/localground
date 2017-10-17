@@ -186,13 +186,14 @@ define([
                 fieldView.render();
                 expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
                 expect(fieldView.$el).toContainElement(".errorMessage");
-                expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
+                expect($(fieldView.$el.find('span')[0]).html()).toBe("A field name is required");
             });
 
             it("If fieldtype is blank, it shows an error", function () {
                 createNewFieldView(this);
                 expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(0);
                 fixture = setFixtures("<div></div>").append(fieldView.$el);
+                fixture.find(".fieldname").val("sample");
                 fieldView.$el.find("select").val("-1");
                 fieldView.saveField();
                 fieldView.render();
@@ -200,8 +201,7 @@ define([
                 console.log(fieldView);
                 expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
                 expect(fieldView.$el).toContainElement(".errorMessage");
-                expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
-                expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Required");
+                expect($(fieldView.$el.find('span')[0]).html()).toBe("A field type is required");
             });
         });
 
@@ -507,7 +507,7 @@ define([
 
                 expect(Field.prototype.validateChoice).toHaveBeenCalledTimes(1);
 
-                expect(field.get('errorRatingName')).toBeTruthy();
+                expect(field.get('errorChoice')).toBeTruthy();
             });
 
             it ("Successfully saves the choice list", function(){
@@ -556,9 +556,8 @@ define([
                 expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
                 expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
                 expect(fieldView.$el).toContainElement(".errorMessage");
-                expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
-                expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Required");
-                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Both Field name and type need to be filled in');
+                expect($(fieldView.$el.find('span')[0]).html()).toBe("Both field name and type are required");
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Both field name and type are required');
             });
 
             it ("Shows Unfinished Rating Error", function(){
@@ -577,10 +576,9 @@ define([
                 console.log(field)
                 expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
                 expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
-                expect(Field.prototype.validateRating).toHaveBeenCalledTimes(1);
-                expect(field.get('errorRatingName')).toBeTruthy();
-                expect(field.get('errorRatingValue')).toBeTruthy();
-                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Both rating name and value must be filled.');
+                expect(Field.prototype.validateRating).toHaveBeenCalledTimes(2);
+                expect(field.get('errorMissingRatings')).toBeTruthy();
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'One or more ratings are needed for this field');
             });
 
             it ("Shows Unfinished Choice Error", function(){
@@ -598,9 +596,9 @@ define([
                 console.log(field)
                 expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
                 expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
-                expect(Field.prototype.validateChoice).toHaveBeenCalledTimes(1);
-                expect(field.get('errorRatingName')).toBeTruthy();
-                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Need to pick name for all choices.');
+                expect(Field.prototype.validateChoice).toHaveBeenCalledTimes(2);
+                expect(field.get('errorMissingChoices')).toBeTruthy();
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'One or more choices are needed for this field');
             });
 
 
