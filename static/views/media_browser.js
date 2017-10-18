@@ -71,31 +71,16 @@ define([
             displayCards: function () {
                 this.viewMode = "thumb";
                 this.render();
-                this.hideLoadingMessage();
             },
 
             displayTable: function () {
                 this.viewMode = "table";
                 this.render();
-                this.hideLoadingMessage();
-            },
-
-            hideLoadingMessage: function () {
-                this.$el.find("#loading-animation").empty();
             },
 
             displayMedia: function () {
-                if (this.currentMedia == 'photos') {
-                    this.collection = new Photos();
-                } else if (this.currentMedia == 'audio') {
-                    this.collection = new Audio();
-                } else {
-                    this.collection = new Videos();
-                }
-                this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
-                this.collection.fetch({reset: true});
-                this.listenTo(this.collection, 'reset', this.render);
-                this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
+                this.collection.trigger('reset');
             },
 
             doSearch: function (e) {
