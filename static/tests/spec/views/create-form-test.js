@@ -169,8 +169,6 @@ define([
                     expect(fixture.find('.remove-row').html()).toBeUndefined();
                     fixture.find('.new_field_button').trigger('click');
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
-                    // console.log(fixture.find('.remove-row'));
-                    // expect(fixture.find('.remove-row')).toBeInDOM(); // I do not understand this to be in DOM
                     expect(fixture.find('.remove-row').html()).not.toBeUndefined();
 
                     //remove new row by triggering '.remove-row click'

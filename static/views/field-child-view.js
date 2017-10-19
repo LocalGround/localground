@@ -152,7 +152,8 @@ define([
         saveChoicesToModel: function () {
             this.model.set("extras", this.choicesList);
         },
-        validateField: function(){
+        validateField: function () {
+            console.error(this.model.validationError);
             if (!this.model.isValid() ) {
                 console.log("Field Error Detected");
                 if (!this.parent){
@@ -164,9 +165,8 @@ define([
             }
 
         },
-        saveField: function () {
-            var that = this,
-                fieldName = this.$el.find(".fieldname").val(),
+        setFieldValuesFromHtmlForm: function () {
+            var fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
                 messages;
@@ -186,7 +186,10 @@ define([
             } else if (fieldType == "choice") {
                 this.saveChoicesToModel();
             }
-
+        },
+        saveField: function () {
+            var that = this;
+            this.setFieldValuesFromHtmlForm();
             this.model.save(null, {
                 success: function () {
                     if (that.parent) {

@@ -205,7 +205,6 @@ define([
             });
         });
 
-
         describe("Create Form Fields: Radio button switch test", function () {
             beforeEach(function () {
                 initSpies(this);

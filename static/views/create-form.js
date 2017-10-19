@@ -190,16 +190,18 @@ define([
                 model = that.collection.getModelByAttribute('temp_id', tempID);
                 childView = that.children.findByModel(model);
 
-                switch(modeNameStr){
+                switch(modeNameStr) {
                     case "validate":
+                        // set the values, but don't save them to the database:
+                        childView.setFieldValuesFromHtmlForm();
                         success = success && childView.validateField();
-                        console.log(success);
                         if (!success){
                             that.app.vent.trigger('error-message', "Cannot have unfilled fields.");
                             return false;
                         }
                         break;
                     case "save":
+                        // set the values AND save them to the database:
                         childView.saveField(i + 1);
                         that.wait(100);
                         break;
