@@ -1,6 +1,5 @@
 # abstract
-from localground.apps.site.models.abstract.base import Base, BaseAudit, \
-    BaseNamedMedia, BaseUploadedMedia
+from localground.apps.site.models.abstract.base import Base, BaseAudit, BaseUploadedMedia
 from localground.apps.site.models.abstract.mixins import ExtentsMixin, \
     PointMixin, ExtrasMixin, ProjectMixin, GenericRelationMixin, \
     MediaMixin, NamedMixin, ObjectPermissionsMixin

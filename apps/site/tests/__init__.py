@@ -363,6 +363,7 @@ class ModelMixin(object):
         # create a marker:
         lat = 37.87
         lng = -122.28
+        project = project or self.project
         record = form.TableModel()
         record.point = Point(lng, lat, srid=4326)
         if project:

@@ -2,7 +2,6 @@ from django.contrib.gis.db import models
 from localground.apps.site.models import ObjectTypes
 from datetime import datetime
 from localground.apps.site.managers import MarkerManager
-from localground.apps.site.models import BaseUploadedMedia
 from django.contrib.contenttypes import generic
 from localground.apps.site.models import PointMixin, ExtrasMixin, \
     NamedMixin, GenericRelationMixin, ProjectMixin, BaseAudit

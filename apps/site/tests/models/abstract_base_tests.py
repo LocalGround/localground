@@ -9,7 +9,6 @@ class BaseAbstractModelClassTest(test.TestCase, ModelMixin):
 
     def setUp(self):
         ModelMixin.setUp(self)
-        from localground.apps.site import models
         form = self.create_form_with_fields()
         Record = form.TableModel
         self.classes_that_inherit_from_base = {
