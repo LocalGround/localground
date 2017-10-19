@@ -55,14 +55,34 @@ class BaseAuditAbstractModelClassTest(BaseAbstractModelClassTest):
         class_list = self.classes_that_inherit_from_base_audit.values()
         for cls in class_list:
             self.assertTrue(hasattr(cls, 'owner'))
-            # Riley TODO: Finish this method
+            self.assertTrue(hasattr(cls, 'last_updated_by'))
+          #  self.assertTrue(hasattr(cls, 'date_created')) DateTime fields failing this test...
+          #  self.assertTrue(hasattr(cls, 'time_stamp'))   DateTime fields failing this test...
+            self.assertTrue(hasattr(cls, 'filter_fields'))
             count += 1
         self.assertEqual(count, len(class_list))
 
     def test_filter_fields_set_correctly_for_baseaudit_abstract_class(
             self, **kwargs):
-        self.assertEqual(1, 1)
+        test_fields = ('id', 'date_created', 'time_stamp')
+        self.assertEqual(self.Photo.filter_fields, test_fields)
+        self.assertEqual(self.photo.filter_fields, test_fields)
+
 
     def test_get_filter_fields_returns_correct_query_fields_dict(
             self, **kwargs):
-        self.assertEqual(1, 1)
+        test_keys = [
+            'attribution',
+            'name',
+            'file_name_orig',
+            'tags',
+            'point',
+            'owner',
+            'project',
+            'caption',
+            'device',
+            'date_created',
+            'id'
+        ]
+        self.assertEqual(self.Photo.get_filter_fields().keys(),test_keys)
+        self.assertEqual(self.photo.get_filter_fields().keys(), test_keys)
