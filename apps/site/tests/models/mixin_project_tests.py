@@ -10,3 +10,6 @@ class ProjectMixinTest(test.TestCase, ModelMixin):
 
     def test_dummy_project(self, **kwargs):
         self.assertEqual(1, 1)
+
+    def test_hi_riley(self, **kwargs):
+        self.assertEqual(1, 1)
