@@ -247,6 +247,7 @@ define([
                     expect(newCreateForm.collection.at(0).get("col_alias")).toBe("new field 1");
                     expect(newCreateForm.collection.at(1).get("col_alias")).toBe("new field 2");
                     expect(newCreateForm.collection.at(2).get("col_alias")).toBe("new field 3");
+
                 });
 
                 it("Successfully deletes the form", function () {
@@ -303,33 +304,19 @@ define([
                     fixture.find('#formName').val('new form name');
                     fixture.find('#caption').val('dummy caption');
 
-                    console.log("Before Setting Changes")
-                    console.log(fixture.find('.fieldname').val());
-                    console.log(fixture.find('.fieldType').val());
-
-
                     fixture.find('.fieldname').val("Sample Text");
                     fixture.find('.fieldType').val("text");
                     fixture.find('.display_field_button').prop("checked");
 
-                    console.log("After Setting Changes")
-                    console.log(fixture.find('.fieldname').val());
-                    console.log(fixture.find('.fieldType').val());
-
-                    console.log(fixture.html());
-                    console.log(newCreateForm.$el.html());
 
                     expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(0);
                     expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(0);
                     expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(0);
 
-                    //console.log(newCreateForm.validateFields());
-
                     newCreateForm.saveFormSettings();
 
 
                     expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(1);
-                    //expect(newCreateForm.validateFields).toEqual(true);
                     expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(1);
                     expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(2);
 
@@ -353,12 +340,9 @@ define([
                     expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(0);
                     expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(0);
 
-                    //console.log(newCreateForm.validateFields());
-
                     newCreateForm.saveFormSettings();
 
                     expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(1);
-                    //expect(newCreateForm.validateFields).toEqual(false); // Having trouble gettign this to be false
                     expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(1);
                     expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Cannot have unfilled fields.');
                 });

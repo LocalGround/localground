@@ -56,6 +56,9 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 this.set("errorRatingValue", false);
                 this.set("errorMissingRatings", false);
                 this.set("errorMissingChoices", false);
+                // reset error message each time in case
+                // for no error or new one
+                this.errorMessage = "";
 
                 // variables to keep track of the errorMessage
 

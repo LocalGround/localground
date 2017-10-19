@@ -134,13 +134,11 @@ define([
 
             this.model.save(null, {
                 success: function () {
-                    var success = that.saveFields();
-                    if (success) {
-                        key = "form_" + that.model.id;
-                        that.app.vent.trigger("create-collection", key);
-                        that.app.vent.trigger('success-message', "The form was saved successfully");
-                        that.app.vent.trigger('hide-modal');
-                    }
+                    that.saveFields();
+                    key = "form_" + that.model.id;
+                    that.app.vent.trigger("create-collection", key);
+                    that.app.vent.trigger('success-message', "The form was saved successfully");
+                    //that.app.vent.trigger('hide-modal');
                 },
                 error: function () {
                     that.app.vent.trigger('error-message', "Cannot save with empty form or fields.");
@@ -175,6 +173,7 @@ define([
                 return;
             }
             var success = true;
+            var errorsFound = 0;
             this.initCollection();
             var that = this,
                 $rows = this.$el.find("#fieldList > tr"),
@@ -196,8 +195,7 @@ define([
                         childView.setFieldValuesFromHtmlForm();
                         success = success && childView.validateField();
                         if (!success){
-                            that.app.vent.trigger('error-message', "Cannot have unfilled fields.");
-                            return false;
+                            errorsFound ++;
                         }
                         break;
                     case "save":
@@ -207,6 +205,10 @@ define([
                         break;
                 }
             });
+            if (errorsFound > 0){
+                success = false;
+                this.app.vent.trigger('error-message', "Cannot have unfilled fields.");
+            }
             return success
         },
 

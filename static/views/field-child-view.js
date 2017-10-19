@@ -21,7 +21,8 @@ define([
             'draw': 'render'
         },
         events: {
-            'click .remove-row': 'removeModel',
+            'click .remove-row': 'removeFieldRow',
+            'click .delete-field': 'deleteField',
             'blur input.fieldname': 'setAlias',
             'blur input.rating-value': 'saveNewRating',
             'blur input.rating-name': 'saveNewRating',
@@ -70,6 +71,11 @@ define([
 
         removeRating: function (e) {
             e.preventDefault();
+            if (this.$el.find('.rating-row').length == 1){
+                this.model.errorMessage = "Must have at least 1 rating to exist"
+                this.render();
+                return;
+            }
             if (window.confirm("Want to remove rating?")){
                 var rating_row = $(e.target).closest(".rating-row");
                 $(rating_row).remove();
@@ -77,7 +83,13 @@ define([
             }
         },
         removeChoice: function (e) {
+
             e.preventDefault();
+            if (this.$el.find('.choice-row').length == 1){
+                this.model.errorMessage = "Must have at least 1 choice to exist"
+                this.render();
+                return;
+            }
             if (window.confirm("Want to remove choice?")){
                 var choice_row = $(e.target).closest(".choice-row");
                 $(choice_row).remove();
@@ -153,7 +165,7 @@ define([
             this.model.set("extras", this.choicesList);
         },
         validateField: function () {
-            console.error(this.model.validationError);
+            this.model.errorMessage = "";
             if (!this.model.isValid() ) {
                 console.log("Field Error Detected");
                 if (!this.parent){
@@ -241,8 +253,28 @@ define([
             }
 
         },
-        removeModel: function () {
+        removeFieldRow: function () {
             this.model.destroy();
+        },
+
+        deleteField: function (e) {
+            if (this.parent && this.parent.collection.length == 1){
+                this.parent.app.vent.trigger("error-message", "Cannot delete the last field");
+                return
+            }
+            if (!confirm("Are you sure you want to remove this field from the form?")) {
+                return;
+            }
+
+            var $elem = $(e.target),
+                $row = $elem.parent().parent();
+            $row.remove();
+            this.model.destroy();
+
+
+            if (e) {
+                e.preventDefault();
+            }
         }
 
     });
