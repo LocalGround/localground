@@ -5,7 +5,7 @@ from localground.apps.site.tests.models.abstract_base_uploaded_media_tests impor
 class AudioModelTest(BaseUploadedMediaAbstractModelClassTest):
 
     def setUp(self):
-        BaseAuditAbstractModelClassTest.setUp(self)
+        BaseUploadedMediaAbstractModelClassTest.setUp(self)
 
     def tearDown(self):
         # delete method also removes files from file system:
