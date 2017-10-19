@@ -169,6 +169,7 @@ class BaseAudit(Base):
         app_label = 'site'
         abstract = True
 
+
 class BaseUploadedMedia(MediaMixin, NamedMixin, ProjectMixin, BaseAudit):
     file_name_new = models.CharField(max_length=255)
     attribution = models.CharField(
@@ -178,7 +179,7 @@ class BaseUploadedMedia(MediaMixin, NamedMixin, ProjectMixin, BaseAudit):
         help_text="Name of the person who created the media file (text)"
     )
     filter_fields = MediaMixin.filter_fields + \
-        ('name', 'description', 'tags','attribution', 'point')
+        ('name', 'description', 'tags', 'attribution', 'point')
 
     class Meta:
         abstract = True

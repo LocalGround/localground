@@ -13,13 +13,14 @@ for this class.
 class BaseAuditAbstractModelClassTest(BaseAbstractModelClassTest):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
+        """
         form = self.create_form_with_fields()
         Record = form.TableModel
         photo = self.create_photo()
         marker = self.create_marker()
         map_image = self.create_mapimage()
         relation = self.create_relation(marker, photo)
-        """
+
         self.object_instances_that_inherit_from_base_audit = {
             # Groupings and Associations
             'project': self.create_project(),
@@ -65,8 +66,8 @@ class BaseAuditAbstractModelClassTest(BaseAbstractModelClassTest):
         for instance in instance_list:
             self.assertTrue(hasattr(instance, 'owner'))
             self.assertTrue(hasattr(instance, 'last_updated_by'))
-            self.assertTrue(hasattr(instance, 'date_created')) 
-            self.assertTrue(hasattr(instance, 'time_stamp'))   
+            self.assertTrue(hasattr(instance, 'date_created'))
+            self.assertTrue(hasattr(instance, 'time_stamp'))
             self.assertTrue(hasattr(instance, 'filter_fields'))
             count += 1
         self.assertEqual(count, len(instance_list))
@@ -75,7 +76,7 @@ class BaseAuditAbstractModelClassTest(BaseAbstractModelClassTest):
     def test_filter_fields_set_correctly_for_baseaudit_abstract_class(
             self, **kwargs):
         test_fields = ('id', 'date_created', 'time_stamp')
-        self.assertEqual(models.BaseAudit.filter_fields, test_fields)       
+        self.assertEqual(models.BaseAudit.filter_fields, test_fields)
 
     def test_get_filter_fields_returns_correct_query_fields_dict(
             self, **kwargs):
