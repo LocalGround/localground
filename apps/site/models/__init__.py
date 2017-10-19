@@ -2,8 +2,8 @@
 from localground.apps.site.models.abstract.base import Base, BaseAudit, \
     BaseNamedMedia, BaseUploadedMedia
 from localground.apps.site.models.abstract.mixins import ExtentsMixin, \
-    PointMixin, ExtrasMixin, ProjectMixin, BaseGenericRelationMixin, \
-    BaseMediaMixin, BaseNamedMixin, ObjectPermissionsMixin
+    PointMixin, ExtrasMixin, ProjectMixin, GenericRelationMixin, \
+    MediaMixin, NamedMixin, ObjectPermissionsMixin
 
 # layers
 from localground.apps.site.models.layer import Layer

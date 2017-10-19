@@ -3,14 +3,14 @@ from django.http import Http404
 from localground.apps.lib.helpers import classproperty
 from django.contrib.contenttypes.models import ContentType
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-from localground.apps.site.models.abstract.mixins import BaseNamedMixin, \
-    ProjectMixin, BaseMediaMixin
+from localground.apps.site.models.abstract.mixins import NamedMixin, \
+    ProjectMixin, MediaMixin
 '''
 This file contains the following abstract classes:
     * Base
     * BaseAudit
-    * BaseNamedMedia
-    * BaseUploadedMedia
+    * NamedMedia
+    * UploadedMedia
 '''
 
 
@@ -170,8 +170,8 @@ class BaseAudit(Base):
         abstract = True
 
 
-class BaseNamedMedia(BaseMediaMixin, BaseNamedMixin, ProjectMixin, BaseAudit):
-    filter_fields = BaseMediaMixin.filter_fields + \
+class BaseNamedMedia(MediaMixin, NamedMixin, ProjectMixin, BaseAudit):
+    filter_fields = MediaMixin.filter_fields + \
         ('name', 'description', 'tags')
 
     class Meta:

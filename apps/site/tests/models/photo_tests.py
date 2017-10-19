@@ -1,15 +1,20 @@
 from django import test
 from localground.apps.site import models
-from localground.apps.site.tests import ModelMixin
+from localground.apps.site.tests.models.abstract_base_audit_tests import \
+    BaseAuditAbstractModelClassTest
+from localground.apps.site.tests.models.mixin_project_tests import \
+    ProjectMixinTest
+from localground.apps.site.tests.models.mixin_point_tests import PointMixinTest
 import urllib
 
 
-class PhotoModelTest(test.TestCase, ModelMixin):
+class PhotoModelTest(PointMixinTest, ProjectMixinTest,
+                     BaseAuditAbstractModelClassTest):
 
     # To run test:
     # $ python manage.py test localground.apps.site.tests.models.PhotoModelTest
     def setUp(self):
-        ModelMixin.setUp(self)
+        BaseAuditAbstractModelClassTest.setUp(self)
 
     def tearDown(self):
         # delete method also removes files from file system:

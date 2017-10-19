@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from localground.apps.site.models.abstract.base import BaseAudit, Base
-from localground.apps.site.models.abstract.mixins import BaseNamedMixin
+from localground.apps.site.models.abstract.mixins import NamedMixin
 from jsonfield import JSONField
 '''
 This file contains the following classes:
@@ -40,7 +40,7 @@ class OverlayType(Base):
         return self.name
 
 
-class TileSet(BaseNamedMixin, BaseAudit):
+class TileSet(NamedMixin, BaseAudit):
 
     """
     Stores the specific overlays available in Local Ground.

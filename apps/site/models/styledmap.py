@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 from django.contrib.gis.db import models
-from localground.apps.site.models import BaseNamedMixin, ProjectMixin, BaseAudit
+from localground.apps.site.models import NamedMixin, ProjectMixin, BaseAudit
 from jsonfield import JSONField
 from localground.apps.site.managers import StyledMapManager
 
-class StyledMap(BaseNamedMixin, ProjectMixin, BaseAudit):
+class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
     center = models.PointField()
     zoom = models.IntegerField()
     panel_styles = JSONField(blank=True, null=True)

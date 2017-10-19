@@ -5,11 +5,11 @@ from localground.apps.site.managers import MarkerManager
 from localground.apps.site.models import BaseUploadedMedia
 from django.contrib.contenttypes import generic
 from localground.apps.site.models import PointMixin, ExtrasMixin, \
-    BaseNamedMixin, BaseGenericRelationMixin, ProjectMixin, BaseAudit
+    NamedMixin, GenericRelationMixin, ProjectMixin, BaseAudit
 
 
-class Marker(ExtrasMixin, PointMixin, ProjectMixin, BaseNamedMixin,
-             BaseGenericRelationMixin, BaseAudit):
+class Marker(ExtrasMixin, PointMixin, ProjectMixin, NamedMixin,
+             GenericRelationMixin, BaseAudit):
     """
     Markers are association objects with a geometry (either point,
     line, or polygon).  Markers can be associated with one or more photos,

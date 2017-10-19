@@ -3,7 +3,6 @@ from jsonfield import JSONField
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import ArrayField
 from localground.apps.lib.helpers import upload_helpers
-
 import operator
 '''
 This file contains the following mixins:
@@ -11,8 +10,8 @@ This file contains the following mixins:
     * ExtentsMixin
     * ProjectMixin
     * ExtrasMixin
-    * BaseGenericRelationMixin
-    * BaseMediaMixin
+    * GenericRelationMixin
+    * MediaMixin
 '''
 
 
@@ -92,7 +91,7 @@ class ExtrasMixin(models.Model):
         abstract = True
 
 
-class BaseGenericRelationMixin(models.Model):
+class GenericRelationMixin(models.Model):
     from django.contrib.contenttypes import fields
 
     entities = fields.GenericRelation(
@@ -199,7 +198,7 @@ class BaseGenericRelationMixin(models.Model):
         return self.grab(Marker)
 
 
-class BaseNamedMixin(models.Model):
+class NamedMixin(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     tags = ArrayField(models.TextField(), default=list)
@@ -209,7 +208,7 @@ class BaseNamedMixin(models.Model):
         abstract = True
 
 
-class BaseMediaMixin(models.Model):
+class MediaMixin(models.Model):
     host = models.CharField(max_length=255)
     virtual_path = models.CharField(max_length=255)
     file_name_orig = models.CharField(max_length=255)
