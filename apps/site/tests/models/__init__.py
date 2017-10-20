@@ -15,3 +15,4 @@ from localground.apps.site.tests.models.mixin_project_tests import *
 # Model Classes:
 from localground.apps.site.tests.models.audio_tests import *
 from localground.apps.site.tests.models.photo_tests import *
+from localground.apps.site.tests.models.lookup_tests import *

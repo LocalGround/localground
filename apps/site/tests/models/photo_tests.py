@@ -15,6 +15,7 @@ class PhotoModelTest(PointMixinTest, ProjectMixinTest,
     # $ python manage.py test localground.apps.site.tests.models.PhotoModelTest
     def setUp(self):
         BaseAuditAbstractModelClassTest.setUp(self)
+        self.model = self.create_photo()
 
     def tearDown(self):
         # delete method also removes files from file system:
