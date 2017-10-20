@@ -10,11 +10,13 @@ define([
         'use strict';
         var fixture, newCreateForm, initSpies;
 
-        initSpies = function () {
+        initSpies = function (scope) {
             spyOn(CreateForm.prototype, 'render').and.callThrough();
             spyOn(CreateForm.prototype, 'initModel').and.callThrough();
             spyOn(CreateForm.prototype, 'fetchShareData').and.callThrough();
             spyOn(CreateForm.prototype, 'saveFields').and.callThrough();
+            spyOn(CreateForm.prototype, 'validateFields').and.callThrough();
+            spyOn(CreateForm.prototype, 'checkEachFieldAndPerformAction').and.callThrough();
             spyOn(Form.prototype, "getFields").and.callThrough();
 
             //event methods:
@@ -23,14 +25,22 @@ define([
             spyOn(CreateForm.prototype, 'removeRow').and.callThrough();
             spyOn(CreateForm.prototype, 'addFieldButton').and.callThrough();
             spyOn(CreateForm.prototype, 'backToList').and.callThrough();
-            spyOn(Field.prototype, 'save').and.callThrough();
+
+
             spyOn(Form.prototype, 'createField').and.callThrough();
             spyOn(Form.prototype, 'destroy').and.callThrough();
+
+            spyOn(Field.prototype, 'validate').and.callThrough();
+            spyOn(Field.prototype, 'validateRating').and.callThrough();
+            spyOn(Field.prototype, 'validateChoice').and.callThrough();
+            spyOn(Field.prototype, 'save').and.callThrough();
+
+            spyOn(scope.app.vent, 'trigger').and.callThrough();
         };
 
         describe("Create Form: Initialization Tests", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
             });
 
             it("Form Successfully created", function () {
@@ -59,9 +69,9 @@ define([
 
         describe("Create Form: Initialize model", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
                 newCreateForm = new CreateForm({
-                    model: this.form //initializes w/three fields
+                    model: this.form
                 });
             });
 
@@ -73,7 +83,7 @@ define([
 
         describe("Create Form: Attach Collection Event Handler", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
                 newCreateForm = new CreateForm({
                     model: this.form
                 });
@@ -83,7 +93,7 @@ define([
 
         describe("Create Form: Initialize Model without fields", function () {
             it("Create an empty form without fields and get fields", function () {
-                initSpies();
+                initSpies(this);
                 var emptyForm = new CreateForm({
                     model: new Form()
                 });
@@ -92,7 +102,7 @@ define([
             });
 
             it("Create an empty form with an ID without fields", function () {
-                initSpies();
+                initSpies(this);
                 var emptyForm = new CreateForm({
                     model: new Form({id: 5})
                 });
@@ -103,7 +113,7 @@ define([
 
         describe("Create Form: Parent Events All Fire", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
                 newCreateForm = new CreateForm({
                     model: this.form
                 });
@@ -119,7 +129,7 @@ define([
 
         describe("Create Form: All Methods work", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
             });
 
             describe("Functions that require Form to be empty", function () {
@@ -144,10 +154,6 @@ define([
                 });
 
                 it("removes the new row from the DOM successfully when removeRow is called", function () {
-                    // hint: first call newCreateForm.addFieldButton() and then
-                    // make sure that there's a ".remove-row" in the DOM. Then call
-                    // newCreateForm.removeRow() and make sure there's not a ".remove-row" in
-                    // the DOM
 
                     fixture = setFixtures('<div></div>').append(newCreateForm.$el);
                     expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(0);
@@ -157,7 +163,6 @@ define([
                     expect(fixture.find('.remove-row').html()).toBeUndefined();
                     fixture.find('.new_field_button').trigger('click');
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
-                    expect(fixture.find('.remove-row')).toBeInDOM();
                     expect(fixture.find('.remove-row').html()).not.toBeUndefined();
 
                     //remove new row by triggering '.remove-row click'
@@ -168,15 +173,11 @@ define([
                 });
 
                 it("correctly saves the model when the saveForm is called", function () {
-                    //hint: make sure that it sets all of the attributes on the model and then
-                    //triggers the form model's "save" method.
                     expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(0);
                     fixture = setFixtures('<div></div>').append(newCreateForm.$el);
                     fixture.find('#formName').val('new form name');
                     fixture.find('#caption').val('dummy caption');
                     newCreateForm.saveFormSettings();
-                    //expect(newCreateForm.model.get('name')).toBe('new form name');
-                    //expect(newCreateForm.model.get('caption')).toBe('dummy caption');
                 });
             });
 
@@ -189,14 +190,10 @@ define([
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
 
-                    //add a new row by triggering the '.new_field_button click'
                     fixture.find('.new_field_button').trigger('click');
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
-
                     fixture.find('#formName').val('new form name');
                     fixture.find('#caption').val('dummy caption');
-                    // We are working with one field from a newly created form
-                    // so it should be easy to find one class of field properties
 
                     fixture.find('.fieldname').val("Sample Text");
                     fixture.find('.fieldType').val("text");
@@ -206,8 +203,8 @@ define([
                     expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(0);
                     newCreateForm.saveFormSettings();
 
-                    expect(newCreateForm.model.get('name')).toBe('new form name');
-                    expect(newCreateForm.model.get('caption')).toBe('dummy caption');
+                    expect(newCreateForm.model.get('name')).toEqual('new form name');
+                    expect(newCreateForm.model.get('caption')).toEqual('dummy caption');
 
                     expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(1);
                     expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(1);
@@ -234,6 +231,7 @@ define([
                     expect(newCreateForm.collection.at(0).get("col_alias")).toBe("new field 1");
                     expect(newCreateForm.collection.at(1).get("col_alias")).toBe("new field 2");
                     expect(newCreateForm.collection.at(2).get("col_alias")).toBe("new field 3");
+
                 });
 
                 it("Successfully deletes the form", function () {
@@ -241,10 +239,6 @@ define([
                         app: this.app,
                         model: this.form
                     });
-                    //I am almost there with delete form, but I am getting the problem that
-                    // deleteForm is not defined
-
-
                     spyOn(window, 'confirm').and.returnValue(true);
 
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
@@ -261,6 +255,68 @@ define([
 
 
                 });
+            });
+
+            describe("Validating a New Field", function() {
+
+                it("Successfully passes all validation tests", function() {
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model:new Form({id: 5})
+                    });
+                    newCreateForm.render();
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
+
+                    fixture.find('.new_field_button').trigger('click');
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
+
+                    fixture.find('#formName').val('new form name');
+                    fixture.find('#caption').val('dummy caption');
+
+                    fixture.find('.fieldname').val("Sample Text");
+                    fixture.find('.fieldType').val("text");
+                    fixture.find('.display_field_button').prop("checked");
+
+
+                    expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(0);
+
+                    newCreateForm.saveFormSettings();
+
+
+                    expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(2);
+
+
+                });
+
+                it("Successfully Detects Unfilled Field Error", function(){
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: new Form({id: 5})
+                    });
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
+
+                    fixture.find('.new_field_button').trigger('click');
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
+
+                    fixture.find('#formName').val('new form name');
+                    fixture.find('#caption').val('dummy caption');
+
+                    expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(0);
+
+                    newCreateForm.saveFormSettings();
+
+                    expect(CreateForm.prototype.validateFields).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.checkEachFieldAndPerformAction).toHaveBeenCalledTimes(1);
+                    expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Cannot have unfilled fields.');
+                });
+
             });
 
         });
