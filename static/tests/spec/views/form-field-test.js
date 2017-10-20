@@ -213,6 +213,7 @@ define([
                     console.log(fixture.find(".delete-field")[4]);
                     // Having trouble with detecting the delete field on the click
                     $(fixture.find('.delete-field')[4]).trigger("click");
+                    console.log(fixture.find(".delete-field"));
                     expect(parentForm.children.length).not.toEqual(5);
 
             });

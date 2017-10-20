@@ -262,9 +262,12 @@ define([
                 this.parent.app.vent.trigger("error-message", "Cannot delete the last field");
                 return
             }
+            console.log("Confirm Delete")
             if (!confirm("Are you sure you want to remove this field from the form?")) {
                 return;
             }
+
+            console.log("Delete Model")
 
             var $elem = $(e.target),
                 $row = $elem.parent().parent();
