@@ -24,7 +24,7 @@ class StatusCodeTest(BaseAbstractModelClassTest, test.TestCase):
         self.assertEqual(StatusCode.MAP_RECT_NOT_FOUND, 9)
         self.assertEqual(StatusCode.FILE_WRITE_PRIVS, 10)
 
-    def test_name_and_description(self, **kwargs):
+    def test_model_properties(self, **kwargs):
         self.assertTrue(hasattr(self.model, 'name'))
         self.assertTrue(hasattr(self.model, 'description'))
         name = StatusCode._meta.get_field("name")

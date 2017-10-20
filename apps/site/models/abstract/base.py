@@ -151,7 +151,8 @@ class BaseAudit(Base):
     date_created = models.DateTimeField(default=get_timestamp_no_milliseconds)
     time_stamp = models.DateTimeField(default=get_timestamp_no_milliseconds,
                                       db_column='last_updated')
-    filter_fields = Base.filter_fields + ('date_created', 'time_stamp')
+    filter_fields = Base.filter_fields + \
+        ('date_created', 'time_stamp', 'owner')
 
     @classmethod
     def get_filter_fields(cls):

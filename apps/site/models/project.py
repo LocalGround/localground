@@ -18,7 +18,7 @@ class Project(NamedMixin, GenericRelationMixin,
     )
 
     filter_fields = BaseAudit.filter_fields + (
-        'slug', 'name', 'description', 'tags', 'owner'
+        'slug', 'name', 'description', 'tags'
     )
     objects = ProjectManager()
 

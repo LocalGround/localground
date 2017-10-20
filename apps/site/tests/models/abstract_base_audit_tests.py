@@ -74,10 +74,12 @@ class BaseAuditAbstractModelClassTest(BaseAbstractModelClassTest):
 
     def test_filter_fields_set_correctly_for_baseaudit_abstract_class(
             self, **kwargs):
-        test_fields = ('id', 'date_created', 'time_stamp')
+        test_fields = ('id', 'date_created', 'time_stamp', 'owner')
         self.assertEqual(models.BaseAudit.filter_fields, test_fields)
 
     def test_get_filter_fields_returns_correct_query_fields_dict(
             self, **kwargs):
         test_keys = ['owner', 'date_created', 'time_stamp']
-        self.assertEqual(models.BaseAudit.get_filter_fields().keys(),test_keys)
+        self.assertEqual(
+            models.BaseAudit.get_filter_fields().keys(), test_keys
+        )
