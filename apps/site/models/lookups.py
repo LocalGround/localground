@@ -22,7 +22,7 @@ class StatusCode(Base):
     description = models.CharField(max_length=2000, null=True, blank=True)
 
     def __unicode__(self):
-        return str(self.id) + ': ' + self.name
+        return '{0}: {1}'.format(self.id, self.name)
 
     class Meta:
         app_label = 'site'
