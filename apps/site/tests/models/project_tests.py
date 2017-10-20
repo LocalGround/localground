@@ -3,8 +3,7 @@ from localground.apps.site.tests.models.abstract_base_uploaded_media_tests \
     import BaseUploadedMediaAbstractModelClassTest
 
 
-class ProjectModelTest(NamedMixin, GenericRelationMixin,
-                       ObjectPermissionsMixin, BaseAudit):
+class ProjectModelTest(object):
 
     def setUp(self):
         BaseUploadedMediaAbstractModelClassTest.setUp(self)
