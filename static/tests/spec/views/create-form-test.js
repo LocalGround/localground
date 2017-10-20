@@ -87,8 +87,6 @@ define([
                 newCreateForm = new CreateForm({
                     model: this.form
                 });
-
-                // Where are the tests for them?
             });
 
         });
@@ -156,10 +154,6 @@ define([
                 });
 
                 it("removes the new row from the DOM successfully when removeRow is called", function () {
-                    // hint: first call newCreateForm.addFieldButton() and then
-                    // make sure that there's a ".remove-row" in the DOM. Then call
-                    // newCreateForm.removeRow() and make sure there's not a ".remove-row" in
-                    // the DOM
 
                     fixture = setFixtures('<div></div>').append(newCreateForm.$el);
                     expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(0);
@@ -179,15 +173,11 @@ define([
                 });
 
                 it("correctly saves the model when the saveForm is called", function () {
-                    //hint: make sure that it sets all of the attributes on the model and then
-                    //triggers the form model's "save" method.
                     expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(0);
                     fixture = setFixtures('<div></div>').append(newCreateForm.$el);
                     fixture.find('#formName').val('new form name');
                     fixture.find('#caption').val('dummy caption');
                     newCreateForm.saveFormSettings();
-                    //expect(newCreateForm.model.get('name')).toBe('new form name');
-                    //expect(newCreateForm.model.get('caption')).toBe('dummy caption');
                 });
             });
 
@@ -200,16 +190,10 @@ define([
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
 
-                    //add a new row by triggering the '.new_field_button click'
                     fixture.find('.new_field_button').trigger('click');
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
-
-                    // again I am having the same problem of values not properly being set
-                    // upon saving a new form and field
                     fixture.find('#formName').val('new form name');
                     fixture.find('#caption').val('dummy caption');
-                    // We are working with one field from a newly created form
-                    // so it should be easy to find one class of field properties
 
                     fixture.find('.fieldname').val("Sample Text");
                     fixture.find('.fieldType').val("text");
@@ -255,10 +239,6 @@ define([
                         app: this.app,
                         model: this.form
                     });
-                    //I am almost there with delete form, but I am getting the problem that
-                    // deleteForm is not defined
-
-
                     spyOn(window, 'confirm').and.returnValue(true);
 
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
@@ -278,7 +258,6 @@ define([
             });
 
             describe("Validating a New Field", function() {
-                /*When you add a new field, fill it in, and click save, it works*/
 
                 it("Successfully passes all validation tests", function() {
                     newCreateForm = new CreateForm({
@@ -289,15 +268,6 @@ define([
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
 
-                    /*
-                    Unfortunately, the test itself does not work because
-                    no matter how correct the values are set,
-                    it does not show up in the DOM form the fixtures
-
-                    will return to correcting it after the problem is solved
-                    */
-
-                    //add a new row by triggering the '.new_field_button click'
                     fixture.find('.new_field_button').trigger('click');
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
 

@@ -85,8 +85,6 @@ define([
                 expect(newSpreadsheet).toEqual(jasmine.any(Spreadsheet));
             });
 
-            // Turn that it into a describe for collection tests
-            //Test with photos, audio, and records collections:
             describe("Setting collections: ", function(){
                 it("Successfully set photo collection", function () {
                     newSpreadsheet = new Spreadsheet({
@@ -179,9 +177,6 @@ define([
                 });
 
                 it("Successfully calls attachModels", function(){
-                    // Unforntunately, this one requires digging into one of the elements
-                    // inside field so that it can actually gather the collection of models
-                    // for the "added media" column
                     var models = [];
                     this.photos.each(function(model){
                         models.push(model);
@@ -190,8 +185,6 @@ define([
                     newSpreadsheet.app.vent.trigger("add-models-to-marker", models);
                     expect(Spreadsheet.prototype.attachModels).toHaveBeenCalledTimes(1);
                 });
-
-                // Even triggers form collection:
 
                 it("Successfully calls Collection -> add", function(){
                     newSpreadsheet.collection.trigger("add");
@@ -315,8 +308,6 @@ define([
                 });
             });
 
-
-
         });
 
         describe("Spreadsheet Carousel Click Functions", function(){
@@ -348,9 +339,6 @@ define([
 
             beforeEach(function(){
                 setupSpreadsheetTest(this);
-                /*newSpreadsheet = new Spreadsheet({
-                    app: this.app
-                });*/
             });
 
             it("Go through the Button renderer", function(){
@@ -428,7 +416,6 @@ define([
             it ("Sucessfully switch between different video providers from drop-down", function(){
 
                 var vidCols = newSpreadsheet.getColumnHeaders();
-                //console.log(vidCols);
                 expect(vidCols[6]).toEqual("Video ID");
                 expect(vidCols[7]).toEqual("Provider");
 

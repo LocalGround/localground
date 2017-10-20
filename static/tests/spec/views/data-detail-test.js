@@ -95,7 +95,6 @@ define([
             });
 
             it("Successfully calls bindFields", function(){
-                //expect(1).toEqual(-1);
                 newDataDetail = new DataDetail({
                     app: this.app,
                     model: this.marker,
@@ -134,8 +133,6 @@ define([
 
                 expect(fixture.find('.circle-icon')).toHaveClass('icon-rotate');
 
-                // would be good to write tests dealing with scrollTop() values,
-                // but so far unable to set these values within the fixture
             });
         });
 
@@ -343,96 +340,6 @@ define([
                 expect(fixture.find("source").attr("src")).toEqual(this.audio_file.get("file_path"));
 
             });
-            /*
-            it("Successfully renders record with all media count", function () {
-                // 1. initialize the dataDetail view with a record model:
-                //Let's first test with all media types present
-                this.record_test = this.form_1.at(0);
-                this.record_test.set("children", {
-                    photos: {
-                        name: "Photos",
-                        id: "photos",
-                        overlay_type: "photo",
-                        data: this.photos.toJSON()
-                    },
-                    audio: {
-                        name: "Audio",
-                        id: "audio",
-                        overlay_type: "audio",
-                        data: this.audioFiles.toJSON()
-                    },
-                    videos: {
-                        name: "Videos",
-                        id: "videos",
-                        overlay_type: "video",
-                        data: this.videos.toJSON()
-                    }
-                });
-                this.record_test.set("video_count",1);
-                this.record_test.set("photo_count",1);
-                this.record_test.set("audio_count",1);
-
-                setupDataDetail(this, {
-                    model: this.record_test,
-                    mode: "view"
-
-                });
-                newDataDetail.render();
-                // 2. append the element to the fixture:
-                fixture.append(newDataDetail.$el);
-
-                // 3. ensure photo render correctly:
-                expect(fixture.find("h4").html().includes("Preview")).toBeTruthy();
-                expect(fixture.html()).toContain("section");
-                expect(fixture.html()).toContain("carousel-videos-photos");
-                expect(fixture.html()).toContain("carousel-audio");
-                expect(fixture.find("h3").html()).toEqual(this.record_test.get("name"));
-                expect(fixture.find("p").html()).toEqual(this.record_test.get("caption"));
-            });
-
-            it("Successfully renders record without media count", function () {
-                // 1. initialize the dataDetail view with a record model:
-                this.record_test = this.form_1.at(0);
-
-                setupDataDetail(this, {
-                    model: this.record_test,
-                    mode: "view"
-
-                });
-                newDataDetail.render();
-                // 2. append the element to the fixture:
-                fixture.append(newDataDetail.$el);
-
-                // 3. ensure photo render correctly:
-                expect(fixture.find("h4").html().includes("Preview")).toBeTruthy();
-                expect(fixture.html()).toContain("section");
-                expect(fixture.html()).not.toContain("carousel-videos-photos");
-                expect(fixture.html()).not.toContain("carousel-audio");
-                expect(fixture.find("h3").html()).toEqual(this.record_test.get("name"));
-                expect(fixture.find("p").html()).toEqual(this.record_test.get("caption"));
-            });
-
-            it("Successfully renders marker with all media count", function () {
-                // 1. initialize the dataDetail view with a record model:
-                //Let's first test with all media types present
-
-                setupDataDetail(this, {
-                    model: this.marker,
-                    mode: "view"
-                });
-                newDataDetail.render();
-                // 2. append the element to the fixture:
-                fixture.append(newDataDetail.$el);
-
-                // 3. ensure photo render correctly:
-                expect(fixture.find("h4").html().includes("Preview")).toBeTruthy();
-                expect(fixture.html()).toContain("section");
-                expect(fixture.html()).toContain("carousel-videos-photos");
-                expect(fixture.html()).toContain("carousel-audio");
-                expect(fixture.find("h3").html()).toEqual(this.marker.get("name"));
-                expect(fixture.find("p").html()).toEqual(this.marker.get("caption"));
-            });
-            */
         });
 
         /*
@@ -801,10 +708,6 @@ define([
                 expect(fixture.find("button.button-secondary").html()).not.toEqual("Remove Location Marker");
 
             });
-
-            /*it("Successfully calls activateRectangleTrigger", function(){
-                expect(1).toEqual(-1);
-            });*/
 
             it("Successfully calls activateMarkerTrigger", function(){
                 // 1. initialize the dataDetail view:

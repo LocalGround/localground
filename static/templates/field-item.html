@@ -1,9 +1,6 @@
 
-<!-- A <div> tag may be necessary to fit in the whole row inside.
-     However, it is unknown how to solve the row format problem
--->
 <td>
-    <i class="fa fa-grip fa-rotate-90"></i> <!-- The rotate grip item will need to be extended to fit the whole row-->
+    <i class="fa fa-grip fa-rotate-90"></i>
 </td>
 <td>
     <!-- Radio button -->
@@ -25,7 +22,6 @@
             {{/ifequal}}
 
             {{#ifequal data_type "rating"}}
-            <!-- Make this list the new extras list to reduce confusion for users -->
                 <span class ="extras">
                     <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
                     <table>
@@ -78,7 +74,6 @@
             <option value="choice"{{#ifequal data_type "choice"}} SELECTED {{/ifequal}}>Choice</option>
         </select>
             {{#ifequal data_type "rating"}}
-            <!-- Make this list the new extras list to reduce confusion for users -->
                 <span class ="extras">
                     <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
                     <table>

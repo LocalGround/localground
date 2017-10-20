@@ -19,7 +19,6 @@ define([
             _.extend(this, opts);
 
             if (!this.model) {
-                // Create a blank project if new project made
                 this.model = new Form();
             } else {
                 this.initModel();
@@ -88,7 +87,6 @@ define([
             }).disableSelection();
         },
 
-        // Fix helper with preserved width of cells
         fixHelper: function (e, ui) {
             ui.children().each(function () {
                 $(this).width($(this).width());
@@ -98,7 +96,7 @@ define([
         fetchShareData: function () {
             this.model.getFields();
         },
-        removeRow: function (e) { // to remove a field that has not yet been saved
+        removeRow: function (e) {
             var $elem = $(e.target),
                 $row =  $elem.parent().parent();
             if ($row.has('select').length != 0) {
@@ -128,8 +126,6 @@ define([
             this.model.set('caption', caption);
             this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
             this.model.set('project_ids', [this.app.getProjectID()]);
-            // Some way, there has to be a condition to
-            // instantly trigger error when zero fields have name
 
             this.model.save(null, {
                 success: function () {
@@ -137,7 +133,6 @@ define([
                     key = "form_" + that.model.id;
                     that.app.vent.trigger("create-collection", key);
                     that.app.vent.trigger('success-message', "The form was saved successfully");
-                    //that.app.vent.trigger('hide-modal');
                 },
                 error: function () {
                     that.app.vent.trigger('error-message', "Cannot save with empty form or fields.");

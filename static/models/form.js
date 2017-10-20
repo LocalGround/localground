@@ -45,8 +45,7 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
                 field.validate();
                 field.save(null, {
                     success: function () {
-                        //that.getFields();
-                        //that.fields.add(field);
+
                     },
                     error: function () {
                         console.error("Field is not saved");
