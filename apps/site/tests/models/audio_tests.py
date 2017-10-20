@@ -2,6 +2,7 @@ from localground.apps.site import models
 from localground.apps.site.tests.models.abstract_base_uploaded_media_tests import \
     BaseUploadedMediaAbstractModelClassTest
 
+
 class AudioModelTest(BaseUploadedMediaAbstractModelClassTest):
 
     def setUp(self):
