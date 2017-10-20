@@ -1,6 +1,5 @@
 from localground.apps.site.tests import ModelMixin
 from localground.apps.site import models
-from django import test
 from localground.apps.site.tests.models.abstract_base_tests import \
     BaseAbstractModelClassTest
 

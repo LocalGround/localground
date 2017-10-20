@@ -3,7 +3,7 @@ from django import test
 from localground.apps.site import models
 
 
-class ProjectMixinTest(test.TestCase, ModelMixin):
+class ProjectMixinTest(ModelMixin):
 
     def setUp(self):
         ModelMixin.setUp(self)
