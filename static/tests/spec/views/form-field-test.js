@@ -204,18 +204,17 @@ define([
                     createExistingFieldView(this);
 
                     spyOn(window, "confirm").and.returnValue(true);
+                    expect(fieldView.model.destroy).toHaveBeenCalledTimes(0);
+                    expect(FieldChildView.prototype.deleteField).toHaveBeenCalledTimes(0);
 
                     var parentForm = fieldView.parent;
-                    console.log(parentForm);
                     fixture = setFixtures("<div></div>").append(parentForm.$el);
-                    console.log(fixture.find(".delete-field"));
                     expect(parentForm.children.length).toEqual(5);
-                    console.log(fixture.find(".delete-field")[4]);
-                    // Having trouble with detecting the delete field on the click
+                    expect(fixture.find(".delete-field").length).toEqual(5);
                     $(fixture.find('.delete-field')[4]).trigger("click");
-                    console.log(fixture.find(".delete-field"));
-                    expect(fixture.find(".delete-field").length).not.toEqual(5);
-
+                    expect(FieldChildView.prototype.deleteField).toHaveBeenCalledTimes(1);
+                    expect(fixture.find(".delete-field").length).toEqual(4);
+                    expect(fieldView.model.destroy).toHaveBeenCalledTimes(1);
             });
         });
 
