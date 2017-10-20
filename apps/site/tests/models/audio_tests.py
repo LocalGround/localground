@@ -7,6 +7,7 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest):
 
     def setUp(self):
         BaseUploadedMediaAbstractModelClassTest.setUp(self)
+        self.model = self.create_audio()
 
     def tearDown(self):
         # delete method also removes files from file system:

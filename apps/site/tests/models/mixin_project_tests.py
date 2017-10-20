@@ -16,3 +16,9 @@ class ProjectMixinTest(test.TestCase, ModelMixin):
 
     def test_hi_cynthia(self, **kwargs):
         self.assertEqual(1, 1)
+
+    # set project, save, and make sure no errors
+    def test_sets_project_correctly(self, **kwargs):
+        project = self.create_project()
+        self.model.project = project
+        self.assertTrue(hasattr(self.model, 'project'))
