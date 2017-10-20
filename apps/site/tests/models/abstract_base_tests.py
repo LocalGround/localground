@@ -3,7 +3,7 @@ from django import test
 from localground.apps.site import models
 
 
-class BaseAbstractModelClassTest(test.TestCase, ModelMixin):
+class BaseAbstractModelClassTest(ModelMixin):
     # To run test:
     # $ python manage.py test localground.apps.site.tests.models.PhotoModelTest
 
