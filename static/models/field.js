@@ -68,7 +68,6 @@ define(["underscore", "collections/dataTypes", "models/base"],
 
                 var emptyName = attrs.col_alias.trim() === "";
                 var unselectedType = attrs.data_type === "-1" || !attrs.data_type;
-                console.log(attrs);
 
                 this.set("errorFieldName", emptyName);
                 this.set("errorFieldType", unselectedType);
@@ -81,7 +80,6 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 errorChoice = this.get("errorChoice");
                 errorMissingRatings = this.get("errorMissingRatings");
                 errorMissingChoices = this.get("errorMissingChoices");
-                console.log(this);
 
                 if (errorName && errorType) return this.getErrorMessage("errorField");
                 if (errorName) return this.getErrorMessage("errorFieldName");

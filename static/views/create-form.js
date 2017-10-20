@@ -119,7 +119,6 @@ define([
                 that = this,
                 key = "form_" + this.model.id,
                 fieldsValidated = this.validateFields();
-            console.log(fieldsValidated);
             if (!fieldsValidated) {
                 this.render();
                 return;
