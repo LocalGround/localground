@@ -1,6 +1,7 @@
 from localground.apps.site.tests import ModelMixin
 from django import test
 from localground.apps.site import models
+from localground.apps.lib.helpers import upload_helpers
 
 
 class MediaMixinTest(ModelMixin):
@@ -17,5 +18,9 @@ class MediaMixinTest(ModelMixin):
         self.assertTrue(hasattr(self.model, 'filter_fields'))
 
     def test_get_absolute_path(self):
-        abs_path = '/localground/userdata/media/tester/audio/'
+        # Using the method to generate the absolute path
+        abs_path = upload_helpers.generate_absolute_path(
+            self.user, self.model.model_name_plural
+        )
+        # abs_path = '/localground/userdata/media/tester/audio/'
         self.assertEqual(abs_path, self.model.get_absolute_path())
