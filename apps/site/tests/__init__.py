@@ -480,8 +480,10 @@ class ModelMixin(object):
             name=name,
             description='Audio Description',
             file_name_orig=file_name,
+            file_name_new='new.jpg',
             tags=tags,
             point=point,
+            virtual_path='/userdata/media/' + user.username + '/audio/'
         )
         audio.save()
         return audio

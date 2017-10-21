@@ -14,7 +14,7 @@ class ObjectAuthority(Base):
     ObjectPermissionsMixin (either private, public-with-key, or public)
     """
     PRIVATE = 1
-    PUBLIC_WITH_LINK = 2
+    PUBLIC_WITH_LINK = 2 #TODO remove this feature
     PUBLIC = 3
 
     name = models.CharField(max_length=255, blank=True)

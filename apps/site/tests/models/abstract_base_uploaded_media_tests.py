@@ -3,11 +3,12 @@ from localground.apps.site.tests.models.abstract_base_audit_tests import \
     BaseAuditAbstractModelClassTest
 from localground.apps.site.tests.models.mixin_project_tests import \
     ProjectMixinTest
+from localground.apps.site.tests.models import MediaMixinTest, NamedMixinTest
 
 
 class BaseUploadedMediaAbstractModelClassTest(
-        # TODO: MediaMixin,
-        # TODO: NamedMixin
+        MediaMixinTest,
+        NamedMixinTest,
         ProjectMixinTest,
         BaseAuditAbstractModelClassTest):
 
