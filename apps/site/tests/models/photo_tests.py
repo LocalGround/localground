@@ -20,7 +20,7 @@ class PhotoModelTest(PointMixinTest, ProjectMixinTest,
     def tearDown(self):
         # delete method also removes files from file system:
         for photo in models.Photo.objects.all():
-            photo.delete()
+            photo.remove_media_from_file_system()
 
     def test_photo_file_thumbnail_generator_works(self, **kwargs):
         import os

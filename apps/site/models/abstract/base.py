@@ -17,6 +17,12 @@ This file contains the following abstract classes:
 class Base(models.Model):
     filter_fields = ('id',)
 
+    def __unicode__(self):
+        return '{0}. {1}'.format(self.id, self.name)
+
+    def __str__(self):
+        return self.__unicode__()
+
     class Meta:
         app_label = 'site'
         abstract = True

@@ -27,28 +27,3 @@ class Project(NamedMixin, GenericRelationMixin,
         unique_together = ('slug', 'owner')
         verbose_name = 'project'
         verbose_name_plural = 'projects'
-
-    @classmethod
-    def get_users(cls):
-        # Returns a list of user that own or have access to at least one
-        # project.
-        from django.db.models import Q
-        from django.contrib.auth.models import User
-
-        return User.objects.distinct().filter(
-            Q(project__isnull=False) | Q(userauthorityobject__isnull=False)
-        ).order_by('username', )
-
-    @classmethod
-    def get_default_project(cls, user):
-        from django.db.models import Q
-
-        return Project.objects.filter(
-            Q(owner=user) | Q(users__user=user)
-        ).order_by('-time_stamp')[0]
-
-    def __unicode__(self):
-        return self.name
-
-    def __str__(self):
-        return self.name

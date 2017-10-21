@@ -22,9 +22,6 @@ class StatusCode(Base):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=2000, null=True, blank=True)
 
-    def __unicode__(self):
-        return '{0}. {1}'.format(self.id, self.name)
-
     class Meta:
         app_label = 'site'
         ordering = ('id',)
@@ -41,18 +38,12 @@ class UploadSource(Base):
 
     name = models.CharField(max_length=255)
 
-    def __unicode__(self):
-        return '{0}. {1}'.format(self.id, self.name)
-
     class Meta:
         app_label = 'site'
 
 
 class UploadType(Base):
     name = models.CharField(max_length=255)
-
-    def __unicode__(self):
-        return '{0}. {1}'.format(self.id, self.name)
 
     class Meta:
         app_label = 'site'
@@ -61,9 +52,6 @@ class UploadType(Base):
 class ErrorCode(Base):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=2000, null=True, blank=True)
-
-    def __unicode__(self):
-        return str(self.id) + '. ' + self.name
 
     class Meta:
         app_label = 'site'
