@@ -4,7 +4,16 @@ language: python
 
 python:
   - "2.7"
-  
+
+notifications:
+  email:
+    recipients:
+      - vanwars@gmail.com
+      - rileyflynn@gmail.com
+      - mrjbrpg@gmail.com
+    on_success: change # default setting: change
+    on_failure: always # default setting: always
+
 env:
   global:
     - DB_HOST=127.0.0.1
@@ -16,7 +25,7 @@ env:
 
 virtualenv:
   system_site_packages: true
-  
+
 addons:
   postgresql: "9.3"
 
@@ -26,12 +35,12 @@ services:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get -y install python-software-properties
-  
+
   # Install GIS libraries
   - sudo apt-get -y install mapserver-bin
   - sudo apt-get -y install gdal-bin
   - sudo apt-get -y install cgi-mapserver
-  
+
   # Install custom PostgreSQL / PostGIS
   - sudo apt-get -y install postgresql-9.3
   - sudo apt-get -y install postgresql-client-9.3
@@ -39,12 +48,12 @@ before_install:
   - sudo apt-get -y install postgresql-plperl-9.3
   - sudo apt-get -y install postgresql-9.3-postgis-2.3
   - sudo apt-get -y install postgresql-9.3-postgis-2.3-scripts
-  
-  # Install some final MapServer libraries (which I think need to 
+
+  # Install some final MapServer libraries (which I think need to
   # get installed after PostgreSQL / PostGIS)
   - sudo apt-get -y install libmapserver1 libmapserver1-dev
   - sudo apt-get -y install python-gdal
-  
+
   # Install Apache + Modules
   - sudo apt-get -y install apache2
   - sudo apt-get -y install libapache2-mod-fcgid
@@ -97,5 +106,5 @@ before_script:
   - mkdir userdata/prints
   - mkdir userdata/deleted
   - ./deploy_tools/gis.sh
-  
+
 script: cd apps && python manage.py test --verbosity=2

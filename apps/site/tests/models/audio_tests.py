@@ -1,7 +1,8 @@
 from localground.apps.site import models
-from localground.apps.site.tests.models.abstract_base_uploaded_media_tests import \
-    BaseUploadedMediaAbstractModelClassTest
+from localground.apps.site.tests.models.abstract_base_uploaded_media_tests \
+    import BaseUploadedMediaAbstractModelClassTest
 from django import test
+
 
 class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
 

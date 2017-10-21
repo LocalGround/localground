@@ -18,7 +18,10 @@ class MediaMixinTest(ModelMixin):
         self.assertTrue(hasattr(self.model, 'filter_fields'))
 
     def test_get_absolute_path(self):
-        # Using the method to generate the absolute path
+        # Using the method to generate the absolute path. Good not to
+        # hardcode b/c this path will look different on every server.
+        # Was breaking on TravisCI b/c travis stores static media in a
+        # different location.
         abs_path = upload_helpers.generate_absolute_path(
             self.user, self.model.model_name_plural
         )
