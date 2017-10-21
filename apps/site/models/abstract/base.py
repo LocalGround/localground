@@ -17,6 +17,12 @@ This file contains the following abstract classes:
 class Base(models.Model):
     filter_fields = ('id',)
 
+    def __unicode__(self):
+        return '{0}. {1}'.format(self.id, self.name)
+
+    def __str__(self):
+        return self.__unicode__()
+
     class Meta:
         app_label = 'site'
         abstract = True
@@ -151,7 +157,8 @@ class BaseAudit(Base):
     date_created = models.DateTimeField(default=get_timestamp_no_milliseconds)
     time_stamp = models.DateTimeField(default=get_timestamp_no_milliseconds,
                                       db_column='last_updated')
-    filter_fields = Base.filter_fields + ('date_created', 'time_stamp')
+    filter_fields = Base.filter_fields + \
+        ('date_created', 'time_stamp', 'owner')
 
     @classmethod
     def get_filter_fields(cls):

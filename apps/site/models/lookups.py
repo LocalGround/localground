@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from localground.apps.site.models import Base
 
+
 class StatusCode(Base):
 
     READY_FOR_PROCESSING = 1
@@ -21,9 +22,6 @@ class StatusCode(Base):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=2000, null=True, blank=True)
 
-    def __unicode__(self):
-        return str(self.id) + ': ' + self.name
-
     class Meta:
         app_label = 'site'
         ordering = ('id',)
@@ -40,18 +38,12 @@ class UploadSource(Base):
 
     name = models.CharField(max_length=255)
 
-    def __unicode__(self):
-        return str(self.id) + '. ' + self.name
-
     class Meta:
         app_label = 'site'
 
 
 class UploadType(Base):
     name = models.CharField(max_length=255)
-
-    def __unicode__(self):
-        return str(self.id) + '. ' + self.name
 
     class Meta:
         app_label = 'site'
@@ -61,18 +53,14 @@ class ErrorCode(Base):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=2000, null=True, blank=True)
 
-    def __unicode__(self):
-        return str(self.id) + ': ' + self.name
-
     class Meta:
         app_label = 'site'
 
 
 class ObjectTypes():
-
     """
-    A look-up table of supported media models (and their string representations).
-    Not sure how useful this class really is.
+    A look-up table of supported media models (and their string
+    representations). Not sure how useful this class really is.
     """
     PHOTO = 'photo'
     AUDIO = 'audio'

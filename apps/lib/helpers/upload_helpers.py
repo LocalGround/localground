@@ -18,8 +18,6 @@ def encrypt_media_path(host, model_name_plural, path):
     )
 
 def get_absolute_path(virtual_path):
-    print('FILE_ROOT: ')
-    print(settings.FILE_ROOT)
     return settings.FILE_ROOT + virtual_path
 
 def generate_relative_path(owner, model_name_plural, uuid=None):

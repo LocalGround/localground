@@ -12,7 +12,7 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
     def tearDown(self):
         # delete method also removes files from file system:
         for audio in models.Audio.objects.all():
-            audio.delete()
+            audio.remove_media_from_file_system()
 
     def test_dummy_audio(self, **kwargs):
         self.assertEqual(1, 1)
