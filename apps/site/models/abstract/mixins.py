@@ -3,7 +3,6 @@ from jsonfield import JSONField
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import ArrayField
 from localground.apps.lib.helpers import upload_helpers
-
 import operator
 '''
 This file contains the following mixins:
@@ -11,8 +10,8 @@ This file contains the following mixins:
     * ExtentsMixin
     * ProjectMixin
     * ExtrasMixin
-    * BaseGenericRelationMixin
-    * BaseMediaMixin
+    * GenericRelationMixin
+    * MediaMixin
 '''
 
 
@@ -92,7 +91,7 @@ class ExtrasMixin(models.Model):
         abstract = True
 
 
-class BaseGenericRelationMixin(models.Model):
+class GenericRelationMixin(models.Model):
     from django.contrib.contenttypes import fields
 
     entities = fields.GenericRelation(
@@ -199,7 +198,7 @@ class BaseGenericRelationMixin(models.Model):
         return self.grab(Marker)
 
 
-class BaseNamedMixin(models.Model):
+class NamedMixin(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     tags = ArrayField(models.TextField(), default=list)
@@ -209,7 +208,7 @@ class BaseNamedMixin(models.Model):
         abstract = True
 
 
-class BaseMediaMixin(models.Model):
+class MediaMixin(models.Model):
     host = models.CharField(max_length=255)
     virtual_path = models.CharField(max_length=255)
     file_name_orig = models.CharField(max_length=255)
@@ -273,3 +272,65 @@ class BaseMediaMixin(models.Model):
     @classmethod
     def make_directory(cls, path):
         upload_helpers.make_directory(path)
+
+
+class ObjectPermissionsMixin(models.Model):
+    from django.contrib.contenttypes import fields
+    """
+    Abstract base class for media groups (Project and View objects).
+    """
+    access_authority = models.ForeignKey('ObjectAuthority',
+                                         db_column='view_authority',
+                                         verbose_name='Sharing')
+    access_key = models.CharField(max_length=16, null=True, blank=True)
+    users = fields.GenericRelation('UserAuthorityObject')
+
+    class Meta:
+        abstract = True
+        app_label = 'site'
+
+    def __has_user_permissions(self, user, authority_id):
+        # anonymous or null users don't have user-level permissions:
+        if user is None or not user.is_authenticated():
+            return False
+
+        # object owners have blanket view/edit/manage user-level permissions:
+        if self.owner == user:
+            return True
+
+        # users with privileges which are greater than or equal to
+        # the authority_id have user-level permisisons:
+        return len(self.users
+                   .filter(user=user)
+                   .filter(authority__id__gte=authority_id)
+                   ) > 0
+
+    def can_view(self, user=None, access_key=None):
+        from localground.apps.site.models.permissions import ObjectAuthority, \
+            UserAuthority
+        # projects and views marked as public are viewable:
+        if self.access_authority.id == ObjectAuthority.PUBLIC:
+            return True
+
+        # projects and views marked as "PUBLIC_WITH_LINK" that provide
+        # the correct access_key are viewable:
+        elif self.access_authority.id == ObjectAuthority.PUBLIC_WITH_LINK \
+                and self.access_key == access_key:
+            return True
+
+        # projects which are accessible by the user are viewable:
+        else:
+            return self.__has_user_permissions(user, UserAuthority.CAN_VIEW)
+
+    def can_edit(self, user):
+        from localground.apps.site.models.permissions import UserAuthority
+        return self.__has_user_permissions(user, UserAuthority.CAN_EDIT)
+
+    def can_manage(self, user):
+        from localground.apps.site.models.permissions import UserAuthority
+        return self.__has_user_permissions(user, UserAuthority.CAN_MANAGE)
+
+    def share_url(self):
+        return '/profile/{0}/{1}/share/'.format(
+            self.model_name_plural,
+            self.id)

@@ -58,8 +58,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         '''
         return self.encrypt_url(self.file_name_large)
 
-    def delete(self, *args, **kwargs):
-        # remove images from file system:
+    def remove_media_from_file_system(self):
         path = self.get_absolute_path()
         if len(path.split('/')) > 2:  # protects against empty file path
             file_paths = [
@@ -78,7 +77,8 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
                         len(f) > 0 and p.find(settings.USER_MEDIA_DIR) > 0):
                     os.remove(p)
 
-        # execute default behavior
+    def delete(self, *args, **kwargs):
+        self.remove_media_from_file_system()
         super(Photo, self).delete(*args, **kwargs)
 
     def rotate_left(self, user):

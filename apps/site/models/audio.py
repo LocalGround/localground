@@ -8,8 +8,8 @@ import os
 class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
     objects = AudioManager()
 
-    def delete(self, *args, **kwargs):
-        # remove images from file system:
+    def remove_media_from_file_system(self):
+        # remove files from file system:
         path = self.get_absolute_path()
         if len(path.split('/')) > 2:  # protects against empty file path
             file_paths = [
@@ -20,7 +20,8 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
                 if os.path.exists(f):
                     os.remove(f)
 
-        # execute default behavior
+    def delete(self, *args, **kwargs):
+        self.remove_media_from_file_system()
         super(Audio, self).delete(*args, **kwargs)
 
     class Meta:

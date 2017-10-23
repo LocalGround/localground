@@ -1,12 +1,12 @@
 from django.contrib.gis.db import models
 from localground.apps.site.managers import VideoManager
 from django.contrib.postgres.fields import ArrayField
-from localground.apps.site.models import PointMixin, BaseNamedMixin, \
+from localground.apps.site.models import PointMixin, NamedMixin, \
     BaseAudit, ProjectMixin
 import os
 
 
-class Video(ProjectMixin, BaseNamedMixin, PointMixin, BaseAudit):
+class Video(ProjectMixin, NamedMixin, PointMixin, BaseAudit):
     VIDEO_PROVIDERS = (
         ('vimeo', 'Vimeo'),
         ('youtube', 'YouTube')

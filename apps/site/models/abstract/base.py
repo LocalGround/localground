@@ -3,19 +3,25 @@ from django.http import Http404
 from localground.apps.lib.helpers import classproperty
 from django.contrib.contenttypes.models import ContentType
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-from localground.apps.site.models.abstract.mixins import BaseNamedMixin, \
-    ProjectMixin, BaseMediaMixin
+from localground.apps.site.models.abstract.mixins import NamedMixin, \
+    ProjectMixin, MediaMixin
 '''
 This file contains the following abstract classes:
     * Base
     * BaseAudit
-    * BaseNamedMedia
-    * BaseUploadedMedia
+    * NamedMedia
+    * UploadedMedia
 '''
 
 
 class Base(models.Model):
     filter_fields = ('id',)
+
+    def __unicode__(self):
+        return '{0}. {1}'.format(self.id, self.name)
+
+    def __str__(self):
+        return self.__unicode__()
 
     class Meta:
         app_label = 'site'
@@ -88,6 +94,10 @@ class Base(models.Model):
         Finds the corresponding model class, based on the arguments
         '''
         name = model_name or model_name_plural
+        if name is None:
+            raise Exception(
+                'either model_name or model_name_plural argument is required'
+            )
         if name.find('form_') == -1:
             return cls.__get_model_managed(
                 model_name=model_name,
@@ -147,7 +157,8 @@ class BaseAudit(Base):
     date_created = models.DateTimeField(default=get_timestamp_no_milliseconds)
     time_stamp = models.DateTimeField(default=get_timestamp_no_milliseconds,
                                       db_column='last_updated')
-    filter_fields = Base.filter_fields + ('date_created', 'time_stamp')
+    filter_fields = Base.filter_fields + \
+        ('date_created', 'time_stamp', 'owner')
 
     @classmethod
     def get_filter_fields(cls):
@@ -166,16 +177,7 @@ class BaseAudit(Base):
         abstract = True
 
 
-class BaseNamedMedia(BaseMediaMixin, BaseNamedMixin, ProjectMixin, BaseAudit):
-    filter_fields = BaseMediaMixin.filter_fields + \
-        ('name', 'description', 'tags')
-
-    class Meta:
-        app_label = 'site'
-        abstract = True
-
-
-class BaseUploadedMedia(BaseNamedMedia):
+class BaseUploadedMedia(MediaMixin, NamedMixin, ProjectMixin, BaseAudit):
     file_name_new = models.CharField(max_length=255)
     attribution = models.CharField(
         max_length=500, blank=True,
@@ -183,7 +185,8 @@ class BaseUploadedMedia(BaseNamedMedia):
         verbose_name="Author / Creator",
         help_text="Name of the person who created the media file (text)"
     )
-    filter_fields = BaseNamedMedia.filter_fields + ('attribution', 'point')
+    filter_fields = MediaMixin.filter_fields + \
+        ('name', 'description', 'tags', 'attribution', 'point')
 
     class Meta:
         abstract = True

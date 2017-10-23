@@ -9,12 +9,12 @@ import urllib
 
 
 class BatchQueryObjectMixin(ModelMixin):
-    model = models.BaseMediaMixin
+    model = models.MediaMixin
     create_function_name = None
     file_names = ['a', 'b', 'c']
 
     def setUp(self):
-        #for this test, don't use the default fixtures
+        # for this test, don't use the default fixtures
         ModelMixin.setUp(self, load_fixtures=False)
 
         # create 3 users:

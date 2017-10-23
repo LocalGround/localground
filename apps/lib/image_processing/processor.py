@@ -19,8 +19,9 @@ class General:
         return cv_image
 
     def make_directory(self, path):
-        from localground.apps.site.models import BaseMediaMixin
-        BaseMediaMixin.make_directory(path)
+        from localground.apps.site.models import MediaMixin
+        MediaMixin.make_directory(path)
+
 
 class Processor(General):
     is_debug = True
