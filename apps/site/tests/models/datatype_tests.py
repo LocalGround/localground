@@ -11,20 +11,20 @@ class DataTypeTest(BaseAbstractModelClassTest, test.TestCase):
 
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
-        self.model = DataType.to_dict()
+        self.model = DataType()
 
     # Still need more to test...
 
     def test_datatype_enum(self, **kwargs):
-        self.assertEqual(DataType.TEXT, 1)
-        self.assertEqual(DataType.INTEGER, 2)
-        self.assertEqual(DataType.DATETIME, 3)
-        self.assertEqual(DataType.BOOLEAN, 4)
-        self.assertEqual(DataType.DECIMAL, 5)
-        self.assertEqual(DataType.RATING, 6)
-        self.assertEqual(DataType.CHOICE, 7)
-        self.assertEqual(DataType.PHOTO, 8)
-        self.assertEqual(DataType.AUDIO, 9)
+        self.assertEqual(DataType.DataTypes.TEXT, 1)
+        self.assertEqual(DataType.DataTypes.INTEGER, 2)
+        self.assertEqual(DataType.DataTypes.DATETIME, 3)
+        self.assertEqual(DataType.DataTypes.BOOLEAN, 4)
+        self.assertEqual(DataType.DataTypes.DECIMAL, 5)
+        self.assertEqual(DataType.DataTypes.RATING, 6)
+        self.assertEqual(DataType.DataTypes.CHOICE, 7)
+        self.assertEqual(DataType.DataTypes.PHOTO, 8)
+        self.assertEqual(DataType.DataTypes.AUDIO, 9)
 
     def test_model_properties(self, **kwargs):
         self.assertTrue(hasattr(self.model, 'name'))
