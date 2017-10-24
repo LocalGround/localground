@@ -16,6 +16,7 @@ define(["jquery",
                 if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
                 }
+                console.log('layer list childview initlize');
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",

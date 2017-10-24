@@ -29,6 +29,7 @@ define(["marionette",
             },
 
             initialize: function (opts) {
+                console.log('layer list view initlize');
                 this.app = opts.app;
                 this.model = opts.model;
 

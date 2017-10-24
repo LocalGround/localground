@@ -35,7 +35,7 @@ define(["jquery",
                         'change #map-select': 'setActiveMap',
                         'click .add-map': 'showAddMapModal',
                         'click .selected-map': 'showMapList',
-                        'click .map-item': 'selectMap',
+                        //'click .map-item': 'selectMap',
                         'click .map-edit': 'editMap',
                         'click .map-select-option': 'showMapList',
                         'click .map-dropdown': 'showMapList'
@@ -188,7 +188,6 @@ define(["jquery",
                 if (this.collection.length == 0) {
                     return;
                 }
-                console.log('set active map called');
                 var selectedMapModel = map,
                     that = this;
                 this.activeMap = map;
