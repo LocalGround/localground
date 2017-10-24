@@ -29,12 +29,13 @@ define(
         "models/layer",
         "models/form",
         "models/field",
-        "lib/data/dataManager"
+        "lib/data/dataManager",
+        "apps/style/router"
     ],
 
     function (Backbone, Marionette, $, appUtilities, Projects, Photos, AudioFiles, Videos, Maps,
               MapImages, Markers, Records, Prints, Forms, Fields, Project, ProjectUser, Photo, Marker,
-              Audio, Video, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
+              Audio, Video, Record, Map, MapImage, Print, Layer, Form, Field, DataManager, Router) {
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker, .modal, #map_canvas').remove();
@@ -189,6 +190,7 @@ define(
                         "data_source": "form_1",
                         "symbol_shape": "fa-circle",
                         "layer_type": "continuous",
+                        "newLayer": true,
                         "metadata": {
                             "fillColor": "#4e70d4",
                             "strokeWeight": 1,
@@ -281,6 +283,7 @@ define(
                         "data_source": "form_1",
                         "symbol_shape": "circle",
                         "layer_type": "categorical",
+                        "newLayer": true,
                         "metadata": {
                             "newKey": 6,
                             "fillColor": "#4e70d4",
@@ -810,6 +813,13 @@ define(
                 },
                 getMap: function () {
                     return this.map;
+                },
+                start: function (options) {
+                    // declares any important global functionality;
+                    // kicks off any objects and processes that need to run
+                   
+                    this.router = new Router({ app: this });
+                    Backbone.history.start();
                 }
             });
 

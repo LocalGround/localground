@@ -44,6 +44,11 @@ define([
 
             //1. for gallery and map:
             var model = this.app.dataManager.getModel(dataType, parseInt(id));
+            if (dataType == "markers" || dataType.indexOf("form_") != -1) {
+                if (!model.get("children")) {
+                    model.fetch({"reset": true});
+                }
+            }
             detailView = new DataDetail({
                 model: this.app.dataManager.getModel(dataType, parseInt(id)),
                 app: this.app

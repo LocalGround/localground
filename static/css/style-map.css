@@ -181,16 +181,29 @@
 */
 
 .map-item, .selected-map-item {
-    padding: 4px 8px;
+    padding: 4px 11px;
 }
 
 .map-item p, .selected-map-item p {
-    display: inline-block
+    display: inline-block;
+    cursor: pointer;
 }
 
 .map-edit {
-    float: right;
+    margin-left: 5px;
     cursor: pointer;
+    padding-top: 1px;
+}
+
+.selected-map-item .map-preview {
+    padding: 2px 11px;
+}
+
+
+
+.map-dropdown {
+    float: right;
+    padding-top: 4px;
 }
 
 .map-list {
@@ -282,8 +295,9 @@
     background-color: white;
 }
 
-.map-select-option {
+.selected-map-name {
     font-weight: 400;
+    cursor: default;
 }
 
 
@@ -415,6 +429,10 @@ table.color-properties td:first-child {
 .palette-item:last-child {
     border-width: 1px 1px 1px 0;
     border-radius: 0 6px 6px 0;
+}
+
+.palette-item:only-child {
+    border-radius: 6px 6px 6px 6px;
 }
 
 .palette-wrapper {

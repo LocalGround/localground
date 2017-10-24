@@ -18,7 +18,7 @@ define([
 
                 spyOn(MarkerStyleView.prototype, 'initialize').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'buildPalettes').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'buildColumnList').and.callThrough();
+                spyOn(MarkerStyleView.prototype, 'buildPropertiesList').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'hideColorRamp').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'selectDataType').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'contData').and.callThrough();
@@ -63,7 +63,7 @@ define([
                 //initialize categorical MarkerStyleView object:
                 categoricalMarkerStyleView = new MarkerStyleView({
                     app: that.app,
-                    model: that.testMap.get("layers").at(2)
+                    model: that.testMap.get("layers").at(2)//,
                 });
                 categoricalMarkerStyleView.render();
 
@@ -90,7 +90,7 @@ define([
                 expect(categoricalMarkerStyleView).toEqual(jasmine.any(MarkerStyleView));
                 expect(MarkerStyleView.prototype.initialize).toHaveBeenCalledTimes(1);
                 expect(MarkerStyleView.prototype.buildPalettes).toHaveBeenCalledTimes(1);
-                expect(MarkerStyleView.prototype.createCorrectSymbols).toHaveBeenCalledTimes(1);
+                expect(MarkerStyleView.prototype.updateMapAndRender).toHaveBeenCalledTimes(1);
 
                 //sets properties:
                 expect(categoricalMarkerStyleView.model).toEqual(this.testMap.get("layers").at(2));
@@ -101,9 +101,6 @@ define([
             it("should listen for events", function () {
                 expect(MarkerStyleView.prototype.selectDataType).toHaveBeenCalledTimes(0);
                 expect(MarkerStyleView.prototype.hideColorRamp).toHaveBeenCalledTimes(0);
-                expect(MarkerStyleView.prototype.render).toHaveBeenCalledTimes(2);
-
-                categoricalMarkerStyleView.app.vent.trigger("update-data-source");
                 expect(MarkerStyleView.prototype.render).toHaveBeenCalledTimes(3);
 
                 $('body').trigger("click");
@@ -179,14 +176,17 @@ define([
             });
 
             it("should build the correct column list", function () {
-                categoricalMarkerStyleView.buildColumnList();
+                categoricalMarkerStyleView.buildPropertiesList();
                 expect(categoricalMarkerStyleView.categoricalList).toEqual([
                     { text: "Test Text", value: "test_text", hasData: true },
+                    { text: 'Test Boolean', value: 'test_boolean', hasData: true },
                     { text: 'Test Choice', value: 'test_choice', hasData: true }
+                    
                 ]);
 
                 expect(categoricalFixture.find("#cat-prop").find("option:eq(0)").val()).toEqual("test_text");
-                expect(categoricalFixture.find("#cat-prop").find("option:eq(1)").val()).toEqual("test_choice");
+                expect(categoricalFixture.find("#cat-prop").find("option:eq(1)").val()).toEqual("test_boolean");
+                expect(categoricalFixture.find("#cat-prop").find("option:eq(2)").val()).toEqual("test_choice");
             });
 
             it("should select correct color palette", function () {
@@ -311,7 +311,7 @@ define([
             });
 
             it("should build the correct column list", function () {
-                continuousMarkerStyleView.buildColumnList();
+                continuousMarkerStyleView.buildPropertiesList();
                 expect(continuousMarkerStyleView.continuousList).toEqual([
                     { text: "Test Integer", value: "test_integer", hasData: true },
                     { text: "Test Rating", value: "test_rating", hasData: true }

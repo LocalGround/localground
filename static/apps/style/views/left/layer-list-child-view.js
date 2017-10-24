@@ -11,14 +11,16 @@ define(["jquery",
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
+               // this.listenTo(this.app.vent, "route-layer", this.routerSendCollection);
                 this.initMapOverlays();
                 if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
                 }
+                console.log('layer list childview initlize');
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
-            className: "layer-column",
+         //   className: "layer-column",
             templateHelpers: function () {
                 return {
                     isChecked: this.model.get("metadata").isShowing
@@ -30,30 +32,45 @@ define(["jquery",
             },
             events: {
                 //edit event here, pass the this.model to the right panel
-                'click .edit' : 'sendCollection',
                 'click .layer-delete' : 'deleteLayer',
                 'change input': 'showHideOverlays'
             },
 
-            sendCollection: function () {
-               // this.$el.addClass('selected-layer');
-                this.$el.attr('id', this.model.id);
-                //console.log(this.model, this.model.id);
-                this.app.vent.trigger('handle-selected-layer', this.model.id);
-                this.app.vent.trigger("edit-layer", this.model, this.collection);
+            // triggered from the router
+            checkSelectedItem: function(layerId) {
+                    this.$el.attr('id', this.model.id);
+
+                    if (this.$el.find('input').prop('checked', false)) {
+                        this.$el.find('input').click();
+                    }
+
+            },
+
+            childRouterSendCollection: function (mapId, layerId) {
+
+                if (this.model.id == layerId) {
+                    this.checkSelectedItem(layerId);
+
+                    // This event actually triggers the 'createLayer()' function in right-panel.js layoutview
+                    this.app.vent.trigger("edit-layer", this.model, this.collection);
+
+                    // This just adds css to indicate the selected layer, via the parent view
+                    // only triggers after the layer has been sent to right-panel
+                    this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
+                }
             },
 
             deleteLayer: function () {
                 if (!confirm("Are you sure you want to delete this layer?")) {
                     return;
                 }
-                //console.log("deleteLayer()", this.model);
-                //console.log("collection before delete: ", this.collection);
+                var url = "//" + this.model.get('map_id');
                 this.model.destroy();
                 this.collection.remove(this.model);
                 this.deleteOverlays();
-                //this.hideOverlays();
-                //console.log("collection after delete: ", this.collection);
+                console.log(url);
+                
+                this.app.router.navigate(url);
                 this.app.vent.trigger('update-layer-list');
                 this.app.vent.trigger("hide-right-panel");
             },
@@ -64,8 +81,6 @@ define(["jquery",
             },
 
             updateMapOverlays: function () {
-                //console.log('rebuilding map overlays');
-                //console.log(this.model.getSymbols());
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
                 this.initMapOverlays();
@@ -101,7 +116,6 @@ define(["jquery",
                     });
                     that.markerOverlayList.push(overlays);
                 });
-                //console.log(this.markerOverlayList);
             },
 
             showOverlays: function () {
@@ -117,9 +131,6 @@ define(["jquery",
             },
 
             deleteOverlays: function () {
-                //console.log("deleteOverlays() called")
-              //  this.$el.find('.gmnoprint').remove();
-
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.remove();
                 });

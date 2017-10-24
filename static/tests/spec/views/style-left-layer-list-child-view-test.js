@@ -16,7 +16,6 @@ define([
             // 1) add spies for all relevant objects:
             spyOn(scope.app.vent, 'trigger').and.callThrough();
             spyOn(LayerListChildView.prototype, 'initialize').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'sendCollection').and.callThrough();
             spyOn(LayerListChildView.prototype, 'updateTitle').and.callThrough();
             spyOn(LayerListChildView.prototype, 'showHideOverlays').and.callThrough();
             spyOn(LayerListChildView.prototype, 'showOverlays').and.callThrough();
@@ -62,7 +61,7 @@ define([
                 expect(fixture.find('p.layer-name').html()).toBe("hello world");
             });
 
-            it("should have correct html", function () {  
+            it("should have correct html", function () {
                 expect(fixture).toContainElement('p.layer-name');
                 expect(fixture).toContainElement('input');
                 expect(fixture).toContainElement('a.edit');
@@ -71,24 +70,10 @@ define([
             it("should set model correctly", function () {
                 expect(layerListChildView.model).toEqual(this.layer);
             });
-        });
 
-        describe("When events are triggered", function () {
-            beforeEach(function () {
-                initView(this);
-            });
-            afterEach(function () {
-                Backbone.history.stop();
-            });
-            it("functions should run", function() {
-                expect(layerListChildView.sendCollection).toHaveBeenCalledTimes(0);
-                fixture.find('.edit').trigger("click");
-                expect(layerListChildView.sendCollection).toHaveBeenCalledTimes(1);
-            });
             it("initialized 3 OverlayListView objects", function () {
                 expect(layerListChildView.markerOverlayList.length).toBe(3);
             });
-
         });
 
         describe("LayerListChildView: Events", function () {

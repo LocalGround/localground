@@ -1,4 +1,8 @@
-<input type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} /> 
-<p class="layer-name">{{ title }}</p> 
-<a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-<a class="edit">edit</a>
+<div class='layer-column' id='layer{{id}}'>
+    <input type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} /> 
+    <p class="layer-name">{{ title }}</p> 
+    <a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+    <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a>
+</div>
+
+

@@ -110,12 +110,12 @@ define([
 
             it("Sets data sources as expected", function () {
                 expect(dataManager.getLookup()).toEqual([
-                    { id: 'markers', name: 'Sites' },
-                    { id: 'form_1', name: 'Team Members' },
-                    { id: 'photos', name: 'Photos' },
-                    { id: 'audio', name: 'Audio' },
-                    { id: 'videos', name: 'Videos' },
-                    { id: 'map_images', name: 'Map Images' }
+                    { id: 'markers', name: 'Sites', hasData: true },
+                    { id: 'form_1', name: 'Team Members', hasData: true },
+                    { id: 'photos', name: 'Photos', hasData: true },
+                    { id: 'audio', name: 'Audio', hasData: true },
+                    { id: 'videos', name: 'Videos', hasData: true },
+                    { id: 'map_images', name: 'Map Images', hasData: true }
                 ]);
             });
 

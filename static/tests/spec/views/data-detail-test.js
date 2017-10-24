@@ -104,7 +104,7 @@ define([
             });
         });
 
-        describe("Data Detail: Open Expanded", function(){
+        /*describe("Data Detail: Open Expanded", function(){
             beforeEach(function(){
                 jasmine.clock().install();
                 initSpies(this);
@@ -134,7 +134,7 @@ define([
                 expect(fixture.find('.circle-icon')).toHaveClass('icon-rotate');
 
             });
-        });
+        });*/
 
         describe("Data Detail: Featured Image", function(){
             beforeEach(function(){
