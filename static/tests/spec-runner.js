@@ -81,7 +81,10 @@ require(['boot'], function () {
         'spec/lib/form-field-date-time-test.js',
         'spec/lib/form-field-choice-test.js',
         'spec/lib/form-field-rating-test.js',
-        'spec/lib/form-field-add-media-test.js'
+        'spec/lib/form-field-add-media-test.js',
+
+        //ROUTERS
+        'spec/views/style-router-test.js'
 
     ];
 

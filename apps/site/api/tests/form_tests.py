@@ -11,12 +11,11 @@ from django.db import transaction
 
 def get_metadata_form():
     return {'data_url': {'read_only': True, 'required': False, 'type': 'field'},
-        'project_ids': {'read_only': False, 'required': True, 'type': 'field'},
+        'project_id': {'read_only': False, 'required': True, 'type': 'field'},
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
-        'slug': {'read_only': False, 'required': True, 'type': 'slug'},
         'fields_url': {'read_only': True, 'required': False, 'type': 'field'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
@@ -68,7 +67,7 @@ class FormDataTestMixin(object):
         for i, field in enumerate(fields):
             d[field.col_name] = vals[i]
         return d
-    
+
     def test_check_metadata(self):
         for url in self.urls:
             response = self.client_user.options(url,
@@ -76,14 +75,14 @@ class FormDataTestMixin(object):
                                 content_type="application/x-www-form-urlencoded"
                             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            fields = response.data['actions'].get('PUT') or response.data['actions'].get('POST') 
+            fields = response.data['actions'].get('PUT') or response.data['actions'].get('POST')
 
             #ensure that dictionary is not empty:
             self.assertFalse(not fields)
-            
+
             #ensure that the fields dictionary are the same length:
             self.assertTrue(len(fields.keys()) >= len(self.metadata.keys()))
-            
+
             #ensure that field specs match:
             for key in self.metadata.keys():
                 self.assertEqual(fields[key]['type'], self.metadata[key]['type'])
@@ -116,7 +115,7 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         self.url = '/api/0/forms/%s/data/' % self.form.id
         self.urls = [self.url]
         self.view = views.FormDataList.as_view()
-        
+
     def tearDown(self):
         for m in models.Form.objects.all():
             m.remove_table_from_cache()
@@ -137,10 +136,10 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         # verify values:
         #print d
         FormDataTestMixin.verify_success(self, d)
-        
+
     def test_check_metadata(self, **kwargs):
         FormDataTestMixin.test_check_metadata(self, **kwargs)
-        
+
     def test_counts_serializer(self, **kwargs):
         self.photo1 = self.create_photo(self.user, self.project)
         self.audio1 = self.create_audio(self.user, self.project)
@@ -148,18 +147,18 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         self.create_relation(self.rec_1, self.photo1)
         self.create_relation(self.rec_1, self.audio1)
         self.create_relation(self.rec_1, self.audio2)
-        
+
         response = self.client_user.get(self.url)
         self.assertEqual(response.data['results'][0]['photo_count'], 1)
         self.assertEqual(response.data['results'][0]['audio_count'], 2)
-        
+
         # clean up:
         self.delete_relation(self.rec_1, self.photo1)
         self.delete_relation(self.rec_1, self.audio1)
         self.delete_relation(self.rec_1, self.audio2)
-        
+
 class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
-    
+
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.metadata = get_metadata_records()
@@ -173,11 +172,11 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         self.url = '/api/0/forms/%s/data/%s/' % (self.form.id, self.rec_1.id)
         self.urls = [self.url]
         self.view = views.FormDataInstance.as_view()
-        
+
     def tearDown(self):
         for m in models.Form.objects.all():
             m.remove_table_from_cache()
-            
+
     def test_check_metadata(self, **kwargs):
         FormDataTestMixin.test_check_metadata(self, **kwargs)
 
@@ -190,18 +189,17 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         )
         #print response.data
         FormDataTestMixin.verify_success(self, d)
-        
+
     def test_child_serializer(self, **kwargs):
         self.photo1 = self.create_photo(self.user, self.project)
         self.audio1 = self.create_audio(self.user, self.project)
         self.create_relation(self.rec_1, self.photo1)
         self.create_relation(self.rec_1, self.audio1)
-        
+
         response = self.client_user.get(self.url)
         self.assertEqual(len(response.data['children']['photos']['data']), 1)
         self.assertEqual(len(response.data['children']['audio']['data']), 1)
-        
+
         # clean up:
         self.delete_relation(self.rec_1, self.photo1)
         self.delete_relation(self.rec_1, self.audio1)
-    

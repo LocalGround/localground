@@ -26,7 +26,6 @@ define(["jquery",
             tagName: "tr",
             className: "table-row",
             templateHelpers: function () {
-                //console.log("child helpers", this);
                 return {
                     dataType: this.dataType,
                     icons: IconLookup.getIcons(),

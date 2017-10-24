@@ -62,7 +62,7 @@ class FormMixin(GroupMixin):
     # Todo: restrict viewing data to the row-level, based on project
     # permissions.
     related_fields = ['owner', 'last_updated_by']
-    prefetch_fields = ['users__user', 'projects', 'field_set']
+    prefetch_fields = ['users__user', 'field_set']
 
     def my_forms(self, user=None):
         # a form is associated with one or more projects
@@ -133,9 +133,9 @@ class FormMixin(GroupMixin):
         #               has been indirectly shared)
         c2 = (
             (Q(
-                projects__access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK) & Q(
-                projects__access_key=access_key)) | Q(
-                projects__access_authority__id=ObjectAuthority.PUBLIC))
+                project__access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK) & Q(
+                project__access_key=access_key)) | Q(
+                project__access_authority__id=ObjectAuthority.PUBLIC))
 
         q = self.model.objects.distinct().select_related(*self.related_fields)
         q = q.filter(c1 | c2)
@@ -159,42 +159,6 @@ class FormManager(models.GeoManager, FormMixin):
 
     def get_queryset(self):
         return FormQuerySet(self.model, using=self._db)
-
-
-
-class PresentationMixin(GroupMixin):
-
-    def _get_objects(self, user, authority_id=1, request=None, context=None,
-                     ordering_field='-time_stamp', with_counts=True, **kwargs):
-
-        if user is None or not user.is_authenticated():
-            raise GenericLocalGroundError('The user cannot be empty')
-
-        q = (
-            self.model.objects
-            .select_related(*self.related_fields)
-            .filter(
-                Q(authuser__user=user) &
-                Q(authuser__user_authority__id__gte=authority_id)
-            )
-        )
-        if request:
-            q = self._apply_sql_filter(q, request, context)
-        q = q.prefetch_related(*self.prefetch_fields)
-        if ordering_field:
-            q = q.order_by(ordering_field)
-        return q
-
-
-#class PresentationQuerySet(QuerySet, PresentationMixin):
-#    pass
-
-
-class PresentationManager(models.GeoManager, PresentationMixin):
-    #def get_queryset(self):
-    #    return PresentationQuerySet(self.model, using=self._db)
-    pass
-
 
 class LayerMixin(GroupMixin):
     prefetch_fields = []

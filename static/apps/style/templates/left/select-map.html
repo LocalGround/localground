@@ -1,6 +1,6 @@
 <div class="style-section-header-wrapper">
     <div class="plus-container" style="position:relative;float:right;">
-        <a class="add-map"><i class="fa fa-plus add" aria-hidden="true"></i></a>
+        <a class="add-map" href="/style/#/new"><i class="fa fa-plus add" aria-hidden="true"></i></a>
     </div>
     <h4>Map</h4>
 </div>
@@ -10,19 +10,25 @@
 {{else}}
 <div class="selected-map">
     <div class="selected-map-item" data-value="{{ map.id }}">
-        <p class="map-select-option" data-value="{{ map.id }}">{{ name }}</p>
-        <i class="fa fa-angle-down"></i>
-        <p>preview</p>
-        <p class="map-edit" data-value="{{ map.id }}"><i class="fa fa-pencil" aria-hidden="true"></i>
+        <p class="selected-map-name" data-value="{{ map.id }}">{{ name }}</p>
+        <i class="fa fa-angle-down map-dropdown"></i>
+
+        <p class="map-edit" data-value="{{ map.id }}"><i class="fa fa-pencil map-edit" data-value="{{ map.id }}" aria-hidden="true"></i>
         </p>
+        <a href="/presentation#/{{previewURL}}" target="_blank" style="color: white;">
+            <p class="map-preview"><i class="fa fa-eye" aria-hidden="true"></i>
+            </p>
+        </a>
     </div>
 </div>
 
 <div class="map-list" id="map-select">
     {{#each items}}
-    <div class="map-item" data-value="{{ this.id }}">
-        <p class="map-name" data-value="{{ this.id }}">{{ this.name }}</p>
-    </div>
+    <a href="/style/#/{{this.id}}">
+        <div class="map-item" data-value="{{ this.id }}">
+            <p class="map-name" data-value="{{ this.id }}">{{ this.name }}</p>
+        </div>
+    </a>
     {{/each}}
 </div>
 

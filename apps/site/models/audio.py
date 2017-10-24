@@ -1,18 +1,17 @@
-from django.contrib.gis.db import models
-from django.conf import settings
 from localground.apps.site.managers import AudioManager
-from localground.apps.site.models import BasePointMixin, ExtrasMixin, BaseUploadedMedia
+from localground.apps.site.models import PointMixin
+from localground.apps.site.models import ExtrasMixin
+from localground.apps.site.models import BaseUploadedMedia
 import os
 
 
-class Audio(ExtrasMixin, BasePointMixin, BaseUploadedMedia):
-    name = name_plural = 'audio'
+class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
     objects = AudioManager()
 
     def delete(self, *args, **kwargs):
         # remove images from file system:
         path = self.get_absolute_path()
-        if len(path.split('/')) > 2: #protects against empty file path
+        if len(path.split('/')) > 2:  # protects against empty file path
             file_paths = [
                 '%s%s' % (path, self.file_name_orig),
                 '%s%s' % (path, self.file_name_new)
@@ -29,13 +28,6 @@ class Audio(ExtrasMixin, BasePointMixin, BaseUploadedMedia):
         ordering = ['id']
         verbose_name = 'audio'
         verbose_name_plural = 'audio'
-
-    def to_dict(self):
-        d = super(Audio, self).to_dict()
-        if self.description is not None and len(self.description) > 5:
-            d.update({'description': self.description,})
-        d.update({'path_orig': self.encrypt_url(self.file_name_orig),})
-        return d
 
     def __unicode__(self):
         return self.file_name_new + ': ' + self.name

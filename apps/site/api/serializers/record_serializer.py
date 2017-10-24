@@ -28,16 +28,6 @@ class BaseRecordSerializer(serializers.ModelSerializer):
     video_count = serializers.SerializerMethodField()
     audio_count = serializers.SerializerMethodField()
 
-    def get_fields(self, *args, **kwargs):
-        fields = super(BaseRecordSerializer, self).get_fields(*args, **kwargs)
-        if self.context.get('view'):
-            view = self.context['view']
-            form = models.Form.objects.get(id=view.kwargs.get('form_id'))
-            fields['project_id'].queryset = form.projects.all()
-        else:
-            fields['project_id'].queryset = models.Form.objects.all()
-        return fields
-
     def get_children(self, obj):
         children = {}
         self.photos = self.get_photos(obj) or []
@@ -54,7 +44,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
     def get_photo_count(self, obj):
         try:
             return obj.photo_count
-        except:
+        except Exception:
             try:
                 return len(obj.photos)
             except:

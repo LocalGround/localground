@@ -19,7 +19,6 @@ class ApiLayerTest(object):
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
-        'slug': {'read_only': False, 'required': True, 'type': 'slug'},
         'access': {'read_only': True, 'required': False, 'type': 'field'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
@@ -39,7 +38,6 @@ class ApiLayerTest(object):
             'name': self.name,
             'caption': self.description,
             'tags': self.tags,
-            'slug': self.slug,
             'symbols': json.dumps(symbols)
         }
         #print d

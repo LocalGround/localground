@@ -19,7 +19,6 @@ define([
             _.extend(this, opts);
 
             if (!this.model) {
-                // Create a blank project if new project made
                 this.model = new Form();
             } else {
                 this.initModel();
@@ -39,7 +38,8 @@ define([
             return {
                 showSuccess: this.showSuccess,
                 showError: this.showError,
-                caption: this.model.get("caption")
+                caption: this.model.get("caption"),
+                errorMessage: this.model.errorMessage
             };
         },
 
@@ -57,6 +57,9 @@ define([
             'click .back': 'backToList',
             'blur .formName': 'setFormName',
             'blur .caption': 'setCaption'
+        },
+        modelEvents: {
+            'error-message': 'modelErrorMessage'
         },
         setFormName: function () {
             this.model.set('name', this.$el.find('.formName').val());
@@ -84,7 +87,6 @@ define([
             }).disableSelection();
         },
 
-        // Fix helper with preserved width of cells
         fixHelper: function (e, ui) {
             ui.children().each(function () {
                 $(this).width($(this).width());
@@ -94,12 +96,15 @@ define([
         fetchShareData: function () {
             this.model.getFields();
         },
-        removeRow: function (e) { // to remove a field that has not yet been saved
+        removeRow: function (e) {
             var $elem = $(e.target),
                 $row =  $elem.parent().parent();
             if ($row.has('select').length != 0) {
                 $row.remove();
             }
+        },
+        modelErrorMessage(message){
+            this.app.vent.trigger('error-message', message);
         },
         wait: function (ms) {
             var d = new Date(),
@@ -110,23 +115,25 @@ define([
             var formName = this.$el.find('.formName').val(),
                 caption = this.$el.find('.caption').val(),
                 that = this,
-                key = "form_" + this.model.id;
+                key = "form_" + this.model.id,
+                fieldsValidated = this.validateFields();
+            if (!fieldsValidated) {
+                this.render();
+                return;
+            }
 
             this.model.set('name', formName);
             this.model.set('caption', caption);
-            this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
-            this.model.set('project_ids', [this.app.getProjectID()]);
+            this.model.set('project_id', this.app.getProjectID());
             this.model.save(null, {
                 success: function () {
                     that.saveFields();
-                    // Not quite there yet
                     key = "form_" + that.model.id;
                     that.app.vent.trigger("create-collection", key);
                     that.app.vent.trigger('success-message', "The form was saved successfully");
-                    that.app.vent.trigger('hide-modal');
                 },
                 error: function () {
-                    console.error("The form could not be saved");
+                    that.app.vent.trigger('error-message', "Cannot save with empty form or fields.");
                 }
             });
         },
@@ -144,21 +151,67 @@ define([
             this.collection = this.model.fields;
         },
 
-        saveFields: function () {
+        /*
+          This shall only have 2 modes when reading and / or writing fields:
+
+          1 - "validate" - check and return true if all fields filled
+                           or false when any field is not filled
+          2 - "save" - after going through validation steps,
+                       simply save all complete fields onto form
+        */
+        checkEachFieldAndPerformAction: function (modeName) {
+            var modeNameStr = modeName.trim().toLowerCase();
+            if (!(modeNameStr === "save" || modeNameStr === "validate")){
+                return;
+            }
+            var success = true;
+            var errorsFound = 0;
             this.initCollection();
             var that = this,
                 $rows = this.$el.find("#fieldList > tr"),
                 tempID,
                 model,
                 childView;
+            if($rows.length == 0){
+                this.app.vent.trigger('error-message', "Cannot have an empty form.");
+                return false;
+            }
             $rows.each(function (i) {
                 tempID = $(this).attr("id");
                 model = that.collection.getModelByAttribute('temp_id', tempID);
                 childView = that.children.findByModel(model);
-                console.log(childView);
-                childView.saveField(i + 1);
-                that.wait(100);
+
+                switch(modeNameStr) {
+                    case "validate":
+                        // set the values, but don't save them to the database:
+                        childView.setFieldValuesFromHtmlForm();
+                        success = success && childView.validateField();
+                        if (!success){
+                            errorsFound ++;
+                        }
+                        break;
+                    case "save":
+                        // set the values AND save them to the database:
+                        childView.saveField(i + 1);
+                        that.wait(100);
+                        break;
+                }
             });
+            if (errorsFound > 0){
+                success = false;
+                this.app.vent.trigger('error-message', "Cannot have unfilled fields.");
+            }
+            return success
+        },
+
+        validateFields: function(){
+            var success = this.checkEachFieldAndPerformAction("validate");
+            return success;
+        },
+
+        saveFields: function () {
+            this.checkEachFieldAndPerformAction("save");
+
         },
         addFieldButton: function () {
             this.initCollection();
@@ -195,8 +248,7 @@ define([
             var that = this;
             this.showSuccess = this.showError = false;
             this.collection.each(function (model) {
-                if (model.serverErrorMessage ||
-                        model.errorFieldType || model.errorFieldName) {
+                if (model.errorMessage) {
                     that.showError = true;
                     return;
                 }

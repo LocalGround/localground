@@ -17,13 +17,13 @@ TODO: move fixture loading into actual python code, probably
 This is super duper slow and dumb
 """
 fixture_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fixtures'))
-fixture_filenames = ['test_data.json'] #'database_initialization.json', 
+fixture_filenames = ['test_data.json'] #'database_initialization.json',
 
 def load_test_fixtures():
     #print 'loading test fixtures...'
     for fixture_filename in fixture_filenames:
         fixture_file = os.path.join(fixture_dir, fixture_filename)
-    
+
         fixture = open(fixture_file, 'rb')
         objects = serializers.deserialize('json', fixture, ignorenonexistent=True)
         for obj in objects:
@@ -153,7 +153,7 @@ class ModelMixin(object):
             slug=slug)
         p.save()
         return p
-    
+
     def grant_project_permissions_to_user(self, project, granted_to, authority_id=1):
         uao = models.UserAuthorityObject()
         uao.user = granted_to
@@ -177,23 +177,6 @@ class ModelMixin(object):
         )
         l.save()
         return l
-
-    def create_presentation(
-            self,
-            user,
-            name='Test Presentation',
-            authority_id=1):
-        import random
-        slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
-        p = models.Presentation(
-            name=name,
-            owner=user,
-            last_updated_by=user,
-            access_authority=models.ObjectAuthority.objects.get(
-                id=authority_id),
-            slug=slug)
-        p.save()
-        return p
 
     def _add_group_user(self, group, user, authority_id):
         uao = models.UserAuthorityObject(
@@ -231,7 +214,7 @@ class ModelMixin(object):
         else:
             from django.contrib.gis.geos import GEOSGeometry
             geom = GEOSGeometry(json.dumps(geoJSON))
-            
+
         m = models.Marker(
             project=project,
             name=name,
@@ -281,24 +264,16 @@ class ModelMixin(object):
                     authority_id=models.ObjectAuthority.PRIVATE,
                     project=None):
 
-        oa = models.ObjectAuthority.objects.get(
-            id=authority_id
-        )
-        import random
-        slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
-        if user is None:
-            user = self.user
         f = models.Form(
-            owner=user,
+            owner=user or self.user,
             name=name,
-            slug=slug,
             description=description,
             last_updated_by=user,
-            access_authority=oa
+            access_authority=models.ObjectAuthority.objects.get(
+                id=authority_id
+            ),
+            project=project or self.project
         )
-        f.save()
-        project = project or self.project
-        f.projects.add(project)
         f.save()
         return f
 
@@ -392,15 +367,7 @@ class ModelMixin(object):
     def create_imageopt(self, mapimage):
         p = mapimage.source_print
         img = models.ImageOpts(
-            source_mapimage=mapimage,
-            file_name_orig='some_file_name.png',
-            host=mapimage.host,
-            virtual_path=mapimage.virtual_path,
-            extents=p.extents,
-            zoom=p.zoom,
-            northeast=p.northeast,
-            southwest=p.southwest,
-            center=p.center
+            source_mapimage=mapimage
         )
         img.save(user=mapimage.owner)
         return img
@@ -475,7 +442,7 @@ class ModelMixin(object):
         )
         audio.save()
         return audio
-    
+
     def create_relation(self, source_model, attach_model, ordering=1, turned_on=False):
         r = models.GenericAssociation(
             source_type=type(source_model).get_content_type(),
@@ -489,7 +456,7 @@ class ModelMixin(object):
         )
         r.save()
         return r
-    
+
     def delete_relation(self, source_model, attach_model):
         queryset = models.GenericAssociation.objects.filter(
             entity_type=type(attach_model).get_content_type(),
@@ -498,7 +465,7 @@ class ModelMixin(object):
             source_id=source_model.id
         )
         queryset.delete()
-    
+
     def get_relation(self, source_model, attach_model):
         return models.GenericAssociation.objects.filter(
             entity_type=type(attach_model).get_content_type(),

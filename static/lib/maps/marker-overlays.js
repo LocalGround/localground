@@ -57,7 +57,6 @@ define(['marionette',
             },
 
             showAll: function () {
-                console.log('showAll');
                 this.children.each(function (overlay) {
                     overlay.show();
                 });

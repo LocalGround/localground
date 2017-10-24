@@ -34,23 +34,15 @@ define(
                 });
             },
 
-            // Apparently, there is not a way to get the array of users
-            // from the project object directly
-            // using inheritance-based ways
             getProjectUserCount: function () {
                 return this.projectUsers.length;
             },
 
-            // we get a collection of users by setting up
-            // a temporary dummy user that has nothing inside
-            // However, it returns undefined
+
             getProjectUsers: function () {
                 this.projectUsers.fetch({ reset: true });
             },
 
-            // we get a collection of users by setting up
-            // a temporary dummy user that has nothing inside
-            // However, it returns undefined
             getProjectUserByUsername: function (username) {
                 var i, pu, u;
                 for (i = 0; i < this.projectUsers.length; i++) {

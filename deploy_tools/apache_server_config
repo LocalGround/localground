@@ -4,7 +4,7 @@
     # CGI_PATH		= Please replace with the cgi directory
     # MAP_CGI_PATH	= Please replace with the directory where the map / tile cgi scripts are located
 
-    ServerName dev.localground.org 
+    ServerName dev.localground.org
     Redirect "/" "https://dev.localground.org/"
 </VirtualHost>
 
@@ -40,27 +40,6 @@
     WSGIScriptAlias / "/var/www/code/dev/localground/apache/app_config.wsgi"
     WSGIPassAuthorization On
     <Directory "/var/www/code//dev/localground/apache">
-        Require all granted
-    </Directory>
-
-    # ----------------------------------------------------------------
-    # MapServer Configuration, if you're going to use it (useful for
-    # creating tiles and for reprojecting images) to be printed on you
-    # paper maps.  Adjust these paths to meet your needs...
-    # ----------------------------------------------------------------
-    SetEnvIf Request_URI "/ows/ms.fcgi" MS_MAPFILE=/var/www/code/dev/localground/mapserver/localground.map
-    # MapServer FastCGI location
-    ScriptAlias /ows/ /var/www/ows/
-    <Directory "/var/www/ows">
-        AllowOverride None
-        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-        Require all granted
-    </Directory>
-
-    ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
-    <Directory "/usr/lib/cgi-bin">
-        AllowOverride None
-        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
         Require all granted
     </Directory>
 

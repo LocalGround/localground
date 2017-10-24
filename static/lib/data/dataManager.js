@@ -45,7 +45,6 @@ define(["underscore", "marionette", "models/project",
                 for (dataType in this.model.get("children")) {
                     opts = this.model.get("children")[dataType];
                     jsonData = opts.data;
-                    delete opts.data;
                     _.extend(opts, {
                         title: opts.name,
                         overlayType: opts.overlay_type,
@@ -57,6 +56,7 @@ define(["underscore", "marionette", "models/project",
                     });
                     collection = this.initCollection(opts, jsonData);
                     this.dataDictionary[dataType] = collection;
+                    //delete opts.data;
                 }
                 this.dataLoaded = true;
                 this.vent.trigger('data-loaded');
@@ -165,22 +165,23 @@ define(["underscore", "marionette", "models/project",
                 var collection,
                     dataType,
                     lookup = [
-                        { id: "markers", name: "Sites" }
+                        { id: "markers", name: "Sites", hasData: this.getCollection("markers").length > 0 }
                     ];
                 for (dataType in this.dataDictionary) {
                     collection = this.dataDictionary[dataType];
                     if (collection.getIsCustomType()) {
                         lookup.push({
                             id: collection.getDataType(),
-                            name: collection.getTitle()
+                            name: collection.getTitle(),
+                            hasData: collection.length > 0
                         });
                     }
                 };
                 lookup.push.apply(lookup, [
-                    { id: "photos", name: "Photos" },
-                    { id: "audio", name: "Audio" },
-                    { id: "videos", name: "Videos" },
-                    { id: "map_images", name: "Map Images" }
+                    { id: "photos", name: "Photos", hasData: this.getCollection("photos").length > 0 },
+                    { id: "audio", name: "Audio", hasData: this.getCollection("audio").length > 0 },
+                    { id: "videos", name: "Videos", hasData: this.getCollection("videos").length > 0 },
+                    { id: "map_images", name: "Map Images", hasData: this.getCollection("map_images").length > 0 }
                 ])
                 return lookup;
             },

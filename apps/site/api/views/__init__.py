@@ -6,7 +6,6 @@ from localground.apps.site.api.views.mapimage_overlay_views import MapImageOverl
 from localground.apps.site.api.views.photo_views import (
     PhotoList, PhotoInstance, rotate_left, rotate_right
 )
-from localground.apps.site.api.views.presentation_views import PresentationList, PresentationInstance
 from localground.apps.site.api.views.print_views import PrintList, PrintInstance, LayoutViewSet
 from localground.apps.site.api.views.project_views import ProjectList, ProjectInstance
 from localground.apps.site.api.views.sharing_views import SharingList, SharingInstance
@@ -52,10 +51,6 @@ def api_root(request, format=None, **kwargs):
                                    format=format)
     d['photos'] = reverse('photo-list', request=request, format=format)
     d['videos'] = reverse('video-list', request=request, format=format)
-    d['presentations'] = reverse(
-        'presentation-list',
-        request=request,
-        format=format)
     d['prints'] = reverse('print-list', request=request, format=format)
     d['projects'] = reverse('project-list', request=request, format=format)
     #d['layers'] = reverse('layer-list', request=request, format=format)

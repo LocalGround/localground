@@ -2,7 +2,7 @@
 # sudo apt-get install libffi-dev
 # sudo pip install --upgrade cffi
 # sudo pip install cairosvg==1.0.22
-#https://pypi.python.org/pypi/svgpathtools/ 
+#https://pypi.python.org/pypi/svgpathtools/
 import random
 from localground.apps.lib.externals.svgpathtools import parse_path, svg2paths, wsvg
 from localground.apps.lib.helpers.units import Units
@@ -107,15 +107,15 @@ class Icon(object):
             'height': 20
         }
     }
-    
+
     @staticmethod
     def get_icon_list():
         return Icon.ICONS.values()
-    
+
     @staticmethod
     def get_icon_keys():
         return Icon.ICONS.keys()
-    
+
     def __init__(self, key, **kwargs):
         # set defaults:
         self.baseWidth = 15
@@ -150,15 +150,15 @@ class Icon(object):
                 props['width'] = 23
                 props['height'] = 23
                 props['fillColor'] = '#ed867d'
-        
+
         # apply icon properties:
         for k, v in props.iteritems():
             setattr(self, k, v)
-        
+
         # apply kwargs:
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
-        
+
         # apply defaults for missing instance variable values:
         self.set_defaults()
 
@@ -177,7 +177,7 @@ class Icon(object):
             str(self.baseWidth + self.strokeWeight + 2) + ' ' +
             str(self.baseWidth + self.strokeWeight + 2)
         )
-        
+
     def set_defaults(self):
         self.scale = self.scale or self.get_scale()
         self.anchor = self.anchor or self.get_anchor()
@@ -195,7 +195,7 @@ from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
 a = AcetateLayer()
 a.generate_acetate_layer_with_map()
     '''
-    
+
     def __init__(self, file_path=".", center=None, project_id=2, zoom=13, width=640, height=640):
         self.center = center or Point(-122.2939, 37.8686)
         self.zoom = zoom
@@ -214,13 +214,13 @@ a.generate_acetate_layer_with_map()
         self.generate_acetate_layer()
         self.generate_static_map()
         self.generate_final_map()
-        
+
     def generate_acetate_layer(self):
         from localground.apps.site import models
         from PIL import Image
         paths, path_attributes, icon = [], [], None
         keys = Icon.get_icon_keys()
-        forms = models.Form.objects.filter(projects__id=self.project_id)
+        forms = models.Form.objects.filter(project__id=self.project_id)
         extents = Extents.get_extents_from_center_lat_lng(self.center, self.zoom, self.width, self.height)
         extents.toPixels(self.zoom)
         layers = [
@@ -274,7 +274,7 @@ a.generate_acetate_layer_with_map()
             map_type, self.zoom, self.center, self.width, self.height
         )
         map_image.save(self.basemap_path)
-        
+
     def generate_final_map(self):
         from PIL import Image
         basemap_image = Image.open(self.basemap_path, 'r').convert('RGBA')
@@ -296,13 +296,13 @@ a.generate_acetate_layer_with_map()
                 pixels.append(pixel)
         return pixels
 
-        
+
     def toPNG(self):
         # first set environment variables b/c of cairo bug:
         import os
         os.environ['LANG'] = 'en_US.UTF-8'
         os.environ['LC_ALL'] = 'en_US.UTF-8'
-        
+
         # then import cairosvg:
         #print(self.acetate_path)
         import cairosvg

@@ -9,15 +9,17 @@ define(["jquery",
         "collections/photos",
         "collections/audio",
         "collections/videos",
-        "./create-field",
+        "views/field-child-view",
+        "models/field",
         "handsontable",
         "text!../templates/spreadsheet.html",
+        "text!../templates/create-field.html",
         "lib/audio/audio-player",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
-        Record, Marker, Photos, Audio, Videos, CreateFieldView, Handsontable, SpreadsheetTemplate,
-        AudioPlayer, Carousel) {
+        Record, Marker, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
+        SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -702,19 +704,21 @@ define(["jquery",
             },
 
             showCreateFieldForm: function () {
-                // see the apps/gallery/views/toolbar-dataview.js function
-                // to pass the appropriate arguments:
+                var formID = this.app.dataType.split("_")[1];
                 var fieldView = new CreateFieldView({
-                    formID: this.app.dataType.split("_")[1],
+                    formID: formID,
                     fields: this.fields,
-                    app: this.app
+                    app: this.app,
+                    model: new Field(null, { id: formID }),
+                    template: Handlebars.compile(CreateFieldTemplate),
+                    tagName: "div"
                 });
                 this.app.vent.trigger('show-modal', {
                     title: "Create New Column",
                     view: fieldView,
-                    saveFunction: fieldView.saveToDatabase,
-                    width: 300,
-                    height: 100
+                    saveFunction: fieldView.saveField,
+                    width: 600,
+                    height: 300
                 });
             },
 

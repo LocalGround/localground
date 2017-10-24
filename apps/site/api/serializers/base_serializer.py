@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
-from localground.apps.site.models import BaseNamed
 from django.forms.widgets import Input
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api.fields.json_fields import JSONField
@@ -32,12 +31,12 @@ class AuditSerializerMixin(object):
             'last_updated_by': self.context.get('request').user,
             'time_stamp': get_timestamp_no_milliseconds()
         }
-    
+
     def create(self, validated_data):
         # Extend to add auditing information:
         validated_data.update(self.get_presave_create_dictionary())
         return super(AuditSerializerMixin, self).create(validated_data)
-    
+
     def update(self, instance, validated_data):
         # Extend to add auditing information:
         validated_data.update(self.get_presave_update_dictionary())
@@ -52,7 +51,7 @@ class BaseSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSerialize
             'app_label': model_meta.app_label,
             'model_name': model_meta.object_name.lower()
         }
-    
+
     class Meta:
         fields = ('id',)
 
@@ -73,7 +72,7 @@ class BaseNamedSerializer(BaseSerializer):
     )
     overlay_type = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
-    
+
     def get_projects(self):
         if self.context.get('view'):
             view = self.context['view']
@@ -89,8 +88,8 @@ class BaseNamedSerializer(BaseSerializer):
             return models.Project.objects.all()
 
     class Meta:
-        #model = BaseNamed
-        fields = ('url', 'id', 'name', 'caption', 'overlay_type', 'tags', 'owner')
+        fields = ('url', 'id', 'name', 'caption', 'overlay_type',
+                  'tags', 'owner')
 
     def get_overlay_type(self, obj):
         return obj._meta.verbose_name
@@ -112,13 +111,13 @@ class GeometrySerializer(BaseNamedSerializer):
         allow_null=True,
         required=False,
         style={'base_template': 'json.html', 'rows': 5})
-    
+
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
         required=False
     )
-    
+
     def get_fields(self, *args, **kwargs):
         fields = super(GeometrySerializer, self).get_fields(*args, **kwargs)
         #restrict project list at runtime:
@@ -142,7 +141,7 @@ class MediaGeometrySerializer(GeometrySerializer):
     class Meta:
         fields = GeometrySerializer.Meta.fields + ('attribution', 'file_name', 'media_file',
                                                    'file_path_orig')
-        
+
     def get_file_path_orig(self, obj):
         # original file gets renamed to file_name_new in storage
         # (spaces, etc. removed)

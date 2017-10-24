@@ -65,13 +65,6 @@ urlpatterns += format_suffix_patterns(patterns('',
     url(r'^projects/$',
         views.ProjectList.as_view(),
         name='project-list'),
-    url(
-        r'^presentations/(?P<pk>[0-9]+)/$',
-        views.PresentationInstance.as_view(),
-        name='presentation-detail'),
-    url(r'^presentations/$',
-        views.PresentationList.as_view(),
-        name='presentation-list'),
     #url(
     #    r'^layers/(?P<pk>[0-9]+)/$',
     #    views.LayerInstance.as_view(),

@@ -26,10 +26,6 @@ define(["jquery",
             },
             catDataHasBeenBuilt: false,
             template: Handlebars.compile(MarkerStyleTemplate),
-            modelEvents: {
-                //'change:symbols': 'render'//,
-                //'change:metadata': 'contData'
-            },
 
             //each of these childViews is a symbol. this view renders the value-rules box
             childView: MarkerStyleChildView,
@@ -45,19 +41,48 @@ define(["jquery",
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                //console.log('initialize', this.model.get('symbols'), this.collection);
+
+
+                /* reset layer type to 'basic' on initialize
+                 this is the easiest way to prevent the view from being initialized
+                 as continuous or categorical when no such cont. or cat. data is available
+                 e.g. in case the user switches from a data source that has continuous data to one that doesn't
+                */
+                var propertiesList = this.buildPropertiesList();
+                if (
+                    (propertiesList[1].length === 0 && this.model.get('layer_type') === 'continuous') ||
+                    (propertiesList[0].length === 0 && this.model.get('layer_type') === 'categorical')
+                ) {
+                    this.model.set('layer_type', 'basic');
+                }
+
+                // and set the variable
                 this.dataType = this.model.get('layer_type');
+
+
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
                 this.collection = new Symbols(this.model.get("symbols"));
 
-                // builds correct palette on-load
-               // this.buildPalettes(this.getCatInfo().list.length);
-               this.createCorrectSymbols();
+                this.selectedProp = this.model.get('metadata').currentProp;
+
+                // important to render before createCorrectSymbol because createCorrectSymbol
+                // depends on info in the DOM (e.g. what property is selected)
+                this.render();
+
+                // don't recreate symbols if they already exist
+                // this is so existing unique individual attributes aren't overwritten by global ones
+                if (this.model.get('newLayer') === true) {
+                    this.createCorrectSymbols();
+                } else if (this.dataType === 'basic') {
+                    this.createCorrectSymbols();
+                } else {
+                    this.buildPalettes(this.model.get('symbols').length);
+                    this.updateMapAndRender();
+                }
 
                 $('body').click($.proxy(this.hideColorRamp, this));
 
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
-                this.listenTo(this.app.vent, 'update-data-source', this.render);
                 this.listenTo(this.app.vent, 'update-map', this.updateMap);
             },
 
@@ -68,18 +93,15 @@ define(["jquery",
                 this.$el.find('#stroke-color-picker').ColorPicker({
 
                     onShow: function (colpkr) {
-                        //console.log("colorPicker show");
                         $(colpkr).fadeIn(500);
                         return false;
                     },
                     onHide: function (colpkr) {
-                        //console.log("colorPicker hide");
                         that.updateStrokeColor(color);
                         $(colpkr).fadeOut(500);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
-                        //console.log("colorPicker changed");
                         color = "#" + hex;
                     }
                 });
@@ -103,33 +125,26 @@ define(["jquery",
                 !$el.hasClass('global-symbol-dropdown') &&
                 !$el.hasClass('selected-symbol-div') &&
                 !$el.hasClass('fa-circle') &&
-                !$el.hasClass('fa-angle-down') ) {   
+                !$el.hasClass('fa-angle-down') ) {
                     $(".symbols-layout-container").hide();
                 }
             },
-/*
-            reRender: function () {
-                console.log("symbol change registered");
-                //rebuild symbols collection based on updated info:
-                this.collection = new Backbone.Collection(this.model.get("symbols"));
-                this.render();
-            },
-*/
+
             templateHelpers: function () {
                 var metadata = this.model.get("metadata"),
-                columnList = this.buildColumnList(),
+                propertiesList = this.buildPropertiesList(),
                     helpers;
                 helpers = {
                     metadata: metadata,
                     dataType: this.dataType,
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
-                    categoricalList: columnList[0],
-                    continuousList: columnList[1],
+                    categoricalList: propertiesList[0],
+                    continuousList: propertiesList[1],
                     icons: IconLookup.getIcons(),
                     selectedProp: this.selectedProp,
-                    hasContinuousFields: (columnList[1].length > 0),
-                    hasCategoricalFields: (columnList[0].length > 0)
+                    hasContinuousFields: (propertiesList[1].length > 0),
+                    hasCategoricalFields: (propertiesList[0].length > 0)
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
@@ -152,6 +167,7 @@ define(["jquery",
                 'click .palette-list': 'selectPalette',
                 'click .palette-list *': 'selectPalette',
                 'click #global-symbol': 'showSymbols'
+               // 'click .palette-list *': 'selectPalette'
             },
 
             showSymbols: function (e) {
@@ -161,13 +177,36 @@ define(["jquery",
                 });
                 console.log(this.symbolsView);
               //  this.$el.append(this.symbolsView.$el);
-              //  this.symbolsView.$el.show(); 
-            },  
+              //  this.symbolsView.$el.show();
+            },
 
             selectDataType: function (e) {
                 this.dataType = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
                 this.model.set("layer_type", this.dataType);
-                this.render();
+
+                if (this.dataType == 'continuous') {
+                    // loops over the properties list and selects the first property that actually contains data
+                    // i.e. it skips over any property that contains no data (one that would be grayed out in the dropdown)
+                    for (var i=0; i < this.categoricalList.length; i++) {
+                        if (this.categoricalList[i].hasData) {
+                            this.selectedProp = this.continuousList[i].value;
+                            this.model.get('metadata').currentProp = this.continuousList[i].value;
+                            break;
+                        }
+                    }
+                }
+
+                if (this.dataType == 'categorical') {
+                    // loops over the properties list and selects the first property that actually contains data
+                    // i.e. it skips over any property that contains no data (one that would be grayed out in the dropdown)
+                    for (var i=0; i < this.categoricalList.length; i++) {
+                        if (this.categoricalList[i].hasData) {
+                            this.selectedProp = this.categoricalList[i].value;
+                            this.model.get('metadata').currentProp = this.categoricalList[i].value;
+                            break;
+                        }
+                    }
+                }
                 this.createCorrectSymbols();
             },
 
@@ -175,58 +214,71 @@ define(["jquery",
                 this.collection = new Symbols(this.model.get("symbols"));
                 this.render();
             },
-            buildColumnList: function () {
+
+            // builds list of properties/fields to populate property dropdown list
+            buildPropertiesList: function () {
                 //clearing out the lists
                 this.categoricalList = [];
                 this.continuousList = [];
+
+                // generic property lists for photos, audio, and markers
+                // property lists for custom forms are generated by 'buildCustomPropertiesList()'
                 var photoAudioList = ["id", "name", "caption", "tags", "owner", "attribution"],
                 markerList = ["name", "caption", "tags", "owner"];
+
                 var key = this.model.get('data_source'),
                     collection = this.app.dataManager.getCollection(key);
+
                 //still need to account for map-images below...
                 if (key == "photos" || key == "audio") {
-                    this.buildGenericColumnList(photoAudioList);
+                    this.buildGenericPropertiesList(photoAudioList, collection);
                 } else if (key == "markers") {
-                    this.buildGenericColumnList(markerList);
+                    this.buildGenericPropertiesList(markerList, collection);
                 } else if (key.includes("form_")) {
-                    this.buildCustomColumnList(collection);
+                    this.buildCustomPropertiesList(collection);
                 }
                 return [this.categoricalList, this.continuousList];
             },
 
-            buildGenericColumnList: function(list) {
+            // builds 'this.categoricalList' for generic data types
+            // note: all generic properties/fields are categorical, not continuous
+            buildGenericPropertiesList: function(list, collection) {
                 for (var i=0;i<list.length;i++) {
                     this.categoricalList.push({
                         text: list[i],
                         value:list[i],
-                        hasData: true
+                        hasData: this.fieldHasData(collection, list[i])
                     });
                 }
             },
 
-            buildCustomColumnList: function (collection) {
+            // builds 'this.categoricalList' or 'this.continuousList' for custom data types
+            buildCustomPropertiesList: function (collection) {
                 var that = this;
                 collection.getFields().models.forEach(function(log) {
                     var field = log.get("col_name");
-
-                    if (log.get("data_type") === "text" || log.get("data_type") === "choice") {
+                    if (log.get("data_type") === "text" || log.get("data_type") === "choice" || log.get("data_type") === "boolean") {
                         that.categoricalList.push({
                             text: log.get("col_alias"),
                             value: log.get("col_name"),
-                            hasData: that.columnHasData(collection, field)
+                            hasData: that.fieldHasData(collection, field)
                         });
                     } else if (log.get("data_type") === "integer" || log.get("data_type") === "rating"){
                         that.continuousList.push({
                             text: log.get("col_alias"),
                             value: log.get("col_name"),
-                            hasData: that.columnHasData(collection, field)
+                            hasData: that.fieldHasData(collection, field)
                         });
                     }
                 });
             },
 
-            columnHasData: function (collection, field) {
+            // this function determines if a particular property/field
+            // actually contains any data. If it does not, then the function returns 'false'
+            // and that property will be grayed-out in the properties dropdown list (disabled)
+            fieldHasData: function (collection, field) {
                 var hasData = [];
+
                 collection.models.forEach(function(d) {
                     if (d.get(field)){
                         hasData.push(true);
@@ -235,6 +287,7 @@ define(["jquery",
                     }
                 });
 
+                //
                 if (hasData.includes(true)) {
                     return true;
                 } else {
@@ -247,28 +300,12 @@ define(["jquery",
                     this.contData();
                 } else if (this.dataType == "categorical") {
                     this.catData();
-
-                    /*
-                    // below was an attempt to not regenerate categorical symbols every time
-                    // but it didn't work if the existing symbols it retrieved were categorical
-                    if (!this.model.get("metadata").catBuilt) {
-                        console.log("building catData", this.collection);
-                        this.catData();
-                    } else {
-                        console.log("catData already exists", this.model.get("symbols"));
-                        this.setSymbols(new Symbols(this.model.get("symbols")));
-                        console.log(this.getCatInfo().list, this.getCatInfo().list.length);
-                        this.buildPalettes(this.getCatInfo().list.length);
-                       // return;
-                    }
-                    */
                 } else if (this.dataType == "basic") {
                     this.simpleData();
                 }
             },
 
             contData: function() {
-                //console.log("cont change registered");
                 this.buildPalettes();
                 var cssId = "#cont-prop";
                 this.setSelectedProp(cssId);
@@ -276,7 +313,6 @@ define(["jquery",
             },
 
             catData: function() {
-                //console.log("catData triggered");
                 var cssId = "#cat-prop";
                 this.setSelectedProp(cssId);
                 var catInfo = this.getCatInfo();
@@ -289,15 +325,18 @@ define(["jquery",
             buildContinuousSymbols: function (cont) {
                 var counter = 0,
                 selected = this.selectedProp;
+                if (!this.layerDraft.continuous === null) {
+                    this.model.set('symbols', this.layerDraft.continuous);
+                }
                 this.layerDraft.continuous = new Symbols();
                 while (cont.currentFloor < cont.max) {
                     this.layerDraft.continuous.add({
                         "rule": selected + " >= " + cont.currentFloor.toFixed(0) + " and " + selected + " <= " + (cont.currentFloor + cont.segmentSize).toFixed(0),
                         "title": "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
-                        "fillOpacity": parseFloat(this.$el.find("#palette-opacity").val()) || 1,
-                        "strokeWeight": parseFloat(this.$el.find("#stroke-weight").val()) || 1,
-                        "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()) || 1,
-                        "width": parseFloat(this.$el.find("#marker-width").val()) || 20,
+                        "fillOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#palette-opacity").val()), 1),
+                        "strokeWeight": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-weight").val()), 1),
+                        "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
+                        "width": this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
                         "shape": this.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + this.selectedColorPalette[counter],
                         "strokeColor": this.model.get("metadata").strokeColor,
@@ -305,25 +344,12 @@ define(["jquery",
                     });
                     counter++;
                     cont.currentFloor = Math.round((cont.currentFloor + cont.segmentSize)*100)/100;
-                    //console.log(cont.currentFloor);
                 }
+                this.layerNoLongerNew();
                 return this.layerDraft.continuous;
             },
-/*
-            manageDefault: function (input) {
-                console.log(input);
-                var output;
-                if (input == undefined || NaN) {
-                    output = 1;
-                } else {
-                    output = parseFloat(input);
-                }
-                console.log(output);
-                return output;
-            },
-*/
+
             buildCategoricalSymbols: function (cat) {
-                //console.log(cat);
                 var that = this,
                 idCounter = 1,
                 paletteCounter = 0;
@@ -332,12 +358,12 @@ define(["jquery",
                     that.layerDraft.categorical.add({
                         "rule": that.selectedProp + " = " + item,
                         "title": item,
-                        "fillOpacity": parseFloat(that.$el.find("#palette-opacity").val()) || 1,
-                        "strokeWeight": parseFloat(that.$el.find("#stroke-weight").val()) || 1,
-                        "strokeOpacity": parseFloat(that.$el.find("#stroke-opacity").val()) || 1,
-                        "width": parseFloat(that.$el.find("#marker-width").val()) || 20,
+                        "fillOpacity": that.defaultIfUndefined(parseFloat(that.$el.find("#palette-opacity").val()), 1),
+                        "strokeWeight": that.defaultIfUndefined(parseFloat(that.$el.find("#stroke-weight").val()), 1),
+                        "strokeOpacity": that.defaultIfUndefined(parseFloat(that.$el.find("#stroke-opacity").val()), 1),
+                        "width": that.defaultIfUndefined(parseFloat(that.$el.find("#marker-width").val()), 20),
                         "shape": that.$el.find(".global-marker-shape").val(),
-                        "fillColor": "#" + that.selectedColorPalette[paletteCounter > 7 ? paletteCounter = 0 : paletteCounter],
+                        "fillColor": "#" + that.selectedColorPalette[paletteCounter % 8],
                         "strokeColor": that.model.get("metadata").strokeColor,
                         "id": idCounter,
                         "instanceCount": cat.instanceCount[item]
@@ -346,18 +372,17 @@ define(["jquery",
                     idCounter++;
                     paletteCounter++;
                 });
+                this.layerNoLongerNew();
                 return that.layerDraft.categorical;
             },
 
-            /* returns an object containing information
-             * for defining a layer's continuous 'buckets'
-            */
+            // returns an object containing information
+            // for defining a layer's continuous 'buckets'
             getContInfo: function () {
                 var selected = this.selectedProp,
                     buckets = this.model.get("metadata").buckets,
                     key = this.model.get('data_source'),
                     collection = this.app.dataManager.getCollection(key);
-
                 this.continuousData = [];
                 collection.models.forEach((d) => {
                     this.continuousData.push(d.get(selected));
@@ -384,7 +409,6 @@ define(["jquery",
                 },
                 selected = this.selectedProp,
                 collection = this.app.dataManager.getCollection(key);
-                //console.log("get catInfo: $selected", selected, this.model.get('metadata'), this.selectedProp);
                 collection.models.forEach(function(d) {
                     if (!cat.list.includes(d.get(selected)) && d.get(selected)) {
                         cat.list.push(d.get(selected));
@@ -399,24 +423,25 @@ define(["jquery",
 
 
             simpleData: function () {
-                //console.log("simpleData triggered", this.model);
                 this.setSymbols(this.buildSimpleSymbols(this.model.get('data_source')));
             },
 
             buildSimpleSymbols: function (key) {
                 name = this.app.dataManager.getCollection(key).getTitle();
 
-               // if (this.model.getSymbols().length > 0) {
-               //     this.layerDraft.simple = this.model.getSymbols();
-               // } else {
-                    this.layerDraft.simple = new Symbols([{
-                        "rule": "*",
-                        "title": name,
-                        "shape": "circle",
-                        "fillColor": "#60c7cc",
-                        "id": 1
-                    }]);
-              //  }
+                this.layerDraft.simple = new Symbols([{
+                    "rule": "*",
+                    "title": name,
+                    "shape": this.$el.find(".global-marker-shape").val(),
+                    "fillOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#palette-opacity").val()), 1),
+                  //  "fillColor": "#60c7cc",
+                    "strokeWeight": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-weight").val()), 1),
+                    "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
+                    "strokeColor": this.model.get("metadata").strokeColor,
+                    'width': this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
+                    "id": 1
+                }]);
+                this.layerNoLongerNew();
                 return this.layerDraft.simple;
             },
 
@@ -427,12 +452,15 @@ define(["jquery",
                     this.model.get('metadata').currentProp = this.$el.find(cssId).val();
                 }
                 this.selectedProp = this.model.get('metadata').currentProp;
-                //console.log('changing selected proprty', this.$el.find(cssId).val(), this.selectedProp);
             },
 
             setSymbols: function (symbs) {
                 this.collection = symbs;
-                this.model.set("symbols", symbs.toJSON());
+
+
+                // since we're reassigning this.collection above, it's no longer pointing
+                // to model.get('symbols'), so we eed to sync the model symbols to the new collection
+                this.syncModelSymbsToCollection();
                 this.updateMapAndRender();
             },
 
@@ -476,7 +504,6 @@ define(["jquery",
             },
 
             buildPalettes: function (itemCount) {
-                //console.log("building palette, count = ", count);
                 var count = itemCount;
                 if (count > 8) { count = 8; }
                 var seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8;
@@ -508,7 +535,6 @@ define(["jquery",
             },
 
             updateMap: function () {
-                //console.log('updateMap');
                 var that = this;
                 this.delayExecution("mapTimer", function () {
                     that.model.trigger('rebuild-markers')
@@ -524,7 +550,6 @@ define(["jquery",
                 }
                 this.updateMetadata("fillOpacity", opacity);
                 this.updateMap();
-                //this.render();
             },
 
             updateGlobalShape: function(e) {
@@ -568,37 +593,59 @@ define(["jquery",
                 var paletteId = $(e.target).val();
                 this.updateMetadata("paletteId", paletteId);
                 this.selectedColorPalette = this.allColors[paletteId];
-                if (this.dataType == "categorical") {
-                    this.catData();
-                } else if (this.dataType == "continuous") {
-                    this.contData();
-                }
+                this.updatePalette();
+            },
+
+            updatePalette: function() {
+                var i = 0,
+                that = this;
+                this.collection.each(function(symbol) {
+                    symbol.set('fillColor', "#" + that.selectedColorPalette[i]);
+                    i++;
+                });
+
+                this.updateMapAndRender();
+            },
+
+            /* if the collection pointer changes (e.g. after a new symbol set is built),
+               make sure the model symbols and the collection point to the same thing
+            */
+            syncModelSymbsToCollection: function () {
+                this.model.set("symbols", this.collection.toJSON());
             },
 
             showPalettes: function () {
                 this.$el.find(".palette-wrapper").css({display: 'block'});
             },
 
+            layerNoLongerNew: function() {
+                this.model.set('newLayer', false);
+            },
+
             //convenience function
             updateMetadata: function(newKey, newValue) {
                 var that = this;
-                //console.log("a.", this.collection.length, this.model.getSymbols().length);
                 var localMeta = this.model.get("metadata") || {},
                     that = this;
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta);
 
-                //console.log("b.", this.collection.length, this.model.getSymbols().length);
                 this.collection.each(function(symbol) {
-                    //console.log(symbol.id, that.model.getSymbols().length);
                     symbol.set(newKey, newValue);
-                    //console.log(symbol.id, that.model.getSymbols().length);
                 });
                 this.app.layerHasBeenAltered = true;
                 this.app.layerHasBeenSaved = false;
+            },
 
-                //console.log("c.", this.collection.length, this.model.getSymbols().length);
-            }
+            // returns a default value if the input value from the dom is undefined
+            // needed because simply using '||' for defaults is buggy
+            defaultIfUndefined: function (domValue, defaultValue) {
+                if (domValue === undefined) {
+                    return defaultValue;
+                } else {
+                    return domValue;
+                }
+            },
 
         });
         return MarkerStyleView;
