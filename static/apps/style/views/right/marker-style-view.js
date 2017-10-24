@@ -411,7 +411,7 @@ define(["jquery",
                     "title": name,
                     "shape": this.$el.find(".global-marker-shape").val(),
                     "fillOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#palette-opacity").val()), 1),
-                    "fillColor": "#60c7cc",
+                  //  "fillColor": "#60c7cc",
                     "strokeWeight": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-weight").val()), 1),
                     "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
                     "strokeColor": this.model.get("metadata").strokeColor,
@@ -433,7 +433,11 @@ define(["jquery",
 
             setSymbols: function (symbs) {
                 this.collection = symbs;
-                this.model.set("symbols", symbs.toJSON());
+
+                 
+                // since we're reassigning this.collection above, it's no longer pointing 
+                // to model.get('symbols'), so we eed to sync the model symbols to the new collection
+                this.syncModelSymbsToCollection();
                 this.updateMapAndRender();
             },
 
@@ -566,31 +570,25 @@ define(["jquery",
                 var paletteId = $(e.target).val();
                 this.updateMetadata("paletteId", paletteId);
                 this.selectedColorPalette = this.allColors[paletteId];
-                if (this.dataType == "categorical") {
-                    console.log(this.model.get("symbols"));
-                    this.updatePalette();
-                } else if (this.dataType == "continuous") {
-                    console.log(this.model.get("symbols"));
-                    this.updatePalette();
-                }
+                this.updatePalette();
             },
 
             updatePalette: function() {
-                var symbols = this.model.get("symbols");
                 var i = 0,
                 that = this;
-                symbols.forEach(function(symbol) {
-                    console.log(that.selectedColorPalette[i]);
-                    symbol.fillColor = "#" + that.selectedColorPalette[i];
+                this.collection.each(function(symbol) {
+                    symbol.set('fillColor', "#" + that.selectedColorPalette[i]);
                     i++;
                 });
-                console.log('updatePalette', this.model.get('symbols'));
 
                 this.updateMapAndRender();
             },
 
-            updateCatPalette: function() {
-
+            /* if the collection pointer changes (e.g. after a new symbol set is built),
+               make sure the model symbols and the collection point to the same thing
+            */
+            syncModelSymbsToCollection: function () {
+                this.model.set("symbols", this.collection.toJSON());
             },
 
             showPalettes: function () {

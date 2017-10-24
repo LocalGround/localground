@@ -18,14 +18,12 @@ define(["jquery",
                 'change .marker-shape': 'updateShape'
             },
             modelEvents: {
-                'change': 'updateLayerSymbols',
-                'change symbols': 'updateLayerSymbols'
+                'change': 'updateLayerSymbols'
             },
 
             tagName: "tr",
             className: "table-row",
             templateHelpers: function () {
-                console.log('template helper');
                 return {
                     dataType: this.dataType,
                     icons: IconLookup.getIcons(),
@@ -68,7 +66,6 @@ define(["jquery",
                 this.app.vent.trigger('update-map'); //added
             },
             updateLayerSymbols: function () {
-                console.log('model change detected', this.model);
                 this.layer.setSymbol(this.model);
                 this.render();
             },

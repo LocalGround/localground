@@ -70,22 +70,10 @@ define([
             it("should set model correctly", function () {
                 expect(layerListChildView.model).toEqual(this.layer);
             });
-        });
 
-        describe("When events are triggered", function () {
-            beforeEach(function () {
-                initView(this);
-            });
-            afterEach(function () {
-                Backbone.history.stop();
-            });
-            it("router should trigger controller function", function() {
-                expect(1).toEqual(-1);
-            });
             it("initialized 3 OverlayListView objects", function () {
                 expect(layerListChildView.markerOverlayList.length).toBe(3);
             });
-
         });
 
         describe("LayerListChildView: Events", function () {
