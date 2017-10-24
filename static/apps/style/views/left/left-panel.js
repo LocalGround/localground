@@ -14,6 +14,7 @@ define(["jquery",
             template: Handlebars.compile(LeftPanelLayoutTemplate),
 
             initialize: function (opts) {
+                console.log('left panel intialize');
                 /*This Layout View relies on a Map model which gets set from the change-map event,
                 which is triggered from the select-map-view.js */
                 this.app = opts.app;
@@ -112,6 +113,8 @@ define(["jquery",
 
                 //rerender layers
                 //this.app.vent.trigger('update-layer-list');
+
+                this.app.router.navigate();
 
                 // resets the map list so the correct layers are displayed
                 this.app.vent.trigger('update-map-list');
