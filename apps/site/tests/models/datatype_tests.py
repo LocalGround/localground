@@ -34,5 +34,10 @@ class DataTypeTest(BaseAbstractModelClassTest, test.TestCase):
         self.assertTrue(isinstance(name, models.CharField))
         self.assertTrue(isinstance(sql, models.CharField))
 
-    #def test_to_dict(self, **kwargs):
-        #
+    def test_to_dict(self, **kwargs):
+        # by default, the datatype without a set value
+        # will print out empty information
+        testDict = self.model.to_dict()
+        self.assertEqual(testDict['id'], None)
+        self.assertEqual(testDict['name'], u'')
+        self.assertEqual(testDict['sql'], u'')
