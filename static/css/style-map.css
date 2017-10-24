@@ -186,7 +186,7 @@
 
 .map-item p, .selected-map-item p {
     display: inline-block;
-    cursor: default;
+    cursor: pointer;
 }
 
 .map-edit {

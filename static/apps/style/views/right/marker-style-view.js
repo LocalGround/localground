@@ -154,7 +154,7 @@ define(["jquery",
                 'change #stroke-opacity': 'updateStrokeOpacity',
                 'click .selected-palette-wrapper': 'showPalettes',
                 'click .palette-list': 'selectPalette',
-                'click .palette-list *': 'selectPalette'
+               // 'click .palette-list *': 'selectPalette'
             },
 
             selectDataType: function (e) {
@@ -340,7 +340,7 @@ define(["jquery",
                         "strokeOpacity": that.defaultIfUndefined(parseFloat(that.$el.find("#stroke-opacity").val()), 1),
                         "width": that.defaultIfUndefined(parseFloat(that.$el.find("#marker-width").val()), 20),
                         "shape": that.$el.find(".global-marker-shape").val(),
-                        "fillColor": "#" + that.selectedColorPalette[paletteCounter > 7 ? paletteCounter = 0 : paletteCounter],
+                        "fillColor": "#" + that.selectedColorPalette[paletteCounter % 8],
                         "strokeColor": that.model.get("metadata").strokeColor,
                         "id": idCounter,
                         "instanceCount": cat.instanceCount[item]
@@ -567,10 +567,30 @@ define(["jquery",
                 this.updateMetadata("paletteId", paletteId);
                 this.selectedColorPalette = this.allColors[paletteId];
                 if (this.dataType == "categorical") {
-                    this.catData();
+                    console.log(this.model.get("symbols"));
+                    this.updatePalette();
                 } else if (this.dataType == "continuous") {
-                    this.contData();
+                    console.log(this.model.get("symbols"));
+                    this.updatePalette();
                 }
+            },
+
+            updatePalette: function() {
+                var symbols = this.model.get("symbols");
+                var i = 0,
+                that = this;
+                symbols.forEach(function(symbol) {
+                    console.log(that.selectedColorPalette[i]);
+                    symbol.fillColor = "#" + that.selectedColorPalette[i];
+                    i++;
+                });
+                console.log('updatePalette', this.model.get('symbols'));
+
+                this.updateMapAndRender();
+            },
+
+            updateCatPalette: function() {
+
             },
 
             showPalettes: function () {

@@ -57,6 +57,22 @@ define(["jquery",
                 this.getRegion('markerStyle').show(msv);
             },
 
+            createDSV: function () {
+                var msv = new MarkerStyleView({
+                    app: this.app,
+                    model: this.model
+                });
+                
+            },
+
+            createSCSV: function () {
+                var scsv = new SourceCodeStyleView({
+                    app: this.app,
+                    model: this.model
+                });
+                this.getRegion('sourceCodeStyle').show(scsv);
+            },
+
             createLayer: function (layer, collection) {
                 this.triggerShowPanel();
               //  this.model = layer;
@@ -72,33 +88,18 @@ define(["jquery",
                 
                 this.dataSource.show(dsv);
                 this.createMSV();
-                this.updateSourceCode();
+                this.createSCSV();
+//                this.updateSourceCode();
                 if(!this.model.id) {
                     this.saveLayer();
                 }
             },
 
-            updateSourceCode: function () {
-                if (this.sourceCode) {
-                    this.sourceCode.model = this.model;
-                    this.sourceCode.render();
-                } else {
-                    this.sourceCode = new SourceCodeStyleView({
-                        app: this.app,
-                        model: this.model
-                    });
-                }
-            },
-
             showSourceRegion: function () {
-                if (this.sourceCodeStyle.$el) {
-                    this.sourceCodeStyle.$el.show();
-                } else {
-                    this.sourceCodeStyle.show(this.sourceCode);
-                }
                 if (this.markerStyle.$el) {
                     this.markerStyle.$el.hide();
                 }
+                this.sourceCodeStyle.$el.show();
             },
 
             showMarkerStyleRegion: function () {

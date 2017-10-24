@@ -37,12 +37,15 @@ define ([
             },
 
             saveMap: function () {
+                console.log('new map modal, save!');
+                console.log('mode: ', this.mode);
                 var mapAttrs = {};
                 mapAttrs.name = this.$el.find("#new-map-name").val();
                 mapAttrs.slug = this.$el.find('#new-map-slug').val();
                 mapAttrs.description = this.$el.find('#new-map-description').val();
 
                 if (this.mode == 'editExistingMap') {
+                    console.log('editExistingMap: ', this.mode);
                     this.map.set({
                         name: this.$el.find("#new-map-name").val(),
                         slug: this.$el.find("#new-map-slug").val(),
@@ -51,6 +54,7 @@ define ([
                     });
                     this.app.vent.trigger("edit-map", this.map);
                 } else if (this.mode == 'createNewMap') {
+                    console.log('createNewMap: ', this.mode);
                     this.app.vent.trigger("create-new-map", mapAttrs);
                 }
             },

@@ -174,9 +174,9 @@ define(["jquery",
                             }
                         });;
                     }});
-                this.app.vent.trigger("change-map", this.map);
                 this.setActiveMap(this.map);
-                this.render();
+             //   this.render();
+                this.app.router.navigate('//' + this.map.id); 
             },
 
             drawOnce: function () {
@@ -188,7 +188,7 @@ define(["jquery",
                 if (this.collection.length == 0) {
                     return;
                 }
-
+                console.log('set active map called');
                 var selectedMapModel = map,
                     that = this;
                 this.activeMap = map;
