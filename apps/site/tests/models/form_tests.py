@@ -13,9 +13,11 @@ class FormTest(BaseAbstractModelClassTest, test.TestCase):
         self.model = self.create_form()
 
     def test_get_filter_fields(self, **kwargs):
-        # Looks like somehow it never reaches this assert
-        # from attempting to retrieve query fields data
-        query_fields_data = self.model.get_filter_fields()
+
+        # this one contains a dictionary of information
+        # related to the form
+        formWithFields = self.create_form_with_fields()
+        query_fields_data = formWithFields.get_filter_fields()
         print(query_fields_data)
         self.assertEqual(1, 0)
 
@@ -26,10 +28,10 @@ class FormTest(BaseAbstractModelClassTest, test.TestCase):
         self.assertEqual(1, 0)
 
     def test_get_fields(self, **kwargs):
-        # does not seem to reach self assert either
-        formWithFields = self.create_form_with_fields()
-        retrievedFields = formWithFields.get_fields()
-        print(retrievedFields)
+        # So this one does not contain names inside fields
+        # formWithFields = self.create_form_with_fields()
+        # retrievedFields = formWithFields.get_fields()
+        # print(retrievedFields)
         self.assertEqual(1, 0)
 
     def test_get_model_class(self, **kwargs):
