@@ -22,3 +22,20 @@ class FieldTest(BaseAbstractModelClassTest, test.TestCase):
     def test_get_class(self, **kwargs):
         print(self.model)
         self.assertEqual(1,0)
+
+    # skip the following for now: can_view, can_edit, can_manage for now
+
+    def test_to_dict(self, **kwargs):
+        pass
+
+    def test_toJSON(self, **kwargs):
+        pass
+
+    def test_col_name(self, **kwargs):
+        pass
+
+    def test_save(self, **kwargs):
+        pass
+
+    def test_add_column_to_table(self, **kwargs):
+        pass
