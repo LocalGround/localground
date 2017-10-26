@@ -29,10 +29,10 @@ class DataType(Base):
         )
 
     def __str__(self):
-        return self.name
+        return self.__unicode__()
 
     def __repr__(self):
-        return self.name
+        return self.__unicode__()
 
     class Meta:
         app_label = 'site'

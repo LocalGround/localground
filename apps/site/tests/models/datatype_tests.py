@@ -29,8 +29,8 @@ class DataTypeTest(BaseAbstractModelClassTest, test.TestCase):
     def test_model_properties(self, **kwargs):
         self.assertTrue(hasattr(self.model, 'name'))
         self.assertTrue(hasattr(self.model, 'sql'))
-        name = DataType._meta.get_field("name")
-        sql = DataType._meta.get_field("sql")
+        name = DataType._meta.get_field('name')
+        sql = DataType._meta.get_field('sql')
         self.assertTrue(isinstance(name, models.CharField))
         self.assertTrue(isinstance(sql, models.CharField))
 
@@ -41,3 +41,9 @@ class DataTypeTest(BaseAbstractModelClassTest, test.TestCase):
         self.assertEqual(testDict['id'], None)
         self.assertEqual(testDict['name'], u'')
         self.assertEqual(testDict['sql'], u'')
+
+    def test_create_data_type(self, **kwargs):
+        # by default, the datatype without a set value
+        # will print out empty information
+        newDataType = DataType()
+        newDataType.save()
