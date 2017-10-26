@@ -264,3 +264,46 @@ from site_marker m, site_project pr
 ) t
 where t.view_authority > 1
 group by t.id;
+
+
+
+
+
+
+
+
+
+
+
+---------------------
+-- Reset Sequences --
+---------------------
+BEGIN;
+SELECT setval(pg_get_serial_sequence('"site_layer"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_layer";
+SELECT setval(pg_get_serial_sequence('"site_statuscode"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_statuscode";
+SELECT setval(pg_get_serial_sequence('"site_uploadsource"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_uploadsource";
+SELECT setval(pg_get_serial_sequence('"site_uploadtype"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_uploadtype";
+SELECT setval(pg_get_serial_sequence('"site_errorcode"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_errorcode";
+SELECT setval(pg_get_serial_sequence('"site_marker"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_marker";
+SELECT setval(pg_get_serial_sequence('"site_overlaysource"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_overlaysource";
+SELECT setval(pg_get_serial_sequence('"site_overlaytype"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_overlaytype";
+SELECT setval(pg_get_serial_sequence('"site_tileset"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_tileset";
+SELECT setval(pg_get_serial_sequence('"site_objectauthority"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_objectauthority";
+SELECT setval(pg_get_serial_sequence('"site_userauthority"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_userauthority";
+SELECT setval(pg_get_serial_sequence('"site_userauthorityobject"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_userauthorityobject";
+SELECT setval(pg_get_serial_sequence('"site_project"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_project";
+SELECT setval(pg_get_serial_sequence('"site_userprofile_contacts"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_userprofile_contacts";
+SELECT setval(pg_get_serial_sequence('"site_userprofile"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_userprofile";
+SELECT setval(pg_get_serial_sequence('"site_genericassociation"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_genericassociation";
+SELECT setval(pg_get_serial_sequence('"site_datatype"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_datatype";
+SELECT setval(pg_get_serial_sequence('"site_field"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_field";
+SELECT setval(pg_get_serial_sequence('"site_form"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_form";
+SELECT setval(pg_get_serial_sequence('"site_layout"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_layout";
+SELECT setval(pg_get_serial_sequence('"site_print"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_print";
+SELECT setval(pg_get_serial_sequence('"site_mapimage"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_mapimage";
+SELECT setval(pg_get_serial_sequence('"site_imageopts"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_imageopts";
+SELECT setval(pg_get_serial_sequence('"site_photo"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_photo";
+SELECT setval(pg_get_serial_sequence('"site_audio"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_audio";
+SELECT setval(pg_get_serial_sequence('"site_video"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_video";
+SELECT setval(pg_get_serial_sequence('"site_styledmap"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_styledmap";
+COMMIT;
