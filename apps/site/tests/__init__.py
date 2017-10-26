@@ -1,4 +1,5 @@
 from django import test
+from django.conf import settings
 from django.core.urlresolvers import resolve
 from rest_framework import status
 from localground.apps.site import models
@@ -475,6 +476,7 @@ class ModelMixin(object):
         project = project or self.project
         audio = models.Audio(
             project=project,
+            host=settings.SERVER_HOST,
             owner=user,
             last_updated_by=user,
             name=name,

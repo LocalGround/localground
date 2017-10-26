@@ -81,6 +81,7 @@ def save_file_to_disk(owner, model_name_plural, file, uuid=None):
 
     # derive file name:
     file_name, ext = os.path.splitext(file.name.lower())
+    file_name = file_name.split('/')[-1]
     file_name = ''.join(
         char for char in file_name if char.isalnum()).lower()
     if os.path.exists(media_path + '/%s%s' % (file_name, ext)):
