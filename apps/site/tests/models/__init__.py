@@ -17,3 +17,6 @@ from localground.apps.site.tests.models.audio_tests import *
 from localground.apps.site.tests.models.lookup_tests import *
 from localground.apps.site.tests.models.photo_tests import *
 from localground.apps.site.tests.models.project_tests import *
+from localground.apps.site.tests.models.datatype_tests import *
+from localground.apps.site.tests.models.field_tests import *
+from localground.apps.site.tests.models.form_tests import *

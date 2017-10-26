@@ -12,5 +12,8 @@ class FormTest(BaseAbstractModelClassTest, test.TestCase):
 
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
+        self.model = self.create_form()
 
     # Still need more to test...
+    def test_dummy(self, **kwargs):
+        self.assertEqual(1, 0)

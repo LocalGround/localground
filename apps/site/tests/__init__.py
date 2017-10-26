@@ -288,7 +288,6 @@ class ModelMixin(object):
 
     def create_form(self, name='A title',
                     description='A description', user=None,
-                    authority_id=models.ObjectAuthority.PRIVATE,
                     project=None):
 
         from localground.apps.site import models
@@ -296,10 +295,7 @@ class ModelMixin(object):
             owner=user or self.user,
             name=name,
             description=description,
-            last_updated_by=user,
-            access_authority=models.ObjectAuthority.objects.get(
-                id=authority_id
-            ),
+            last_updated_by=user or self.user,
             project=project or self.project
         )
         f.save()
@@ -310,7 +306,6 @@ class ModelMixin(object):
             name='A title',
             description='A description',
             user=None,
-            authority_id=models.ObjectAuthority.PRIVATE,
             num_fields=2,
             project=None):
         '''
@@ -327,7 +322,6 @@ class ModelMixin(object):
         if user is None:
             user = self.user
         f = self.create_form(name, description, user=user,
-                             authority_id=authority_id,
                              project=project)
         for i in range(0, num_fields):
             field_name = 'Field %s' % (i + 1)
