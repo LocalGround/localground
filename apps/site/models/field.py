@@ -18,7 +18,7 @@ class Field(BaseAudit):
 
     # how the fields should be ordered in the data entry form:
     ordering = models.IntegerField()
-    
+
     def can_view(self, user=None, access_key=None):
         return self.form.can_view(user=user, access_key=access_key)
 
