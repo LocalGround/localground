@@ -14,3 +14,12 @@ class LayoutTest(BaseAbstractModelClassTest, test.TestCase):
 
     def test_dummy(self, **kwargs):
         pass
+
+
+    def test_model_properties(self, **kwargs):
+        self.assertTrue(hasattr(self.model, 'name'))
+        self.assertTrue(hasattr(self.model, 'description'))
+        name = StatusCode._meta.get_field("name")
+        description = StatusCode._meta.get_field("description")
+        self.assertTrue(isinstance(name, models.CharField))
+        self.assertTrue(isinstance(description, models.CharField))
