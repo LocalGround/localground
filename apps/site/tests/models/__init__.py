@@ -20,3 +20,7 @@ from localground.apps.site.tests.models.project_tests import *
 from localground.apps.site.tests.models.datatype_tests import *
 from localground.apps.site.tests.models.field_tests import *
 from localground.apps.site.tests.models.form_tests import *
+from localground.apps.site.tests.models.imageopts_tests import *
+from localground.apps.site.tests.models.layout_tests import *
+from localground.apps.site.tests.models.mapimage_tests import *
+from localground.apps.site.tests.models.prints_tests import *
