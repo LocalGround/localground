@@ -12,14 +12,29 @@ class LayoutTest(BaseAbstractModelClassTest, test.TestCase):
         BaseAbstractModelClassTest.setUp(self)
         self.model = Layout()
 
-    def test_dummy(self, **kwargs):
-        pass
 
-
+    # A streamlined approach to checking all the properties
+    # from the class being tested on
     def test_model_properties(self, **kwargs):
-        self.assertTrue(hasattr(self.model, 'name'))
-        self.assertTrue(hasattr(self.model, 'description'))
-        name = StatusCode._meta.get_field("name")
-        description = StatusCode._meta.get_field("description")
-        self.assertTrue(isinstance(name, models.CharField))
-        self.assertTrue(isinstance(description, models.CharField))
+        for prop in [
+            ('name' , models.CharField),
+            ('display_name' , models.CharField),
+            ('map_width_pixels' , models.IntegerField),
+            ('map_height_pixels' , models.IntegerField),
+            ('qr_size_pixels' , models.IntegerField),
+            ('border_width' , models.IntegerField),
+            ('is_active' , models.BooleanField),
+            ('is_landscape' , models.BooleanField),
+            ('is_data_entry' , models.BooleanField)
+        ]:
+            prop_name = prop[0]
+            prop_type = prop[1]
+            field = Layout._meta.get_field(prop_name)
+            self.assertEqual(
+                field.name,
+                prop_name
+            )
+            self.assertEqual(
+                type(field),
+                prop_type
+            )
