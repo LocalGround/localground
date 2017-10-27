@@ -31,6 +31,9 @@ class Field(BaseAudit):
     def to_dict(self):
         return dict(alias=self.col_alias, id=self.id)
 
+    def __unicode__(self):
+        return '{0}. {1}'.format(self.id, self.col_alias)
+
     def __str__(self):
         return self.col_alias
 
