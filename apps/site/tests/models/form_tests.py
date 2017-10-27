@@ -21,11 +21,13 @@ class FormTest(BaseAbstractModelClassTest, test.TestCase):
         formWithFields = self.create_form_with_fields()
         query_fields_data = formWithFields.get_filter_fields()
         print(query_fields_data)
-        self.assertEqual(query_fields_data['owner'],
-            {'help_text': u'',
-            'type': 'integer',
-            'col_name': 'owner',
-            'label': u'owner'
+        self.assertEqual(
+            query_fields_data['owner'].to_dict(),
+            {
+                'help_text': u'',
+                'type': 'integer',
+                'col_name': 'owner',
+                'label': u'owner'
             })
 
         self.assertEqual(query_fields_data['date_created'],
