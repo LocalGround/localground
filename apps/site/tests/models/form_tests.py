@@ -30,32 +30,36 @@ class FormTest(BaseAbstractModelClassTest, test.TestCase):
                 'label': u'owner'
             })
 
-        self.assertEqual(query_fields_data['date_created'],
-            {'help_text': u'',
-            'type': 'date',
-            'col_name': 'date_created',
-            'label': u'date created'
+        self.assertEqual(query_fields_data['date_created'].to_dict(),
+            {
+                'help_text': u'',
+                'type': 'date',
+                'col_name': 'date_created',
+                'label': u'date created'
             })
 
-        self.assertEqual(query_fields_data['id'],
-            {'help_text': u'',
-            'type': 'integer',
-            'col_name': 'id',
-            'label': u'id'
+        self.assertEqual(query_fields_data['id'].to_dict(),
+            {
+                'help_text': u'',
+                'type': 'integer',
+                'col_name': 'id',
+                'label': u'ID'
             })
 
-        self.assertEqual(query_fields_data['project'],
-            {'help_text': u'',
-            'type': 'string',
-            'col_name': 'project',
-            'label': u'project'
+        self.assertEqual(query_fields_data['project'].to_dict(),
+            {
+                'help_text': 'Project to which the form belongs',
+                'type': 'string',
+                'col_name': 'project',
+                'label': u'project'
             })
 
-        self.assertEqual(query_fields_data['time_stamp'],
-            {'help_text': u'',
-            'type': 'date',
-            'col_name': 'time_stmap',
-            'label': u'time stamp'
+        self.assertEqual(query_fields_data['time_stamp'].to_dict(),
+            {
+                'help_text': u'',
+                'type': 'date',
+                'col_name': 'time_stamp',
+                'label': u'time stamp'
             })
 
         pass
