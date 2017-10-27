@@ -20,7 +20,6 @@ class FormTest(BaseAbstractModelClassTest, test.TestCase):
         # related to the form
         formWithFields = self.create_form_with_fields()
         query_fields_data = formWithFields.get_filter_fields()
-        print(query_fields_data)
         self.assertEqual(
             query_fields_data['owner'].to_dict(),
             {
@@ -62,33 +61,9 @@ class FormTest(BaseAbstractModelClassTest, test.TestCase):
                 'label': u'time stamp'
             })
 
-        pass
-
-    def test_cache_dynamic_models(self, **kwargs):
-        pass
-
-    def test_clear_table_model_cache(self, **kwargs):
-        pass
-
     def test_get_fields(self, **kwargs):
         formWithFields = self.create_form_with_fields(num_fields=9)
         retrievedFields = formWithFields.get_fields(print_only = True)
         self.assertEqual(9, len(retrievedFields))
         for field in retrievedFields:
             self.assertTrue(type(field) is Field)
-
-
-    def test_get_model_class(self, **kwargs):
-        pass
-
-    def test_source_table_exists(self, **kwargs):
-        pass
-
-    def test_save(self, **kwargs):
-        pass
-
-    def test_delete(self, **kwargs):
-        pass
-
-    def test_remove_table_from_cache(self, **kwargs):
-        pass
