@@ -50,7 +50,7 @@ class MapImage(BaseUploadedMedia):
         return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
 
     def original_image_filesystem(self):
-        return '%s/%s' % (self.get_abs_directory_path(), self.file_name_new)
+        return '%s%s' % (self.get_abs_directory_path(), self.file_name_new)
 
     def processed_map_filesystem(self):
         return self.get_abs_directory_path(

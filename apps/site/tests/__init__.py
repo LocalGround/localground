@@ -429,17 +429,30 @@ class ModelMixin(object):
 
     def create_imageopt(self, mapimage):
         from localground.apps.site import models
-        p = mapimage.source_print
+        user = self.user
         img = models.ImageOpts(
-            source_mapimage=mapimage
+            source_mapimage=mapimage,
+            opacity=1,
+            name='map image test',
+            file_name_orig='map_image_opts1.jpg',
+            virtual_path='/userdata/media/' + user.username + '/map-images/',
+            host=settings.SERVER_HOST
         )
         img.save(user=mapimage.owner)
         return img
 
     def create_mapimage(self, user=None, project=None, tags=[],
-                        name='MapImage Name'):
+                        name='MapImage Name', generate_print=False):
+
         from localground.apps.site import models
-        p = self.create_print_without_image(map_title='A mapimage-linked print')
+        if generate_print:
+            p = self.create_print(
+                map_title='A mapimage-linked print'
+            )
+        else:
+            p = self.create_print_without_image(
+                map_title='A mapimage-linked print'
+            )
         user = user or self.user
         project = project or self.project
         mapimage = models.MapImage(

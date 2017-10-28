@@ -1,14 +1,15 @@
 from localground.apps.site.models import MapImage
 from django.conf import settings
 from django.contrib.gis.db import models
-from localground.apps.site.tests.models.abstract_base_tests import \
-    BaseAbstractModelClassTest
+from localground.apps.site.tests.models import \
+    BaseUploadedMediaAbstractModelClassTest
 from django import test
 
-class MapImageTest(BaseAbstractModelClassTest, test.TestCase):
+
+class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
 
     def setUp(self):
-        BaseAbstractModelClassTest.setUp(self)
+        BaseUploadedMediaAbstractModelClassTest.setUp(self)
         self.model = self.create_mapimage()
 
     # A streamlined approach to checking all the properties
@@ -33,14 +34,8 @@ class MapImageTest(BaseAbstractModelClassTest, test.TestCase):
             prop_name = prop[0]
             prop_type = prop[1]
             field = MapImage._meta.get_field(prop_name)
-            self.assertEqual(
-                field.name,
-                prop_name
-            )
-            self.assertEqual(
-                type(field),
-                prop_type
-            )
+            self.assertEqual(field.name, prop_name)
+            self.assertEqual(type(field), prop_type)
 
     def test_thumb(self):
         import base64
@@ -59,3 +54,33 @@ class MapImageTest(BaseAbstractModelClassTest, test.TestCase):
             settings.FILE_ROOT + '/' + settings.USER_MEDIA_DIR +
             '/media/tester/map-images/'
         )
+
+    def test_original_image_filesystem(self):
+        self.assertEqual(
+            self.model.original_image_filesystem(),
+            self.model.get_abs_directory_path() + self.model.file_name_new
+        )
+
+    def test_processed_map_filesystem(self):
+        self.assertEqual(
+            self.model.processed_map_filesystem(),
+            self.model.get_abs_directory_path() +
+            self.model.processed_image.file_name_orig
+        )
+
+    def test_processed_map_url_path(self):
+        import base64
+        from localground.apps.lib.helpers import upload_helpers
+        file_name_orig = base64.b64decode(
+            self.model.processed_map_url_path().split('/')[-2]
+        )
+        file_name_orig = file_name_orig.split('#')[0]
+        self.assertEqual(
+            file_name_orig,
+            '/' + settings.USER_MEDIA_DIR + '/media/tester/map-images/' +
+            self.model.processed_image.file_name_orig
+        )
+
+    '''
+    TODO: Next Sprint: write tests for Processor
+    '''
