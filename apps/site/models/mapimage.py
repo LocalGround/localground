@@ -47,7 +47,7 @@ class MapImage(BaseUploadedMedia):
             (self.virtual_path, self.file_name_thumb))
 
     def get_abs_directory_path(self):
-        return '%s/%s' % (settings.FILE_ROOT, self.virtual_path)
+        return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
 
     def original_image_filesystem(self):
         return '%s/%s' % (self.get_abs_directory_path(), self.file_name_new)

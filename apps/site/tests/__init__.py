@@ -1,4 +1,5 @@
 from django import test
+from django.conf import settings
 from django.core.urlresolvers import resolve
 from rest_framework import status
 from localground.apps.site import models
@@ -261,6 +262,43 @@ class ModelMixin(object):
         from localground.apps.site import models
         return models.Marker.objects.get(id=marker_id)
 
+    def create_print_without_image(
+            self, layout_id=1, map_provider=1, lat=55, lng=61.4, zoom=17,
+            map_title='A title', instructions='A description', tags=[],
+            generate_pdf=True):
+        from django.conf import settings
+        from localground.apps.site import models
+        layout = models.Layout.objects.get(id=layout_id)
+        tileset = models.TileSet.objects.get(id=map_provider)
+        uuid = generic.generateID()
+        user = self.user
+        p = models.Print(
+            uuid=uuid,
+            project=self.project,
+            zoom=zoom,
+            map_width=layout.map_width_pixels,
+            map_height=layout.map_height_pixels,
+            map_provider=tileset,
+            owner=user,
+            last_updated_by=user,
+            layout=layout,
+            host=settings.SERVER_HOST,
+            map_image_path='map.jpg',
+            pdf_path='Print_' + uuid + '.pdf',
+            preview_image_path='thumbnail.jpg',
+            name=map_title,
+            description=instructions,
+            center=None,
+            northeast=None,
+            southwest=None,
+            extents=None,
+            virtual_path='/%s/%s/%s/' % (
+                settings.USER_MEDIA_DIR, 'prints', uuid
+            )
+        )
+        p.save()
+        return p
+
     def create_print(self, layout_id=1, map_provider=1,
                      lat=55, lng=61.4, zoom=17,
                      map_title='A title',
@@ -401,7 +439,7 @@ class ModelMixin(object):
     def create_mapimage(self, user=None, project=None, tags=[],
                         name='MapImage Name'):
         from localground.apps.site import models
-        p = self.create_print(map_title='A mapimage-linked print')
+        p = self.create_print_without_image(map_title='A mapimage-linked print')
         user = user or self.user
         project = project or self.project
         mapimage = models.MapImage(
@@ -416,7 +454,12 @@ class ModelMixin(object):
             status=models.StatusCode.get_status(
                 models.StatusCode.PROCESSED_SUCCESSFULLY),
             upload_source=models.UploadSource.get_source(
-                models.UploadSource.WEB_FORM))
+                models.UploadSource.WEB_FORM),
+            virtual_path='/userdata/media/' + user.username + '/map-images/',
+            host=settings.SERVER_HOST,
+            file_name_orig='map_image.jpg',
+            file_name_thumb='map_image_thumb.jpg'
+        )
         mapimage.save()
         mapimage.processed_image = self.create_imageopt(mapimage)
         mapimage.save()
