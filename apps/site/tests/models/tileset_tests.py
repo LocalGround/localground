@@ -13,9 +13,7 @@ class TileSetTest(BaseAbstractModelClassTest, test.TestCase):
         self.model = TileSet.objects.get(id=1)
 
     '''
-    Note - with an emopty Tileset class
-    there is no value of the following:
-    Overlay Source
+    There is no value of the following:
     Extras
     '''
     def test_model_properties(self):
@@ -25,11 +23,11 @@ class TileSetTest(BaseAbstractModelClassTest, test.TestCase):
             ('overlay_source', models.ForeignKey),
             ('is_printable', models.BooleanField),
             ('provider_id', models.CharField),
-            ('title_url', models.CharField),
+            ('tile_url', models.CharField),
             ('static_url', models.CharField),
             ('key', models.CharField),
             ('attribution', models.CharField),
-            ('extras', models.JSONField),
+            # ('extras', models.JSONField),
         ]:
             prop_name = prop[0]
             prop_type = prop[1]
@@ -39,13 +37,12 @@ class TileSetTest(BaseAbstractModelClassTest, test.TestCase):
 
     def test_to_dict(self, **kwargs):
         testDict = self.model.to_dict()
-        print(testDict)
         self.assertEqual(testDict['id'], 1)
-        self.assertEqual(testDict['name'], u'')
-        self.assertEqual(testDict['source_id'], u'')
-        self.assertEqual(testDict['source_name'], u'')
-        self.assertEqual(testDict['title_url'], u'')
-        self.assertEqual(testDict['static_url'], u'')
-        self.assertEqual(testDict['min'], u'')
-        self.assertEqual(testDict['max'], u'')
-        self.assertEqual(testDict['is_printable'], u'')
+        self.assertEqual(testDict['name'], u'Grayscale')
+        self.assertEqual(testDict['source_id'], 1)
+        self.assertEqual(testDict['source_name'], u'mapbox')
+        self.assertEqual(testDict['tile_url'], u'https://api.mapbox.com/styles/v1/lg/cj176x4e400252sk86yda5omv/tiles/256/{z}/{x}/{y}')
+        self.assertEqual(testDict['static_url'], u'https://api.mapbox.com/styles/v1/lg/cj176yj2k001t2spk3cjy6j8m/static/{x},{y},{z},0.00,0.00/{w}x{h}')
+        self.assertEqual(testDict['min'], 1)
+        self.assertEqual(testDict['max'], 20)
+        self.assertEqual(testDict['is_printable'], True)
