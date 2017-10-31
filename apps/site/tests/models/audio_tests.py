@@ -16,15 +16,15 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
         for audio in models.Audio.objects.all():
             audio.remove_media_from_file_system()
 
-    def test_create_audio_using_post(self, **kwargs):
+    def makeTmpFile(self):
         import tempfile
         import wave
         import random
         import struct
-        from django.core.files import File
         
         # Create dummy audio file:
-        tmp_file = tempfile.NamedTemporaryFile(suffix='.wav')
+        #tmp_file = tempfile.NamedTemporaryFile(suffix='.wav')
+        tmp_file = open('/tmp/test.wav', 'w')
         noise_output = wave.open(tmp_file, 'w')
         noise_output.setparams((2, 2, 44100, 0, 'NONE', 'not compressed'))
         values = []
@@ -39,20 +39,66 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
         value_str = ''.join(values)
         noise_output.writeframes(value_str)
         noise_output.close()
+        return tmp_file
 
-        # Save dummy file to disk:
-        file_name_new = None
-        with open(tmp_file.name, 'rb') as data:
-            file_name_new = upload_helpers.save_file_to_disk(
-                self.user, 'audio', File(data)
-            )
-            self.assertEqual(1,1)
+        
+       
 
-            # Convert file to MP3
-            media_path = upload_helpers.generate_absolute_path(
-                self.user, 'audio'
-            )
-            with open(media_path + file_name_new, 'rb') as data:                                
-                models.Audio.process_file(File(data), self.user)
-                print(data.name)
-                self.assertTrue(os.path.isfile(data.name))
+    def test_convert_wav_to_mp3(self, **kwargs):
+        from django.core.files import File
+        tmp_file = self.makeTmpFile()
+        with open(tmp_file.name, 'rb') as data:                            
+            result = models.Audio.process_file(File(data), self.user)
+            name_wav = tmp_file.name.split('/')[-1].lower()
+            name_mp3 = name_wav.replace('wav', 'mp3')
+            virtual_path = upload_helpers.generate_relative_path(self.user, 'audio')
+            absolute_path = upload_helpers.generate_absolute_path(self.user, 'audio')
+            wav_file_path = absolute_path + name_wav
+            mp3_file_path = absolute_path + result['file_name_new']
+            
+            self.assertEqual(result['file_name_new'], name_mp3)
+            self.assertEqual(result['content_type'], 'wav')
+            self.assertEqual(result['file_name_orig'], tmp_file.name)
+            self.assertEqual(result['name'], tmp_file.name)
+            self.assertEqual(result['virtual_path'], virtual_path)
+
+            # Test that both the mp3 and the wav file are now on disk
+            self.assertTrue(os.path.isfile(wav_file_path))
+            self.assertTrue(os.path.isfile(mp3_file_path))
+
+    def test_delete(self, **kwargs):
+        from django.core.files import File
+        tmp_file = self.makeTmpFile()
+        with open(tmp_file.name, 'rb') as data:                            
+            result = models.Audio.process_file(File(data), self.user)
+            name_wav = tmp_file.name.split('/')[-1].lower()
+            name_mp3 = name_wav.replace('wav', 'mp3')
+            virtual_path = upload_helpers.generate_relative_path(self.user, 'audio')
+            absolute_path = upload_helpers.generate_absolute_path(self.user, 'audio')
+            wav_file_path = absolute_path + name_wav
+            mp3_file_path = absolute_path + result['file_name_new']
+
+            self.model.file_name_new = result['file_name_new']
+            self.model.content_type = result['content_type']
+
+            # removing '/tmp' from file_name_orig. 
+            # otherwise method will try to delete invalid path 
+            # '/userdata/media/tester/audio//tmp/tmpExNqHF.wav'
+            self.model.file_name_orig = name_wav
+            self.model.name = result['name']
+            self.model.virtual_path = result['virtual_path']
+            self.model.save()
+
+            # check that files are on the disk
+
+            # Test that both the mp3 and the wav file are now on disk
+            self.assertTrue(os.path.isfile(wav_file_path))
+            self.assertTrue(os.path.isfile(mp3_file_path))
+
+            self.model.delete()
+
+            self.assertTrue(self.model.id is None)
+
+            # Test that both the mp3 and the wav file are no longer on disk
+            self.assertFalse(os.path.isfile(mp3_file_path))
+            self.assertFalse(os.path.isfile(wav_file_path))

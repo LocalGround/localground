@@ -14,13 +14,17 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
         
         #save to disk:
         model_name_plural = cls.model_name_plural
-        file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file)
+        file_name_new = upload_helpers.save_file_to_disk(
+            owner, model_name_plural, file
+        )
         file_name, ext = os.path.splitext(file_name_new)
         
         # convert to MP3:
         if ext != '.mp3':
             # use ffmpeg to convert to mp3:
-            media_path = upload_helpers.generate_absolute_path(owner, model_name_plural)
+            media_path = upload_helpers.generate_absolute_path(
+                owner, model_name_plural
+            )
             path_to_be_converted = media_path + '/' + file_name_new
             file_name_new = file_name + '.mp3'
             path_to_mp3 = media_path + '/' + file_name_new
@@ -33,7 +37,9 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
             'name': name or file.name,
             'file_name_new': file_name_new,
             'content_type': ext.replace('.', ''),
-            'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural)
+            'virtual_path': upload_helpers.generate_relative_path(
+                owner, model_name_plural
+            )
         }
 
     def remove_media_from_file_system(self):

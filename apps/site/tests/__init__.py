@@ -457,6 +457,7 @@ class ModelMixin(object):
         project = project or self.project
         video = models.Video(
             project=project,
+            #host=settings.SERVER_HOST,
             owner=user,
             last_updated_by=user,
             name=name,
