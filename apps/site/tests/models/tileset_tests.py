@@ -10,7 +10,7 @@ class TileSetTest(BaseAbstractModelClassTest, test.TestCase):
 
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
-        self.model = TileSet()
+        self.model = TileSet.objects.get(id=1)
 
     '''
     Note - with an emopty Tileset class
@@ -39,8 +39,8 @@ class TileSetTest(BaseAbstractModelClassTest, test.TestCase):
 
     def test_to_dict(self, **kwargs):
         testDict = self.model.to_dict()
-        print('\n' + testDict)
-        self.assertEqual(testDict['id'], None)
+        print(testDict)
+        self.assertEqual(testDict['id'], 1)
         self.assertEqual(testDict['name'], u'')
         self.assertEqual(testDict['source_id'], u'')
         self.assertEqual(testDict['source_name'], u'')
