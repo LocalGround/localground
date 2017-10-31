@@ -112,7 +112,7 @@ class ImageOpts(ExtentsMixin, MediaMixin, BaseAudit):
         return self._encrypt_media_path(
             '%s%s' %
             (self.source_mapimage.virtual_path,
-             self.file_name),
+             self.file_name_orig),
             host=host)
 
     def save(self, user=None, *args, **kwargs):
