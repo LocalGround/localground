@@ -1,4 +1,8 @@
-from localground.apps.site.models import ObjectAuthority, UserAuthority
+from localground.apps.site.models import ObjectAuthority, \
+    UserAuthority, UserAuthorityObject
+from localground.apps.site.tests.models.abstract_base_tests import \
+BaseAbstractModelClassTest
+from django.contrib.contenttypes import fields
 from django import test
 
 
@@ -43,9 +47,28 @@ class UserAuthorityTests(test.TestCase):
         self.assertEqual(field.name, 'name')
         self.assertEqual(type(field), models.CharField)
 
-'''
-class UserAuthorityObjectTests(test.TestCase):
+        
+class UserAuthorityObjectTests(BaseAbstractModelClassTest, 
+    test.TestCase):
     def setUp(self):
+        BaseAbstractModelClassTest.setUp(self)
         self.model = UserAuthorityObject()
-'''
     
+    def test_model_properties(self):
+        from django.contrib.gis.db import models
+        for prop in [
+            ('user', models.ForeignKey),
+            ('authority', models.ForeignKey),
+            ('time_stamp', models.DateTimeField),
+            ('granted_by', models.ForeignKey),
+            ('content_type', models.ForeignKey),
+            ('object_id', models.PositiveIntegerField),
+            ('object', fields.GenericForeignKey),
+            ]:
+            prop_name = prop[0]
+            prop_type = prop[1]
+            field = UserAuthorityObject._meta.get_field(prop_name)
+            self.assertEqual(field.name, prop_name)
+            self.assertEqual(type(field), prop_type)
+    
+    #def test_to_dict(self):

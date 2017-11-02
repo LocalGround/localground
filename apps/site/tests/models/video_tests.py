@@ -7,7 +7,7 @@ from django import test
 import os
 
 #class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
-class AudioModelTest(test.TestCase):
+class VideoModelTest(test.TestCase):
 
     '''
     def setUp(self):
