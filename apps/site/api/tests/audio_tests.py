@@ -49,6 +49,19 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
         self.view = views.AudioList.as_view()
         self.metadata = get_metadata()
 
+    def test_page_500_status_basic_user(self, urls=None, **kwargs):
+        if urls is None:
+            urls = self.urls
+        for url in urls:
+            response = self.client_user.get(url)
+            self.assertEqual(response.status_code,
+                status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def test_page_200_status_basic_user(self, urls=None, **kwargs):
+        url = '/api/0/audio/?project_id={0}'.format(self.project.id)
+        response = self.client_user.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_create_audio_using_post(self, **kwargs):
         import tempfile
         tmp_file = tempfile.NamedTemporaryFile(suffix='.wav')
