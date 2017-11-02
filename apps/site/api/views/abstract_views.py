@@ -3,6 +3,8 @@ from localground.apps.site.api import filters
 from localground.apps.site import models
 from rest_framework import generics, status, exceptions
 from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer
+from django.core.exceptions import ValidationError
+from rest_framework.exceptions import APIException
 
 class QueryableListCreateAPIView(generics.ListCreateAPIView):
 
@@ -37,7 +39,7 @@ class QueryableListAPIView(generics.ListAPIView):
         except:
             pass
         return ret
-    
+
 class QueryableRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def metadata(self, request):
         # extend the existing metadata method in the parent class by adding a
@@ -56,7 +58,7 @@ class QueryableRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class MediaList(QueryableListCreateAPIView):
-    filter_backends = (filters.SQLFilterBackend,)
+    filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
     ext_whitelist = []
 
     def get_queryset(self):
@@ -66,6 +68,7 @@ class MediaList(QueryableListCreateAPIView):
             return self.model.objects.get_objects_public(
                 access_key=self.request.GET.get('access_key')
             )
+
 
 class MediaInstance(generics.RetrieveUpdateDestroyAPIView):
 
