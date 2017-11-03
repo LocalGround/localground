@@ -70,7 +70,9 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
     '''
 
     def test_video_list_returns_all_videos(self, **kwargs):
-        response = self.client_user.get(self.url)
+        response = self.client_user.get(
+            self.url + '?project_id={0}'.format(self.project.id)
+        )
         results = response.data.get("results")
         r1 = results[0]
         r2 = results[1]

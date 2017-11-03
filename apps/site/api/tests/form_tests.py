@@ -39,6 +39,8 @@ class ApiFormListTest(test.TestCase, ViewMixinAPI):
         self.view = views.FormList.as_view()
         self.metadata = get_metadata_form()
 
+    
+
 class FormDataTestMixin(object):
 
     POINT = {
