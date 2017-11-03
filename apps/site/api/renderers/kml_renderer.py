@@ -26,9 +26,12 @@ class KMLRenderer(renderers.BaseRenderer):
         """
         kml = KML()
         dataset = None
-        if 'overlay_type' in raw_data and raw_data['overlay_type'] == 'project':
+        if 'overlay_type' in raw_data and \
+                raw_data['overlay_type'] == 'project':
             # instance of complex type: projects
-            dataset = raw_data['children']['photos']['data'] + raw_data['children']['audio']['data'] + raw_data['children']['markers']['data']
+            dataset = raw_data['children']['photos']['data'] + \
+                raw_data['children']['audio']['data'] + \
+                raw_data['children']['markers']['data']
         elif 'results' in raw_data:
             # list of simple type: photos, audio, or markers
             dataset = raw_data.get('results')
@@ -42,7 +45,8 @@ class KMLRenderer(renderers.BaseRenderer):
             name = KML.as_node('name', [data['name']])
             cdata = None
             if 'file_path_orig' in data:
-                cdata = KML.wrap_cdata(data['overlay_type'], data['file_path_orig'])
+                cdata = KML.wrap_cdata(
+                    data['overlay_type'], data['file_path_orig'])
             description = KML.as_node('description', [cdata, data['caption']])
             coord = KML.get_coord(data['geometry'])
             point = KML.as_node('Point', [coord])
@@ -50,9 +54,11 @@ class KMLRenderer(renderers.BaseRenderer):
             kml.append(placemark)
         return kml.get_kml()
 
+
 class KML():
     """
-    Simplified KML encoder with limited features for Local Ground data export API
+    Simplified KML encoder with limited features for Local Ground
+    data export API
     """
 
     prolog = '<?xml version="1.0" encoding="UTF-8"?>'
@@ -90,7 +96,12 @@ class KML():
     def get_coord(geom):
         opening = '<coordinates>'
         closing = '</coordinates>'
-        coord = '{}{},{},0{}'.format(opening, geom['coordinates'][0], geom['coordinates'][1], closing)
+        coord = '{}{},{},0{}'.format(
+            opening,
+            geom['coordinates'][0],
+            geom['coordinates'][1],
+            closing
+        )
         return coord
 
     def append(self, new_node):

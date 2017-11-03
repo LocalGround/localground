@@ -54,8 +54,10 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
             urls = self.urls
         for url in urls:
             response = self.client_user.get(url)
-            self.assertEqual(response.status_code,
-                status.HTTP_500_INTERNAL_SERVER_ERROR)
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def test_page_200_status_basic_user(self, urls=None, **kwargs):
         url = '/api/0/audio/?project_id={0}'.format(self.project.id)
