@@ -56,6 +56,8 @@ class BaseAbstractModelClassTest(ModelMixin):
         }
         self.Photo = models.Photo
         self.photo = self.create_photo()
+        #self.Video = models.Video
+        #self.video = self.create_video()
 
     def test_classes_all_have_required_class_properties(self, **kwargs):
         count = 0

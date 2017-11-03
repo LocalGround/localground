@@ -195,6 +195,28 @@ class ModelMixin(object):
         return layer
     '''
 
+    def create_layer(self):
+        layer = models.Layer(
+            last_updated_by=self.user,
+            owner=self.user,
+            styled_map=self.create_styled_map()
+        )
+        layer.save()
+        return layer
+
+    def create_generic_association(self):
+        marker = self.create_marker()
+        photo = self.create_photo()
+
+        gen_ass = models.GenericAssociation(
+            source_object=marker,
+            entity_object=photo,
+            last_updated_by=self.user, 
+            owner=self.user
+        )
+        gen_ass.save()
+        return gen_ass
+
     def _add_group_user(self, group, user, authority_id):
         from localground.apps.site import models
         uao = models.UserAuthorityObject(
@@ -506,6 +528,7 @@ class ModelMixin(object):
         project = project or self.project
         video = models.Video(
             project=project,
+            #host=settings.SERVER_HOST,
             owner=user,
             last_updated_by=user,
             name=name,
@@ -525,6 +548,7 @@ class ModelMixin(object):
         project = project or self.project
         audio = models.Audio(
             project=project,
+            host=settings.SERVER_HOST,
             owner=user,
             last_updated_by=user,
             name=name,
@@ -537,6 +561,20 @@ class ModelMixin(object):
         )
         audio.save()
         return audio
+
+    def create_styled_map(self):
+        from localground.apps.site.models import StyledMap
+        from django.contrib.gis.geos import GEOSGeometry
+        map = models.StyledMap(
+            center= GEOSGeometry('POINT(5 23)'),
+            zoom=3,
+            last_updated_by=self.user,
+            owner = self.user,
+            project = self.project,
+            name='Oakland Map'
+        )
+        map.save()
+        return map
 
     def create_relation(self, source_model, attach_model, ordering=1, turned_on=False):
         from localground.apps.site import models
