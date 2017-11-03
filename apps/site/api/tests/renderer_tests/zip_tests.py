@@ -51,7 +51,9 @@ class ZIPRendererListTest(ZipMediaMixin, test.TestCase, ModelMixin):
     def test_all_media_files_present_in_zip_file(self):
         for url in self.urls.keys():
             expected_count = self.urls.get(url)
-            response = self.client_user.get(url + '?format=zip')
+            response = self.client_user.get(
+                url + '?format=zip&project_id={0}'.format(self.project.id)
+            )
             data = StringIO(response.content)
             zip_file = zipfile.ZipFile(data, 'r')
             data = StringIO(zip_file.read('content.csv'))
