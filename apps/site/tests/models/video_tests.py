@@ -1,13 +1,15 @@
 from localground.apps.site import models
 from localground.apps.site.models import Video
-from localground.apps.site.tests.models.abstract_base_uploaded_media_tests \
-    import BaseUploadedMediaAbstractModelClassTest
+from localground.apps.site.tests.models import \
+    ProjectMixinTest, NamedMixinTest, PointMixinTest, \
+    BaseAuditAbstractModelClassTest
 from localground.apps.lib.helpers import upload_helpers
 from django import test
 import os
 
-#class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
-class VideoModelTest(test.TestCase):
+class AudioModelTest(ProjectMixinTest, NamedMixinTest, 
+    PointMixinTest, BaseAuditAbstractModelClassTest,test.TestCase):
+#class VideoModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
 
     '''
     def setUp(self):
@@ -40,7 +42,12 @@ class VideoModelTest(test.TestCase):
         self.assertEqual(self.model.filter_fields, test_filter_fields)
         '''
     def setUp(self):
-        self.model = Video()
+        ProjectMixinTest.setUp(self)
+        #NamedMixinTest.setUp(self)
+        PointMixinTest.setUp(self)
+        BaseAuditAbstractModelClassTest.setUp(self)
+        
+        self.model = self.create_video()
     
     def test_static_properties(self, **kwargs):
         test_providers = (
@@ -64,7 +71,7 @@ class VideoModelTest(test.TestCase):
             self.assertEqual(type(field), prop_type)
 
     def test_other_attributes(self):
-        test_ff =  (
+        test_ff = (
             'id', 'project', 'date_created', 'name', 'description', 'tags', 'point'
         )
         self.assertEqual(self.model.filter_fields, test_ff)

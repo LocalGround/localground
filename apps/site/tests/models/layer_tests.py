@@ -1,15 +1,25 @@
 from localground.apps.site import models
 from localground.apps.site.models import Layer
 from localground.apps.site.models import StyledMap
-from localground.apps.site.tests.models.abstract_base_uploaded_media_tests \
-    import BaseUploadedMediaAbstractModelClassTest
+from django.contrib.auth.models import User
+from localground.apps.site.tests.models.abstract_base_audit_tests import \
+    BaseAuditAbstractModelClassTest
 from django import test
 from jsonfield import JSONField
 
 
-class LayerModelTests(test.TestCase):
+class LayerModelTests(BaseAuditAbstractModelClassTest,test.TestCase):
     def setUp(self):
-        self.model = Layer()
+        from localground.apps.site import models
+        BaseAuditAbstractModelClassTest.setUp(self)
+        self.model = self.create_layer()
+        self.other_user = User.objects.create_user(
+            'tester2',
+            first_name='test',
+            email='',
+            password=self.user_password
+        )
+
     
     def test_static_properties(self, **kwargs):
         test_layer_types = (
@@ -37,26 +47,13 @@ class LayerModelTests(test.TestCase):
             field = Layer._meta.get_field(prop_name)
             self.assertEqual(field.name, prop_name)
             self.assertEqual(type(field), prop_type)
-
-    def test_Meta(self):
-        self.assertTrue(hasattr(self.model.Meta, 'app_label'))
-        #self.assertTrue(hasattr(self.model.Meta, 'unique_together'))
-        self.assertEqual(self.model.Meta.app_label, 'site')
-        '''
-        self.assertEqual(
-            self.model.Meta.unique_together, ('title', 'styled_map')
-        )
-        '''
     
-    '''
-    # need to properly mock a 'StyledMap' in order to test this
     def test_can_edit(self):
-        map = StyledMap()
-        map.save() #needs to be saved to the database with non-null attributes?
-        self.model.user = 'test_user'
-        other_user = 'other_user'
-        self.model.styled_map = map 
-
-        self.assertTrue(self.model.can_edit(self.model.user))
-        self.assertFalse(self.model.can_edit(other_user))
-    '''
+        self.assertTrue(self.model.can_edit(self.user))
+        self.assertFalse(self.model.can_edit(self.other_user))
+    
+    def test_can_view(self):
+        # always true, all layers are viewable
+        self.assertTrue(self.model.can_edit(self.user))
+        self.assertTrue(self.model.can_edit(self.other_user))
+    

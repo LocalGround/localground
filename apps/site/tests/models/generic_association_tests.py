@@ -1,5 +1,6 @@
 from localground.apps.site import models
 from localground.apps.site.models import GenericAssociation
+from django.contrib.auth.models import User
 from localground.apps.site.tests.models.abstract_base_uploaded_media_tests \
     import BaseUploadedMediaAbstractModelClassTest
 from localground.apps.site.tests.models.abstract_base_tests import \
@@ -13,7 +14,13 @@ from django.contrib.contenttypes import generic
 class GenericAssociationModelTests(BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
-        self.model = GenericAssociation()
+        self.model = self.create_generic_association()
+        self.other_user = User.objects.create_user(
+            'tester2',
+            first_name='test',
+            email='',
+            password=self.user_password
+        )
     
     def test_model_properties(self):
         from django.contrib.gis.db import models
@@ -44,5 +51,10 @@ class GenericAssociationModelTests(BaseAbstractModelClassTest, test.TestCase):
         }
         self.assertEqual(self.model.to_dict(), test_dict)
     
-    #def test_can_edit()
-    #def test_can_view()
+    def test_can_edit(self):
+        self.assertTrue(self.model.can_edit(self.user))
+        self.assertFalse(self.model.can_edit(self.other_user))
+        
+    def test_can_view(self):
+        self.assertTrue(self.model.can_view(self.user))
+        self.assertFalse(self.model.can_view(self.other_user))

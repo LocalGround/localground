@@ -39,22 +39,25 @@ class GenericAssociationModelTests(BaseAbstractModelClassTest, test.TestCase):
     
     def test_get_name(self):
         self.assertEqual(self.model.get_name(), 'Marker Test')
-        
-        '''
-        # test if no name exists?
-        # problem: marker has no 'id' to fall back on
+
+        # test if no name exists
         self.model.name = None
-        self.assertEqual(self.model.get_name(), self.model.id)
-        '''
-    
-    #def test_get_records(self):
-    # need to create forms to make this work?
+        self.assertEqual(self.model.get_name(), 'Marker #%s' % (self.model.id))
 
-    #def test_get_form_ids(self):
+    def test_create_instance(self):
+        user = self.user
+        project = self.project
+        lat = 37.87
+        lng = -122.28
+        name = 'Marker 1'
+        new_marker = Marker.create_instance(
+            user, project, lat, lng, name
+        )
+        self.assertTrue(new_marker.pk)
+        self.assertTrue(new_marker.point)
+        self.assertEqual(new_marker.color, 'CCCCCC')
+        self.assertEqual(new_marker.project, self.model.project)
+        self.assertEqual(new_marker.owner, self.model.owner)
 
-    
-
-    #def test_create_instance(self):
-
-    #def test_can_edit()
-    #def test_can_view()
+    def test_unicode_(self):
+        self.assertEqual(str(self.model.id), self.model.__unicode__())

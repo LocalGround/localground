@@ -102,3 +102,10 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
             # Test that both the mp3 and the wav file are no longer on disk
             self.assertFalse(os.path.isfile(mp3_file_path))
             self.assertFalse(os.path.isfile(wav_file_path))
+
+    def test_unicode_(self):
+        test_string1 = self.model.file_name_new + ': ' + self.model.name
+        test_string2 = 'new.jpg: Audio Name'
+
+        self.assertEqual(self.model.__unicode__(), test_string1)
+        self.assertEqual(self.model.__unicode__(), test_string2)

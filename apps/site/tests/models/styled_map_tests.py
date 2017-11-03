@@ -13,7 +13,7 @@ from jsonfield import JSONField
 class GenericAssociationModelTests(BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
-        self.model = StyledMap()
+        self.model = self.create_styled_map()
     
     def test_model_properties(self):
         from django.contrib.gis.db import models
@@ -37,5 +37,5 @@ class GenericAssociationModelTests(BaseAbstractModelClassTest, test.TestCase):
         self.assertTrue(self.model.can_view(self.model.user))
     
     def test_str_(self):
-        self.model.name = 'map34'
-        self.assertEqual(self.model.__str__(), 'map34')
+        #self.model.name = 'map34'
+        self.assertEqual(self.model.__str__(), 'Oakland Map')
