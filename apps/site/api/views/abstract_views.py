@@ -2,9 +2,11 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api import filters
 from localground.apps.site import models
 from rest_framework import generics, status, exceptions
-from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer
+from localground.apps.site.api.serializers.user_profile_serializer import \
+    UserProfileSerializer
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import APIException
+
 
 class QueryableListCreateAPIView(generics.ListCreateAPIView):
 
@@ -19,9 +21,10 @@ class QueryableListCreateAPIView(generics.ListCreateAPIView):
         try:
             query = QueryParser(self.model, request.GET.get('query'))
             ret['filters'] = query.to_dict_list()
-        except:
+        except Exception:
             pass
         return ret
+
 
 class QueryableListAPIView(generics.ListAPIView):
 
@@ -36,11 +39,13 @@ class QueryableListAPIView(generics.ListAPIView):
         try:
             query = QueryParser(self.model, request.GET.get('query'))
             ret['filters'] = query.to_dict_list()
-        except:
+        except Exception:
             pass
         return ret
 
-class QueryableRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+
+class QueryableRetrieveUpdateDestroyView(
+        generics.RetrieveUpdateDestroyAPIView):
     def metadata(self, request):
         # extend the existing metadata method in the parent class by adding a
         # list of available filters
@@ -52,7 +57,7 @@ class QueryableRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         try:
             query = QueryParser(self.model, request.GET.get('query'))
             ret['filters'] = query.to_dict_list()
-        except:
+        except Exception:
             pass
         return ret
 

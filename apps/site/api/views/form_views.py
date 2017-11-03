@@ -1,14 +1,16 @@
 from rest_framework import viewsets, generics
 from localground.apps.site.api import serializers, filters, permissions
-from localground.apps.site.api.views.abstract_views import QueryableListCreateAPIView
+from localground.apps.site.api.views.abstract_views import \
+    QueryableListCreateAPIView
 from localground.apps.site import models
 from django.http import Http404
 from rest_framework.response import Response
 from rest_framework import status
 
+
 class FormList(QueryableListCreateAPIView):
     serializer_class = serializers.FormSerializerList
-    filter_backends = (filters.SQLFilterBackend,)
+    filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
     model = models.Form
 
     def get_queryset(self):
@@ -39,5 +41,3 @@ class FormInstance(generics.RetrieveUpdateDestroyAPIView):
             return models.Form.objects.get_objects_public(
                 access_key=self.request.GET.get('access_key')
             )
-
-

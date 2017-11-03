@@ -57,12 +57,13 @@ class ProjectManager(models.GeoManager, ProjectMixin):
     def get_queryset(self):
         return ProjectQuerySet(self.model, using=self._db)
 
+
 class FormMixin(GroupMixin):
     # For now, only the owner can view / edit a form.
     # Todo: restrict viewing data to the row-level, based on project
     # permissions.
     related_fields = ['owner', 'last_updated_by']
-    prefetch_fields = ['users__user', 'field_set']
+    prefetch_fields = ['field_set']
 
     def my_forms(self, user=None):
         # a form is associated with one or more projects
