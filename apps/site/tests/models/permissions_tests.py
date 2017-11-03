@@ -29,6 +29,10 @@ class ObjectAuthorityTest(test.TestCase):
             field = ObjectAuthority._meta.get_field(prop_name)
             self.assertEqual(field.name, prop_name)
             self.assertEqual(type(field), prop_type)
+    
+    def test_unicode_(self):
+        self.model.name = 'Tester'
+        self.assertEqual(self.model.__unicode__(), 'Tester')
 
 class UserAuthorityTests(test.TestCase):
     def setUp(self):
@@ -46,6 +50,10 @@ class UserAuthorityTests(test.TestCase):
         field = UserAuthority._meta.get_field('name')
         self.assertEqual(field.name, 'name')
         self.assertEqual(type(field), models.CharField)
+    
+    def test_unicode_(self):
+        self.model.name = 'Tester'
+        self.assertEqual(self.model.__unicode__(), 'Tester')
 
         
 class UserAuthorityObjectTests(BaseAbstractModelClassTest, 
@@ -71,4 +79,22 @@ class UserAuthorityObjectTests(BaseAbstractModelClassTest,
             self.assertEqual(field.name, prop_name)
             self.assertEqual(type(field), prop_type)
     
-    #def test_to_dict(self):
+    '''
+    # how to test this???
+    def test_to_dict(self):
+        self.model.auth_user = {'username': 'tester_person'}
+        #self.model.auth_user.username = "tester_person"
+        self.model.authority.id = 777
+        self.authority.name = 'Tester'
+
+        test_dict = {
+            'username': 'tester_person',
+            'authority_id': 777,
+            'authority': 'Tester'
+        }
+
+        self.assertEqual(self.model.to_dict(), test_dict)
+    '''
+
+
+
