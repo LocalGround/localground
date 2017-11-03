@@ -156,7 +156,6 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
         data = StringIO(response.content)
         reader = csv.DictReader(data)
         expected = {
-            'form_{}'.format(self.form.id): 2,
             'marker': 1,
             'photo': 2,
             'audio': 2,

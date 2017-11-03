@@ -111,7 +111,7 @@ class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
         self.form = self.create_form_with_fields(
             name="Class Form", num_fields=9
         )
-        #self.form = models.Form.objects.get(id=self.form.id)  # requery
+        # self.form = models.Form.objects.get(id=self.form.id)  # requery
         self.records = self.create_records(
             self.form, 8, photo=self.photo1, audio=self.audio1
         )
@@ -130,8 +130,8 @@ class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
         self.urls = {
             # 1 project + 2 photos + 2 audio + 2 markers + 8 records
             '/api/0/projects/{}/'.format(self.project.id): 15,
-            # 1 project + 2 photos + 2 audio + 2 records
-            '/api/0/markers/{0}/'.format(self.marker1.id): 7
+            # 1 project + 2 photos + 2 audio (no records)
+            '/api/0/markers/{}/'.format(self.marker1.id): 5
         }
 
     def test_all_media_files_present_in_zip_file(self):
@@ -139,8 +139,6 @@ class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
         self.create_relation(self.marker1, self.photo2)
         self.create_relation(self.marker1, self.audio1)
         self.create_relation(self.marker1, self.audio2)
-        self.create_relation(self.marker1, self.record1)
-        self.create_relation(self.marker1, self.record2)
 
         for url in self.urls.keys():
             expected_count = self.urls.get(url)
@@ -173,4 +171,4 @@ class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
             # are present in the zip file:
             self.assertSetEqual(set(file_paths), set(zip_file.namelist()))
             self.assertEqual(num_rows, expected_count)
-            self.assertTrue(num_rows > 6)
+            self.assertTrue(num_rows > 4)

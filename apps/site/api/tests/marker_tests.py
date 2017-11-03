@@ -14,8 +14,6 @@ def get_metadata():
         'audio_count': {'read_only': True, 'required': False, 'type': 'field'},
         'map_image_count': {'read_only': True, 'required': False,
                             'type': 'field'},
-        'record_count': {'read_only': True, 'required': False,
-                         'type': 'field'},
         'video_count': {'read_only': True, 'required': False, 'type': 'field'},
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
@@ -133,7 +131,6 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         marker = response.data.get("results")[0]
         self.assertEqual(len(marker.get('photo_array')), 1)
         self.assertEqual(len(marker.get('audio_array')), 1)
-        self.assertTrue('record_array' in marker)
         self.assertTrue('map_image_array' in marker)
 
         # clean up:
@@ -216,8 +213,6 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.metadata = get_metadata()
         self.metadata.update({
             'children': {'read_only': True, 'required': False,
-                         'type': u'field'},
-            'form_ids': {'read_only': True, 'required': False,
                          'type': u'field'}
         })
 
@@ -285,7 +280,6 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 self.assertEqual(result_json.get('photo_count'), 0)
                 self.assertEqual(result_json.get('audio_count'), 0)
                 self.assertEqual(result_json.get('map_image_count'), 0)
-                self.assertEqual(result_json.get('record_count'), 0)
 
     def test_update_marker_using_patch(self, **kwargs):
         for k in ['Point', 'LineString', 'Polygon']:
