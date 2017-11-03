@@ -15,7 +15,9 @@ class ZipMediaMixin(mixins.MediaMixin):
 
     def test_zip_is_valid(self):
         for url in self.urls:
-            response = self.client_user.get(url + '?format=zip')
+            response = self.client_user.get(
+                url + '?format=zip&project_id={0}'.format(self.project.id)
+            )
             data = StringIO(response.content)
 
             # Check if the zip file is not corrupted
@@ -129,7 +131,7 @@ class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
             # 1 project + 2 photos + 2 audio + 2 markers + 8 records
             '/api/0/projects/{}/'.format(self.project.id): 15,
             # 1 project + 2 photos + 2 audio + 2 records
-            '/api/0/markers/{}/'.format(self.marker1.id): 7
+            '/api/0/markers/{0}/'.format(self.marker1.id): 7
         }
 
     def test_all_media_files_present_in_zip_file(self):
@@ -142,7 +144,9 @@ class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
 
         for url in self.urls.keys():
             expected_count = self.urls.get(url)
-            response = self.client_user.get(url + '?format=zip')
+            response = self.client_user.get(
+                url + '?format=zip&project_id={0}'.format(self.project.id)
+            )
             data = StringIO(response.content)
             zip_file = zipfile.ZipFile(data, 'r')
             data = StringIO(zip_file.read('content.csv'))
