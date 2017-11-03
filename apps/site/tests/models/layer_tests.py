@@ -54,6 +54,6 @@ class LayerModelTests(BaseAuditAbstractModelClassTest,test.TestCase):
     
     def test_can_view(self):
         # always true, all layers are viewable
-        self.assertTrue(self.model.can_edit(self.user))
-        self.assertTrue(self.model.can_edit(self.other_user))
+        self.assertTrue(self.model.can_view(self.user))
+        self.assertTrue(self.model.can_view(self.other_user))
     

@@ -14,9 +14,11 @@ class ExtentsMixinTest(test.TestCase, ModelMixin):
 
     def test_model_properties(self, **kwargs):
         from django.contrib.gis.db import models
-        from localground.apps.site.models import BaseUploadedMedia
         prop_name = 'extents'
         prop_type = models.PolygonField
         field = ExtentsMixin._meta.get_field(prop_name)
         self.assertEqual(field.name, prop_name)
         self.assertEqual(type(field), prop_type)
+
+    def test_geometry(self):
+        self.assertEqual(self.model.geometry(), self.model.extents)
