@@ -1,5 +1,6 @@
 # abstract
-from localground.apps.site.models.abstract.base import Base, BaseAudit, BaseUploadedMedia
+from localground.apps.site.models.abstract.base import \
+    Base, BaseAudit, BaseUploadedMedia
 from localground.apps.site.models.abstract.mixins import ExtentsMixin, \
     PointMixin, ExtrasMixin, ProjectMixin, GenericRelationMixin, \
     MediaMixin, NamedMixin, ObjectPermissionsMixin
@@ -22,9 +23,7 @@ from localground.apps.site.models.project import Project
 from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
     ObjectUserPermissions, UserAuthorityObject, \
-    UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser, \
-    ProjectUser, VideoUser, MapImageUser, PrintUser, \
-    FormUser
+    UserAuthority, ObjectAuthority, ProjectUser
 from localground.apps.site.models.genericassociation import GenericAssociation
 
 # prints

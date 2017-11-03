@@ -84,19 +84,10 @@ class FormMixin(GroupMixin):
         q = (
             self.model.objects.distinct()
             .select_related(*self.related_fields)
-                .filter(
-                    Q(authuser__user=user) &
-                    Q(authuser__user_authority__id__gte=authority_id)
-            )
         )
         if request:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
-        q = q.extra(
-            select={
-                'form_fields': 'select form_fields from v_form_fields WHERE v_form_fields.id = site_form.id'
-            }
-        )
         q = q.order_by(ordering_field)
         return q
 
@@ -173,10 +164,6 @@ class LayerMixin(GroupMixin):
         q = (
             self.model.objects
             .select_related(*self.related_fields)
-            .filter(
-                Q(authuser__user=user) &
-                Q(authuser__user_authority__id__gte=authority_id)
-            )
         )
         if request:
             q = self._apply_sql_filter(q, request, context)
