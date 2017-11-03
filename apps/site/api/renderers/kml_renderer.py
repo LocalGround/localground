@@ -36,7 +36,8 @@ class KMLRenderer(renderers.BaseRenderer):
             # instance of simple type: photos, audio, or markers
             dataset = [raw_data]
         for data in dataset:
-            if (not data['geometry']) or (not data['geometry']['coordinates']):
+            if (not data.get('geometry') or
+                    not data.get('geometry').get('coordinates')):
                 continue
             name = KML.as_node('name', [data['name']])
             cdata = None

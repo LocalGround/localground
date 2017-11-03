@@ -1,6 +1,7 @@
 from localground.apps.site.api import serializers
 from localground.apps.site import models
-from localground.apps.site.api.views.abstract_views import MediaList, MediaInstance
+from localground.apps.site.api.views.abstract_views import \
+    MediaList, MediaInstance
 
 
 class MapImageList(MediaList):
