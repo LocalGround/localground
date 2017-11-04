@@ -1,3 +1,4 @@
+'''
 from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
@@ -7,7 +8,7 @@ import json
 from rest_framework import status
 from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
-'''
+
 class ApiLayerTest(object):
     name = 'New Layer Name'
     description = 'Test layer description'
@@ -18,19 +19,24 @@ class ApiLayerTest(object):
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
-        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
+        'overlay_type': {
+            'read_only': True, 'required': False, 'type': 'field'},
         'access': {'read_only': True, 'required': False, 'type': 'field'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'}
     }
     symbols = [
-        {"color": "#7075FF", "width": 30, "rule": "worms > 0", "title": "At least 1 worm"},
-        {"color": "#F011D9", "width": 30, "rule": "worms = 0", "title": "No worms"}
+        {"color": "#7075FF", "width": 30,
+            "rule": "worms > 0", "title": "At least 1 worm"},
+        {"color": "#F011D9", "width": 30,
+            "rule": "worms = 0", "title": "No worms"}
     ]
     invalid_symbols = [
-        {"color": "#7075FF", "width": 30, "rule": "worms > 0", "title": "At least 1 worm"},
-        {"color": "#F011D9", "width": 30, "rule": "worms = 0", "title": "No worms"}
+        {"color": "#7075FF", "width": 30,
+            "rule": "worms > 0", "title": "At least 1 worm"},
+        {"color": "#F011D9", "width": 30,
+            "rule": "worms = 0", "title": "No worms"}
     ]
 
     def _test_save_layer(self, method, status_id, symbols):
@@ -40,10 +46,14 @@ class ApiLayerTest(object):
             'tags': self.tags,
             'symbols': json.dumps(symbols)
         }
-        #print d
-        #response = method(self.url,data=urllib.urlencode(d),HTTP_X_CSRFTOKEN=self.csrf_token,content_type="application/x-www-form-urlencoded")
-        response = method(self.url,data=json.dumps(d),HTTP_X_CSRFTOKEN=self.csrf_token,content_type="application/json")
-        #print response.data
+        # print d
+        response = method(
+            self.url,
+            data=json.dumps(d),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+        # print response.data
         self.assertEqual(response.status_code, status_id)
 
         # if it was successful, verify data:
@@ -58,11 +68,11 @@ class ApiLayerTest(object):
             self.assertEqual(rec.slug, self.slug)
 
 
-class ApiLayerListTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
+class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.url = '/api/0/layers/'
+        self.url = '/api/0/maps/{0}/layers/'.format()
         self.urls = [self.url]
         self.model = models.Layer
         self.view = views.LayerList.as_view()
@@ -103,21 +113,25 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         )
 
     def test_update_view_using_patch(self, **kwargs):
-        response = self.client_user.patch(self.url,
-                                          data=urllib.urlencode({
-                                              'name': self.name,
-                                          }),
-                                          HTTP_X_CSRFTOKEN=self.csrf_token,
-                                          content_type="application/x-www-form-urlencoded"
-                                          )
+        response = self.client_user.patch(
+            self.url,
+            data=urllib.urlencode({
+                'name': self.name,
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rec = models.Layer.objects.get(id=self.obj.id)
         self.assertEqual(rec.name, self.name)
         self.assertNotEqual(self.obj.name, self.name)
 
     def test_update_view_invalid_children_put(self, **kwargs):
-        self._test_save_layer(self.client_user.put, status.HTTP_400_BAD_REQUEST,
-                             json.dumps(self.invalid_symbols))
+        self._test_save_layer(
+            self.client_user.put,
+            status.HTTP_400_BAD_REQUEST,
+            json.dumps(self.invalid_symbols)
+        )
 
     def test_update_view_invalid_children_patch(self, **kwargs):
         self._test_save_layer(
@@ -141,13 +155,14 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         )
 
         # and then get rid of them:
-        response = self.client_user.patch(self.url,
-                                          data=urllib.urlencode({
-                                              'symbols': []
-                                          }),
-                                          HTTP_X_CSRFTOKEN=self.csrf_token,
-                                          content_type="application/x-www-form-urlencoded"
-                                          )
+        response = self.client_user.patch(
+            self.url,
+            data=urllib.urlencode({
+                'symbols': []
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rec = models.Layer.objects.get(id=self.obj.id)
 
@@ -158,9 +173,10 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         self.model.objects.get(id=view_id)
 
         # delete view:
-        response = self.client_user.delete(self.url,
-                                           HTTP_X_CSRFTOKEN=self.csrf_token
-                                           )
+        response = self.client_user.delete(
+            self.url,
+            HTTP_X_CSRFTOKEN=self.csrf_token
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # check to make sure it's gone:

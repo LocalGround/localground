@@ -284,6 +284,43 @@ class ModelMixin(object):
         from localground.apps.site import models
         return models.Marker.objects.get(id=marker_id)
 
+    def create_print_without_image(
+            self, layout_id=1, map_provider=1, lat=55, lng=61.4, zoom=17,
+            map_title='A title', instructions='A description', tags=[],
+            generate_pdf=True):
+        from django.conf import settings
+        from localground.apps.site import models
+        layout = models.Layout.objects.get(id=layout_id)
+        tileset = models.TileSet.objects.get(id=map_provider)
+        uuid = generic.generateID()
+        user = self.user
+        p = models.Print(
+            uuid=uuid,
+            project=self.project,
+            zoom=zoom,
+            map_width=layout.map_width_pixels,
+            map_height=layout.map_height_pixels,
+            map_provider=tileset,
+            owner=user,
+            last_updated_by=user,
+            layout=layout,
+            host=settings.SERVER_HOST,
+            map_image_path='map.jpg',
+            pdf_path='Print_' + uuid + '.pdf',
+            preview_image_path='thumbnail.jpg',
+            name=map_title,
+            description=instructions,
+            center=None,
+            northeast=None,
+            southwest=None,
+            extents=None,
+            virtual_path='/%s/%s/%s/' % (
+                settings.USER_MEDIA_DIR, 'prints', uuid
+            )
+        )
+        p.save()
+        return p
+
     def create_print(self, layout_id=1, map_provider=1,
                      lat=55, lng=61.4, zoom=17,
                      map_title='A title',
@@ -311,7 +348,6 @@ class ModelMixin(object):
 
     def create_form(self, name='A title',
                     description='A description', user=None,
-                    authority_id=models.ObjectAuthority.PRIVATE,
                     project=None):
 
         from localground.apps.site import models
@@ -319,10 +355,7 @@ class ModelMixin(object):
             owner=user or self.user,
             name=name,
             description=description,
-            last_updated_by=user,
-            access_authority=models.ObjectAuthority.objects.get(
-                id=authority_id
-            ),
+            last_updated_by=user or self.user,
             project=project or self.project
         )
         f.save()
@@ -333,7 +366,6 @@ class ModelMixin(object):
             name='A title',
             description='A description',
             user=None,
-            authority_id=models.ObjectAuthority.PRIVATE,
             num_fields=2,
             project=None):
         '''
@@ -350,7 +382,6 @@ class ModelMixin(object):
         if user is None:
             user = self.user
         f = self.create_form(name, description, user=user,
-                             authority_id=authority_id,
                              project=project)
         for i in range(0, num_fields):
             field_name = 'Field %s' % (i + 1)
@@ -420,17 +451,30 @@ class ModelMixin(object):
 
     def create_imageopt(self, mapimage):
         from localground.apps.site import models
-        p = mapimage.source_print
+        user = self.user
         img = models.ImageOpts(
-            source_mapimage=mapimage
+            source_mapimage=mapimage,
+            opacity=1,
+            name='map image test',
+            file_name_orig='map_image_opts1.jpg',
+            virtual_path='/userdata/media/' + user.username + '/map-images/',
+            host=settings.SERVER_HOST
         )
         img.save(user=mapimage.owner)
         return img
 
     def create_mapimage(self, user=None, project=None, tags=[],
-                        name='MapImage Name'):
+                        name='MapImage Name', generate_print=False):
+
         from localground.apps.site import models
-        p = self.create_print(map_title='A mapimage-linked print')
+        if generate_print:
+            p = self.create_print(
+                map_title='A mapimage-linked print'
+            )
+        else:
+            p = self.create_print_without_image(
+                map_title='A mapimage-linked print'
+            )
         user = user or self.user
         project = project or self.project
         mapimage = models.MapImage(
@@ -445,7 +489,12 @@ class ModelMixin(object):
             status=models.StatusCode.get_status(
                 models.StatusCode.PROCESSED_SUCCESSFULLY),
             upload_source=models.UploadSource.get_source(
-                models.UploadSource.WEB_FORM))
+                models.UploadSource.WEB_FORM),
+            virtual_path='/userdata/media/' + user.username + '/map-images/',
+            host=settings.SERVER_HOST,
+            file_name_orig='map_image.jpg',
+            file_name_thumb='map_image_thumb.jpg'
+        )
         mapimage.save()
         mapimage.processed_image = self.create_imageopt(mapimage)
         mapimage.save()

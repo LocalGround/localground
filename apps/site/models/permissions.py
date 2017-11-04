@@ -14,7 +14,7 @@ class ObjectAuthority(Base):
     ObjectPermissionsMixin (either private, public-with-key, or public)
     """
     PRIVATE = 1
-    PUBLIC_WITH_LINK = 2 #TODO remove this feature
+    PUBLIC_WITH_LINK = 2  # TODO remove this feature
     PUBLIC = 3
 
     name = models.CharField(max_length=255, blank=True)
@@ -93,30 +93,6 @@ class UserAuthorityObject(Base):
         app_label = 'site'
 
 
-
-'''
---------------------------------------------------------------------------------
-TODO: EVERYTHING BELOW THIS LINE NEEDS TO BE DEPRECATED
---------------------------------------------------------------------------------
-In order for this deprecation to be possible, the following endpoints need to be
-filtered by a project endpoint:
-
-* Audio
-* Photo
-* StyledMap
-* Video
-* Marker
-* Print
-* Project
-* Form
-
-Q: Which endpoints are available only for logged-in users?
-A: Only StyledMap
-
-Q: Which endpoints aren't filtered by a project?
-A: Project, DataType, TileSet
-'''
-
 class ObjectUserPermissions(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              db_column='user_id', on_delete=models.DO_NOTHING)
@@ -130,95 +106,6 @@ class ObjectUserPermissions(models.Model):
         app_label = 'site'
 
 
-class AudioUser(ObjectUserPermissions):
-    audio = models.ForeignKey(
-        'Audio',
-        db_column='audio_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_audio'
-
-
-class PhotoUser(ObjectUserPermissions):
-    photo = models.ForeignKey(
-        'Photo',
-        db_column='photo_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_photos'
-
-class StyledMapUser(ObjectUserPermissions):
-    styled_map = models.ForeignKey(
-        'StyledMap',
-        db_column='map_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_maps'
-
-
-class VideoUser(ObjectUserPermissions):
-    video = models.ForeignKey(
-        'Video',
-        db_column='video_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_videos'
-
-
-class MarkerUser(ObjectUserPermissions):
-    marker = models.ForeignKey(
-        'Marker',
-        db_column='marker_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_markers'
-
-
-class PrintUser(ObjectUserPermissions):
-    print_obj = models.ForeignKey(
-        'Print',
-        db_column='print_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_prints'
-
-class MapImageUser(ObjectUserPermissions):
-    mapimage = models.ForeignKey(
-        'MapImage',
-        db_column='mapimage_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_mapimages'
-
-
 class ProjectUser(ObjectUserPermissions):
     project = models.ForeignKey('Project', db_column='project_id',
                                 on_delete=models.DO_NOTHING,
@@ -228,13 +115,3 @@ class ProjectUser(ObjectUserPermissions):
         app_label = 'site'
         managed = False
         db_table = 'v_private_projects'
-
-
-class FormUser(ObjectUserPermissions):
-    form = models.ForeignKey('Form', db_column='form_id',
-                             on_delete=models.DO_NOTHING,
-                             related_name='authuser')
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_forms'

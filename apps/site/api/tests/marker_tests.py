@@ -7,16 +7,19 @@ import json
 from rest_framework import status
 from django.contrib.gis.geos import GEOSGeometry
 
+
 def get_metadata():
     return {
         'photo_count': {'read_only': True, 'required': False, 'type': 'field'},
         'audio_count': {'read_only': True, 'required': False, 'type': 'field'},
-        'map_image_count': {'read_only': True, 'required': False, 'type': 'field'},
+        'map_image_count': {'read_only': True, 'required': False,
+                            'type': 'field'},
         'video_count': {'read_only': True, 'required': False, 'type': 'field'},
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
-        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
+        'overlay_type': {'read_only': True, 'required': False,
+                         'type': 'field'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
@@ -25,6 +28,7 @@ def get_metadata():
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
+
 
 class DataMixin(object):
     Point = {
@@ -72,28 +76,57 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.marker = self.create_marker(self.user, self.project)
 
     def tearDown(self):
-        #delete method also removes files from file system:
+        # delete method also removes files from file system:
         models.Photo.objects.all().delete()
         models.Audio.objects.all().delete()
 
+    def test_page_500_status_basic_user(self, urls=None, **kwargs):
+        if urls is None:
+            urls = self.urls
+        for url in urls:
+            response = self.client_user.get(url)
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def test_page_200_status_basic_user(self, urls=None, **kwargs):
+        for url in self.urls:
+            response = self.client_user.get(url, {
+                'project_id': self.project.id
+            })
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_metadata_only_available_with_flag(self, **kwargs):
-        response = self.client_user.get(self.urls[0])
+        response = self.client_user.get(
+            self.urls[0], {
+                'marker_with_media_arrays': True,
+                'project_id': self.project.id
+            }
+        )
         m = response.data.get("results")[0]
         self.assertIsNone(m.get("update_metadata"))
 
-        response = self.client_user.get(self.urls[0], {'include_metadata': True})
+        response = self.client_user.get(
+            self.urls[0], {
+                'include_metadata': True,
+                'project_id': self.project.id
+            }
+        )
         m = response.data.get("results")[0]
         self.assertIsNotNone(m.get("update_metadata"))
 
     def test_arrays_available_when_flag_exists(self):
-        #create some associations:
+        # create some associations:
         self.photo1 = self.create_photo(self.user, self.project)
         self.audio1 = self.create_audio(self.user, self.project)
         self.create_relation(self.marker, self.photo1)
         self.create_relation(self.marker, self.audio1)
-
         response = self.client_user.get(
-            self.urls[0], {'marker_with_media_arrays': True}
+            self.urls[0], {
+                'marker_with_media_arrays': True,
+                'project_id': self.project.id
+            }
         )
         marker = response.data.get("results")[0]
         self.assertEqual(len(marker.get('photo_array')), 1)
@@ -104,10 +137,13 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.delete_relation(self.marker, self.photo1)
         self.delete_relation(self.marker, self.audio1)
 
-
     def test_bad_json_creates_fails(self, **kwargs):
         # 1. define a series of bad JSON dictionaries
-        for d in [{'geometry': self.Crazy1}, {'geometry': self.Crazy2}, {'extras': self.ExtrasBad}]:
+        for d in [
+            {'geometry': self.Crazy1},
+            {'geometry': self.Crazy2},
+            {'extras': self.ExtrasBad}
+        ]:
             params = {
                 'name': 'New Marker Name',
                 'caption': 'Test description',
@@ -116,9 +152,10 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 'project_id': self.project.id,
                 'extras': self.ExtrasGood
             }
-            # 2. update the params dictionary with the invalid dictionary entry.
+            # 2. update the params dictionary with the invalid dictionary entry
             params.update(d)
             for i, url in enumerate(self.urls):
+                url = url + '?project_id={0}'.format(self.project.id)
                 response = self.client_user.post(
                     url,
                     data=urllib.urlencode(params),
@@ -130,7 +167,9 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
 
     def test_create_marker_point_line_poly_using_post(self, **kwargs):
         for i, url in enumerate(self.urls):
-            name, description, color = 'New Marker 1', 'Test description1', 'FF0000'
+            name = 'New Marker 1'
+            description = 'Test description1'
+            color = 'FF0000'
             for k in ['Point', 'LineString', 'Polygon']:
                 geom = getattr(self, k)
                 response = self.client_user.post(
@@ -158,7 +197,9 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                         json.dumps(geom)))
                 self.assertEqual(k, new_marker.geometry.geom_type)
                 self.assertEqual(new_marker.project.id, self.project.id)
-                self.assertEqual(new_marker.extras, json.loads(self.ExtrasGood))
+                self.assertEqual(
+                    new_marker.extras, json.loads(self.ExtrasGood)
+                )
 
 
 class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
@@ -171,17 +212,22 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.view = views.MarkerInstance.as_view()
         self.metadata = get_metadata()
         self.metadata.update({
-            'children': {'read_only': True, 'required': False, 'type': u'field'}
+            'children': {'read_only': True, 'required': False,
+                         'type': u'field'}
         })
 
     def tearDown(self):
-        #delete method also removes files from file system:
+        # delete method also removes files from file system:
         models.Photo.objects.all().delete()
         models.Audio.objects.all().delete()
 
     def test_bad_json_update_fails(self, **kwargs):
         # 1. define a series of bad JSON dictionaries
-        for d in [{'geometry': self.Crazy1}, {'geometry': self.Crazy2}, {'extras': self.ExtrasBad}]:
+        for d in [
+            {'geometry': self.Crazy1},
+            {'geometry': self.Crazy2},
+            {'extras': self.ExtrasBad}
+        ]:
             params = {
                 'name': 'New Marker Name',
                 'caption': 'Test description',
@@ -189,7 +235,7 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 'geometry': self.Point,
                 'extras': self.ExtrasGood
             }
-            # 2. update the params dictionary with the invalid dictionary entry.
+            # 2. update the params dictionary with the invalid dictionary entry
             params.update(d)
             for i, url in enumerate(self.urls):
                 response = self.client_user.put(
@@ -228,7 +274,9 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                     updated_marker.geometry,
                     GEOSGeometry(
                         json.dumps(geom)))
-                self.assertEqual(updated_marker.extras, json.loads(self.ExtrasGood))
+                self.assertEqual(
+                    updated_marker.extras, json.loads(self.ExtrasGood)
+                )
                 self.assertEqual(result_json.get('photo_count'), 0)
                 self.assertEqual(result_json.get('audio_count'), 0)
                 self.assertEqual(result_json.get('map_image_count'), 0)
@@ -237,10 +285,12 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         for k in ['Point', 'LineString', 'Polygon']:
             geom = getattr(self, k)
             for i, url in enumerate(self.urls):
-                response = self.client_user.patch(url,
-                                                  data=urllib.urlencode({'geometry': geom}),
-                                                  HTTP_X_CSRFTOKEN=self.csrf_token,
-                                                  content_type="application/x-www-form-urlencoded")
+                response = self.client_user.patch(
+                    url,
+                    data=urllib.urlencode({'geometry': geom}),
+                    HTTP_X_CSRFTOKEN=self.csrf_token,
+                    content_type="application/x-www-form-urlencoded"
+                )
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 updated_marker = models.Marker.objects.get(id=self.marker.id)
                 self.assertEqual(
@@ -255,9 +305,10 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         models.Marker.objects.get(id=marker_id)
 
         # delete marker:
-        response = self.client_user.delete('/api/0/markers/%s/' % marker_id,
-                                           HTTP_X_CSRFTOKEN=self.csrf_token
-                                           )
+        response = self.client_user.delete(
+            '/api/0/markers/%s/' % marker_id,
+            HTTP_X_CSRFTOKEN=self.csrf_token
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # check to make sure it's gone:

@@ -57,12 +57,13 @@ class ProjectManager(models.GeoManager, ProjectMixin):
     def get_queryset(self):
         return ProjectQuerySet(self.model, using=self._db)
 
+
 class FormMixin(GroupMixin):
     # For now, only the owner can view / edit a form.
     # Todo: restrict viewing data to the row-level, based on project
     # permissions.
     related_fields = ['owner', 'last_updated_by']
-    prefetch_fields = ['users__user', 'field_set']
+    prefetch_fields = ['field_set']
 
     def my_forms(self, user=None):
         # a form is associated with one or more projects
@@ -83,19 +84,10 @@ class FormMixin(GroupMixin):
         q = (
             self.model.objects.distinct()
             .select_related(*self.related_fields)
-                .filter(
-                    Q(authuser__user=user) &
-                    Q(authuser__user_authority__id__gte=authority_id)
-            )
         )
         if request:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
-        q = q.extra(
-            select={
-                'form_fields': 'select form_fields from v_form_fields WHERE v_form_fields.id = site_form.id'
-            }
-        )
         q = q.order_by(ordering_field)
         return q
 
@@ -172,10 +164,6 @@ class LayerMixin(GroupMixin):
         q = (
             self.model.objects
             .select_related(*self.related_fields)
-            .filter(
-                Q(authuser__user=user) &
-                Q(authuser__user_authority__id__gte=authority_id)
-            )
         )
         if request:
             q = self._apply_sql_filter(q, request, context)

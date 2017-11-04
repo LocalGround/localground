@@ -11,16 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='StyledMapUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_maps',
-                'managed': False,
-            },
-        ),
         migrations.AddField(
             model_name='layer',
             name='data_property',
@@ -76,9 +66,5 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='layer',
             name='tags',
-        ),
-        migrations.AlterModelTable(
-            name='mapimageuser',
-            table='v_private_mapimages',
         )
     ]

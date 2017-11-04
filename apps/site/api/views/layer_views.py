@@ -1,20 +1,22 @@
 from rest_framework import generics, status
 from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract_views import QueryableListCreateAPIView
+from localground.apps.site.api.views.abstract_views import \
+    QueryableListCreateAPIView
 from localground.apps.site import models
 from localground.apps.site.api.permissions import CheckProjectPermissions
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 
+
 class LayerList(QueryableListCreateAPIView):
     error_messages = {}
     warnings = []
     serializer_class = serializers.LayerSerializer
-    filter_backends = (filters.SQLFilterBackend,)
+    filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
     model = models.Layer
     paginate_by = 100
-        
+
     def get_queryset(self):
         map_id = int(self.kwargs.get('map_id'))
         try:
@@ -37,6 +39,7 @@ class LayerInstance(
         generics.RetrieveUpdateDestroyAPIView):
     error_messages = {}
     warnings = []
+
     def get_queryset(self):
         map_id = int(self.kwargs.get('map_id'))
         try:
@@ -44,7 +47,7 @@ class LayerInstance(
         except models.StyledMap.DoesNotExist:
             raise Http404
         return self.model.objects.filter(styled_map=styled_map)
-    
+
     serializer_class = serializers.LayerDetailSerializer
     model = models.Layer
 

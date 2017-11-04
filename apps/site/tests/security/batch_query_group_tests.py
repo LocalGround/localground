@@ -1,7 +1,7 @@
 from django import test
 from django.contrib.auth.models import AnonymousUser
 from localground.apps.site import models
-from localground.apps.site.models import FormUser, UserAuthorityObject
+from localground.apps.site.models import UserAuthorityObject
 from localground.apps.site.managers.base import GenericLocalGroundError
 from localground.apps.site.tests import ModelMixin
 from rest_framework import status
@@ -28,10 +28,8 @@ class BatchQueryGroupMixin(ModelMixin):
         # create 2 groups:
         self._create_groups()
 
-
     def tearDown(self):
         models.Form.objects.all().delete()
-
 
     def test_owner_can_view_objects(self):
         # Both forms are owned by self.owner
@@ -135,8 +133,6 @@ class BatchProjectQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
 
     def tearDown(self):
         BatchQueryGroupMixin.tearDown(self)
-
-
 
     def _create_groups(self):
         # delete all projects in database:

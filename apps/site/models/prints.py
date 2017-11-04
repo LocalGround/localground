@@ -45,11 +45,6 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
 
     objects = PrintManager()
 
-    @classmethod
-    def inline_form(cls, user):
-        from localground.apps.site.forms import get_inline_form_with_tags
-        return get_inline_form_with_tags(cls, user)
-
     @property
     def embedded_mapimages(self):
         from localground.apps.site.models import MapImage
@@ -66,22 +61,6 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
     def generate_relative_path(self):
         return '/%s/%s/%s/' % (settings.USER_MEDIA_DIR,
                                self._meta.verbose_name_plural, self.uuid)
-
-    def configuration_url(self):
-        import urllib
-        data = urllib.urlencode({
-            'center_lat': self.center.y,
-            'center_lng': self.center.x,
-            'zoom': self.zoom,
-            'map_provider': self.map_provider.id,
-            'project_id': self.project.id,
-            'map_title': self.name.encode('utf8'),
-            'instructions': self.description.encode('utf8'),
-            'mapimage_ids': ','.join(
-                [str(s.id) for s in self.embedded_mapimages]
-            )
-        })
-        return '//' + self.host + '/maps/print/?' + data
 
     def thumb(self):
         path = '%s%s' % (self.virtual_path, self.preview_image_path)

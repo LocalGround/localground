@@ -5,6 +5,7 @@ from localground.apps.site.managers.base import ObjectMixin
 from localground.apps.site.managers.overlays import MarkerMixin
 from localground.apps.lib.errors import GenericLocalGroundError
 
+
 class UploadMixin(ObjectMixin):
     related_fields = ['project', 'owner', 'last_updated_by']
     prefetch_fields = []  # 'project__users__user']

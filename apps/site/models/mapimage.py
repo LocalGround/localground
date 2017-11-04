@@ -47,10 +47,10 @@ class MapImage(BaseUploadedMedia):
             (self.virtual_path, self.file_name_thumb))
 
     def get_abs_directory_path(self):
-        return '%s/%s' % (settings.FILE_ROOT, self.virtual_path)
+        return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
 
     def original_image_filesystem(self):
-        return '%s/%s' % (self.get_abs_directory_path(), self.file_name_new)
+        return '%s%s' % (self.get_abs_directory_path(), self.file_name_new)
 
     def processed_map_filesystem(self):
         return self.get_abs_directory_path(
@@ -112,7 +112,7 @@ class ImageOpts(ExtentsMixin, MediaMixin, BaseAudit):
         return self._encrypt_media_path(
             '%s%s' %
             (self.source_mapimage.virtual_path,
-             self.file_name),
+             self.file_name_orig),
             host=host)
 
     def save(self, user=None, *args, **kwargs):

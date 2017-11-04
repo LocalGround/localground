@@ -1,7 +1,7 @@
 import os
 from localground.apps.site.tests import ModelMixin
 from django import test
-from localground.apps.site import models
+from django.contrib.gis.db import models
 from localground.apps.lib.helpers import upload_helpers
 
 
@@ -11,10 +11,17 @@ class MediaMixinTest(ModelMixin):
         ModelMixin.setUp(self)
 
     def test_media_mixin_creates_attributes(self):
-        self.assertTrue(hasattr(self.model, 'host'))
-        self.assertTrue(hasattr(self.model, 'virtual_path'))
-        self.assertTrue(hasattr(self.model, 'file_name_orig'))
-        self.assertTrue(hasattr(self.model, 'content_type'))
+        for prop in [
+            ('host', models.CharField),
+            ('virtual_path', models.CharField),
+            ('file_name_orig', models.CharField),
+            ('content_type', models.CharField),
+        ]:
+            prop_name = prop[0]
+            prop_type = prop[1]
+            field = type(self.model)._meta.get_field(prop_name)
+            self.assertEqual(field.name, prop_name)
+            self.assertEqual(type(field), prop_type)
         self.assertTrue(hasattr(self.model, 'groups'))
         self.assertTrue(hasattr(self.model, 'filter_fields'))
 
