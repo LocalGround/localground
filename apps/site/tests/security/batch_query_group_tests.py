@@ -1,7 +1,7 @@
 from django import test
 from django.contrib.auth.models import AnonymousUser
 from localground.apps.site import models
-from localground.apps.site.models import FormUser, UserAuthorityObject
+from localground.apps.site.models import UserAuthorityObject
 from localground.apps.site.managers.base import GenericLocalGroundError
 from localground.apps.site.tests import ModelMixin
 from rest_framework import status
@@ -34,13 +34,13 @@ class BatchQueryGroupMixin(ModelMixin):
     def test_owner_can_view_objects(self):
         # Both forms are owned by self.owner
         self.assertEqual(
-            2,
+            3,
             len(self.model.objects.get_objects(self.owner))
         )
 
     def test_owner_can_edit_objects(self):
         self.assertEqual(
-            2,
+            3,
             len(self.model.objects.get_objects_editable(self.owner))
         )
 
@@ -58,12 +58,12 @@ class BatchQueryGroupMixin(ModelMixin):
 
         # user2 should be able to view 1 forms....
         self.assertEqual(
-            1,
+            2,
             len(self.model.objects.get_objects(self.user2))
         )
         # user2 should only be able to edit 0 form...
         self.assertEqual(
-            0,
+            1,
             len(self.model.objects.get_objects_editable(self.user2))
         )
 
@@ -81,12 +81,12 @@ class BatchQueryGroupMixin(ModelMixin):
 
         # user2 should be able to view 1 form....
         self.assertEqual(
-            1,
+            2,
             len(self.model.objects.get_objects(self.user2))
         )
         # user2 should only be able to edit 1 form...
         self.assertEqual(
-            1,
+            2,
             len(self.model.objects.get_objects_editable(self.user2))
         )
 
@@ -96,12 +96,12 @@ class BatchQueryGroupMixin(ModelMixin):
 
         # user2 should be able to view 1 forms....
         self.assertEqual(
-            1,
+            2,
             len(self.model.objects.get_objects(self.user2))
         )
         # user2 should only be able to edit 1 forms...
         self.assertEqual(
-            1,
+            2,
             len(self.model.objects.get_objects_editable(self.user2))
         )
 
@@ -131,15 +131,12 @@ class BatchProjectQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
     def setUp(self):
         BatchQueryGroupMixin.setUp(self)
 
-
     def tearDown(self):
         BatchQueryGroupMixin.tearDown(self)
 
-
-
     def _create_groups(self):
         # delete all projects in database:
-        models.Project.objects.all().delete()
+        # models.Project.objects.all().delete()
 
         # and add two new ones:
         self.group1 = self.create_project(

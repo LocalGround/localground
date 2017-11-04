@@ -22,102 +22,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='AttachmentUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_attachments',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AudioUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_audio',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='FormUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_forms',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='MarkerUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_markers',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='PhotoUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_photos',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='PrintUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_prints',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
             name='ProjectUser',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
             ],
             options={
                 'db_table': 'v_private_projects',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='ScanUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_scans',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='SnapshotUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_views',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='VideoUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_videos',
                 'managed': False,
             },
         ),

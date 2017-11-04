@@ -9,27 +9,33 @@ from rest_framework import status
 from django.contrib.gis.geos import GEOSGeometry
 from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
+
 class LayoutMixin(object):
     metadata = {
-        'display_name': {'read_only': False, 'required': False, 'type': 'string'},
+        'display_name': {'read_only': False, 'required': False,
+                         'type': 'string'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': True, 'type': 'string'},
-        'map_width': { 'type': 'string', 'required': True, 'read_only': False },
-        'map_height': {'type': 'string', 'required': True, 'read_only': False }
+        'map_width': {'type': 'string', 'required': True, 'read_only': False},
+        'map_height': {'type': 'string', 'required': True, 'read_only': False}
     }
+
 
 def get_metadata():
     return {
-        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
+        'overlay_type': {'read_only': True, 'required': False,
+                         'type': 'field'},
         'layout': {'read_only': False, 'required': True, 'type': 'field'},
         'uuid': {'read_only': True, 'required': False, 'type': 'field'},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
-        'map_provider_url': {'read_only': True, 'required': False, 'type': 'field'},
+        'map_provider_url': {'read_only': True, 'required': False,
+                             'type': 'field'},
         'center': {'read_only': False, 'required': True, 'type': 'geojson'},
         'thumb': {'read_only': True, 'required': False, 'type': 'field'},
         'zoom': {'read_only': False, 'required': False, 'type': 'integer'},
         'map_title': {'read_only': False, 'required': False, 'type': 'string'},
-        'map_provider': {'read_only': False, 'required': True, 'type': 'field'},
+        'map_provider': {'read_only': False, 'required': True,
+                         'type': 'field'},
         'pdf': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': True, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
@@ -37,8 +43,10 @@ def get_metadata():
         'instructions': {'read_only': False, 'required': False, 'type': 'memo'}
     }
 
+
 class PrintMixin(object):
     metadata = get_metadata()
+
 
 class ApiLayoutListTest(test.TestCase, ViewMixinAPI, LayoutMixin):
 
@@ -70,6 +78,23 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI, PrintMixin):
             "coordinates": [12.492324113849, 41.890307434153]
         }
 
+    def test_page_500_status_basic_user(self, urls=None, **kwargs):
+        if urls is None:
+            urls = self.urls
+        for url in urls:
+            response = self.client_user.get(url)
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def test_page_200_status_basic_user(self, urls=None, **kwargs):
+        for url in self.urls:
+            response = self.client_user.get(url, {
+                'project_id': self.project.id
+            })
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_create_print_using_post(self, **kwargs):
         map_title = 'A Map Title'
         instructions = 'Some instructions.'
@@ -98,7 +123,9 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI, PrintMixin):
                       .order_by('-id',))[0]
         self.assertEqual(new_object.name, map_title)
         self.assertEqual(new_object.host, 'testserver')
-        self.assertEqual(new_object.virtual_path, '/userdata/prints/%s/' % new_object.uuid)
+        self.assertEqual(
+            new_object.virtual_path, '/userdata/prints/%s/' % new_object.uuid
+        )
         self.assertTrue(len(new_object.uuid), 8)
         self.assertEqual(new_object.description, instructions)
         self.assertEqual(
@@ -115,14 +142,11 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI, PrintMixin):
         data = response.data
         pdf_response = self.client_user.get(data.get('pdf'))
         self.assertEqual(pdf_response.status_code, status.HTTP_200_OK)
-        
-        #print data.get('pdf'), pdf_response
-        
-        
+
+        # print data.get('pdf'), pdf_response
         thumb_response = self.client_user.get(data.get('thumb'))
         self.assertEqual(thumb_response.status_code, status.HTTP_200_OK)
-        #print data.get('thumb'), thumb_response
-        
+        # print data.get('thumb'), thumb_response
 
 
 class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
@@ -136,24 +160,28 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
         self.model = models.Print
         self.metadata = get_metadata()
         self.metadata.update({
-            'center': {'read_only': True, 'required': False, 'type': 'geojson'},
+            'center': {'read_only': True, 'required': False,
+                       'type': 'geojson'},
             'layout': {'read_only': True, 'required': False, 'type': 'field'},
-            'map_provider': {'read_only': True, 'required': False, 'type': 'field'}, 
-            'project_id': {'read_only': False, 'required': False, 'type': 'field'},
-            'zoom': {'read_only': True, 'required': False, 'type': 'integer'},    
+            'map_provider': {'read_only': True, 'required': False,
+                             'type': 'field'},
+            'project_id': {'read_only': False, 'required': False,
+                           'type': 'field'},
+            'zoom': {'read_only': True, 'required': False, 'type': 'integer'},
         })
 
     def test_tnt_using_patch(self, **kwargs):
         name, description, tags = 'A', 'B', 'C'
-        response = self.client_user.patch(self.url,
-                                          data=json.dumps({
-                                              'map_title': name,
-                                              'instructions': description,
-                                              'tags': tags
-                                          }),
-                                          HTTP_X_CSRFTOKEN=self.csrf_token,
-                                          content_type="application/json"
-                                          )
+        response = self.client_user.patch(
+            self.url,
+            data=json.dumps({
+                'map_title': name,
+                'instructions': description,
+                'tags': tags
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_obj = self.model.objects.get(id=self.print_object.id)
         self.assertEqual(updated_obj.name, name)
@@ -162,15 +190,16 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
 
     def test_update_print_using_put(self, **kwargs):
         name, description, tags = 'A', 'B', 'C'
-        response = self.client_user.put(self.url,
-                                        data=json.dumps({
-                                            'map_title': name,
-                                            'instructions': description,
-                                            'tags': tags
-                                        }),
-                                        HTTP_X_CSRFTOKEN=self.csrf_token,
-                                        content_type="application/json"
-                                        )
+        response = self.client_user.put(
+            self.url,
+            data=json.dumps({
+                'map_title': name,
+                'instructions': description,
+                'tags': tags
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_obj = self.model.objects.get(id=self.print_object.id)
         self.assertEqual(updated_obj.name, name)
@@ -184,9 +213,9 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
         self.model.objects.get(id=print_id)
 
         # delete photo:
-        response = self.client_user.delete(self.url,
-                                           HTTP_X_CSRFTOKEN=self.csrf_token
-                                           )
+        response = self.client_user.delete(
+            self.url, HTTP_X_CSRFTOKEN=self.csrf_token
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # check to make sure it's gone:

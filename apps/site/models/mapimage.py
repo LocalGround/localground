@@ -3,7 +3,7 @@ from datetime import datetime
 from django.conf import settings
 from localground.apps.site.managers import MapImageManager
 from localground.apps.site.models import (
-    BaseMediaMixin,
+    MediaMixin,
     BaseAudit,
     StatusCode,
     BaseUploadedMedia,
@@ -47,10 +47,10 @@ class MapImage(BaseUploadedMedia):
             (self.virtual_path, self.file_name_thumb))
 
     def get_abs_directory_path(self):
-        return '%s/%s' % (settings.FILE_ROOT, self.virtual_path)
+        return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
 
     def original_image_filesystem(self):
-        return '%s/%s' % (self.get_abs_directory_path(), self.file_name_new)
+        return '%s%s' % (self.get_abs_directory_path(), self.file_name_new)
 
     def processed_map_filesystem(self):
         return self.get_abs_directory_path(
@@ -90,7 +90,7 @@ class MapImage(BaseUploadedMedia):
         return 'MapImage #' + self.uuid
 
 
-class ImageOpts(ExtentsMixin, BaseMediaMixin, BaseAudit):
+class ImageOpts(ExtentsMixin, MediaMixin, BaseAudit):
     source_mapimage = models.ForeignKey(MapImage)
     opacity = models.FloatField(default=1)
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -112,7 +112,7 @@ class ImageOpts(ExtentsMixin, BaseMediaMixin, BaseAudit):
         return self._encrypt_media_path(
             '%s%s' %
             (self.source_mapimage.virtual_path,
-             self.file_name),
+             self.file_name_orig),
             host=host)
 
     def save(self, user=None, *args, **kwargs):

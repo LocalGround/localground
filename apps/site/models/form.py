@@ -1,14 +1,14 @@
 from django.contrib.gis.db import models
 from django.db.models import Q
 from localground.apps.site.managers import FormManager
-from localground.apps.site.models import BaseNamedMixin, BaseAudit, \
-    ObjectPermissionsMixin, ProjectMixin
+from localground.apps.site.models import NamedMixin, BaseAudit, \
+     ProjectMixin
 from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 
 
-class Form(BaseNamedMixin, ProjectMixin, ObjectPermissionsMixin, BaseAudit):
+class Form(NamedMixin, ProjectMixin, BaseAudit):
     table_name = models.CharField(max_length=255, unique=True)
     objects = FormManager()
     _model_class = None

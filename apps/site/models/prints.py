@@ -2,18 +2,18 @@ from django.contrib.gis.db import models
 from localground.apps.site.managers import PrintManager
 from django.conf import settings
 from localground.apps.site.models.abstract.base import BaseAudit
-from localground.apps.site.models.abstract.mixins import BaseMediaMixin
+from localground.apps.site.models.abstract.mixins import MediaMixin
 from localground.apps.site.models.abstract.mixins import ProjectMixin
 from localground.apps.site.models.abstract.mixins import \
-    BaseGenericRelationMixin
+    GenericRelationMixin
 from localground.apps.site.models.abstract.mixins import ExtentsMixin
 from PIL import Image
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.geos import Polygon
 
 
-class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin,
-            BaseGenericRelationMixin, BaseAudit):
+class Print(ExtentsMixin, MediaMixin, ProjectMixin,
+            GenericRelationMixin, BaseAudit):
     uuid = models.CharField(unique=True, max_length=8)
     name = models.CharField(
         max_length=255,
@@ -40,15 +40,10 @@ class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin,
     preview_image_path = models.CharField(max_length=255)
     deleted = models.BooleanField(default=False)
 
-    filter_fields = BaseMediaMixin.filter_fields + \
+    filter_fields = MediaMixin.filter_fields + \
         ('name', 'description', 'tags', 'uuid')
 
     objects = PrintManager()
-
-    @classmethod
-    def inline_form(cls, user):
-        from localground.apps.site.forms import get_inline_form_with_tags
-        return get_inline_form_with_tags(cls, user)
 
     @property
     def embedded_mapimages(self):
@@ -66,22 +61,6 @@ class Print(ExtentsMixin, BaseMediaMixin, ProjectMixin,
     def generate_relative_path(self):
         return '/%s/%s/%s/' % (settings.USER_MEDIA_DIR,
                                self._meta.verbose_name_plural, self.uuid)
-
-    def configuration_url(self):
-        import urllib
-        data = urllib.urlencode({
-            'center_lat': self.center.y,
-            'center_lng': self.center.x,
-            'zoom': self.zoom,
-            'map_provider': self.map_provider.id,
-            'project_id': self.project.id,
-            'map_title': self.name.encode('utf8'),
-            'instructions': self.description.encode('utf8'),
-            'mapimage_ids': ','.join(
-                [str(s.id) for s in self.embedded_mapimages]
-            )
-        })
-        return '//' + self.host + '/maps/print/?' + data
 
     def thumb(self):
         path = '%s%s' % (self.virtual_path, self.preview_image_path)

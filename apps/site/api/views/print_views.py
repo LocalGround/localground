@@ -1,12 +1,13 @@
 from rest_framework import viewsets, generics, permissions
 from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract_views import QueryableListCreateAPIView
+from localground.apps.site.api.views.abstract_views import \
+    QueryableListCreateAPIView
 from localground.apps.site import models
 
 
 class PrintList(QueryableListCreateAPIView):
     serializer_class = serializers.PrintSerializer
-    filter_backends = (filters.SQLFilterBackend,)
+    filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
     model = models.Print
 
     def get_queryset(self):
@@ -18,7 +19,7 @@ class PrintList(QueryableListCreateAPIView):
             )
 
     paginate_by = 100
-    
+
     def perform_create(self, serializer):
         from django.contrib.gis.geos import GEOSGeometry
         posted_data = serializer.validated_data
@@ -52,6 +53,7 @@ class PrintList(QueryableListCreateAPIView):
             'map_height': instance.map_height
         }
         serializer.save(**d)
+
 
 class PrintInstance(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Print.objects.select_related(

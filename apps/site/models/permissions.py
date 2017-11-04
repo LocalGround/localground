@@ -1,20 +1,20 @@
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
-from localground.apps.site.models import Base
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import fields
 from django.conf import settings
+from localground.apps.site.models.abstract.base import Base
 
 
-class ObjectAuthority(models.Model):
+class ObjectAuthority(Base):
 
     """
     Describes the permissions configuration of any class inheriting from
     ObjectPermissionsMixin (either private, public-with-key, or public)
     """
     PRIVATE = 1
-    PUBLIC_WITH_LINK = 2
+    PUBLIC_WITH_LINK = 2  # TODO remove this feature
     PUBLIC = 3
 
     name = models.CharField(max_length=255, blank=True)
@@ -27,7 +27,7 @@ class ObjectAuthority(models.Model):
         app_label = 'site'
 
 
-class UserAuthority(models.Model):
+class UserAuthority(Base):
 
     """
     Used in conjunction with ObjectAuthority to assign user-level permissions
@@ -48,7 +48,7 @@ class UserAuthority(models.Model):
         app_label = 'site'
 
 
-class UserAuthorityObject(models.Model):
+class UserAuthorityObject(Base):
 
     """
     Model that assigns a particular User (auth_user) and UserAuthority
@@ -93,87 +93,6 @@ class UserAuthorityObject(models.Model):
         app_label = 'site'
 
 
-class ObjectPermissionsMixin(models.Model):
-    """
-    Abstract base class for media groups (Project and View objects).
-    """
-    access_authority = models.ForeignKey('ObjectAuthority',
-                                         db_column='view_authority',
-                                         verbose_name='Sharing')
-    access_key = models.CharField(max_length=16, null=True, blank=True)
-    users = fields.GenericRelation('UserAuthorityObject')
-
-    def __has_user_permissions(self, user, authority_id):
-        # anonymous or null users don't have user-level permissions:
-        if user is None or not user.is_authenticated():
-            return False
-
-        # object owners have blanket view/edit/manage user-level permissions:
-        if self.owner == user:
-            return True
-
-        # users with privileges which are greater than or equal to
-        # the authority_id have user-level permisisons:
-        return len(self.users
-                   .filter(user=user)
-                   .filter(authority__id__gte=authority_id)
-                   ) > 0
-
-    def can_view(self, user=None, access_key=None):
-        # projects and views marked as public are viewable:
-        if self.access_authority.id == ObjectAuthority.PUBLIC:
-            return True
-
-        # projects and views marked as "PUBLIC_WITH_LINK" that provide
-        # the correct access_key are viewable:
-        elif self.access_authority.id == ObjectAuthority.PUBLIC_WITH_LINK \
-                and self.access_key == access_key:
-            return True
-
-        # projects which are accessible by the user are viewable:
-        else:
-            return self.__has_user_permissions(user, UserAuthority.CAN_VIEW)
-
-    def can_edit(self, user):
-        return self.__has_user_permissions(user, UserAuthority.CAN_EDIT)
-
-    def can_manage(self, user):
-        return self.__has_user_permissions(user, UserAuthority.CAN_MANAGE)
-
-    def share_url(self):
-        return '/profile/{0}/{1}/share/'.format(
-            self.model_name_plural,
-            self.id)
-
-    class Meta:
-        abstract = True
-        app_label = 'site'
-
-
-
-'''
---------------------------------------------------------------------------------
-TODO: EVERYTHING BELOW THIS LINE NEEDS TO BE DEPRECATED
---------------------------------------------------------------------------------
-In order for this deprecation to be possible, the following endpoints need to be
-filtered by a project endpoint:
-
-* Audio
-* Photo
-* StyledMap
-* Video
-* Marker
-* Print
-* Project
-* Form
-
-Q: Which endpoints are available only for logged-in users?
-A: Only StyledMap
-
-Q: Which endpoints aren't filtered by a project?
-A: Project, DataType, TileSet
-'''
-
 class ObjectUserPermissions(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              db_column='user_id', on_delete=models.DO_NOTHING)
@@ -187,95 +106,6 @@ class ObjectUserPermissions(models.Model):
         app_label = 'site'
 
 
-class AudioUser(ObjectUserPermissions):
-    audio = models.ForeignKey(
-        'Audio',
-        db_column='audio_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_audio'
-
-
-class PhotoUser(ObjectUserPermissions):
-    photo = models.ForeignKey(
-        'Photo',
-        db_column='photo_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_photos'
-
-class StyledMapUser(ObjectUserPermissions):
-    styled_map = models.ForeignKey(
-        'StyledMap',
-        db_column='map_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_maps'
-
-
-class VideoUser(ObjectUserPermissions):
-    video = models.ForeignKey(
-        'Video',
-        db_column='video_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_videos'
-
-
-class MarkerUser(ObjectUserPermissions):
-    marker = models.ForeignKey(
-        'Marker',
-        db_column='marker_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_markers'
-
-
-class PrintUser(ObjectUserPermissions):
-    print_obj = models.ForeignKey(
-        'Print',
-        db_column='print_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_prints'
-
-class MapImageUser(ObjectUserPermissions):
-    mapimage = models.ForeignKey(
-        'MapImage',
-        db_column='mapimage_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_mapimages'
-
-
 class ProjectUser(ObjectUserPermissions):
     project = models.ForeignKey('Project', db_column='project_id',
                                 on_delete=models.DO_NOTHING,
@@ -285,13 +115,3 @@ class ProjectUser(ObjectUserPermissions):
         app_label = 'site'
         managed = False
         db_table = 'v_private_projects'
-
-
-class FormUser(ObjectUserPermissions):
-    form = models.ForeignKey('Form', db_column='form_id',
-                             on_delete=models.DO_NOTHING,
-                             related_name='authuser')
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_forms'

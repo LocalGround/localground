@@ -2,14 +2,13 @@ from django.contrib.gis.db import models
 from localground.apps.site.models import ObjectTypes
 from datetime import datetime
 from localground.apps.site.managers import MarkerManager
-from localground.apps.site.models import BaseUploadedMedia
 from django.contrib.contenttypes import generic
 from localground.apps.site.models import PointMixin, ExtrasMixin, \
-    BaseNamedMixin, BaseGenericRelationMixin, ProjectMixin, BaseAudit
+    NamedMixin, GenericRelationMixin, ProjectMixin, BaseAudit
 
 
-class Marker(ExtrasMixin, PointMixin, ProjectMixin, BaseNamedMixin,
-             BaseGenericRelationMixin, BaseAudit):
+class Marker(ExtrasMixin, PointMixin, ProjectMixin, NamedMixin,
+             GenericRelationMixin, BaseAudit):
     """
     Markers are association objects with a geometry (either point,
     line, or polygon).  Markers can be associated with one or more photos,
@@ -38,7 +37,7 @@ class Marker(ExtrasMixin, PointMixin, ProjectMixin, BaseNamedMixin,
         return self.point or self.polyline or self.polygon
 
     @classmethod
-    def create_instance(user, project, lat, lng, name=None):
+    def create_instance(cls, user, project, lat, lng, name=None):
         from django.contrib.gis.geos import Point
         marker = Marker()
         marker.project = project
@@ -49,54 +48,12 @@ class Marker(ExtrasMixin, PointMixin, ProjectMixin, BaseNamedMixin,
         if name is not None:
             marker.name = name
         marker.save()
+        return marker
 
     def get_name(self):
         if self.name is None or len(self.name) == 0:
             return 'Marker #%s' % (self.id)
         return self.name
-
-    def get_records(self, forms=None):
-        """
-        Gets all of the records in the marker.
-        """
-        from django.contrib.contenttypes.models import ContentType
-        from localground.apps.site import models
-
-        if self._records_dict is None:
-            # query for forms and form content types if they're null:
-            if forms is None:
-                forms = (models.Form.objects
-                         #.select_related('project')
-                         .prefetch_related('field_set', 'field_set__data_type')
-                         .filter(project=obj.project)
-                         )
-                table_models = [form.TableModel for form in forms]
-                ContentType.objects.get_for_models(
-                    *table_models,
-                    concrete_model=False)
-
-            self._records_dict = {}
-            for form in forms:
-                cls = form.TableModel
-                recs = self.grab(cls)
-                if len(recs) > 0:
-                    self._records_dict[form] = recs
-
-        return self._records_dict
-
-    def get_form_ids(self):
-        from localground.apps.site.models import Photo, Audio, MapImage, Video
-        from django.contrib.contenttypes.models import ContentType
-        content_ids = [
-            ct.id for ct in
-            ContentType.objects.get_for_models(Photo, Audio, MapImage, Video).values()
-        ]
-        return (
-            self.entities
-            .values_list('entity_type__model', flat=True)
-            .distinct()
-            .exclude(entity_type__in=content_ids)
-        )
 
     def __unicode__(self):
         return str(self.id)

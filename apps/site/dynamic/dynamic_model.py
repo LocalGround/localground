@@ -1,4 +1,4 @@
-from localground.apps.site.models import PointMixin, BaseAudit, BaseGenericRelationMixin, ProjectMixin
+from localground.apps.site.models import PointMixin, BaseAudit, GenericRelationMixin, ProjectMixin
 from localground.apps.site.managers import RecordManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
@@ -14,7 +14,7 @@ adds the auditing columns to the user-generated tables.
 '''
 
 
-class DynamicModelMixin(PointMixin, BaseGenericRelationMixin, BaseAudit):
+class DynamicModelMixin(PointMixin, GenericRelationMixin, BaseAudit):
     project = models.ForeignKey('Project')
     filter_fields = BaseAudit.filter_fields + ('project',)
     objects = RecordManager()

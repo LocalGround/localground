@@ -1,9 +1,9 @@
 # abstract
-from localground.apps.site.models.abstract.base import Base, BaseAudit, \
-    BaseNamedMedia, BaseUploadedMedia
+from localground.apps.site.models.abstract.base import \
+    Base, BaseAudit, BaseUploadedMedia
 from localground.apps.site.models.abstract.mixins import ExtentsMixin, \
-    PointMixin, ExtrasMixin, ProjectMixin, BaseGenericRelationMixin, \
-    BaseMediaMixin, BaseNamedMixin
+    PointMixin, ExtrasMixin, ProjectMixin, GenericRelationMixin, \
+    MediaMixin, NamedMixin, ObjectPermissionsMixin
 
 # layers
 from localground.apps.site.models.layer import Layer
@@ -22,10 +22,8 @@ from localground.apps.site.models.tileset import OverlaySource, \
 from localground.apps.site.models.project import Project
 from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
-    ObjectPermissionsMixin, ObjectUserPermissions, UserAuthorityObject, \
-    UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser, \
-    ProjectUser, VideoUser, MapImageUser, PrintUser, \
-    FormUser
+    ObjectUserPermissions, UserAuthorityObject, \
+    UserAuthority, ObjectAuthority, ProjectUser
 from localground.apps.site.models.genericassociation import GenericAssociation
 
 # prints
