@@ -34,7 +34,7 @@ define(["jquery",
                         'click .add-map': 'showAddMapModal',
                         'click .selected-map': 'showMapList',
                         'click .map-item': 'handleItemClicks',
-                        'click': 'hideMapList'//, 
+                        'click': 'hideMapList'//,
                         //'click .map-edit': 'editMap'
                     }
                 );
@@ -47,12 +47,12 @@ define(["jquery",
                 if (!this.collection) {
                     // /api/0/maps/ API Endpoint gets built:
                     this.collection = new Maps();
-                    this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
+                    this.collection.setServerQuery("WHERE project_id = " + this.app.getProjectID());
                     this.collection.fetch({ reset: true });
                 } else {
                     this.drawOnce();
                 }
-                
+
                 $('body').click(this.hideFonts);
 
                 this.modal = new Modal();
@@ -65,7 +65,7 @@ define(["jquery",
             setInitialModel: function () {
                 this.render();
 
-                // on initialize, pass the first model in the collection 
+                // on initialize, pass the first model in the collection
                 // to be set as the active map
                 this.setActiveMap(this.collection.at(0));
             },
@@ -107,7 +107,7 @@ define(["jquery",
                 this.map = map;
                 this.map.save(null, {
                     success: function () {
-                        that.modal.hide();               
+                        that.modal.hide();
                         that.render();
                     }
                 });
@@ -180,8 +180,8 @@ define(["jquery",
                 if (this.collection.length == 0) {
                     return;
                 }
-        
-                var selectedMapModel = map, 
+
+                var selectedMapModel = map,
                 that = this;
                 this.activeMap = map;
                 selectedMapModel.fetch({ success: function () {
@@ -190,17 +190,17 @@ define(["jquery",
                     that.app.vent.trigger("change-map", selectedMapModel);
                     that.app.vent.trigger("hide-right-panel");
                     that.render();
-                }}); 
+                }});
             },
 
-            // function is needed to handle the different two different events that eminate 
+            // function is needed to handle the different two different events that eminate
             // from clicking within the '.map-item' div. this is necessary because a click on just the
             // '.edit-map' button also triggers a click on its parent, the '.map-item' div
             handleItemClicks: function () {
                 console.log($(event.target).attr('class'));
                 var id = $(event.target).data('value'),
                 map = this.collection.get(id);
-                
+
                 if ($(event.target).hasClass('map-edit')) {
                     this.editMap(map);
                 } else if ($(event.target).hasClass('map-item') || $(event.target).hasClass('map-name')){
@@ -233,7 +233,7 @@ define(["jquery",
                     mode: 'editExistingMap',
                     map: map
                 });
-                
+
                 this.modal.update({
                     class: "add-map",
                     view: createMapModel,
@@ -261,10 +261,10 @@ define(["jquery",
 
             showMapList: function() {
                 this.$el.find('.map-list').show();
-            }, 
+            },
 
             hideMapList: function(e) {
-                var $el = $(e.target);   
+                var $el = $(e.target);
                 if (!$el.hasClass('selected-map-item') && !$el.hasClass('map-name') && !$el.hasClass('map-edit')) {
                     this.$el.find('.map-list').hide();
                 }

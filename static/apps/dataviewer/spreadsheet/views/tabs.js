@@ -16,7 +16,7 @@ define([
             this.app = opts.app;
             if (!this.forms) {
                 this.forms = new Forms();
-                this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
+                this.forms.setServerQuery("WHERE project_id = " + this.app.getProjectID());
                 this.forms.fetch({ reset: true });
                 this.listenTo(this.forms, "reset", this.render);
             }

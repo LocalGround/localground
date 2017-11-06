@@ -92,7 +92,7 @@ define([
                 } else {
                     this.collection = new Videos();
                 }
-                this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
+                this.collection.setServerQuery("WHERE project_id = " + this.app.getProjectID());
                 this.collection.fetch({reset: true});
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
