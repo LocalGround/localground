@@ -51,17 +51,17 @@ define([
              *     for samples of valid queries.
              */
 
-            this.query ="WHERE name like %" + term +
+            this.query +="WHERE name like %" + term +
                         "% OR caption like %" + term +
                         "% OR attribution like %" + term +
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
-            this.query += " AND project = " + projectID;
+            this.query = " AND project_id = " + projectID;
             this.fetch({ reset: true });
         },
 
         clearSearch: function(projectID){
-            this.query = "WHERE project = " + projectID;
+            this.query = "WHERE project_id = " + projectID;
             this.fetch({ reset: true });
         }
 

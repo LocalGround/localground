@@ -10,7 +10,7 @@ define(["backbone", "models/audio", "collections/base", "collections/basePageabl
         size: 12,
         key: 'audio',
         name: 'Audio Files',
-        url: '/api/0/audio/'
+        url: '/api/0/audio/' // Maybe thinking about simply adding in that ?project_id={id}
     });
     return AudioFiles;
 });

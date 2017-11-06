@@ -71,7 +71,7 @@ define([
             this.modal = new Modal();
             this.forms = new Forms();
             this.listenTo(this.forms, "reset", this.render);
-            this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
+            this.forms.setServerQuery("WHERE project_id = " + this.app.getProjectID());
             this.listenTo(this.forms, 'reset', this.renderAndRoute);
             this.forms.fetch({ reset: true });
         },
