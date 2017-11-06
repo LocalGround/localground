@@ -19,9 +19,10 @@ class ExtentsMixinTest(test.TestCase, ModelMixin):
         field = ExtentsMixin._meta.get_field(prop_name)
         self.assertEqual(field.name, prop_name)
         self.assertEqual(type(field), prop_type)
-    '''
+    
     def test_geometry(self):
-        self.assertEqual(self.model.geometry(), self.model.extents)
+        print(self.model.geometry)
+        #self.assertEqual(self.model.geometry(), self.model.extents)
 
-    def test_remove_extents():
-    '''
+    #def test_remove_extents():
+    

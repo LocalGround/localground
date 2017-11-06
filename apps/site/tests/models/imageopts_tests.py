@@ -2,15 +2,16 @@ from localground.apps.site.models import ImageOpts
 from django.conf import settings
 from django.contrib.gis.db import models
 from localground.apps.site.tests.models import \
-    MediaMixinTest, BaseAuditAbstractModelClassTest
+    MediaMixinTest, BaseAuditAbstractModelClassTest,ExtentsMixinTest 
 from django import test
 
 
-class ImageOptsTest(MediaMixinTest, BaseAuditAbstractModelClassTest,
+class ImageOptsTest(ExtentsMixinTest, MediaMixinTest, BaseAuditAbstractModelClassTest,
                     test.TestCase):
 
     def setUp(self):
         BaseAuditAbstractModelClassTest.setUp(self)
+        ExtentsMixinTest.setUp(self)
         map_image = self.create_mapimage()
         self.model = self.create_imageopt(map_image)
 
