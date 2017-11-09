@@ -58,6 +58,8 @@ define([
             });
 
             it("select should render correctly", function () {
+                console.log(fixture.find('option'))
+                // Unforntunately, there are html elements that have 'option'
                 expect(fixture).toContainElement("#map-select");
                 expect(fixture.find('option').length).toEqual(1);
                 expect(fixture.find('option').length).toEqual(this.maps.length);

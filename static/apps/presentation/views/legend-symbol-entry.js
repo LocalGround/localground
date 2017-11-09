@@ -59,7 +59,10 @@ define(['marionette',
                 var that = this, matchedCollection;
                 this.template = Handlebars.compile(SymbolTemplate);
                 this.data = this.app.dataManager.getCollection(this.data_source);
-                matchedCollection = new this.data.constructor(null, { url: "dummy" });
+                matchedCollection = new this.data.constructor(null, {
+                    url: "dummy",
+                    projectID: that.app.getProjectID()
+                });
 
                 this.data.each(function (model) {
                     if (that.model.checkModel(model)) {

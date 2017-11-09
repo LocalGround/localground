@@ -86,7 +86,10 @@ define(["jquery",
                     symbols = this.model.getSymbols();
                     //console.log(this.model.getSymbols());
                 symbols.each(function (symbol) {
-                    matchedCollection = new data.constructor(null, { url: "dummy" });
+                    matchedCollection = new data.constructor(null, {
+                        url: "dummy",
+                        projectID: that.app.getProjectID()
+                    });
                     data.each(function (model) {
                         //console.log("symbol looped once", symbol.checkModel(model));
                         if (symbol.checkModel(model)) {

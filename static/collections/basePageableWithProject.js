@@ -8,7 +8,7 @@ define([
             opts = opts || {};
             _.extend(this, opts);
             if (!this.projectID) {
-                console.error("projectID is required");
+                console.error("projectID is required: " + this.key);
                 return;
             }
             BasePageable.prototype.initialize.apply(this, arguments);

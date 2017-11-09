@@ -132,7 +132,10 @@ define([
 
                 jasmine.clock().tick(100);
 
+                console.log(fixture.find('.circle-icon'));
+
                 expect(fixture.find('.circle-icon')).toHaveClass('icon-rotate');
+                // there does not seem to be an icon-rotate class anywhere
 
                 // would be good to write tests dealing with scrollTop() values,
                 // but so far unable to set these values within the fixture

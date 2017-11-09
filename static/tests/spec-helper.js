@@ -328,7 +328,7 @@ define(
             });
             this.layer = this.testMap.get("layers").at(0);
             this.layers = this.testMap.get("layers");
-            this.maps = new Maps([this.mapTest]);
+            this.maps = new Maps([this.mapTest],{ projectID: 3 });
             this.form = new Form({
                 "url": "http://localhost:7777/api/0/forms/1/",
                 "id": 1,
@@ -340,9 +340,7 @@ define(
                 "data_url": "http://localhost:7777/api/0/forms/1/data/",
                 "fields_url": "http://localhost:7777/api/0/forms/1/fields/",
                 "slug": "slug_64358",
-                "project_ids": [
-                    3
-                ],
+                "project_id": 3,
                 "fields": [
                     {
                         "id": 1,
@@ -429,9 +427,7 @@ define(
                 "data_url": "http://localhost:7777/api/0/forms/2/data/",
                 "fields_url": "http://localhost:7777/api/0/forms/2/fields/",
                 "slug": "slug_64358",
-                "project_ids": [
-                    3
-                ],
+                "project_id": 3,
                 "fields": [{
                     "id": 15,
                     "form": 2,
@@ -443,7 +439,7 @@ define(
                     "url": "http://localhost:7777/api/0/forms/2/fields/15"
                 }]
             });
-            this.forms = new Forms([this.form, this.form2], { projectID: this.project.id });
+            this.forms = new Forms([this.form, this.form2], { projectID: 1});
             this.photos = new Photos([
                 new Photo({ id: 1, name: "Cat", tags: ['animal', 'cat', 'cute', 'tag1'], project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", attribution: "Owner1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_medium_sm: '//:0', path_marker_sm: "//:0" }),
                 new Photo({id: 2, name: "Dog", tags: ['animal', 'dog'], project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_medium: '//:0', path_small: '//:0', path_marker_sm: "//:0" }),
