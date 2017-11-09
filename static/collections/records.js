@@ -64,7 +64,7 @@ define([
             if (!fields) return;
 
             this.query = "WHERE " + this.addFieldQuery(fields, term);
-            this.query += " AND project_id = " + projectID
+            //this.query += " AND project_id = " + projectID
             this.fetch({ reset: true });
         },
 
@@ -101,7 +101,7 @@ define([
         },
 
         clearSearch: function(projectID){
-            this.query = "WHERE project_id = " + projectID;
+            this.query = ""; //WHERE project_id = " + projectID;
             this.fetch({ reset: true });
         }
     });

@@ -3,16 +3,16 @@ from localground.apps.site.models import DataType
 
 from django.contrib.gis.db import models
 
-from localground.apps.site.tests.models.abstract_base_tests import \
-    BaseAbstractModelClassTest
+from localground.apps.site.tests.models.abstract_base_audit_tests import \
+    BaseAuditAbstractModelClassTest
 from django import test
 
 
 # form test in progress
-class FieldTest(BaseAbstractModelClassTest, test.TestCase):
+class FieldTest(BaseAuditAbstractModelClassTest, test.TestCase):
 
     def setUp(self):
-        BaseAbstractModelClassTest.setUp(self)
+        BaseAuditAbstractModelClassTest.setUp(self)
         self.model = Field()
         self.model.col_name_db = "test_col"
         self.model.col_alias = "test column"

@@ -86,13 +86,13 @@ define([
 
             displayMedia: function () {
                 if (this.currentMedia == 'photos') {
-                    this.collection = new Photos();
+                    this.collection = new Photos(null, { projectID: this.app.getProjectID() });
                 } else if (this.currentMedia == 'audio') {
-                    this.collection = new Audio();
+                    this.collection = new Audio(null, { projectID: this.app.getProjectID() });
                 } else {
-                    this.collection = new Videos();
+                    this.collection = new Videos(null, { projectID: this.app.getProjectID() });
                 }
-                this.collection.setServerQuery("WHERE project_id = " + this.app.getProjectID());
+                //this.collection.setServerQuery("WHERE project_id = " + this.app.getProjectID());
                 this.collection.fetch({reset: true});
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'reset', this.hideLoadingMessage);

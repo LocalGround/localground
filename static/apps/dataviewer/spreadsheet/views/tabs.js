@@ -15,8 +15,7 @@ define([
             this.template = Handlebars.compile(TabsTemplate);
             this.app = opts.app;
             if (!this.forms) {
-                this.forms = new Forms();
-                this.forms.setServerQuery("WHERE project_id = " + this.app.getProjectID());
+                this.forms = new Forms(null, { projectID: this.app.getProjectID() });
                 this.forms.fetch({ reset: true });
                 this.listenTo(this.forms, "reset", this.render);
             }

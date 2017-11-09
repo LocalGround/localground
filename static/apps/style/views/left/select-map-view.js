@@ -47,7 +47,7 @@ define(["jquery",
                 if (!this.collection) {
                     // /api/0/maps/ API Endpoint gets built:
                     this.collection = new Maps();
-                    this.collection.setServerQuery("WHERE project_id = " + this.app.getProjectID());
+                    this.collection.setServerQuery("");
                     this.collection.fetch({ reset: true });
                 } else {
                     this.drawOnce();

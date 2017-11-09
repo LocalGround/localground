@@ -10,6 +10,8 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseUploadedMediaAbstractModelClassTest.setUp(self)
         self.model = self.create_audio()
+        self.object_type = self.model_name = self.pretty_name = 'audio'
+        self.model_name_plural = self.pretty_name_plural = 'audio'
 
     def tearDown(self):
         # delete method also removes files from file system:
@@ -21,7 +23,7 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
         import wave
         import random
         import struct
-        
+
         # Create dummy audio file:
         #tmp_file = tempfile.NamedTemporaryFile(suffix='.wav')
         tmp_file = open('/tmp/test.wav', 'w')
@@ -41,13 +43,10 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
         noise_output.close()
         return tmp_file
 
-        
-       
-
     def test_convert_wav_to_mp3(self, **kwargs):
         from django.core.files import File
         tmp_file = self.makeTmpFile()
-        with open(tmp_file.name, 'rb') as data:                            
+        with open(tmp_file.name, 'rb') as data:
             result = models.Audio.process_file(File(data), self.user)
             name_wav = tmp_file.name.split('/')[-1].lower()
             name_mp3 = name_wav.replace('wav', 'mp3')
@@ -55,7 +54,7 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
             absolute_path = upload_helpers.generate_absolute_path(self.user, 'audio')
             wav_file_path = absolute_path + name_wav
             mp3_file_path = absolute_path + result['file_name_new']
-            
+
             self.assertEqual(result['file_name_new'], name_mp3)
             self.assertEqual(result['content_type'], 'wav')
             self.assertEqual(result['file_name_orig'], tmp_file.name)
@@ -69,7 +68,7 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
     def test_delete(self, **kwargs):
         from django.core.files import File
         tmp_file = self.makeTmpFile()
-        with open(tmp_file.name, 'rb') as data:                            
+        with open(tmp_file.name, 'rb') as data:
             result = models.Audio.process_file(File(data), self.user)
             name_wav = tmp_file.name.split('/')[-1].lower()
             name_mp3 = name_wav.replace('wav', 'mp3')
@@ -81,8 +80,8 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
             self.model.file_name_new = result['file_name_new']
             self.model.content_type = result['content_type']
 
-            # removing '/tmp' from file_name_orig. 
-            # otherwise method will try to delete invalid path 
+            # removing '/tmp' from file_name_orig.
+            # otherwise method will try to delete invalid path
             # '/userdata/media/tester/audio//tmp/tmpExNqHF.wav'
             self.model.file_name_orig = name_wav
             self.model.name = result['name']
