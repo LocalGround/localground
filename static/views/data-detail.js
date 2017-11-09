@@ -305,7 +305,9 @@ define([
         getPhotos: function () {
             var children = this.model.get("children") || {},
                 featuredImage = this.getFeaturedImage(),
-                photos = children.photos ? new Photos(children.photos.data, { projectID: this.app.getProjectID() }) : new Photos([]);
+                photos = children.photos ? new Photos(children.photos.data,
+                    { projectID: this.app.getProjectID() }) : new Photos([],
+                    { projectID: this.app.getProjectID() });
             if (featuredImage) {
                 photos.remove(photos.get(featuredImage.id));
             }
@@ -313,11 +315,15 @@ define([
         },
         getAudio: function () {
             var children = this.model.get("children") || {};
-            return children.audio ? new Audio(children.audio.data, { projectID: this.app.getProjectID() }) : new Audio([]);
+            return children.audio ? new Audio(children.audio.data,
+                { projectID: this.app.getProjectID() }) : new Audio([],
+                { projectID: this.app.getProjectID() });
         },
         getVideos: function () {
             var children = this.model.get("children") || {};
-            return children.videos ? new Videos(children.videos.data, { projectID: this.app.getProjectID() }) : new Videos([]);
+            return children.videos ? new Videos(children.videos.data,
+                { projectID: this.app.getProjectID() }) : new Videos([],
+                { projectID: this.app.getProjectID() });
         },
         viewRender: function () {
             //return;
