@@ -15,6 +15,11 @@ class StatusCodeTest(BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = StatusCode.get_status(1)
+        self.object_type = 'status-code'
+        self.model_name = 'status_code'
+        self.pretty_name = 'status code'
+        self.model_name_plural = 'status-codes'
+        self.pretty_name_plural = 'status codes'
 
     def test_static_lookup_properties(self, **kwargs):
         self.assertEqual(StatusCode.READY_FOR_PROCESSING, 1)
@@ -49,6 +54,11 @@ class UploadSourceTest(BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = UploadSource.get_source(1)
+        self.object_type = 'upload-source'
+        self.model_name = 'upload_source'
+        self.pretty_name = 'upload source'
+        self.model_name_plural = 'upload-sources'
+        self.pretty_name_plural = 'upload sources'
 
     def test_static_lookup_properties(self, **kwargs):
         self.assertEqual(UploadSource.WEB_FORM, 1)
@@ -73,6 +83,11 @@ class UploadTypeTest(BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = UploadType.objects.get(id=1)
+        self.object_type = 'upload-type'
+        self.model_name = 'upload_type'
+        self.pretty_name = 'upload type'
+        self.model_name_plural = 'upload-types'
+        self.pretty_name_plural = 'upload types'
 
     def test_name(self, **kwargs):
         self.assertTrue(hasattr(self.model, 'name'))
@@ -88,6 +103,12 @@ class ErrorCodeTest(BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = ErrorCode.objects.get(id=1)
+        self.object_type = 'error-code'
+        self.model_name = 'error_code'
+        self.pretty_name = 'error code'
+        self.model_name_plural = 'error-codes'
+        self.pretty_name_plural = 'error codes'
+        
 
     def test_name_and_description(self, **kwargs):
         self.assertTrue(hasattr(self.model, 'name'))
@@ -106,6 +127,7 @@ class ErrorCodeTest(BaseAbstractModelClassTest, test.TestCase):
 
 
 class ObjectTypeTest(test.TestCase):
+
     def test_object_types(self, **kwargs):
         self.assertEqual(ObjectTypes.PHOTO, 'photo')
         self.assertEqual(ObjectTypes.AUDIO, 'audio')

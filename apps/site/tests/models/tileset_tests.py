@@ -3,14 +3,17 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from localground.apps.site.tests.models.abstract_base_tests import \
     BaseAbstractModelClassTest
+from localground.apps.site.tests.models import NamedMixinTest
 from django import test
 
 
-class TileSetTest(BaseAbstractModelClassTest, test.TestCase):
+class TileSetTest(NamedMixinTest, BaseAbstractModelClassTest, test.TestCase):
 
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = TileSet.objects.get(id=1)
+        self.object_type = self.model_name = self.pretty_name = 'tile'
+        self.model_name_plural = self.pretty_name_plural = 'tiles'
 
     '''
     There is no value of the following:

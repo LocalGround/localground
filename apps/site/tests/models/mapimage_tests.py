@@ -11,6 +11,11 @@ class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseUploadedMediaAbstractModelClassTest.setUp(self)
         self.model = self.create_mapimage()
+        self.object_type = 'map-image'
+        self.model_name = 'map_image'
+        self.pretty_name = 'map image'
+        self.model_name_plural = 'map-images'
+        self.pretty_name_plural = 'map images'
 
     # A streamlined approach to checking all the properties
     # from the class being tested on

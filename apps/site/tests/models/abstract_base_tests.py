@@ -9,67 +9,64 @@ class BaseAbstractModelClassTest(ModelMixin):
 
     def setUp(self):
         ModelMixin.setUp(self)
+        '''
         form = self.create_form_with_fields()
         Record = form.TableModel
         self.classes_that_inherit_from_base = {
             # Groupings and Associations
-            'project': models.Project,
-            'relation': models.GenericAssociation,
+            DONE 'project': models.Project,
+            DONE 'relation': models.GenericAssociation,
 
             # Permissions
-            'object_authority': models.ObjectAuthority,
-            'user_authority': models.UserAuthority,
-            'user_object_authority': models.UserAuthorityObject,
+            DONE 'object_authority': models.ObjectAuthority,
+            DONE 'user_authority': models.UserAuthority,
+            DONE 'user_object_authority': models.UserAuthorityObject,
 
             # Presentation-Related
-            'map': models.StyledMap,
-            'layer': models.Layer,
+            DONE 'map': models.StyledMap,
+            DONE 'layer': models.Layer,
 
             # Tiles
-            'tileset': models.TileSet,
-            'overlay_source': models.OverlaySource,
-            'overlay_type': models.OverlayType,
+            DONE 'tileset': models.TileSet,
+            DONE 'overlay_source': models.OverlaySource,
+            DONE 'overlay_type': models.OverlayType,
 
             # User-Defined Schemas
-            'form': models.Form,
-            'field': models.Field,
-            'data_type': models.DataType,
+            DONE 'form': models.Form,
+            DONE 'field': models.Field,
+            DONE 'data_type': models.DataType,
 
             # Sites
-            'marker': models.Marker,
+            DONE 'marker': models.Marker,
             'record': Record,
 
             # Prints
-            'print': models.Print,
-            'layout': models.Layout,
+            DONE 'print': models.Print,
+            DONE 'layout': models.Layout,
 
             # Map Image Processing:
-            'map_image': models.MapImage,
-            'image_opts': models.ImageOpts,
-            'error_code': models.ErrorCode,
-            'status_code': models.StatusCode,
+            DONE 'map_image': models.MapImage,
+            DONE 'image_opts': models.ImageOpts,
+            DONE 'error_code': models.ErrorCode,
+            DONE 'status_code': models.StatusCode,
 
             # Media:
-            'photo': models.Photo,
-            'video': models.Video,
-            'audio': models.Audio
+            DONE 'photo': models.Photo, 
+            DONE 'video': models.Video,
+            DONE 'audio': models.Audio
         }
         self.Photo = models.Photo
         self.photo = self.create_photo()
-        #self.Video = models.Video
-        #self.video = self.create_video()
+        '''
+        
 
     def test_classes_all_have_required_class_properties(self, **kwargs):
-        count = 0
-        class_list = self.classes_that_inherit_from_base.values()
-        for cls in class_list:
-            self.assertTrue(hasattr(cls, 'object_type'))
-            self.assertTrue(hasattr(cls, 'model_name'))
-            self.assertTrue(hasattr(cls, 'pretty_name'))
-            self.assertTrue(hasattr(cls, 'model_name_plural'))
-            self.assertTrue(hasattr(cls, 'pretty_name_plural'))
-            count += 1
-        self.assertEqual(count, len(class_list))
+        c = self.model.__class__
+        self.assertTrue(hasattr(c, 'object_type'))
+        self.assertTrue(hasattr(c, 'model_name'))
+        self.assertTrue(hasattr(c, 'pretty_name'))
+        self.assertTrue(hasattr(c, 'model_name_plural'))
+        self.assertTrue(hasattr(c, 'pretty_name_plural'))
 
     '''
     ----------------------------------------------------------------------------
@@ -77,30 +74,30 @@ class BaseAbstractModelClassTest(ModelMixin):
     Pick a class that inherits from Base and ensure that all of methods work.
     ----------------------------------------------------------------------------
     '''
-    def test_object_type_prop(self, **kwargs):
+    def test_object_type_prop(self):
         # Check that it works for a class and a method
-        self.assertEqual(self.Photo.object_type, "photo")
-        self.assertEqual(self.photo.object_type, "photo")
+        self.assertEqual(self.model.__class__.object_type, self.object_type)
+        self.assertEqual(self.model.object_type, self.object_type)
 
     def test_model_name_prop(self, **kwargs):
         # Check that it works for a class and a method
-        self.assertEqual(self.Photo.model_name, "photo")
-        self.assertEqual(self.photo.model_name, "photo")
+        self.assertEqual(self.model.__class__.model_name, self.model_name)
+        self.assertEqual(self.model.model_name, self.model_name)
 
     def test_model_name_plural_prop(self, **kwargs):
         # Check that it works for a class and a method
-        self.assertEqual(self.Photo.model_name_plural, "photos")
-        self.assertEqual(self.photo.model_name_plural, "photos")
+        self.assertEqual(self.model.__class__.model_name_plural, self.model_name_plural)
+        self.assertEqual(self.model.model_name_plural, self.model_name_plural)
 
     def test_pretty_name_prop(self, **kwargs):
         # Check that it works for a class and a method
-        self.assertEqual(self.Photo.pretty_name, "photo")
-        self.assertEqual(self.photo.pretty_name, "photo")
+        self.assertEqual(self.model.__class__.pretty_name, self.pretty_name)
+        self.assertEqual(self.model.pretty_name, self.pretty_name)
 
     def test_pretty_name_plural_prop(self, **kwargs):
         # Check that it works for a class and a method
-        self.assertEqual(self.Photo.pretty_name_plural, "photos")
-        self.assertEqual(self.photo.pretty_name_plural, "photos")
+        self.assertEqual(self.model.__class__.pretty_name_plural, self.pretty_name_plural)
+        self.assertEqual(self.model.pretty_name_plural, self.pretty_name_plural)
 
     '''
     ----------------------------------------------------------------------------
@@ -108,29 +105,26 @@ class BaseAbstractModelClassTest(ModelMixin):
     Pick a class that inherits from Base and ensure that all of methods work.
     ----------------------------------------------------------------------------
     '''
-    def test_classes_all_have_required_class_methods(self, **kwargs):
-        count = 0
-        class_list = self.classes_that_inherit_from_base.values()
-        for cls in class_list:
-            import inspect
-            self.assertEqual(
-                inspect.getargspec(cls.get_model)[0],
-                ['cls', 'model_name', 'model_name_plural']
-            )
-            self.assertTrue(hasattr(cls, 'get_filter_fields'))
-            self.assertTrue(hasattr(cls, 'get_content_type'))
-            count += 1
-        self.assertEqual(count, len(class_list))
+    def test_has_required_class_methods(self, **kwargs):
+        c = self.model.__class__
+        import inspect
+        self.assertEqual(
+            inspect.getargspec(c.get_model)[0],
+            ['cls', 'model_name', 'model_name_plural']
+        )
+        self.assertTrue(hasattr(c, 'get_filter_fields'))
+        self.assertTrue(hasattr(c, 'get_content_type'))
 
     def test_get_model_method_returns_model_unless_args_missing(
             self, **kwargs):
         from localground.apps.site import models
         self.assertEqual(models.Base.get_model(
-            model_name="photo"), models.Photo
+            model_name=self.model_name), self.model.__class__
         )
         self.assertEqual(models.Base.get_model(
-            model_name_plural="photos"), models.Photo
+            model_name_plural=self.model_name_plural), self.model.__class__
         )
+        #print(self.model_name_plural)
 
         # Ensure no arguments yields an error message:
         with self.assertRaises(Exception) as e:
@@ -145,8 +139,8 @@ class BaseAbstractModelClassTest(ModelMixin):
         self.assertEqual(models.Base.get_filter_fields(), {})
         self.assertEqual(len(models.Photo.get_filter_fields()), 11)
         self.assertEqual(
-            self.Photo.get_filter_fields().keys(),
-            self.photo.get_filter_fields().keys(),
+            self.model.__class__.get_filter_fields().keys(),
+            self.model.get_filter_fields().keys(),
             [
                 'attribution',
                 'name',
@@ -166,7 +160,7 @@ class BaseAbstractModelClassTest(ModelMixin):
         from django.contrib.contenttypes.models import ContentType
         self.assertEqual(models.Base.get_content_type().name, "base")
         self.assertEqual(
-            self.Photo.get_content_type().name,
-            self.photo.get_content_type().name,
-            "photo"
+            self.model.__class__.get_content_type().name,
+            self.model.get_content_type().name,
+            self.model_name
         )

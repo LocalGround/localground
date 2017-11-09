@@ -16,6 +16,8 @@ class FieldTest(BaseAbstractModelClassTest, test.TestCase):
         self.model = Field()
         self.model.col_name_db = "test_col"
         self.model.col_alias = "test column"
+        self.object_type = self.model_name = self.pretty_name = 'field'
+        self.model_name_plural = self.pretty_name_plural = 'fields'
 
     # skip the following for now: can_view, can_edit, can_manage for now
 

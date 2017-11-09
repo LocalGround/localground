@@ -4,15 +4,21 @@ from localground.apps.site.tests.models.abstract_base_uploaded_media_tests \
     import BaseUploadedMediaAbstractModelClassTest
 from localground.apps.site.tests.models.abstract_base_tests import \
 BaseAbstractModelClassTest
+from localground.apps.site.tests.models import ExtrasMixinTest, \
+    PointMixinTest, ProjectMixinTest, NamedMixinTest, \
+    GenericRelationMixinTest
 
 from django import test
 from django.contrib.contenttypes import generic
 
 
-class GenericAssociationModelTests(BaseAbstractModelClassTest, test.TestCase):
+class MarkerTests(ExtrasMixinTest, PointMixinTest, ProjectMixinTest, 
+    NamedMixinTest, GenericRelationMixinTest, BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = self.create_marker()
+        self.object_type = self.model_name = self.pretty_name = 'marker'
+        self.model_name_plural = self.pretty_name_plural = 'markers'
     
     def test_model_properties(self):
         from django.contrib.gis.db import models

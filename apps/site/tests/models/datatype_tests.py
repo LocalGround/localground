@@ -12,6 +12,11 @@ class DataTypeTest(BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = DataType()
+        self.object_type = 'data-type'
+        self.model_name = 'data_type'
+        self.pretty_name = 'data type'
+        self.model_name_plural = 'data-types'
+        self.pretty_name_plural = 'data types'
 
     # Still need more to test...
 

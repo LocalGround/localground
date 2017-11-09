@@ -15,6 +15,8 @@ class GenericAssociationModelTests(BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = self.create_generic_association()
+        self.object_type = self.model_name = self.pretty_name = 'generic association'
+        self.model_name_plural = self.pretty_name_plural = 'generic associations'
         self.other_user = User.objects.create_user(
             'tester2',
             first_name='test',

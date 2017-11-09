@@ -8,8 +8,14 @@ from localground.apps.site.tests.models.abstract_base_tests import \
     BaseAbstractModelClassTest
 from django import test
 from localground.apps.lib.helpers import generic
+from localground.apps.site.tests.models import \
+    MediaMixinTest, BaseAuditAbstractModelClassTest,ExtentsMixinTest, \
+    ProjectMixinTest, GenericRelationMixinTest 
 
-
+'''
+class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest, 
+    GenericRelationMixinTest, BaseAbstractModelClassTest, test.TestCase):
+'''
 class PrintsTest(BaseAbstractModelClassTest, test.TestCase):
 
     def setUp(self):
@@ -17,6 +23,11 @@ class PrintsTest(BaseAbstractModelClassTest, test.TestCase):
         self.model = Print(
             uuid=generic.generateID()
         )
+        '''
+        or do self.model.create_print()
+        '''
+        self.object_type = self.model_name = self.pretty_name = 'print'
+        self.model_name_plural = self.pretty_name_plural = 'prints'
 
     def test_dummy(self, **kwargs):
         pass

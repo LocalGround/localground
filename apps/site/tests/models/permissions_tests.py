@@ -9,6 +9,8 @@ from django import test
 class ObjectAuthorityTest(test.TestCase):
     def setUp(self):
         self.model = ObjectAuthority()
+        self.object_type = self.model_name = self.pretty_name = 'object_authority'
+        self.model_name_plural = self.pretty_name_plural = 'object_authorities'
         
     def test_static_properties(self, **kwargs):
         #self.objAuth = ObjectAuthority()
@@ -37,6 +39,8 @@ class ObjectAuthorityTest(test.TestCase):
 class UserAuthorityTests(test.TestCase):
     def setUp(self):
         self.model = UserAuthority()
+        self.object_type = self.model_name = self.pretty_name = 'user_authority'
+        self.model_name_plural = self.pretty_name_plural = 'user_authorities'
     
     def test_static_properties(self, **kwargs):
         self.assertEqual(self.model.CAN_VIEW, 1)
@@ -61,6 +65,8 @@ class UserAuthorityObjectTests(BaseAbstractModelClassTest,
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = UserAuthorityObject()
+        self.object_type = self.model_name = self.pretty_name = 'user authority object'
+        self.model_name_plural = self.pretty_name_plural = 'user authority objects'
     
     def test_model_properties(self):
         from django.contrib.gis.db import models
@@ -79,7 +85,7 @@ class UserAuthorityObjectTests(BaseAbstractModelClassTest,
             self.assertEqual(field.name, prop_name)
             self.assertEqual(type(field), prop_type)
     
-    '''
+    
     # how to test this???
     def test_to_dict(self):
         self.model.auth_user = {'username': 'tester_person'}
@@ -94,7 +100,7 @@ class UserAuthorityObjectTests(BaseAbstractModelClassTest,
         }
 
         self.assertEqual(self.model.to_dict(), test_dict)
-    '''
+    
 
 
 

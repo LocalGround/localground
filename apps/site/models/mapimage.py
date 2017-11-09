@@ -97,14 +97,8 @@ class ImageOpts(ExtentsMixin, MediaMixin, BaseAudit):
 
     class Meta:
         app_label = 'site'
-
-    @property
-    def model_name(self):
-        return self.source_mapimage.model_name
-
-    @property
-    def model_name_plural(self):
-        return self.source_mapimage.model_name_plural
+        verbose_name = 'map-image'
+        verbose_name_plural = 'map-images'
 
     def processed_map_url_path(self):
         host = self.source_mapimage.host
@@ -146,3 +140,4 @@ class ImageOpts(ExtentsMixin, MediaMixin, BaseAudit):
 
     def can_edit(self, user):
         return self.source_mapimage.can_edit(user)
+    

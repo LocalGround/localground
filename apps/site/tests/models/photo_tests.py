@@ -6,17 +6,24 @@ from localground.apps.site.tests.models.abstract_base_audit_tests import \
 from localground.apps.site.tests.models.mixin_project_tests import \
     ProjectMixinTest
 from localground.apps.site.tests.models.mixin_point_tests import PointMixinTest
+from localground.apps.site.tests.models import ExtrasMixinTest
+
+
 import urllib
 
 
-class PhotoModelTest(PointMixinTest, ProjectMixinTest,
-                     BaseAuditAbstractModelClassTest):
+class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
+                     BaseAuditAbstractModelClassTest, test.TestCase):
 
     # To run test:
     # $ python manage.py test localground.apps.site.tests.models.PhotoModelTest
     def setUp(self):
         BaseAuditAbstractModelClassTest.setUp(self)
+        PointMixinTest.setUp(self)
+        ExtrasMixinTest.setUp(self)
         self.model = self.create_photo()
+        self.object_type = self.model_name = self.pretty_name = 'photo'
+        self.model_name_plural = self.pretty_name_plural = 'photos'
 
     def tearDown(self):
         # delete method also removes files from file system:

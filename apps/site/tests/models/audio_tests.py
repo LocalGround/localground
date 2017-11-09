@@ -1,15 +1,18 @@
 from localground.apps.site import models
 from localground.apps.site.tests.models.abstract_base_uploaded_media_tests \
     import BaseUploadedMediaAbstractModelClassTest
+from localground.apps.site.tests.models import ExtrasMixinTest, PointMixinTest
 from localground.apps.lib.helpers import upload_helpers
 from django import test
 import os
 
-class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
+class AudioModelTest(ExtrasMixinTest, PointMixinTest, BaseUploadedMediaAbstractModelClassTest, test.TestCase):
 
     def setUp(self):
         BaseUploadedMediaAbstractModelClassTest.setUp(self)
         self.model = self.create_audio()
+        self.object_type = self.model_name = self.pretty_name = 'audio'
+        self.model_name_plural = self.pretty_name_plural = 'audio'
 
     def tearDown(self):
         # delete method also removes files from file system:
@@ -41,8 +44,6 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
         noise_output.close()
         return tmp_file
 
-        
-       
 
     def test_convert_wav_to_mp3(self, **kwargs):
         from django.core.files import File

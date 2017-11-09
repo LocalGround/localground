@@ -12,6 +12,8 @@ class LayoutTest(BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = Layout()
+        self.object_type = self.model_name = self.pretty_name = 'layout'
+        self.model_name_plural = self.pretty_name_plural = 'layouts'
 
     # A streamlined approach to checking all the properties
     # from the class being tested on

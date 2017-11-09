@@ -4,18 +4,14 @@ from django.contrib.auth.models import User
 from localground.apps.site import models
 
 
-class ProjectMixinTest(ModelMixin):
-
-    def setUp(self):
-        ModelMixin.setUp(self)
-
+class ProjectMixinTest(object):
     # set project, save, and make sure no errors
     def test_sets_project_correctly(self, **kwargs):
         project = self.create_project()
         self.model.project = project
         self.assertTrue(hasattr(self.model, 'project'))
 
-    def test_can_view_method(self):
+    def test_project_can_view_method(self):
         # test_user = self.create_user()
         test_user = User.objects.create_user(
             username = 'Person 1',
@@ -34,7 +30,8 @@ class ProjectMixinTest(ModelMixin):
         # now other use CAN view test
         self.assertTrue(self.model.can_view(test_user))
 
-    def test_can_edit_method(self):
+    def test_project_can_edit_method(self):
+        print('running project tests')
         test_user = User.objects.create_user(
             username = 'Person 1',
             first_name='Person',
