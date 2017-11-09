@@ -88,15 +88,30 @@ class UserAuthorityObjectTests(BaseAbstractModelClassTest,
     
     # how to test this???
     def test_to_dict(self):
-        self.model.auth_user = {'username': 'tester_person'}
-        #self.model.auth_user.username = "tester_person"
-        self.model.authority.id = 777
-        self.authority.name = 'Tester'
+        from localground.apps.lib.helpers import get_timestamp_no_milliseconds
+        from django.contrib.auth.models import User
+        other_user = User.objects.create_user(
+            'tester2',
+            first_name='test',
+            email='',
+            password=self.user_password
+        )
 
+        # 1. create an authority object
+        uao = UserAuthorityObject()
+        uao.user = other_user
+        uao.authority = UserAuthority.objects.get(id=1)
+        uao.granted_by = other_user
+        uao.time_stamp = get_timestamp_no_milliseconds()
+        uao.content_type = self.project.get_content_type()
+        uao.object_id = self.project.id
+        uao.save()
+
+        # 2. test that values match
         test_dict = {
             'username': 'tester_person',
-            'authority_id': 777,
-            'authority': 'Tester'
+            'authority_id': 1,
+            'authority': 'Can View'
         }
 
         self.assertEqual(self.model.to_dict(), test_dict)

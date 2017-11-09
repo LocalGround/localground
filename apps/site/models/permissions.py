@@ -52,7 +52,7 @@ class UserAuthorityObject(Base):
 
     """
     Model that assigns a particular User (auth_user) and UserAuthority
-    object to a particular Group.
+    object to a Project.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     authority = models.ForeignKey('UserAuthority')
@@ -68,7 +68,7 @@ class UserAuthorityObject(Base):
 
     def to_dict(self):
         return {
-            'username': self.auth_user.username,
+            'username': self.user.username,
             'authority_id': self.authority.id,
             'authority': self.authority.name
         }
