@@ -260,7 +260,7 @@ define(["jquery",
                         model: model,
                         mode: "photos",
                         app: that.app,
-                        collection: new Photos(model)
+                        collection: new Photos(model, { projectID: this.app.getProjectID() })
                     });
                 img.src = value;
                 img.onclick = function (e) {
@@ -295,7 +295,7 @@ define(["jquery",
                         model: model,
                         mode: "videos",
                         app: that.app,
-                        collection: new Videos(model)
+                        collection: new Videos(model, { projectID: this.app.getProjectID() })
                     });
                 if (model.get('video_provider') === "vimeo") {
                     i.className = "fa fa-3x fa-vimeo";
@@ -744,7 +744,7 @@ define(["jquery",
                     projectID = this.app.getProjectID(),
                     rec;
                 dataType = dataType != undefined ? dataType : this.app.dataType;
-                if (dataType == "audio" || dataType == "photos") { // Unsure on using the following: || dataType == "videos"
+                if (dataType == "audio" || dataType == "photos") {
                     this.showMediaUploader();
                     return;
                 } else if (dataType == "markers"){

@@ -46,7 +46,7 @@ define(["jquery",
                 _.extend(this, opts);
                 if (!this.collection) {
                     // /api/0/maps/ API Endpoint gets built:
-                    this.collection = new Maps();
+                    this.collection = new Maps(null, { projectID: this.app.getProjectID() });
                     this.collection.setServerQuery("");
                     this.collection.fetch({ reset: true });
                 } else {

@@ -52,19 +52,6 @@ define([
                 return Handlebars.compile(MapImageTemplate);
             }
             return Handlebars.compile(SiteTemplate);
-            /*return Handlebars.compile("<div class='parallax black hello world' data-target-top='0%'> \
-                <div class='top-section'> \
-                {{#if photo_count }} \
-                    <div class='mobile-carousel carousel-videos-photos'></div> \
-                {{/if}} \
-                </div> \
-            </div> \
-            <div class='parallax body' id='parallax-body' data-target-top='50%' style='\
-                color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}'> \
-                <div class='expanded' style='display:none;'>Expanded</div> \
-                <div class='contracted'>Contracted</div> \
-            </div>");*/
-
 
         },
         featuredImageID: null,
@@ -318,7 +305,7 @@ define([
         getPhotos: function () {
             var children = this.model.get("children") || {},
                 featuredImage = this.getFeaturedImage(),
-                photos = children.photos ? new Photos(children.photos.data) : new Photos([]);
+                photos = children.photos ? new Photos(children.photos.data, { projectID: this.app.getProjectID() }) : new Photos([]);
             if (featuredImage) {
                 photos.remove(photos.get(featuredImage.id));
             }
@@ -326,11 +313,11 @@ define([
         },
         getAudio: function () {
             var children = this.model.get("children") || {};
-            return children.audio ? new Audio(children.audio.data) : new Audio([]);
+            return children.audio ? new Audio(children.audio.data, { projectID: this.app.getProjectID() }) : new Audio([]);
         },
         getVideos: function () {
             var children = this.model.get("children") || {};
-            return children.videos ? new Videos(children.videos.data) : new Videos([]);
+            return children.videos ? new Videos(children.videos.data, { projectID: this.app.getProjectID() }) : new Videos([]);
         },
         viewRender: function () {
             //return;

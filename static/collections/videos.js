@@ -1,9 +1,10 @@
-define(["models/video", "collections/basePageable"], function (Video, BasePageable) {
+define(["models/video", "collections/basePageableWithProject"],
+function (Video, BasePageableWithProject) {
     "use strict";
     /**
      * @class localground.collections.VideoFiles
      */
-    var Videos = BasePageable.extend({
+    var Videos = BasePageableWithProject.extend({
         model: Video,
         overlay_type: 'video',
         fillColor: "#92374D",

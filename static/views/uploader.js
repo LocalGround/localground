@@ -154,10 +154,10 @@ define ([
 
             displayMedia: function () {
                 if (this.currentMedia == "photos") {
-                    this.collection = new Photos();
+                    this.collection = new Photos(null, { projectID: this.app.getProjectID() });
                 }
                 else if (this.currentMedia == "audio") {
-                    this.collection = new Audio();
+                    this.collection = new Audio(null, { projectID: this.app.getProjectID() });
 
                     // There must be a for loop to handle creation of the
                     // audio players

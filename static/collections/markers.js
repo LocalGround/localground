@@ -1,10 +1,10 @@
-define(["models/marker", "collections/basePageable"],
-function (Marker, BasePageable) {
+define(["models/marker", "collections/basePageableWithProject"],
+function (Marker, BasePageableWithProject) {
     "use strict";
     /**
      * @class localground.collections.Markers
      */
-    var Markers = BasePageable.extend({
+    var Markers = BasePageableWithProject.extend({
         model: Marker,
         overlay_type: 'marker',
         name: 'Sites',

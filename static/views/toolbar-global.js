@@ -50,7 +50,7 @@ define([
 
         getPreviewMap: function () {
             var that = this;
-            this.maps = new Maps();
+            this.maps = new Maps(null, { projectID: this.app.getProjectID() });
             //this.maps.setServerQuery("WHERE project_id = " + this.app.getProjectID());
             this.maps.fetch({
                 reset: true,
