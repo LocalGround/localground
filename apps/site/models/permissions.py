@@ -52,7 +52,7 @@ class UserAuthorityObject(Base):
 
     """
     Model that assigns a particular User (auth_user) and UserAuthority
-    object to a Project.
+    object to a particular Group.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     authority = models.ForeignKey('UserAuthority')
