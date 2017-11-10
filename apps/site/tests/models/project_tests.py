@@ -30,6 +30,6 @@ class ProjectModelTest(NamedMixinTest, GenericRelationMixinTest, ObjectPermissio
             ('slug', 'name', 'description', 'tags')
         self.assertEqual(self.model.filter_fields, test_fields)
 
-    def test_check_objects_manager(self, **kwargs):
+    def test_check_project_objects_manager(self, **kwargs):
         self.assertTrue(hasattr(Project, 'objects'))
         self.assertTrue(isinstance(Project.objects, ProjectManager))

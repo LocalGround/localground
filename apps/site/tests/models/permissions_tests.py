@@ -101,11 +101,29 @@ class UserAuthorityObjectTests(BaseAbstractModelClassTest,
             self.assertEqual(field.name, prop_name)
             self.assertEqual(type(field), prop_type)
 
-
-    # how to test this???
-    def test_to_dict(self):
+    def test_permission_to_dict(self):
         self.assertEqual(self.model.to_dict(), {
             'username': 'tester2',
             'authority_id': 1,
             'authority': 'Can View'
         })
+
+    def test_permissions_unicode(self):
+        self.assertEqual(self.model.__unicode__(), 'tester2')
+
+    def test_permissions_can_view(self):
+        # User Authority is initially set to 1 (Can View)
+        self.assertTrue(self.model.can_view(self.model.user))
+
+        self.assertFalse(self.model.can_edit(
+            self.model.user, 2)
+        )
+
+        # change User Authority to 2 (Can Edit)
+        self.model.authority=UserAuthority.objects.get(id=2)
+        self.assertTrue(self.model.can_edit(
+            self.model.user, 1)
+        )
+
+
+    

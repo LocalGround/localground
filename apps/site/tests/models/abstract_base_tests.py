@@ -79,22 +79,22 @@ class BaseAbstractModelClassTest(ModelMixin):
         self.assertEqual(self.model.__class__.object_type, self.object_type)
         self.assertEqual(self.model.object_type, self.object_type)
 
-    def test_model_name_prop(self, **kwargs):
-        # Check that it works for a class and a method
+    def test_model_name_prop(self):
+        # Check that it works for a class and a method 
         self.assertEqual(self.model.__class__.model_name, self.model_name)
         self.assertEqual(self.model.model_name, self.model_name)
 
-    def test_model_name_plural_prop(self, **kwargs):
+    def test_model_name_plural_prop(self):
         # Check that it works for a class and a method
         self.assertEqual(self.model.__class__.model_name_plural, self.model_name_plural)
         self.assertEqual(self.model.model_name_plural, self.model_name_plural)
 
-    def test_pretty_name_prop(self, **kwargs):
+    def test_pretty_name_prop(self):
         # Check that it works for a class and a method
         self.assertEqual(self.model.__class__.pretty_name, self.pretty_name)
         self.assertEqual(self.model.pretty_name, self.pretty_name)
 
-    def test_pretty_name_plural_prop(self, **kwargs):
+    def test_pretty_name_plural_prop(self):
         # Check that it works for a class and a method
         self.assertEqual(self.model.__class__.pretty_name_plural, self.pretty_name_plural)
         self.assertEqual(self.model.pretty_name_plural, self.pretty_name_plural)

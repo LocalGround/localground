@@ -19,3 +19,19 @@ class BaseAuditAbstractModelClassTest(BaseAbstractModelClassTest):
         self.assertEqual(
             models.BaseAudit.get_filter_fields().keys(), test_keys
         )
+
+    def test_base_audit_model_properties(self):
+        from django.contrib.gis.db import models
+        from localground.apps.site.models import BaseAudit
+        print('ran Base Audit Tests')
+        for prop in [
+            ('owner', models.ForeignKey),
+            ('last_updated_by', models.ForeignKey),
+            ('date_created', models.DateTimeField),
+            ('time_stamp', models.DateTimeField),
+        ]:
+            prop_name = prop[0]
+            prop_type = prop[1]
+            field = BaseAudit._meta.get_field(prop_name)
+            self.assertEqual(field.name, prop_name)
+            self.assertEqual(type(field), prop_type)

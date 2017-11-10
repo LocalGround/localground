@@ -1,5 +1,7 @@
 from localground.apps.site import models
 from localground.apps.site.models import Video
+from localground.apps.site.managers import VideoManager
+
 from localground.apps.site.tests.models import \
     ProjectMixinTest, NamedMixinTest, PointMixinTest, \
     BaseAuditAbstractModelClassTest
@@ -54,4 +56,8 @@ class AudioModelTest(ProjectMixinTest, NamedMixinTest,
 
         self.assertEqual(self.model.__str__(), test__str__)
         self.assertEqual(self.model.__repr__(), test__repr__)
+
+    def test_check_marker_objects_manager(self):
+        self.assertTrue(hasattr(Video, 'objects'))
+        self.assertTrue(isinstance(Video.objects, VideoManager))
         

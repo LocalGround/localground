@@ -1,5 +1,6 @@
 from localground.apps.site import models
 from localground.apps.site.models import StyledMap
+from localground.apps.site.managers import StyledMapManager
 from localground.apps.site.tests.models.abstract_base_tests import \
 BaseAbstractModelClassTest
 from localground.apps.site.tests.models import \
@@ -39,9 +40,8 @@ class StyledMapTests(NamedMixinTest, ProjectMixinTest, BaseAbstractModelClassTes
     '''
     StyledMap overrides the ProjectMixin's can_view() method.
     Therefore, we will override and skip ProjectMixinTests's  
-    'test_project_can_view_method()' test and instead write a new test 
-    for StyledMapTest
-
+    'test_project_can_view_method()' test and instead write a new can_view() 
+    test for StyledMapTest
     '''
     def test_project_can_view_method(self):
         pass
@@ -53,3 +53,7 @@ class StyledMapTests(NamedMixinTest, ProjectMixinTest, BaseAbstractModelClassTes
     def test_str_(self):
         #self.model.name = 'map34'
         self.assertEqual(self.model.__str__(), 'Oakland Map')
+
+    def test_check_styled_map_objects_manager(self, **kwargs):
+        self.assertTrue(hasattr(StyledMap, 'objects'))
+        self.assertTrue(isinstance(StyledMap.objects, StyledMapManager))

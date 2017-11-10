@@ -1,5 +1,6 @@
 from localground.apps.site import models
 from localground.apps.site.models import Marker
+from localground.apps.site.managers import MarkerManager
 from localground.apps.site.tests.models.abstract_base_uploaded_media_tests \
     import BaseUploadedMediaAbstractModelClassTest
 from localground.apps.site.tests.models.abstract_base_tests import \
@@ -67,3 +68,7 @@ class MarkerTests(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
 
     def test_unicode_(self):
         self.assertEqual(str(self.model.id), self.model.__unicode__())
+        
+    def test_check_marker_objects_manager(self):
+        self.assertTrue(hasattr(Marker, 'objects'))
+        self.assertTrue(isinstance(Marker.objects, MarkerManager))
