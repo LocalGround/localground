@@ -184,6 +184,7 @@ define([
             this.app = this.form.app;
             this.listenTo(this.model, 'add-models-to-marker', this.attachModels);
             this.template = Handlebars.compile(MediaTemplate);
+            this.model.fetch({reset: true});
         },
         attachModels: function (models) {
             var errors = this.form.commit({ validate: true }),

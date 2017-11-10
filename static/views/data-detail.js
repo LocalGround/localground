@@ -191,7 +191,7 @@ define([
                     }
                     //*/
                     else {
-                        console.log("The current form of adding marker on empty form is buggy");
+                        //console.log("The current form of adding marker on empty form is buggy");
                     }
                     that.icon = new Icon({
                         shape: shape,
@@ -382,7 +382,6 @@ define([
         },
 
         onRender: function () {
-            console.log(this.dataType, "On Render");
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {
