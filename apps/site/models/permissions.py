@@ -79,15 +79,15 @@ class UserAuthorityObject(Base):
     # Leveraging parent project's can_edit function
     def can_view(self, user, access_key=None):
         # to view someone else's privs, you need edit privs:
-        return self.object.can_edit(user) or self.user == user
+        return self.object.can_manage(user) or self.user == user
 
     def can_edit(self, user, authority_id):
-        # deletegate to can_manage:
-        return self.object.can_manage(user) or \
-            (self.user == user and self.authority.id > authority_id)
+        # must be a manager to change permissions:
+        return self.can_view(user) or self.authority.id == 3
 
     def can_delete(self, user):
-        return self.object.can_manage(user) or self.user == user
+        # delegate to can_view
+        return self.can_view(user)
 
     class Meta:
         app_label = 'site'

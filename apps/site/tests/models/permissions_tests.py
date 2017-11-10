@@ -66,14 +66,22 @@ class UserAuthorityObjectTests(BaseAbstractModelClassTest,
     test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
-        other_user = User.objects.create_user(
+        self.user_granted_permission = User.objects.create_user(
             'tester2',
             first_name='test',
             email='',
             password=self.user_password
         )
+
+        self.user_not_granted_permission = User.objects.create_user(
+            'tester3',
+            first_name='otherPerson',
+            email='',
+            password='1234567'
+        )
+
         self.model = UserAuthorityObject(
-            user=other_user,
+            user=self.user_granted_permission,
             authority=UserAuthority.objects.get(id=1),
             granted_by=self.user,
             time_stamp=get_timestamp_no_milliseconds(),
@@ -112,18 +120,68 @@ class UserAuthorityObjectTests(BaseAbstractModelClassTest,
         self.assertEqual(self.model.__unicode__(), 'tester2')
 
     def test_permissions_can_view(self):
-        # User Authority is initially set to 1 (Can View)
-        self.assertTrue(self.model.can_view(self.model.user))
+        # 1. you manage the project (e.g. you're a teacher), 
+        # and you're viewing a student's UAO (UserAuthorityObject)
+        self.assertTrue(self.model.can_view(self.user))
 
+        # 2. Or, you are the student and you're looking at your own
+        # UserAuthorityObject --> True
+        self.assertTrue(self.model.can_view(self.model.user))
+        # sanity check
+        self.assertTrue(self.model.can_view(self.user_granted_permission))
+
+        # 3. If you're not a manager (i.e. not a manager), and you're 
+        # trying to look at your classmates UAO --> False
+        self.assertFalse(self.model.can_view(self.user_not_granted_permission))
+
+
+    def test_permissions_can_delete(self):
+        # 1. you manage the project (e.g. you're a teacher), 
+        # and you're viewing a student's UAO (UserAuthorityObject)
+        self.assertTrue(self.model.can_delete(self.user))
+
+        # 2. Or, you are the student and you're looking at your own
+        # UserAuthorityObject --> True
+        self.assertTrue(self.model.can_delete(self.model.user))
+        # sanity check
+        self.assertTrue(self.model.can_delete(self.user_granted_permission))
+
+        # 3. If you're not a manager (i.e. not a manager), and you're 
+        # trying to look at your classmates UAO --> False
+        self.assertFalse(self.model.can_delete(self.user_not_granted_permission))
+
+    def test_permissions_can_edit(self):
+        # 1. you manage the project (e.g. you're a teacher), 
+        # and you're viewing a student's UAO (UserAuthorityObject)
+        self.assertTrue(self.model.can_edit(self.user))
+
+        # 2. Or, you are the student and you're looking at your own
+        # UserAuthorityObject --> True
+        self.assertTrue(self.model.can_edit(self.model.user))
+        # sanity check
+        self.assertTrue(self.model.can_edit(self.user_granted_permission))
+
+        # 3. If you're not a manager (i.e. not a manager), and you're 
+        # trying to look at your classmates UAO --> False
+        self.assertFalse(self.model.can_edit(self.user_not_granted_permission))
+
+        # 4. Give 'CAN_MANAGE' access to user who hasn't been granted permission
+        # is this the coorect thing to be testing?
+        self.model.authority=UserAuthority.objects.get(id=3)
+        self.assertTrue(self.model.can_edit(self.user_not_granted_permission))
+
+
+        '''
         self.assertFalse(self.model.can_edit(
-            self.model.user, 2)
+            self.model.user)
         )
 
         # change User Authority to 2 (Can Edit)
-        self.model.authority=UserAuthority.objects.get(id=2)
+        self.model.authority=UserAuthority.objects.get(id=3)
         self.assertTrue(self.model.can_edit(
             self.model.user, 1)
         )
+        '''
 
 
     
