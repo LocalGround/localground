@@ -213,6 +213,7 @@ define([
                     that.model.fetch({reset: true});
                 };
             for (i = 0; i < models.length; ++i) {
+                console.log(models[i]);
                 ordering = this.model.get("photo_count") + this.model.get("audio_count");
                 this.model.attach(models[i], (ordering + i + 1));
             }
