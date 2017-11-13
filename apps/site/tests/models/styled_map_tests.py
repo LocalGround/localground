@@ -5,7 +5,7 @@ from localground.apps.site.tests.models.abstract_base_tests import \
 BaseAbstractModelClassTest
 from localground.apps.site.tests.models import \
     BaseAuditAbstractModelClassTest, NamedMixinTest, \
-    ProjectMixinTest 
+    ProjectMixinTest
 
 from django import test
 from jsonfield import JSONField
@@ -17,7 +17,7 @@ class StyledMapTests(NamedMixinTest, ProjectMixinTest, BaseAbstractModelClassTes
         self.model = self.create_styled_map()
         self.object_type = self.model_name = self.pretty_name = 'styled_map'
         self.model_name_plural = self.pretty_name_plural = 'styled_maps'
-    
+
     def test_model_properties(self):
         from django.contrib.gis.db import models
         for prop in [
@@ -38,8 +38,8 @@ class StyledMapTests(NamedMixinTest, ProjectMixinTest, BaseAbstractModelClassTes
 
     '''
     StyledMap overrides the ProjectMixin's can_view() method.
-    Therefore, we will override and skip ProjectMixinTests's  
-    'test_project_can_view_method()' test and instead write a new can_view() 
+    Therefore, we will override and skip ProjectMixinTests's
+    'test_project_can_view_method()' test and instead write a new can_view()
     test for StyledMapTest
     '''
     def test_project_can_view_method(self):
@@ -48,7 +48,7 @@ class StyledMapTests(NamedMixinTest, ProjectMixinTest, BaseAbstractModelClassTes
     def test_can_view(self):
         self.model.user = 'anybody'
         self.assertTrue(self.model.can_view(self.model.user))
-    
+
     def test_str_(self):
         #self.model.name = 'map34'
         self.assertEqual(self.model.__str__(), 'Oakland Map')
