@@ -8,7 +8,6 @@ from localground.apps.site.tests.models import \
     ProjectMixinTest 
 
 from django import test
-from django.contrib.contenttypes import generic
 from jsonfield import JSONField
 
 
