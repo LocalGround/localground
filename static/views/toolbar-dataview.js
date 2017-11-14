@@ -43,6 +43,7 @@ define([
             };
         },
         route: function (e) {
+            console.log("route");
             if (!e) {
                 return;
             }

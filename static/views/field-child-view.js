@@ -21,8 +21,8 @@ define([
             'draw': 'render'
         },
         events: {
-            'click .remove-row': 'removeModel',
-            'click .delete-field': 'doDelete',
+            'click .remove-row': 'removeFieldRow',
+            'click .delete-field': 'deleteField',
             'blur input.fieldname': 'setAlias',
             'blur input.rating-value': 'saveNewRating',
             'blur input.rating-name': 'saveNewRating',
@@ -35,11 +35,9 @@ define([
         },
         templateHelpers: function () {
             var errorMessages = {
-                errorFieldType: this.model.errorFieldType,
-                errorFieldName: this.model.errorFieldName,
                 serverErrorMessage: this.model.serverErrorMessage,
-                extraList: this.model.get("extras")
-
+                extraList: this.model.get("extras"),
+                errorMessage: this.model.errorMessage
             };
             return errorMessages;
         },
@@ -55,13 +53,11 @@ define([
 
         setRatingsFromModel: function () {
             if (this.model.get("data_type") != "rating") { return; }
-            console.log("Loading Ratings");
             this.ratingsList = this.model.get("extras") || [];
         },
 
         setChoicesFromModel: function () {
             if (this.model.get("data_type") != "choice") { return; }
-            console.log("Loading Choices");
             this.choicesList = this.model.get("extras") || [];
         },
 
@@ -75,6 +71,11 @@ define([
 
         removeRating: function (e) {
             e.preventDefault();
+            if (this.$el.find('.rating-row').length == 1){
+                this.model.errorMessage = "Must have at least 1 rating to exist"
+                this.render();
+                return;
+            }
             if (window.confirm("Want to remove rating?")){
                 var rating_row = $(e.target).closest(".rating-row");
                 $(rating_row).remove();
@@ -82,7 +83,13 @@ define([
             }
         },
         removeChoice: function (e) {
+
             e.preventDefault();
+            if (this.$el.find('.choice-row').length == 1){
+                this.model.errorMessage = "Must have at least 1 choice to exist"
+                this.render();
+                return;
+            }
             if (window.confirm("Want to remove choice?")){
                 var choice_row = $(e.target).closest(".choice-row");
                 $(choice_row).remove();
@@ -91,10 +98,6 @@ define([
         },
 
         updateRatingList: function () {
-            //if (!this.ratingsList) return;
-            //AN attempt to solve the problem, but this.ratingsList is undefined
-            // despite that it is an empty array, therefore nothing can be pushed
-            //console.log("update ratings list called");
             if (this.$el.find('.rating-row').length == 0) { return; }
             this.ratingsList = [];
             var that = this,
@@ -107,22 +110,15 @@ define([
                 var _rating_value = parseInt($row.find('.rating-value').val());
                 if (isNaN(_rating_value)) _rating_value = original_value;
 
-
-
                 that.ratingsList.push({
                     name: $row.find('.rating-name').val(),
                     value: _rating_value
                 });
             });
-            console.log(this.ratingsList);
             this.saveRatingsToModel();
         },
 
         updateChoiceList: function () {
-            //if (!this.ratingsList) return;
-            //AN attempt to solve the problem, but this.ratingsList is undefined
-            // despite that it is an empty array, therefore nothing can be pushed
-            //console.log("update ratings list called");
             if (this.$el.find('.choice-row').length == 0) { return; }
             this.choicesList = [];
             var that = this,
@@ -130,17 +126,10 @@ define([
                 $row;
             $rows.each(function () {
                 $row = $(this);
-
-                console.log($row);
-                console.log($row.find(".choice").val());
-
-                ///*
                 that.choicesList.push({
                     name: $row.find(".choice").val()
                 });
-                //*/
             });
-            console.log(this.choicesList);
             this.saveChoicesToModel();
         },
 
@@ -166,29 +155,32 @@ define([
 
         setDataType: function () {
             this.model.set("data_type", this.$el.find(".fieldType").val());
-            if (this.model.get("data_type") == "rating") {
-                this.render();
-            } else if (this.model.get("data_type") == "choice") {
-                this.render();
-            }
+            this.render();
         },
         saveRatingsToModel: function () {
-
             this.model.set("extras", this.ratingsList);
         },
 
-
         saveChoicesToModel: function () {
-
             this.model.set("extras", this.choicesList);
         },
-        saveField: function () {
-            var that = this,
-                fieldName = this.$el.find(".fieldname").val(),
+        validateField: function () {
+            this.model.errorMessage = "";
+            if (!this.model.isValid() ) {
+                if (!this.parent){
+                    this.app.vent.trigger('error-message', this.model.validationError);
+                }
+                return false;
+            } else {
+                return true;
+            }
+
+        },
+        setFieldValuesFromHtmlForm: function () {
+            var fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
                 messages;
-            this.validate(fieldName, fieldType);
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
 
@@ -196,75 +188,47 @@ define([
                 this.model.set("data_type", fieldType);
             }
 
+            if (!this.parent){
+                this.validateField();
+            }
+
             if (fieldType == "rating"){
                 this.saveRatingsToModel();
-            } else if (fieldType == "choice"){
+            } else if (fieldType == "choice") {
                 this.saveChoicesToModel();
             }
-
-            if (!this.model.errorFieldName && !this.model.errorFieldType &&
-                this.validateRating() && this.validateChoice()){
-                console.log('saving...');
-                this.model.save(null, {
-                    success: function () {
-                    that.app.vent.trigger('success-message', "Child field has been saved.");
+        },
+        saveField: function () {
+            var that = this;
+            this.setFieldValuesFromHtmlForm();
+            this.model.save(null, {
+                success: function () {
+                    if (that.parent) {
+                        //if we're in the "Edit Site Types View"
                         that.parent.renderWithSaveMessages();
+                    } else {
+                        //if we're in the spreadsheet "Add Field" view
+                        that.model.set("ordering", that.fields.length);
+                        that.fields.add(that.model);
+                        that.app.vent.trigger('success-message', "New Field added");
+                        that.app.vent.trigger("render-spreadsheet");
+                        that.app.vent.trigger("hide-modal");
+                    }
 
-                    },
-                    error: function (model, response) {
-                        messages = JSON.parse(response.responseText);
-                        that.model.serverErrorMessage = messages.detail;
+                },
+                error: function (model, response) {
+                    messages = JSON.parse(response.responseText);
+                    that.model.serverErrorMessage = messages.detail;
+                    if (that.parent) {
                         that.parent.renderWithSaveMessages();
+                    } else {
                         that.app.vent.trigger('error-message', "Child field has not been saved.");
                     }
-                });
-            } else {
-                console.log('rendering...');
+                }
+            });
+            if (!this.parent){
                 this.render();
             }
-        },
-        validate: function (fieldName, fieldType) {
-            this.model.errorFieldName = this.model.errorFieldType = false;
-            this.model.serverErrorMessage = null;
-            if (fieldName.trim() === "") {
-                this.model.errorFieldName = true;
-            }
-            if (fieldType === "-1") {
-                this.model.errorFieldType = true;
-            }
-        },
-
-        validateRating: function () {
-            // No need to check if incorrect type
-            if (this.model.get("data_type") != "rating") return true;
-            var errors = false;
-            for (var i = 0; i < this.ratingsList.length; ++i){
-                console.log(this.ratingsList[i]);
-                if (this.ratingsList[i].name.trim() === ""){
-                    this.ratingsList[i].errorRatingName = true;
-                    errors = true;
-                }
-                if (isNaN(parseInt(this.ratingsList[i].value))){
-                    this.ratingsList[i].errorRatingValue = true;
-                    errors = true;
-                }
-            }
-            return !errors;
-        },
-
-
-        validateChoice: function () {
-            // No need to check if incorrect type
-            if (this.model.get("data_type") != "choice") return true;
-            var errors = false;
-            for (var i = 0; i < this.choicesList.length; ++i){
-                console.log(this.choicesList[i]);
-                if (this.choicesList[i].name.trim() === ""){
-                    this.choicesList[i].errorRatingName = true;
-                    errors = true;
-                }
-            }
-            return !errors;
         },
 
         onRender: function () {
@@ -288,19 +252,24 @@ define([
             }
 
         },
-        removeModel: function () {
+        removeFieldRow: function () {
             this.model.destroy();
         },
 
-        doDelete: function (e) {
+        deleteField: function (e) {
+            if (this.parent && this.parent.collection.length == 1){
+                this.parent.app.vent.trigger("error-message", "Cannot delete the last field");
+                return
+            }
             if (!confirm("Are you sure you want to remove this field from the form?")) {
                 return;
             }
             var $elem = $(e.target),
                 $row = $elem.parent().parent();
             $row.remove();
-
             this.model.destroy();
+
+
             if (e) {
                 e.preventDefault();
             }

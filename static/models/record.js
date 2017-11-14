@@ -23,14 +23,7 @@ define(["models/base",
                 }
             },
             url: function () {
-                /*
-                 Terrible hack to accommodate the Django REST Framework. Before the
-                 browser issues a POST, PUT, or PATCH request, it first issues an
-                 OPTIONS request to ensure that the request is legal. For some reason,
-                 the Local Ground produces an error for this OPTIONS request if a
-                 '/.json' footer isn't attached to the end. Hence this function overrides
-                 the based url() function in backbone
-                 */
+
                 var base =
                     _.result(this, 'urlRoot') ||
                     _.result(this.collection, 'url') || urlError(),

@@ -18,12 +18,14 @@ define(["jquery",
             template: Handlebars.compile(MapTemplate),
             templateHelpers: function() {
                 if (this.activeMap) {
-                    var name = this.activeMap.get('name');
+                    var name = this.activeMap.get('name'),
+                    slug = this.activeMap.get('slug')
                 }
                 return {
                     noItems: (this.collection.length === 0),
                     map: this.activeMap,
-                    name: name
+                    name: name,
+                    previewURL: slug
                 }
             },
 
@@ -53,21 +55,27 @@ define(["jquery",
                     this.drawOnce();
                 }
 
-                $('body').click(this.hideFonts);
+                $('body').click(this.hideMapList.bind(this));
 
                 this.modal = new Modal();
                 this.listenTo(this.collection, 'reset', this.setInitialModel);
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
                 this.listenTo(this.app.vent, "edit-map", this.updateMap);
                 this.listenTo(this.app.vent, 'update-map-list', this.setInitialModel);
+                this.listenTo(this.app.vent, 'route-map', this.getSelectedMap);
+                this.listenTo(this.app.vent, 'route-new-map', this.showAddMapModal);
+            },
+
+            getSelectedMap: function(mapId) {
+                var map = this.collection.get(mapId);
+                this.setActiveMap(map);
             },
 
             setInitialModel: function () {
-                this.render();
-
                 // on initialize, pass the first model in the collection
                 // to be set as the active map
                 this.setActiveMap(this.collection.at(0));
+                this.render();
             },
 
             newMap: function (mapAttrs) {
@@ -92,10 +100,8 @@ define(["jquery",
                     success: this.setMapAndRender.bind(this),
                     error: function (model, response){
                         var messages = JSON.parse(response.responseText);
-                        console.log(messages);
                         if (messages.slug && messages.slug.length > 0) {
                             that.slugError = messages.slug[0];
-                            console.log("should have error message", that.slugError);
                         }
                         that.app.vent.trigger("send-modal-error", that.slugError);
                     }
@@ -111,46 +117,37 @@ define(["jquery",
                         that.render();
                     }
                 });
-              /*  this.map.save(null, {
-                    success: this.setMapAndRender.bind(this),
-                    error: function (model, response){
-                        var messages = JSON.parse(response.responseText);
-                        console.log(messages);
-                        if (messages.slug && messages.slug.length > 0) {
-                            that.slugError = messages.slug[0];
-                            console.log("should have error message", that.slugError);
-                        }
-                        that.app.vent.trigger("send-modal-error", that.slugError);
-                    }
-                });  */
             },
 
             setMapAndRender: function () {
                 var that = this,
                     dm = this.app.dataManager;
+                   // dm = this.app.dataManager.model.attributes.children;
                 this.collection.add(this.map);
                 this.modal.hide();
                 this.render();
+
+                // sets newly created map as the selected map
                 this.$el.find('#map-select').val(this.map.id);
 
                 var layers = new Layers(null, {mapID: this.map.get("id")});
                 this.map.set("layers", layers);
-                dm.each(function (entry) {
-                    var collection = entry.getCollection(); //that.app.dataManager.getCollection(dataSource.value);
-                    if (collection.length < 1) {
+
+                dm.each(function (collection) {
+                   if (collection.length < 1) {
                         return;
                     }
-                    if (entry.getIsSite()) {
+                    if (collection.getIsSite()) {
                         var layer = new Layer({
                             map_id: that.map.id,
-                            data_source: entry.getDataType(),
+                            data_source: collection.getDataType(),
                             layer_type: "basic",
                             filters: {},
                             symbols: [{
                                 "fillColor": collection.fillColor,
                                 "width": 20,
                                 "rule": "*",
-                                "title": entry.getTitle()
+                                "title": collection.getTitle()
                             }],
                             metadata: {
                                 buckets: 4,
@@ -163,12 +160,20 @@ define(["jquery",
                                 strokeOpacity: 1,
                                 shape: "circle"
                             },
-                            title: entry.getTitle()
+                            title: collection.getTitle()
                         });
                         layers.add(layer);
-                        layer.save();
+                        layer.save(null, {
+                            success: console.log('layers saved successfully'),
+                            error: function (model, response){
+                                var messages = JSON.parse(response.responseText);
+                                console.log(messages);
+                            }
+                        });;
                     }});
-                this.app.vent.trigger("change-map", this.map);
+                this.setActiveMap(this.map);
+             //   this.render();
+                this.app.router.navigate('//' + this.map.id);
             },
 
             drawOnce: function () {
@@ -180,9 +185,8 @@ define(["jquery",
                 if (this.collection.length == 0) {
                     return;
                 }
-
                 var selectedMapModel = map,
-                that = this;
+                    that = this;
                 this.activeMap = map;
                 selectedMapModel.fetch({ success: function () {
                     that.setCenterZoom(selectedMapModel);
@@ -193,19 +197,10 @@ define(["jquery",
                 }});
             },
 
-            // function is needed to handle the different two different events that eminate
-            // from clicking within the '.map-item' div. this is necessary because a click on just the
-            // '.edit-map' button also triggers a click on its parent, the '.map-item' div
-            handleItemClicks: function () {
-                console.log($(event.target).attr('class'));
+            selectMap: function () {
                 var id = $(event.target).data('value'),
                 map = this.collection.get(id);
-
-                if ($(event.target).hasClass('map-edit')) {
-                    this.editMap(map);
-                } else if ($(event.target).hasClass('map-item') || $(event.target).hasClass('map-name')){
-                    this.setActiveMap(map);
-                }
+                this.setActiveMap(map);
             },
 
             showAddMapModal: function () {
@@ -239,7 +234,7 @@ define(["jquery",
                     view: createMapModel,
                     title: 'Edit Map',
                     width: 400,
-                    height: 0,
+                    height: 150,
                     closeButtonText: "Done",
                     showSaveButton: true,
                     saveFunction: createMapModel.saveMap.bind(createMapModel),
@@ -265,12 +260,14 @@ define(["jquery",
 
             hideMapList: function(e) {
                 var $el = $(e.target);
-                if (!$el.hasClass('selected-map-item') && !$el.hasClass('map-name') && !$el.hasClass('map-edit')) {
+                if (!$el.hasClass('selected-map-item') && !$el.hasClass('map-name') && !$el.hasClass('map-edit') && !$el.hasClass('map-select-option') && !$el.hasClass('map-dropdown')) {
                     this.$el.find('.map-list').hide();
                 }
             },
 
-            editMap: function (map) {
+            editMap: function () {
+                var id = $(event.target).data('value'),
+                map = this.collection.get(id);
                 this.showEditMapModal(map);
             }
 

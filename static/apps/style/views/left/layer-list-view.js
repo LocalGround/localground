@@ -29,60 +29,66 @@ define(["marionette",
             },
 
             initialize: function (opts) {
+                console.log('layer list view initlize');
                 this.app = opts.app;
                 this.model = opts.model;
 
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
-                this.listenTo(this.app.vent, 'handle-selected-layer', this.handleSelectedLayer);
-                this.listenTo(this.app.vent, 'create-new-layer', this.createNewLayer);
+                this.listenTo(this.app.vent, 'route-layer', this.routerSendCollection);
+                this.listenTo(this.app.vent, 'add-css-to-selected-layer', this.addCssToSelectedLayer);
+                this.listenTo(this.app.vent, 'route-new-layer', this.createNewLayer);
             },
 
             events: function () {
-                return _.extend(
-                    { 'click .add-layer' : 'createNewLayer' }                );
+                return _.extend({ 
+                    //'click .add-layer' : 'createNewLayer' 
+                });
             },
+
             showDropDown: function () {
                 this.$el.find("#new-layer-options").toggle();
             },
 
-            handleSelectedLayer: function (id) {
-                this.$el.find('.layer-column').removeClass('selected-layer');
-                this.$el.find('#' + id).addClass('selected-layer');
+            routerSendCollection: function (mapId, layerId) {
+                var active;
+
+                // loops through children and send the matching child to the right panel
+                this.children.forEach(function(item) {
+                    if (item.model.get('id') == layerId) {
+                        item.childRouterSendCollection(mapId, layerId);
+                    }
+                });
             },
-            
-            createNewLayer: function (e) {
-                console.log("Altered?: ", this.app.layerHasBeenAltered)
-                console.log("Saved?: ", this.app.layerHasBeenSaved)
+
+            // this just adds some css to indicate the selected layer
+            addCssToSelectedLayer: function (id) {
+                this.$el.find('.layer-column').removeClass('selected-layer');
+                this.$el.find('#' +'layer' + id).addClass('selected-layer');
+            },
+
+            createNewLayer: function (mapID) {
                 var continueAction = true;
                 if (this.app.layerHasBeenAltered && !this.layerHasBeenSaved) {
-                    console.log("should send save confirmation");
                     continueAction = confirm("You have unsaved changes on your currently selected layer. If you continue, your changes will not be saved. Do you wish to continue?");
                 }
                 if(!continueAction) {
-                    console.log("should exit createLayer()");
                     return;
                 }
-                console.log("createNewLayer triggered", this.app.selectedMapModel);
                 var layer = new Layer({
                     map_id: this.app.selectedMapModel.id,
-                    data_source: "photos", //default
+                    data_source: "markers", //default
                     layer_type: "basic",
                     filters: {},
                     symbols: [{
                         "fillColor": "#7075FF",
-                        "width": 30,
-                        "rule": "sculptures > 0",
+                        "width": 20,
+                        "rule": "*",
                         "title": "At least 1 sculpture"
                     }],
-                    title: "Layer 1"
+                    title: "Layer 1", 
+                    newLayer: true
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);
-                this.showSection();
-                /*
-                if (e) {
-                    e.preventDefault();
-                }
-                */
             }
 
         }));

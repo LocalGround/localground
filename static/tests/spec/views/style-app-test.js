@@ -2,9 +2,10 @@ var rootDir = "../../";
 define([
     "backbone",
     rootDir + "apps/style/style-app",
-    rootDir + "lib/maps/basemap"
+    rootDir + "lib/maps/basemap",
+    rootDir + "apps/style/router"
 ],
-    function (Backbone, StyleApp, BaseMapView) {
+    function (Backbone, StyleApp, BaseMapView, Router) {
         'use strict';
         var styleApp, fixture, initApp;
 
@@ -12,11 +13,14 @@ define([
 
             // 1) add spies for all relevant objects:
             spyOn(StyleApp.prototype, 'initialize').and.callThrough();
+            spyOn(StyleApp.prototype, 'loadRegions').and.callThrough();
             spyOn(StyleApp.prototype, 'updateDisplay').and.callThrough();
             spyOn(StyleApp.prototype, 'hideList').and.callThrough();
             spyOn(StyleApp.prototype, 'unhideList').and.callThrough();
             spyOn(StyleApp.prototype, 'hideDetail').and.callThrough();
             spyOn(StyleApp.prototype, 'unhideDetail').and.callThrough();
+            spyOn(StyleApp.prototype, 'showRightLayout').and.callThrough();
+            spyOn(StyleApp.prototype, 'rerouteIfNeeded').and.callThrough();
             spyOn(BaseMapView.prototype, 'renderMap');
             spyOn(BaseMapView.prototype, 'initialize');
             spyOn(BaseMapView.prototype, 'onShow');
@@ -51,6 +55,30 @@ define([
             it("should initialize correctly", function () {
                 expect(styleApp.initialize).toHaveBeenCalledTimes(1);
                 expect(styleApp).toEqual(jasmine.any(StyleApp));
+            });
+        });
+
+        describe("StyleApp: events should trigger corresponding functions", function() {
+            beforeEach(function () {
+                initApp(this);
+            });
+            afterEach(function () {
+                Backbone.history.stop();
+            });
+            it('should call loadRegions', function () {
+                expect(StyleApp.prototype.loadRegions).toHaveBeenCalledTimes(0);
+                styleApp.vent.trigger('data-loaded');
+                expect(StyleApp.prototype.loadRegions).toHaveBeenCalledTimes(1);
+            });
+            it('should call rerouteIfNeeded', function () {
+                expect(StyleApp.prototype.rerouteIfNeeded).toHaveBeenCalledTimes(0);
+                styleApp.vent.trigger('ready-for-routing');
+                expect(StyleApp.prototype.rerouteIfNeeded).toHaveBeenCalledTimes(1);
+            });
+            it('should create RightPanel', function () {
+                expect(StyleApp.prototype.showRightLayout).toHaveBeenCalledTimes(0);
+                styleApp.vent.trigger('edit-layer', this.testMap.get("layers").at(2), "fake collection");
+                expect(StyleApp.prototype.showRightLayout).toHaveBeenCalledTimes(1);
             });
         });
 
@@ -94,6 +122,34 @@ define([
                 expect(StyleApp.prototype.updateDisplay).toHaveBeenCalled();
             });
         });
+/*
+        describe('Router', function() {
+            var trigger = {trigger: true};
+            var router;
+            beforeEach(function () {
+                initApp(this);
+                // This is the trick, right here:
+                // The Backbone history code dodges our spies
+                // unless we set them up exactly like this:
+                Backbone.history.stop(); //stop the router
+              //  spyOn(Router.prototype, 'index'); //spy on our routes, and they won't get called
+             //   spyOn(Router.prototype, 'displayMap'); 
+
+               // router = new StyleApp.prototype.Router(); // Set up the spies _before_ creating the router
+                Backbone.history.start();
+            });
+            afterEach(function () {
+                Backbone.history.stop();
+            });
+            it('/item routes to item with id', function(){
+                //':mapId': 'displayMap',
+                console.log(StyleApp.prototype);
+                Router.prototype.navigate('/288', trigger);
+                expect(router.displayMap).toHaveBeenCalledWith('288');
+              });
+
+        });
+        */
 
     });
 

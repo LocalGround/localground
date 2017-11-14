@@ -1,6 +1,6 @@
-var rootDir = "../../";
+var rootDir = '../../';
 define([
-    rootDir + "apps/style/views/right/right-panel"
+    rootDir + 'apps/style/views/right/right-panel'
 ],
     function (RightPanelView) {
         'use strict';
@@ -16,6 +16,7 @@ define([
                 model: scope.layer,
                 collection: scope.layer.getSymbols()
             });
+            rightPanel.render();
             //console.log(scope.layer.get("symbols"));
             //console.log(scope.layer.getSymbols());
 
@@ -45,8 +46,7 @@ define([
             });
 
             it("should call createLayer()", function () {
-                expect(rightPanel.createLayer).toHaveBeenCalledTimes(0);
-                rightPanel.app.vent.trigger('edit-layer', this.layer, rightPanel.collection);
+                // gets called once from our init function initializing the view
                 expect(rightPanel.createLayer).toHaveBeenCalledTimes(1);
 
                 //has correct model
@@ -64,6 +64,7 @@ define([
             });
 
             it("should call saveLayer()", function () {
+                this.app.start();
                 expect(rightPanel.saveLayer).toHaveBeenCalledTimes(0);
                 fixture.find('.layer-save').trigger("click");
                 expect(rightPanel.saveLayer).toHaveBeenCalledTimes(1);
