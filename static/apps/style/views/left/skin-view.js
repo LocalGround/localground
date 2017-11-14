@@ -19,7 +19,7 @@ define(["marionette",
                 this.collection = new Maps([
                     { id: 1, name: "Greyscale" },
                     { id: 2, name: "Default" },
-                    { id: 3, name: "Dark" } ], {project_id: 4});
+                    { id: 3, name: "Dark" } ], {projectID: this.app.getProjectID()});
             }
         }));
         return SelectSkinView;
