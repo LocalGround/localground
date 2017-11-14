@@ -17,9 +17,9 @@ define(["marionette",
                 // here is some fake data until the
                 // /api/0/maps/ API Endpoint gets built:
                 this.collection = new Maps([
-                    { id: 1, name: "Greyscale", project_id: 4 },
-                    { id: 2, name: "Default", project_id: 4 },
-                    { id: 3, name: "Dark", project_id: 4 }                ]);
+                    { id: 1, name: "Greyscale" },
+                    { id: 2, name: "Default" },
+                    { id: 3, name: "Dark" } ], {project_id: 4});
             }
         }));
         return SelectSkinView;
