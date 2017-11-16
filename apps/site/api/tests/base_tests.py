@@ -54,7 +54,6 @@ class ViewMixinAPI(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
-            print(url)
             response = self.client_user.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 

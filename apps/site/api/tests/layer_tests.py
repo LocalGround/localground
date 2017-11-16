@@ -28,12 +28,6 @@ class ApiLayerTest(object):
         {"color": "#F011D9", "width": 30,
             "rule": "worms = 0", "title": "No worms"}
     ]
-    invalid_symbols = [
-        {"color": "#7075FF", "width": 30,
-            "rule": "worms > 0", "title": "At least 1 worm"},
-        {"color": "#F011D9", "width": 30,
-            "rule": "worms = 0", "title": "No worms"}
-    ]
 
     def _test_save_layer(self, method, status_id, symbols):
         d = {
@@ -43,7 +37,6 @@ class ApiLayerTest(object):
             #'tags': self.tags,
             'symbols': json.dumps(symbols)
         }
-        # print d
         response = method(
             self.url,
             data=json.dumps(d),
@@ -69,11 +62,9 @@ class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.model = self.create_layer()
-        self.url = '/api/0/maps/{0}/layers/{1}/'.format(
-            self.model.styled_map.id,
-            self.model.id
+        self.url = '/api/0/maps/{0}/layers/'.format(
+            self.model.styled_map.id
             )
-        print('LASYERLIST')
         self.urls = [self.url]
         self.map_id = self.model.styled_map.id
         #self.model = models.Layer
@@ -128,19 +119,6 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         rec = models.Layer.objects.get(id=self.obj.id)
         self.assertEqual(rec.title, self.name)
         self.assertNotEqual(self.obj.title, self.name)
-
-    def test_update_view_invalid_children_put(self, **kwargs):
-        self._test_save_layer(
-            self.client_user.put,
-            status.HTTP_400_BAD_REQUEST,
-            json.dumps(self.invalid_symbols)
-        )
-
-    def test_update_view_invalid_children_patch(self, **kwargs):
-        self._test_save_layer(
-            self.client_user.patch,
-            status.HTTP_400_BAD_REQUEST,
-            json.dumps(self.invalid_symbols))
 
     def test_update_view_invalid_json(self, **kwargs):
         self._test_save_layer(

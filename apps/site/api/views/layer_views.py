@@ -14,7 +14,7 @@ class LayerList(QueryableListCreateAPIView):
     error_messages = {}
     warnings = []
     serializer_class = serializers.LayerSerializer
-    filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
+    filter_backends = (filters.SQLFilterBackend,)
     model = models.Layer
     paginate_by = 100
 
