@@ -7,6 +7,7 @@ from localground.apps.site.api.permissions import CheckProjectPermissions
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
+from rest_framework.response import Response
 
 
 class LayerList(QueryableListCreateAPIView):
@@ -33,7 +34,15 @@ class LayerList(QueryableListCreateAPIView):
             response.data = self.error_messages
             response.status = status.HTTP_400_BAD_REQUEST
         return response
-
+    
+    '''
+    def get(self, request):
+        map_id = int(self.kwargs.get('map_id'))
+        layers = self.model.objects.all()
+        assert False, layers
+        serializer = serializers.LayerSerializer(layers, many=True)
+        return Response(serializer.data)
+    '''
 
 class LayerInstance(
         generics.RetrieveUpdateDestroyAPIView):

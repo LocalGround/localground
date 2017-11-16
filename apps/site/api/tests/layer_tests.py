@@ -1,4 +1,3 @@
-'''
 from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
@@ -11,21 +10,18 @@ from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 class ApiLayerTest(object):
     name = 'New Layer Name'
-    description = 'Test layer description'
-    tags = "a,b,c"
-    slug = 'my_layer'
+    #tags = "a,b,c"
+    #slug = 'my_layer'
     metadata = {
         'symbols': {'read_only': False, 'required': False, 'type': 'json'},
-        'caption': {'read_only': False, 'required': False, 'type': 'memo'},
-        'tags': {'read_only': False, 'required': False, 'type': 'field'},
-        'url': {'read_only': True, 'required': False, 'type': 'field'},
-        'overlay_type': {
-            'read_only': True, 'required': False, 'type': 'field'},
-        'access': {'read_only': True, 'required': False, 'type': 'field'},
-        'owner': {'read_only': True, 'required': False, 'type': 'field'},
+        'layer_type': {'read_only': False, 'required': False, 'type': 'choice'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
-        'name': {'read_only': False, 'required': False, 'type': 'string'}
+        'title': {'read_only': False, 'required': True, 'type': 'string'},
+        'data_source': {'read_only': False, 'required': False, 'type': 'string'},
+        'metadata': {'read_only': False, 'required': False, 'type': 'json'},
+        'map_id': {'read_only': False, 'required': True, 'type': 'field'}
     }
+
     symbols = [
         {"color": "#7075FF", "width": 30,
             "rule": "worms > 0", "title": "At least 1 worm"},
@@ -41,9 +37,10 @@ class ApiLayerTest(object):
 
     def _test_save_layer(self, method, status_id, symbols):
         d = {
-            'name': self.name,
-            'caption': self.description,
-            'tags': self.tags,
+            'title': self.name,
+            'map_id': self.map_id,
+            #'caption': self.description,
+            #'tags': self.tags,
             'symbols': json.dumps(symbols)
         }
         # print d
@@ -53,7 +50,6 @@ class ApiLayerTest(object):
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/json"
         )
-        # print response.data
         self.assertEqual(response.status_code, status_id)
 
         # if it was successful, verify data:
@@ -61,20 +57,26 @@ class ApiLayerTest(object):
             if hasattr(self, 'obj'):
                 rec = models.Layer.objects.get(id=self.obj.id)
             else:
-                rec = self.model.objects.all().order_by('-id',)[0]
-            self.assertEqual(rec.name, self.name)
-            self.assertEqual(rec.description, self.description)
-            self.assertEqual(rec.tags, convert_tags_to_list(self.tags))
-            self.assertEqual(rec.slug, self.slug)
+                rec = models.Layer.objects.all().order_by('-id',)[0]
+            self.assertEqual(rec.title, self.name)
+            self.assertEqual(rec.symbols, self.symbols)
+            #self.assertEqual(rec.tags, convert_tags_to_list(self.tags))
+            #self.assertEqual(rec.slug, self.slug)
 
 
 class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.url = '/api/0/maps/{0}/layers/'.format()
+        self.model = self.create_layer()
+        self.url = '/api/0/maps/{0}/layers/{1}/'.format(
+            self.model.styled_map.id,
+            self.model.id
+            )
+        print('LASYERLIST')
         self.urls = [self.url]
-        self.model = models.Layer
+        self.map_id = self.model.styled_map.id
+        #self.model = models.Layer
         self.view = views.LayerList.as_view()
 
     def test_create_layer_using_post(self, **kwargs):
@@ -96,11 +98,12 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.obj = self.create_layer(
-            self.user,
-            name='Test Layer 1',
-            authority_id=1)
-        self.url = '/api/0/layers/%s/' % self.obj.id
+        self.obj = self.create_layer()
+        #self.url = '/api/0/layers/%s/' % self.obj.id
+        self.url = '/api/0/maps/{0}/layers/{1}/'.format(
+            self.obj.styled_map.id, self.obj.id
+        )
+        self.map_id = self.obj.styled_map.id
         self.urls = [self.url]
         self.model = models.Layer
         self.view = views.LayerInstance.as_view()
@@ -116,15 +119,15 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         response = self.client_user.patch(
             self.url,
             data=urllib.urlencode({
-                'name': self.name,
+                'title': self.name,
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rec = models.Layer.objects.get(id=self.obj.id)
-        self.assertEqual(rec.name, self.name)
-        self.assertNotEqual(self.obj.name, self.name)
+        self.assertEqual(rec.title, self.name)
+        self.assertNotEqual(self.obj.title, self.name)
 
     def test_update_view_invalid_children_put(self, **kwargs):
         self._test_save_layer(
@@ -188,4 +191,4 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         except self.model.DoesNotExist:
             # trigger assertion success if photo is removed
             self.assertEqual(1, 1)
-'''
+
