@@ -4,7 +4,7 @@ from django.shortcuts import render as direct_to_template
 from django.contrib.auth.decorators import login_required
 import sys
 from django.contrib import admin
-from mysite.core import views
+from localground.apps.site.views import document_view
 
 urlpatterns = patterns('',
 
@@ -33,5 +33,6 @@ urlpatterns = patterns('',
     url(r'^api/0/', include('localground.apps.site.api.urls')),
 
     # document
-    url(r'^amazon-tester/, views.DocumentCreateView.as_view(), name='home'),
+    url(r'^amazon-tester/$', document_view.DocumentCreateView.as_view(),
+        name='home')
 )
