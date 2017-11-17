@@ -31,7 +31,6 @@ class ProjectMixinTest(object):
         self.assertTrue(self.model.can_view(test_user))
 
     def test_project_can_edit_method(self):
-        print('running project tests')
         test_user = User.objects.create_user(
             username = 'Person 1',
             first_name='Person',

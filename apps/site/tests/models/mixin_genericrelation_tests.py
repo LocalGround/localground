@@ -12,7 +12,6 @@ class GenericRelationMixinTest(ModelMixin):
     def test_generic_relation_properties(self):
         from django.contrib.gis.db import models
         from django.contrib.contenttypes import fields
-        print('ran generic relations tests')
         for prop in [
             ('entities', fields.GenericRelation)
         ]:

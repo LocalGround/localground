@@ -11,7 +11,6 @@ class ExtrasMixinTest(ModelMixin):
         ModelMixin.setUp(self)
 
     def test_extras_model_properties(self):
-        print('running extras tests')
         from django.contrib.gis.db import models
         prop_name = 'extras'
         prop_type = JSONField

@@ -14,7 +14,6 @@ class ObjectPermissionsMixinTest(ModelMixin):
     def test_object_permission_properties(self):
         from django.contrib.gis.db import models
         from localground.apps.site.models import BaseUploadedMedia
-        print('ran object permissions tests')
         for prop in [
             ('access_authority', models.ForeignKey),
             ('access_key', models.CharField),

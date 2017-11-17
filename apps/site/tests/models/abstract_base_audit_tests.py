@@ -23,7 +23,6 @@ class BaseAuditAbstractModelClassTest(BaseAbstractModelClassTest):
     def test_base_audit_model_properties(self):
         from django.contrib.gis.db import models
         from localground.apps.site.models import BaseAudit
-        print('ran Base Audit Tests')
         for prop in [
             ('owner', models.ForeignKey),
             ('last_updated_by', models.ForeignKey),

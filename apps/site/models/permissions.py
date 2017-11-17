@@ -77,11 +77,11 @@ class UserAuthorityObject(Base):
         return self.user.username
 
     # Leveraging parent project's can_edit function
-    def can_view(self, user, access_key=None):
+    def can_view(self, user):
         # to view someone else's privs, you need edit privs:
         return self.object.can_manage(user) or self.user == user
 
-    def can_edit(self, user, authority_id):
+    def can_edit(self, user):
         # must be a manager to change permissions:
         return self.can_view(user) or self.authority.id == 3
 

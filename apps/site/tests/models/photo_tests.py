@@ -1,4 +1,5 @@
 from django import test
+import Image
 from localground.apps.site import models
 from localground.apps.site.models import Photo
 from localground.apps.site.tests.models.abstract_base_audit_tests import \
@@ -7,6 +8,14 @@ from localground.apps.site.tests.models.mixin_project_tests import \
     ProjectMixinTest
 from localground.apps.site.tests.models.mixin_point_tests import PointMixinTest
 from localground.apps.site.tests.models import ExtrasMixinTest
+import os
+import tempfile
+from django.conf import settings
+from rest_framework import status
+from localground.apps.site import models
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
+from django.core.files import File
+import json
 
 
 import urllib
@@ -39,14 +48,6 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
         Step 3: refactor more to make photo model DRY. Dont repeat code in rotate()
         """
 
-        import os
-        import Image
-        import tempfile
-        from django.conf import settings
-        from rest_framework import status
-        from localground.apps.site import models
-        from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-        from django.core.files import File
         user = self.user
         project = self.project
         image = Image.new('RGB', (200, 100))
@@ -205,9 +206,7 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
         )
 
     def test_absolute_virtual_path_large(self):
-        #print('ABSVIRTPATH: ', self.model.file_name_large)
         path_large = self.model.encrypt_url(self.model.file_name_large)
-        #print('PATH LARGE: ', path_large)
         self.assertEqual(
             self.model.absolute_virtual_path_large(),
             path_large
@@ -241,11 +240,34 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
             self.model.name, self.model.file_name_orig
         )
         self.assertEqual(self.model.__unicode__(), test_string)
+    
     '''
     def test_read_exif_data(self):
-        photo = self.test_photo_file_thumbnail_generator_works()
-        print('/Users/riley/Downloads/murals/20160804_141720.jpg')
-        photo2 = self.create_photo()
-        print(Photo.read_exif_data('/Users/riley/Downloads/IMG_5648.JPG'))
+        from PIL.ExifTags import TAGS
+
+        d = {
+            
+            'DateTimeOriginal': '',
+            'DateTimeDigitized': '',
+            'DateTime': '',
+            'Model': '', 
+            'Orientation': '',
+            'Model': '7777',
+            'GPSInfo': {
+                0: '\x00\x00\x02\x02', 
+                1: u'S', 
+                2: ((33, 1), (51, 1), (2191, 100)), 
+                3: u'E', 
+                4: ((151, 1), (13, 1), (1173, 100)), 
+                5: '\x00', 
+                6: (0, 1)}
+            }
+        image = Image.new('RGB', (200, 100))
+        #exif_data = image.info['exif']
+        tmp_file = 'test.jpg'
+        image.save(tmp_file, "JPEG", quality=85, exif=json.dumps(d))
+        im = Image.open(image)
+        print(im._getexif())
+
     '''
     

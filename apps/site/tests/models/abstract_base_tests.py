@@ -124,7 +124,6 @@ class BaseAbstractModelClassTest(ModelMixin):
         self.assertEqual(models.Base.get_model(
             model_name_plural=self.model_name_plural), self.model.__class__
         )
-        #print(self.model_name_plural)
 
         # Ensure no arguments yields an error message:
         with self.assertRaises(Exception) as e:

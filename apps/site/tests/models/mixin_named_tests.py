@@ -12,7 +12,6 @@ class NamedMixinTest(ModelMixin):
     def test_named_mixin_model_properties(self):
         from django.contrib.gis.db import models
         from localground.apps.site.models import NamedMixin
-        print('ran NamedTests')
         for prop in [
             ('name', models.CharField),
             ('description', models.TextField),

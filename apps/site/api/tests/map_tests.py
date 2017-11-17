@@ -150,7 +150,6 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
                             HTTP_X_CSRFTOKEN=self.csrf_token,
                             content_type="application/x-www-form-urlencoded"
                         )
-        print('ACTUAL', response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_map = models.StyledMap.objects.get(id=self.map.id)
         self.assertEqual(updated_map.name, name)

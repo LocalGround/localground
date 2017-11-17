@@ -38,7 +38,6 @@ class PointMixinTest(ModelMixin):
         self.assertEqual(self.model.last_updated_by, self.user)   
 
     def test_point_remove_latlng(self):
-        print('running point tests')
         point = 'POINT(-96.876369 29.905320)'
         self.model.point = point
         self.model.remove_latlng(self.user)
