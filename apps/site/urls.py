@@ -4,6 +4,7 @@ from django.shortcuts import render as direct_to_template
 from django.contrib.auth.decorators import login_required
 import sys
 from django.contrib import admin
+from mysite.core import views
 
 urlpatterns = patterns('',
 
@@ -29,5 +30,8 @@ urlpatterns = patterns('',
         'localground.apps.site.views.mediaserver.serve_media'),
 
     # data API
-    url(r'^api/0/', include('localground.apps.site.api.urls'))
+    url(r'^api/0/', include('localground.apps.site.api.urls')),
+
+    # document
+    url(r'^amazon-tester/, views.DocumentCreateView.as_view(), name='home'),
 )

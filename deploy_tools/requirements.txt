@@ -33,6 +33,10 @@ SwampDragon==0.4.2.2
 celery==3.1
 django-celery==3.1.17
 flower==0.9.0
+boto3==1.4.4
+django-storages==1.6.1
+python-decouple==3.0
+
 
 ###########################
 # Acetate Layer Libraries #

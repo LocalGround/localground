@@ -46,9 +46,9 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
             else:
                 im.thumbnail((s, s), Image.ANTIALIAS)
             abs_path = '%s/%s_%s%s' % (media_path, file_name, s, ext)
-            im.save(abs_path)
+            im.save(abs_path) # this is where we want to save photos into the Amazon Cloud bucket
             photo_paths.append('%s_%s%s' % (file_name, s, ext))
-            
+
         return {
             'device': exif.get('model', None),
             'point': exif.get('point', None),

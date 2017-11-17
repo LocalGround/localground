@@ -199,6 +199,8 @@ INSTALLED_APPS = (
     'corsheaders',
     'djcelery',
     'social.apps.django_app.default',
+    'storages',
+
 )
 
 REST_FRAMEWORK = {
