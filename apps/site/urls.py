@@ -33,5 +33,5 @@ urlpatterns = patterns('',
     url(r'^api/0/', include('localground.apps.site.api.urls')),
 
     # document
-    url(r'^amazon-tester/, views.DocumentCreateView.as_view(), name='home'),
+    url(r'^amazon-tester/', views.DocumentCreateView.as_view(), name='home'),
 )
