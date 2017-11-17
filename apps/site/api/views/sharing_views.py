@@ -64,7 +64,7 @@ class SharingInstance(SharingMixin, QueryableRetrieveUpdateDestroyView):
 
     def perform_update(self, serializer):
         instance = self.get_object()
-        if instance.can_edit(self.request.user, self.kwargs.get("authority")):
+        if instance.can_edit(self.request.user):
             serializer.save()
         else:
             raise exceptions.PermissionDenied(detail="You do not have manager permissions on project id=%s" % self.kwargs.get('project_id'))
