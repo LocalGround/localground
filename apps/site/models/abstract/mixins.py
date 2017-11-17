@@ -46,10 +46,6 @@ class PointMixin(models.Model):
         self.last_updated_by = user
         self.save()
 
-    def __unicode__(self):
-        return self.display_coords()
-
-
 class ExtentsMixin(models.Model):
     """
     abstract class for uploads with lat/lng references.

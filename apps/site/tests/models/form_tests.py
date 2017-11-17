@@ -4,15 +4,21 @@ from localground.apps.site.models import Field
 from django.contrib.gis.db import models
 from localground.apps.site.tests.models.abstract_base_tests import \
     BaseAbstractModelClassTest
+from localground.apps.site.tests.models.abstract_base_audit_tests import \
+    BaseAuditAbstractModelClassTest
+from localground.apps.site.tests.models import ProjectMixinTest, NamedMixinTest
 from django import test
 
 
 # form test in progress
-class FormTest(BaseAbstractModelClassTest, test.TestCase):
+class FormTest(NamedMixinTest, ProjectMixinTest, BaseAuditAbstractModelClassTest, test.TestCase):
 
     def setUp(self):
-        BaseAbstractModelClassTest.setUp(self)
+        BaseAuditAbstractModelClassTest.setUp(self)
+        #BaseAbstractModelClassTest.setUp(self)
         self.model = self.create_form()
+        self.object_type = self.model_name = self.pretty_name = 'form'
+        self.model_name_plural = self.pretty_name_plural = 'forms'
 
     def test_get_filter_fields(self, **kwargs):
 

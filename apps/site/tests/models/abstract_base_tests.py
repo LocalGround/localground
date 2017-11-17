@@ -7,13 +7,6 @@ class BaseAbstractModelClassTest(ModelMixin):
     # To run test:
     # $ python manage.py test localground.apps.site.tests.models.PhotoModelTest
 
-    def setUp(self):
-        ModelMixin.setUp(self)
-        form = self.create_form_with_fields()
-        Record = form.TableModel
-        self.Photo = models.Photo
-        self.photo = self.create_photo()
-
     def test_classes_all_have_required_class_properties(self, **kwargs):
         c = self.model.__class__
         self.assertTrue(hasattr(c, 'object_type'))
@@ -38,17 +31,18 @@ class BaseAbstractModelClassTest(ModelMixin):
         self.assertEqual(self.model.__class__.model_name, self.model_name)
         self.assertEqual(self.model.model_name, self.model_name)
 
+
     def test_model_name_plural_prop(self):
         # Check that it works for a class and a method
         self.assertEqual(self.model.__class__.model_name_plural, self.model_name_plural)
         self.assertEqual(self.model.model_name_plural, self.model_name_plural)
 
-    def test_pretty_name_prop(self, **kwargs):
+    def test_pretty_name_prop(self):
         # Check that it works for a class and a method
         self.assertEqual(self.model.__class__.pretty_name, self.pretty_name)
         self.assertEqual(self.model.pretty_name, self.pretty_name)
 
-    def test_pretty_name_plural_prop(self, **kwargs):
+    def test_pretty_name_plural_prop(self):
         # Check that it works for a class and a method
         self.assertEqual(self.model.__class__.pretty_name_plural, self.pretty_name_plural)
         self.assertEqual(self.model.pretty_name_plural, self.pretty_name_plural)
@@ -73,10 +67,10 @@ class BaseAbstractModelClassTest(ModelMixin):
             self, **kwargs):
         from localground.apps.site import models
         self.assertEqual(models.Base.get_model(
-            model_name="photo"), models.Photo
+            model_name=self.model_name), self.model.__class__
         )
         self.assertEqual(models.Base.get_model(
-            model_name_plural="photos"), models.Photo
+            model_name_plural=self.model_name_plural), self.model.__class__
         )
 
         # Ensure no arguments yields an error message:
@@ -92,8 +86,8 @@ class BaseAbstractModelClassTest(ModelMixin):
         self.assertEqual(models.Base.get_filter_fields(), {})
         self.assertEqual(len(models.Photo.get_filter_fields()), 11)
         self.assertEqual(
-            self.Photo.get_filter_fields().keys(),
-            self.photo.get_filter_fields().keys(),
+            self.model.__class__.get_filter_fields().keys(),
+            self.model.get_filter_fields().keys(),
             [
                 'attribution',
                 'name',
@@ -113,7 +107,7 @@ class BaseAbstractModelClassTest(ModelMixin):
         from django.contrib.contenttypes.models import ContentType
         self.assertEqual(models.Base.get_content_type().name, "base")
         self.assertEqual(
-            self.Photo.get_content_type().name,
-            self.photo.get_content_type().name,
-            "photo"
+            self.model.__class__.get_content_type().name,
+            self.model.get_content_type().name,
+            self.model_name
         )

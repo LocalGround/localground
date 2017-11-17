@@ -11,6 +11,11 @@ class OverlayTypeTest(BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = OverlayType()
+        self.object_type = 'overlay-type'
+        self.model_name = 'overlay_type'
+        self.pretty_name = 'overlay type'
+        self.model_name_plural = 'overlay-types'
+        self.pretty_name_plural = 'overlay types'
 
     # A streamlined approach to checking all the properties
     # from the class being tested on

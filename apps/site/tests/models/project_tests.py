@@ -4,14 +4,18 @@ from django.contrib.gis.db import models
 from django import test
 from localground.apps.site.tests.models.abstract_base_audit_tests import \
     BaseAuditAbstractModelClassTest
+from localground.apps.site.tests.models import NamedMixinTest, \
+    ObjectPermissionsMixinTest, GenericRelationMixinTest
 
 
 # TODO: Include other mixins when ready
-class ProjectModelTest(BaseAuditAbstractModelClassTest, test.TestCase):
+class ProjectModelTest(NamedMixinTest, GenericRelationMixinTest, ObjectPermissionsMixinTest, BaseAuditAbstractModelClassTest, test.TestCase):
 
     def setUp(self):
         BaseAuditAbstractModelClassTest.setUp(self)
         self.model = self.create_project()
+        self.object_type = self.model_name = self.pretty_name = 'project'
+        self.model_name_plural = self.pretty_name_plural = 'projects'
 
     def test_model_properties(self):
         self.assertTrue(hasattr(self.model, 'extents'))
@@ -26,6 +30,6 @@ class ProjectModelTest(BaseAuditAbstractModelClassTest, test.TestCase):
             ('slug', 'name', 'description', 'tags')
         self.assertEqual(self.model.filter_fields, test_fields)
 
-    def test_check_objects_manager(self, **kwargs):
+    def test_check_project_objects_manager(self, **kwargs):
         self.assertTrue(hasattr(Project, 'objects'))
         self.assertTrue(isinstance(Project.objects, ProjectManager))

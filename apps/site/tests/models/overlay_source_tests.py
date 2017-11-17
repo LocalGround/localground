@@ -11,6 +11,11 @@ class OverlaySourceTest(BaseAbstractModelClassTest, test.TestCase):
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = OverlaySource()
+        self.object_type = 'overlay-source'
+        self.model_name = 'overlay_source'
+        self.pretty_name = 'overlay source'
+        self.model_name_plural = 'overlay-sources'
+        self.pretty_name_plural = 'overlay sources'
 
     # A streamlined approach to checking all the properties
     # from the class being tested on

@@ -13,12 +13,15 @@ class LayerModelTests(BaseAuditAbstractModelClassTest,test.TestCase):
         from localground.apps.site import models
         BaseAuditAbstractModelClassTest.setUp(self)
         self.model = self.create_layer()
+        self.object_type = self.model_name = self.pretty_name = 'layer'
+        self.model_name_plural = self.pretty_name_plural = 'layers'
         self.other_user = User.objects.create_user(
             'tester2',
             first_name='test',
             email='',
             password=self.user_password
         )
+        
 
     
     def test_static_properties(self, **kwargs):

@@ -25,6 +25,8 @@ class StatusCode(Base):
     class Meta:
         app_label = 'site'
         ordering = ('id',)
+        verbose_name = 'status-code'
+        verbose_name_plural = 'status-codes'
 
 
 class UploadSource(Base):
@@ -40,6 +42,9 @@ class UploadSource(Base):
 
     class Meta:
         app_label = 'site'
+        verbose_name = 'upload-source'
+        verbose_name_plural = 'upload-sources'
+
 
 
 class UploadType(Base):
@@ -47,6 +52,8 @@ class UploadType(Base):
 
     class Meta:
         app_label = 'site'
+        verbose_name = 'upload-type'
+        verbose_name_plural = 'upload-types'
 
 
 class ErrorCode(Base):
@@ -55,6 +62,8 @@ class ErrorCode(Base):
 
     class Meta:
         app_label = 'site'
+        verbose_name = 'error-code'
+        verbose_name_plural = 'error-codes'
 
 
 class ObjectTypes():
@@ -69,3 +78,4 @@ class ObjectTypes():
     SCAN = 'mapimage'
     PRINT = 'print'
     RECORD = 'record'
+

@@ -1,11 +1,16 @@
 from localground.apps.site import models
+from localground.apps.site.models import Audio
+from localground.apps.site.managers import AudioManager
 from localground.apps.site.tests.models.abstract_base_uploaded_media_tests \
     import BaseUploadedMediaAbstractModelClassTest
+from localground.apps.site.tests.models import ExtrasMixinTest, PointMixinTest
 from localground.apps.lib.helpers import upload_helpers
 from django import test
 import os
 
-class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
+
+class AudioModelTest(ExtrasMixinTest, PointMixinTest,
+                     BaseUploadedMediaAbstractModelClassTest, test.TestCase):
 
     def setUp(self):
         BaseUploadedMediaAbstractModelClassTest.setUp(self)
@@ -17,6 +22,10 @@ class AudioModelTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
         # delete method also removes files from file system:
         for audio in models.Audio.objects.all():
             audio.remove_media_from_file_system()
+
+    def test_check_audio_objects_manager(self):
+        self.assertTrue(hasattr(Audio, 'objects'))
+        self.assertTrue(isinstance(Audio.objects, AudioManager))
 
     def makeTmpFile(self):
         import tempfile
