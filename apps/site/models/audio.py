@@ -5,6 +5,7 @@ from localground.apps.site.models import BaseUploadedMedia
 from localground.apps.lib.helpers import upload_helpers
 import os
 from django.db import models
+from django.core.files.base import ContentFile
 
 '''
 Here is the pattern that has to be broken down for a valid url for AWS S3:
@@ -29,9 +30,17 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
     uploaded_file = models.FileField(null=True)
     objects = AudioManager()
 
+    def send_to_amazon(self, file, owner):
+        model_name_plural = self.model_name_plural
+        file_name_new = upload_helpers.save_file_to_disk(
+            owner, model_name_plural, file
+        )
+        self.uploaded_file.save(file_name_new, file)
+
     @classmethod
     def process_file(cls, file, owner, name=None):
 
+        # add new file to S3:
         #save to disk:
         model_name_plural = cls.model_name_plural
         file_name_new = upload_helpers.save_file_to_disk(

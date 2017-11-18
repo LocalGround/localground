@@ -15,15 +15,15 @@ class AudioSerializer(MediaGeometrySerializer):
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
-    
+
     def create(self, validated_data):
         # Overriding the create method to handle file processing
         owner = self.context.get('request').user
         f = self.initial_data.get('media_file')
-        
+
         # ensure filetype is valid:
         upload_helpers.validate_file(f, self.ext_whitelist)
-        
+
         # save it to disk
         extras = models.Audio.process_file(
             f, owner, name=self.initial_data.get('name')
@@ -37,6 +37,7 @@ class AudioSerializer(MediaGeometrySerializer):
         validated_data.update(self.validated_data)
         validated_data.update(extras)
         self.instance = self.Meta.model.objects.create(**validated_data)
+        self.instance.send_to_amazon(f, owner)
         return self.instance
 
     class Meta:
@@ -53,4 +54,3 @@ class AudioSerializerUpdate(AudioSerializer):
     media_file = serializers.CharField(
         source='file_name_orig', required=False, read_only=True
     )
-
