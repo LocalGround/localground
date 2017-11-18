@@ -240,34 +240,56 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
             self.model.name, self.model.file_name_orig
         )
         self.assertEqual(self.model.__unicode__(), test_string)
-    
-    '''
+
     def test_read_exif_data(self):
-        from PIL.ExifTags import TAGS
+        import io
+        from PIL import Image
+        from PIL.ExifTags import TAGS, GPSTAGS 
+        import piexif
 
-        d = {
-            
-            'DateTimeOriginal': '',
-            'DateTimeDigitized': '',
-            'DateTime': '',
-            'Model': '', 
-            'Orientation': '',
-            'Model': '7777',
-            'GPSInfo': {
-                0: '\x00\x00\x02\x02', 
-                1: u'S', 
-                2: ((33, 1), (51, 1), (2191, 100)), 
-                3: u'E', 
-                4: ((151, 1), (13, 1), (1173, 100)), 
-                5: '\x00', 
-                6: (0, 1)}
-            }
         image = Image.new('RGB', (200, 100))
-        #exif_data = image.info['exif']
         tmp_file = 'test.jpg'
-        image.save(tmp_file, "JPEG", quality=85, exif=json.dumps(d))
-        im = Image.open(image)
-        print(im._getexif())
+        image.save(tmp_file)
 
-    '''
+        o = io.BytesIO()
+        thumb_im = Image.open("test.jpg")
+        thumb_im.thumbnail((50, 50), Image.ANTIALIAS)
+        thumb_im.save(o, "jpeg")
+        thumbnail = o.getvalue()
+
+        zeroth_ifd = {piexif.ImageIFD.Make: u"Canon",
+                    piexif.ImageIFD.XResolution: (96, 1),
+                    piexif.ImageIFD.YResolution: (96, 1),
+                    piexif.ImageIFD.Software: u"piexif"
+                    }
+        exif_ifd = {piexif.ExifIFD.DateTimeOriginal: u"2099:09:29 10:10:10",
+                    piexif.ExifIFD.LensMake: u"LensMake",
+                    piexif.ExifIFD.Sharpness: 65535,
+                    piexif.ExifIFD.LensSpecification: ((1, 1), (1, 1), (1, 1), (1, 1)),
+                    }
+        gps_ifd = {piexif.GPSIFD.GPSVersionID: (2, 0, 0, 0),
+                piexif.GPSIFD.GPSAltitudeRef: 1,
+                piexif.GPSIFD.GPSDateStamp: u"1999:99:99 99:99:99",
+                piexif.GPSIFD.GPSLatitude: ((122, 1), (16, 1), (2163, 100)),
+                piexif.GPSIFD.GPSLatitudeRef: "N",
+                piexif.GPSIFD.GPSLongitude: ((122, 1), (16, 1), (2163, 100)),
+                piexif.GPSIFD.GPSLongitudeRef: "W"
+                }
+        first_ifd = {piexif.ImageIFD.Make: u"Canon",
+                    piexif.ImageIFD.XResolution: (40, 1),
+                    piexif.ImageIFD.YResolution: (40, 1),
+                    piexif.ImageIFD.Software: u"piexif"
+                    }
+
+        exif_dict = {"0th":zeroth_ifd, "Exif":exif_ifd, "GPS":gps_ifd, "1st":first_ifd, "thumbnail":thumbnail}
+        exif_bytes = piexif.dump(exif_dict)
+        im = Image.open("test.jpg")
+        im.thumbnail((100, 100), Image.ANTIALIAS)
+        im.save("test.jpg", exif=exif_bytes)
+        
+        im = Image.open("test.jpg")
+        info = im._getexif() 
+        
+        new_exif = self.model.read_exif_data(im)
     
+        self.assertEqual(new_exif.get('point').coords, (-122.27267499999999, 122.27267499999999))

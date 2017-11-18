@@ -542,7 +542,7 @@ class ModelMixin(object):
         return video
 
     def create_audio(self, user=None, project=None, name='Audio Name',
-                     file_name='my_audio.jpg', tags=[], point=None):
+                     file_name='my_audio.wav', tags=[], point=None):
         from localground.apps.site import models
         user = user or self.user
         project = project or self.project
@@ -554,7 +554,7 @@ class ModelMixin(object):
             name=name,
             description='Audio Description',
             file_name_orig=file_name,
-            file_name_new='new.jpg',
+            file_name_new='new.wav',
             tags=tags,
             point=point,
             virtual_path='/userdata/media/' + user.username + '/audio/'
