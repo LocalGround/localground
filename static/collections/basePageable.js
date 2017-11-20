@@ -8,7 +8,6 @@ define([
         initialize: function (recs, opts) {
             opts = opts || {};
             _.extend(this, opts);
-            console.log(this.app);
             BackbonePageable.prototype.initialize.apply(this, arguments);
         },
         fillColor: "#ed867d",
