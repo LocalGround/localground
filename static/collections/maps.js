@@ -1,6 +1,7 @@
-define(["models/map", "collections/basePageable"], function (Map, BasePageable) {
+define(["models/map", "collections/basePageableWithProject"],
+function (Map, BasePageableWithProject) {
     "use strict";
-    var Maps = BasePageable.extend({
+    var Maps = BasePageableWithProject.extend({
         model: Map,
         name: 'Maps',
         key: 'maps',

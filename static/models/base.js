@@ -15,7 +15,7 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 tags: 'Text'
             },
             getDataTypePlural: function () {
-                if (this.collection && this.collection.getDataType) {
+                if (this.collection && this.collection.getDataType()) {
                     return this.collection.getDataType();
                 }
                 var type = this.get("overlay_type");
@@ -136,7 +136,7 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                     return this.collection.key;
                 }
                 switch(this.get("overlay_type")) {
-                    case "photo": 
+                    case "photo":
                         return "photos";
                     case "audio":
                         return "audio";

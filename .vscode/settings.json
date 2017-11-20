@@ -1,3 +1,15 @@
 // Place your settings in this file to overwrite default and user settings.
 {
+    "workbench.statusBar.visible": true,
+    "editor.wordWrap": true,
+    "window.zoomLevel": 0,
+    "workbench.colorTheme": "Hybrid Next",
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#1C252A",
+        "list.inactiveSelectionBackground": "#222E34",
+        "list.activeSelectionBackground": "#222E34",
+        "list.inactiveSelectionForeground": "#B3BA3D",
+        
+        
+    }  
 }

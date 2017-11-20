@@ -1,9 +1,10 @@
 var rootDir = "../../";
 define([
     'jquery',
-    rootDir + "apps/style/views/right/marker-style-view-child"
+    rootDir + "apps/style/views/right/marker-style-view-child",
+    rootDir + "apps/style/views/symbols/symbol-selection-layout-view"
 ],
-    function ($, MarkerStyleChildView) {
+    function ($, MarkerStyleChildView, IndSymbolLayoutView) {
         'use strict';
         var markerStyleChildView,
             fixture,
@@ -108,7 +109,7 @@ define([
                 expect(MarkerStyleChildView.prototype.onRender).toHaveBeenCalledTimes(2);
                 expect(markerStyleChildView.app.vent.trigger).toHaveBeenCalledWith('update-map');
             });
-
+/*
             it("Listens for a shape update and sets the model", function () {
                 expect(MarkerStyleChildView.prototype.updateShape).toHaveBeenCalledTimes(0);
                 expect(MarkerStyleChildView.prototype.updateLayerSymbols).toHaveBeenCalledTimes(0);
@@ -117,6 +118,13 @@ define([
                 expect(MarkerStyleChildView.prototype.updateShape).toHaveBeenCalledTimes(1);
                 expect(symbol.get("shape")).toEqual('worm');
                 expect(markerStyleChildView.app.vent.trigger).toHaveBeenCalledWith('update-map');
+            });
+*/
+            it("showSymbols() should create symbol view", function() {
+                expect(fixture).not.toContainElement('.symbols-layout-container');
+                $(fixture.find('.selected-symbol-div').click());
+                expect(markerStyleChildView.indSymbolsView).toEqual(jasmine.any(IndSymbolLayoutView));
+                expect(fixture).toContainElement('.symbols-layout-container');
             });
 
             it("updates parent layer when symbol changes", function () {

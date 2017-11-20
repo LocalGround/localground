@@ -4,7 +4,7 @@ define([
     "collections/baseMixin"
 ], function (_, BackbonePageable, BaseMixin) {
     "use strict";
-    var PageableCollection = BackbonePageable.extend({
+    var BasePageable = BackbonePageable.extend({
         initialize: function (recs, opts) {
             opts = opts || {};
             _.extend(this, opts);
@@ -51,35 +51,39 @@ define([
              *     for samples of valid queries.
              */
 
-            this.query ="WHERE name like %" + term +
+            this.query +="WHERE name like %" + term +
                         "% OR caption like %" + term +
                         "% OR attribution like %" + term +
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
-            this.query += " AND project = " + projectID;
+            //this.query = " AND project_id = " + projectID;
             this.fetch({ reset: true });
         },
 
         clearSearch: function(projectID){
-            this.query = "WHERE project = " + projectID;
+            this.query = "";//WHERE project_id = " + projectID;
             this.fetch({ reset: true });
         }
 
     });
-    _.extend(PageableCollection.prototype, BaseMixin);
+    _.extend(BasePageable.prototype, BaseMixin);
 
     // and finally, need to override fetch from BaseMixin in a way that calls the parent class
-    _.extend(PageableCollection.prototype, {
+    _.extend(BasePageable.prototype, {
         fetch: function (options) {
             //override fetch and append query parameters:
+            options = options || {};
+            options.data = options.data || {};
+            if (this.projectID) {
+                options.data = {
+                    project_id: this.projectID
+                };
+            }
             if (this.query) {
-                // apply some additional options to the fetch:
-                options = options || {};
-                options.data = options.data || {};
-                options.data = { query: this.query };
+                options.data.query = this.query;
             }
             return BackbonePageable.prototype.fetch.call(this, options);
         }
     });
-    return PageableCollection;
+    return BasePageable;
 });

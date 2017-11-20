@@ -509,7 +509,8 @@ nav .selected{
 #model-form fieldset input[type="password"],
 #model-form fieldset input[type="email"],
 .inline-form textarea,
-.inline-form input {
+.inline-form input,
+.inline-form select {
     padding: 4px 6px;
     border-radius: 2px;
     font-size: 14px;
@@ -541,8 +542,10 @@ nav .selected{
 #model-form fieldset>div>div,
 .inline-form input,
 .inline-form .container-3-4,
-.inline-form textarea{
-    flex:3;
+.inline-form textarea,
+.inline-form select,
+.inline-form .extras {
+    flex: 3;
 }
 
 fieldset > div, .inline-form {
@@ -1687,7 +1690,7 @@ tbody .failure-message, tbody .success-message {
 .carousel-caption {
     display: none;
     color: #999;
-    
+
 }
 
 .carousel-caption-wrapper {
@@ -2355,14 +2358,27 @@ span.plus {
 .fieldTable > tbody > tr, .fieldTable > thead > tr {
     border-bottom: solid 1px #F0F0F0 !important;
 }
+
+.create-field-label{
+    font-size: 16;
+}
+
+.create-field-table{
+    padding: 15px 5px 15px 5px;
+}
+
+.create-field-table > tr > td{
+    padding: 15px 5px 15px 5px;
+    flex: 2;
+}
 /*
   Ratings
 */
 
-.ratingError {
-    background-color: #FFDDDD;
-    color: #D22;
-    font-weight: bold;
+.errorMessage {
+    /*background-color: #FFDDDD; */
+    color: #A22;
+    font-weight: normal;
 }
 
 

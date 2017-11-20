@@ -123,7 +123,6 @@ define(["marionette",
             },
 
             updateLegend: function (event) {
-                console.log(this.model);
                 this.model.get("panel_styles").display_legend = $(event.target).is(':checked');
             },
            
@@ -132,7 +131,6 @@ define(["marionette",
                 this.render();
             },
             updateFont: function (event) {
-                console.log($(event.target).text());
                 this.model.get("panel_styles")[this.activeKey].font = $(event.target).text();
                 this.render();
             },
@@ -142,7 +140,6 @@ define(["marionette",
             },
             // triggered from colorPicker
             updateFontColor: function (hex) {
-                console.log("update font color");
                 this.model.get("panel_styles")[this.activeKey].color = hex;
                 $('#font-color-picker').css('color', '#' + hex);
                 this.render();
@@ -150,7 +147,6 @@ define(["marionette",
 
             // triggered from colorPicker
             updateBackgroundColor: function (hex) {
-                console.log("update background color");
                 this.model.get("panel_styles")[this.activeKey].backgroundColor = hex;
                 $('#background-color-picker').css('color', '#' + hex);
                 this.render();

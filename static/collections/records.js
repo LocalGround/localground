@@ -1,12 +1,12 @@
 define([
     "underscore",
-    "collections/basePageable",
+    "collections/basePageableWithProject",
     "models/record",
     "jquery",
     "collections/baseMixin"
-], function (_, BasePageable, Record, $, CollectionMixin) {
+], function (_, BasePageableWithProject, Record, $, CollectionMixin) {
     "use strict";
-    var Records = BasePageable.extend({
+    var Records = BasePageableWithProject.extend({
         model: Record,
         columns: null,
         key: 'form_?',
@@ -25,7 +25,7 @@ define([
                 alert("The Records collection requires a key parameter upon initialization");
                 return;
             }
-            BasePageable.prototype.initialize.apply(this, arguments);
+            BasePageableWithProject.prototype.initialize.apply(this, arguments);
         },
         state: {
             currentPage: 1,
@@ -64,7 +64,7 @@ define([
             if (!fields) return;
 
             this.query = "WHERE " + this.addFieldQuery(fields, term);
-            this.query += " AND project = " + projectID
+            //this.query += " AND project_id = " + projectID
             this.fetch({ reset: true });
         },
 
@@ -101,7 +101,7 @@ define([
         },
 
         clearSearch: function(projectID){
-            this.query = "WHERE project = " + projectID;
+            this.query = ""; //WHERE project_id = " + projectID;
             this.fetch({ reset: true });
         }
     });
@@ -122,7 +122,7 @@ define([
 					query: this.query
 				});
             }
-            BasePageable.__super__.fetch.apply(this, arguments);
+            BasePageableWithProject.__super__.fetch.apply(this, arguments);
         }
     });
     return Records;
