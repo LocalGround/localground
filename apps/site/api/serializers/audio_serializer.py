@@ -25,19 +25,15 @@ class AudioSerializer(MediaGeometrySerializer):
         upload_helpers.validate_file(f, self.ext_whitelist)
 
         # save it to disk
-        extras = models.Audio.process_file(
-            f, owner, name=self.initial_data.get('name')
-        )
+        extras = {
+            'attribution': validated_data.get('attribution') or owner.username
+        }
         extras.update(self.get_presave_create_dictionary())
-        extras.update({
-            'attribution': validated_data.get('attribution') or owner.username,
-            'host': settings.SERVER_HOST
-        })
         validated_data = {}
         validated_data.update(self.validated_data)
         validated_data.update(extras)
         self.instance = self.Meta.model.objects.create(**validated_data)
-        self.instance.send_to_amazon(f, owner)
+        self.instance.process_file(f, owner)
         return self.instance
 
     class Meta:

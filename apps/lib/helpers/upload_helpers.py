@@ -3,7 +3,7 @@ from django.conf import settings
 from pwd import getpwnam
 from rest_framework import exceptions
 from localground.apps.lib.helpers import generic
-    
+
 '''
 Utility File Path Methods
 '''
@@ -72,6 +72,16 @@ def make_directory(path):
                 os.mkdir(p)
                 #os.chown(p, uid, gid)
                 os.chmod(p, permissions)
+
+
+def simplify_file_name(file):
+    file_name, ext = os.path.splitext(file.name.lower())
+    file_name = file_name.split('/')[-1]
+    file_name = ''.join(
+        char for char in file_name if char.isalnum()
+    ).lower()
+    return '{0}{1}'.format(file_name, ext)
+
 
 def save_file_to_disk(owner, model_name_plural, file, uuid=None):
     # create directory if it doesn't exist:

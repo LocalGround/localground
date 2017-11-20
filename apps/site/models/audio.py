@@ -26,19 +26,25 @@ to the one that is tied to a Document object
 i.e. doc.upload.url [use-url from FileField] & doc.upload.file
 '''
 
+
 class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
     uploaded_file = models.FileField(null=True)
     objects = AudioManager()
 
-    def send_to_amazon(self, file, owner):
-        model_name_plural = self.model_name_plural
-        file_name_new = upload_helpers.save_file_to_disk(
-            owner, model_name_plural, file
+    def process_file(self, file, owner, name=None):
+        file_name = upload_helpers.simplify_file_name(file)
+        a, ext = os.path.splitext(file_name)
+        self.uploaded_file.save(
+            file_name, file
         )
-        self.uploaded_file.save(file_name_new, file)
+        self.file_name_orig = file.name
+        self.name = name or file.name
+        self.file_name_new = file_name
+        self.content_type = ext.replace('.', '')
+        self.save()
 
     @classmethod
-    def process_file(cls, file, owner, name=None):
+    def process_file1(cls, file, owner, name=None):
 
         # add new file to S3:
         #save to disk:
