@@ -56,6 +56,7 @@ class AudioModelTest(ExtrasMixinTest, PointMixinTest,
         from django.core.files import File
         tmp_file = self.makeTmpFile()
         with open(tmp_file.name, 'rb') as data:
+            print data
             result = models.Audio.process_file(File(data), self.user)
             name_wav = tmp_file.name.split('/')[-1].lower()
             name_mp3 = name_wav.replace('wav', 'mp3')
@@ -77,6 +78,7 @@ class AudioModelTest(ExtrasMixinTest, PointMixinTest,
     def test_delete(self, **kwargs):
         from django.core.files import File
         tmp_file = self.makeTmpFile()
+        print 'TEMP FILE!!!!!', tmp_file.name
         with open(tmp_file.name, 'rb') as data:
             self.model.process_file(File(data), self.user)
 
