@@ -50,6 +50,7 @@ class AudioModelTest(ExtrasMixinTest, PointMixinTest,
         value_str = ''.join(values)
         noise_output.writeframes(value_str)
         noise_output.close()
+        print os.path.getsize('/tmp/test.wav')
         return tmp_file
 
     def test_convert_wav_to_mp3(self, **kwargs):
@@ -79,21 +80,24 @@ class AudioModelTest(ExtrasMixinTest, PointMixinTest,
         from django.core.files import File
         tmp_file = self.makeTmpFile()
         print 'TEMP FILE!!!!!', tmp_file.name
-        with open(tmp_file.name, 'rb') as data:
-            self.model.process_file(File(data), self.user)
+        print tmp_file.name
+        f = File(open('/tmp/test.wav'))
+        print f.size
+        self.model.process_file(f, self.user)
 
-            # check that files are on the disk
+        # check that files are on the disk
 
-            # Test that both the mp3 and the wav file are now on disk
-            self.assertEqual(self.model.media_file, 1)
-            self.assertEqual(self.model.media_file_orig, 1)
-            print self.model.media_file_orig
-            print self.model.media_file
-            self.model.delete()
+        # Test that both the mp3 and the wav file are now on disk
+        self.assertEqual(self.model.media_file, 1)
+        self.assertEqual(self.model.media_file_orig, 1)
+        print self.model.media_file_orig
+        print self.model.media_file
+        self.model.delete()
 
-            self.assertTrue(self.model.id is None)
-            print self.model.media_file_orig
-            print self.model.media_file
+        self.assertTrue(self.model.id is None)
+        print self.model.media_file_orig
+        print self.model.media_file
+
 
     def test_unicode_(self):
         test_string1 = str(self.model.id) + ': ' + self.model.name

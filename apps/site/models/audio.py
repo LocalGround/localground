@@ -4,6 +4,7 @@ from localground.apps.site.models import ExtrasMixin
 from localground.apps.site.models import BaseUploadedMedia
 from localground.apps.lib.helpers import upload_helpers
 import os
+import time
 from django.db import models
 from django.core.files import File
 from django.core.files.base import ContentFile
@@ -26,9 +27,15 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
     def process_file(self, file, owner, name=None):
         file_name_orig = upload_helpers.simplify_file_name(file)
+        print file_name_orig
 
         base_name, ext = os.path.splitext(file_name_orig)
         path_to_orig = '/tmp/{0}'.format(file_name_orig)
+        if os.path.isfile(path_to_orig):
+            timestamp = int(time.time())
+            file_name_orig = '{0}_{1}{2}'.format(base_name, timestamp, ext)
+            path_to_orig = '/tmp/{0}'.format(file_name_orig)
+            print path_to_orig
 
         # If the file is already an MP3, than original and new file the same:
         file_name_new = file_name_orig
@@ -39,6 +46,8 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
         for chunk in file.chunks():
             destination.write(chunk)
         destination.close()
+
+        print path_to_orig
 
         if ext != '.mp3':
             # use ffmpeg to convert to mp3:
