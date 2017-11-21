@@ -29,22 +29,42 @@ i.e. doc.upload.url [use-url from FileField] & doc.upload.file
 
 
 class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
-    uploaded_file = models.FileField(null=True)
+    media_file_orig = models.FileField(null=True)
+    media_file = models.FileField(null=True)
     objects = AudioManager()
 
     def process_file(self, file, owner, name=None):
-        file_name = upload_helpers.simplify_file_name(file)
-        a, ext = os.path.splitext(file_name)
-        self.uploaded_file.storage.location = \
-            '/{0}/{1}/{2}/'.format(
-                settings.AWS_S3_MEDIA_BUCKET,
-                owner.username,
-                self.model_name_plural
-            )
-        self.uploaded_file.save(file_name, file)
+        from django.core.files import File
+        file_name_orig = upload_helpers.simplify_file_name(file)
+        base_name, ext = os.path.splitext(file_name_orig)
+
+        if ext != '.mp3':
+            # use ffmpeg to convert to mp3:
+            file_name_new = base_name + '.mp3'
+            path_to_mp3 = '/tmp/{0}'.format(file_name_new)
+            path_to_orig = '/tmp/{0}'.format(file_name_orig)
+
+            # save original file to disk:
+            destination = open(path_to_orig, 'wb+')
+            for chunk in file.chunks():
+                destination.write(chunk)
+            destination.close()
+            command = 'ffmpeg -loglevel panic -i \'%s\' -ab 32k -ar 22050 -y \'%s\'' % \
+                (path_to_orig, path_to_mp3)
+            result = os.popen(command)
+        storage_location = '/{0}/{1}/{2}/'.format(
+            settings.AWS_S3_MEDIA_BUCKET,
+            owner.username,
+            self.model_name_plural
+        )
+        self.media_file.storage.location = storage_location
+        self.media_file_orig.storage.location = storage_location
+
+        self.media_file.save(file_name_new, File(open(path_to_mp3)))
+        self.media_file_orig.save(file_name_orig, File(open(path_to_orig)))
         self.file_name_orig = file.name
         self.name = name or file.name
-        self.file_name_new = file_name
+        self.file_name_new = file_name_new
         self.content_type = ext.replace('.', '')
         self.save()
 
@@ -71,6 +91,7 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
             command = 'ffmpeg -loglevel panic -i \'%s\' -ab 32k -ar 22050 -y \'%s\'' % \
                 (path_to_be_converted, path_to_mp3)
             result = os.popen(command)
+
 
         return {
             'file_name_orig': file.name,
