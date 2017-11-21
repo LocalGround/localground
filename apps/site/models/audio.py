@@ -5,6 +5,7 @@ from localground.apps.site.models import BaseUploadedMedia
 from localground.apps.lib.helpers import upload_helpers
 import os
 from django.db import models
+from django.core.files import File
 from django.core.files.base import ContentFile
 from django.conf import settings
 
