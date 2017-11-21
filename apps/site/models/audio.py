@@ -33,10 +33,11 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
     media_file = models.FileField(null=True)
     objects = AudioManager()
 
-    def get_storage_location(self, owner):
+    def get_storage_location(self, user=None):
+        user = user or self.owner
         return '/{0}/{1}/{2}/'.format(
             settings.AWS_S3_MEDIA_BUCKET,
-            owner.username,
+            user.username,
             self.model_name_plural
         )
 
@@ -65,9 +66,10 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
             result = os.popen(command)
 
         # set storage location:
-        self.media_file.storage.location = self.get_storage_location(owner)
+        self.media_file.storage.location = \
+            self.get_storage_location(user=owner)
         self.media_file_orig.storage.location = \
-            self.get_storage_location(owner)
+            self.get_storage_location(user=owner)
 
         # Save to Amazon
         from django.core.files import File
@@ -94,7 +96,13 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
                     os.remove(f)
 
     def delete(self, *args, **kwargs):
+        # raise Exception('delete override')
         self.remove_media_from_file_system()
+        self.media_file.storage.location = self.get_storage_location()
+        self.media_file_orig.storage.location = \
+            self.get_storage_location()
+        self.media_file_orig.delete()
+        self.media_file.delete()
         super(Audio, self).delete(*args, **kwargs)
 
     class Meta:
