@@ -33,75 +33,53 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
     media_file = models.FileField(null=True)
     objects = AudioManager()
 
+    def get_storage_location(self, owner):
+        return '/{0}/{1}/{2}/'.format(
+            settings.AWS_S3_MEDIA_BUCKET,
+            owner.username,
+            self.model_name_plural
+        )
+
     def process_file(self, file, owner, name=None):
-        from django.core.files import File
         file_name_orig = upload_helpers.simplify_file_name(file)
+
         base_name, ext = os.path.splitext(file_name_orig)
+        path_to_orig = '/tmp/{0}'.format(file_name_orig)
+
+        # If the file is already an MP3, than original and new file the same:
+        file_name_new = file_name_orig
+        path_to_mp3 = path_to_orig
+
+        # save original file to disk (only necessary b/c of ffmpeg processing):
+        destination = open(path_to_orig, 'wb+')
+        for chunk in file.chunks():
+            destination.write(chunk)
+        destination.close()
 
         if ext != '.mp3':
             # use ffmpeg to convert to mp3:
             file_name_new = base_name + '.mp3'
             path_to_mp3 = '/tmp/{0}'.format(file_name_new)
-            path_to_orig = '/tmp/{0}'.format(file_name_orig)
-
-            # save original file to disk:
-            destination = open(path_to_orig, 'wb+')
-            for chunk in file.chunks():
-                destination.write(chunk)
-            destination.close()
             command = 'ffmpeg -loglevel panic -i \'%s\' -ab 32k -ar 22050 -y \'%s\'' % \
                 (path_to_orig, path_to_mp3)
             result = os.popen(command)
-        storage_location = '/{0}/{1}/{2}/'.format(
-            settings.AWS_S3_MEDIA_BUCKET,
-            owner.username,
-            self.model_name_plural
-        )
-        self.media_file.storage.location = storage_location
-        self.media_file_orig.storage.location = storage_location
 
-        self.media_file.save(file_name_new, File(open(path_to_mp3)))
+        # set storage location:
+        self.media_file.storage.location = self.get_storage_location(owner)
+        self.media_file_orig.storage.location = \
+            self.get_storage_location(owner)
+
+        # Save to Amazon
+        from django.core.files import File
         self.media_file_orig.save(file_name_orig, File(open(path_to_orig)))
+        self.media_file.save(file_name_new, File(open(path_to_mp3)))
+
+        # Save file names to model:
         self.file_name_orig = file.name
         self.name = name or file.name
         self.file_name_new = file_name_new
         self.content_type = ext.replace('.', '')
         self.save()
-
-    @classmethod
-    def process_file1(cls, file, owner, name=None):
-
-        # add new file to S3:
-        #save to disk:
-        model_name_plural = cls.model_name_plural
-        file_name_new = upload_helpers.save_file_to_disk(
-            owner, model_name_plural, file
-        )
-        file_name, ext = os.path.splitext(file_name_new)
-
-        # convert to MP3:
-        if ext != '.mp3':
-            # use ffmpeg to convert to mp3:
-            media_path = upload_helpers.generate_absolute_path(
-                owner, model_name_plural
-            )
-            path_to_be_converted = media_path + '/' + file_name_new
-            file_name_new = file_name + '.mp3'
-            path_to_mp3 = media_path + '/' + file_name_new
-            command = 'ffmpeg -loglevel panic -i \'%s\' -ab 32k -ar 22050 -y \'%s\'' % \
-                (path_to_be_converted, path_to_mp3)
-            result = os.popen(command)
-
-
-        return {
-            'file_name_orig': file.name,
-            'name': name or file.name,
-            'file_name_new': file_name_new,
-            'content_type': ext.replace('.', ''),
-            'virtual_path': upload_helpers.generate_relative_path(
-                owner, model_name_plural
-            )
-        }
 
     def remove_media_from_file_system(self):
         # remove files from file system:
