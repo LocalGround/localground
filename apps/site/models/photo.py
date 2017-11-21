@@ -10,6 +10,11 @@ import os
 from swampdragon.models import SelfPublishModel
 from localground.apps.site.api.realtime_serializers import PhotoRTSerializer
 
+# from django.db import models # maybe excess?
+from django.core.files import File
+from django.core.files.base import ContentFile
+from django.conf import settings
+
 
 class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     file_name_large = models.CharField(max_length=255)
@@ -22,8 +27,64 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
 
+    def process_file(self, file, owner, name=None):
+
+        # get the oiginal file name to successfully save
+        file_name_orig = upload_helpers.simplify_file_name(file)
+        base_name, ext = os.path.splitext(file_name_orig)
+
+        # create thumbnails:
+        media_path = upload_helpers.generate_absolute_path(owner, model_name_plural)
+        im = Image.open(media_path + '/' + file_name_new)
+
+        # trying to make rough draft idea of new process file for images
+        path_to_orig = '/tmp/{0}'.format(file_name_orig)
+
+        exif = cls.read_exif_data(im)
+        sizes = [1000, 500, 250, 128, 50, 20]
+        photo_paths = [file_name_new]
+        for s in sizes:
+            if s in [50, 25]:
+                # ensure that perfect squares:
+                im.thumbnail((s * 2, s * 2), Image.ANTIALIAS)
+                im = im.crop([0, 0, s - 2, s - 2])
+                # for some reason, ImageOps.expand throws an error for some files:
+                im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
+            else:
+                im.thumbnail((s, s), Image.ANTIALIAS)
+            abs_path = '%s/%s_%s%s' % (media_path, file_name, s, ext)
+            im.save(abs_path) # this is where we want to save photos into the Amazon Cloud bucket
+            photo_paths.append('%s_%s%s' % (file_name, s, ext))
+
+        # get all the links to the various sizes of the image
+        file_name_large = photo_paths[1],
+        file_name_medium = photo_paths[2],
+        file_name_medium_sm = photo_paths[3],
+        file_name_small = photo_paths[4],
+        file_name_marker_lg = photo_paths[5],
+        file_name_marker_sm = photo_paths[6],
+
+        # create storage location
+        storage_location = '/{0}/{1}/{2}/'.format(
+            settings.AWS_S3_MEDIA_BUCKET,
+            owner.username,
+            self.model_name_plural
+        )
+        self.media_file.storage.location = storage_location
+        self.media_file_orig.storage.location = storage_location
+
+        # self.media_file.save(file_name_new, File(open(path_to_medium)))
+        # need to find way to convert each size into a path (?)
+
+        self.media_file_orig.save(file_name_orig, File(open(path_to_orig)))
+        self.file_name_orig = file.name
+        self.name = name or file.name
+        self.file_name_new = file_name_new
+        self.content_type = ext.replace('.', '')
+        self.save()
+
     @classmethod
-    def process_file(cls, file, owner):
+    def process_file1(cls, file, owner):
         from PIL import Image, ImageOps
         #save to disk:
         model_name_plural = cls.model_name_plural

@@ -5,6 +5,7 @@ from localground.apps.site.models import BaseUploadedMedia
 from localground.apps.lib.helpers import upload_helpers
 import os
 from django.db import models
+from django.core.files import File
 from django.core.files.base import ContentFile
 from django.conf import settings
 
@@ -34,7 +35,6 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
     objects = AudioManager()
 
     def process_file(self, file, owner, name=None):
-        from django.core.files import File
         file_name_orig = upload_helpers.simplify_file_name(file)
         base_name, ext = os.path.splitext(file_name_orig)
 
