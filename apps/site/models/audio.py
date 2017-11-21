@@ -84,26 +84,14 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.content_type = ext.replace('.', '')
         self.save()
 
-    def remove_media_from_file_system(self):
-        # remove files from file system:
-        path = self.get_absolute_path()
-        if len(path.split('/')) > 2:  # protects against empty file path
-            file_paths = [
-                '%s%s' % (path, self.file_name_orig),
-                '%s%s' % (path, self.file_name_new)
-            ]
-            for f in file_paths:
-                if os.path.exists(f):
-                    os.remove(f)
-
-    def delete(self, *args, **kwargs):
-        # raise Exception('delete override')
-        self.remove_media_from_file_system()
+    def remove_media_from_s3(self):
         self.media_file.storage.location = self.get_storage_location()
-        self.media_file_orig.storage.location = \
-            self.get_storage_location()
+        self.media_file_orig.storage.location = self.get_storage_location()
         self.media_file_orig.delete()
         self.media_file.delete()
+
+    def delete(self, *args, **kwargs):
+        self.remove_media_from_s3()
         super(Audio, self).delete(*args, **kwargs)
 
     class Meta:
