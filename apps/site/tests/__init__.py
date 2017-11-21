@@ -211,7 +211,7 @@ class ModelMixin(object):
         gen_ass = models.GenericAssociation(
             source_object=marker,
             entity_object=photo,
-            last_updated_by=self.user, 
+            last_updated_by=self.user,
             owner=self.user
         )
         gen_ass.save()
@@ -548,16 +548,16 @@ class ModelMixin(object):
         project = project or self.project
         audio = models.Audio(
             project=project,
-            host=settings.SERVER_HOST,
+            # host=settings.SERVER_HOST,
             owner=user,
             last_updated_by=user,
             name=name,
             description='Audio Description',
-            file_name_orig=file_name,
-            file_name_new='new.jpg',
+            # file_name_orig=file_name,
+            # file_name_new='new.jpg',
             tags=tags,
-            point=point,
-            virtual_path='/userdata/media/' + user.username + '/audio/'
+            point=point
+            # virtual_path='/userdata/media/' + user.username + '/audio/'
         )
         audio.save()
         return audio

@@ -9,31 +9,13 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 from django.conf import settings
 
-'''
-Here is the pattern that has to be broken down for a valid url for AWS S3:
-
-example:
-https://s3test-assets.s3.amazonaws.com/media/Screen_Shot_2017-11-17_at_12.14.59_PM.png
-
-breakdown of the http address:
-https:// {bucketname} .s3.amazonaws.com / {path to media file} / {media file}
-
-somehow, the uploaded file has to be connected with the media
-at the end of the url.
-
-Furthermore, when the file is finished processing,
-it will be appropriate to assign the uploaded_file
-to the one that is tied to a Document object
-
-i.e. doc.upload.url [use-url from FileField] & doc.upload.file
-'''
-
 
 class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
     media_file_orig = models.FileField(null=True)
     media_file = models.FileField(null=True)
     objects = AudioManager()
 
+    # TODO: move this to a base class:
     def get_storage_location(self, user=None):
         user = user or self.owner
         return '/{0}/{1}/{2}/'.format(
@@ -101,4 +83,4 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
         verbose_name_plural = 'audio'
 
     def __unicode__(self):
-        return self.file_name_new + ': ' + self.name
+        return '{0}: {1}'.format(self.id, self.name)

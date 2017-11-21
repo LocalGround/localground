@@ -21,7 +21,7 @@ class AudioModelTest(ExtrasMixinTest, PointMixinTest,
     def tearDown(self):
         # delete method also removes files from file system:
         for audio in models.Audio.objects.all():
-            audio.remove_media_from_file_system()
+            audio.remove_media_from_s3()
 
     def test_check_audio_objects_manager(self):
         self.assertTrue(hasattr(Audio, 'objects'))
@@ -78,42 +78,21 @@ class AudioModelTest(ExtrasMixinTest, PointMixinTest,
         from django.core.files import File
         tmp_file = self.makeTmpFile()
         with open(tmp_file.name, 'rb') as data:
-            result = models.Audio.process_file(File(data), self.user)
-            name_wav = tmp_file.name.split('/')[-1].lower()
-            name_mp3 = name_wav.replace('wav', 'mp3')
-            virtual_path = upload_helpers.generate_relative_path(self.user, 'audio')
-            absolute_path = upload_helpers.generate_absolute_path(self.user, 'audio')
-            wav_file_path = absolute_path + name_wav
-            mp3_file_path = absolute_path + result['file_name_new']
-
-            self.model.file_name_new = result['file_name_new']
-            self.model.content_type = result['content_type']
-
-            # removing '/tmp' from file_name_orig.
-            # otherwise method will try to delete invalid path
-            # '/userdata/media/tester/audio//tmp/tmpExNqHF.wav'
-            self.model.file_name_orig = name_wav
-            self.model.name = result['name']
-            self.model.virtual_path = result['virtual_path']
-            self.model.save()
+            self.model.process_file(File(data), self.user)
 
             # check that files are on the disk
 
             # Test that both the mp3 and the wav file are now on disk
-            self.assertTrue(os.path.isfile(wav_file_path))
-            self.assertTrue(os.path.isfile(mp3_file_path))
-
+            self.assertEqual(self.model.media_file, 1)
+            self.assertEqual(self.model.media_file_orig, 1)
+            print self.model.media_file_orig
+            print self.model.media_file
             self.model.delete()
 
             self.assertTrue(self.model.id is None)
-
-            # Test that both the mp3 and the wav file are no longer on disk
-            self.assertFalse(os.path.isfile(mp3_file_path))
-            self.assertFalse(os.path.isfile(wav_file_path))
+            print self.model.media_file_orig
+            print self.model.media_file
 
     def test_unicode_(self):
-        test_string1 = self.model.file_name_new + ': ' + self.model.name
-        test_string2 = 'new.jpg: Audio Name'
-
+        test_string1 = str(self.model.id) + ': ' + self.model.name
         self.assertEqual(self.model.__unicode__(), test_string1)
-        self.assertEqual(self.model.__unicode__(), test_string2)
