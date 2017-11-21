@@ -79,24 +79,21 @@ class AudioModelTest(ExtrasMixinTest, PointMixinTest,
     def test_delete(self, **kwargs):
         from django.core.files import File
         tmp_file = self.makeTmpFile()
-        print 'TEMP FILE!!!!!', tmp_file.name
-        print tmp_file.name
         f = File(open('/tmp/test.wav'))
-        print f.size
         self.model.process_file(f, self.user)
 
         # check that files are on the disk
+        self.assertEqual(self.model.media_file, 'test.mp3')
 
-        # Test that both the mp3 and the wav file are now on disk
-        self.assertEqual(self.model.media_file, 1)
-        self.assertEqual(self.model.media_file_orig, 1)
-        print self.model.media_file_orig
-        print self.model.media_file
+        base_name, ext = os.path.splitext(self.model.media_file_orig.name)
+        self.assertEqual('.wav', ext)
+
         self.model.delete()
 
         self.assertTrue(self.model.id is None)
-        print self.model.media_file_orig
-        print self.model.media_file
+        self.assertTrue(not hasattr(self.model.media_file_orig, 'url'))
+        self.assertTrue(not hasattr(self.model.media_file, 'url'))
+
 
 
     def test_unicode_(self):
