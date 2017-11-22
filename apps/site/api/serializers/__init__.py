@@ -7,6 +7,9 @@ from localground.apps.site.api.serializers.base_serializer import BaseSerializer
 from localground.apps.site.api.serializers.project_serializer import ProjectSerializer, ProjectDetailSerializer
 from localground.apps.site.api.serializers.sharing_serializer import SharingListSerializer, SharingDetailSerializer
 from localground.apps.site.api.serializers.marker_serializer import MarkerSerializer, MarkerSerializerCounts, MarkerSerializerCountsWithMetadata, MarkerSerializerLists, MarkerSerializerListsWithMetadata
+
+from localground.apps.site.api.serializers.marker_w_attrs_serializer import MarkerWAttrsSerializer, MarkerWAttrsSerializerCounts, MarkerWAttrsSerializerCountsWithMetadata, MarkerWAttrsSerializerLists, MarkerWAttrsSerializerListsWithMetadata
+
 from localground.apps.site.api.serializers.association_serializer import AssociationSerializer, AssociationSerializerDetail
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer, PhotoSerializerUpdate
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer, AudioSerializerUpdate

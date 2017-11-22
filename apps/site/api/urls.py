@@ -128,6 +128,13 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.MarkerList.as_view(),
         name='marker-list'),
     url(
+        r'^markerwithattrs/(?P<pk>[0-9]+)/$',
+        views.MarkerWAttrsInstance.as_view(),
+        name='markerwithattributes-detail'),
+    url(r'^markerwithattrs/$',
+        views.MarkerWAttrsList.as_view(),
+        name='markerwithattributes-list'),
+    url(
         r'^prints/(?P<pk>[0-9]+)/$',
         views.PrintInstance.as_view(),
         name='print-detail'),

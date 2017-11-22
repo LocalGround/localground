@@ -199,6 +199,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'djcelery',
     'social.apps.django_app.default',
+    'django.contrib.postgres',
 )
 
 REST_FRAMEWORK = {

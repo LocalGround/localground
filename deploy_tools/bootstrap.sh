@@ -67,6 +67,7 @@ CREATE_SQL="create database $DB_NAME;"
 psql -c "$CREATE_SQL" -U postgres
 psql -c "CREATE EXTENSION postgis;" -U postgres -d $DB_NAME
 psql -c "CREATE EXTENSION postgis_topology;" -U postgres -d $DB_NAME
+psql -c "CREATE EXTENSION hstore;" -U postgres -d $DB_NAME
 psql -c "alter user postgres with encrypted password '$DB_PASSWORD';" -U postgres
 sudo sed -i "s/$TRUST/$MD5/g" $PG_HBA
 sudo service postgresql restart

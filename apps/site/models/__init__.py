@@ -14,6 +14,7 @@ from localground.apps.site.models.lookups import StatusCode, UploadSource, \
 
 # overlays
 from localground.apps.site.models.marker import Marker
+from localground.apps.site.models.marker_with_attributes import MarkerWithAttributes
 from localground.apps.site.models.tileset import OverlaySource, \
     OverlayType, TileSet
 
