@@ -9,18 +9,27 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds, \
 
 
 class AudioSerializer(GeometrySerializer):
-    ext_whitelist = ['m4a', 'mp3', 'mp4', 'mpeg', '3gp', 'aif', 'aiff', 'ogg', 'wav']
-    '''media_file = serializers.FileField(
-        max_length=None, allow_empty_file=False,
-        use_url=True, style={'base_template': 'file.html'},
-        source='file_name_orig',
-        help_text='Valid file types are: ' + ', '.join(ext_whitelist))
-    '''
+    ext_whitelist = [
+        'm4a', 'mp3', 'mp4', 'mpeg', '3gp', 'aif', 'aiff', 'ogg', 'wav'
+    ]
+
     media_file = serializers.CharField(
-        source='media_file_orig', required=True, style={'base_template': 'file.html'},
+        source='file_name_orig',
+        required=True,
+        style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
     file_path = serializers.SerializerMethodField('get_file_path_new')
+
+    class Meta:
+        model = models.Audio
+        fields = GeometrySerializer.Meta.fields + \
+            ('file_path', 'media_file', )
+        depth = 0
+
+    def get_file_path_new(self, obj):
+        obj.media_file.storage.location = obj.get_storage_location()
+        return obj.media_file.url
 
     def create(self, validated_data):
         # Overriding the create method to handle file processing
@@ -41,16 +50,6 @@ class AudioSerializer(GeometrySerializer):
         self.instance = self.Meta.model.objects.create(**validated_data)
         self.instance.process_file(f, owner)
         return self.instance
-
-    class Meta:
-        model = models.Audio
-        fields = GeometrySerializer.Meta.fields + \
-            ('file_path', 'media_file', )
-        depth = 0
-
-    def get_file_path_new(self, obj):
-        obj.media_file.storage.location = obj.get_storage_location()
-        return obj.media_file.url
 
 
 class AudioSerializerUpdate(AudioSerializer):
