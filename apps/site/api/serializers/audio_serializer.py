@@ -15,12 +15,11 @@ class AudioSerializer(GeometrySerializer):
         use_url=True, style={'base_template': 'file.html'},
         source='file_name_orig',
         help_text='Valid file types are: ' + ', '.join(ext_whitelist))
-
+    '''
     media_file = serializers.CharField(
-        source='file_name_orig', required=True, style={'base_template': 'file.html'},
+        source='media_file_orig', required=True, style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
-    '''
     file_path = serializers.SerializerMethodField('get_file_path_new')
 
     def create(self, validated_data):
