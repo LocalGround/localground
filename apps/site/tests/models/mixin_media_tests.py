@@ -25,6 +25,8 @@ class MediaMixinTest(ModelMixin):
         self.assertTrue(hasattr(self.model, 'groups'))
         self.assertTrue(hasattr(self.model, 'filter_fields'))
 
+    '''
+    # SVW: Beginning to deprecate
     def test_get_absolute_path(self):
         # Using the method to generate the absolute path. Good not to
         # hardcode b/c this path will look different on every server.
@@ -35,7 +37,8 @@ class MediaMixinTest(ModelMixin):
         )
         # abs_path = '/localground/userdata/media/tester/audio/'
         self.assertEqual(abs_path, self.model.get_absolute_path())
-    
+    '''
+
     def test_absolute_virtual_path(self):
         abs_virt_path = upload_helpers.encrypt_media_path(
             self.model.host,
@@ -71,7 +74,7 @@ class MediaMixinTest(ModelMixin):
         )
         self.assertEqual(media_path, self.model._encrypt_media_path(path))
 
-    
+
     def test_encrypt_url(self):
         file_name = 'test_file_name'
         # return self.virtual_path + file_name
@@ -80,7 +83,7 @@ class MediaMixinTest(ModelMixin):
 
     def test_make_directory(self):
 
-        # using 'ebooks' here just so we're not testing 
+        # using 'ebooks' here just so we're not testing
         # the creation of a directory that already exists
         path = upload_helpers.generate_absolute_path(
             self.user, 'ebooks'

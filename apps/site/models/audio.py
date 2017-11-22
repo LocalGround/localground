@@ -33,7 +33,8 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
         path_to_orig = '/tmp/{0}'.format(file_name_orig)
         if os.path.isfile(path_to_orig):
             timestamp = int(time.time())
-            file_name_orig = '{0}_{1}{2}'.format(base_name, timestamp, ext)
+            base_name = '{0}_{1}'.format(base_name, timestamp)
+            file_name_orig = '{0}{1}'.format(base_name, ext)
             path_to_orig = '/tmp/{0}'.format(file_name_orig)
             # print path_to_orig
 
