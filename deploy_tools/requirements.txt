@@ -13,6 +13,7 @@ djangorestframework-csv==1.2.0
 djangorestframework-gis==0.8.2
 djangorestframework-jsonp==1.0.0
 djangorestframework-xml==1.0.1
+djangorestframework-hstore==1.4.2
 django-cors-headers==0.12
 django-websocket-redis==0.4.3
 django-registration==2.0.4

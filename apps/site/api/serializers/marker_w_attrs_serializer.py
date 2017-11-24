@@ -4,12 +4,14 @@ from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 from django.conf import settings
 from localground.apps.site.api.metadata import CustomMetadata
+from rest_framework_hstore.fields import HStoreField
+
 
 class MarkerWAttrsSerializerMixin(GeometrySerializer):
     #color = fields.ColorField(required=False)
     color = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     update_metadata = serializers.SerializerMethodField()
-    attributes = serializers.CharMappingField(
+    attributes = HStoreField(
         help_text='Store arbitrary key / value pairs here in JSON form. Example: {"key": "value"}',
         allow_null=True,
         required=False,
