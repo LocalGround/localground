@@ -19,11 +19,8 @@ class MarkerWithAttributes(ExtrasMixin, PointMixin, ProjectMixin, NamedMixin,
     """
     polyline = models.LineStringField(blank=True, null=True)
     polygon = models.PolygonField(blank=True, null=True)
+    form = models.ForeignKey('Form')
 
-    # todo:  replace project with generic association to either a project, view,
-    # or presentation :)
-    color = models.CharField(max_length=6, default="CCCCCC")
-    _records_dict = None
     objects = MarkerManager()
     filter_fields = ('id', 'project', 'name', 'description', 'tags',)
     attributes = HStoreField(default={})

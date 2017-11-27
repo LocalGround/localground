@@ -24,10 +24,11 @@ class FormList(QueryableListCreateAPIView):
     paginate_by = 100
 
     def perform_create(self, serializer):
+        '''
         d = {
             'access_authority': models.ObjectAuthority.objects.get(id=1)
-        }
-        serializer.save(**d)
+        }'''
+        serializer.save()
 
 
 class FormInstance(generics.RetrieveUpdateDestroyAPIView):

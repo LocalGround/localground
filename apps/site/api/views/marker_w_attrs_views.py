@@ -1,11 +1,24 @@
 from rest_framework import generics
 from localground.apps.site.api import serializers, filters
+from localground.apps.site.api.serializers.marker_w_attrs_serializer import \
+    create_dynamic_serializer
 from localground.apps.site.api.views.abstract_views import \
     QueryableListCreateAPIView
 from localground.apps.site import models
 
 
 class MarkerWAttrsGeometryMixin(object):
+
+    def get_serializer_class(self, is_list=False):
+        '''
+        This serializer class gets build dynamically, according to the
+        user-generated table being queried
+        '''
+        try:
+            form = models.Form.objects.get(id=1)
+        except models.Form.DoesNotExist:
+            raise Http404
+        return create_dynamic_serializer(form)
 
     def get_geometry_dictionary(self, serializer):
         d = {}
@@ -38,23 +51,6 @@ class MarkerWAttrsList(QueryableListCreateAPIView, MarkerWAttrsGeometryMixin):
     filter_backends = (filters.SQLFilterBackend,)
     paginate_by = 100
 
-    def get_serializer_class(self):
-        r = self.request
-        include_metadata = r.GET.get('include_metadata') in \
-            ['True', 'true', '1']
-        include_lists = r.GET.get('marker_with_media_arrays') in \
-            ['True', 'true', '1']
-        if include_metadata:
-            if include_lists:
-                return serializers.MarkerWAttrsSerializerListsWithMetadata
-            else:
-                return serializers.MarkerWAttrsSerializerCountsWithMetadata
-        else:
-            if include_lists:
-                return serializers.MarkerWAttrsSerializerLists
-            else:
-                return serializers.MarkerWAttrsSerializerCounts
-
     def get_queryset(self):
         r = self.request
         include_lists = r.GET.get('marker_with_media_arrays') in \
@@ -85,9 +81,8 @@ class MarkerWAttrsList(QueryableListCreateAPIView, MarkerWAttrsGeometryMixin):
 
 class MarkerWAttrsInstance(
         MarkerWAttrsGeometryMixin, generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.MarkerWithAttributes \
-                     .objects.select_related('owner', 'project')
-    serializer_class = serializers.MarkerWAttrsSerializer
+    queryset = models.MarkerWithAttributes.objects.select_related(
+        'owner', 'project')
 
     def perform_update(self, serializer):
         d = self.get_geometry_dictionary(serializer)
