@@ -30,7 +30,7 @@ echo "Y" | sudo apt-get install gdal-bin
 echo "Y" | sudo apt-get install cgi-mapserver
 echo "Y" | sudo apt-get install python-gdal
 echo "Y" | sudo apt-get install python-mapscript
-	
+
 ###############################################
 # Add the google projection to the proj4 file #
 ###############################################
@@ -52,6 +52,7 @@ echo "Y" | sudo apt-get install libpq-dev
 # Configure PostgreSQL / PostGIS #
 ##################################
 # Doing some automatic config file manipulations for postgres / postgis:
+DOMAIN="localhost:7777"
 DB_OWNER="postgres"
 DB_NAME="lg_test_database"
 DB_PASSWORD="password"
@@ -69,6 +70,7 @@ psql -c "CREATE EXTENSION postgis;" -U postgres -d $DB_NAME
 psql -c "CREATE EXTENSION postgis_topology;" -U postgres -d $DB_NAME
 psql -c "CREATE EXTENSION hstore;" -U postgres -d $DB_NAME
 psql -c "alter user postgres with encrypted password '$DB_PASSWORD';" -U postgres
+psql -c "update django_site set domain = '$DOMAIN', name = '$DOMAIN';" -d $DB_NAME -U postgres
 sudo sed -i "s/$TRUST/$MD5/g" $PG_HBA
 sudo service postgresql restart
 
@@ -132,7 +134,7 @@ sudo a2enmod ssl
 sudo cp /localground/deploy_tools/apache_vagrant_config /etc/apache2/sites-available/localground.conf
 sudo ln -s /etc/apache2/sites-available/localground.conf /etc/apache2/sites-enabled/localground.conf
 sudo cp /localground/deploy_tools/settings_local.py /localground/apps/.
-sudo rm /etc/apache2/sites-enabled/000-default.conf 
+sudo rm /etc/apache2/sites-enabled/000-default.conf
 sudo service apache2 restart
 
 ###############################
@@ -149,7 +151,7 @@ sudo cp -r /usr/local/lib/python2.7/dist-packages/swampdragon/static/swampdragon
 #################
 sudo apt-get -y install redis-server rabbitmq-server
 
-# we use supervisor to run our celery worker 
+# we use supervisor to run our celery worker
 sudo apt-get -y install supervisor
 sudo cp /localground/deploy_tools/celeryd.conf /etc/supervisor/conf.d/celeryd.conf
 sudo mkdir /var/log/celery

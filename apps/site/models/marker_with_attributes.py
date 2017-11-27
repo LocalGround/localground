@@ -26,7 +26,7 @@ class MarkerWithAttributes(ExtrasMixin, PointMixin, ProjectMixin, NamedMixin,
     _records_dict = None
     objects = MarkerManager()
     filter_fields = ('id', 'project', 'name', 'description', 'tags',)
-    attributes = HStoreField(default={'data': 'text'})
+    attributes = HStoreField(default={})
 
     class Meta:
         verbose_name = 'marker'

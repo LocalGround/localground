@@ -9,24 +9,40 @@ from rest_framework_hstore.fields import HStoreField
 
 class MarkerWAttrsSerializerMixin(GeometrySerializer):
     #color = fields.ColorField(required=False)
-    color = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     update_metadata = serializers.SerializerMethodField()
+
     attributes = HStoreField(
         help_text='Store arbitrary key / value pairs here in JSON form. Example: {"key": "value"}',
         allow_null=True,
         required=False,
+        default={},
         style={'base_template': 'json.html', 'rows': 5})
+
+    worm_count = serializers.IntegerField(
+        allow_null=True,
+        required=False,
+        source='attributes.worm_count',
+        default={})
+
+    soil_moisture = serializers.CharField(
+        allow_null=True,
+        required=False,
+        source='attributes.soil_moisture',
+        default={})
+
+    team_name = serializers.CharField(
+        allow_null=True,
+        required=False,
+        source='attributes.team_name',
+        default={})
 
 
     class Meta:
         model = models.MarkerWithAttributes
         fields = GeometrySerializer.Meta.fields + \
-            ('color', 'extras', 'attributes')
+            ('extras', 'attributes', 'worm_count', 'soil_moisture', 'team_name')
         depth = 0
 
-    def get_update_metadata(self, obj):
-        m = CustomMetadata()
-        return m.get_serializer_info(self)
 
 class MarkerWAttrsSerializer(MarkerWAttrsSerializerMixin):
 
@@ -44,6 +60,7 @@ class MarkerWAttrsSerializer(MarkerWAttrsSerializerMixin):
         fields = MarkerWAttrsSerializerMixin.Meta.fields + \
             ('children', 'photo_count', 'audio_count', 'video_count', 'map_image_count')
         depth = 0
+
 
     def get_children(self, obj):
         from django.contrib.contenttypes.models import ContentType

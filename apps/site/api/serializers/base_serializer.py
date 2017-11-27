@@ -65,7 +65,7 @@ class BaseNamedSerializer(BaseSerializer):
         style={'base_template': 'tags.html'},
         help_text='Tag your object here'
     )
-    name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
+    #name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     caption = serializers.CharField(
         source='description', required=False, allow_null=True, label='caption',
         style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
