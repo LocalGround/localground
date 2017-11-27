@@ -11,36 +11,42 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     #color = fields.ColorField(required=False)
     update_metadata = serializers.SerializerMethodField()
 
+    '''
     attributes = HStoreField(
         help_text='Store arbitrary key / value pairs here in JSON form. Example: {"key": "value"}',
         allow_null=True,
         required=False,
         default={},
         style={'base_template': 'json.html', 'rows': 5})
+    '''
 
     worm_count = serializers.IntegerField(
         allow_null=True,
         required=False,
-        source='attributes.worm_count',
-        default={})
+        source='attributes.worm_count')
 
     soil_moisture = serializers.CharField(
         allow_null=True,
         required=False,
-        source='attributes.soil_moisture',
-        default={})
+        source='attributes.soil_moisture')
 
     team_name = serializers.CharField(
         allow_null=True,
         required=False,
-        source='attributes.team_name',
-        default={})
+        source='attributes.team_name')
 
+    def create(self, validated_data):
+        from django_hstore.dict import HStoreDict
+        validated_data['attributes'] = HStoreDict(validated_data['attributes'])
+        validated_data.update(self.validated_data)
+        validated_data.update(self.get_presave_create_dictionary())
+        self.instance = self.Meta.model.objects.create(**validated_data)
+        return self.instance
 
     class Meta:
         model = models.MarkerWithAttributes
         fields = GeometrySerializer.Meta.fields + \
-            ('extras', 'attributes', 'worm_count', 'soil_moisture', 'team_name')
+            ('extras', 'worm_count', 'soil_moisture', 'team_name')
         depth = 0
 
 
