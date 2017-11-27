@@ -1,9 +1,6 @@
 
-<!-- A <div> tag may be necessary to fit in the whole row inside.
-     However, it is unknown how to solve the row format problem
--->
 <td>
-    <i class="fa fa-grip fa-rotate-90"></i> <!-- The rotate grip item will need to be extended to fit the whole row-->
+    <i class="fa fa-grip fa-rotate-90"></i>
 </td>
 <td>
     <!-- Radio button -->
@@ -12,8 +9,7 @@
 </td>
 <td>
     <input type="text" class="fieldname" placeholder="field name" value="{{ col_alias }}">
-    {{#if errorFieldName}}<span>Field Name Missing</span>{{/if}}
-    {{#if serverErrorMessage}}<span>{{serverErrorMessage}}</span>{{/if}}
+    {{#if errorMessage}}<span class="errorMessage">{{errorMessage}}</span>{{/if}}
 
 </td>
 <td class="form-reorder">
@@ -26,20 +22,16 @@
             {{/ifequal}}
 
             {{#ifequal data_type "rating"}}
-            <!-- Make this list the new extras list to reduce confusion for users -->
                 <span class ="extras">
                     <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
                     <table>
                         {{#each extraList}}
                         <tr class="rating-row">
-
                             <td>
                                 <input type="text" class="rating-value" placeholder="Type rating value" value="{{this.value}}" />
-                                {{#if this.errorRatingValue}}<span class="ratingError">Must Be a Number</span>{{/if}}
                             </td>
                             <td>
-                                <input type="text" class="rating-name" placeholder="Type new rating" value="{{this.name}}" />
-                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
+                                <input type="text" class="rating-name" placeholder="Type rating name" value="{{this.name}}" />
                             </td>
                             <td>
                                 <a href="#" class="remove-rating">&times;</a>
@@ -60,7 +52,6 @@
 
                             <td>
                                 <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
-                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
                             </td>
                             <td>
                                 <a href="#" class="remove-choice">&times;</a>
@@ -82,9 +73,7 @@
             <option value="rating"{{#ifequal data_type "rating"}} SELECTED {{/ifequal}}>Rating</option>
             <option value="choice"{{#ifequal data_type "choice"}} SELECTED {{/ifequal}}>Choice</option>
         </select>
-
             {{#ifequal data_type "rating"}}
-            <!-- Make this list the new extras list to reduce confusion for users -->
                 <span class ="extras">
                     <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
                     <table>
@@ -92,11 +81,9 @@
                         <tr class="rating-row">
                             <td>
                                 <input type="text" class="rating-value" placeholder="Type rating value" value="{{this.value}}" />
-                                {{#if this.errorRatingValue}}<span class="ratingError">Must Be a Number</span>{{/if}}
                             </td>
                             <td>
-                                <input type="text" class="rating-name" placeholder="Type new rating" value="{{this.name}}" />
-                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
+                                <input type="text" class="rating-name" placeholder="Type rating name" value="{{this.name}}" />
                             </td>
                             <td>
                                 <a href="#" class="remove-rating">&times;</a>
@@ -116,7 +103,6 @@
                         <tr class="choice-row">
                             <td>
                                 <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
-                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
                             </td>
                             <td>
                                 <a href="#" class="remove-choice">&times;</a>
@@ -126,8 +112,6 @@
                     </table>
                 </span>
             {{/ifequal}}
-
-        {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}
     {{/if}}
 </td>
 <td><a href="#" class="{{#if id }}delete-field {{else}} remove-row{{/if}} ">&times;</a></td>

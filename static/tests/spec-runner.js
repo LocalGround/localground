@@ -58,6 +58,9 @@ require(['boot'], function () {
         'spec/views/project-user-test.js',
         'spec/views/data-detail-test.js',
 
+        //style app symbols selection views
+        'spec/views/style-symbol-selection-layout-view.js',
+
         // PRINT
         'spec/views/generate-print-test.js',
         'spec/views/print-options-test.js',
@@ -78,7 +81,10 @@ require(['boot'], function () {
         'spec/lib/form-field-date-time-test.js',
         'spec/lib/form-field-choice-test.js',
         'spec/lib/form-field-rating-test.js',
-        'spec/lib/form-field-add-media-test.js'
+        'spec/lib/form-field-add-media-test.js',
+
+        //ROUTERS
+        'spec/views/style-router-test.js'
 
     ];
 

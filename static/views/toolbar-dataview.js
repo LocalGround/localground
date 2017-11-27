@@ -43,6 +43,7 @@ define([
             };
         },
         route: function (e) {
+            console.log("route");
             if (!e) {
                 return;
             }
@@ -69,9 +70,9 @@ define([
 
             $('body').click(this.hideMenus);
             this.modal = new Modal();
-            this.forms = new Forms();
+            this.forms = new Forms(null, { projectID: this.app.getProjectID() });
             this.listenTo(this.forms, "reset", this.render);
-            this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
+            //this.forms.setServerQuery("WHERE project_id = " + this.app.getProjectID());
             this.listenTo(this.forms, 'reset', this.renderAndRoute);
             this.forms.fetch({ reset: true });
         },

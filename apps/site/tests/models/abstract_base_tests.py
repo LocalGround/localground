@@ -7,59 +7,6 @@ class BaseAbstractModelClassTest(ModelMixin):
     # To run test:
     # $ python manage.py test localground.apps.site.tests.models.PhotoModelTest
 
-    def setUp(self):
-        ModelMixin.setUp(self)
-        '''
-        form = self.create_form_with_fields()
-        Record = form.TableModel
-        self.classes_that_inherit_from_base = {
-            # Groupings and Associations
-            DONE 'project': models.Project,
-            DONE 'relation': models.GenericAssociation,
-
-            # Permissions
-            DONE 'object_authority': models.ObjectAuthority,
-            DONE 'user_authority': models.UserAuthority,
-            DONE 'user_object_authority': models.UserAuthorityObject,
-
-            # Presentation-Related
-            DONE 'map': models.StyledMap,
-            DONE 'layer': models.Layer,
-
-            # Tiles
-            DONE 'tileset': models.TileSet,
-            DONE 'overlay_source': models.OverlaySource,
-            DONE 'overlay_type': models.OverlayType,
-
-            # User-Defined Schemas
-            DONE 'form': models.Form,
-            DONE 'field': models.Field,
-            DONE 'data_type': models.DataType,
-
-            # Sites
-            DONE 'marker': models.Marker,
-            'record': Record,
-
-            # Prints
-            DONE 'print': models.Print,
-            DONE 'layout': models.Layout,
-
-            # Map Image Processing:
-            DONE 'map_image': models.MapImage,
-            DONE 'image_opts': models.ImageOpts,
-            DONE 'error_code': models.ErrorCode,
-            DONE 'status_code': models.StatusCode,
-
-            # Media:
-            DONE 'photo': models.Photo, 
-            DONE 'video': models.Video,
-            DONE 'audio': models.Audio
-        }
-        self.Photo = models.Photo
-        self.photo = self.create_photo()
-        '''
-        
-
     def test_classes_all_have_required_class_properties(self, **kwargs):
         c = self.model.__class__
         self.assertTrue(hasattr(c, 'object_type'))
@@ -80,9 +27,10 @@ class BaseAbstractModelClassTest(ModelMixin):
         self.assertEqual(self.model.object_type, self.object_type)
 
     def test_model_name_prop(self):
-        # Check that it works for a class and a method 
+        # Check that it works for a class and a method
         self.assertEqual(self.model.__class__.model_name, self.model_name)
         self.assertEqual(self.model.model_name, self.model_name)
+
 
     def test_model_name_plural_prop(self):
         # Check that it works for a class and a method

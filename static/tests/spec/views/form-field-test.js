@@ -8,14 +8,14 @@ define([
 ],
     function ($, CreateForm, FieldChildView, Field) {
         'use strict';
-        var fixture, formView, fieldView, initSpies, createExistingFieldView, createNewFieldView;
+        var fixture, formView, fieldView, initSpies,
+            createExistingFieldView, createNewFieldView, createNewFieldViewNoParent;
 
-        initSpies = function () {
+        initSpies = function (scope) {
             //error catch functions
             spyOn(FieldChildView.prototype, 'initialize').and.callThrough();
             spyOn(FieldChildView.prototype, 'render').and.callThrough();
-            spyOn(FieldChildView.prototype, 'doDelete').and.callThrough();
-            spyOn(FieldChildView.prototype, 'validate').and.callThrough();
+            spyOn(FieldChildView.prototype, 'validateField').and.callThrough();
 
             spyOn(FieldChildView.prototype, 'setRatingsFromModel').and.callThrough();
             spyOn(FieldChildView.prototype, 'saveNewRating').and.callThrough();
@@ -23,22 +23,27 @@ define([
             spyOn(FieldChildView.prototype, 'updateRatingList').and.callThrough();
             spyOn(FieldChildView.prototype, 'addNewRating').and.callThrough();
             spyOn(FieldChildView.prototype, 'saveRatingsToModel').and.callThrough();
-            spyOn(FieldChildView.prototype, 'validateRating').and.callThrough();
 
+            spyOn(FieldChildView.prototype, 'saveField').and.callThrough();
             spyOn(FieldChildView.prototype, 'setChoicesFromModel').and.callThrough();
             spyOn(FieldChildView.prototype, 'saveNewChoice').and.callThrough();
             spyOn(FieldChildView.prototype, 'removeChoice').and.callThrough();
             spyOn(FieldChildView.prototype, 'updateChoiceList').and.callThrough();
             spyOn(FieldChildView.prototype, 'addNewChoice').and.callThrough();
             spyOn(FieldChildView.prototype, 'saveChoicesToModel').and.callThrough();
-            spyOn(FieldChildView.prototype, 'validateChoice').and.callThrough();
+            spyOn(FieldChildView.prototype, 'deleteField').and.callThrough();
 
             spyOn(Field.prototype, 'destroy');
+            spyOn(Field.prototype, 'isValid').and.callThrough();
+            spyOn(Field.prototype, 'validate').and.callThrough();
+            spyOn(Field.prototype, 'validateRating').and.callThrough();
+            spyOn(Field.prototype, 'validateChoice').and.callThrough();
+
+            spyOn(scope.app.vent, 'trigger').and.callThrough();
 
         };
 
         createExistingFieldView = function (scope) {
-            console.log('createExistingFieldView');
             var opts = {};
             _.extend(opts, scope.form.toJSON(), {
                 model: scope.form.fields.at(0),
@@ -47,7 +52,6 @@ define([
                     app: scope.app
                 })
             });
-            console.log(opts);
             fieldView = new FieldChildView(opts);
             fieldView.render();
         };
@@ -65,9 +69,32 @@ define([
             fieldView.render();
         };
 
+        createNewFieldView = function (scope) {
+            var opts = {};
+            _.extend(opts, scope.form.toJSON(), {
+                model: new Field({}, {id: scope.form.id }),
+                parent: new CreateForm({
+                    model: scope.form,
+                    app: scope.app
+                })
+            });
+            fieldView = new FieldChildView(opts);
+            fieldView.render();
+        };
+
+        createNewFieldViewNoParent = function (scope) {
+            var opts = {};
+            _.extend(opts, scope.form.toJSON(), {
+                model: new Field({}, {id: scope.form.id}),
+                app: scope.app
+            });
+            fieldView = new FieldChildView(opts);
+            fieldView.render();
+        };
+
         describe("Create Form Fields: Initialization Tests", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
             });
 
             it("Same number of fields successfully created", function () {
@@ -100,7 +127,7 @@ define([
 
         describe("Create Form Fields: Render Tests", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
             });
             it("Renders child HTML", function () {
                 var opts = {}, field = this.form.fields.at(0);
@@ -117,13 +144,11 @@ define([
                 expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(6);
 
                 //check HTML in DOM:
-                console.log(fieldView.$el.html());
                 expect(fieldView.$el).toEqual("tr");
                 expect(fieldView.$el).toContainElement(".fa-grip");
                 expect(fieldView.$el).toContainElement("input.fieldname");
                 expect(fieldView.$el).toContainElement("td.form-reorder");
                 expect(fieldView.$el).toContainElement("span.fieldType");
-                expect(fieldView.$el).toContainElement("a.delete-field");
                 expect(fieldView.$el).toContainElement(".display-field");
                 expect(fieldView.model.get("is_display_field")).toBe(true);
                 expect(fieldView.$el.find('.display-field').is(":checked")).toBeTruthy();
@@ -150,73 +175,52 @@ define([
                 expect(fieldView.$el.find('.display-field').is(":checked")).toBeFalsy();
             });
 
-            it("Don't delete when user cancels confirm dialog", function () {
-                var opts = {}, field = this.form.fields.at(0);
-                _.extend(opts, this.form.toJSON(), {
-                    model: field,
-                    parent: new CreateForm({
-                        model: this.form,
-                        app: this.app
-                    })
-                });
-                spyOn(window, 'confirm').and.returnValue(false);
-                expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(0);
-                expect(Field.prototype.destroy).toHaveBeenCalledTimes(0);
-                fieldView = new FieldChildView(opts);
-                fieldView.render();
-                fixture = setFixtures('<div></div>').append(fieldView.$el);
-                fieldView.$el.find('a.delete-field').trigger('click');
-                expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(1);
-                expect(Field.prototype.destroy).toHaveBeenCalledTimes(0);
-            });
-
-            it("Delete when user cancels confirm dialog", function () {
-                var opts = {}, field = this.form.fields.at(0);
-                _.extend(opts, this.form.toJSON(), {
-                    model: field,
-                    parent: new CreateForm({
-                        model: this.form,
-                        app: this.app
-                    })
-                });
-                spyOn(window, 'confirm').and.returnValue(true);
-                expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(0);
-                expect(Field.prototype.destroy).toHaveBeenCalledTimes(0);
-                fieldView = new FieldChildView(opts);
-                fieldView.render();
-                fixture = setFixtures('<div></div>').append(fieldView.$el);
-                expect(fieldView.$el).toBeInDOM();
-                fieldView.$el.find('a.delete-field').trigger('click');
-                expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(1);
-                expect(Field.prototype.destroy).toHaveBeenCalledTimes(1);
-                expect(fieldView.$el).not.toBeInDOM();
-            });
-
             it("If fieldname is blank, it shows an error", function () {
                 createExistingFieldView(this);
-                expect(FieldChildView.prototype.validate).toHaveBeenCalledTimes(0);
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(0);
                 fixture = setFixtures("<div></div>").append(fieldView.$el);
-                fixture.find(".fieldname").val("").trigger('blur');
+                fixture.find(".fieldname").val("");
                 fieldView.saveField();
-                expect(FieldChildView.prototype.validate).toHaveBeenCalledTimes(1);
-                expect(fieldView.$el.hasClass("failure-message")).toBeTruthy();
-                expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
+                fieldView.render();
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
+                expect(fieldView.$el).toContainElement(".errorMessage");
+                expect($(fieldView.$el.find('span')[0]).html()).toBe("A field name is required");
             });
 
             it("If fieldtype is blank, it shows an error", function () {
                 createNewFieldView(this);
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(0);
+                fixture = setFixtures("<div></div>").append(fieldView.$el);
+                fixture.find(".fieldname").val("sample");
                 fieldView.$el.find("select").val("-1");
-                fieldView.saveField(1);
-                expect(fieldView.$el.hasClass("failure-message")).toBeTruthy();
-                expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
-                expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Missing");
+                fieldView.saveField();
+                fieldView.render();
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
+                expect(fieldView.$el).toContainElement(".errorMessage");
+                expect($(fieldView.$el.find('span')[0]).html()).toBe("A field type is required");
+            });
+
+            it("Delete a field from an existing form", function(){
+                    createExistingFieldView(this);
+
+                    spyOn(window, "confirm").and.returnValue(true);
+                    expect(fieldView.model.destroy).toHaveBeenCalledTimes(0);
+                    expect(FieldChildView.prototype.deleteField).toHaveBeenCalledTimes(0);
+
+                    var parentForm = fieldView.parent;
+                    fixture = setFixtures("<div></div>").append(parentForm.$el);
+                    expect(parentForm.children.length).toEqual(5);
+                    expect(fixture.find(".delete-field").length).toEqual(5);
+                    $(fixture.find('.delete-field')[4]).trigger("click");
+                    expect(FieldChildView.prototype.deleteField).toHaveBeenCalledTimes(1);
+                    expect(fixture.find(".delete-field").length).toEqual(4);
+                    expect(fieldView.model.destroy).toHaveBeenCalledTimes(1);
             });
         });
 
-
-        describe("Radio button switch test", function () {
+        describe("Create Form Fields: Radio button switch test", function () {
             beforeEach(function () {
-                initSpies();
+                initSpies(this);
             });
             it("Renders child HTML", function () {
                 var opts = {}, field = this.form.fields.at(1);
@@ -238,9 +242,9 @@ define([
             });
         });
 
-        describe("Ratings Test", function(){
+        describe("Create Form Fields: Ratings Test", function(){
             beforeEach(function(){
-                initSpies();
+                initSpies(this);
                 var opts = {}, field = this.form.fields.at(3);
                 _.extend(opts, this.form.toJSON(), {
                     model: field,
@@ -293,8 +297,6 @@ define([
 
                 extras = field.get("extras");
                 var lastIndexRating = extras[extras.length - 1];
-                console.log(lastIndexRating);
-                console.log(extras);
                 expect(field.get("extras").length).toEqual(4);
                 expect($(rating_rows[3]).find(".rating-name").val()).toEqual(lastIndexRating.name);
                 expect($(rating_rows[3]).find(".rating-value").val()).toEqual(lastIndexRating.value.toString());
@@ -347,18 +349,20 @@ define([
                 var extras = field.get("extras");
                 var rating_rows = fixture.find(".rating-row");
 
+                expect(Field.prototype.validateRating).toHaveBeenCalledTimes(0);
 
                 fieldView.updateRatingList();
-                fieldView.validateRating();
+                fieldView.validateField();
+                fieldView.render();
 
                 extras = field.get("extras");
                 var lastIndexRating = extras[extras.length - 1];
-                console.log(lastIndexRating);
-                console.log(extras);
 
-                expect(lastIndexRating.errorRatingName).toBeTruthy();
-                expect(lastIndexRating.errorRatingValue).toBeTruthy();
+                // Now having trouble detecting the error rating items as HTML attributes
+                expect(Field.prototype.validateRating).toHaveBeenCalledTimes(1);
 
+                expect(field.get('errorRatingName')).toBeTruthy();
+                expect(field.get('errorRatingValue')).toBeTruthy();
             });
 
             it ("Successfully saves the rating list", function(){
@@ -394,11 +398,9 @@ define([
             });
         });
 
-        // Modify the Copy pasted thing so that
-        // this works for choices test
-        describe("Choices Test", function(){
+        describe("Create Form Fields: Choices Test", function(){
             beforeEach(function(){
-                initSpies();
+                initSpies(this);
                 var opts = {}, field = this.form.fields.at(4);
                 _.extend(opts, this.form.toJSON(), {
                     model: field,
@@ -422,14 +424,10 @@ define([
                 expect(fixture.find(".choice-row").length).toEqual(field.get("extras").length);
                 expect(fixture.find(".choice-row").length).toEqual(3);
 
-
-                //expect(1).toEqual(0);
-
             });
 
             it("Shows the HTML elements of the choices", function(){
 
-                //*
                 var field = this.form.fields.at(4);
 
                 var choice_rows = fixture.find(".choice-row");
@@ -438,13 +436,10 @@ define([
                     var choice_name = $(choice_rows[i]).find(".choice").val();
                     expect(choice_name).toEqual(extras[i].name);
                 }
-                //*/
-                //expect(1).toEqual(0);
+
             });
 
             it ("Successfully adds a new choice to the list", function(){
-
-                //*
 
                 var field = this.form.fields.at(4);
                 fixture.find(".add-new-choice").trigger("click");
@@ -457,19 +452,13 @@ define([
 
                 extras = field.get("extras");
                 var lastIndexchoice = extras[extras.length - 1];
-                console.log(lastIndexchoice);
-                console.log(extras);
                 expect(field.get("extras").length).toEqual(4);
                 expect($(choice_rows[3]).find(".choice").val()).toEqual(lastIndexchoice.name);
-                //*/
-
-
-                //expect(1).toEqual(0);
 
             });
 
             it ("Successfully removes a choice from the list", function(){
-                //*
+
                 spyOn(window, 'confirm').and.returnValue(true);
                 var field = this.form.fields.at(4);
                 var choice_rows = fixture.find(".choice-row");
@@ -478,16 +467,11 @@ define([
 
                 var extras = field.get("extras");
                 expect(field.get("extras").length).toEqual(2);
-                //*/
-
-
-                //expect(1).toEqual(0);
 
             });
 
             it ("Edits Existing Choice", function(){
 
-                //*
                 var field = this.form.fields.at(4);
                 var choice_rows = fixture.find(".choice-row");
 
@@ -506,39 +490,31 @@ define([
 
                 expect($(choice_rows[2]).find(".choice").val()).not.toEqual(original_name);
 
-                //*/
-
-                //expect(1).toEqual(0);
-
             });
 
             it ("Detects user input error", function(){
 
-                //*
                 var field = this.form.fields.at(4);
                 fixture.find(".add-new-choice").trigger("click");
                 var extras = field.get("extras");
                 var choice_rows = fixture.find(".choice-row");
 
+                expect(Field.prototype.validateChoice).toHaveBeenCalledTimes(0);
+
 
                 fieldView.updateChoiceList();
-                fieldView.validateChoice();
+                fieldView.validateField();
 
                 extras = field.get("extras");
                 var lastIndexchoice = extras[extras.length - 1];
-                console.log(lastIndexchoice);
-                console.log(extras);
 
-                expect(lastIndexchoice.errorRatingName).toBeTruthy();
-                //*/
+                expect(Field.prototype.validateChoice).toHaveBeenCalledTimes(1);
 
-
-                //expect(1).toEqual(0);
-
+                expect(field.get('errorChoice')).toBeTruthy();
             });
 
             it ("Successfully saves the choice list", function(){
-                //*
+
                 var field = this.form.fields.at(4);
                 var choice_rows = fixture.find(".choice-row");
 
@@ -559,13 +535,69 @@ define([
 
                 for (var i = 0; i < extras.length; ++i){
                     expect($(choice_rows[i]).find(".choice").val()).toEqual(extras[i].name);
-
                     expect($(choice_rows[i]).find(".choice").val()).not.toEqual(original_extras[i].name);
                 }
 
-                //*/
-                //expect(1).toEqual(0);
-
             });
         });
+
+        describe("Create Form Fields: Validation Error Messages Without Form", function(){
+            beforeEach(function(){
+                initSpies(this);
+                createNewFieldViewNoParent(this);
+                fixture = setFixtures('<div></div>').append(fieldView.$el);
+            });
+
+            it ("Shows Unfilled Field Name and Type Error", function(){
+
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(0);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(0);
+                fixture = setFixtures("<div></div>").append(fieldView.$el);
+                fieldView.saveField();
+                fieldView.render();
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
+                expect(fieldView.$el).toContainElement(".errorMessage");
+                expect($(fieldView.$el.find('span')[0]).html()).toBe("Both field name and type are required");
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'Both field name and type are required');
+            });
+
+            it ("Shows Unfinished Rating Error", function(){
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(0);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(0);
+                expect(Field.prototype.validateRating).toHaveBeenCalledTimes(0);
+                fixture = setFixtures("<div></div>").append(fieldView.$el);
+                fixture.find(".fieldname").val("sample");
+                fieldView.$el.find(".fieldType").val("rating");
+                fixture.find(".add-new-rating").trigger("click");
+                fieldView.saveField();
+                var field = fieldView.model;
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
+                expect(Field.prototype.validateRating).toHaveBeenCalledTimes(2);
+                expect(field.get('errorMissingRatings')).toBeTruthy();
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'One or more ratings are needed for this field');
+            });
+
+            it ("Shows Unfinished Choice Error", function(){
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(0);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(0);
+                expect(Field.prototype.validateChoice).toHaveBeenCalledTimes(0);
+                fixture = setFixtures("<div></div>").append(fieldView.$el);
+                fixture.find(".fieldname").val("sample");
+                fieldView.$el.find("select").val("choice");
+                fixture.find(".add-new-choice").trigger("click");
+                fieldView.saveField();
+                fieldView.render();
+                var field = fieldView.model;
+                expect(FieldChildView.prototype.saveField).toHaveBeenCalledTimes(1);
+                expect(FieldChildView.prototype.validateField).toHaveBeenCalledTimes(1);
+                expect(Field.prototype.validateChoice).toHaveBeenCalledTimes(2);
+                expect(field.get('errorMissingChoices')).toBeTruthy();
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('error-message', 'One or more choices are needed for this field');
+            });
+
+
+        });
+
     });

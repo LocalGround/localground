@@ -49,7 +49,7 @@ define([
 
             });
         });
-        
+
         describe("When MapView is rendered", function () {
             beforeEach(function () {
                 initSpies();
@@ -58,9 +58,11 @@ define([
             });
 
             it("select should render correctly", function () {
+                console.log(fixture.find('option'))
+                // Unforntunately, there are html elements that have 'option'
                 expect(fixture).toContainElement("#map-select");
-                expect(fixture.find('option').length).toEqual(1);
-                expect(fixture.find('option').length).toEqual(this.maps.length);
+                expect(fixture.find('#map-select a').length).toEqual(1);
+                expect(fixture.find('#map-select a').length).toEqual(this.maps.length);
             });
 
             /*it("should have add button", function () {
@@ -96,47 +98,6 @@ define([
                 initFixtures();
             });
 
-            /*
-            it("Calls success function when save successful", function () {
-                expect(1).toEqual(-1);
-            });
-
-            it("Adds new map to the collection when save successful", function () {
-                expect(1).toEqual(-1);
-            });
-
-            it("Creates a collection (if it's undefinedMap) after map save", function () {
-                expect(1).toEqual(-1);
-            });
-
-            it("Sets this.app.currentMap when map save successful", function () {
-                //*****NOTE: this is the source of the "add layers" bug.
-                expect(1).toEqual(-1);
-            });
-
-            it("Sets this.app.currentMap when setModel method called", function () {
-                expect(1).toEqual(-1);
-            });
-
-            it("It renders / calles appropriate methods when drawOnce called.", function () {
-                expect(1).toEqual(-1);
-            });
-
-            it("when setActiveMap called, the appropriate properties are set and events are called", function () {
-                expect(1).toEqual(-1);
-            });
-
-            it("when showAddMapModal called, the appropriate properties are set and events are called", function () {
-                expect(1).toEqual(-1);
-            });
-
-            it("when setCenterZoom called, the appropriate properties are set and events are called", function () {
-                expect(1).toEqual(-1);
-            });
-
-            it("when setMapTypeId called, the appropriate properties are set and events are called", function () {
-                expect(1).toEqual(-1);
-            });*/
         });
 
         describe("Ensure that cases are handled when no map is defined:", function () {
@@ -144,7 +105,7 @@ define([
                 initSpies();
                 mapView = new SelectMapView({
                     app: this.app,
-                    collection: new Maps()
+                    collection: new Maps(null, { projectID: this.app.getProjectID() })
                 });
                 mapView.render();
                 initFixtures();
@@ -155,17 +116,6 @@ define([
                 mapView.collection.trigger('reset');
                 expect(mapView.app.currentMap).toBeUndefined();
 
-                //pretend that the new map modal just created a new map:
-                /*var mapModel = this.maps.at(0);
-                mapView.collection.add(mapModel);
-                mapModel.save();
-                var args = mapModel.mostRecentCall.args;
-                args[1].success();
-                expect(mapView.app.currentMap).toEqual(mapModel);*/
             });
-
-            /*it("displays message to user when no maps are defined", function () {
-                expect(fixture.find('p')).toHaveText("informational message about what to do");
-            });*/
         });
     });

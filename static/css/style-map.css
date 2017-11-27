@@ -181,16 +181,29 @@
 */
 
 .map-item, .selected-map-item {
-    padding: 4px 8px;
+    padding: 4px 11px;
 }
 
 .map-item p, .selected-map-item p {
-    display: inline-block
+    display: inline-block;
+    cursor: pointer;
 }
 
 .map-edit {
-    float: right;
+    margin-left: 5px;
     cursor: pointer;
+    padding-top: 1px;
+}
+
+.selected-map-item .map-preview {
+    padding: 2px 11px;
+}
+
+
+
+.map-dropdown {
+    float: right;
+    padding-top: 4px;
 }
 
 .map-list {
@@ -282,8 +295,9 @@
     background-color: white;
 }
 
-.map-select-option {
+.selected-map-name {
     font-weight: 400;
+    cursor: default;
 }
 
 
@@ -417,6 +431,10 @@ table.color-properties td:first-child {
     border-radius: 0 6px 6px 0;
 }
 
+.palette-item:only-child {
+    border-radius: 6px 6px 6px 6px;
+}
+
 .palette-wrapper {
     width: 200px;
     flex: 1;
@@ -511,4 +529,69 @@ table.color-properties td:first-child {
     text-decoration: underline;
     cursor: pointer;
     color: #666;
+}
+
+.selected-symbol-div {
+    padding: 2px 4px;
+    width: 30px;
+    background-color: white;
+}
+
+.selected-symbol-div:hover {
+    border: 1px solid #c7c7c7;
+    box-shadow: 0 2px 0px 0 rgba(0,0,0,.02);
+}
+
+.selected-symbol-div .fa-angle-down {
+    font-size: 11px;
+}
+
+.table-row {
+    height: 26px;
+}
+
+.symbols-layout-container {
+    min-width: 150px;
+    min-height: 150px;
+    background: white;
+    position: absolute;
+    text-align: left;
+}
+
+.ind-symbols-layout-container {
+    min-width: 150px;
+    min-height: 150px;
+    background: white;
+    position: absolute;
+    text-align: left;
+}
+
+.symbol-menu-tabs {
+    display: inline-block;
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 2px 15px;
+}
+
+.global-symbol-dropdown {
+    position: relative;
+}
+
+.ind-symbol-dropdown {
+    position: relative;
+    top: -16px;
+    left: 65px;
+    z-index: 100;
+}
+
+.title-td {
+    width: 85px;
+}
+
+.inactive-tab {
+    color: white;
+    background: #a2a2a2;
 }

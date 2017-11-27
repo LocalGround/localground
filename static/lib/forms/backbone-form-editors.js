@@ -184,6 +184,7 @@ define([
             this.app = this.form.app;
             this.listenTo(this.model, 'add-models-to-marker', this.attachModels);
             this.template = Handlebars.compile(MediaTemplate);
+            this.model.fetch({reset: true});
         },
         attachModels: function (models) {
             var errors = this.form.commit({ validate: true }),
@@ -213,6 +214,7 @@ define([
                     that.model.fetch({reset: true});
                 };
             for (i = 0; i < models.length; ++i) {
+                console.log(models[i]);
                 ordering = this.model.get("photo_count") + this.model.get("audio_count");
                 this.model.attach(models[i], (ordering + i + 1));
             }

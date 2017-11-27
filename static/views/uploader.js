@@ -33,7 +33,6 @@ define ([
                         "click" : "selectedClass"
                     },
                     selectedClass : function (e) {
-
                         if (!e.metaKey && !e.shiftKey){
                             $(".column").removeClass("selected-card");
                             this.model.collection.each(function(model){
@@ -153,20 +152,9 @@ define ([
             },
 
             displayMedia: function () {
-                if (this.currentMedia == "photos") {
-                    this.collection = new Photos();
-                }
-                else if (this.currentMedia == "audio") {
-                    this.collection = new Audio();
-
-                    // There must be a for loop to handle creation of the
-                    // audio players
-                }
-                // after you re-initialize the collection, you have to
-                // attach all of the Marionette default event handlers
-                // in order for this to work:
-                this._initialEvents();
-                this.collection.fetch({ reset: true });
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
+                this.collection.trigger('reset');
+                this.hideLoadingMessage();
             },
             changeToAudio: function () {
                 this.currentMedia = "audio";
@@ -179,7 +167,6 @@ define ([
             },
 
             addModels: function () {
-                console.log('uploader: addModels');
                 var selectedModels = [];
                 this.collection.each(function (model) {
                     if (model.get("isSelected")) {

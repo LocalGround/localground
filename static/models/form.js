@@ -7,6 +7,7 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
                 isVisible: false,
                 checked: false
             }),
+            errorMessage: null,
             urlRoot: '/api/0/forms/',
             initialize: function (data, opts) {
                 if (this.get("id")) {
@@ -26,6 +27,14 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
                 }
             },
 
+            validate(attrs, options){
+                if (!this.fields){
+                    this.trigger('error-message', "Cannot save with empty form or fields.");
+                    this.errorMessage = "Form must contain valid fields.";
+                    return this.errorMessage;
+                }
+            },
+
             createField: function (name, fieldType, displayField, ordering) {
                 var field = new Field(null, { id: this.get("id") }),
                     that = this;
@@ -33,10 +42,10 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
                 field.set("data_type", fieldType);
                 field.set("is_display_field", displayField);
                 field.set("ordering", ordering);
+                field.validate();
                 field.save(null, {
                     success: function () {
-                        //that.getFields();
-                        //that.fields.add(field);
+
                     },
                     error: function () {
                         console.error("Field is not saved");

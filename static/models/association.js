@@ -14,6 +14,7 @@ define(["models/base"], function (Base) {
             attachmentType: type of attached media ("photos" or "audio")
             attachmentID: attached media id (OPTIONAL)
             */
+			console.log(data);
             var model = data.model,
                 attachmentType = data.attachmentType,
                 attachmentID = data.attachmentID,
