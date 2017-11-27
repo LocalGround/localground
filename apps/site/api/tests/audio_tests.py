@@ -9,6 +9,7 @@ from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 from rest_framework import status
+from django.core.files import File
 
 
 def get_metadata():
@@ -38,6 +39,30 @@ ExtrasGood = '''{
 }'''
 
 
+def makeTmpFile():
+    import wave
+    import random
+    import struct
+
+    # Create dummy audio file:
+    tmp_file = open('/tmp/test.wav', 'w')
+    noise_output = wave.open(tmp_file, 'w')
+    noise_output.setparams((2, 2, 44100, 0, 'NONE', 'not compressed'))
+    values = []
+    SAMPLE_LEN = 44100 * 5
+
+    for i in range(0, SAMPLE_LEN):
+        value = random.randint(-32767, 32767)
+        packed_value = struct.pack('h', value)
+        values.append(packed_value)
+        values.append(packed_value)
+
+    value_str = ''.join(values)
+    noise_output.writeframes(value_str)
+    noise_output.close()
+    return tmp_file
+
+
 class ApiAudioListTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
@@ -62,28 +87,14 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_audio_using_post(self, **kwargs):
-        import tempfile
-        tmp_file = tempfile.NamedTemporaryFile(suffix='.wav')
-        noise_output = wave.open(tmp_file, 'w')
-        noise_output.setparams((2, 2, 44100, 0, 'NONE', 'not compressed'))
-        values = []
-        SAMPLE_LEN = 44100 * 5
-
-        for i in range(0, SAMPLE_LEN):
-            value = random.randint(-32767, 32767)
-            packed_value = struct.pack('h', value)
-            values.append(packed_value)
-            values.append(packed_value)
-
-        value_str = ''.join(values)
-        noise_output.writeframes(value_str)
-        noise_output.close()
+        tmp_file = makeTmpFile()
+        f = File(open('/tmp/test.wav'))
         author_string = 'Author of the media file'
         with open(tmp_file.name, 'rb') as data:
             response = self.client_user.post(
                 self.urls[0], {
                     'project_id': self.project.id,
-                    'media_file': data,
+                    'media_file': f,
                     'attribution': author_string,
                     'extras': ExtrasGood
                 },
