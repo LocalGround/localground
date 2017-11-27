@@ -148,6 +148,25 @@ class MediaGeometrySerializer(GeometrySerializer):
         return obj.encrypt_url(obj.file_name_new)
 
 
+class MediaGeometrySerializerNew(GeometrySerializer):
+    ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
+    media_file = serializers.CharField(
+        source='file_name_orig',
+        required=True,
+        style={'base_template': 'file.html'},
+        write_only=True,
+        help_text='Valid file types are: ' + ', '.join(ext_whitelist)
+    )
+    file_path = serializers.SerializerMethodField('get_file_path_new')
+
+    class Meta:
+        fields = GeometrySerializer.Meta.fields + \
+            ('attribution', 'media_file', 'file_path')
+
+    def get_file_path_new(self, obj):
+        obj.media_file.storage.location = obj.get_storage_location()
+        return obj.media_file.url
+
 
 class ExtentsSerializer(BaseNamedSerializer):
     project_id = fields.ProjectField(

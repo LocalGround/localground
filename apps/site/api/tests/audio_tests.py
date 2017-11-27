@@ -24,11 +24,8 @@ def get_metadata():
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         "caption": {"type": "memo", "required": False, "read_only": False},
-        "file_path_orig": {"type": "field", "required": False,
-                           "read_only": True},
         "attribution": {"type": "string", "required": False,
                         "read_only": False},
-        "file_name": {"type": "string", "required": False, "read_only": True},
         "media_file": {"type": "string", "required": True, "read_only": False},
         'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
