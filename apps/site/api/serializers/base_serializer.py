@@ -164,8 +164,11 @@ class MediaGeometrySerializerNew(GeometrySerializer):
             ('attribution', 'media_file', 'file_path')
 
     def get_file_path_new(self, obj):
-        obj.media_file.storage.location = obj.get_storage_location()
-        return obj.media_file.url
+        if obj.media_file:
+            obj.media_file.storage.location = obj.get_storage_location()
+            return obj.media_file.url
+        else:
+            return None
 
 
 class ExtentsSerializer(BaseNamedSerializer):

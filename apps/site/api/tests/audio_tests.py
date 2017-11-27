@@ -101,17 +101,13 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(file_name, new_audio.file_name_orig)
             # ensure not empty:
             self.assertTrue(len(new_audio.file_name_new) > 5)
-            self.assertEqual(settings.SERVER_HOST, new_audio.host)
-            self.assertNotEqual(path.find('/profile/audio/'), -1)
-            self.assertNotEqual(path.find(new_audio.host), -1)
-            self.assertTrue(len(path.split('/')[-2]) > 40)
 
 
 class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self, load_fixtures=True)
-        self.audio = models.Audio.objects.get(id=1)
+        ViewMixinAPI.setUp(self)
+        self.audio = self.create_audio()
         self.url = '/api/0/audio/%s/' % self.audio.id
         self.urls = [self.url]
         self.view = views.AudioInstance.as_view()
