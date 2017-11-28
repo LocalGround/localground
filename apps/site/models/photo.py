@@ -25,13 +25,13 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     file_name_small = models.CharField(max_length=255)
     file_name_marker_lg = models.CharField(max_length=255)
     file_name_marker_sm = models.CharField(max_length=255)
-    path_orig = models.FileField(null=True)
-    path_large = models.FileField(null=True)
-    path_medium = models.FileField(null=True)
-    path_medium_sm = models.FileField(null=True)
-    path_small = models.FileField(null=True)
-    path_marker_lg = models.FileField(null=True)
-    path_marker_sm = models.FileField(null=True)
+    media_file_orig = models.FileField(null=True)
+    media_file_large = models.FileField(null=True)
+    media_file_medium = models.FileField(null=True)
+    media_file_medium_sm = models.FileField(null=True)
+    media_file_small = models.FileField(null=True)
+    media_file_marker_lg = models.FileField(null=True)
+    media_file_marker_sm = models.FileField(null=True)
     device = models.CharField(max_length=255, blank=True, null=True)
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
@@ -55,6 +55,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
 
         # trying to make rough draft idea of new process file for images
+        path_to_orig = '/tmp/{0}'.format(file_name_orig)
         path_to_new = '/tmp/{0}'.format(file_name_new)
         media_path = upload_helpers.generate_absolute_path(owner, self.model_name_plural)
         with open(media_path + file_name_new, 'wb+') as destination:
@@ -107,15 +108,20 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.media_file_orig.save(file_name_new, File(open(path_to_new)))
         '''
         storage_location = self.get_storage_location(user=owner)
-        path_orig = storage_location
-        path_large = storage_location
-        path_medium = storage_location
-        path_medium_sm = storage_location
-        path_small = storage_location
-        path_marker_lg = storage_location
-        path_marker_sm = storage_location
+        self.media_file_orig.storage.location = storage_location
+        self.media_file_large.storage.location = storage_location
+        self.media_file_medium.storage.location = storage_location
+        self.media_file_medium_sm.storage.location = storage_location
+        self.media_file_small.storage.location = storage_location
+        self.media_file_marker_lg.storage.location = storage_location
+        self.media_file_marker_sm.storage.location = storage_location
 
         # Save filename to model
+        raise Exception(photo_paths)
+        self.media_file_orig.save(file_name_orig, \
+            File(open(photo_paths[0])))
+        self.media_file.save(file_name_new, File(open(path_to_mp3)))
+
         self.host = settings.SERVER_HOST
         self.file_name_orig = file.name
         self.name = name or file.name
