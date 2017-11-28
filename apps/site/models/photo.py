@@ -101,22 +101,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         file_name_marker_sm = photo_paths[6]['name']
 
         # set storage location
-        '''
-        # TODO: You need to create new model properties for this to work.
-        # Please see the Audio file
-        storage_location = \
-            self.get_storage_location(user=owner)
-        self.media_file.storage.location = storage_location
-        self.media_file_orig.storage.location = storage_location
-
-        # self.media_file.save(file_name_new, File(open(path_to_medium)))
-        # need to find way to convert each size into a path (?)
-
-        # Save to Amazon S3
-        # not sure about also saving the different sizes
-        # since they all derive from the original image
-        self.media_file_orig.save(file_name_new, File(open(path_to_new)))
-        '''
         storage_location = self.get_storage_location(user=owner)
         self.media_file_orig.storage.location = storage_location
         self.media_file_large.storage.location = storage_location
@@ -126,13 +110,32 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.media_file_marker_lg.storage.location = storage_location
         self.media_file_marker_sm.storage.location = storage_location
 
-        # Save filename to model
-        #raise Exception(photo_paths)
+        # Save to Amazon S3
         self.media_file_orig.save(
             photo_paths[0]['name'], File(open(photo_paths[0]['path']))
         )
+        self.media_file_large.save(
+            photo_paths[1]['name'], File(open(photo_paths[1]['path']))
+        )
+        self.media_file_medium.save(
+            photo_paths[2]['name'], File(open(photo_paths[2]['path']))
+        )
+        self.media_file_medium_sm.save(
+            photo_paths[3]['name'], File(open(photo_paths[3]['path']))
+        )
+        self.media_file_small.save(
+            photo_paths[4]['name'], File(open(photo_paths[4]['path']))
+        )
+        self.media_file_marker_lg.save(
+            photo_paths[5]['name'], File(open(photo_paths[5]['path']))
+        )
+        self.media_file_marker_sm.save(
+            photo_paths[6]['name'], File(open(photo_paths[6]['path']))
+        )
         '''
         John TODOs:
+
+        (DONE)
         1. Make sure that all of the thumbnailed images are posted to Amazon:
         * media_file_large
         * media_file_medium
@@ -141,6 +144,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         * media_file_marker_lg
         * media_file_marker_sm
 
+        (DONE?)
         2. Update Photos API Endpoint so that it's serving the Amazon verion of
         the files, not the filesystem ones
 
@@ -156,7 +160,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
            S3 versions of images
         '''
 
-        self.host = settings.SERVER_HOST
+        # Save file names to model
         self.file_name_orig = file.name
         self.name = name or file.name
         self.file_name_new = file_name_new
@@ -167,9 +171,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.file_name_marker_lg = photo_paths[5]['name']
         self.file_name_marker_sm = photo_paths[6]['name']
         self.content_type = ext.replace('.', '')
-        self.virtual_path = upload_helpers.generate_relative_path(
-            owner, self.model_name_plural
-        )
         self.save()
 
     # This method will eventually be erased
