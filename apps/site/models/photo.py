@@ -14,6 +14,8 @@ from localground.apps.site.api.realtime_serializers import PhotoRTSerializer
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.conf import settings
+import Image
+import ImageOps
 
 
 class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
@@ -38,23 +40,28 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
     def process_file(self, file, owner, name=None):
 
-        print(self.model_name_plural)
+        #raise Exception(self.model_name_plural)
 
         # get the orginal file name to successfully save
-        file_name_orig = upload_helpers.simplify_file_name(file)
-        base_name, ext = os.path.splitext(file_name_orig)
+        file_name_new = upload_helpers.simplify_file_name(file)
+        base_name, ext = os.path.splitext(file_name_new)
 
-        # create thumbnails:
-        media_path = upload_helpers.generate_absolute_path(owner, model_name_plural)
-        im = Image.open(media_path + '/' + file_name_new)
 
         # trying to make rough draft idea of new process file for images
-        path_to_orig = '/tmp/{0}'.format(file_name_orig)
+        path_to_new = '/tmp/{0}'.format(file_name_new)
+        media_path = upload_helpers.generate_absolute_path(owner, self.model_name_plural)
+        with open(media_path + file_name_new, 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
 
-        exif = cls.read_exif_data(im)
+        # create thumbnails:
+        im = Image.open(media_path + file_name_new)
+
+        exif = self.read_exif_data(im)
         sizes = [1000, 500, 250, 128, 50, 20]
         photo_paths = [file_name_new]
         for s in sizes:
+            file_name = '{0}_{1}'.format(base_name, s)
             if s in [50, 25]:
                 # ensure that perfect squares:
                 im.thumbnail((s * 2, s * 2), Image.ANTIALIAS)
@@ -76,6 +83,9 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         file_name_marker_sm = photo_paths[6],
 
         # set storage location
+        '''
+        # TODO: You need to create new model properties for this to work.
+        # Please see the Audio file
         storage_location = \
             self.get_storage_location(user=owner)
         self.media_file.storage.location = storage_location
@@ -87,13 +97,24 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         # Save to Amazon S3
         # not sure about also saving the different sizes
         # since they all derive from the original image
-        self.media_file_orig.save(file_name_orig, File(open(path_to_orig)))
+        self.media_file_orig.save(file_name_new, File(open(path_to_new)))
+        '''
 
         # Save filename to model
+        self.host = settings.SERVER_HOST
         self.file_name_orig = file.name
         self.name = name or file.name
         self.file_name_new = file_name_new
+        self.file_name_large = photo_paths[1]
+        self.file_name_medium = photo_paths[2]
+        self.file_name_medium_sm = photo_paths[3]
+        self.file_name_small = photo_paths[4]
+        self.file_name_marker_lg = photo_paths[5]
+        self.file_name_marker_sm = photo_paths[6]
         self.content_type = ext.replace('.', '')
+        self.virtual_path = upload_helpers.generate_relative_path(
+            owner, self.model_name_plural
+        )
         self.save()
 
     # This method will eventually be erased
