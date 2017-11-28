@@ -5,7 +5,7 @@ from localground.apps.site.api.serializers.marker_w_attrs_serializer import \
 from localground.apps.site.api.views.abstract_views import \
     QueryableListCreateAPIView
 from localground.apps.site import models
-
+from django.http import Http404
 
 class MarkerWAttrsGeometryMixin(object):
 
@@ -15,7 +15,8 @@ class MarkerWAttrsGeometryMixin(object):
         user-generated table being queried
         '''
         try:
-            form = models.Form.objects.get(id=1)
+            #form = models.Form.objects.get(id=1)
+            form = models.Form.objects.get(id=self.kwargs.get('form_id'))
         except models.Form.DoesNotExist:
             raise Http404
         return create_dynamic_serializer(form)
