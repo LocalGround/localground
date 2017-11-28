@@ -89,7 +89,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
                 im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
             else:
                 im.thumbnail((s, s), Image.ANTIALIAS)
-            abs_path = '%s/%s_%s%s' % (media_path, file_name, s, ext)
             im.save(abs_path) # this is where we want to save photos into the Amazon Cloud bucket
             #photo_paths.append('%s_%s%s' % (file_name, s, ext))
 
