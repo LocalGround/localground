@@ -47,9 +47,17 @@ class MarkerWAttrsGeometryMixin(object):
         return d
 
 
-class MarkerWAttrsList(QueryableListCreateAPIView, MarkerWAttrsGeometryMixin):
+class MarkerWAttrsList(MarkerWAttrsGeometryMixin, QueryableListCreateAPIView):
     filter_backends = (filters.SQLFilterBackend,)
     paginate_by = 100
+
+    '''def get_serializer_class(self, is_list=False):
+        try:
+            form = models.Form.objects.get(id=1)
+        except models.Form.DoesNotExist:
+            raise Http404
+        return create_dynamic_serializer(form)
+    '''
 
     def get_queryset(self):
         r = self.request

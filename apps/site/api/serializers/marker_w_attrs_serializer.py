@@ -39,8 +39,7 @@ def create_dynamic_serializer(form, **kwargs):
     """
     generate a dynamic serializer from dynamic model
     """
-    #return MarkerWAttrsSerializer
-    field_names, photo_fields, photo_details, audio_fields, audio_details = [], [], [], [], []
+    field_names = []
     display_field = None
 
     for field in form.fields:
@@ -66,6 +65,14 @@ def create_dynamic_serializer(form, **kwargs):
                     allow_null=True,
                     required=False)
             })
+        elif field.data_type.id == models.DataType.DataTypes.CHOICE:
+            attrs.update({
+                field.col_name: serializers.ChoiceField(
+                    source='attributes.' + field.col_name,
+                    allow_null=True,
+                    required=False,
+                    choices=('mural', 'sculpture'))
+            })
         else:
             attrs.update({
                 field.col_name: serializers.CharField(
@@ -82,4 +89,4 @@ def create_dynamic_serializer(form, **kwargs):
                 source=display_field.col_name, read_only=True)
         })
 
-    return type('dynamic_marker_serializer', (MarkerWAttrsSerializerMixin, ), attrs)
+    return type('DynamicMarkerSerializer', (MarkerWAttrsSerializerMixin, ), attrs)
