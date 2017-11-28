@@ -25,6 +25,13 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     file_name_small = models.CharField(max_length=255)
     file_name_marker_lg = models.CharField(max_length=255)
     file_name_marker_sm = models.CharField(max_length=255)
+    path_orig = models.FileField(null=True)
+    path_large = models.FileField(null=True)
+    path_medium = models.FileField(null=True)
+    path_medium_sm = models.FileField(null=True)
+    path_small = models.FileField(null=True)
+    path_marker_lg = models.FileField(null=True)
+    path_marker_sm = models.FileField(null=True)
     device = models.CharField(max_length=255, blank=True, null=True)
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
@@ -99,6 +106,14 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         # since they all derive from the original image
         self.media_file_orig.save(file_name_new, File(open(path_to_new)))
         '''
+        storage_location = self.get_storage_location(user=owner)
+        path_orig = storage_location
+        path_large = storage_location
+        path_medium = storage_location
+        path_medium_sm = storage_location
+        path_small = storage_location
+        path_marker_lg = storage_location
+        path_marker_sm = storage_location
 
         # Save filename to model
         self.host = settings.SERVER_HOST
