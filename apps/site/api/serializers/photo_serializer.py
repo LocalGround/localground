@@ -14,7 +14,7 @@ class PhotoSerializer(MediaGeometrySerializer):
     path_marker_lg = serializers.SerializerMethodField()
     path_marker_sm = serializers.SerializerMethodField()
 
-    #help_text='Valid file types are: ' + ', '.join(ext_whitelist)
+    # help_text='Valid file types are: ' + ', '.join(ext_whitelist)
 
     class Meta:
         model = models.Photo
@@ -50,16 +50,16 @@ class PhotoSerializer(MediaGeometrySerializer):
         # ensure filetype is valid:
         upload_helpers.validate_file(f, self.ext_whitelist)
 
-        # save it to disk
-        data = models.Photo.process_file(f, owner)
-        data.update(self.get_presave_create_dictionary())
-        data.update({
-            'attribution': validated_data.get('attribution') or owner.username,
-            'host': settings.SERVER_HOST
+        # Save it to Amazon S3 cloud
+        self.validated_data.update(self.get_presave_create_dictionary())
+        self.validated_data.update({
+            'attribution': validated_data.get('attribution') or owner.username
         })
-        data.update(validated_data)
-        self.instance = self.Meta.model.objects.create(**data)
+        self.instance = self.Meta.model.objects.create(**self.validated_data)
+        self.instance.process_file(f, owner)
         return self.instance
 
+
 class PhotoSerializerUpdate(PhotoSerializer):
-    media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
+    media_file = serializers.CharField(
+        source='file_name_orig', required=False, read_only=True)

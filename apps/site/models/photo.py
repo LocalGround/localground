@@ -38,7 +38,9 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
     def process_file(self, file, owner, name=None):
 
-        # get the oiginal file name to successfully save
+        print(self.model_name_plural)
+
+        # get the orginal file name to successfully save
         file_name_orig = upload_helpers.simplify_file_name(file)
         base_name, ext = os.path.splitext(file_name_orig)
 
@@ -83,6 +85,8 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         # need to find way to convert each size into a path (?)
 
         # Save to Amazon S3
+        # not sure about also saving the different sizes
+        # since they all derive from the original image
         self.media_file_orig.save(file_name_orig, File(open(path_to_orig)))
 
         # Save filename to model
