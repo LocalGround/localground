@@ -19,12 +19,16 @@ import ImageOps
 
 
 class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
+    # File System File fields (to be deleted eventually, after the full
+    # migration is completed Don't delete yet.)
     file_name_large = models.CharField(max_length=255)
     file_name_medium = models.CharField(max_length=255)
     file_name_medium_sm = models.CharField(max_length=255)
     file_name_small = models.CharField(max_length=255)
     file_name_marker_lg = models.CharField(max_length=255)
     file_name_marker_sm = models.CharField(max_length=255)
+
+    # S3 File fields
     media_file_orig = models.FileField(null=True)
     media_file_large = models.FileField(null=True)
     media_file_medium = models.FileField(null=True)
@@ -55,7 +59,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
 
         # trying to make rough draft idea of new process file for images
-        path_to_orig = '/tmp/{0}'.format(file_name_orig)
         path_to_new = '/tmp/{0}'.format(file_name_new)
         media_path = upload_helpers.generate_absolute_path(owner, self.model_name_plural)
         with open(media_path + file_name_new, 'wb+') as destination:
@@ -67,9 +70,17 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
         exif = self.read_exif_data(im)
         sizes = [1000, 500, 250, 128, 50, 20]
-        photo_paths = [file_name_new]
+        photo_paths = [{
+            'name': file_name_new,
+            'path': '{0}/{1}'.format(media_path, file_name_new)
+        }]
         for s in sizes:
-            file_name = '{0}_{1}'.format(base_name, s)
+            file_name = '{0}_{1}{2}'.format(base_name, s, ext)
+            abs_path = '{0}/{1}'.format(media_path, file_name)
+            photo_paths.append({
+                'name': file_name,
+                'path': '{0}/{1}'.format(media_path, file_name)
+            })
             if s in [50, 25]:
                 # ensure that perfect squares:
                 im.thumbnail((s * 2, s * 2), Image.ANTIALIAS)
@@ -80,15 +91,15 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
                 im.thumbnail((s, s), Image.ANTIALIAS)
             abs_path = '%s/%s_%s%s' % (media_path, file_name, s, ext)
             im.save(abs_path) # this is where we want to save photos into the Amazon Cloud bucket
-            photo_paths.append('%s_%s%s' % (file_name, s, ext))
+            #photo_paths.append('%s_%s%s' % (file_name, s, ext))
 
         # get all the links to the various sizes of the image
-        file_name_large = photo_paths[1],
-        file_name_medium = photo_paths[2],
-        file_name_medium_sm = photo_paths[3],
-        file_name_small = photo_paths[4],
-        file_name_marker_lg = photo_paths[5],
-        file_name_marker_sm = photo_paths[6],
+        file_name_large = photo_paths[1]['name'],
+        file_name_medium = photo_paths[2]['name'],
+        file_name_medium_sm = photo_paths[3]['name'],
+        file_name_small = photo_paths[4]['name'],
+        file_name_marker_lg = photo_paths[5]['name'],
+        file_name_marker_sm = photo_paths[6]['name']
 
         # set storage location
         '''
@@ -117,21 +128,45 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.media_file_marker_sm.storage.location = storage_location
 
         # Save filename to model
-        raise Exception(photo_paths)
-        self.media_file_orig.save(file_name_orig, \
-            File(open(photo_paths[0])))
-        self.media_file.save(file_name_new, File(open(path_to_mp3)))
+        #raise Exception(photo_paths)
+        self.media_file_orig.save(
+            photo_paths[0]['name'], File(open(photo_paths[0]['path']))
+        )
+        '''
+        John TODOs:
+        1. Make sure that all of the thumbnailed images are posted to Amazon:
+        * media_file_large
+        * media_file_medium
+        * media_file_medium_sm
+        * media_file_small
+        * media_file_marker_lg
+        * media_file_marker_sm
+
+        2. Update Photos API Endpoint so that it's serving the Amazon verion of
+        the files, not the filesystem ones
+
+        3. Fix tests and add new ones to ensure that S3 functionality is
+           working
+
+        4. On the delete method, remove all images from S3 before deleting the
+           record from the database.
+
+        5. Delete all filesystem code, *but KEEP THE OLD fields
+
+        6. If time, fix the rotation methods so that they pull from and update
+           S3 versions of images
+        '''
 
         self.host = settings.SERVER_HOST
         self.file_name_orig = file.name
         self.name = name or file.name
         self.file_name_new = file_name_new
-        self.file_name_large = photo_paths[1]
-        self.file_name_medium = photo_paths[2]
-        self.file_name_medium_sm = photo_paths[3]
-        self.file_name_small = photo_paths[4]
-        self.file_name_marker_lg = photo_paths[5]
-        self.file_name_marker_sm = photo_paths[6]
+        self.file_name_large = photo_paths[1]['name']
+        self.file_name_medium = photo_paths[2]['name']
+        self.file_name_medium_sm = photo_paths[3]['name']
+        self.file_name_small = photo_paths[4]['name']
+        self.file_name_marker_lg = photo_paths[5]['name']
+        self.file_name_marker_sm = photo_paths[6]['name']
         self.content_type = ext.replace('.', '')
         self.virtual_path = upload_helpers.generate_relative_path(
             owner, self.model_name_plural
