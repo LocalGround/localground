@@ -27,6 +27,15 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
 
+    # TODO: move this to a base class
+    def get_storage_location(self, user=None):
+        user = user or self.owner
+        return '/{0}/{1}/{2}/'.format(
+            settings.AWS_S3_MEDIA_BUCKET,
+            user.username,
+            self.model_name_plural
+        )
+
     def process_file(self, file, owner, name=None):
 
         # get the oiginal file name to successfully save
@@ -64,25 +73,26 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         file_name_marker_lg = photo_paths[5],
         file_name_marker_sm = photo_paths[6],
 
-        # create storage location
-        storage_location = '/{0}/{1}/{2}/'.format(
-            settings.AWS_S3_MEDIA_BUCKET,
-            owner.username,
-            self.model_name_plural
-        )
+        # set storage location
+        storage_location = \
+            self.get_storage_location(user=owner)
         self.media_file.storage.location = storage_location
         self.media_file_orig.storage.location = storage_location
 
         # self.media_file.save(file_name_new, File(open(path_to_medium)))
         # need to find way to convert each size into a path (?)
 
+        # Save to Amazon S3
         self.media_file_orig.save(file_name_orig, File(open(path_to_orig)))
+
+        # Save filename to model
         self.file_name_orig = file.name
         self.name = name or file.name
         self.file_name_new = file_name_new
         self.content_type = ext.replace('.', '')
         self.save()
 
+    # This method will eventually be erased
     @classmethod
     def process_file1(cls, file, owner):
         from PIL import Image, ImageOps
@@ -163,6 +173,15 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         '''
         return self.encrypt_url(self.file_name_large)
 
+    # Good basis for removing from S3 when saved in S3
+    # May be useful as abstract function from base
+    def remove_media_from_s3(self):
+        self.media_file.storage.location = self.get_storage_location()
+        self.media_file_orig.storage.location = self.get_storage_location()
+        self.media_file_orig.delete()
+        self.media_file.delete()
+
+    # This will eventually get deleted
     def remove_media_from_file_system(self):
         path = self.get_absolute_path()
         if len(path.split('/')) > 2:  # protects against empty file path
@@ -258,8 +277,13 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
             decoded = TAGS.get(tag, tag)
             d[decoded] = value
         '''
-        keys = ['DateTimeOriginal', 'DateTimeDigitized', 'DateTime', 'Model',
-                'Orientation', 'GPSInfo']
+        keys = ['DateTimeOriginal',
+                'DateTimeDigitized',
+                'DateTime',
+                'Model',
+                'Orientation',
+                'GPSInfo'
+               ]
         '''
         return_dict = {}
         if d.get('GPSInfo') is not None:
