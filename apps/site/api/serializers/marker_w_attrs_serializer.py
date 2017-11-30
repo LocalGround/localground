@@ -99,7 +99,7 @@ def create_dynamic_serializer(form, **kwargs):
                 source='attributes.' + field.col_name,
                 allow_null=True,
                 required=False,
-                format="iso-8601", 
+                format="iso-8601",
                 input_formats=None)
         })
     def createBooleanField():
@@ -136,8 +136,8 @@ def create_dynamic_serializer(form, **kwargs):
                     allow_null=True,
                     required=False)
             })
-        
-        
+
+
         # if field.data_type.id == models.DataType.DataTypes.INTEGER:
         #     attrs.update({
         #         field.col_name: serializers.IntegerField(
@@ -158,7 +158,7 @@ def create_dynamic_serializer(form, **kwargs):
         #             source='attributes.' + field.col_name,
         #             allow_null=True,
         #             required=False,
-        #             format="iso-8601", 
+        #             format="iso-8601",
         #             input_formats=None)
         #     })
         # elif field.data_type.id == models.DataType.DataTypes.BOOLEAN:
@@ -184,7 +184,7 @@ def create_dynamic_serializer(form, **kwargs):
         #             required=False)
         #     })
 
-        
+
         # error implementing choicefield. For potential help, see:
         # https://stackoverflow.com/questions/29248164/key-error-in-django-rest-framework-when-using-serializers-choicefield-with-tuple
         # elif field.data_type.id == models.DataType.DataTypes.CHOICE:
@@ -200,7 +200,7 @@ def create_dynamic_serializer(form, **kwargs):
         #             required=False,
         #             choices=choices)
         #     })
-        
+
         # else:
         #     attrs.update({
         #         field.col_name: serializers.CharField(
@@ -208,13 +208,15 @@ def create_dynamic_serializer(form, **kwargs):
         #             allow_null=True,
         #             required=False)
         #     })
-        
 
     # set custom display name field getter, according on the display_field:
     if display_field is not None:
+        def get_display_name(self, obj):
+            return obj.attributes.get(display_field.col_name)
+
         attrs.update({
-            'display_name': serializers.CharField(
-                source=display_field.col_name, read_only=True)
+            'display_name': serializers.SerializerMethodField(),
+            'get_display_name': get_display_name
         })
 
     return type('DynamicMarkerSerializer', (MarkerWAttrsSerializerMixin, ), attrs)
