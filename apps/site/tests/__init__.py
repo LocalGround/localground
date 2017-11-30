@@ -280,6 +280,41 @@ class ModelMixin(object):
         m.save()
         return m
 
+    def create_marker_w_attrs(self, user=None, project=None, 
+                    name="Test Marker With Attrs", geoJSON=None, point=None, 
+                    extras={"random key": "random value"},tags=[]):
+        from localground.apps.site import models
+        geom = None
+        user = user or self.user
+        project = project or self.project
+        if geoJSON is None and point is None:
+            from django.contrib.gis.geos import Point
+            lat = 37.87
+            lng = -122.28
+            geom = Point(lng, lat, srid=4326)
+        elif point:
+            geom = point
+        else:
+            from django.contrib.gis.geos import GEOSGeometry
+            geom = GEOSGeometry(json.dumps(geoJSON))
+
+        mwa = models.MarkerWithAttributes(
+            project=project,
+            name=name,
+            owner=user,
+            extras=extras,
+            last_updated_by=user,
+            tags=tags
+        )
+        if geom.geom_type == "Point":
+            mwa.point = geom
+        elif geom.geom_type == "LineString":
+            mwa.polyline = geom
+        else:
+            mwa.polygon = geom
+        mwa.save()
+        return mwa
+
     def get_marker(self, marker_id=1):
         from localground.apps.site import models
         return models.Marker.objects.get(id=marker_id)

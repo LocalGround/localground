@@ -8,6 +8,9 @@ import django.contrib.postgres.fields
 from django.conf import settings
 import django.contrib.postgres.fields.hstore
 import localground.apps.lib.helpers
+from django.contrib.postgres.fields import HStoreField
+from django.contrib.postgres.operations import HStoreExtension
+
 
 
 class Migration(migrations.Migration):
@@ -18,6 +21,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        HStoreExtension(),
         migrations.CreateModel(
             name='MarkerWithAttributes',
             fields=[

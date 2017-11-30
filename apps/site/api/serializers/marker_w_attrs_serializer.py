@@ -18,10 +18,14 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     the URL for ourselves:
     '''
     url = serializers.SerializerMethodField()#'get_url')
+    form = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         return '%s/api/0/forms/%s/data/%s' % \
                 (settings.SERVER_URL, obj.form.id, obj.id)
+
+    def get_form(self, obj):
+        return self.form.id
 
 
     class Meta:
@@ -34,6 +38,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
         # Override to handle HStore
         validated_data['attributes'] = HStoreDict(validated_data['attributes'])
         validated_data.update(self.get_presave_create_dictionary())
+        validated_data.update({'form': self.form})
         self.instance = self.Meta.model.objects.create(**validated_data)
         return self.instance
 
@@ -70,7 +75,8 @@ def create_dynamic_serializer(form, **kwargs):
 
     attrs = {
         '__module__': 'localground.apps.site.api.serializers.MarkerWAttrsSerializer',
-        'Meta': Meta
+        'Meta': Meta,
+        'form': form
     }
 
     def createIntField():
