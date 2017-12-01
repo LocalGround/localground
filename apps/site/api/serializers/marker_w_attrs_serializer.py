@@ -8,6 +8,17 @@ from django.conf import settings
 from django_hstore.dict import HStoreDict
 from rest_framework.settings import api_settings
 
+from rest_framework import serializers
+
+
+class ChoiceIntField(serializers.ChoiceField):
+
+    def to_internal_value(self, data):
+        try:
+            return int(data)
+        except e:
+            self.fail('integer required', input=data)
+
 
 class MarkerWAttrsSerializerMixin(GeometrySerializer):
     update_metadata = serializers.SerializerMethodField()
@@ -86,6 +97,30 @@ def create_dynamic_serializer(form, **kwargs):
                 allow_null=True,
                 required=False)
         })
+
+    def createChoiceField():
+        attrs.update({
+            field.col_name: serializers.ChoiceField(
+                source='attributes.' + field.col_name,
+                choices=list(
+                    map(lambda d: (d['name'], d['name']), field.extras)
+                ),
+                allow_null=True,
+                required=False)
+        })
+
+    def createRatingField():
+        # https://github.com/encode/django-rest-framework/issues/1755
+        attrs.update({
+            field.col_name: ChoiceIntField(
+                source='attributes.' + field.col_name,
+                choices=list(
+                    map(lambda d: (d['value'], d['name']), field.extras)
+                ),
+                allow_null=True,
+                required=False)
+        })
+
     def createTextField():
         attrs.update({
             field.col_name: serializers.CharField(
@@ -93,21 +128,24 @@ def create_dynamic_serializer(form, **kwargs):
                 allow_null=True,
                 required=False)
         })
+
     def createDateTimeField():
         attrs.update({
             field.col_name: serializers.DateTimeField(
                 source='attributes.' + field.col_name,
                 allow_null=True,
                 required=False,
-                format="iso-8601", 
+                format="iso-8601",
                 input_formats=None)
         })
+
     def createBooleanField():
         attrs.update({
             field.col_name: serializers.BooleanField(
                 source='attributes.' + field.col_name,
                 required=False)
         })
+
     def createDecimalField():
         attrs.update({
             field.col_name: serializers.DecimalField(
@@ -123,7 +161,8 @@ def create_dynamic_serializer(form, **kwargs):
         models.DataType.DataTypes.DATETIME: createDateTimeField,
         models.DataType.DataTypes.BOOLEAN: createBooleanField,
         models.DataType.DataTypes.DECIMAL: createDecimalField,
-        models.DataType.DataTypes.RATING: createIntField
+        models.DataType.DataTypes.RATING: createRatingField,
+        models.DataType.DataTypes.CHOICE: createChoiceField
     }
 
     for field in form.fields:
@@ -136,8 +175,8 @@ def create_dynamic_serializer(form, **kwargs):
                     allow_null=True,
                     required=False)
             })
-        
-        
+
+
         # if field.data_type.id == models.DataType.DataTypes.INTEGER:
         #     attrs.update({
         #         field.col_name: serializers.IntegerField(
@@ -158,7 +197,7 @@ def create_dynamic_serializer(form, **kwargs):
         #             source='attributes.' + field.col_name,
         #             allow_null=True,
         #             required=False,
-        #             format="iso-8601", 
+        #             format="iso-8601",
         #             input_formats=None)
         #     })
         # elif field.data_type.id == models.DataType.DataTypes.BOOLEAN:
@@ -184,7 +223,7 @@ def create_dynamic_serializer(form, **kwargs):
         #             required=False)
         #     })
 
-        
+
         # error implementing choicefield. For potential help, see:
         # https://stackoverflow.com/questions/29248164/key-error-in-django-rest-framework-when-using-serializers-choicefield-with-tuple
         # elif field.data_type.id == models.DataType.DataTypes.CHOICE:
@@ -200,7 +239,7 @@ def create_dynamic_serializer(form, **kwargs):
         #             required=False,
         #             choices=choices)
         #     })
-        
+
         # else:
         #     attrs.update({
         #         field.col_name: serializers.CharField(
@@ -208,13 +247,15 @@ def create_dynamic_serializer(form, **kwargs):
         #             allow_null=True,
         #             required=False)
         #     })
-        
 
     # set custom display name field getter, according on the display_field:
     if display_field is not None:
+        def get_display_name(self, obj):
+            return obj.attributes.get(display_field.col_name)
+
         attrs.update({
-            'display_name': serializers.CharField(
-                source=display_field.col_name, read_only=True)
+            'display_name': serializers.SerializerMethodField(),
+            'get_display_name': get_display_name
         })
 
     return type('DynamicMarkerSerializer', (MarkerWAttrsSerializerMixin, ), attrs)
