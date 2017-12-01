@@ -15,13 +15,23 @@ class PhotoSerializer(MediaGeometrySerializerNew):
     path_marker_lg = serializers.SerializerMethodField()
     path_marker_sm = serializers.SerializerMethodField()
 
+    '''
+    media_file_orig = models.FileField(null=True)
+    media_file_medium = models.FileField(null=True)
+    media_file_medium_sm = models.FileField(null=True)
+    media_file_small = models.FileField(null=True)
+    media_file_marker_lg = models.FileField(null=True)
+    media_file_marker_sm = models.FileField(null=True)
+    '''
+
     # help_text='Valid file types are: ' + ', '.join(ext_whitelist)
 
     class Meta:
         model = models.Photo
         fields = MediaGeometrySerializerNew.Meta.fields + (
             'path_large', 'path_medium', 'path_medium_sm',
-            'path_small', 'path_marker_lg', 'path_marker_sm'
+            'path_small', 'path_marker_lg', 'path_marker_sm',
+            'media_file_orig'
         )
         depth = 0
 
@@ -46,22 +56,22 @@ class PhotoSerializer(MediaGeometrySerializerNew):
         return self.instance
 
     def get_path_large(self, obj):
-        return obj.encrypt_url(obj.file_name_large)
+        return obj.media_file_large.url
 
     def get_path_medium(self, obj):
-        return obj.encrypt_url(obj.file_name_medium)
+        return obj.media_file_medium.url
 
     def get_path_medium_sm(self, obj):
-        return obj.encrypt_url(obj.file_name_medium_sm)
+        return obj.media_file_medium_sm.url
 
     def get_path_small(self, obj):
-        return obj.encrypt_url(obj.file_name_small)
+        return obj.media_file_small.url
 
     def get_path_marker_lg(self, obj):
-        return obj.encrypt_url(obj.file_name_marker_lg)
+        return obj.media_file_marker_lg.url
 
     def get_path_marker_sm(self, obj):
-        return obj.encrypt_url(obj.file_name_marker_sm)
+        return obj.media_file_marker_sm.url
 
 
 class PhotoSerializerUpdate(PhotoSerializer):
