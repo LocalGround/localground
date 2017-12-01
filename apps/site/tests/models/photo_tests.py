@@ -85,6 +85,8 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
             photo.process_file(File(data), user)
 
             for url in [
+                photo.media_file_orig.url,
+                photo.media_file.url,
                 photo.media_file_large.url,
                 photo.media_file_medium.url,
                 photo.media_file_medium_sm.url,
@@ -92,6 +94,7 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
                 photo.media_file_marker_lg.url,
                 photo.media_file_marker_sm.url
             ]:
+                print url
                 p = urlparse(url)
                 conn = httplib.HTTPConnection(p.netloc)
                 conn.request('HEAD', p.path)
@@ -109,9 +112,14 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
 
     def _test_photo_rotates(self, photo, rotate_function, **kwargs):
         import Image
-        raise Exception(self.model.media_file_orig.read())
-        img_path = '%s%s' % (photo.get_absolute_path(), photo.file_name_orig)
-        img = Image.open(img_path)
+        # 1. grabbing original Amazon file and saving it to local disk:
+        local_img = open('/tmp/thumb.jpg', 'wb+')
+        for chunk in photo.media_file_orig.read():
+            local_img.write(chunk)
+        local_img.close()
+
+        # 2. Open it with Image library
+        img = Image.open(local_img.name)
         (width, height) = img.size
 
         # check that the dimensions are as they should be:

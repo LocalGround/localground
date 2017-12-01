@@ -17,6 +17,35 @@ from django.conf import settings
 import Image
 import ImageOps
 
+'''
+John TODOs:
+
+(DONE)
+1. Make sure that all of the thumbnailed images are posted to Amazon:
+* media_file_large
+* media_file_medium
+* media_file_medium_sm
+* media_file_small
+* media_file_marker_lg
+* media_file_marker_sm
+
+(DONE)
+2. Update Photos API Endpoint so that it's serving the Amazon verion of
+the files, not the filesystem ones
+
+3. Fix tests and add new ones to ensure that S3 functionality is
+   working
+
+4. On the delete method, remove all images from S3 before deleting the
+   record from the database.
+
+5. Delete all filesystem code, *but KEEP THE OLD fields
+
+6. If time, fix the rotation methods so that they pull from and update
+   S3 versions of images
+'''
+
+
 
 class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     # File System File fields (to be deleted eventually, after the full
@@ -50,31 +79,27 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
             self.model_name_plural
         )
 
-    def process_file(self, file, owner, name=None):
+    def set_aws_storage_locations(self, owner):
+        storage_location = self.get_storage_location(user=owner)
+        self.media_file.storage.location = storage_location
+        self.media_file_orig.storage.location = storage_location
+        self.media_file_large.storage.location = storage_location
+        self.media_file_medium.storage.location = storage_location
+        self.media_file_medium_sm.storage.location = storage_location
+        self.media_file_small.storage.location = storage_location
+        self.media_file_marker_lg.storage.location = storage_location
+        self.media_file_marker_sm.storage.location = storage_location
 
-        #raise Exception(self.model_name_plural)
-
-        # get the orginal file name to successfully save
-        file_name_new = upload_helpers.simplify_file_name(file)
-        base_name, ext = os.path.splitext(file_name_new)
-
-
-        # trying to make rough draft idea of new process file for images
-        path_to_new = '/tmp/{0}'.format(file_name_new)
-        media_path = upload_helpers.generate_absolute_path(owner, self.model_name_plural)
-        with open(media_path + file_name_new, 'wb+') as destination:
-            for chunk in file.chunks():
-                destination.write(chunk)
-
-        # create thumbnails:
-        im = Image.open(media_path + file_name_new)
-
-        exif = self.read_exif_data(im)
+    def generate_thumbnails(self, owner, media_path, im):
+        self.set_aws_storage_locations(owner)
+        file_name = im.filename
+        base_name, ext = os.path.splitext(file_name)
         sizes = [1000, 500, 250, 128, 50, 20]
         photo_paths = [{
-            'name': file_name_new,
-            'path': '{0}/{1}'.format(media_path, file_name_new)
+            'name': base_name + ext,
+            'path': '{0}/{1}'.format(media_path, file_name)
         }]
+        raise Exception(file_name, media_path)
         for s in sizes:
             file_name = '{0}_{1}{2}'.format(base_name, s, ext)
             abs_path = '{0}/{1}'.format(media_path, file_name)
@@ -90,37 +115,12 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
                 im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
             else:
                 im.thumbnail((s, s), Image.ANTIALIAS)
-            im.save(abs_path) # this is where we want to save photos into the Amazon Cloud bucket
-            #photo_paths.append('%s_%s%s' % (file_name, s, ext))
-
-        # get all the links to the various sizes of the image
-        file_name_large = photo_paths[1]['name'],
-        file_name_medium = photo_paths[2]['name'],
-        file_name_medium_sm = photo_paths[3]['name'],
-        file_name_small = photo_paths[4]['name'],
-        file_name_marker_lg = photo_paths[5]['name'],
-        file_name_marker_sm = photo_paths[6]['name']
-
-        # set storage location
-        storage_location = self.get_storage_location(user=owner)
-        self.media_file.storage.location = storage_location
-        self.media_file_orig.storage.location = storage_location
-        self.media_file_large.storage.location = storage_location
-        self.media_file_medium.storage.location = storage_location
-        self.media_file_medium_sm.storage.location = storage_location
-        self.media_file_small.storage.location = storage_location
-        self.media_file_marker_lg.storage.location = storage_location
-        self.media_file_marker_sm.storage.location = storage_location
+            im.save(abs_path)
 
         # Save to Amazon S3
         self.media_file_orig.save(
             photo_paths[0]['name'], File(open(photo_paths[0]['path']))
         )
-        # This following statement works for media_file
-        # because it is tied with the amazon cloud storage
-        # now the next step is to investigate the path
-        # for all the other image sizes
-        # because they may not be linked to the amazon s3 cloud storage
         self.media_file.save(
             photo_paths[0]['name'], File(open(photo_paths[0]['path']))
         )
@@ -142,93 +142,34 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.media_file_marker_sm.save(
             photo_paths[6]['name'], File(open(photo_paths[6]['path']))
         )
+        self.content_type = ext.replace('.', '')
 
+    def process_file(self, file, owner, name=None):
+
+        # get the orginal file name to successfully save
+        file_name_new = upload_helpers.simplify_file_name(file)
+
+        path_to_new = '/tmp/{0}'.format(file_name_new)
+        media_path = upload_helpers.generate_absolute_path(owner, self.model_name_plural)
+        with open(media_path + file_name_new, 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+
+        file_path = media_path + file_name_new
+        im = Image.open(file_path)
+        exif = self.read_exif_data(im)
+        self.device = exif.get('model', None)
+        self.point = exif.get('point', None)
+
+        self.generate_thumbnails(owner, media_path, im)
         # lets find out if any path contains S3 links
         # raise Exception(photo_paths)
-        '''
-        John TODOs:
-
-        (DONE)
-        1. Make sure that all of the thumbnailed images are posted to Amazon:
-        * media_file_large
-        * media_file_medium
-        * media_file_medium_sm
-        * media_file_small
-        * media_file_marker_lg
-        * media_file_marker_sm
-
-        (DONE)
-        2. Update Photos API Endpoint so that it's serving the Amazon verion of
-        the files, not the filesystem ones
-
-        3. Fix tests and add new ones to ensure that S3 functionality is
-           working
-
-        4. On the delete method, remove all images from S3 before deleting the
-           record from the database.
-
-        5. Delete all filesystem code, *but KEEP THE OLD fields
-
-        6. If time, fix the rotation methods so that they pull from and update
-           S3 versions of images
-        '''
 
         # Save file names to model
         self.file_name_orig = file.name
         self.name = name or file.name
-        self.file_name_new = file_name_new
-        self.file_name_large = photo_paths[1]['name']
-        self.file_name_medium = photo_paths[2]['name']
-        self.file_name_medium_sm = photo_paths[3]['name']
-        self.file_name_small = photo_paths[4]['name']
-        self.file_name_marker_lg = photo_paths[5]['name']
-        self.file_name_marker_sm = photo_paths[6]['name']
-        self.content_type = ext.replace('.', '')
+
         self.save()
-
-    # This method will eventually be erased
-    @classmethod
-    def process_file1(cls, file, owner):
-        from PIL import Image, ImageOps
-        #save to disk:
-        model_name_plural = cls.model_name_plural
-        file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file)
-        file_name, ext = os.path.splitext(file_name_new)
-
-        # create thumbnails:
-        media_path = upload_helpers.generate_absolute_path(owner, model_name_plural)
-        im = Image.open(media_path + '/' + file_name_new)
-        exif = cls.read_exif_data(im)
-        sizes = [1000, 500, 250, 128, 50, 20]
-        photo_paths = [file_name_new]
-        for s in sizes:
-            if s in [50, 25]:
-                # ensure that perfect squares:
-                im.thumbnail((s * 2, s * 2), Image.ANTIALIAS)
-                im = im.crop([0, 0, s - 2, s - 2])
-                # for some reason, ImageOps.expand throws an error for some files:
-                im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
-            else:
-                im.thumbnail((s, s), Image.ANTIALIAS)
-            abs_path = '%s/%s_%s%s' % (media_path, file_name, s, ext)
-            im.save(abs_path) # this is where we want to save photos into the Amazon Cloud bucket
-            photo_paths.append('%s_%s%s' % (file_name, s, ext))
-
-        return {
-            'device': exif.get('model', None),
-            'point': exif.get('point', None),
-            'file_name_orig': file.name,
-            'name': file.name,
-            'file_name_new': file_name_new,
-            'file_name_large': photo_paths[1],
-            'file_name_medium': photo_paths[2],
-            'file_name_medium_sm': photo_paths[3],
-            'file_name_small': photo_paths[4],
-            'file_name_marker_lg': photo_paths[5],
-            'file_name_marker_sm': photo_paths[6],
-            'content_type': ext.replace('.', ''),
-            'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural)
-        }
 
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.file_name_orig)
@@ -309,12 +250,16 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         from PIL import Image, ImageOps
         import time
         timestamp = int(time.time())
-        media_path = self.get_absolute_path()
+        local_img = open('/tmp/thumb.jpg', 'wb+')
+        for chunk in self.media_file_orig.read():
+            local_img.write(chunk)
+        local_img.close()
+        media_path = local_img.name
         # somehow use the django default storage to open file from amazon
         # I believe it is more than
 
         # 1) do the rotation:
-        im = Image.open(media_path + self.file_name_new)
+        im = Image.open(media_path)
         file_name, ext = os.path.splitext(self.file_name_new)
         im = im.rotate(degrees)
         im.save(media_path + self.file_name_new)
