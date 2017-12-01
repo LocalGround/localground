@@ -287,6 +287,7 @@ class ModelMixin(object):
         geom = None
         user = user or self.user
         project = project or self.project
+        form = self.create_form()
         if geoJSON is None and point is None:
             from django.contrib.gis.geos import Point
             lat = 37.87
@@ -304,7 +305,12 @@ class ModelMixin(object):
             owner=user,
             extras=extras,
             last_updated_by=user,
-            tags=tags
+            tags=tags,
+            form=form,
+            attributes={
+                'color': 'white',
+                'age': '25'
+            }
         )
         if geom.geom_type == "Point":
             mwa.point = geom

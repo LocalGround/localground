@@ -89,7 +89,7 @@ class ViewMixinAPI(ModelMixin):
 
             # ensure that the two dictionaries are the same length:
             self.assertEqual(len(fields.keys()), len(self.metadata.keys()))
-
+            
             # ensure that field specs match:
             for key in self.metadata.keys():
                 try:
