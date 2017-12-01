@@ -17,6 +17,17 @@ def encrypt_media_path(host, model_name_plural, path):
         base64.b64encode(path)
     )
 
+'''
+It looks like there are files being uploaded to localground first
+before it is being modified to change the location and then
+upload the stuff to the amazon cloud server
+because file_root and user_media_dir points to
+the local server storage instead of the amazon s3 settings.
+
+Therefore, we have to make dradual changes
+that will transfer files to the cloud instead of keeping them
+inside the local server
+'''
 def get_absolute_path(virtual_path):
     return settings.FILE_ROOT + virtual_path
 

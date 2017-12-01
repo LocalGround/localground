@@ -29,6 +29,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     file_name_marker_sm = models.CharField(max_length=255)
 
     # S3 File fields
+    media_file = models.FileField(null=True)
     media_file_orig = models.FileField(null=True)
     media_file_large = models.FileField(null=True)
     media_file_medium = models.FileField(null=True)
@@ -102,6 +103,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
         # set storage location
         storage_location = self.get_storage_location(user=owner)
+        self.media_file.storage.location = storage_location
         self.media_file_orig.storage.location = storage_location
         self.media_file_large.storage.location = storage_location
         self.media_file_medium.storage.location = storage_location
@@ -112,6 +114,14 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
         # Save to Amazon S3
         self.media_file_orig.save(
+            photo_paths[0]['name'], File(open(photo_paths[0]['path']))
+        )
+        # This following statement works for media_file
+        # because it is tied with the amazon cloud storage
+        # now the next step is to investigate the path
+        # for all the other image sizes
+        # because they may not be linked to the amazon s3 cloud storage
+        self.media_file.save(
             photo_paths[0]['name'], File(open(photo_paths[0]['path']))
         )
         self.media_file_large.save(
@@ -132,6 +142,9 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.media_file_marker_sm.save(
             photo_paths[6]['name'], File(open(photo_paths[6]['path']))
         )
+
+        # lets find out if any path contains S3 links
+        # raise Exception(photo_paths)
         '''
         John TODOs:
 

@@ -129,6 +129,11 @@ class GeometrySerializer(BaseNamedSerializer):
             ('project_id', 'geometry', 'extras')
 
 
+'''
+This is the old version of the class, which is used
+to store media within its own server.
+However, it will be depricated eventually
+'''
 class MediaGeometrySerializer(GeometrySerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     file_name = serializers.CharField(source='file_name_new', required=False, read_only=True)
@@ -148,6 +153,12 @@ class MediaGeometrySerializer(GeometrySerializer):
         return obj.encrypt_url(obj.file_name_new)
 
 
+'''
+This is the new version of the class,
+which sends files to the Amazon S3 cloud storage
+to make uploading, changing, and removing files easier
+This will eventually replace the old class
+'''
 class MediaGeometrySerializerNew(GeometrySerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     media_file = serializers.CharField(

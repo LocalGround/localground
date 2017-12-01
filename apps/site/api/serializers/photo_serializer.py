@@ -1,12 +1,13 @@
 import os, sys
 from django.conf import settings
-from localground.apps.site.api.serializers.base_serializer import MediaGeometrySerializer
+from localground.apps.site.api.serializers.base_serializer \
+    import MediaGeometrySerializerNew
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.site.api.fields import FileField
 from localground.apps.lib.helpers import upload_helpers, generic
 
-class PhotoSerializer(MediaGeometrySerializer):
+class PhotoSerializer(MediaGeometrySerializerNew):
     path_large = serializers.SerializerMethodField()
     path_medium = serializers.SerializerMethodField()
     path_medium_sm = serializers.SerializerMethodField()
@@ -18,11 +19,31 @@ class PhotoSerializer(MediaGeometrySerializer):
 
     class Meta:
         model = models.Photo
-        fields = MediaGeometrySerializer.Meta.fields + (
+        fields = MediaGeometrySerializerNew.Meta.fields + (
             'path_large', 'path_medium', 'path_medium_sm',
             'path_small', 'path_marker_lg', 'path_marker_sm'
         )
         depth = 0
+
+    def create(self, validated_data):
+        # Overriding the create method to handle file processing
+        owner = self.context.get('request').user
+
+        # looks like media_file is the only one being saved
+        # onto the amazon cloud storage, but not the others
+        f = self.initial_data.get('media_file')
+
+        # ensure filetype is valid:
+        upload_helpers.validate_file(f, self.ext_whitelist)
+
+        # Save it to Amazon S3 cloud
+        self.validated_data.update(self.get_presave_create_dictionary())
+        self.validated_data.update({
+            'attribution': validated_data.get('attribution') or owner.username
+        })
+        self.instance = self.Meta.model.objects.create(**self.validated_data)
+        self.instance.process_file(f, owner)
+        return self.instance
 
     def get_path_large(self, obj):
         return obj.encrypt_url(obj.file_name_large)
@@ -41,23 +62,6 @@ class PhotoSerializer(MediaGeometrySerializer):
 
     def get_path_marker_sm(self, obj):
         return obj.encrypt_url(obj.file_name_marker_sm)
-
-    def create(self, validated_data):
-        # Overriding the create method to handle file processing
-        owner = self.context.get('request').user
-        f = self.initial_data.get('media_file')
-
-        # ensure filetype is valid:
-        upload_helpers.validate_file(f, self.ext_whitelist)
-
-        # Save it to Amazon S3 cloud
-        self.validated_data.update(self.get_presave_create_dictionary())
-        self.validated_data.update({
-            'attribution': validated_data.get('attribution') or owner.username
-        })
-        self.instance = self.Meta.model.objects.create(**self.validated_data)
-        self.instance.process_file(f, owner)
-        return self.instance
 
 
 class PhotoSerializerUpdate(PhotoSerializer):
