@@ -157,7 +157,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         * media_file_marker_lg
         * media_file_marker_sm
 
-        (DONE?)
+        (DONE)
         2. Update Photos API Endpoint so that it's serving the Amazon verion of
         the files, not the filesystem ones
 
@@ -310,6 +310,8 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         import time
         timestamp = int(time.time())
         media_path = self.get_absolute_path()
+        # somehow use the django default storage to open file from amazon
+        # I believe it is more than
 
         # 1) do the rotation:
         im = Image.open(media_path + self.file_name_new)

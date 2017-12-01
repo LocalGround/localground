@@ -30,8 +30,7 @@ class PhotoSerializer(MediaGeometrySerializerNew):
         model = models.Photo
         fields = MediaGeometrySerializerNew.Meta.fields + (
             'path_large', 'path_medium', 'path_medium_sm',
-            'path_small', 'path_marker_lg', 'path_marker_sm',
-            'media_file_orig'
+            'path_small', 'path_marker_lg', 'path_marker_sm'
         )
         depth = 0
 

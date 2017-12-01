@@ -16,6 +16,8 @@ from localground.apps.site import models
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.core.files import File
 import json
+import httplib
+from urlparse import urlparse
 
 
 import urllib
@@ -78,27 +80,22 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
                 'time_stamp': get_timestamp_no_milliseconds(),
                 'project': self.project
             }
-            attributes_from_processed_file = models.Photo.process_file(
-                File(data), user
-            )
-            photo_data.update(attributes_from_processed_file)
-            #photo = models.Photo.objects.get(id=response.get("id"))
-            #result.update(self.get_presave_create_dictionary())
-
             photo = models.Photo.objects.create(**photo_data)
             media_path = photo.get_absolute_path()
+            photo.process_file(File(data), user)
 
-            for file_name in [
-                photo.file_name_large,
-                photo.file_name_medium,
-                photo.file_name_medium_sm,
-                photo.file_name_small,
-                photo.file_name_marker_lg,
-                photo.file_name_marker_sm
+            for url in [
+                photo.media_file_large.url,
+                photo.media_file_medium.url,
+                photo.media_file_medium_sm.url,
+                photo.media_file_small.url,
+                photo.media_file_marker_lg.url,
+                photo.media_file_marker_sm.url
             ]:
-                self.assertTrue(len(file_name) > 4)
-                self.assertTrue(os.path.exists(
-                    '%s%s' % (media_path, file_name)))
+                p = urlparse(url)
+                conn = httplib.HTTPConnection(p.netloc)
+                conn.request('HEAD', p.path)
+                self.assertEqual(conn.getresponse().status, 200)
 
             return photo
 
@@ -112,6 +109,7 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
 
     def _test_photo_rotates(self, photo, rotate_function, **kwargs):
         import Image
+        raise Exception(self.model.media_file_orig.read())
         img_path = '%s%s' % (photo.get_absolute_path(), photo.file_name_orig)
         img = Image.open(img_path)
         (width, height) = img.size
