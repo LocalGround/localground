@@ -47,21 +47,27 @@ class PhotoSerializer(MediaGeometrySerializerNew):
         return self.instance
 
     def get_path_large(self, obj):
+        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_large.url
 
     def get_path_medium(self, obj):
+        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_medium.url
 
     def get_path_medium_sm(self, obj):
+        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_medium_sm.url
 
     def get_path_small(self, obj):
+        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_small.url
 
     def get_path_marker_lg(self, obj):
+        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_marker_lg.url
 
     def get_path_marker_sm(self, obj):
+        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_marker_sm.url
 
 

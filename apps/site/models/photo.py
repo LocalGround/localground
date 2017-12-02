@@ -69,8 +69,13 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
     def django_file_field_to_pil(self, file_field):
         import urllib
+        import cStringIO
+        #Retrieve our source image from a URL
         fp = urllib.urlopen(file_field.url)
-        s = StringIO(fp.read())
+
+        #Load the URL data into an image
+        s = cStringIO.StringIO(fp.read())
+
         return Image.open(s)
 
     def generate_thumbnail(self, im, size, file_name):
@@ -87,10 +92,8 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
     def generate_thumbnails(self, im, owner, file_name, replace=False):
         base_name, ext = os.path.splitext(file_name)
-        self.set_aws_storage_locations(owner)
-
-        # if replace:
-        #    self.remove_media_from_s3()
+        if replace:
+           self.remove_media_from_s3()
 
         self.media_file_orig.save(
             file_name,
@@ -127,6 +130,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.content_type = 'JPG'
 
     def process_file(self, file, owner, name=None):
+        self.set_aws_storage_locations(owner)
         im = Image.open(file)
 
         # read EXIF data:
@@ -166,7 +170,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.media_file_marker_sm.delete()
 
     def delete(self, *args, **kwargs):
-        #self.remove_media_from_s3()
+        self.remove_media_from_s3()
         super(Photo, self).delete(*args, **kwargs)
 
     def rotate_left(self, user):
@@ -177,7 +181,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
     def __rotate(self, user, degrees):
         # 1. retrieve file from S3 and convert to PIL image:
-        print self.media_file_orig.url
+        self.set_aws_storage_locations(self.owner)
         im = self.django_file_field_to_pil(self.media_file_orig)
 
         # 2. Do the rotation:
