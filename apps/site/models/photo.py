@@ -1,16 +1,12 @@
+import os
+import time
 from django.contrib.gis.db import models
 from django.conf import settings
 from localground.apps.site.managers import PhotoManager
 from localground.apps.site.models import ExtrasMixin, PointMixin, \
     BaseUploadedMedia
-from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-from localground.apps.lib.helpers import upload_helpers
-import os
 
-# from django.db import models # maybe excess?
 from django.core.files import File
-from django.core.files.base import ContentFile
-from django.conf import settings
 import Image
 import ImageOps
 from StringIO import StringIO
@@ -188,8 +184,12 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         im = im.rotate(degrees)
 
         # 3. Generate the thumbnails
+        base_name, ext = os.path.splitext(self.media_file_orig.name)
+        # and salt
+        base_name = base_name.split('_t')[0]
+        base_name += '_t' + str(time.time()).split('.')[0][5:]
         self.generate_thumbnails(
-            im, self.owner, self.media_file_orig.name, replace=True)
+            im, self.owner, base_name + ext, replace=True)
 
         # 3. Save:
         self.save()
