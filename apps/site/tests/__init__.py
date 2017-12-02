@@ -282,12 +282,12 @@ class ModelMixin(object):
 
     def create_marker_w_attrs(self, user=None, project=None, 
                     name="Test Marker With Attrs", geoJSON=None, point=None, 
-                    extras={"random key": "random value"},tags=[]):
+                    extras={"random key": "random value"},tags=[], form=None):
         from localground.apps.site import models
         geom = None
         user = user or self.user
         project = project or self.project
-        form = self.create_form()
+        form = form or self.create_form()
         if geoJSON is None and point is None:
             from django.contrib.gis.geos import Point
             lat = 37.87

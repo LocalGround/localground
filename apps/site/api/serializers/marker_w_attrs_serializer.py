@@ -47,7 +47,9 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
     def create(self, validated_data):
         # Override to handle HStore
-        validated_data['attributes'] = HStoreDict(validated_data['attributes'])
+        print('HELLO')
+        if 'attributes' in validated_data:
+            validated_data['attributes'] = HStoreDict(validated_data['attributes'])
         validated_data.update(self.get_presave_create_dictionary())
         validated_data.update({'form': self.form})
         self.instance = self.Meta.model.objects.create(**validated_data)
@@ -55,7 +57,9 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
     def update(self, instance, validated_data):
         # Override to handle HStore
-        validated_data['attributes'] = HStoreDict(validated_data['attributes'])
+        #print(validated_data)
+        if 'attributes' in validated_data:
+            validated_data['attributes'] = HStoreDict(validated_data['attributes'])
         validated_data.update(self.get_presave_update_dictionary())
         return super(MarkerWAttrsSerializerMixin, self).update(
             instance, validated_data
@@ -177,51 +181,7 @@ def create_dynamic_serializer(form, **kwargs):
             })
 
 
-        # if field.data_type.id == models.DataType.DataTypes.INTEGER:
-        #     attrs.update({
-        #         field.col_name: serializers.IntegerField(
-        #             source='attributes.' + field.col_name,
-        #             allow_null=True,
-        #             required=False)
-        #     })
-        # elif field.data_type.id == models.DataType.DataTypes.TEXT:
-        #     attrs.update({
-        #         field.col_name: serializers.CharField(
-        #             source='attributes.' + field.col_name,
-        #             allow_null=True,
-        #             required=False)
-        #     })
-        # elif field.data_type.id == models.DataType.DataTypes.DATETIME:
-        #     attrs.update({
-        #         field.col_name: serializers.DateTimeField(
-        #             source='attributes.' + field.col_name,
-        #             allow_null=True,
-        #             required=False,
-        #             format="iso-8601",
-        #             input_formats=None)
-        #     })
-        # elif field.data_type.id == models.DataType.DataTypes.BOOLEAN:
-        #     attrs.update({
-        #         field.col_name: serializers.BooleanField(
-        #             source='attributes.' + field.col_name,
-        #             required=False)
-        #     })
-        # elif field.data_type.id == models.DataType.DataTypes.DECIMAL:
-        #     attrs.update({
-        #         field.col_name: serializers.DecimalField(
-        #             source='attributes.' + field.col_name,
-        #             allow_null=True,
-        #             required=False,
-        #             max_digits=50,
-        #             decimal_places=10)
-        #     })
-        # elif field.data_type.id == models.DataType.DataTypes.RATING:
-        #     attrs.update({
-        #         field.col_name: serializers.IntegerField(
-        #             source='attributes.' + field.col_name,
-        #             allow_null=True,
-        #             required=False)
-        #     })
+
 
 
         # error implementing choicefield. For potential help, see:
@@ -240,13 +200,6 @@ def create_dynamic_serializer(form, **kwargs):
         #             choices=choices)
         #     })
 
-        # else:
-        #     attrs.update({
-        #         field.col_name: serializers.CharField(
-        #             source='attributes.' + field.col_name,
-        #             allow_null=True,
-        #             required=False)
-        #     })
 
     # set custom display name field getter, according on the display_field:
     if display_field is not None:
