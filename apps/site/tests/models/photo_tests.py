@@ -39,16 +39,9 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
     def tearDown(self):
         # delete method also removes files from file system:
         for photo in models.Photo.objects.all():
-            photo.remove_media_from_file_system()
+            photo.delete()
 
     def test_photo_file_thumbnail_generator_works(self, **kwargs):
-        """
-        Step 1: move process_file() from photo serializer to photo model
-        Step 2: instead of 'with open' post to api,
-            do 'with open' and directly call model.process_file()
-            (don't go through the api)
-        Step 3: refactor more to make photo model DRY. Dont repeat code in rotate()
-        """
 
         user = self.user
         project = self.project
@@ -59,19 +52,6 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
         tags = "j,k,l"
 
         with open(tmp_file, 'rb') as data:
-
-            '''
-            response = self.client_user.post(
-                '/api/0/photos/',
-                {
-                    'project_id': project.id,
-                    'media_file': data,
-                    'attribution': author_string,
-                    'tags': tags
-                },
-                HTTP_X_CSRFTOKEN=self.csrf_token
-            )
-            '''
             photo_data = {
                 'attribution': user.username,
                 'host': settings.SERVER_HOST,
@@ -94,7 +74,7 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
                 photo.media_file_marker_lg.url,
                 photo.media_file_marker_sm.url
             ]:
-                print url
+                #print url
                 p = urlparse(url)
                 conn = httplib.HTTPConnection(p.netloc)
                 conn.request('HEAD', p.path)
@@ -128,8 +108,8 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
 
         # rotate photo to the right:
         rotate_function(self.user)
-        img_path = '%s%s' % (photo.get_absolute_path(), photo.file_name_orig)
-        img = Image.open(img_path)
+        # img_path = '%s%s' % (photo.get_absolute_path(), photo.file_name_orig)
+        # img = Image.open(img_path)
         (width, height) = img.size
 
         # check that photo has rotated 90 degrees
