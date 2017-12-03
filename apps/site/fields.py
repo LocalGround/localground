@@ -20,4 +20,7 @@ class LGFileField(SaveMixin, models.FileField):
 
 
 class LGImageField(SaveMixin, models.ImageField):
-    pass
+
+    def __init__(self, verbose_name=None, name=None, upload_to='', storage=None, **kwargs):
+        super(LGImageField, self).__init__(self, instance, field, name)
+        raise Exception(instance)

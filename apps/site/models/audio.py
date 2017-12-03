@@ -16,16 +16,7 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
     media_file = LGFileField(null=True)
     objects = AudioManager()
 
-    # TODO: move this to a base class:
-    def get_storage_location(self, user=None):
-        user = user or self.owner
-        return '/{0}/{1}/{2}/'.format(
-            settings.AWS_S3_MEDIA_BUCKET,
-            user.username,
-            self.model_name_plural
-        )
-
-    def process_file(self, file, owner, name=None):
+    def process_file(self, file, name=None):
         file_name_orig = upload_helpers.simplify_file_name(file)
 
         base_name, ext = os.path.splitext(file_name_orig)
@@ -54,12 +45,6 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
                 (path_to_orig, path_to_mp3)
             result = os.popen(command)
 
-        # set storage location:
-        self.media_file.storage.location = \
-            self.get_storage_location(user=owner)
-        self.media_file_orig.storage.location = \
-            self.get_storage_location(user=owner)
-
         # Save to Amazon
         from django.core.files import File
         self.media_file_orig.save(file_name_orig, File(open(path_to_orig)))
@@ -73,8 +58,6 @@ class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.save()
 
     def remove_media_from_s3(self):
-        self.media_file.storage.location = self.get_storage_location()
-        self.media_file_orig.storage.location = self.get_storage_location()
         self.media_file_orig.delete()
         self.media_file.delete()
 

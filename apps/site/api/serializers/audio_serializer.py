@@ -6,13 +6,21 @@ from localground.apps.lib.helpers import upload_helpers
 
 
 class AudioSerializer(MediaGeometrySerializerNew):
+    path = serializers.SerializerMethodField()
+    path_orig = serializers.SerializerMethodField()
     ext_whitelist = [
         'm4a', 'mp3', 'mp4', 'mpeg', '3gp', 'aif', 'aiff', 'ogg', 'wav'
     ]
 
+    def get_path(self, obj):
+        return obj.media_file.url
+
+    def get_path_orig(self, obj):
+        return obj.media_file_orig.url
+
     class Meta:
         model = models.Audio
-        fields = MediaGeometrySerializerNew.Meta.fields
+        fields = MediaGeometrySerializerNew.Meta.fields + ('path', 'path_orig')
         depth = 0
 
     def create(self, validated_data):
@@ -28,7 +36,7 @@ class AudioSerializer(MediaGeometrySerializerNew):
             'attribution': validated_data.get('attribution') or owner.username
         })
         self.instance = self.Meta.model.objects.create(**self.validated_data)
-        self.instance.process_file(f, owner)
+        self.instance.process_file(f)
         return self.instance
 
 

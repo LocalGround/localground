@@ -10,6 +10,7 @@ from localground.apps.lib.helpers import upload_helpers, generic
 
 
 class PhotoSerializer(MediaGeometrySerializerNew):
+    path = serializers.SerializerMethodField()
     path_large = serializers.SerializerMethodField()
     path_medium = serializers.SerializerMethodField()
     path_medium_sm = serializers.SerializerMethodField()
@@ -20,7 +21,7 @@ class PhotoSerializer(MediaGeometrySerializerNew):
     class Meta:
         model = models.Photo
         fields = MediaGeometrySerializerNew.Meta.fields + (
-            'path_large', 'path_medium', 'path_medium_sm',
+            'path', 'path_large', 'path_medium', 'path_medium_sm',
             'path_small', 'path_marker_lg', 'path_marker_sm'
         )
         depth = 0
@@ -44,6 +45,9 @@ class PhotoSerializer(MediaGeometrySerializerNew):
         self.instance = self.Meta.model.objects.create(**self.validated_data)
         self.instance.process_file(f)
         return self.instance
+
+    def get_path(self, obj):
+        return obj.media_file_orig.url
 
     def get_path_large(self, obj):
         return obj.media_file_large.url
