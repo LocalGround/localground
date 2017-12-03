@@ -16,8 +16,6 @@ class PhotoSerializer(MediaGeometrySerializerNew):
     path_marker_lg = serializers.SerializerMethodField()
     path_marker_sm = serializers.SerializerMethodField()
 
-    # help_text='Valid file types are: ' + ', '.join(ext_whitelist)
-
     class Meta:
         model = models.Photo
         fields = MediaGeometrySerializerNew.Meta.fields + (
@@ -73,4 +71,4 @@ class PhotoSerializer(MediaGeometrySerializerNew):
 
 class PhotoSerializerUpdate(PhotoSerializer):
     media_file = serializers.CharField(
-        source='file_name_orig', required=False, read_only=True)
+        source='media_file_orig', required=False, read_only=True)

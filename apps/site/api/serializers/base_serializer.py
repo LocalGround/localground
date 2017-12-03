@@ -159,27 +159,21 @@ which sends files to the Amazon S3 cloud storage
 to make uploading, changing, and removing files easier
 This will eventually replace the old class
 '''
+
+
 class MediaGeometrySerializerNew(GeometrySerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     media_file = serializers.CharField(
-        source='file_name_orig',
+        source='media_file_orig',
         required=True,
         style={'base_template': 'file.html'},
         write_only=True,
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
-    file_path = serializers.SerializerMethodField('get_file_path_new')
 
     class Meta:
         fields = GeometrySerializer.Meta.fields + \
-            ('attribution', 'media_file', 'file_path')
-
-    def get_file_path_new(self, obj):
-        if obj.media_file:
-            obj.media_file.storage.location = obj.get_storage_location()
-            return obj.media_file.url
-        else:
-            return None
+            ('attribution', 'media_file')
 
 
 class ExtentsSerializer(BaseNamedSerializer):

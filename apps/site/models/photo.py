@@ -23,14 +23,13 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     file_name_marker_sm = models.CharField(max_length=255)
 
     # S3 File fields
-    media_file = models.FileField(null=True)
-    media_file_orig = models.FileField(null=True)
-    media_file_large = models.FileField(null=True)
-    media_file_medium = models.FileField(null=True)
-    media_file_medium_sm = models.FileField(null=True)
-    media_file_small = models.FileField(null=True)
-    media_file_marker_lg = models.FileField(null=True)
-    media_file_marker_sm = models.FileField(null=True)
+    media_file_orig = models.ImageField(null=True)
+    media_file_large = models.ImageField(null=True)
+    media_file_medium = models.ImageField(null=True)
+    media_file_medium_sm = models.ImageField(null=True)
+    media_file_small = models.ImageField(null=True)
+    media_file_marker_lg = models.ImageField(null=True)
+    media_file_marker_sm = models.ImageField(null=True)
     device = models.CharField(max_length=255, blank=True, null=True)
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
@@ -46,7 +45,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
 
     def set_aws_storage_locations(self, owner):
         storage_location = self.get_storage_location(user=owner)
-        self.media_file.storage.location = storage_location
         self.media_file_orig.storage.location = storage_location
         self.media_file_large.storage.location = storage_location
         self.media_file_medium.storage.location = storage_location
@@ -66,10 +64,10 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     def django_file_field_to_pil(self, file_field):
         import urllib
         import cStringIO
-        #Retrieve our source image from a URL
+        # Retrieve our source image from a URL
         fp = urllib.urlopen(file_field.url)
 
-        #Load the URL data into an image
+        # Load the URL data into an image
         s = cStringIO.StringIO(fp.read())
 
         return Image.open(s)
@@ -89,13 +87,9 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     def generate_thumbnails(self, im, owner, file_name, replace=False):
         base_name, ext = os.path.splitext(file_name)
         if replace:
-           self.remove_media_from_s3()
+            self.remove_media_from_s3()
 
         self.media_file_orig.save(
-            file_name,
-            self.pil_to_django_file(im, file_name)
-        )
-        self.media_file.save(
             file_name,
             self.pil_to_django_file(im, file_name)
         )
@@ -157,7 +151,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     def remove_media_from_s3(self):
         self.set_aws_storage_locations(self.owner)
         self.media_file_orig.delete()
-        self.media_file.delete()
         self.media_file_large.delete()
         self.media_file_medium.delete()
         self.media_file_medium_sm.delete()
