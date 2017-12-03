@@ -35,6 +35,13 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
 
+    def get_storage_location(self):
+        return '/{0}/{1}/{2}/'.format(
+            settings.AWS_S3_MEDIA_BUCKET,
+            self.owner.username,
+            self.model_name_plural
+        )
+
     def pil_to_django_file(self, im, file_name):
         from django.core.files.uploadedfile import InMemoryUploadedFile
         str_io = StringIO()

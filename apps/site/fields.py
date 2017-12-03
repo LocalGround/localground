@@ -14,13 +14,25 @@ class SaveMixin(object):
         # print self.storage.location
         return super(SaveMixin, self).pre_save(model_instance, add)
 
+    @property
+    def url(self):
+        raise Exception(self.instance)
+        self._require_file()
+        return self.storage.url(self.name)
+
 
 class LGFileField(SaveMixin, models.FileField):
-    pass
+    @property
+    def url(self):
+        raise Exception(self.instance)
+        self._require_file()
+        return self.storage.url(self.name)
 
 
 class LGImageField(SaveMixin, models.ImageField):
 
-    def __init__(self, verbose_name=None, name=None, upload_to='', storage=None, **kwargs):
-        super(LGImageField, self).__init__(self, instance, field, name)
-        raise Exception(instance)
+    @property
+    def url(self):
+        raise Exception(self.instance)
+        self._require_file()
+        return self.storage.url(self.name)

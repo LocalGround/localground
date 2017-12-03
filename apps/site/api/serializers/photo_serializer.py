@@ -18,6 +18,13 @@ class PhotoSerializer(MediaGeometrySerializerNew):
     path_marker_lg = serializers.SerializerMethodField()
     path_marker_sm = serializers.SerializerMethodField()
 
+    def __init__(self, *args, **kwargs):
+        super(PhotoSerializer, self).__init__(*args, **kwargs)
+        # Sets the storage location upon initialization:
+        if self.instance:
+            self.instance.media_file_orig.storage.location = \
+                self.instance.get_storage_location()
+
     class Meta:
         model = models.Photo
         fields = MediaGeometrySerializerNew.Meta.fields + (
