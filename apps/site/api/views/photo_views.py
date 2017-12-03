@@ -5,6 +5,7 @@ from localground.apps.site.api.views.abstract_views import MediaList, MediaInsta
 from localground.apps.site import models
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
 
 class PhotoFilter(django_filters.FilterSet):
@@ -36,7 +37,10 @@ def rotate_left(request, pk, format='html'):
     context = {'request': request}
     try:
         photo = models.Photo.objects.get(id=pk)
-        photo.rotate_left(request.user)
+        photo.rotate_left()
+        photo.last_updated_by = request.user
+        photo.time_stamp = get_timestamp_no_milliseconds()
+        photo.save()
 
         return Response(serializers.PhotoSerializer(photo, context=context).data,
                         status=status.HTTP_200_OK)
@@ -50,7 +54,10 @@ def rotate_right(request, pk, format='html'):
     context = {'request': request}
     try:
         photo = models.Photo.objects.get(id=pk)
-        photo.rotate_right(request.user)
+        photo.rotate_right()
+        photo.last_updated_by = request.user
+        photo.time_stamp = get_timestamp_no_milliseconds()
+        photo.save()
         return Response(serializers.PhotoSerializer(photo, context=context).data,
                         status=status.HTTP_200_OK)
     except models.Photo.DoesNotExist:

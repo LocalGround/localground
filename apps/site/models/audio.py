@@ -5,15 +5,15 @@ from localground.apps.site.models import BaseUploadedMedia
 from localground.apps.lib.helpers import upload_helpers
 import os
 import time
-from django.db import models
 from django.core.files import File
+from localground.apps.site.fields import LGFileField
 from django.core.files.base import ContentFile
 from django.conf import settings
 
 
 class Audio(ExtrasMixin, PointMixin, BaseUploadedMedia):
-    media_file_orig = models.FileField(null=True)
-    media_file = models.FileField(null=True)
+    media_file_orig = LGFileField(null=True)
+    media_file = LGFileField(null=True)
     objects = AudioManager()
 
     # TODO: move this to a base class:

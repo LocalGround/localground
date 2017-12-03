@@ -10,6 +10,7 @@ from django.core.files import File
 import Image
 import ImageOps
 from StringIO import StringIO
+from localground.apps.site.fields import LGImageField
 
 
 class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
@@ -23,35 +24,16 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     file_name_marker_sm = models.CharField(max_length=255)
 
     # S3 File fields
-    media_file_orig = models.ImageField(null=True)
-    media_file_large = models.ImageField(null=True)
-    media_file_medium = models.ImageField(null=True)
-    media_file_medium_sm = models.ImageField(null=True)
-    media_file_small = models.ImageField(null=True)
-    media_file_marker_lg = models.ImageField(null=True)
-    media_file_marker_sm = models.ImageField(null=True)
+    media_file_orig = LGImageField(null=True)
+    media_file_large = LGImageField(null=True)
+    media_file_medium = LGImageField(null=True)
+    media_file_medium_sm = LGImageField(null=True)
+    media_file_small = LGImageField(null=True)
+    media_file_marker_lg = LGImageField(null=True)
+    media_file_marker_sm = LGImageField(null=True)
     device = models.CharField(max_length=255, blank=True, null=True)
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
-
-    # TODO: move this to a base class
-    def get_storage_location(self, user=None):
-        user = user or self.owner
-        return '/{0}/{1}/{2}/'.format(
-            settings.AWS_S3_MEDIA_BUCKET,
-            user.username,
-            self.model_name_plural
-        )
-
-    def set_aws_storage_locations(self, owner):
-        storage_location = self.get_storage_location(user=owner)
-        self.media_file_orig.storage.location = storage_location
-        self.media_file_large.storage.location = storage_location
-        self.media_file_medium.storage.location = storage_location
-        self.media_file_medium_sm.storage.location = storage_location
-        self.media_file_small.storage.location = storage_location
-        self.media_file_marker_lg.storage.location = storage_location
-        self.media_file_marker_sm.storage.location = storage_location
 
     def pil_to_django_file(self, im, file_name):
         from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -84,7 +66,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
             im.thumbnail((size, size), Image.ANTIALIAS)
         return self.pil_to_django_file(im, file_name)
 
-    def generate_thumbnails(self, im, owner, file_name, replace=False):
+    def generate_thumbnails(self, im, file_name, replace=False):
         base_name, ext = os.path.splitext(file_name)
         if replace:
             self.remove_media_from_s3()
@@ -119,8 +101,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         )
         self.content_type = 'JPG'
 
-    def process_file(self, file, owner, name=None):
-        self.set_aws_storage_locations(owner)
+    def process_file(self, file, name=None):
         im = Image.open(file)
 
         # read EXIF data:
@@ -129,7 +110,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.point = exif.get('point', None)
 
         # generate thumbnails
-        self.generate_thumbnails(im, owner, file.name)
+        self.generate_thumbnails(im, file.name)
 
         # Save file names to model: Do we still need these fields?
         self.file_name_orig = file.name
@@ -149,7 +130,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     # Good basis for removing from S3 when saved in S3
     # May be useful as abstract function from base
     def remove_media_from_s3(self):
-        self.set_aws_storage_locations(self.owner)
         self.media_file_orig.delete()
         self.media_file_large.delete()
         self.media_file_medium.delete()
@@ -162,15 +142,14 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.remove_media_from_s3()
         super(Photo, self).delete(*args, **kwargs)
 
-    def rotate_left(self, user):
-        self.__rotate(user, degrees=90)
+    def rotate_left(self):
+        self.__rotate(degrees=90)
 
-    def rotate_right(self, user):
-        self.__rotate(user, degrees=270)
+    def rotate_right(self):
+        self.__rotate(degrees=270)
 
-    def __rotate(self, user, degrees):
+    def __rotate(self, degrees):
         # 1. retrieve file from S3 and convert to PIL image:
-        self.set_aws_storage_locations(self.owner)
         im = self.django_file_field_to_pil(self.media_file_orig)
 
         # 2. Do the rotation:
@@ -182,7 +161,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         base_name = base_name.split('_t')[0]
         base_name += '_t' + str(time.time()).split('.')[0][5:]
         self.generate_thumbnails(
-            im, self.owner, base_name + ext, replace=True)
+            im, base_name + ext, replace=True)
 
         # 3. Save:
         self.save()

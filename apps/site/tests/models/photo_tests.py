@@ -1,6 +1,7 @@
 from django import test
 import Image
-from django.contrib.gis.db.models import ImageField, CharField
+from django.contrib.gis.db.models import CharField
+from localground.apps.site.fields import LGImageField
 from localground.apps.site import models
 from localground.apps.site.tests.models.abstract_base_audit_tests import \
     BaseAuditAbstractModelClassTest
@@ -58,7 +59,7 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
             }
             photo = models.Photo.objects.create(**photo_data)
             media_path = photo.get_absolute_path()
-            photo.process_file(File(data), user)
+            photo.process_file(File(data))
         return photo
 
     def test_photo_rotates_right(self, **kwargs):
@@ -86,7 +87,7 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
         self.assertEqual(photo.media_file_orig.height, 100)
 
         # rotate photo to the right:
-        rotate_function(self.user)
+        rotate_function()
 
         # check that photo has rotated 90 degrees
         self.assertEqual(photo.media_file_orig.width, 100)
@@ -102,13 +103,13 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
     def test_model_properties(self, **kwargs):
         from localground.apps.site.models import BaseUploadedMedia
         for prop in [
-            ('media_file_orig', ImageField),
-            ('media_file_large', ImageField),
-            ('media_file_medium', ImageField),
-            ('media_file_medium_sm', ImageField),
-            ('media_file_small', ImageField),
-            ('media_file_marker_lg', ImageField),
-            ('media_file_marker_sm', ImageField),
+            ('media_file_orig', LGImageField),
+            ('media_file_large', LGImageField),
+            ('media_file_medium', LGImageField),
+            ('media_file_medium_sm', LGImageField),
+            ('media_file_small', LGImageField),
+            ('media_file_marker_lg', LGImageField),
+            ('media_file_marker_sm', LGImageField),
             ('device', CharField)
         ]:
             prop_name = prop[0]

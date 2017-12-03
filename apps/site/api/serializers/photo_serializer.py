@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 from django.conf import settings
 from localground.apps.site.api.serializers.base_serializer \
     import MediaGeometrySerializerNew
@@ -41,31 +42,25 @@ class PhotoSerializer(MediaGeometrySerializerNew):
             'attribution': validated_data.get('attribution') or owner.username
         })
         self.instance = self.Meta.model.objects.create(**self.validated_data)
-        self.instance.process_file(f, owner)
+        self.instance.process_file(f)
         return self.instance
 
     def get_path_large(self, obj):
-        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_large.url
 
     def get_path_medium(self, obj):
-        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_medium.url
 
     def get_path_medium_sm(self, obj):
-        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_medium_sm.url
 
     def get_path_small(self, obj):
-        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_small.url
 
     def get_path_marker_lg(self, obj):
-        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_marker_lg.url
 
     def get_path_marker_sm(self, obj):
-        obj.set_aws_storage_locations(obj.owner)
         return obj.media_file_marker_sm.url
 
 
