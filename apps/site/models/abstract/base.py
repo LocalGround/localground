@@ -41,8 +41,8 @@ class Base(models.Model):
             raise Exception(
                 'Either model_name or model_name_plural is required here.')
 
-        from django.db.models import loading
-        models = loading.get_models()
+        from django.apps import apps
+        models = apps.get_models()
         if model_name_plural:
             for m in models:
                 try:
