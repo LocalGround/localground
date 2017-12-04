@@ -37,6 +37,7 @@ def rotate_left(request, pk, format='html'):
     context = {'request': request}
     try:
         photo = models.Photo.objects.get(id=pk)
+        photo.media_file_orig.storage.location = photo.get_storage_location()
         photo.rotate_left()
         photo.last_updated_by = request.user
         photo.time_stamp = get_timestamp_no_milliseconds()
@@ -54,6 +55,7 @@ def rotate_right(request, pk, format='html'):
     context = {'request': request}
     try:
         photo = models.Photo.objects.get(id=pk)
+        photo.media_file_orig.storage.location = photo.get_storage_location()
         photo.rotate_right()
         photo.last_updated_by = request.user
         photo.time_stamp = get_timestamp_no_milliseconds()
