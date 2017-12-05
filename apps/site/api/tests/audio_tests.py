@@ -18,7 +18,6 @@ def get_metadata():
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False,
                          'type': 'field'},
-        'file_path': {'read_only': True, 'required': False, 'type': 'field'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
@@ -27,7 +26,12 @@ def get_metadata():
         "caption": {"type": "memo", "required": False, "read_only": False},
         "attribution": {"type": "string", "required": False,
                         "read_only": False},
-        "media_file": {"type": "string", "required": True, "read_only": False},
+        "media_file": {"type": "string", "required": True,
+                       "read_only": False},
+        "file_path": {"type": "field", "required": False,
+                      "read_only": True},
+        "file_path_orig": {"type": "field", "required": False,
+                           "read_only": True},
         'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
 
@@ -119,6 +123,9 @@ class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.audio = self.create_audio()
+        tmp_file = makeTmpFile()
+        f = File(open('/tmp/test.wav'))
+        self.audio.process_file(f)
         self.url = '/api/0/audio/%s/' % self.audio.id
         self.urls = [self.url]
         self.view = views.AudioInstance.as_view()
