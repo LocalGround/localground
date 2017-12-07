@@ -347,6 +347,7 @@ define([
 
                 expect($(rating_rows[3]).find(".rating-name").val()).toEqual(lastIndexRating.name);
                 expect($(rating_rows[3]).find(".rating-value").val()).toEqual(lastIndexRating.value.toString());
+                expect(FieldChildView.prototype.addNewRating).toHaveBeenCalledTimes(2)
                 expect(field.get("extras").length).toEqual(5);
             });
 
@@ -516,6 +517,7 @@ define([
                 fixture.find(".add-new-choice").trigger("click");
 
                 expect($(choice_rows[3]).find(".choice").val()).toEqual(lastIndexchoice.name);
+                expect(FieldChildView.prototype.addNewChoice).toHaveBeenCalledTimes(2)
                 expect(field.get("extras").length).toEqual(5);
             });
 
