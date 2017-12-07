@@ -30,6 +30,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     '''
     url = serializers.SerializerMethodField()#'get_url')
     form = serializers.SerializerMethodField()
+    name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
 
     def get_url(self, obj):
         return '%s/api/0/forms/%s/data/%s' % \
@@ -47,7 +48,6 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
     def create(self, validated_data):
         # Override to handle HStore
-        print('HELLO')
         if 'attributes' in validated_data:
             validated_data['attributes'] = HStoreDict(validated_data['attributes'])
         validated_data.update(self.get_presave_create_dictionary())
@@ -115,6 +115,7 @@ def create_dynamic_serializer(form, **kwargs):
 
     def createRatingField():
         # https://github.com/encode/django-rest-framework/issues/1755
+        #print(field.extras)
         attrs.update({
             field.col_name: ChoiceIntField(
                 source='attributes.' + field.col_name,
@@ -124,12 +125,14 @@ def create_dynamic_serializer(form, **kwargs):
                 allow_null=True,
                 required=False)
         })
+        #print(list(map(lambda d: (d['value'], d['name']), field.extras)))
 
     def createTextField():
         attrs.update({
             field.col_name: serializers.CharField(
                 source='attributes.' + field.col_name,
                 allow_null=True,
+                allow_blank=True,
                 required=False)
         })
 
@@ -147,7 +150,7 @@ def create_dynamic_serializer(form, **kwargs):
         attrs.update({
             field.col_name: serializers.BooleanField(
                 source='attributes.' + field.col_name,
-                required=False)
+                required=False,)
         })
 
     def createDecimalField():

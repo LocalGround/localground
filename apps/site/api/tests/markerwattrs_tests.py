@@ -21,7 +21,14 @@ def get_metadata():
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'},
-        'form': {'read_only': True, 'required': False, 'type': 'field'}
+        'form': {'read_only': True, 'required': False, 'type': 'field'},
+        'field_1': {'read_only': False, 'required': False, 'type': 'string'},
+        'field_2': {'read_only': False, 'required': False, 'type': 'integer'},
+        'field_3': {'read_only': False, 'required': False, 'type': 'datetime'},
+        'field_4': {'read_only': False, 'required': False, 'type': 'boolean'},
+        'field_5': {'read_only': False, 'required': False, 'type': 'decimal'},
+        'field_6': {'read_only': False, 'required': False, 'type': 'choice'},
+        'field_7': {'read_only': False, 'required': False, 'type': 'choice'}
     }
 
 class DataMixin(object):
@@ -65,15 +72,162 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         ViewMixinAPI.setUp(self)
         self.view = views.MarkerWAttrsList.as_view()
         self.metadata = get_metadata()
-        self.form = self.create_form()
-        self.markerwattrs = self.create_marker_w_attrs(self.user, self.project, form=self.form)
-        self.urls = ['/api/0/forms/%s/data/' % self.form.id]
+        form = self.create_form_with_fields(num_fields=7)
+        self.markerwattrs = self.create_marker_w_attrs(self.user, self.project, form=form)
+        self.urls = ['/api/0/forms/%s/data/' % form.id]
 
     def tearDown(self):
         # delete method also removes files from file system:
         models.Photo.objects.all().delete()
         models.Audio.objects.all().delete()
 
+    def test_post_individual_attrs(self):
+        for d in [
+            {'field_1': 'field_1 text'},
+            {'field_2': '77'}, # should not be a string?
+            #{'field_3': '1990-12-31T23:59:60Z'}, #Can't get DateTime to work
+            {'field_4': 'true'}, # should not be a string?
+            {'field_5': '43124.543252'},
+            {'field_6': '2'},
+            {'field_7': 'Independent'}
+        ]:
+            default_data = {
+                'project_id': self.project.id
+            }
+            default_data.update(d)
+            urls = self.urls
+            for url in urls:
+                url = url + '?project_id={0}'.format(self.project.id)
+                response = self.client_user.post(
+                    url,
+                    data=urllib.urlencode(default_data),
+                    HTTP_X_CSRFTOKEN=self.csrf_token,
+                    content_type="application/x-www-form-urlencoded"    
+                )
+                new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
+                #print(models.MarkerWithAttributes.objects.all())
+                #print(response.data)
+                self.assertEqual(
+                    new_marker.attributes[d.keys()[0]], d.values()[0]
+                )
+                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_post_many_attributes(self):
+        hstore_data = {
+            'field_1': 'field_1 text',
+            'field_2': '77',
+            #'field_3': '1990-12-31T23:59:60Z', #Can't get DateTime to work
+            'field_4': 'true',
+            'field_5': '43124.543252',
+            'field_6': '2',
+            'field_7': 'Independent'
+        }
+        dict_len = len(hstore_data)
+
+        data = {
+                'project_id': self.project.id
+        }
+        data.update(hstore_data)
+
+        urls = self.urls
+        for url in urls:
+                url = url + '?project_id={0}'.format(self.project.id)
+                response = self.client_user.post(
+                    url,
+                    data=urllib.urlencode(data),
+                    HTTP_X_CSRFTOKEN=self.csrf_token,
+                    content_type="application/x-www-form-urlencoded"    
+                )
+                new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
+                #print(models.MarkerWithAttributes.objects.all())
+                #print(response.data)
+                
+                # print(new_marker.attributes)
+                # print(new_marker.id)
+                for i in range(0, dict_len):
+                    self.assertEqual(
+                        new_marker.attributes[hstore_data.keys()[i]], hstore_data.values()[i]
+                    )
+                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_post_fails_w_invalid_attrs(self):
+        for d in [
+            #{'field_1': 33},
+            {'field_2': 'some text'}, 
+            #{'field_3': '1990-12-31T23:59:60Z'}, #Can't get DateTime to work
+            {'field_4': 'invalid text'}, # should not be a string?
+            {'field_5': 'invalid text'},
+            # {'field_6': 'nothing'}, # problems with ChoiceIntField exception handling
+            {'field_7': 'Invalid text'}
+        ]:
+            default_data = {
+                'project_id': self.project.id
+            }
+            default_data.update(d)
+            urls = self.urls
+            for url in urls:
+                url = url + '?project_id={0}'.format(self.project.id)
+                response = self.client_user.post(
+                    url,
+                    data=urllib.urlencode(default_data),
+                    HTTP_X_CSRFTOKEN=self.csrf_token,
+                    content_type="application/x-www-form-urlencoded"    
+                )
+                new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
+                #print(models.MarkerWithAttributes.objects.all())
+                #print(response.data)
+                '''
+                self.assertEqual(
+                    new_marker.attributes[d.keys()[0]], d.values()[0]
+                )
+                '''
+                # print('failed for: ', d.keys()[0], response.status_code)
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                # print('failure test passed for: ', d.keys()[0])
+
+    def test_allow_null_posts(self):
+        # having difficulty getting Django to allow null values, 
+        # esp. for numerical entries
+        hstore_data = {
+            'field_1': '',
+            #'field_2': None,
+            #'field_3': '1990-12-31T23:59:60Z', #Can't get DateTime to work
+            #'field_4': False,
+            #'field_5': None,
+        }
+        dict_len = len(hstore_data)
+
+        data = {
+                'project_id': self.project.id
+        }
+        data.update(hstore_data)
+
+        urls = self.urls
+        for url in urls:
+                url = url + '?project_id={0}'.format(self.project.id)
+                response = self.client_user.post(
+                    url,
+                    data=urllib.urlencode(data),
+                    HTTP_X_CSRFTOKEN=self.csrf_token,
+                    content_type="application/x-www-form-urlencoded"    
+                )
+                new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
+                #print(models.MarkerWithAttributes.objects.all())
+                # print('response: ', response.data)
+                # print()
+                # print('marker attrs: ', new_marker.attributes)
+                # print(new_marker.id)
+                for i in range(0, dict_len):
+                    self.assertEqual(
+                        new_marker.attributes[hstore_data.keys()[i]], hstore_data.values()[i]
+                    )
+                
+                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+                
+
+
+    '''
     def test_page_500_status_basic_user(self, urls=None, **kwargs):
         if urls is None:
             urls = self.urls
@@ -84,6 +238,7 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 response.status_code,
                 status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+    '''
 
     def test_page_200_status_basic_user(self, urls=None, **kwargs):
         for url in self.urls:
@@ -161,9 +316,11 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     response.status_code,
                     status.HTTP_400_BAD_REQUEST)
 
+    
+    # new_marker.name always returns 'None'
     def test_create_marker_point_line_poly_using_post(self, **kwargs):
         for i, url in enumerate(self.urls):
-            name = 'New Marker 1'
+            name = 'MWA'
             description = 'Test description1'
             for k in ['Point', 'LineString', 'Polygon']:
                 geom = getattr(self, k)
@@ -183,6 +340,9 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     print('196: ', response.data)
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
+                #print(models.MarkerWithAttributes.objects.all().order_by('-id',))
+                #print(new_marker.id)
+                #print(response.data)
                 self.assertEqual(new_marker.name, name)
                 self.assertEqual(new_marker.description, description)
                 self.assertEqual(
@@ -194,21 +354,223 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 self.assertEqual(
                     new_marker.extras, json.loads(self.ExtrasGood)
                 )
+        
 
 
 class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.view = views.MarkerWAttrsInstance.as_view()
+        form = self.create_form_with_fields(num_fields=7)
         self.metadata = get_metadata()
-        self.markerwattrs = self.create_marker_w_attrs(self.user, self.project)
+        self.markerwattrs = self.create_marker_w_attrs(self.user, self.project, form=form)
         self.urls = ['/api/0/forms/%s/data/%s/' % \
             (self.markerwattrs.form.id, self.markerwattrs.id)]
+        self.list_url = '/api/0/forms/%s/data/' % form.id
+        self.hstore_data = [
+            {'field_1': 'field_1 text'},
+            {'field_2': '77'}, # should not be a string?
+            #{'field_3': '1990-12-31T23:59:60Z'}, #Can't get DateTime to work
+            {'field_4': 'true'}, # should not be a string?
+            #{'field_5': '43124.543252'}, 
+            {'field_6': '2'},
+            {'field_7': 'Independent'}
+        ]
 
-    #def tearDown(self):
+    def tearDown(self):
         # delete method also removes files from file system:
         models.Photo.objects.all().delete()
         models.Audio.objects.all().delete()
+
+    def post_hstore_data(self, hstore_data):
+        mwa_ids = []
+        posted_data = {} 
+        for d in hstore_data:
+            default_data = {
+                'project_id': self.project.id,
+                'geometry': self.Point,
+                'caption': 'this is the caption text'
+            }
+            default_data.update(d)
+            
+            url = self.list_url + '?project_id={0}'.format(self.project.id)
+            response = self.client_user.post(
+                url,
+                data=urllib.urlencode(default_data),
+                HTTP_X_CSRFTOKEN=self.csrf_token,
+                content_type="application/x-www-form-urlencoded"    
+            )
+            new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
+           
+            self.assertEqual(
+                new_marker.attributes[d.keys()[0]], d.values()[0]
+            )
+  
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+            # store values for upcoming test
+            mwa_ids.append(new_marker.id)
+            posted_data[new_marker.id] = [d.keys()[0], d.values()[0]]
+
+            # return some information about the newly created markers
+        return mwa_ids, posted_data
+
+    def test_get(self):
+        
+        # run  self.post_hstore_data() and get info
+        mwa_ids, posted_data = self.post_hstore_data(self.hstore_data)
+
+        # now, test GET for each new marker
+        for marker_id in mwa_ids:
+            response = self.client_user.get(self.list_url + '%s/' % marker_id)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+            # test contains the key/attribute
+            self.assertTrue(posted_data[marker_id][0] in response.data)
+
+            # test key/attribute value is correct
+            # having to cast to string and make everything lowercase to get matches
+            # ...seems like the wrong approach
+            self.assertEqual(
+                str(response.data[posted_data[marker_id][0]]).lower(), 
+                posted_data[marker_id][1].lower())
+
+    
+    def test_put(self):
+        # run  self.post_hstore_data() and get info
+        mwa_ids, posted_data = self.post_hstore_data(self.hstore_data)
+
+        new_hstore_data_dict = {
+            'field_1': 'new field_1 text',
+            'field_2': '88', # should not be a string?
+            #'field_3': '2002-12-31T23:59:60Z', #Can't get DateTime to work
+            'field_4': 'false', # should not be a string?
+            #'field_5': '7777.7777', 
+            'field_6': '1',
+            'field_7': 'Democrat'
+        }
+
+
+        # now, test PUT for each new marker (replace)
+        for marker_id in mwa_ids:
+
+            # first just check for some pre-existing default data
+            marker = models.MarkerWithAttributes.objects.get(id=marker_id)
+            '''
+            self.assertEqual(
+                json.loads(marker.geometry.geojson), 
+                self.Point
+            )
+            '''
+
+            self.assertEqual(
+                marker.description,
+                'this is the caption text'
+            )
+
+            url = self.list_url + '%s/' % marker_id
+            key = posted_data[marker_id][0]
+            new_data_item = new_hstore_data_dict[key]
+            new_data = {
+                key: new_data_item,
+                'caption': None,
+            }
+
+            response = self.client_user.put(
+                    url,
+                    data=urllib.urlencode(new_data),
+                    HTTP_X_CSRFTOKEN=self.csrf_token,
+                    content_type="application/x-www-form-urlencoded")
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            # print(new_data)
+            # print(response.data)
+            # print(response.status_code)
+            # print('   ')
+            # test contains the hstore key/attribute
+            self.assertTrue(posted_data[marker_id][0] in response.data)
+
+            # test hstore key/attribute value is correct
+            # having to cast to string and make everything lowercase to get matches
+            # ...seems like the wrong approach
+            self.assertEqual(
+                str(response.data[posted_data[marker_id][0]]).lower(), 
+                new_data_item.lower())
+
+            # finally, check that other fields are replaced (nulled)
+            marker = models.MarkerWithAttributes.objects.get(id=marker_id)
+            self.assertEqual(marker.description, 'None')
+            self.assertEqual(response.data['caption'], 'None')
+            '''
+            self.assertEqual(marker.geometry.geojson, None)
+            self.assertEqual(response.data['geometry'], None)
+            '''
+
+    
+    def test_patch(self):
+        # run  self.post_hstore_data() and get info
+        mwa_ids, posted_data = self.post_hstore_data(self.hstore_data)
+
+        new_hstore_data_dict = {
+            'field_1': 'new field_1 text',
+            'field_2': '88', # should not be a string?
+            #'field_3': '2002-12-31T23:59:60Z', #Can't get DateTime to work
+            'field_4': 'false', # should not be a string?
+            #'field_5': '7777.7777', 
+            'field_6': '1',
+            'field_7': 'Democrat'
+        }
+
+        # now, test PATCH for each new marker (replace)
+        for marker_id in mwa_ids:
+
+            # first just check for some pre-existing default data
+            marker = models.MarkerWithAttributes.objects.get(id=marker_id)
+            self.assertEqual(
+                json.loads(marker.geometry.geojson), 
+                self.Point
+            )
+
+            self.assertEqual(
+                marker.description,
+                'this is the caption text'
+            )
+
+            url = self.list_url + '%s/' % marker_id
+            key = posted_data[marker_id][0]
+            new_data_item = new_hstore_data_dict[key]
+            new_data = {key: new_data_item}
+
+            response = self.client_user.patch(
+                    url,
+                    data=urllib.urlencode(new_data),
+                    HTTP_X_CSRFTOKEN=self.csrf_token,
+                    content_type="application/x-www-form-urlencoded")
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            # print(new_data)
+            # print(response.data)
+            # print('   ')
+            # test contains the hstore key/attribute
+            self.assertTrue(posted_data[marker_id][0] in response.data)
+
+            # test hstore key/attribute value is correct
+            # having to cast to string and make everything lowercase to get matches
+            # ...seems like the wrong approach
+            self.assertEqual(
+                str(response.data[posted_data[marker_id][0]]).lower(), 
+                new_data_item.lower())
+
+            # finally, check that other fields have not been replaced (nulled)
+            marker = models.MarkerWithAttributes.objects.get(id=marker_id)
+            self.assertEqual(marker.description, 'this is the caption text')
+            self.assertEqual(response.data['caption'], 'this is the caption text')
+            self.assertEqual(json.loads(marker.geometry.geojson), self.Point)
+            self.assertEqual(response.data['geometry'], self.Point)
+            
+            
+
 
     def test_something(self):
         self.assertAlmostEqual(1, 1)
@@ -293,54 +655,3 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             # clean up:
             self.delete_relation(self.markerwattrs, self.photo1)
             self.delete_relation(self.markerwattrs, self.audio1)
-
-
-'''
-OrderedDict([
-    ('url', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', True), (u'label', u'Url')])), 
-    
-    ('id', OrderedDict([(u'type', u'integer'), (u'required', False), (u'read_only', True), (u'label', u'ID')])), 
-    
-    ('name', OrderedDict([(u'type', u'string'), (u'required', False), (u'read_only', False), (u'label', u'Name'), (u'max_length', 255)])), 
-    
-    ('caption', OrderedDict([(u'type', 'memo'), (u'required', False), (u'read_only', False), (u'label', u'caption')])), 
-    
-    ('overlay_type', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', True), (u'label', u'Overlay type')])), 
-    
-    ('tags', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', False), (u'label', u'tags'), (u'help_text', u'Tag your object here')])), 
-    
-    ('owner', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', True), (u'label', u'Owner')])), 
-    
-    ('project_id', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', False), (u'label', u'Project id'), (u'choices', [{u'display_name': u'652. My First Project', u'value': u'652'}, {u'display_name': u'653. Test Project', u'value': u'653'}])])), 
-    
-    ('geometry', OrderedDict([(u'type', 'geojson'), (u'required', False), (u'read_only', False), (u'label', u'Geometry'), (u'help_text', u'Assign a GeoJSON string')])), 
-    
-    ('extras', OrderedDict([(u'type', 'json'), (u'required', False), (u'read_only', False), (u'label', u'Extras'), (u'help_text', u'Store arbitrary key / value pairs here in JSON form. Example: {"key": "value"}')])), 
-    
-    ('form', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', True), (u'label', u'Form')]))])
-
-OrderedDict([
-    ('url', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', True), (u'label', u'Url')])), 
-
-    ('id', OrderedDict([(u'type', u'integer'), (u'required', False), (u'read_only', True), (u'label', u'ID')])), 
-    
-    ('name', OrderedDict([(u'type', u'string'), (u'required', False), (u'read_only', False), (u'label', u'Name'), (u'max_length', 255)])), 
-    
-    ('caption', OrderedDict([(u'type', 'memo'), (u'required', False), (u'read_only', False), (u'label', u'caption')])), 
-    
-    ('overlay_type', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', True), (u'label', u'Overlay type')])), 
-    
-    ('tags', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', False), (u'label', u'tags'), (u'help_text', u'Tag your object here')])), 
-    
-    ('owner', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', True), (u'label', u'Owner')])), 
-    
-    ('data_url', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', True), (u'label', u'Data url')])), 
-    
-    ('fields_url', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', True), (u'label', u'Fields url')])), 
-    
-    ('project_id', OrderedDict([(u'type', u'field'), (u'required', True), (u'read_only', False), (u'label', u'Project id'), (u'choices', [{u'display_name': u'664. My First Project', u'value': u'664'}, {u'display_name': u'665. Test Project', u'value': u'665'}])])), 
-    
-    ('fields', OrderedDict([(u'type', u'field'), (u'required', False), (u'read_only', True), (u'label', u'Fields')]))])
-
-
-'''

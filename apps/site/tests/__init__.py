@@ -306,11 +306,7 @@ class ModelMixin(object):
             extras=extras,
             last_updated_by=user,
             tags=tags,
-            form=form,
-            attributes={
-                'color': 'white',
-                'age': '25'
-            }
+            form=form
         )
         if geom.geom_type == "Point":
             mwa.point = geom
@@ -426,16 +422,25 @@ class ModelMixin(object):
                              project=project)
         for i in range(0, num_fields):
             field_name = 'Field %s' % (i + 1)
-            if i == 0: field_name = 'name'
+            #if i == 0: field_name = 'name'
             fld = self.create_field(name=field_name,
                                 data_type=DataType.objects.get(id=(i + 1)),
                                 ordering=(i + 1),
                                 form=f)
+            if i+1 == 6:
+                fld.extras = [{"name": "Bad", "value": 1},
+                              {"name": "Ok", "value": 2},
+                              {"name": "Good", "value": 3}]
+
+            if i+1 == 7:
+                fld.extras = [{"name": "Democrat"},
+                              {"name": "Republican"},
+                              {"name": "Independent"}]
             fld.save()
         f.remove_table_from_cache()
         return f
 
-    def create_field(self, form, name='Field 1',
+    def create_field(self, form, name='Field 1', extras=None,
                      data_type=None, ordering=1, is_display_field=False):
         from localground.apps.site import models
         data_type = data_type or DataType.objects.get(id=1)
@@ -446,7 +451,8 @@ class ModelMixin(object):
             is_display_field=is_display_field,
             form=form,
             owner=self.user,
-            last_updated_by=self.user
+            last_updated_by=self.user,
+            extras=extras
         )
         f.save()
         return f

@@ -26,28 +26,14 @@ class MarkerWithAttributes(ExtrasMixin, PointMixin, ProjectMixin, NamedMixin,
     attributes = HStoreField(default={})
 
     class Meta:
-        verbose_name = 'marker'
-        verbose_name_plural = 'markers'
+        verbose_name = 'marker with attributes'
+        verbose_name_plural = 'marker with attributes'
         ordering = ['id']
         app_label = 'site'
 
     @property
     def geometry(self):
         return self.point or self.polyline or self.polygon
-
-    @classmethod
-    def create_instance(cls, user, project, lat, lng, name=None):
-        from django.contrib.gis.geos import Point
-        marker = Marker()
-        marker.project = project
-        marker.owner = user
-        marker.color = 'CCCCCC'
-        marker.last_updated_by = user
-        marker.point = Point(lng, lat, srid=4326)
-        if name is not None:
-            marker.name = name
-        marker.save()
-        return marker
 
     def get_name(self):
         if self.name is None or len(self.name) == 0:
