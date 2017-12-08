@@ -2,10 +2,10 @@
 #title          :setup.sh
 #description    :LocalGround configuration and installation script
 #author         :brian@newday.host
-#date           :20171011
+#date           :20171208
 #version        :0.1.4
 #usage          :./localground.sh
-#notes          : make symlink
+#notes          : break up script to includes.
 #bash_version   :4.3.48(1)-release
 #============================================================================
 
@@ -194,7 +194,7 @@ echo -e $"MAPBOX_API_KEY: $MAPBOX_API_KEY \n" | tee -a "$log_file"
 
 #Google Oauth 2
 read -p "Enter your SOCIAL_AUTH_GOOGLE_OAUTH2_KEY [google_oauth]: " googleoauth
-	SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=${googleoauth:-google_oauth}
+									SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=${googleoauth:-google_oauth}
 echo -e $"SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: $SOCIAL_AUTH_GOOGLE_OAUTH2_KEY \n" | tee -a "$log_file"
 
 #Google Oauth 2 Secret
@@ -316,107 +316,7 @@ fi
 #
 ## TODO: Check Qualys SSL afterwards for privacy score. https://github.com/ssllabs/ssllabs-scan/
 
-echo -e $"CONFIG: TLS Encryption." | tee -a "$log_file"
-
-## Check if SSL snippets directory exists or not.
-    echo -e $"CHECK: /etc/nginx/snippets/" | tee -a "$log_file"
-if ! [ -d /etc/nginx/snippets/ ]; then
-	### create the directory
-	mkdir /etc/nginx/snippets/
-	### give permission to snippets dir
-	chmod 755 /etc/nginx/snippets/
-fi
-    echo -e $"✓ SUCCESS: Directory '/etc/nginx/snippets/' created! \n" | tee -a "$log_file"
-
-## DEV = TRUE
-# Generate SSL cert
-# Set public .crt file, private .pem file, and dhparam file locations
-
-if [ "$development" = true ] ; then
-	## Generate weak Diffie-Helman key (for Perfect Forward Secrecy).
-	echo -e $"CONFIG: Now Generating weak Diffie-Helman key." | tee -a "$log_file"
-	/usr/bin/openssl dhparam -out /etc/ssl/certs/dhparam.pem 1024
-	echo -e $"✓ SUCCESS: Installed Diffie-Helman key! \n" | tee -a "$log_file"
-
-	## Self signed crt
-	echo -e $"CONFIG: Now Generating weak Self Singed Cert." | tee -a "$log_file"
-	/usr/bin/openssl req -x509 -newkey rsa:2048 -keyout /etc/ssl/certs/key.pem -out /etc/ssl/certs/cert.pem -days 365 -nodes -subj "/C=US/ST=California/L=Berkeley/O=Local Ground/OU=Org/CN=dev.localground.org"
-	echo -e $"✓ SUCCESS: Installed Self Signed certificate! \n" | tee -a "$log_file"
-
-	## Set locations to variables
-	ssl_cert="/etc/ssl/certs/cert.pem"
-	ssl_key="/etc/ssl/certs/key.pem"
-	dhparam="/etc/ssl/certs/dhparam.pem"
-fi
-
-## DEV = False
-# INSTALL certbot
-# Obtain SSL cert
-# Set public .crt file, private .pem file, and dhparam file locations
-
-if [ "$development" = false ] ; then
-	echo -e $"CONFIG: Now Installing Certbot." | tee -a "$log_file"
-	apt-get install software-properties-common -y
-	add-apt-repository ppa:certbot/certbot -y
-	apt-get update
-	apt-get install python-certbot-nginx -y
-	echo -e $"✓ SUCCESS: Installed Certbot! \n" | tee -a "$log_file"
-
-	## Generate strong Diffie-Helman key (for Perfect Forward Secrecy).
-	echo -e $"CONFIG: Now Generating strong Diffie-Helman key." | tee -a "$log_file"
-#	/usr/bin/openssl dhparam -out /etc/ssl/certs/dhparam.pem 4096
-	echo -e $"✓ SUCCESS Installed Diffie-Helman key! \n" | tee -a "$log_file"
-
-	## Generate TLS cert.
-	echo -e $"CONFIG: Now installing Let's Encrypt TLS certificate." | tee -a "$log_file"
-	certbot certonly --agree-tos --no-eff-email -m $emailaddr --standalone -d $domain || { echo 'cerbot failed' ; exit 1; }
-	echo -e $"✓ SUCCESS: Installed Let's Encrypt TLS certificate! \n" | tee -a "$log_file"
-
-	## Set locations to variables
-	ssl_cert="/etc/letsencrypt/live/$domain/fullchain.pem"
-	ssl_key="/etc/letsencrypt/live/$domain/privkey.pem"
-	dhparam="/etc/ssl/certs/dhparam.pem"
-fi
-
-## Create TLS snippets
-mkdir /etc/nginx/snippets/
-
-echo -e $"CONFIG: TLS Snippet." | tee -a "$log_file"
-
-if ! echo "## SSL Certs
-    ssl_certificate $ssl_cert;
-    ssl_certificate_key $ssl_key; # private key file
-
-## SSL Config
-    ssl_session_timeout 1d;
-    ssl_session_cache shared:SSL:50m;
-    ssl_session_tickets off;
-    ssl_dhparam $dhparam;
-
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';
-    ssl_prefer_server_ciphers on;
-
-## HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
-    add_header Strict-Transport-Security max-age=15768000;
-
-## OCSP Stapling
-    # fetch OCSP records from URL in ssl_certificate and cache them
-    ssl_stapling on;
-    ssl_stapling_verify on;
-
-    ## verify chain of trust of OCSP response using Root CA and Intermediate certs
-    ssl_trusted_certificate $ssl_cert;
-
-    resolver 8.8.8.8;
-" > $sslsnippet
-	then
-		echo -e $"✗ FAIL: There is an ERROR creating $sslsnippet file. \n" | tee -a "$log_file"
-		exit;
-	else
-		echo -e $"✓ SUCCESS: TLS Snippet file created! \n" | tee -a "$log_file"
-	fi
-
+source config-ssl.sh
 
 ##################################
 ##				##
@@ -447,85 +347,7 @@ fi
 # This section creates virtual host rules file.
 #
 
-## Create NGINX Config
-
-echo -e $"CONFIG: nginx" | tee -a "$log_file"
-
-## remove default site
-rm /etc/nginx/sites-enabled/default
-
-## echo config to file
-	if ! echo "## DJANGO Upstream
-upstream django {
-	server 127.0.0.1:8000;			# for a web port socket
-	# run: python $userDir$rootDir/apps/manage.py runserver 127.0.0.1:8000
-        }
-
-server {
-## Listen on IPv4 and IPv6
-    listen 80 default_server;
-    listen [::]:80 default_server;
-
-## Redirect all HTTP requests to HTTPS with a 301 Moved Permanently response.
-    return 301 https://\$host\$request_uri;
-}
-
-server {
-## Listen on IPv4 and IPv6
-    listen 443 ssl http2 default_server;
-    listen [::]:443 ssl http2 default_server;
-
-## Logs
-    access_log   /var/log/nginx/$domain.access.log;
-    error_log    /var/log/nginx/$domain.error.log;
-
-## SSL Options
-include $sslsnippet;
-
-## Upload Options
-   client_max_body_size 1024m;
-   client_body_timeout 480s;
-
-## Serve the Django Application website
-    root    $userDir$rootDir;
-
-## Django UserData
-    location /userdata  {
-	alias $userDir$rootDir/userdata;	# your Django project's media files
-    }
-
-## Django static files
-    location /static {
-	alias $userDir$rootDir/static;		# your Django project's static files
-    }
-
-## Finally, Set headers and send all non-media requests to the Django server.
-    location / {
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Host \$http_host;
-        proxy_redirect off;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-
-	proxy_pass      http://django/;
-	include         uwsgi_params;
-        }
-}" > $sitesAvailable$domain
-
-	then
-		echo -e $"✗ FAIL: Could not create Virtual Host file '$domain' \n" | tee -a "$log_file"
-		exit;
-	else
-		echo -e $"✓ SUCCESS: Virtual Host file '$domain' created! \n" | tee -a "$log_file"
-fi
-
-## Add domain in /etc/hosts
-if ! echo "127.0.0.1	$domain" >> /etc/hosts
-	then
-		echo -e $"✗ FAIL: Not able to write '/etc/hosts' file. \n" | tee -a "$log_file"
-		exit;
-else
-	echo -e $"✓ SUCCESS: Host added to '/etc/hosts' file! \n" | tee -a "$log_file"
-fi
+source config-nginx.sh
 
 
 ##################################
@@ -562,123 +384,9 @@ echo -e $"✓ SUCCESS: Ownership Configured! \n" | tee -a "$log_file"
 #	Install Localground	 #
 ##				##
 ##################################
-echo -e $"INSTALL: Localground Dependencies" | tee -a "$log_file"
 
-###################################
-# Install Mail			 #
-###################################
-apt-get install sendmail -y
-apt-get install libmail-sendmail-perl -y
-## add use TLS for mail
-echo "include('/etc/mail/tls/starttls.m4')dnl" >> /etc/mail/sendmail.mc
+source install-localground.sh
 
-################
-# Install Java #
-################
-sudo apt-add-repository -y ppa:openjdk-r/ppa
-sudo apt-get update
-sudo apt-get -y install openjdk-7-jre
-
-#######################################
-# Install GDAL, MapServer, Etc. First #
-#######################################
-apt-get install python-software-properties -y
-apt-get install mapserver-bin -y
-apt-get install gdal-bin -y
-apt-get install cgi-mapserver-y
-apt-get install python-gdal -y
-apt-get install python-mapscript -y
-
-###############################################
-# Add the google projection to the proj4 file #
-###############################################
-PROJ_FILE=/usr/share/proj/epsg
-printf '\n#Google Projection\n<900913> +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs\n' | tee -a $PROJ_FILE
-
-###########################################
-# Then Install PostgreSQL9.5, PostGIS 9.5 #
-###########################################
-apt-get install postgresql-9.5 -y
-apt-get install postgresql-client-9.5 -y
-apt-get install postgresql-server-dev-9.5 -y
-apt-get install postgresql-plperl-9.5 -y
-apt-get install postgresql-9.5-postgis-2.2 -y
-apt-get install postgresql-9.5-postgis-scripts -y
-apt-get install libpq-dev -y
-
-########################################################################
-# Install Graphics, Miscellaneous Stuff...
-######################################################################## -y
-apt-get install python-gdal -y
-apt-get install libcv-dev libopencv-dev python-opencv -y
-apt-get install python-psycopg2 -y
-apt-get install python-setuptools -y
-apt-get install -y software-properties-common
-apt-add-repository -y universe
-apt-get update
-apt-get install -y python-pip
-apt-get install python-dev -y
-apt-get install python-mapscript -y
-apt-get install python-scipy -y
-## Ubuntu Xenial doesn't have an ffmpeg package (only libav)
-apt-add-repository -y ppa:jonathonf/ffmpeg-3
-apt-get update -y
-apt-get install ffmpeg -y
-apt-get install redis-server -y
-
-#################
-# SVG Libraries #
-#################
-apt-get -y install python-cffi
-apt-get -y install libffi-dev
-
-############################
-# Install PIP Dependencies #
-############################
-##TODO: Investigate, there may be some problems with the map script / map server install
-pip install -r $userDir$rootDir/deploy_tools/requirements.txt
-
-## Due to difficulties installing cairo via requirements.txt, I'm
-## Installing it the manual way...
-pip uninstall cffi
-pip install cffi==1.10.0
-pip install cairocffi==0.8.0
-pip install cairosvg==1.0.22
-
-#############################
-# Install Node.js and Bower #
-#############################
-#curl -sL https://deb.nodesource.com/setup | sudo bash -
-apt-get install nodejs -y
-apt-get install npm -y
-npm install -g grunt-cli
-ln -s /usr/bin/nodejs /usr/bin/node
-
-###############################
-# Create required directories #
-###############################
-#TODO: remove, AWS S3
-mkdir -p $userDir$rootDir/userdata/media
-mkdir -p $userDir$rootDir/userdata/prints
-mkdir -p $userDir$rootDir/userdata/deleted
-
-#TODO: remove, cause nginx fixes.
-## -> Avoiding the issue w/serving django contrib static files vs. Apache's alias
-#	cp -r /usr/local/lib/python2.7/dist-packages/swampdragon/static/swampdragon $userDir$rootDir/static/swampdragon
-#################
-# Install Redis #
-#################
-apt-get -y install redis-server rabbitmq-server
-
-## We use supervisor to run our celery worker
-apt-get -y install supervisor
-cp $userDir$rootDir/deploy_tools/celeryd.conf /etc/supervisor/conf.d/celeryd.conf
-mkdir /var/log/celery
-
-## Flower will monitor Celery
-cp $userDir$rootDir/deploy_tools/flower.conf /etc/supervisor/conf.d/flower.conf
-
-echo -e $"✓ SUCCESS: Dependencies Installed! \n" | tee -a "$log_file"
 ##################################
 ##				##
 #	Config & populate DB	 #
@@ -688,56 +396,7 @@ echo -e $"✓ SUCCESS: Dependencies Installed! \n" | tee -a "$log_file"
 # This section creates DB, user and grant perms
 #
 
-## Create DB, user and grant perms
-echo -e $"Create Database: $DB_NAME " | tee -a "$log_file"
-	sudo -u postgres psql -c "CREATE DATABASE $DB_NAME;"
-
-echo -e $"Create User: $USER with Password: $DB_PASS" | tee -a "$log_file"
-	sudo -u postgres bash -c "psql -c \"CREATE USER $USER WITH PASSWORD '$DB_PASS';\""
-
-echo -e $"Grant Database Permissions to $DB_NAME" | tee -a "$log_file"
-	sudo -u postgres psql -c "GRANT ALL ON DATABASE $DB_NAME TO $USER;"
-
-echo -e $"✓ SUCCESS: Database created and user added! \n" | tee -a "$log_file"
-
-## Alter DB to Django recommendations
-echo "Alter DB to Django recommendations" | tee -a "$log_file"
-	sudo -u postgres psql -c "ALTER ROLE $USER SET client_encoding TO 'utf8';"
-	sudo -u postgres psql -c "ALTER ROLE $USER SET default_transaction_isolation TO 'read committed';"
-	sudo -u postgres psql -c "ALTER ROLE $USER SET timezone TO 'UTC';"
-## Alter Role for POSTGIS
-	sudo -u postgres bash -c "psql -c \"ALTER ROLE $USER SUPERUSER;\""
-
-	echo -e $"✓ SUCCESS: Database Altered! \n" | tee -a "$log_file"
-
-	echo "Restart PostgreSQL" | tee -a "$log_file"
-	service postgresql restart
-	echo -e $"✓ SUCCESS: Database Restarted! \n" | tee -a "$log_file"
-
-## Create PostGIS Extension
-	echo "CONFIG: Create .pgpass File" | tee -a "$log_file"
-		if ! echo "127.0.0.1:5432:$DB_NAME:$USER:$DB_PASS" > /home/$USER/.pgpass
-	then
-		echo -e $"✗ FAIL: There is an ERROR creating /home/$USER/.pgpass file. \n" | tee -a "$log_file"
-		exit;
-	else
-		echo -e $"✓ SUCCESS: New .pgpass file Created! \n" | tee -a "$log_file"
-	fi
-
-## Set Permission
-	chown $USER:$USER /home/$USER/.pgpass
-	chmod 0600 /home/$USER/.pgpass
-
-## Create PostGIS Extension
-echo "Create PostGIS Extension" | tee -a "$log_file"
-	sudo -u $USER bash -c "psql -c \"CREATE EXTENSION postgis;\" -d $DB_NAME"
-	sudo -u $USER bash -c "psql -c \"CREATE EXTENSION postgis_topology;\" -d $DB_NAME"
-
-## Restart postgresql
-	service postgresql restart
-	echo -e $"✓ SUCCESS: Database Extension Added! \n" | tee -a "$log_file"
-
-echo -e $"CONFIG: BEGIN Localground MAIN CONFIG." | tee -a "$log_file"
+source config-database.sh
 
 ##################################
 ##				##
@@ -749,101 +408,7 @@ echo -e $"CONFIG: BEGIN Localground MAIN CONFIG." | tee -a "$log_file"
 #
 ## TODO: Config Amazon S3
 
-
-## echo settings_local.py
-	if ! echo "from localground.apps.settings import *
-
-DEBUG = $DJANGO_DEBUG
-TEMPLATE_DEBUG = DEBUG
-GDAL_LIBRARY_PATH='$GDAL_LIBRARY_PATH'
-
-ADMINS = (
-    ('Admin', '$emailaddr'),
-)
-
-DEFAULT_FROM_EMAIL = '$emailaddr'
-ADMIN_EMAILS = ['$emailaddr',]
-
-# Custom Local Variables
-# uses for internal links (server_url)
-SERVER_HOST = '$domain'
-PROTOCOL = 'https'
-SERVER_URL = '%s://%s' % (PROTOCOL, SERVER_HOST)
-
-# API Keys
-SENDGRID_API_KEY = '$SENDGRID_API_KEY'
-MAPBOX_API_KEY = '$MAPBOX_API_KEY'
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '$SOCIAL_AUTH_GOOGLE_OAUTH2_KEY'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '$SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET'
-
-# Amazon S3 keys
-#AWS_ACCESS_KEY_ID = "$AWS_ACCESS_KEY_ID"
-#AWS_SECRET_ACCESS_KEY = "$AWS_SECRET_ACCESS_KEY"
-#AWS_STORAGE_BUCKET_NAME = "$AWS_STORAGE_BUCKET_NAME"
-#AWS_QUERYSTRING_AUTH = False
-#AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
-
-#STATICFILES_LOCATION = 'static'
-#MEDIAFILES_LOCATION = 'media'
-#STATICFILES_STORAGE = 'myproject.custom_storages.StaticStorage'
-#DEFAULT_FILE_STORAGE = 'myproject.custom_storages.MediaStorage'
-
-# Django app runs behind a reverse proxy.
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-ALLOWED_HOSTS = ['*'] #TODO: CHECK
-REGISTRATION_OPEN = $REGISTRATION_OPEN
-
-# Absolute path to the directory root of the local ground instance:
-FILE_ROOT = '/var/www/localground'
-STATIC_ROOT = '%s/%s' % (FILE_ROOT, STATIC_MEDIA_DIR)
-APPS_ROOT = '%s/apps' % FILE_ROOT
-USER_MEDIA_ROOT = '%s/%s' % (FILE_ROOT, USER_MEDIA_DIR)
-FONT_ROOT = '%s/css/fonts/' % STATIC_ROOT
-TEMP_DIR = '%s/tmp/' % FILE_ROOT
-QR_READER_PATH = '%s/lib/barcodereader' % APPS_ROOT
-
-MAP_FILE = FILE_ROOT + '/mapserver/localground.map'
-#TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR
-
-# OS variables:
-USER_ACCOUNT = '$USER'		#account to use for creating new OS files / directories
-GROUP_ACCOUNT = '$GROUP_ACCOUNT'	#group to use for creating new OS files / directories
-
-# Database Config
-HOST = '127.0.0.1'		        #Your Database Host
-PORT = '5432'				#Your Database Port
-USERNAME = '$USER'			#Your Database Username
-PASSWORD = '$DB_PASS'		        #Your Database Password
-DATABASE = '$DB_NAME'	        	#Your Database Name
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis', #Code works w/PostGIS
-        'NAME': DATABASE,
-        'USER': USERNAME,
-        'PASSWORD': PASSWORD,
-        'HOST': HOST,
-        'PORT': PORT,
-    }
-}
-
-TEMPLATE_DIRS = (
-    '%s/templates' % APPS_ROOT,
-)
-
-#Turns on Django Debugging
-'''
-INSTALLED_APPS += ('debug_toolbar',)
-INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') #note the 10.0.2.2 is the IP for Vagrant connections
-MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-'''
-" > $userDir$rootDir/apps/settings_local.py
-then
-		echo -e $"✗ FAIL: There is an ERROR creating $userDir$rootDir/apps/settings_local.py file. \n" | tee -a "$log_file"
-		exit;
-	else
-		echo -e $"✓ SUCCESS: New settings_local.py file Created! \n" | tee -a "$log_file"
-fi
+source config-localground.sh
 
 ##################################
 ##				##
@@ -884,7 +449,7 @@ chown -R $USER:$GROUP_ACCOUNT $userDir$rootDir
 
 ##################################
 ##				##
-#	Show Info		 #
+#	   Display Info		 #
 ##				##
 ##################################
 #
