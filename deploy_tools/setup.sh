@@ -106,6 +106,8 @@ domain=localground
 emailaddr=localgrounddev@mailinator.com
 userDir='/'
 rootDir=$domain
+FILE_PATH="/vagrant/deploy_tools/"
+
 
 USER=localground
 DB_PASS=$(openssl rand -hex 32)
@@ -126,6 +128,7 @@ GROUP_ACCOUNT='www-data' #group to use for creating new OS files / directories
       echo "-p Production Env was triggered!" >&2
         domain=$(dig +short myip.opendns.com @resolver1.opendns.com).xip.io
         development=false
+		FILE_PATH = ""
 
 ## Email config
 read -p "Enter your Email Address [localgrounddev@mailinator.com]: " email
@@ -315,8 +318,7 @@ fi
 # NOTE:	Best practice: https://mozilla.github.io/server-side-tls/ssl-config-generator/
 #
 ## TODO: Check Qualys SSL afterwards for privacy score. https://github.com/ssllabs/ssllabs-scan/
-
-source config-ssl.sh
+source "$FILE_PATH"config-ssl.sh
 
 ##################################
 ##				##
@@ -347,7 +349,7 @@ fi
 # This section creates virtual host rules file.
 #
 
-source config-nginx.sh
+source "$FILE_PATH"config-nginx.sh
 
 
 ##################################
@@ -385,7 +387,7 @@ echo -e $"✓ SUCCESS: Ownership Configured! \n" | tee -a "$log_file"
 ##				##
 ##################################
 
-source install-localground.sh
+source "$FILE_PATH"install-localground.sh
 
 ##################################
 ##				##
@@ -396,7 +398,7 @@ source install-localground.sh
 # This section creates DB, user and grant perms
 #
 
-source config-database.sh
+source "$FILE_PATH"config-database.sh
 
 ##################################
 ##				##
@@ -408,7 +410,7 @@ source config-database.sh
 #
 ## TODO: Config Amazon S3
 
-source config-localground.sh
+source "$FILE_PATH"config-localground.sh
 
 ##################################
 ##				##
