@@ -7,6 +7,8 @@ from localground.apps.site.api import fields
 from django.conf import settings
 from django_hstore.dict import HStoreDict
 from rest_framework.settings import api_settings
+import datetime
+import json
 
 from rest_framework import serializers
 
@@ -19,6 +21,16 @@ class ChoiceIntField(serializers.ChoiceField):
         except e:
             self.fail('integer required', input=data)
 
+class CustomDataTimeField(serializers.DateTimeField):
+    def to_representation(self, obj):
+        datetime_object = datetime.datetime.strptime(obj, '%Y-%m-%dT%H:%M:%S')
+        return str(datetime_object)
+    
+    # def to_internal_value(self, obj):
+    #     print(type(obj))
+    #     return obj.isoformat()
+        
+
 
 class MarkerWAttrsSerializerMixin(GeometrySerializer):
     update_metadata = serializers.SerializerMethodField()
@@ -30,7 +42,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     '''
     url = serializers.SerializerMethodField()#'get_url')
     form = serializers.SerializerMethodField()
-    name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
+    # name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
 
     def get_url(self, obj):
         return '%s/api/0/forms/%s/data/%s' % \
@@ -46,9 +58,22 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
             ('form', 'extras', 'url')
         depth = 0
 
+    '''
+    if 'attributes' in validated_data:
+        for key in validated_data['attributes'].keys():
+            val = validated_data['attributes'][key]
+            if isinstance(val, (datetime.datetime, datetime.date)):
+                validated_data['attributes'][key] = val.strftime('%Y-%m-%dT%H:%M:%S')
+    '''
     def create(self, validated_data):
         # Override to handle HStore
         if 'attributes' in validated_data:
+            for key in validated_data['attributes'].keys():
+                val = validated_data['attributes'][key]
+                if isinstance(val, (datetime.datetime, datetime.date)):
+                    # validated_data['attributes'][key] = val.strftime('%Y-%m-%dT%H:%M:%S')
+                    validated_data['attributes'][key] = val.isoformat()
+                
             validated_data['attributes'] = HStoreDict(validated_data['attributes'])
         validated_data.update(self.get_presave_create_dictionary())
         validated_data.update({'form': self.form})
@@ -138,7 +163,7 @@ def create_dynamic_serializer(form, **kwargs):
 
     def createDateTimeField():
         attrs.update({
-            field.col_name: serializers.DateTimeField(
+            field.col_name: CustomDataTimeField(
                 source='attributes.' + field.col_name,
                 allow_null=True,
                 required=False,

@@ -422,7 +422,6 @@ class ModelMixin(object):
                              project=project)
         for i in range(0, num_fields):
             field_name = 'Field %s' % (i + 1)
-            #if i == 0: field_name = 'name'
             fld = self.create_field(name=field_name,
                                 data_type=DataType.objects.get(id=(i + 1)),
                                 ordering=(i + 1),

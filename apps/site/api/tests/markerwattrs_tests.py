@@ -1,4 +1,5 @@
 from django import test
+from rest_framework.settings import api_settings
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
@@ -66,7 +67,7 @@ class DataMixin(object):
         "order": 5
     }'''
 
-class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
+class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -77,25 +78,34 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.urls = ['/api/0/forms/%s/data/' % form.id]
 
     def tearDown(self):
+        pass
         # delete method also removes files from file system:
-        models.Photo.objects.all().delete()
-        models.Audio.objects.all().delete()
+        # models.Photo.objects.all().delete()
+        # models.Audio.objects.all().delete()
 
     def test_post_individual_attrs(self):
+        '''
+        DATE_INPUT_FORMATS = ('%m/%d/%Y', '%Y-%m-%d', '%m/%d/%y', '%m-%d-%y', '%m-%d-%Y')
+        TIME_INPUT_FORMATS = ('%I:%M:%S %p', '%H:%M:%S', '%H:%M')
+        %Y-%m-%dT%H:%M:%S'
+        '''
+        # YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]
+        # (2012, 9, 4, 6, 0)
         for d in [
-            {'field_1': 'field_1 text'},
-            {'field_2': '77'}, # should not be a string?
-            #{'field_3': '1990-12-31T23:59:60Z'}, #Can't get DateTime to work
-            {'field_4': 'true'}, # should not be a string?
-            {'field_5': '43124.543252'},
-            {'field_6': '2'},
-            {'field_7': 'Independent'}
+            # {'field_1': 'field_1 text'},
+            # {'field_2': 77}, # should not be a string?
+            {'field_3': "2012-09-04 06:00:00"}, #Can't get DateTime to work
+            # {'field_4': 'true'}, # should not be a string?
+            # {'field_5': '43124.543252'},
+            # {'field_6': '2'},
+            # {'field_7': 'Independent'}
         ]:
             default_data = {
                 'project_id': self.project.id
             }
             default_data.update(d)
             urls = self.urls
+            #print(api_settings.DATE_INPUT_FORMATS)
             for url in urls:
                 url = url + '?project_id={0}'.format(self.project.id)
                 response = self.client_user.post(
@@ -106,9 +116,11 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 )
                 new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
                 #print(models.MarkerWithAttributes.objects.all())
-                #print(response.data)
+                print(new_marker.attributes)
+                print(d.values()[0])
+                print(response.data)
                 self.assertEqual(
-                    new_marker.attributes[d.keys()[0]], d.values()[0]
+                    response.data[d.keys()[0]], d.values()[0]
                 )
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 

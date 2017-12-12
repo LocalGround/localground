@@ -41,6 +41,8 @@ class MarkerSerializer(MarkerSerializerMixin):
         from django.contrib.contenttypes.models import ContentType
         from localground.apps.site import models
 
+        # raise Exception(obj.photos)
+
         candidates = [
             models.Photo,
             models.Audio,
@@ -70,7 +72,7 @@ class MarkerSerializer(MarkerSerializerMixin):
 
     def get_photos(self, obj):
         from localground.apps.site.api.serializers import PhotoSerializer
-
+        
         data = PhotoSerializer(
             obj.photos,
             many=True, context={ 'request': {} }).data
