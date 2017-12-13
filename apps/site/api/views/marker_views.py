@@ -37,44 +37,16 @@ class MarkerGeometryMixin(object):
 class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin):
     filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
     paginate_by = 100
+    serializers_class = serializers.MarkerSerializerListsWithMetadata
 
     def get_serializer_class(self):
-        r = self.request
-        include_metadata = r.GET.get('include_metadata') in \
-            ['True', 'true', '1']
-        include_lists = r.GET.get('marker_with_media_arrays') in \
-            ['True', 'true', '1']
-        if include_metadata:
-            if include_lists:
-                return serializers.MarkerSerializerListsWithMetadata
-            else:
-                return serializers.MarkerSerializerCountsWithMetadata
-        else:
-            if include_lists:
-                return serializers.MarkerSerializerLists
-            else:
-                return serializers.MarkerSerializerCounts
+        return serializers.MarkerSerializerListsWithMetadata
 
     def get_queryset(self):
-        r = self.request
-        include_lists = r.GET.get('marker_with_media_arrays') in \
-            ['True', 'true', '1']
-        if self.request.user.is_authenticated():
-            if include_lists:
-                return models.Marker.objects.get_objects_with_lists(
-                    self.request.user)
-            else:
-                return models.Marker.objects.get_objects_with_counts(
-                    self.request.user)
-        else:
-            if include_lists:
-                return models.Marker.objects.get_objects_public_with_lists(
-                    access_key=self.request.GET.get('access_key')
-                )
-            else:
-                return models.Marker.objects.get_objects_public_with_counts(
-                    access_key=self.request.GET.get('access_key')
-                )
+        return models.Marker.objects.get_objects_with_lists(
+            self.request.user
+        )
+           
 
     def perform_create(self, serializer):
         d = self.get_geometry_dictionary(serializer)

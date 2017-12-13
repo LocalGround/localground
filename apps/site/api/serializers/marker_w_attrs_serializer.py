@@ -43,6 +43,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     url = serializers.SerializerMethodField()#'get_url')
     form = serializers.SerializerMethodField()
     # name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
+    children = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         return '%s/api/0/forms/%s/data/%s' % \
@@ -51,11 +52,83 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     def get_form(self, obj):
         return self.form.id
 
+    def get_children(self, obj):
+        from django.contrib.contenttypes.models import ContentType
+        from localground.apps.site import models
+
+        children = {}
+        self.audio = self.get_audio(obj) or []
+        self.photos = self.get_photos(obj) or []
+        self.videos = self.get_videos(obj) or []
+        self.map_images = self.get_map_images(obj) or []
+        if self.audio:
+            children['audio'] = self.audio
+        if self.photos:
+            children['photos'] = self.photos
+        if self.videos:
+            children['videos'] = self.videos
+        if self.map_images:
+            children['map_images'] = self.map_images
+
+        return children
+
+    def get_photos(self, obj):
+        from localground.apps.site.api.serializers import PhotoSerializer
+        
+        data = PhotoSerializer(
+            obj.photos,
+            many=True, context={ 'request': {} }).data
+        return self.serialize_list(obj, models.Photo, data)
+
+    def get_videos(self, obj):
+        from localground.apps.site.api.serializers import VideoSerializer
+
+        data = VideoSerializer(
+            obj.videos,
+            many=True, context={ 'request': {} }).data
+        return self.serialize_list(obj, models.Video, data)
+
+    def get_audio(self, obj):
+        from localground.apps.site.api.serializers import AudioSerializer
+
+        data = AudioSerializer(
+            obj.audio,
+            many=True, context={ 'request': {} }).data
+        return self.serialize_list(obj, models.Audio, data)
+
+    def get_map_images(self, obj):
+        from localground.apps.site.api.serializers import MapImageSerializerUpdate
+
+        data = MapImageSerializerUpdate(
+            obj.map_images,
+            many=True, context={ 'request': {} }).data
+        return self.serialize_list(obj, models.MapImage, data)
+
+    def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
+                       model_name_plural=None):
+        if data is None or len(data) == 0:
+            return None
+        if name is None:
+            name = cls.model_name_plural.title()
+        if overlay_type is None:
+            overlay_type = cls.model_name
+        if model_name_plural is None:
+            model_name_plural = cls.model_name_plural
+        return {
+            'id': model_name_plural,
+            'name': name,
+            'overlay_type': overlay_type,
+            'data': data,
+            'attach_url': '%s/api/0/markers/%s/%s/' %
+            (settings.SERVER_URL,
+             obj.id,
+             model_name_plural)}
+
 
     class Meta:
         model = models.MarkerWithAttributes
         fields = GeometrySerializer.Meta.fields + \
-            ('form', 'extras', 'url')
+            ('form', 'extras', 'url', 'children')
         depth = 0
 
     '''
@@ -92,7 +165,36 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
 
 class MarkerWAttrsSerializer(MarkerWAttrsSerializerMixin):
-    pass
+
+    def __init__(self, *args, **kwargs):
+        super(MarkerWAttrsSerializer, self).__init__(*args, **kwargs)
+
+    children = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = MarkerWAttrsSerializerMixin.Meta.fields + ('children',)
+
+    def get_children(self, obj):
+        from django.contrib.contenttypes.models import ContentType
+        from localground.apps.site import models
+
+        raise Exception(obj)
+
+        children = {}
+        self.audio = self.get_audio(obj) or []
+        self.photos = self.get_photos(obj) or []
+        self.videos = self.get_videos(obj) or []
+        self.map_images = self.get_map_images(obj) or []
+        if self.audio:
+            children['audio'] = self.audio
+        if self.photos:
+            children['photos'] = self.photos
+        if self.videos:
+            children['videos'] = self.videos
+        if self.map_images:
+            children['map_images'] = self.map_images
+
+        return children
 
 
 def create_dynamic_serializer(form, **kwargs):
@@ -207,27 +309,6 @@ def create_dynamic_serializer(form, **kwargs):
                     allow_null=True,
                     required=False)
             })
-
-
-
-
-
-        # error implementing choicefield. For potential help, see:
-        # https://stackoverflow.com/questions/29248164/key-error-in-django-rest-framework-when-using-serializers-choicefield-with-tuple
-        # elif field.data_type.id == models.DataType.DataTypes.CHOICE:
-        #     choices = []
-        #     for choice in field.extras:
-        #         choices.append((unicode(choice['name']), unicode(choice['name'])))
-        #     tuple(choices)
-        #     #raise Exception(choices)
-        #     attrs.update({
-        #         field.col_name: serializers.ChoiceField(
-        #             source='attributes.' + field.col_name,
-        #             allow_null=True,
-        #             required=False,
-        #             choices=choices)
-        #     })
-
 
     # set custom display name field getter, according on the display_field:
     if display_field is not None:
