@@ -104,7 +104,7 @@ class ObjectMixin(BaseMixin):
                 (
                     Q(project__authuser__user=user) &
                     Q(project__authuser__user_authority__id__gte=authority_id)
-                ) | Q(owner=user)
+                ) | Q(owner=user)  # this line causes duplicates
             ))
         if project:
             q = q.filter(project=project)

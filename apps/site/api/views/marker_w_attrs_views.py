@@ -61,6 +61,10 @@ class MarkerWAttrsList(MarkerWAttrsGeometryMixin, QueryableListCreateAPIView):
     '''
 
     def get_queryset(self):
+        raise Exception(dir(self.request))
+        return models.MarkerWithAttributes.objects \
+                             .get_objects_with_lists(self.request.user)
+        '''
         r = self.request
         include_lists = r.GET.get('marker_with_media_arrays') in \
             ['True', 'true', '1']
@@ -82,6 +86,7 @@ class MarkerWAttrsList(MarkerWAttrsGeometryMixin, QueryableListCreateAPIView):
                              .get_objects_public_with_counts(
                     access_key=self.request.GET.get('access_key')
                 )
+            '''
 
     def perform_create(self, serializer):
         d = self.get_geometry_dictionary(serializer)

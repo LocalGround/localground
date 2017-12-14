@@ -45,6 +45,13 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     # name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     children = serializers.SerializerMethodField()
 
+    
+    project_id = serializers.PrimaryKeyRelatedField(
+        source='project',
+        required=False,
+        read_only=True
+    )
+
     def get_url(self, obj):
         return '%s/api/0/forms/%s/data/%s' % \
                 (settings.SERVER_URL, obj.form.id, obj.id)
@@ -127,6 +134,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
     class Meta:
         model = models.MarkerWithAttributes
+        #read_only_fields = ('project_id',)
         fields = GeometrySerializer.Meta.fields + \
             ('form', 'extras', 'url', 'children')
         depth = 0
@@ -149,7 +157,10 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
                 
             validated_data['attributes'] = HStoreDict(validated_data['attributes'])
         validated_data.update(self.get_presave_create_dictionary())
-        validated_data.update({'form': self.form})
+        validated_data.update({
+            'form': self.form,
+            'project': self.form.project
+        })
         self.instance = self.Meta.model.objects.create(**validated_data)
         return self.instance
 
@@ -165,13 +176,15 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
 
 class MarkerWAttrsSerializer(MarkerWAttrsSerializerMixin):
-
+    '''
     def __init__(self, *args, **kwargs):
         super(MarkerWAttrsSerializer, self).__init__(*args, **kwargs)
+    '''
 
     children = serializers.SerializerMethodField()
 
     class Meta:
+        #read_only_fields = ('project_id',)
         fields = MarkerWAttrsSerializerMixin.Meta.fields + ('children',)
 
     def get_children(self, obj):
@@ -213,7 +226,7 @@ def create_dynamic_serializer(form, **kwargs):
     class Meta:
         model = models.MarkerWithAttributes
         fields = MarkerWAttrsSerializerMixin.Meta.fields + tuple(field_names)
-        read_only_fields = ('display_name')
+        read_only_fields = ('display_name',)
 
     attrs = {
         '__module__': 'localground.apps.site.api.serializers.MarkerWAttrsSerializer',
