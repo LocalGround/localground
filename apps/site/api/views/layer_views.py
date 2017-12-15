@@ -35,14 +35,6 @@ class LayerList(QueryableListCreateAPIView):
             response.status = status.HTTP_400_BAD_REQUEST
         return response
     
-    '''
-    def get(self, request):
-        map_id = int(self.kwargs.get('map_id'))
-        layers = self.model.objects.all()
-        assert False, layers
-        serializer = serializers.LayerSerializer(layers, many=True)
-        return Response(serializer.data)
-    '''
 
 class LayerInstance(
         generics.RetrieveUpdateDestroyAPIView):

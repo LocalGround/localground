@@ -280,6 +280,43 @@ class ModelMixin(object):
         m.save()
         return m
 
+    def create_marker_w_attrs(self, user=None, project=None, 
+                    name="Test Marker With Attrs", geoJSON=None, point=None, 
+                    extras={"random key": "random value"},tags=[], form=None):
+        from localground.apps.site import models
+        geom = None
+        user = user or self.user
+        project = project or self.project
+        form = form or self.create_form()
+        if geoJSON is None and point is None:
+            from django.contrib.gis.geos import Point
+            lat = 37.87
+            lng = -122.28
+            geom = Point(lng, lat, srid=4326)
+        elif point:
+            geom = point
+        else:
+            from django.contrib.gis.geos import GEOSGeometry
+            geom = GEOSGeometry(json.dumps(geoJSON))
+
+        mwa = models.MarkerWithAttributes(
+            project=project,
+            name=name,
+            owner=user,
+            extras=extras,
+            last_updated_by=user,
+            tags=tags,
+            form=form
+        )
+        if geom.geom_type == "Point":
+            mwa.point = geom
+        elif geom.geom_type == "LineString":
+            mwa.polyline = geom
+        else:
+            mwa.polygon = geom
+        mwa.save()
+        return mwa
+
     def get_marker(self, marker_id=1):
         from localground.apps.site import models
         return models.Marker.objects.get(id=marker_id)
@@ -385,16 +422,24 @@ class ModelMixin(object):
                              project=project)
         for i in range(0, num_fields):
             field_name = 'Field %s' % (i + 1)
-            if i == 0: field_name = 'name'
             fld = self.create_field(name=field_name,
                                 data_type=DataType.objects.get(id=(i + 1)),
                                 ordering=(i + 1),
                                 form=f)
+            if i+1 == 6:
+                fld.extras = [{"name": "Bad", "value": 1},
+                              {"name": "Ok", "value": 2},
+                              {"name": "Good", "value": 3}]
+
+            if i+1 == 7:
+                fld.extras = [{"name": "Democrat"},
+                              {"name": "Republican"},
+                              {"name": "Independent"}]
             fld.save()
         f.remove_table_from_cache()
         return f
 
-    def create_field(self, form, name='Field 1',
+    def create_field(self, form, name='Field 1', extras=None,
                      data_type=None, ordering=1, is_display_field=False):
         from localground.apps.site import models
         data_type = data_type or DataType.objects.get(id=1)
@@ -405,7 +450,8 @@ class ModelMixin(object):
             is_display_field=is_display_field,
             form=form,
             owner=self.user,
-            last_updated_by=self.user
+            last_updated_by=self.user,
+            extras=extras
         )
         f.save()
         return f

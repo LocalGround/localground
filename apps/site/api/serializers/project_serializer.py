@@ -55,6 +55,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
         from django.contrib.contenttypes.models import ContentType
         from localground.apps.site import models
 
+        '''
         candidates = [
             models.Photo,
             models.Audio,
@@ -72,29 +73,37 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
         # this caches the ContentTypes so that we don't keep executing one-off
         # queries
         ContentType.objects.get_for_models(*candidates, concrete_model=False)
+        '''
+        forms = models.Form.objects.prefetch_related(
+                'field_set', 'field_set__data_type'
+            ).filter(project=obj)
+
         children = {
             'photos': self.get_photos(obj),
             'videos': self.get_videos(obj),
             'audio': self.get_audio(obj),
             'map_images': self.get_mapimages(obj),
             'markers': self.get_markers(obj, forms)
+            #'markers_with_attributes': self.get_mwas(obj, forms)
         }
 
         # add table data:
         # todo: start here tomorrow:
         for form in forms:
-            form_data = self.get_table_records(obj, form)
             #if len(form_data.get('data')) > 0:
-            children['form_%s' % form.id] = form_data
+            children['form_%s' % form.id] = self.get_table_records(form)
         return children
 
 
-    def get_table_records(self, obj, form):
+    def get_table_records(self, form):
+        from localground.apps.site.api.serializers.marker_w_attrs_serializer import \
+            create_dynamic_serializer
+        records =  models.MarkerWithAttributes.objects.filter(form=form)
         #raise Exception(form.TableModel.objects.get_objects(obj.owner, project=obj))
         return self.serialize_list(
-            form.TableModel,
-            create_record_serializer(form),
-            form.TableModel.objects.get_objects(obj.owner, project=obj),
+            models.MarkerWithAttributes,
+            create_dynamic_serializer(form),
+            records,
             name=form.name,
             overlay_type='record',
             model_name_plural='form_%s' % form.id
@@ -164,6 +173,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
                 )
             )
 
+
     def serialize_list(self, model_class, serializer_class, records,
                         name=None, overlay_type=None, model_name_plural=None):
         if name is None:
@@ -174,6 +184,8 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             model_name_plural = model_class.model_name_plural
 
         serializer = serializer_class( records, many=True, context={ 'request': {} })
+        # if model_class == models.MarkerWithAttributes:
+        #     raise Exception(serializer.data)
         d = {
             'id': model_name_plural,
             'name': name,
@@ -183,4 +195,6 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
         d.update({
             'update_metadata': self.get_metadata(serializer)
         })
+        # if model_class == models.MarkerWithAttributes:
+        #     raise Exception(d)
         return d
