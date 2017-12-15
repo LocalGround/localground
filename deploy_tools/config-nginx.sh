@@ -20,7 +20,7 @@ rm /etc/nginx/sites-enabled/default
 	if ! echo "## DJANGO Upstream
 upstream django {
 	server 127.0.0.1:8000;			# for a web port socket
-	# run: python $userDir$rootDir/apps/manage.py runserver 127.0.0.1:8000
+	# run: python $userDir$rootDir/apps/manage.py runserver 0.0.0.0:8000
         }
 
 server {
@@ -88,4 +88,3 @@ if ! echo "127.0.0.1	$domain" >> /etc/hosts
 else
 	echo -e $"✓ SUCCESS: Host added to '/etc/hosts' file! \n" | tee -a "$log_file"
 fi
-

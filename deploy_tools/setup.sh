@@ -14,7 +14,7 @@
 #TODO: Config Firewall, sudo ufw allow 'Nginx Full' &&  ufw delete allow 'Nginx HTTP'
 #if vagrant - don't pull repository from git
 #
-#create service that autostarts "python manage.py runserver 127.0.0.1:8000"
+#create service that autostarts "python manage.py runserver 0.0.0.0:8000"
 #
 #
 # cd $HOME/Documents/Business/Clients/UC Berk/localground vagrant up
@@ -499,4 +499,4 @@ echo -e $"✓ SUCCESS: Now Starting LocalGround! \n" | tee -a "$log_file"
 service nginx restart
 
 #TODO: move to socket & config uWSGI in emperor mode.
-sudo -u $USER bash -c "python /var/www/localground/apps/manage.py runserver 127.0.0.1:8000"
+sudo -u $USER bash -c "python /var/www/localground/apps/manage.py runserver 0.0.0.0:8000"
