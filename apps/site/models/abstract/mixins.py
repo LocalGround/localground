@@ -233,14 +233,14 @@ class MediaMixin(models.Model):
         return upload_helpers.get_absolute_path(self.virtual_path)
 
     def absolute_virtual_path(self):
-        return upload_helpers.encrypt_media_path(
+        return upload_helpers.build_media_path(
             self.host,
             self.model_name_plural,
             self.virtual_path + self.file_name_new
         )
 
     def absolute_virtual_path_orig(self):
-        return upload_helpers.encrypt_media_path(
+        return upload_helpers.build_media_path(
             self.host,
             self.model_name_plural,
             self.virtual_path + self.file_name_orig
@@ -256,14 +256,14 @@ class MediaMixin(models.Model):
             self.owner, self.model_name_plural
         )
 
-    def _encrypt_media_path(self, path, host=None):
-        return upload_helpers.encrypt_media_path(
+    def _build_media_path(self, path, host=None):
+        return upload_helpers.build_media_path(
             self.host, self.model_name_plural, path
         )
 
     def encrypt_url(self, file_name):
         # return self.virtual_path + file_name
-        return self._encrypt_media_path(self.virtual_path + file_name)
+        return self._build_media_path(self.virtual_path + file_name)
 
     @classmethod
     def make_directory(cls, path):

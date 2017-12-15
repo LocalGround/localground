@@ -37,7 +37,7 @@ class MediaMixinTest(ModelMixin):
         self.assertEqual(abs_path, self.model.get_absolute_path())
     
     def test_absolute_virtual_path(self):
-        abs_virt_path = upload_helpers.encrypt_media_path(
+        abs_virt_path = upload_helpers.build_media_path(
             self.model.host,
             self.model.model_name_plural,
             self.model.virtual_path + self.model.file_name_new
@@ -45,7 +45,7 @@ class MediaMixinTest(ModelMixin):
         self.assertEqual(abs_virt_path, self.model.absolute_virtual_path())
 
     def test_absolute_virtual_path_orig(self):
-        abs_virt_path_orig = upload_helpers.encrypt_media_path(
+        abs_virt_path_orig = upload_helpers.build_media_path(
             self.model.host,
             self.model.model_name_plural,
             self.model.virtual_path + self.model.file_name_orig
@@ -64,18 +64,18 @@ class MediaMixinTest(ModelMixin):
         )
         self.assertEqual(abs_path, self.model.generate_absolute_path())
 
-    def test__encrypt_media_path(self):
+    def test__build_media_path(self):
         path = 'test_path'
-        media_path = upload_helpers.encrypt_media_path(
+        media_path = upload_helpers.build_media_path(
             self.model.host, self.model.model_name_plural, path
         )
-        self.assertEqual(media_path, self.model._encrypt_media_path(path))
+        self.assertEqual(media_path, self.model._build_media_path(path))
 
     
     def test_encrypt_url(self):
         file_name = 'test_file_name'
         # return self.virtual_path + file_name
-        encrypted_url = self.model._encrypt_media_path(self.model.virtual_path + file_name)
+        encrypted_url = self.model._build_media_path(self.model.virtual_path + file_name)
         self.assertEqual(encrypted_url, self.model.encrypt_url(file_name))
 
     def test_make_directory(self):
