@@ -159,7 +159,7 @@ echo -e $"✓ SUCCESS: Host / Domain: $domain \n" | tee -a "$log_file"
 ## Root Dir config
 read -p "Enter the Root Directory [/var/www/$domain]: " directory
 if [[ "$rootDir" =~ ^/ ]]; then
-	userDir=''
+	userDir='/'
 fi
 	userDir='/var/www/'
 	rootDir=${directory:-$domain}
@@ -371,7 +371,7 @@ else
 	chown -R $USER:www-data $userDir$rootDir
 fi
 	##TODO: fix the need for this
-ln -s  $userDir$rootDir /var/www/localground
+ln -s  $userDir$rootDir localground
 
 	## enable website
 ln -s $sitesAvailable$domain $sitesEnable$domain
@@ -425,8 +425,8 @@ source "$FILE_PATH"config-localground.sh
 
 ## Populate the db & lookuptables
 echo "Populate the DB" | tee -a "$log_file"
-	sudo -u $USER bash -c "python /var/www/localground/apps/manage.py makemigrations"
-	sudo -u $USER bash -c "python /var/www/localground/apps/manage.py migrate"
+	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' makemigrations"
+	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' migrate"
 	service postgresql restart
 echo -e $"✓ SUCCESS: Database populated! \n" | tee -a "$log_file"
 
@@ -435,8 +435,8 @@ echo -e $"✓ SUCCESS: Database populated! \n" | tee -a "$log_file"
 ###############################################
 
 echo -e $"CONFIG: Create required Django tables." | tee -a "$log_file"
-	sudo -u $USER bash -c "python /var/www/localground/apps/manage.py syncdb --noinput"
-	sudo -u $USER bash -c "python /var/www/localground/apps/manage.py test --verbosity=2"
+	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' syncdb --noinput"
+	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' test --verbosity=2"
 echo -e $"✓ SUCCESS: Django Tables Created! \n" | tee -a "$log_file"
 
 echo "Starting celery daemon" | tee -a "$log_file"
@@ -501,4 +501,4 @@ echo -e $"✓ SUCCESS: Now Starting LocalGround! \n" | tee -a "$log_file"
 service nginx restart
 
 #TODO: move to socket & config uWSGI in emperor mode.
-sudo -u $USER bash -c "python /var/www/localground/apps/manage.py runserver 0.0.0.0:8000"
+sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' runserver 0.0.0.0:8000"
