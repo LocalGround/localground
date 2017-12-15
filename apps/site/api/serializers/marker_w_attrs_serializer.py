@@ -44,6 +44,10 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     form = serializers.SerializerMethodField()
     # name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     children = serializers.SerializerMethodField()
+    attached_photos_ids = serializers.SerializerMethodField()
+    attached_audio_ids = serializers.SerializerMethodField()
+    attached_videos_ids = serializers.SerializerMethodField()
+    attached_map_images_id = serializers.SerializerMethodField()
 
     
     project_id = serializers.PrimaryKeyRelatedField(
@@ -111,6 +115,31 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
             many=True, context={ 'request': {} }).data
         return self.serialize_list(obj, models.MapImage, data)
 
+    def get_attached_photos_ids(self, obj):
+        try:
+            return obj.photo_array
+        except:
+            return None
+
+    def get_attached_audio_ids(self, obj):
+        try:
+            return obj.audio_array
+        except:
+            return None
+
+    def get_attached_videos_ids(self, obj):
+        try:
+            return obj.video_array
+        except:
+            return None
+
+    def get_attached_map_images_id(self, obj):
+        try:
+            return obj.map_image_array
+        except:
+            return None
+
+
     def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
                        model_name_plural=None):
         if data is None or len(data) == 0:
@@ -136,7 +165,11 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
         model = models.MarkerWithAttributes
         #read_only_fields = ('project_id',)
         fields = GeometrySerializer.Meta.fields + \
-            ('form', 'extras', 'url', 'children')
+            ('form', 'extras', 'url', 'children') + \
+            ('attached_photos_ids',
+             'attached_audio_ids',
+             'attached_videos_ids',
+             'attached_map_images_id')
         depth = 0
 
     '''
@@ -225,7 +258,8 @@ def create_dynamic_serializer(form, **kwargs):
 
     class Meta:
         model = models.MarkerWithAttributes
-        fields = MarkerWAttrsSerializerMixin.Meta.fields + tuple(field_names)
+        fields = MarkerWAttrsSerializerMixin.Meta.fields + \
+        tuple(field_names)
         read_only_fields = ('display_name',)
 
     attrs = {
@@ -233,7 +267,8 @@ def create_dynamic_serializer(form, **kwargs):
         'Meta': Meta,
         'form': form
     }
-
+        
+    # functions to create custom hstore fields
     def createIntField():
         attrs.update({
             field.col_name: serializers.IntegerField(
@@ -295,12 +330,10 @@ def create_dynamic_serializer(form, **kwargs):
 
     def createDecimalField():
         attrs.update({
-            field.col_name: serializers.DecimalField(
+            field.col_name: serializers.FloatField(
                 source='attributes.' + field.col_name,
                 allow_null=True,
-                required=False,
-                max_digits=50,
-                decimal_places=10)
+                required=False)
         })
     fieldCases = {
         models.DataType.DataTypes.INTEGER: createIntField,

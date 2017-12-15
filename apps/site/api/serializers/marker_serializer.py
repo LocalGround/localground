@@ -179,36 +179,36 @@ class MarkerSerializerCountsWithMetadata(MarkerSerializerCounts):
         depth = 0
 
 class MarkerSerializerLists(MarkerSerializerMixin):
-    photo_array = serializers.SerializerMethodField()
-    audio_array = serializers.SerializerMethodField()
-    video_array = serializers.SerializerMethodField()
-    map_image_array = serializers.SerializerMethodField()
+    attached_photos_ids = serializers.SerializerMethodField()
+    attached_audio_ids = serializers.SerializerMethodField()
+    attached_videos_ids = serializers.SerializerMethodField()
+    attached_map_images_id = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
         fields = MarkerSerializerMixin.Meta.fields + \
-            ('photo_array', 'audio_array', 'video_array', 'map_image_array')
+            ('attached_photos_ids', 'attached_audio_ids', 'attached_videos_ids', 'attached_map_images_id')
         depth = 0
 
-    def get_photo_array(self, obj):
+    def get_attached_photos_ids(self, obj):
         try:
             return obj.photo_array
         except:
             return None
 
-    def get_audio_array(self, obj):
+    def get_attached_audio_ids(self, obj):
         try:
             return obj.audio_array
         except:
             return None
 
-    def get_video_array(self, obj):
+    def get_attached_videos_ids(self, obj):
         try:
             return obj.video_array
         except:
             return None
 
-    def get_map_image_array(self, obj):
+    def get_attached_map_images_id(self, obj):
         try:
             return obj.map_image_array
         except:
