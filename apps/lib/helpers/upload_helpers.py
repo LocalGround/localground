@@ -9,7 +9,7 @@ from localground.apps.lib.helpers import generic
 Utility File Path Methods
 '''
 def build_media_path(host, model_name_plural, path):
-    return '%s://%s%s/' % (
+    return '%s://%s%s' % (
         settings.PROTOCOL,
         host,
         path

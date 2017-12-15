@@ -63,19 +63,7 @@ class ZIPRenderer(renderers.BaseRenderer):
         return overlay_type + 's'
 
     def get_abs_path(self, row, key):
-        """
-        Decodes the URL from serializer and returns the
-        absolute file path on the server:
-        """
-        file_path = row.get(key)[:-1]
-        file_path = file_path.split("/")[-1]
-        try:
-            file_path = base64.b64decode(file_path)
-        except:
-            raise Exception("Could not b64decode path {}".format(file_path), row.get(key))
-        file_path = file_path.split('#')[0] #removes the hash (used to ensure no caching for media files)
-        if not file_path:
-            return None
+        file_path = row.get(key).replace(settings.SERVER_URL, '')
         return file_path
 
     def make_relative_path_for_csv(self, row, key):

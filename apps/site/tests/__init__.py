@@ -211,7 +211,7 @@ class ModelMixin(object):
         gen_ass = models.GenericAssociation(
             source_object=marker,
             entity_object=photo,
-            last_updated_by=self.user, 
+            last_updated_by=self.user,
             owner=self.user
         )
         gen_ass.save()
@@ -335,7 +335,7 @@ class ModelMixin(object):
             models.TileSet.objects.get(id=map_provider),
             zoom,
             Point(lng, lat, srid=4326),
-            'http://localground.stage',
+            settings.SERVER_HOST,
             map_title=map_title,
             instructions=instructions,
             mapimage_ids=None
