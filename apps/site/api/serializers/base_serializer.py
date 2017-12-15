@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
-from localground.apps.site.models import BaseNamed
 from django.forms.widgets import Input
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api.fields.json_fields import JSONField
@@ -13,42 +12,12 @@ https://www.ianlewis.org/en/mixins-and-python
 In Python the class hierarchy is defined right to left,
 so in the example...
 
-class MyClass(Mixin2, Mixin1, BaseClass):
+class MyClass(BaseClass, Mixin1, Mixin2):
     pass
 
-...the BaseClass class is the base class,
-extended by Mixin1 and finally by Mixin2.
+...the Mixin2 class is the base class,
+extended by Mixin1 and finally by BaseClass.
 '''
-
-class ProjectSerializerMixin(serializers.ModelSerializer):
-    
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=True
-    )
-    
-    def get_projects(self):
-        if self.context.get('view'):
-            view = self.context['view']
-            if view.request.user.is_authenticated():
-                return models.Project.objects.get_objects(view.request.user)
-            else:
-                return models.Project.objects.get_objects_public(
-                    access_key=view.request.GET.get('access_key')
-                )
-        elif getattr(self, 'user', None) is not None:
-            return models.Project.objects.get_objects(self.user)
-        else:
-            return models.Project.objects.all()
-    
-    def get_fields(self, *args, **kwargs):
-        fields = super(ProjectSerializerMixin, self).get_fields(*args, **kwargs)
-        #restrict project list at runtime:
-        fields['project_id'].queryset = self.get_projects()
-        return fields
-    
-    
 class AuditSerializerMixin(object):
     def get_presave_create_dictionary(self):
         return {
@@ -62,12 +31,12 @@ class AuditSerializerMixin(object):
             'last_updated_by': self.context.get('request').user,
             'time_stamp': get_timestamp_no_milliseconds()
         }
-    
+
     def create(self, validated_data):
         # Extend to add auditing information:
         validated_data.update(self.get_presave_create_dictionary())
         return super(AuditSerializerMixin, self).create(validated_data)
-    
+
     def update(self, instance, validated_data):
         # Extend to add auditing information:
         validated_data.update(self.get_presave_update_dictionary())
@@ -82,7 +51,7 @@ class BaseSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSerialize
             'app_label': model_meta.app_label,
             'model_name': model_meta.object_name.lower()
         }
-    
+
     class Meta:
         fields = ('id',)
 
@@ -104,9 +73,23 @@ class BaseNamedSerializer(BaseSerializer):
     overlay_type = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
 
+    def get_projects(self):
+        if self.context.get('view'):
+            view = self.context['view']
+            if view.request.user.is_authenticated():
+                return models.Project.objects.get_objects(view.request.user)
+            else:
+                return models.Project.objects.get_objects_public(
+                    access_key=view.request.GET.get('access_key')
+                )
+        elif getattr(self, 'user', None) is not None:
+            return models.Project.objects.get_objects(self.user)
+        else:
+            return models.Project.objects.all()
+
     class Meta:
-        #model = BaseNamed
-        fields = ('url', 'id', 'name', 'caption', 'overlay_type', 'tags', 'owner')
+        fields = ('url', 'id', 'name', 'caption', 'overlay_type',
+                  'tags', 'owner')
 
     def get_overlay_type(self, obj):
         return obj._meta.verbose_name
@@ -115,7 +98,7 @@ class BaseNamedSerializer(BaseSerializer):
         return obj.owner.username
 
 
-class GeometrySerializer(ProjectSerializerMixin, BaseNamedSerializer):
+class GeometrySerializer(BaseNamedSerializer):
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         allow_null=True,
@@ -128,6 +111,18 @@ class GeometrySerializer(ProjectSerializerMixin, BaseNamedSerializer):
         allow_null=True,
         required=False,
         style={'base_template': 'json.html', 'rows': 5})
+
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(),
+        source='project',
+        required=False
+    )
+
+    def get_fields(self, *args, **kwargs):
+        fields = super(GeometrySerializer, self).get_fields(*args, **kwargs)
+        #restrict project list at runtime:
+        fields['project_id'].queryset = self.get_projects()
+        return fields
 
     class Meta:
         fields = BaseNamedSerializer.Meta.fields + \
@@ -146,19 +141,25 @@ class MediaGeometrySerializer(GeometrySerializer):
     class Meta:
         fields = GeometrySerializer.Meta.fields + ('attribution', 'file_name', 'media_file',
                                                    'file_path_orig')
-        
+
     def get_file_path_orig(self, obj):
         # original file gets renamed to file_name_new in storage
         # (spaces, etc. removed)
         return obj.encrypt_url(obj.file_name_new)
 
-class ExtentsSerializer(ProjectSerializerMixin, BaseNamedSerializer):
 
+
+class ExtentsSerializer(BaseNamedSerializer):
+    project_id = fields.ProjectField(
+        label='project_id',
+        source='project',
+        required=False)
     center = fields.GeometryField(
-                help_text='Assign a GeoJSON string',
-                required=False,
-                style={'base_template': 'json.html', 'rows': 5}
-            )
+                        help_text='Assign a GeoJSON string',
+                        required=False,
+                        style={'base_template': 'json.html', 'rows': 5}
+                    )
+
 
 class Meta:
     fields = BaseNamedSerializer.Meta.fields + ('project_id', 'center')

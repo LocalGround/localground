@@ -1,0 +1,24 @@
+<div class="modal">
+    <div class="modal-content" style="width: {{ width }};">
+        <header>
+          <span class="close">&times;</span>
+          <h1>{{ title }}</h1>
+        </header>
+        <div class="modal-body" style="height: {{ height }};">
+            <!-- view content injectsed here -->
+        </div>
+        <footer>
+            <div class="buttons">
+
+                {{#if showDeleteButton}}
+                    <button class="delete-modal button-secondary">{{ deleteButtonText }}</button>
+                {{else}}
+                    <button class="close-modal button-secondary">{{ closeButtonText }}</button>
+                {{/if}}
+                {{#if showSaveButton}}
+                    <button class="save-modal-form button-primary">{{ saveButtonText }}</button>
+                {{/if}}
+            </div>
+        </footer>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="filter">
+    <form class="modal-search-form">
+        <input type="text" id="searchTerm" value="{{searchTerm}}" placeholder="Filter data and media">
+    	<button id="toolbar-search"><i class="fa fa-search" aria-hidden="true"></i></button>
+    </form>
+    <button id="card-view-button-modal" class="button-secondary database-view-buttons-modal"><i class="fa fa-th" aria-hidden="true"></i></button>
+    <button id="table-view-button-modal" class="button-secondary database-view-buttons-modal active"><i class="fa fa-bars" aria-hidden="true"></i></button>
+    <button id="media-videos" class="button-secondary fetch-btn" data-value="videos">Videos</button>
+    <button id="media-audio" class="button-secondary fetch-btn" data-value="audio">Audio</button>
+    <button id="media-photos" class="button-secondary fetch-btn" data-value="photos">Photos</button>
+</div>
+
+
+{{#ifequal viewMode "thumb"}}
+<div class="container-wrapper">
+    <div class="container" id="gallery-main"></div>
+</div>
+{{/ifequal}}
+
+
+
+{{#ifequal viewMode "table"}}
+<div class="container">
+    <div id="table-view-modal" class="database-views-modal" style="display: block;">
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Tags</th>
+                    <th>Kind</th>
+                    <th>Author</th>
+                </tr>
+            </thead>
+
+            <tbody id="gallery-main">
+            </tbody>
+        </table>
+        <br>
+        <div id="loading-animation">
+            <i class="fa fa-cog fa-5x fa-spin"></i>
+        </div>
+    </div>
+</div>
+{{/ifequal}}

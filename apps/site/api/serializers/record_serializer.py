@@ -5,9 +5,8 @@ from localground.apps.site.api import fields
 import datetime
 from django.conf import settings
 from rest_framework.serializers import raise_errors_on_nested_writes, model_meta
-from localground.apps.site.api.serializers.base_serializer import ProjectSerializerMixin
 
-class BaseRecordSerializer(ProjectSerializerMixin, serializers.ModelSerializer):
+class BaseRecordSerializer(serializers.ModelSerializer):
 
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
@@ -16,7 +15,11 @@ class BaseRecordSerializer(ProjectSerializerMixin, serializers.ModelSerializer):
         style={'base_template': 'json.html', 'rows': 5},
         source='point'
     )
-
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(),
+        source='project',
+        required=False
+    )
     owner = serializers.SerializerMethodField()
     overlay_type = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField('get_detail_url')
@@ -41,7 +44,7 @@ class BaseRecordSerializer(ProjectSerializerMixin, serializers.ModelSerializer):
     def get_photo_count(self, obj):
         try:
             return obj.photo_count
-        except:
+        except Exception:
             try:
                 return len(obj.photos)
             except:

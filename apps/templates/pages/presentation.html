@@ -4,21 +4,23 @@
     <title>Local Ground Map Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/style.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/map-presentation.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/style.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/map-presentation.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/main.css" />
 
 </head>
 <body>
     <div class="main-panel presentation-main-panel none">
-        <div id="marker-detail-panel" class="side-panel">
-            <!-- Marker list goes here -->
-        </div><div id="map-panel">
+        <div id="map-panel">
             <div id="map"></div>
         </div>
+        <div id="marker-detail-panel" class="side-panel">
+            <!-- Marker list goes here -->
+        </div>
+
     </div>
-    <div id="presentation-title"></div>
-    <div id="legend" style="display:none;"></div>
+    <div id="presentation-title" ></div>
+    <div id="legend" style="display:none;" ></div>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places"></script>
     {% if DEBUG %}
@@ -26,14 +28,14 @@
             var configPath = '../',
                 MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
         </script>
-        <script data-main="/static/redesign/apps/presentation/kickoff.js" src="/static/redesign/external/require.js"></script>
+        <script data-main="/static/apps/presentation/kickoff.js" src="/static/external/require.js"></script>
     {% else %}
        <!-- Use minified, concatenated code -->
         <script>
             var configPath = '../apps/',
                 MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
         </script>
-        <script data-main="/static/redesign/build/presentation.min.js" src="/static/redesign/external/require.js"></script>
+        <script data-main="/static/build/presentation.min.js" src="/static/external/require.js"></script>
     {% endif %}
 
 </body>

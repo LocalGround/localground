@@ -31,7 +31,7 @@ class ProjectSerializer(BaseNamedSerializer, ProjectSerializerMixin):
         read_only_fields = ('time_stamp', 'date_created', 'last_updated_by')
         fields = BaseNamedSerializer.Meta.fields + ('slug', 'access_authority', 'sharing_url', 'time_stamp', 'date_created', 'last_updated_by')
         depth = 0
-    
+
     def get_last_updated_by(self, obj):
         return obj.last_updated_by.username
 
@@ -40,13 +40,13 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
     slug = serializers.SlugField(max_length=100, label='friendly url', required=False)
     children = serializers.SerializerMethodField()
     view = None
-        
+
     class Meta:
         model = models.Project
         read_only_fields = ('time_stamp', 'date_created', 'last_updated_by')
         fields = ProjectSerializer.Meta.fields + ('sharing_url', 'children')
         depth = 0
-    
+
     def get_metadata(self, serializer_class):
         m = CustomMetadata()
         return m.get_serializer_info(serializer_class)
@@ -61,14 +61,14 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             models.MapImage,
             models.Project,
             models.Marker]
-        
-        forms = (models.Form.objects
-                 .prefetch_related('projects', 'field_set', 'field_set__data_type')
-                 .filter(projects=obj)
-                 )
+
+        forms = models.Form.objects.prefetch_related(
+                'field_set', 'field_set__data_type'
+            ).filter(project=obj)
+
         for form in forms:
             candidates.append(form.TableModel)
-        
+
         # this caches the ContentTypes so that we don't keep executing one-off
         # queries
         ContentType.objects.get_for_models(*candidates, concrete_model=False)
@@ -79,7 +79,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             'map_images': self.get_mapimages(obj),
             'markers': self.get_markers(obj, forms)
         }
-        
+
         # add table data:
         # todo: start here tomorrow:
         for form in forms:
@@ -87,7 +87,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             #if len(form_data.get('data')) > 0:
             children['form_%s' % form.id] = form_data
         return children
-        
+
 
     def get_table_records(self, obj, form):
         #raise Exception(form.TableModel.objects.get_objects(obj.owner, project=obj))
@@ -109,7 +109,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
                 project=obj
             )
         )
-    
+
     def get_videos(self, obj):
         return self.serialize_list(
             models.Video,
@@ -141,7 +141,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             ),
             name="Map Images"
         )
-    
+
     def get_markers(self, obj, forms):
         if self.context['view'].request.GET.get('marker_with_media_arrays') in ['1', 'true', 'True']:
             return self.serialize_list(
@@ -163,7 +163,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
                     forms=forms
                 )
             )
-    
+
     def serialize_list(self, model_class, serializer_class, records,
                         name=None, overlay_type=None, model_name_plural=None):
         if name is None:
@@ -172,7 +172,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             overlay_type = model_class.model_name
         if model_name_plural is None:
             model_name_plural = model_class.model_name_plural
-        
+
         serializer = serializer_class( records, many=True, context={ 'request': {} })
         d = {
             'id': model_name_plural,

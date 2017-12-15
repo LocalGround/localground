@@ -1,13 +1,11 @@
 from localground.apps.site.api.views.audio_views import AudioList, AudioInstance
 from localground.apps.site.api.views.video_views import VideoList, VideoInstance
-from localground.apps.site.api.views.icon_views import IconList, IconInstance
 from localground.apps.site.api.views.mapimage_views import MapImageList, MapImageInstance
 from localground.apps.site.api.views.mapimage_overlay_views import MapImageOverlayList, MapImageOverlayInstance
 
 from localground.apps.site.api.views.photo_views import (
     PhotoList, PhotoInstance, rotate_left, rotate_right
 )
-from localground.apps.site.api.views.presentation_views import PresentationList, PresentationInstance
 from localground.apps.site.api.views.print_views import PrintList, PrintInstance, LayoutViewSet
 from localground.apps.site.api.views.project_views import ProjectList, ProjectInstance
 from localground.apps.site.api.views.sharing_views import SharingList, SharingInstance
@@ -44,7 +42,6 @@ def api_root(request, format=None, **kwargs):
     d['audio'] = reverse('audio-list', request=request, format=format)
     d['forms'] = reverse('form-list', request=request, format=format)
     d['groups'] = reverse('group-list', request=request, format=format)
-    d['icon'] = reverse('icon-list', request=request, format=format)
     d['layouts'] = reverse('layout-list', request=request, format=format)
     d['data-types'] = reverse('datatype-list', request=request, format=format)
     d['markers'] = reverse('marker-list', request=request, format=format)
@@ -54,10 +51,6 @@ def api_root(request, format=None, **kwargs):
                                    format=format)
     d['photos'] = reverse('photo-list', request=request, format=format)
     d['videos'] = reverse('video-list', request=request, format=format)
-    d['presentations'] = reverse(
-        'presentation-list',
-        request=request,
-        format=format)
     d['prints'] = reverse('print-list', request=request, format=format)
     d['projects'] = reverse('project-list', request=request, format=format)
     #d['layers'] = reverse('layer-list', request=request, format=format)

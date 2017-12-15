@@ -1,9 +1,10 @@
 from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
-from localground.apps.site.managers.base import ObjectMixin, BaseMixin
+from localground.apps.site.managers.base import ObjectMixin
 from localground.apps.site.managers.overlays import MarkerMixin
 from localground.apps.lib.errors import GenericLocalGroundError
+
 
 class UploadMixin(ObjectMixin):
     related_fields = ['project', 'owner', 'last_updated_by']
@@ -48,8 +49,8 @@ class MapImageQuerySet(QuerySet, MapImageMixin):
 class MapImageManager(models.GeoManager, MapImageMixin):
     def get_queryset(self):
         return MapImageQuerySet(self.model, using=self._db)
-    
- 
+
+
 class StyledMapMixin(UploadMixin):
     pass
 
@@ -107,21 +108,6 @@ class VideoManager(models.GeoManager, VideoMixin):
     #    return VideoQuerySet(self.model, using=self._db)
     pass
 
-
-class IconManager(models.GeoManager, BaseMixin):
-     def get_objects_public(self, request=None, ordering_field='name', **kwargs):
-        '''
-        This returns all generic icons that are owned by the system
-        '''
-        q = self.model.objects.filter(owner__id=1)
-        if request is not None:
-            q = self._apply_sql_filter(q, request, context)
-        if ordering_field:
-            q = q.order_by(ordering_field)
-        return q
-
-
-
 class RecordMixin(UploadMixin, MarkerMixin):
 
     def _get_objects(self, user, authority_id, project=None, request=None,
@@ -144,7 +130,7 @@ class RecordMixin(UploadMixin, MarkerMixin):
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
         q = self.append_extras(q, "count", project=project, forms=None, user=user)
-            
+
         if ordering_field:
             q = q.order_by(ordering_field)
         return q
@@ -155,7 +141,7 @@ class RecordMixin(UploadMixin, MarkerMixin):
 
 
 class RecordManager(models.GeoManager, RecordMixin):
-    related_fields = ['project', 'owner'] #, 'form']
+    related_fields = ['project', 'owner']
     pass
 
 #    def get_queryset(self):
@@ -189,7 +175,7 @@ class RecordManager(models.GeoManager, RecordMixin):
         # if the form is public access, return all records.  Making a
         # data set publicly viewable means that EVERY record in the dataset
         # is public, regardless of the project permissions setting:
-        if form.can_view(access_key=access_key):
+        if form.project.can_view(access_key=access_key):
             #q = self.model.objects.distinct().select_related(*self.related_fields)
             q = self.model.objects.select_related(*self.related_fields)
             if request is not None:

@@ -1,73 +1,53 @@
 from localground.apps.site.api.serializers.base_serializer import GeometrySerializer
-from localground.apps.site.api.serializers.record_serializer import create_record_serializer
 from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 from django.conf import settings
 from localground.apps.site.api.metadata import CustomMetadata
 
-class MarkerSerializerMixin(GeometrySerializer):    
+class MarkerSerializerMixin(GeometrySerializer):
     #color = fields.ColorField(required=False)
     color = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     update_metadata = serializers.SerializerMethodField()
-    
+
+
     class Meta:
         model = models.Marker
         fields = GeometrySerializer.Meta.fields + ('color', 'extras')
         depth = 0
-        
+
     def get_update_metadata(self, obj):
         m = CustomMetadata()
         return m.get_serializer_info(self)
 
 class MarkerSerializer(MarkerSerializerMixin):
-    
+
     def __init__(self, *args, **kwargs):
         super(MarkerSerializer, self).__init__(*args, **kwargs)
-        self.records = []
 
     children = serializers.SerializerMethodField()
-    form_ids = serializers.SerializerMethodField()
     photo_count = serializers.SerializerMethodField()
     audio_count = serializers.SerializerMethodField()
+    video_count = serializers.SerializerMethodField()
     map_image_count = serializers.SerializerMethodField()
-    record_count = serializers.SerializerMethodField()
-    project_id = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
         fields = MarkerSerializerMixin.Meta.fields + \
-            ('children', 'form_ids', 'photo_count', 'audio_count', 'record_count', 'map_image_count')
+            ('children', 'photo_count', 'audio_count', 'video_count', 'map_image_count')
         depth = 0
 
-    def get_form_ids(self, obj):
-        return obj.get_form_ids()
-
-    def get_project_id(self, obj):
-        # Instance is read-only
-        return obj.project.id
-
     def get_children(self, obj):
-        # ~21 queries per marker is the best I can do if data from 2 separate
-        # forms is attached to a single marker.  This query could be optimized
-        # further if needed.
         from django.contrib.contenttypes.models import ContentType
         from localground.apps.site import models
 
         candidates = [
             models.Photo,
             models.Audio,
+            models.Video,
             models.MapImage,
             models.Project,
             models.Marker]
-        forms = (
-            models.Form.objects.prefetch_related(
-                'field_set',
-                'field_set__data_type',
-                'projects') .filter(
-                projects=obj.project))
-        for form in forms:
-            candidates.append(form.TableModel)
 
         # this caches the ContentTypes so that we don't keep executing one-off
         # queries
@@ -86,24 +66,6 @@ class MarkerSerializer(MarkerSerializerMixin):
         if self.map_images:
             children['map_images'] = self.map_images
 
-        # add table data:
-        form_dict = obj.get_records(forms=forms).items()
-        for form, records in form_dict:
-            SerializerClass = create_record_serializer(form)
-            self.records.extend(records)
-            d = self.serialize_list(
-                obj,
-                form.TableModel,
-                SerializerClass(records, context={ 'request': {} }, many=True).data,
-                name=form.name,
-                overlay_type='record',
-                model_name_plural='form_%s' % form.id
-            )
-            d.update({
-                'headers': [f.col_alias for f in form.fields]
-            })
-            children['form_%s' % form.id] = d
-
         return children
 
     def get_photos(self, obj):
@@ -113,7 +75,7 @@ class MarkerSerializer(MarkerSerializerMixin):
             obj.photos,
             many=True, context={ 'request': {} }).data
         return self.serialize_list(obj, models.Photo, data)
-    
+
     def get_videos(self, obj):
         from localground.apps.site.api.serializers import VideoSerializer
 
@@ -137,18 +99,18 @@ class MarkerSerializer(MarkerSerializerMixin):
             obj.map_images,
             many=True, context={ 'request': {} }).data
         return self.serialize_list(obj, models.MapImage, data)
-    
+
     def get_photo_count(self, obj):
         return len(obj.photos)
 
     def get_audio_count(self, obj):
         return len(obj.audio)
 
+    def get_video_count(self, obj):
+        return len(obj.videos)
+
     def get_map_image_count(self, obj):
         return len(obj.map_images)
-
-    def get_record_count(self, obj):
-        return len(self.records)
 
     def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
                        model_name_plural=None):
@@ -173,13 +135,13 @@ class MarkerSerializer(MarkerSerializerMixin):
 class MarkerSerializerCounts(MarkerSerializerMixin):
     photo_count = serializers.SerializerMethodField()
     audio_count = serializers.SerializerMethodField()
+    video_count = serializers.SerializerMethodField()
     map_image_count = serializers.SerializerMethodField()
-    record_count = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
         fields = MarkerSerializerMixin.Meta.fields + \
-            ('photo_count', 'audio_count', 'record_count', 'map_image_count')
+            ('photo_count', 'audio_count', 'video_count', 'map_image_count')
         depth = 0
 
     def get_photo_count(self, obj):
@@ -194,34 +156,34 @@ class MarkerSerializerCounts(MarkerSerializerMixin):
         except:
             return None
 
+    def get_video_count(self, obj):
+        try:
+            return obj.video_count
+        except:
+            return None
+
     def get_map_image_count(self, obj):
         try:
             return obj.map_image_count
         except:
             return None
 
-    def get_record_count(self, obj):
-        try:
-            return obj.record_count
-        except:
-            return None
-        
 class MarkerSerializerCountsWithMetadata(MarkerSerializerCounts):
     class Meta:
         model = models.Marker
         fields = MarkerSerializerCounts.Meta.fields + ('update_metadata', )
         depth = 0
-    
+
 class MarkerSerializerLists(MarkerSerializerMixin):
     photo_array = serializers.SerializerMethodField()
     audio_array = serializers.SerializerMethodField()
+    video_array = serializers.SerializerMethodField()
     map_image_array = serializers.SerializerMethodField()
-    record_array = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
         fields = MarkerSerializerMixin.Meta.fields + \
-            ('photo_array', 'audio_array', 'record_array', 'map_image_array')
+            ('photo_array', 'audio_array', 'video_array', 'map_image_array')
         depth = 0
 
     def get_photo_array(self, obj):
@@ -236,18 +198,18 @@ class MarkerSerializerLists(MarkerSerializerMixin):
         except:
             return None
 
+    def get_video_array(self, obj):
+        try:
+            return obj.video_array
+        except:
+            return None
+
     def get_map_image_array(self, obj):
         try:
             return obj.map_image_array
         except:
             return None
 
-    def get_record_array(self, obj):
-        try:
-            return obj.record_array
-        except:
-            return None
-        
 class MarkerSerializerListsWithMetadata(MarkerSerializerLists):
     class Meta:
         model = models.Marker

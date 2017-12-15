@@ -51,6 +51,9 @@ class GenericAssociation(BaseAudit):
             self.source_object.project.can_edit(user=user)
         )
 
+    def __unicode__(self):
+        return '{0}. {1} --> {2}'.format(self.source_id, self.source_type, self.entity_type)
+
     class Meta:
         app_label = 'site'
         unique_together = (

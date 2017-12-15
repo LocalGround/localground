@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel=stylesheet type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.31.2/handsontable.full.css">
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/style.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/gallery-style.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/modal_new_project.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/style.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/main.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/gallery-style.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/modal_new_project.css" />
 
     <style>
       img{
@@ -19,7 +19,7 @@
 </head>
 <body>
     <div id="toolbar-main" class="data-toolbar-main">
-        <!-- global toolbar moved to static/redesign/templates/toolbar-global.html -->
+        <!-- global toolbar moved to static/templates/toolbar-global.html -->
     </div>
     <div id="toolbar-dataview" class="filter data">
         <!-- dataview toolbar -->
@@ -27,10 +27,11 @@
     <main class="main-panel spreadsheet-main-panel">
         <!-- Spreadsheet goes here -->
     </main>
+    <aside id="tab-panel" class="spreadsheet-tab-panel"></aside>
 
 
     <!--Modal Section-->
-    <div id="myModal" class="modal">
+    <div id="mediaModal" class="modal">
 
       <!--Close Button-->
       <span class="close big" onclick="document.getElementById('myModal').style.display='none'">
@@ -59,7 +60,8 @@
     <div id="carouselModal" class="carousel-modal spreadsheet">
 
       <!--Close Button-->
-      <span class="close big" onclick="document.getElementById('carouselModal').style.display='none'">
+      <!-- Omitted from span close onclick="document.getElementById('carouselModal').style.display='none'"-->
+      <span class="close big">
         &times;
       </span>
 
@@ -68,13 +70,13 @@
         <script>
             var configPath = '../';
         </script>
-        <script data-main="/static/redesign/apps/spreadsheet/kickoff.js" src="/static/redesign/external/require.js"></script>
+        <script data-main="/static/apps/spreadsheet/kickoff.js" src="/static/external/require.js"></script>
     {% else %}
        <!-- Use minified, concatenated code -->
         <script>
             var configPath = '../apps/';
         </script>
-        <script data-main="/static/redesign/build/spreadsheet.min.js" src="/static/redesign/external/require.js"></script>
+        <script data-main="/static/build/spreadsheet.min.js" src="/static/external/require.js"></script>
     {% endif %}
 
 </body>

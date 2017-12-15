@@ -1,4 +1,4 @@
-from localground.apps.site.models import BasePointMixin, BaseAudit, BaseGenericRelationMixin, ProjectMixin
+from localground.apps.site.models import PointMixin, BaseAudit, GenericRelationMixin, ProjectMixin
 from localground.apps.site.managers import RecordManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
@@ -14,7 +14,7 @@ adds the auditing columns to the user-generated tables.
 '''
 
 
-class DynamicModelMixin(BasePointMixin, BaseGenericRelationMixin, BaseAudit):
+class DynamicModelMixin(PointMixin, GenericRelationMixin, BaseAudit):
     project = models.ForeignKey('Project')
     filter_fields = BaseAudit.filter_fields + ('project',)
     objects = RecordManager()
@@ -83,7 +83,7 @@ class DynamicModelMixin(BasePointMixin, BaseGenericRelationMixin, BaseAudit):
             d.update(dict(project=self.project.to_dict()))
         else:
             d.update(dict(project_id=self.project.id))
-        
+
         if include_data:
             data = []
 
@@ -173,14 +173,14 @@ class ModelClassBuilder(object):
             self.last_updated_by = user
             self.time_stamp = get_timestamp_no_milliseconds()
             super(self.__class__, self).save(*args, **kwargs)
-        
+
         # Add in any fields that were provided
         attrs.update(self.additional_fields)
         attrs.update(dict(
             save=save,
             filter_fields=DynamicModelMixin.filter_fields + tuple(self.dynamic_fields.keys())
         ))
-        
+
         # --------------------------------------------------
         # remove model from  application cache, if it exists
         # --------------------------------------------------
@@ -246,7 +246,7 @@ class ModelClassBuilder(object):
         # This function uses the same code that's used in syncdb to dynamically
         # execute DDL sql on-the-fly.  Copied from:
         # /usr/local/lib/python2.6/dist-packages/django/core/management/commands/syncdb.py
-        
+
         from django.core.management.color import no_style
         from django.db import connection, transaction
 
@@ -297,7 +297,7 @@ class ModelClassBuilder(object):
                               (app_name, model._meta.object_name, e))
 
         #Add to ContentTypes also:
-        
+
         from django.utils.encoding import smart_text
 
         ct = ContentType(

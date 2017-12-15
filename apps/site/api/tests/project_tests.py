@@ -94,7 +94,6 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         marker = children.get('markers').get('data')[0]
         self.assertTrue(marker.has_key('photo_count'))
         self.assertTrue(marker.has_key('audio_count'))
-        self.assertTrue(marker.has_key('record_count'))
         self.assertTrue(marker.has_key('map_image_count'))
         
     def test_get_project_with_marker_arrays(self, **kwargs):
@@ -107,7 +106,6 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         marker = children.get('markers').get('data')[0]
         self.assertTrue(marker.has_key('photo_array'))
         self.assertTrue(marker.has_key('audio_array'))
-        self.assertTrue(marker.has_key('record_array'))
         self.assertTrue(marker.has_key('map_image_array'))
 
     def test_update_project_using_put(self, **kwargs):

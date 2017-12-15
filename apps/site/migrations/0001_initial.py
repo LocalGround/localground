@@ -22,112 +22,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='AttachmentUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_attachments',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='AudioUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_audio',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='FormUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_forms',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='MarkerUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_markers',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='PhotoUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_photos',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='PresentationUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_presentations',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='PrintUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_prints',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
             name='ProjectUser',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
             ],
             options={
                 'db_table': 'v_private_projects',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='ScanUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_scans',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='SnapshotUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_views',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='VideoUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_videos',
                 'managed': False,
             },
         ),
@@ -328,8 +228,7 @@ class Migration(migrations.Migration):
                 ('border_width', models.IntegerField()),
                 ('is_active', models.BooleanField(default=True)),
                 ('is_landscape', models.BooleanField(default=False)),
-                ('is_data_entry', models.BooleanField(default=True)),
-                ('is_mini_form', models.BooleanField(default=False)),
+                ('is_data_entry', models.BooleanField(default=True))
             ],
             options={
                 'ordering': ('id',),
@@ -418,26 +317,6 @@ class Migration(migrations.Migration):
                 'ordering': ['id'],
                 'verbose_name': 'photo',
                 'verbose_name_plural': 'photos',
-            },
-        ),
-        migrations.CreateModel(
-            name='Presentation',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
-                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
-                ('name', models.CharField(max_length=255, null=True, blank=True)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
-                ('access_key', models.CharField(max_length=16, null=True, blank=True)),
-                ('code', jsonfield.fields.JSONField(null=True, blank=True)),
-                ('slug', models.SlugField(help_text=b'A few words, separated by dashes "-", to be used as part of the url', max_length=100, verbose_name=b'Friendly URL')),
-                ('access_authority', models.ForeignKey(db_column=b'view_authority', verbose_name=b'Sharing', to='site.ObjectAuthority')),
-                ('last_updated_by', models.ForeignKey(related_name='site_presentation_related', to=settings.AUTH_USER_MODEL)),
-                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'abstract': False,
             },
         ),
         migrations.CreateModel(

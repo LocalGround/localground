@@ -8,13 +8,13 @@ import urllib
 
 class GroupManageSecurityTest(test.TestCase, ModelMixin):
 
-    fixtures = ['test_data.json'] #'initial_data.json', 
+    fixtures = ['test_data.json'] #'initial_data.json',
 
     def setUp(self):
         ModelMixin.setUp(self)
         self.groups = [
             self.project,
-            self.create_form_with_fields()
+            # self.create_form_with_fields()
         ]
 
     def test_owner_can_manage(self):
@@ -52,12 +52,12 @@ class GroupManageSecurityTest(test.TestCase, ModelMixin):
 class GroupEditSecurityTest(test.TestCase, ModelMixin):
 
     fixtures = ['test_data.json'] #'initial_data.json',
-    
+
     def setUp(self):
         ModelMixin.setUp(self)
         self.groups = [
             self.project,
-            self.create_form_with_fields()
+            # self.create_form_with_fields()
         ]
 
     def test_owner_can_edit(self):
@@ -94,14 +94,14 @@ class GroupEditSecurityTest(test.TestCase, ModelMixin):
 
 class GroupViewSecurityTest(test.TestCase, ModelMixin):
 
-    fixtures = ['test_data.json'] #'initial_data.json', 
+    fixtures = ['test_data.json'] #'initial_data.json',
 
     def setUp(self):
         ModelMixin.setUp(self)
         self.key = 'r3VqnUjxIUI245ns'
         self.groups = [
             self.project,
-            self.create_form_with_fields()
+            #self.create_form_with_fields()
         ]
 
     def test_owner_can_view(self):
