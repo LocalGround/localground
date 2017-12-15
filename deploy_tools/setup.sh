@@ -231,9 +231,9 @@ done
 
 
 ##################################
-##				##
-#	  CREATE USER		 #
-##				##
+##								##
+#	  CREATE USER		 		 #
+##								##
 ##################################
 #
 # This section creates the localground user
@@ -257,9 +257,9 @@ echo "✓ SUCCESS: Linux User '$USER' and dirs created" | tee -a "$log_file"
 
 
 ##################################
-##				##
-#	  INSTALL NGINX		 #
-##				##
+##								##
+#	  INSTALL NGINX		 		 #
+##								##
 ##################################
 #
 # This section installs the fast reverse proxy server NGINX.
@@ -280,9 +280,9 @@ fi
 	service nginx stop
 
 ##################################
-##				##
-#	 CONFIG Root Dir	 #
-##				##
+##								##
+#	 CONFIG Root Dir			 #
+##								##
 ##################################
 #
 # This section checks if root dir exists and clones git repo of localground
@@ -310,9 +310,9 @@ if [ "$development" = false ] ; then
 fi
 
 ##################################
-##				##
-#	  CONFIG SSL 	 	 #
-##				##
+##								##
+#	  CONFIG SSL 	 			 #
+##								##
 ##################################
 #
 # This section configures ssl snippet for nginx based on either dev environment or production
@@ -323,9 +323,9 @@ fi
 source "$FILE_PATH"config-ssl.sh
 
 ##################################
-##				##
-#	CONFIG Crontab	 	 #
-##				##
+##								##
+#	CONFIG Crontab	 			 #
+##								##
 ##################################
 #
 # This section creates crontab for TLS renewal.
@@ -343,9 +343,9 @@ fi
 
 
 ##################################
-##				##
-#	  CONFIG NGINX		 #
-##				##
+##								##
+#	  CONFIG NGINX				 #
+##								##
 ##################################
 #
 # This section creates virtual host rules file.
@@ -355,9 +355,9 @@ source "$FILE_PATH"config-nginx.sh
 
 
 ##################################
-##				##
-#	CONFIG Ownership	 #
-##				##
+##								##
+#	CONFIG Ownership			 #
+##								##
 ##################################
 #
 # This section sets the ownership of the project dir and enables website.
@@ -384,17 +384,17 @@ echo -e $"✓ SUCCESS: Ownership Configured! \n" | tee -a "$log_file"
 
 
 ##################################
-##				##
-#	Install Localground	 #
-##				##
+##								##
+#	Install Localground			 #
+##								##
 ##################################
 
 source "$FILE_PATH"install-localground.sh
 
 ##################################
-##				##
-#	Config & populate DB	 #
-##				##
+##								##
+#	Config & populate DB		 #
+##								##
 ##################################
 #
 # This section creates DB, user and grant perms
@@ -403,9 +403,9 @@ source "$FILE_PATH"install-localground.sh
 source "$FILE_PATH"config-database.sh
 
 ##################################
-##				##
-#	  CONFIG LOCALGROUND	 #
-##				##
+##								##
+#	  CONFIG LOCALGROUND		 #
+##								##
 ##################################
 #
 # This section creates settings settings_local.py
@@ -415,9 +415,9 @@ source "$FILE_PATH"config-database.sh
 source "$FILE_PATH"config-localground.sh
 
 ##################################
-##				##
-#	Populate Database	 #
-##				##
+##								##
+#	Populate Database			 #
+##								##
 ##################################
 #
 # This section populates the DB & lookuptables
@@ -452,9 +452,9 @@ echo -e $"✓ SUCCESS: celery Daemon restart! \n" | tee -a "$log_file"
 chown -R $USER:$GROUP_ACCOUNT $userDir$rootDir
 
 ##################################
-##				##
-#	   Display Info		 #
-##				##
+##								##
+#	   Display Info				 #
+##								##
 ##################################
 #
 # This section Shows Localground Variables
@@ -483,16 +483,16 @@ echo " "
 echo '------------------------------------' | tee -a "$log_file"
 echo ' Server configured. Check it out at ' | tee -a "$log_file"
 echo " https://$domain			  " | tee -a "$log_file"
-echo ' Django: http://localhost:8000      ' | tee -a "$log_file"
+echo ' Django: http://0.0.0.0:8000    ' | tee -a "$log_file"
 echo " Files: $userDir$rootDir		  " | tee -a "$log_file"
 echo '------------------------------------' | tee -a "$log_file"
 echo -e $"✓ SUCCESS: Log file written to: $log_file. \n"
 echo -e $"!!! -- PLEASE REMOVE logfile, it contains sensitive information -- !!! \n"
 
 ##################################
-##				##
-#	Run Django App		 #
-##				##
+##								##
+#	Run Django App				 #
+##								##
 ##################################
 #
 # This section runs Django / Localground
