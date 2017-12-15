@@ -148,23 +148,16 @@ define([
             });
 
             it("Shows an error when making an invalid slug for project", function(){
-
                 fixture = setFixtures("<div></div>").append(newShareForm.$el);
-                fixture.find('#slug').val('%^&*'); // Random invalid character
-                console.log(fixture.find('#slug').val());
-                console.log(fixture.find('#projectName').val());
-                console.log(fixture.find('#caption').val());
-                // now we expect an error to occur
                 expect(fixture.find('.error').length).toEqual(0);
-                console.log(fixture.html());
-                newShareForm.saveProjectSettings();
-                console.log(fixture.html());
-                // However, the save project settings does not have enough info
-                // about the model or response to work like the browser version
-                // which passes the invalid slug rather than reporting an error
-                console.log(fixture.find('.error'));
+                newShareForm.handleServerError(newShareForm.model, {
+                    responseText: '{"slug": ["Enter a valid \\"slug\\" consisting of letters, numbers, underscores or hyphens."]}'
+                })
                 expect(fixture.find('.error').length).toEqual(1);
-                alert("pause")
+                expect(newShareForm.slugError).toEqual("Enter a valid \"slug\" consisting of letters, numbers, underscores or hyphens.")
+                expect(fixture.find('.errorMessage').html()).toEqual(
+                    "Enter a valid \"slug\" consisting of letters, numbers, underscores or hyphens."
+                );
             });
         });
 

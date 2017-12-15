@@ -122,24 +122,28 @@ define(["jquery",
                 this.model.set('slug', this.setSlugValue(slug));
                 this.model.set('owner', owner);
                 this.model.save(null, {
-                    success:function(model, response){
-                        console.log("Project Saved / Created");
-                        that.createNewProjectUsers();
-                        that.slugError = null;
-                        that.render();
-                        that.app.vent.trigger('success-message', "Project Saved.");
-                        that.app.vent.trigger('hide-modal');
-                    },
-                    error: function (model, response){
-                        console.log("Project Not Saved / Created");
-                        that.app.vent.trigger('error-message', "Project Not Saved. Errors detected.");
-                        var messages = JSON.parse(response.responseText);
-                        if (messages.slug && messages.slug.length > 0) {
-                            that.slugError = messages.slug[0];
-                        }
-                        that.render();
-                    }
+                    success: this.handleServerSuccess.bind(this),
+                    error: this.handleServerError.bind(this)
                 });
+            },
+
+            handleServerSuccess: function(model, response) {
+                console.log("Project Saved / Created");
+                this.createNewProjectUsers();
+                this.slugError = null;
+                this.render();
+                this.app.vent.trigger('success-message', "Project Saved.");
+                this.app.vent.trigger('hide-modal');
+            },
+
+            handleServerError: function (model, response) {
+                console.log("Project Not Saved / Created");
+                this.app.vent.trigger('error-message', "Project Not Saved. Errors detected.");
+                var messages = JSON.parse(response.responseText);
+                if (messages.slug && messages.slug.length > 0) {
+                    this.slugError = messages.slug[0];
+                }
+                this.render();
             },
 
             setSlugValue: function(slug_txt){
