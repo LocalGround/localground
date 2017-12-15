@@ -41,9 +41,11 @@ define(["jquery",
             childViewOptions: function () {
                 return this.model.toJSON();
             },
+
+            /**/
             generateSlug: function () {
                 var name = this.$el.find('#projectName').val(),
-                    slug = name.toLowerCase().replace(/\s+/g, "-");
+                    slug = name.toLowerCase().replace(/\s*,\s|\s+/g, "-");
                 if (this.$el.find('#slug').val().length == 0) {
                     this.$el.find('#slug').val(slug);
                 }
@@ -116,7 +118,7 @@ define(["jquery",
                         that.slugError = null;
                         that.render();
                         that.app.vent.trigger('success-message', "Project Saved.");
-                        //that.app.vent.trigger('hide-modal');
+                        that.app.vent.trigger('hide-modal');
                     },
                     error: function (model, response){
                         console.log("Project Not Saved / Created");
