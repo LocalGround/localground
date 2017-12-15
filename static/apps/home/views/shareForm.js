@@ -41,12 +41,25 @@ define(["jquery",
             childViewOptions: function () {
                 return this.model.toJSON();
             },
+
+            /* Make the slug based on project title */
             generateSlug: function () {
-                var name = this.$el.find('#projectName').val(),
-                    slug = name.toLowerCase().replace(/\s+/g, "-");
-                if (this.$el.find('#slug').val().length == 0) {
-                    this.$el.find('#slug').val(slug);
+
+                if (this.$el.find('#slug').val().length > 0){
+                    return;
                 }
+
+                var name = this.$el.find('#projectName').val(),
+                    nameSplit = name.toLowerCase().split(" ");
+
+                // Remove all junk characters between words
+                for(var idx in nameSplit){
+                    nameSplit[idx] = nameSplit[idx].replace(/\W+/g, "").trim();
+                }
+                // clean up extra spaces and complete slug name
+                var slug = nameSplit.join(" ").trim().replace(/\s+/g, "-");
+
+                this.$el.find('#slug').val(slug);
             },
             childView: ProjectUserView,
             attachCollectionEventHandlers: function () {
@@ -102,7 +115,6 @@ define(["jquery",
                     console.log("required items not filled: Need Name, Owner, and User");
                     return;
                 }
-                console.log(this.model.collection);
                 this.model.set('name', projectName);
                 this.model.set('access_authority', shareType);
                 this.model.set('tags', tags);
@@ -110,24 +122,28 @@ define(["jquery",
                 this.model.set('slug', this.setSlugValue(slug));
                 this.model.set('owner', owner);
                 this.model.save(null, {
-                    success:function(model, response){
-                        console.log("Project Saved / Created");
-                        that.createNewProjectUsers();
-                        that.slugError = null;
-                        that.render();
-                        that.app.vent.trigger('success-message', "Project Saved.");
-                        //that.app.vent.trigger('hide-modal');
-                    },
-                    error: function (model, response){
-                        console.log("Project Not Saved / Created");
-                        that.app.vent.trigger('error-message', "Project Not Saved. Errors detected.");
-                        var messages = JSON.parse(response.responseText);
-                        if (messages.slug && messages.slug.length > 0) {
-                            that.slugError = messages.slug[0];
-                        }
-                        that.render();
-                    }
+                    success: this.handleServerSuccess.bind(this),
+                    error: this.handleServerError.bind(this)
                 });
+            },
+
+            handleServerSuccess: function(model, response) {
+                console.log("Project Saved / Created");
+                this.createNewProjectUsers();
+                this.slugError = null;
+                this.render();
+                this.app.vent.trigger('success-message', "Project Saved.");
+                this.app.vent.trigger('hide-modal');
+            },
+
+            handleServerError: function (model, response) {
+                console.log("Project Not Saved / Created");
+                this.app.vent.trigger('error-message', "Project Not Saved. Errors detected.");
+                var messages = JSON.parse(response.responseText);
+                if (messages.slug && messages.slug.length > 0) {
+                    this.slugError = messages.slug[0];
+                }
+                this.render();
             },
 
             setSlugValue: function(slug_txt){
@@ -298,23 +314,3 @@ define(["jquery",
         });
         return ShareFormView;
     });
-
-
-/* NOTES:
-To access the child elements with access to all the parameters,
-do the following:
-
-var parentTag = $("tag attribute or attribute or (.class or #id" name))
-var jChildren = parentTag.children(); // You have access to an array of children
-
-open up the console inspector by having the following:
-console.log(jChildren);
-and now you can see all the parameters that represent the attributes
-read carefully as they have different names compared to the HTML attributes
-
-now you can call the attributes themselves form the children indexes
-
-examples:
-jChildren[i].className
-jChildren[i].id
-*/
