@@ -19,7 +19,7 @@ rm /etc/nginx/sites-enabled/default
 ## echo config to file
 	if ! echo "## DJANGO Upstream
 upstream django {
-	server 127.0.0.1:8000;			# for a web port socket
+	server 0.0.0.0:8000;			# for a web port socket
 	# run: python $userDir$rootDir/apps/manage.py runserver 0.0.0.0:8000
         }
 
