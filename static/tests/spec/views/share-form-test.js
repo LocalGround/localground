@@ -30,6 +30,21 @@ define([
 
         };
 
+        var makeNewProject = function(){
+            var makeNewShareForm = new ShareForm({
+                app: this.app,
+                model: new Project({
+                    id: 8,
+                    time_stamp: new Date().toISOString().replace("Z", ""),
+                    date_created: new Date().toISOString().replace("Z", ""),
+                    access_authority: 1, // Private
+                    owner: "MrJBRPG"
+                })
+            });
+
+            return makeNewShareForm;
+        };
+
         describe("Initialization Test", function(){
             /*
             DO the following:
@@ -111,6 +126,37 @@ define([
 
                 fixture = setFixtures("<div></div>").append(newShareForm.$el);
                 expect(1).toEqual(1);
+            });
+        });
+
+        describe("Share Form: Project Title Slug", function(){
+            beforeEach(function(){
+                initSpies();
+                newShareForm = new ShareForm({
+                    app: this.app,
+                    model: new Project({
+                        id: 8,
+                        time_stamp: new Date().toISOString().replace("Z", ""),
+                        date_created: new Date().toISOString().replace("Z", ""),
+                        access_authority: 1, // Private
+                        owner: "MrJBRPG"
+                    })
+                });
+            });
+
+            it("Shows an error when making an invalid slug for project", function(){
+
+                fixture = setFixtures("<div></div>").append(newShareForm.$el);
+                fixture.find('#slug').val('%^&*'); // Random invalid character
+                console.log(fixture.find('#slug').val());
+                // now we expect an error to occur
+                expect(fixture.find('.error').length).toEqual(0);
+                newShareForm.saveProjectSettings();
+                // However, the save project settings does not have enough info
+                // about the model or response to work like the browser version
+                // which passes the invalid slug rather than reporting an error
+                console.log(fixture.find('.error'));
+                expect(fixture.find('.error').length).toEqual(1);
             });
         });
 

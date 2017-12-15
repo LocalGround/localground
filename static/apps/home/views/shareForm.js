@@ -115,7 +115,6 @@ define(["jquery",
                     console.log("required items not filled: Need Name, Owner, and User");
                     return;
                 }
-                console.log(this.model.collection);
                 this.model.set('name', projectName);
                 this.model.set('access_authority', shareType);
                 this.model.set('tags', tags);
@@ -311,23 +310,3 @@ define(["jquery",
         });
         return ShareFormView;
     });
-
-
-/* NOTES:
-To access the child elements with access to all the parameters,
-do the following:
-
-var parentTag = $("tag attribute or attribute or (.class or #id" name))
-var jChildren = parentTag.children(); // You have access to an array of children
-
-open up the console inspector by having the following:
-console.log(jChildren);
-and now you can see all the parameters that represent the attributes
-read carefully as they have different names compared to the HTML attributes
-
-now you can call the attributes themselves form the children indexes
-
-examples:
-jChildren[i].className
-jChildren[i].id
-*/
