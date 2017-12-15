@@ -44,6 +44,11 @@ define(["jquery",
 
             /* Make the slug based on project title */
             generateSlug: function () {
+
+                if (this.$el.find('#slug').val().length > 0){
+                    return;
+                }
+
                 var name = this.$el.find('#projectName').val(),
                     nameSplit = name.toLowerCase().split(" ");
 
@@ -53,9 +58,8 @@ define(["jquery",
                 }
                 // clean up extra spaces and complete slug name
                 var slug = nameSplit.join(" ").trim().replace(/\s+/g, "-");
-                if (this.$el.find('#slug').val().length == 0) {
-                    this.$el.find('#slug').val(slug);
-                }
+
+                this.$el.find('#slug').val(slug);
             },
             childView: ProjectUserView,
             attachCollectionEventHandlers: function () {
