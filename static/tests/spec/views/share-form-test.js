@@ -138,10 +138,13 @@ define([
                         id: 8,
                         time_stamp: new Date().toISOString().replace("Z", ""),
                         date_created: new Date().toISOString().replace("Z", ""),
-                        access_authority: 1, // Private
-                        owner: "MrJBRPG"
+                        access_authority: 1,
+                        name: "My First Project",
+                        caption: "this is a test"
                     })
                 });
+                newShareForm.app.username = "MrJBRPG";
+                newShareForm.render();
             });
 
             it("Shows an error when making an invalid slug for project", function(){
@@ -149,14 +152,19 @@ define([
                 fixture = setFixtures("<div></div>").append(newShareForm.$el);
                 fixture.find('#slug').val('%^&*'); // Random invalid character
                 console.log(fixture.find('#slug').val());
+                console.log(fixture.find('#projectName').val());
+                console.log(fixture.find('#caption').val());
                 // now we expect an error to occur
                 expect(fixture.find('.error').length).toEqual(0);
+                console.log(fixture.html());
                 newShareForm.saveProjectSettings();
+                console.log(fixture.html());
                 // However, the save project settings does not have enough info
                 // about the model or response to work like the browser version
                 // which passes the invalid slug rather than reporting an error
                 console.log(fixture.find('.error'));
                 expect(fixture.find('.error').length).toEqual(1);
+                alert("pause")
             });
         });
 
