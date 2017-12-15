@@ -3,19 +3,26 @@ from django.conf import settings
 from pwd import getpwnam
 from rest_framework import exceptions
 from localground.apps.lib.helpers import generic
-    
+
 '''
 Utility File Path Methods
 '''
 def encrypt_media_path(host, model_name_plural, path):
     timestamp = int(time.time())
     path = path + '#' + str(timestamp)
+    return '%s://%s/%s/' % (
+        settings.PROTOCOL,
+        host,
+        path
+    )
+    '''
     return '%s://%s/profile/%s/%s/' % (
         settings.PROTOCOL,
         host,
         model_name_plural.replace(' ', '-'),
         base64.b64encode(path)
     )
+    '''
 
 def get_absolute_path(virtual_path):
     return settings.FILE_ROOT + virtual_path
@@ -81,7 +88,6 @@ def save_file_to_disk(owner, model_name_plural, file, uuid=None):
 
     # derive file name:
     file_name, ext = os.path.splitext(file.name.lower())
-    file_name = file_name.split('/')[-1]
     file_name = ''.join(
         char for char in file_name if char.isalnum()).lower()
     if os.path.exists(media_path + '/%s%s' % (file_name, ext)):

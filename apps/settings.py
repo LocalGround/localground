@@ -35,6 +35,7 @@ SERVER_URL = '%s//%s' % (PROTOCOL, SERVER_HOST)
 FILE_ROOT = os.environ.get('FILE_ROOT', '/home/directory/for/localground')
 STATIC_MEDIA_DIR = 'static'
 STATIC_URL = '/static/'
+MEDIA_URL = '/userdata/'
 USER_MEDIA_DIR = 'userdata'
 
 # Absolute path to the directory root of the local ground instance:
