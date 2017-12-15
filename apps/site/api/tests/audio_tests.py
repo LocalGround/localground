@@ -105,9 +105,10 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
             # ensure not empty:
             self.assertTrue(len(new_audio.file_name_new) > 5)
             self.assertEqual(settings.SERVER_HOST, new_audio.host)
-            self.assertNotEqual(path.find('/profile/audio/'), -1)
+            self.assertNotEqual(path.find('/userdata/media/{0}/audio/'.format(
+                self.user.username)), -1)
             self.assertNotEqual(path.find(new_audio.host), -1)
-            self.assertTrue(len(path.split('/')[-2]) > 40)
+            self.assertTrue(len(path) > 50)
 
 
 class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):

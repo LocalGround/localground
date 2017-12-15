@@ -102,7 +102,8 @@ while getopts ":dp" opt; do
     d)
       echo "-d Development Env was triggered!" >&2
 development=true
-domain=localground
+domain=localhost:7777
+protocol=http
 emailaddr=localgrounddev@mailinator.com
 userDir='/'
 rootDir=$domain
@@ -146,6 +147,7 @@ fi
 if [ "$development" = false ] ; then
   read -p "Enter your Domain Name [$domain]: " name
         domain=${name:-$domain}
+		protocol=https
         ## Check if domain already exists
         if [ -e $sitesAvailable$domain ]; then
                 echo -e $"This domain already exists.\nPlease Try Another one" | tee -a "$log_file"
@@ -157,7 +159,7 @@ echo -e $"✓ SUCCESS: Host / Domain: $domain \n" | tee -a "$log_file"
 ## Root Dir config
 read -p "Enter the Root Directory [/var/www/$domain]: " directory
 if [[ "$rootDir" =~ ^/ ]]; then
-	userDir=''
+	userDir='/'
 fi
 	userDir='/var/www/'
 	rootDir=${directory:-$domain}
@@ -229,9 +231,9 @@ done
 
 
 ##################################
-##				##
-#	  CREATE USER		 #
-##				##
+##								##
+#	  CREATE USER		 		 #
+##								##
 ##################################
 #
 # This section creates the localground user
@@ -255,9 +257,9 @@ echo "✓ SUCCESS: Linux User '$USER' and dirs created" | tee -a "$log_file"
 
 
 ##################################
-##				##
-#	  INSTALL NGINX		 #
-##				##
+##								##
+#	  INSTALL NGINX		 		 #
+##								##
 ##################################
 #
 # This section installs the fast reverse proxy server NGINX.
@@ -278,9 +280,9 @@ fi
 	service nginx stop
 
 ##################################
-##				##
-#	 CONFIG Root Dir	 #
-##				##
+##								##
+#	 CONFIG Root Dir			 #
+##								##
 ##################################
 #
 # This section checks if root dir exists and clones git repo of localground
@@ -308,9 +310,9 @@ if [ "$development" = false ] ; then
 fi
 
 ##################################
-##				##
-#	  CONFIG SSL 	 	 #
-##				##
+##								##
+#	  CONFIG SSL 	 			 #
+##								##
 ##################################
 #
 # This section configures ssl snippet for nginx based on either dev environment or production
@@ -321,9 +323,9 @@ fi
 source "$FILE_PATH"config-ssl.sh
 
 ##################################
-##				##
-#	CONFIG Crontab	 	 #
-##				##
+##								##
+#	CONFIG Crontab	 			 #
+##								##
 ##################################
 #
 # This section creates crontab for TLS renewal.
@@ -341,9 +343,9 @@ fi
 
 
 ##################################
-##				##
-#	  CONFIG NGINX		 #
-##				##
+##								##
+#	  CONFIG NGINX				 #
+##								##
 ##################################
 #
 # This section creates virtual host rules file.
@@ -353,9 +355,9 @@ source "$FILE_PATH"config-nginx.sh
 
 
 ##################################
-##				##
-#	CONFIG Ownership	 #
-##				##
+##								##
+#	CONFIG Ownership			 #
+##								##
 ##################################
 #
 # This section sets the ownership of the project dir and enables website.
@@ -369,7 +371,7 @@ else
 	chown -R $USER:www-data $userDir$rootDir
 fi
 	##TODO: fix the need for this
-ln -s  $userDir$rootDir /var/www/localground
+ln -s  $userDir$rootDir localground
 
 	## enable website
 ln -s $sitesAvailable$domain $sitesEnable$domain
@@ -382,17 +384,17 @@ echo -e $"✓ SUCCESS: Ownership Configured! \n" | tee -a "$log_file"
 
 
 ##################################
-##				##
-#	Install Localground	 #
-##				##
+##								##
+#	Install Localground			 #
+##								##
 ##################################
 
 source "$FILE_PATH"install-localground.sh
 
 ##################################
-##				##
-#	Config & populate DB	 #
-##				##
+##								##
+#	Config & populate DB		 #
+##								##
 ##################################
 #
 # This section creates DB, user and grant perms
@@ -401,9 +403,9 @@ source "$FILE_PATH"install-localground.sh
 source "$FILE_PATH"config-database.sh
 
 ##################################
-##				##
-#	  CONFIG LOCALGROUND	 #
-##				##
+##								##
+#	  CONFIG LOCALGROUND		 #
+##								##
 ##################################
 #
 # This section creates settings settings_local.py
@@ -413,9 +415,9 @@ source "$FILE_PATH"config-database.sh
 source "$FILE_PATH"config-localground.sh
 
 ##################################
-##				##
-#	Populate Database	 #
-##				##
+##								##
+#	Populate Database			 #
+##								##
 ##################################
 #
 # This section populates the DB & lookuptables
@@ -423,8 +425,8 @@ source "$FILE_PATH"config-localground.sh
 
 ## Populate the db & lookuptables
 echo "Populate the DB" | tee -a "$log_file"
-	sudo -u $USER bash -c "python /var/www/localground/apps/manage.py makemigrations"
-	sudo -u $USER bash -c "python /var/www/localground/apps/manage.py migrate"
+	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' makemigrations"
+	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' migrate"
 	service postgresql restart
 echo -e $"✓ SUCCESS: Database populated! \n" | tee -a "$log_file"
 
@@ -433,8 +435,8 @@ echo -e $"✓ SUCCESS: Database populated! \n" | tee -a "$log_file"
 ###############################################
 
 echo -e $"CONFIG: Create required Django tables." | tee -a "$log_file"
-	sudo -u $USER bash -c "python /var/www/localground/apps/manage.py syncdb --noinput"
-	sudo -u $USER bash -c "python /var/www/localground/apps/manage.py test --verbosity=2"
+	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' syncdb --noinput"
+	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' test --verbosity=2"
 echo -e $"✓ SUCCESS: Django Tables Created! \n" | tee -a "$log_file"
 
 echo "Starting celery daemon" | tee -a "$log_file"
@@ -450,9 +452,9 @@ echo -e $"✓ SUCCESS: celery Daemon restart! \n" | tee -a "$log_file"
 chown -R $USER:$GROUP_ACCOUNT $userDir$rootDir
 
 ##################################
-##				##
-#	   Display Info		 #
-##				##
+##								##
+#	   Display Info				 #
+##								##
 ##################################
 #
 # This section Shows Localground Variables
@@ -481,16 +483,16 @@ echo " "
 echo '------------------------------------' | tee -a "$log_file"
 echo ' Server configured. Check it out at ' | tee -a "$log_file"
 echo " https://$domain			  " | tee -a "$log_file"
-echo ' Django: http://localhost:8000      ' | tee -a "$log_file"
+echo ' Django: http://0.0.0.0:8000    ' | tee -a "$log_file"
 echo " Files: $userDir$rootDir		  " | tee -a "$log_file"
 echo '------------------------------------' | tee -a "$log_file"
 echo -e $"✓ SUCCESS: Log file written to: $log_file. \n"
 echo -e $"!!! -- PLEASE REMOVE logfile, it contains sensitive information -- !!! \n"
 
 ##################################
-##				##
-#	Run Django App		 #
-##				##
+##								##
+#	Run Django App				 #
+##								##
 ##################################
 #
 # This section runs Django / Localground
@@ -499,4 +501,4 @@ echo -e $"✓ SUCCESS: Now Starting LocalGround! \n" | tee -a "$log_file"
 service nginx restart
 
 #TODO: move to socket & config uWSGI in emperor mode.
-sudo -u $USER bash -c "python /var/www/localground/apps/manage.py runserver 0.0.0.0:8000"
+sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' runserver 0.0.0.0:8000"

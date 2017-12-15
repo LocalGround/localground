@@ -27,7 +27,7 @@ ADMIN_EMAILS = ['$emailaddr',]
 # Custom Local Variables
 # uses for internal links (server_url)
 SERVER_HOST = '$domain'
-PROTOCOL = 'https'
+PROTOCOL = '$protocol'
 SERVER_URL = '%s://%s' % (PROTOCOL, SERVER_HOST)
 
 # API Keys
@@ -58,7 +58,7 @@ FILE_ROOT = '/var/www/localground'
 STATIC_ROOT = '%s/%s' % (FILE_ROOT, STATIC_MEDIA_DIR)
 APPS_ROOT = '%s/apps' % FILE_ROOT
 USER_MEDIA_ROOT = '%s/%s' % (FILE_ROOT, USER_MEDIA_DIR)
-FONT_ROOT = '%s/css/fonts/' % STATIC_ROOT
+FONT_ROOT = '%s/assets/fonts/' % STATIC_ROOT
 TEMP_DIR = '%s/tmp/' % FILE_ROOT
 QR_READER_PATH = '%s/lib/barcodereader' % APPS_ROOT
 

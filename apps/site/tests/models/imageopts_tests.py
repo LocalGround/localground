@@ -2,11 +2,11 @@ from localground.apps.site.models import ImageOpts
 from django.conf import settings
 from django.contrib.gis.db import models
 from localground.apps.site.tests.models import \
-    MediaMixinTest, BaseAuditAbstractModelClassTest,ExtentsMixinTest, ModelMixin 
+    MediaMixinTest, BaseAuditAbstractModelClassTest,ExtentsMixinTest, ModelMixin
 from django import test
 
 
-class ImageOptsTest(ExtentsMixinTest, MediaMixinTest, 
+class ImageOptsTest(ExtentsMixinTest, MediaMixinTest,
     ModelMixin, test.TestCase):
 
     def setUp(self):
@@ -43,13 +43,9 @@ class ImageOptsTest(ExtentsMixinTest, MediaMixinTest,
         )
 
     def test_processed_map_url_path(self):
-        import base64
-        from localground.apps.lib.helpers import upload_helpers
-        map_decoded = base64.b64decode(self.model.
-            processed_map_url_path().split('/')[-2])
-        map_decoded = map_decoded.split('#')[0]
         self.assertEqual(
-            map_decoded,
-            '/' + settings.USER_MEDIA_DIR + '/media/tester/map-images/' +
+            self.model.processed_map_url_path(),
+            settings.SERVER_URL + '/' + settings.USER_MEDIA_DIR +
+            '/media/tester/map-images/' +
             self.model.file_name_orig
         )

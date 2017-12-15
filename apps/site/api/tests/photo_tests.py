@@ -106,9 +106,11 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
                 response.data.get("path_marker_sm")
             ]
             for path in paths:
-                self.assertNotEqual(path.find('/profile/photos/'), -1)
+                self.assertNotEqual(
+                    path.find('/userdata/media/{0}/photos/'.format(
+                        self.user.username)), -1)
                 self.assertNotEqual(path.find(new_photo.host), -1)
-                self.assertTrue(len(path.split('/')[-2]) > 40)
+                self.assertTrue(len(path) > 50)
 
 
 class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):

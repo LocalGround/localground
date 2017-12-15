@@ -43,14 +43,10 @@ class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
             self.assertEqual(type(field), prop_type)
 
     def test_thumb(self):
-        import base64
-        from localground.apps.lib.helpers import upload_helpers
-        thumb_decoded = base64.b64decode(self.model.thumb().split('/')[-2])
-        thumb_decoded = thumb_decoded.split('#')[0]
         self.assertEqual(
-            thumb_decoded,
-            '/' + settings.USER_MEDIA_DIR + '/media/tester/map-images/' +
-            self.model.file_name_thumb
+            self.model.thumb(),
+            settings.SERVER_URL + '/' + settings.USER_MEDIA_DIR +
+            '/media/tester/map-images/' + self.model.file_name_thumb
         )
 
     def test_get_abs_directory_path(self):
@@ -74,15 +70,10 @@ class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
         )
 
     def test_processed_map_url_path(self):
-        import base64
-        from localground.apps.lib.helpers import upload_helpers
-        file_name_orig = base64.b64decode(
-            self.model.processed_map_url_path().split('/')[-2]
-        )
-        file_name_orig = file_name_orig.split('#')[0]
         self.assertEqual(
-            file_name_orig,
-            '/' + settings.USER_MEDIA_DIR + '/media/tester/map-images/' +
+            self.model.processed_map_url_path(),
+            settings.SERVER_URL + '/' + settings.USER_MEDIA_DIR +
+            '/media/tester/map-images/' +
             self.model.processed_image.file_name_orig
         )
 
