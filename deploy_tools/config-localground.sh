@@ -27,7 +27,7 @@ ADMIN_EMAILS = ['$emailaddr',]
 # Custom Local Variables
 # uses for internal links (server_url)
 SERVER_HOST = '$domain'
-PROTOCOL = 'https'
+PROTOCOL = '$protocol'
 SERVER_URL = '%s://%s' % (PROTOCOL, SERVER_HOST)
 
 # API Keys

@@ -102,7 +102,8 @@ while getopts ":dp" opt; do
     d)
       echo "-d Development Env was triggered!" >&2
 development=true
-domain=localground
+domain=localhost:7777
+protocol=http
 emailaddr=localgrounddev@mailinator.com
 userDir='/'
 rootDir=$domain
@@ -146,6 +147,7 @@ fi
 if [ "$development" = false ] ; then
   read -p "Enter your Domain Name [$domain]: " name
         domain=${name:-$domain}
+		protocol=https
         ## Check if domain already exists
         if [ -e $sitesAvailable$domain ]; then
                 echo -e $"This domain already exists.\nPlease Try Another one" | tee -a "$log_file"
