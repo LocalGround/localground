@@ -30,7 +30,7 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 # Custom Local Variables
 PROTOCOL = os.environ.get('PROTOCOL', 'https')
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
-SERVER_URL = '%s//%s' % (PROTOCOL, SERVER_HOST)
+SERVER_URL = '%s://%s' % (PROTOCOL, SERVER_HOST)
 
 FILE_ROOT = os.environ.get('FILE_ROOT', '/home/directory/for/localground')
 STATIC_MEDIA_DIR = 'static'
