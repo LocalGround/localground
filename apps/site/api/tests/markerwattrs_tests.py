@@ -84,21 +84,14 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
         # models.Audio.objects.all().delete()
 
     def test_post_individual_attrs(self):
-        '''
-        DATE_INPUT_FORMATS = ('%m/%d/%Y', '%Y-%m-%d', '%m/%d/%y', '%m-%d-%y', '%m-%d-%Y')
-        TIME_INPUT_FORMATS = ('%I:%M:%S %p', '%H:%M:%S', '%H:%M')
-        %Y-%m-%dT%H:%M:%S'
-        '''
-        # YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]
-        # (2012, 9, 4, 6, 0)
         for d in [
-            # {'field_1': 'field_1 text'},
-            # {'field_2': 77}, # should not be a string?
+            {'field_1': 'field_1 text'},
+            {'field_2': 77}, # should not be a string?
             {'field_3': "2012-09-04 06:00:00"}, #Can't get DateTime to work
-            # {'field_4': 'true'}, # should not be a string?
-            # {'field_5': '43124.543252'},
-            # {'field_6': '2'},
-            # {'field_7': 'Independent'}
+            {'field_4': True}, # should not be a string?
+            {'field_5': 43124.543252},
+            {'field_6': 2},
+            {'field_7': 'Independent'}
         ]:
             default_data = {
                 'project_id': self.project.id
@@ -116,9 +109,9 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 )
                 new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
                 #print(models.MarkerWithAttributes.objects.all())
-                print(new_marker.attributes)
-                print(d.values()[0])
-                print(response.data)
+                # print(new_marker.attributes)
+                # print(d.values()[0])
+                # print(response.data)
                 self.assertEqual(
                     response.data[d.keys()[0]], d.values()[0]
                 )
@@ -127,11 +120,11 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
     def test_post_many_attributes(self):
         hstore_data = {
             'field_1': 'field_1 text',
-            'field_2': '77',
-            #'field_3': '1990-12-31T23:59:60Z', #Can't get DateTime to work
-            'field_4': 'true',
-            'field_5': '43124.543252',
-            'field_6': '2',
+            'field_2': 77,
+            'field_3': '2012-09-04 06:00:00', #Can't get DateTime to work
+            'field_4': True,
+            'field_5': 43124.543252,
+            'field_6': 2,
             'field_7': 'Independent'
         }
         dict_len = len(hstore_data)
@@ -156,9 +149,15 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 
                 # print(new_marker.attributes)
                 # print(new_marker.id)
+                '''
                 for i in range(0, dict_len):
                     self.assertEqual(
                         new_marker.attributes[hstore_data.keys()[i]], hstore_data.values()[i]
+                    )
+                '''
+                for i in range(0, dict_len):
+                    self.assertEqual(
+                        response.data[hstore_data.keys()[i]], hstore_data.values()[i]
                     )
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -381,11 +380,11 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.list_url = '/api/0/forms/%s/data/' % form.id
         self.hstore_data = [
             {'field_1': 'field_1 text'},
-            {'field_2': '77'}, # should not be a string?
-            #{'field_3': '1990-12-31T23:59:60Z'}, #Can't get DateTime to work
-            {'field_4': 'true'}, # should not be a string?
-            #{'field_5': '43124.543252'}, 
-            {'field_6': '2'},
+            {'field_2': 77}, # should not be a string?
+            {'field_3': '2012-09-04 06:00:00'}, #Can't get DateTime to work
+            {'field_4': True}, # should not be a string?
+            {'field_5': 43124.543252}, 
+            {'field_6': 2},
             {'field_7': 'Independent'}
         ]
 
@@ -414,9 +413,14 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             )
             new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
            
+            print(d)
+            print(response.data)
+            print('')
+            '''
             self.assertEqual(
-                new_marker.attributes[d.keys()[0]], d.values()[0]
+                response.data[d.keys()[0]], d.values()[0]
             )
+            '''
   
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -445,8 +449,8 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             # having to cast to string and make everything lowercase to get matches
             # ...seems like the wrong approach
             self.assertEqual(
-                str(response.data[posted_data[marker_id][0]]).lower(), 
-                posted_data[marker_id][1].lower())
+                response.data[posted_data[marker_id][0]], 
+                posted_data[marker_id][1])
 
     
     def test_put(self):
@@ -455,11 +459,11 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
         new_hstore_data_dict = {
             'field_1': 'new field_1 text',
-            'field_2': '88', # should not be a string?
-            #'field_3': '2002-12-31T23:59:60Z', #Can't get DateTime to work
-            'field_4': 'false', # should not be a string?
-            #'field_5': '7777.7777', 
-            'field_6': '1',
+            'field_2': 88, # should not be a string?
+            'field_3': '2012-09-04 06:00:00', #Can't get DateTime to work
+            'field_4': False, # should not be a string?
+            'field_5': 7777.7777, 
+            'field_6': 1,
             'field_7': 'Democrat'
         }
 
@@ -496,19 +500,17 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                     content_type="application/x-www-form-urlencoded")
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            # print(new_data)
-            # print(response.data)
-            # print(response.status_code)
-            # print('   ')
-            # test contains the hstore key/attribute
+           
+            # test that contains the hstore key/attribute
             self.assertTrue(posted_data[marker_id][0] in response.data)
 
             # test hstore key/attribute value is correct
             # having to cast to string and make everything lowercase to get matches
             # ...seems like the wrong approach
+            print(response.data[posted_data[marker_id][0]])
             self.assertEqual(
-                str(response.data[posted_data[marker_id][0]]).lower(), 
-                new_data_item.lower())
+                response.data[posted_data[marker_id][0]], 
+                new_data_item)
 
             # finally, check that other fields are replaced (nulled)
             marker = models.MarkerWithAttributes.objects.get(id=marker_id)
@@ -526,11 +528,11 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
         new_hstore_data_dict = {
             'field_1': 'new field_1 text',
-            'field_2': '88', # should not be a string?
-            #'field_3': '2002-12-31T23:59:60Z', #Can't get DateTime to work
-            'field_4': 'false', # should not be a string?
-            #'field_5': '7777.7777', 
-            'field_6': '1',
+            'field_2': 88, # should not be a string?
+            'field_3': '2012-09-04 06:00:00', #Can't get DateTime to work
+            'field_4': False, # should not be a string?
+            'field_5': 7777.7777, 
+            'field_6': 1,
             'field_7': 'Democrat'
         }
 
@@ -561,18 +563,14 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                     content_type="application/x-www-form-urlencoded")
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            # print(new_data)
-            # print(response.data)
-            # print('   ')
+
             # test contains the hstore key/attribute
             self.assertTrue(posted_data[marker_id][0] in response.data)
 
             # test hstore key/attribute value is correct
-            # having to cast to string and make everything lowercase to get matches
-            # ...seems like the wrong approach
             self.assertEqual(
-                str(response.data[posted_data[marker_id][0]]).lower(), 
-                new_data_item.lower())
+                response.data[posted_data[marker_id][0]], 
+                new_data_item)
 
             # finally, check that other fields have not been replaced (nulled)
             marker = models.MarkerWithAttributes.objects.get(id=marker_id)
@@ -582,10 +580,6 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             self.assertEqual(response.data['geometry'], self.Point)
             
             
-
-
-    def test_something(self):
-        self.assertAlmostEqual(1, 1)
 
     def test_bad_json_update_fails(self, **kwargs):
         # 1. define a series of bad JSON dictionaries
@@ -654,16 +648,83 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             # trigger assertion success if marker is removed
             self.assertEqual(1, 1)
 
-        def test_child_serializer(self, **kwargs):
-            self.photo1 = self.create_photo(self.user, self.project)
-            self.audio1 = self.create_audio(self.user, self.project)
-            self.create_relation(self.markerwattrs, self.photo1)
-            self.create_relation(self.markerwattrs, self.audio1)
+    def test_child_serializer(self, **kwargs):
+        self.photo1 = self.create_photo(self.user, self.project)
+        self.audio1 = self.create_audio(self.user, self.project)
+        self.create_relation(self.markerwattrs, self.photo1)
+        self.create_relation(self.markerwattrs, self.audio1)
 
-            response = self.client_user.get(self.url)
-            self.assertEqual(len(response.data['children']['photos']['data']), 1)
-            self.assertEqual(len(response.data['children']['audio']['data']), 1)
+        response = self.client_user.get(self.url)
+        self.assertEqual(len(response.data['children']['photos']['data']), 1)
+        self.assertEqual(len(response.data['children']['audio']['data']), 1)
 
-            # clean up:
-            self.delete_relation(self.markerwattrs, self.photo1)
-            self.delete_relation(self.markerwattrs, self.audio1)
+        # clean up:
+        self.delete_relation(self.markerwattrs, self.photo1)
+        self.delete_relation(self.markerwattrs, self.audio1)
+
+    def test_attach_media(self):
+        mwa_ids, posted_data = self.post_hstore_data(self.hstore_data)
+
+        self.photo1 = self.create_photo(self.user, self.project)
+        self.audio1 = self.create_audio(self.user, self.project)
+
+        photo_data = {
+            'object_id': self.photo1.id,
+            'ordering': 1 
+        }
+
+        audio_data = {
+            'object_id': self.audio1.id,
+            'ordering': 1 
+        }
+
+        for marker_id in mwa_ids:
+            # first just check for some pre-existing default data
+            marker = models.MarkerWithAttributes.objects.get(id=marker_id)
+
+            photo_url = self.list_url + '%s/' % marker_id + 'photos/'
+            audio_url = self.list_url + '%s/' % marker_id + 'audio/'
+
+            photo_response = self.client_user.post(
+                    photo_url,
+                    data=urllib.urlencode(photo_data),
+                    HTTP_X_CSRFTOKEN=self.csrf_token,
+                    content_type="application/x-www-form-urlencoded")
+
+            audio_response = self.client_user.post(
+                    audio_url,
+                    data=urllib.urlencode(audio_data),
+                    HTTP_X_CSRFTOKEN=self.csrf_token,
+                    content_type="application/x-www-form-urlencoded")
+
+            self.assertEqual(photo_response.status_code, status.HTTP_201_CREATED)
+
+            self.assertEqual(audio_response.status_code, status.HTTP_201_CREATED)
+
+            response = self.client_user.get(self.list_url + '%s/' % marker_id)
+
+            self.assertEqual(
+                response.data['children']['photos']['data'][0]['url'],
+                "/api/0/photos/" + '%s/' % self.photo1.id)
+            self.assertEqual(
+                response.data['children']['audio']['data'][0]['url'],
+                "/api/0/audio/" + '%s/' % self.audio1.id)
+
+            self.assertEqual(
+                response.data['attached_photos_ids'][0], self.photo1.id
+            )
+            self.assertEqual(
+                len(response.data['attached_photos_ids']), 1
+            )
+            self.assertEqual(
+                response.data['attached_audio_ids'][0], self.audio1.id
+            )
+            self.assertEqual(
+                len(response.data['attached_audio_ids']), 1
+            )
+
+            self.delete_relation(marker, self.photo1)
+            self.delete_relation(marker, self.audio1)
+
+
+    

@@ -83,7 +83,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             'videos': self.get_videos(obj),
             'audio': self.get_audio(obj),
             'map_images': self.get_mapimages(obj),
-            'markers': self.get_markers(obj, forms)
+            'markers': self.get_markers(obj)
             #'markers_with_attributes': self.get_mwas(obj, forms)
         }
 
@@ -151,27 +151,15 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             name="Map Images"
         )
 
-    def get_markers(self, obj, forms):
-        if self.context['view'].request.GET.get('marker_with_media_arrays') in ['1', 'true', 'True']:
-            return self.serialize_list(
-                models.Marker,
-                MarkerSerializerLists,
-                models.Marker.objects.get_objects_with_lists(
-                    obj.owner,
-                    project=obj,
-                    forms=forms
-                )
+    def get_markers(self, obj):
+        return self.serialize_list(
+            models.Marker,
+            MarkerSerializerLists,
+            models.Marker.objects.get_objects_with_lists(
+                project=obj,
             )
-        else:
-            return self.serialize_list(
-                models.Marker,
-                MarkerSerializerCounts,
-                models.Marker.objects.get_objects_with_counts(
-                    obj.owner,
-                    project=obj,
-                    forms=forms
-                )
-            )
+        )
+        
 
 
     def serialize_list(self, model_class, serializer_class, records,
