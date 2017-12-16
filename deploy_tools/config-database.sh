@@ -53,6 +53,8 @@ echo "Alter DB to Django recommendations" | tee -a "$log_file"
 echo "Create PostGIS Extension" | tee -a "$log_file"
 	sudo -u $USER bash -c "psql -c \"CREATE EXTENSION postgis;\" -d $DB_NAME"
 	sudo -u $USER bash -c "psql -c \"CREATE EXTENSION postgis_topology;\" -d $DB_NAME"
+	sudo -u $USER bash -c "psql -d template1 -c \"create extension hstore;\""
+	sudo -u $USER bash -c "psql -c \"CREATE EXTENSION hstore;\" -d $DB_NAME"
 
 ## Restart postgresql
 	service postgresql restart
