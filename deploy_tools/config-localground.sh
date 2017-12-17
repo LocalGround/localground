@@ -26,8 +26,8 @@ ADMIN_EMAILS = ['$emailaddr',]
 
 # Custom Local Variables
 # uses for internal links (server_url)
-SERVER_HOST = '$domain'
-PROTOCOL = '$protocol'
+SERVER_HOST = '$SERVER_HOST'
+PROTOCOL = '$PROTOCOL'
 SERVER_URL = '%s://%s' % (PROTOCOL, SERVER_HOST)
 
 # API Keys
@@ -54,7 +54,7 @@ ALLOWED_HOSTS = ['*'] #TODO: CHECK
 REGISTRATION_OPEN = $REGISTRATION_OPEN
 
 # Absolute path to the directory root of the local ground instance:
-FILE_ROOT = '/var/www/localground'
+FILE_ROOT = '$userDir$rootDir'
 STATIC_ROOT = '%s/%s' % (FILE_ROOT, STATIC_MEDIA_DIR)
 APPS_ROOT = '%s/apps' % FILE_ROOT
 USER_MEDIA_ROOT = '%s/%s' % (FILE_ROOT, USER_MEDIA_DIR)

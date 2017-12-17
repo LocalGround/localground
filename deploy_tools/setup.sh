@@ -21,11 +21,10 @@
 # git commit -am "Config Vagrantfile to use root for setup.sh?"
 # git push
 
-
 ##################################
-##				##
-#	      DEFAULTS		 #
-##				##
+##								##
+#	      DEFAULTS		 	     #
+##								##
 ##################################
 #
 # This section sets default paths and strings.
@@ -36,11 +35,11 @@ log_file="$(pwd)/localground.log"
 repository='https://github.com/LocalGround/localground.git'
 gitbranch='nginx-config'
 owner=$(whoami | awk '{print $1}')
-sitesEnable='/etc/nginx/sites-enabled/'
+sitesEnabled='/etc/nginx/sites-enabled/'
 sitesAvailable='/etc/nginx/sites-available/'
 sslsnippet='/etc/nginx/snippets/ssl-localground.conf'
 
-DJANGO_DEBUG=False
+DJANGO_DEBUG=True
 REGISTRATION_OPEN=True
 GDAL_LIBRARY_PATH='/usr/lib/libgdal.so.1'
 
@@ -88,144 +87,147 @@ fi
     echo -e $"==================================== \n\n\n"
 
 ##################################
-##				##
-#	      CONFIG		 #
-##				##
+## CONFIGURING VARIABLES		##
+## d) development               ##
+## p) production                ##
 ##################################
-#
-# This section asks some config questions and provides defaults.
-#
-## Dev environment or production?
-
 while getopts ":dp" opt; do
   case $opt in
+	#############################################
+  	## DEVELOPMENT ENVIRONMENT (d)             ##
+  	#############################################
     d)
-      echo "-d Development Env was triggered!" >&2
-development=true
-domain=localhost:7777
-protocol=http
-emailaddr=localgrounddev@mailinator.com
-userDir='/'
-rootDir=$domain
-FILE_PATH="/vagrant/deploy_tools/"
+      	echo "-d Development Env was triggered!" >&2
+		development=true
+		domain=localground
+		SERVER_HOST=localhost:7777
+		PROTOCOL=http
+		emailaddr=localgrounddev@mailinator.com
+		userDir='/'
+		rootDir=localground
+		FILE_PATH="/vagrant/deploy_tools/"
 
+		USER=localground
+		DB_PASS=$(openssl rand -hex 32)
+		DB_NAME=lg_test_database
+		SENDGRID_API_KEY=sendgridapidefault
+		MAPBOX_API_KEY=mapboxapidefault
+		SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=google_oauth
+		SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=google_oauth_secret
+		AWS_ACCESS_KEY_ID=AWS_Access_ID
+		AWS_SECRET_ACCESS_KEY=aws_secret_access_key_id
+		AWS_STORAGE_BUCKET_NAME=aws_storage_bucket
 
-USER=localground
-DB_PASS=$(openssl rand -hex 32)
-DB_NAME=lg_test_database
-SENDGRID_API_KEY=sendgridapidefault
-MAPBOX_API_KEY=mapboxapidefault
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=google_oauth
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=google_oauth_secret
-AWS_ACCESS_KEY_ID=AWS_Access_ID
-AWS_SECRET_ACCESS_KEY=aws_secret_access_key_id
-AWS_STORAGE_BUCKET_NAME=aws_storage_bucket
+		USER_ACCOUNT=$USER	#account to use for creating new OS files / directories
+		GROUP_ACCOUNT='www-data' #group to use for creating new OS files / directories
+      	;;
 
-USER_ACCOUNT=$USER	#account to use for creating new OS files / directories
-GROUP_ACCOUNT='www-data' #group to use for creating new OS files / directories
-      ;;
-
-    p)
-      echo "-p Production Env was triggered!" >&2
+	############################################
+	## PRODUCTION ENVIRONMENT (p)             ##
+	############################################
+	p)
+      	echo "-p Production Env was triggered!" >&2
         domain=$(dig +short myip.opendns.com @resolver1.opendns.com).xip.io
         development=false
+		DJANGO_DEBUG=False
 		FILE_PATH = ""
 
-## Email config
-read -p "Enter your Email Address [localgrounddev@mailinator.com]: " email
-	## Validate Email address
-	emailaddr=${email:-localgrounddev\@mailinator.com}
-	if [[ $emailaddr =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$ ]]
-	then
-	    echo "Email address $emailaddr is valid." | tee -a "$log_file"
-else
-    echo "Email address $emailaddr is invalid." | tee -a "$log_file"
-fi
+		## Email config
+		read -p "Enter your Email Address [localgrounddev@mailinator.com]: " email
+		## Validate Email address
+		emailaddr=${email:-localgrounddev\@mailinator.com}
+		if [[ $emailaddr =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$ ]]
+		then
+		echo "Email address $emailaddr is valid." | tee -a "$log_file"
+		else
+		echo "Email address $emailaddr is invalid." | tee -a "$log_file"
+		fi
 
-## Domain Name setup
-## make while dev = false to better support the host/domain q.
-if [ "$development" = false ] ; then
-  read -p "Enter your Domain Name [$domain]: " name
-        domain=${name:-$domain}
-		protocol=https
-        ## Check if domain already exists
-        if [ -e $sitesAvailable$domain ]; then
-                echo -e $"This domain already exists.\nPlease Try Another one" | tee -a "$log_file"
-                exit;
-        fi
-fi
-echo -e $"✓ SUCCESS: Host / Domain: $domain \n" | tee -a "$log_file"
+		## Domain Name setup
+		## make while dev = false to better support the host/domain q.
+		if [ "$development" = false ] ; then
+			read -p "Enter your Domain Name [$domain]: " name
+			domain=${name:-$domain}
+			SERVER_HOST=domain
+			PROTOCOL=https
+			## Check if domain already exists
+			if [ -e $sitesAvailable$domain ]; then
+				echo -e $"This domain already exists.\nPlease Try Another one" | tee -a "$log_file"
+				exit;
+			fi
+		fi
+		echo -e $"✓ SUCCESS: Host / Domain: $domain \n" | tee -a "$log_file"
 
-## Root Dir config
-read -p "Enter the Root Directory [/var/www/$domain]: " directory
-if [[ "$rootDir" =~ ^/ ]]; then
-	userDir='/'
-fi
-	userDir='/var/www/'
-	rootDir=${directory:-$domain}
-	## Check if Root Dir already exists
-	if [ -e $userDir$rootDir ]; then
+		## Root Dir config
+		read -p "Enter the Root Directory [/var/www/$domain]: " directory
+		if [[ "$rootDir" =~ ^/ ]]; then
+			userDir='/'
+		fi
+		userDir='/var/www/'
+		rootDir=${directory:-$domain}
+		## Check if Root Dir already exists
+		if [ -e $userDir$rootDir ]; then
 		echo -e $"✗ FAIL: This Root Dir already exists.\nPlease Try Another one" | tee -a "$log_file"
 		exit;
-	fi
-echo -e $"✓ SUCCESS: RootDir: $userDir$rootDir \n" | tee -a "$log_file"
+		fi
+		echo -e $"✓ SUCCESS: RootDir: $userDir$rootDir \n" | tee -a "$log_file"
 
-## Database config
-#TODO: Validation
-read -p "Enter your Database User [localground]: " dbowner
-	USER=${dbowner:-localground}
-echo -e $"USER: $USER \n" | tee -a "$log_file"
+		## Database config
+		#TODO: Validation
+		read -p "Enter your Database User [localground]: " dbowner
+		USER=${dbowner:-localground}
+		echo -e $"USER: $USER \n" | tee -a "$log_file"
 
-read -p "Enter your Database Password [random]: " dbpass
-	DB_PASS=${dbpass:-$(openssl rand -hex 32)}
-echo -e $"DB_PASS: $DB_PASS \n" | tee -a "$log_file"
+		read -p "Enter your Database Password [random]: " dbpass
+		DB_PASS=${dbpass:-$(openssl rand -hex 32)}
+		echo -e $"DB_PASS: $DB_PASS \n" | tee -a "$log_file"
 
-read -p "Enter your Database Name [lg_test_database]: " dbname
-	DB_NAME=${dbname:-lg_test_database}
-echo -e $"DB_NAME: $DB_NAME \n" | tee -a "$log_file"
+		read -p "Enter your Database Name [lg_test_database]: " dbname
+		DB_NAME=${dbname:-lg_test_database}
+		echo -e $"DB_NAME: $DB_NAME \n" | tee -a "$log_file"
 
-## API Keys
+		#sendgrid
+		read -p "Enter your SENDGRID_API_KEY [sendgridapidefault]: " sendgridapi
+		SENDGRID_API_KEY=${sendgridapi:-sendgridapidefault}
+		echo -e $"SENDGRID_API_KEY: $SENDGRID_API_KEY \n" | tee -a "$log_file"
 
+		#mapbox
+		read -p "Enter your MAPBOX_API_KEY [mapboxapidefault]: " mapboxapi
+		MAPBOX_API_KEY=${mapboxapi:-mapboxapidefault}
+		echo -e $"MAPBOX_API_KEY: $MAPBOX_API_KEY \n" | tee -a "$log_file"
 
-#sendgrid
-read -p "Enter your SENDGRID_API_KEY [sendgridapidefault]: " sendgridapi
-	SENDGRID_API_KEY=${sendgridapi:-sendgridapidefault}
-echo -e $"SENDGRID_API_KEY: $SENDGRID_API_KEY \n" | tee -a "$log_file"
+		#Google Oauth 2
+		read -p "Enter your SOCIAL_AUTH_GOOGLE_OAUTH2_KEY [google_oauth]: " googleoauth
+						SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=${googleoauth:-google_oauth}
+		echo -e $"SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: $SOCIAL_AUTH_GOOGLE_OAUTH2_KEY \n" | tee -a "$log_file"
 
-#mapbox
-read -p "Enter your MAPBOX_API_KEY [mapboxapidefault]: " mapboxapi
-	MAPBOX_API_KEY=${mapboxapi:-mapboxapidefault}
-echo -e $"MAPBOX_API_KEY: $MAPBOX_API_KEY \n" | tee -a "$log_file"
+		#Google Oauth 2 Secret
+		read -p "Enter your SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET [google_oauth_secret]: " googleoauthsecret
+		SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=${googleoauthsecret:-google_oauth_secret}
+		echo -e $"SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: $SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET \n" | tee -a "$log_file"
 
-#Google Oauth 2
-read -p "Enter your SOCIAL_AUTH_GOOGLE_OAUTH2_KEY [google_oauth]: " googleoauth
-									SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=${googleoauth:-google_oauth}
-echo -e $"SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: $SOCIAL_AUTH_GOOGLE_OAUTH2_KEY \n" | tee -a "$log_file"
+		#AWS Access
+		read -p "Enter your AWS_ACCESS_KEY_ID [AWS_Access_ID]: " awsaccess
+		AWS_ACCESS_KEY_ID=${awsaccess:-AWS_Access_ID}
+		echo -e $"AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID \n" | tee -a "$log_file"
 
-#Google Oauth 2 Secret
-read -p "Enter your SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET [google_oauth_secret]: " googleoauthsecret
-	SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=${googleoauthsecret:-google_oauth_secret}
-echo -e $"SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: $SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET \n" | tee -a "$log_file"
+		#AWS Secret
+		read -p "Enter your AWS_SECRET_ACCESS_KEY [aws_secret_access_key_id]: " awssecretaccessid
+		AWS_SECRET_ACCESS_KEY=${awssecretaccessid:-aws_secret_access_key_id}
+		echo -e $"AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY \n" | tee -a "$log_file"
 
-#AWS Access
-read -p "Enter your AWS_ACCESS_KEY_ID [AWS_Access_ID]: " awsaccess
-	AWS_ACCESS_KEY_ID=${awsaccess:-AWS_Access_ID}
-echo -e $"AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID \n" | tee -a "$log_file"
+		#AWS Bucket
+		read -p "Enter your AWS_STORAGE_BUCKET_NAME [aws_storage_bucket]: " awsstoragebucket
+		AWS_STORAGE_BUCKET_NAME=${awsstoragebucket:-aws_storage_bucket}
+		echo -e $"AWS_STORAGE_BUCKET_NAME: $AWS_STORAGE_BUCKET_NAME \n" | tee -a "$log_file"
+      	;;
 
-#AWS Secret
-read -p "Enter your AWS_SECRET_ACCESS_KEY [aws_secret_access_key_id]: " awssecretaccessid
-	AWS_SECRET_ACCESS_KEY=${awssecretaccessid:-aws_secret_access_key_id}
-echo -e $"AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY \n" | tee -a "$log_file"
-
-#AWS Bucket
-read -p "Enter your AWS_STORAGE_BUCKET_NAME [aws_storage_bucket]: " awsstoragebucket
-	AWS_STORAGE_BUCKET_NAME=${awsstoragebucket:-aws_storage_bucket}
-echo -e $"AWS_STORAGE_BUCKET_NAME: $AWS_STORAGE_BUCKET_NAME \n" | tee -a "$log_file"
-
-      ;;
+	#############################################
+	## INVALID FLAG                            ##
+	#############################################
     \?)
-      echo "Invalid option: -$OPTARG" >&2
-      ;;
+      	echo "Invalid option: -$OPTARG" >&2
+      	;;
   esac
 done
 
@@ -374,7 +376,7 @@ fi
 ln -s  $userDir$rootDir localground
 
 	## enable website
-ln -s $sitesAvailable$domain $sitesEnable$domain
+ln -s $sitesAvailable$domain $sitesEnabled$domain
 
 	## Reload Nginx
 service nginx reload
@@ -425,17 +427,11 @@ source "$FILE_PATH"config-localground.sh
 
 ## Populate the db & lookuptables
 echo "Populate the DB" | tee -a "$log_file"
-	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' makemigrations"
+	# sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' makemigrations"
 	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' migrate"
+	sudo -u $USER bash -c "psql -c \"update django_site set domain = '$SERVER_HOST', name = '$SERVER_HOST';\" -d $DB_NAME"
 	service postgresql restart
-echo -e $"✓ SUCCESS: Database populated! \n" | tee -a "$log_file"
-
-###############################################
-# Create required Django tables and run tests #
-###############################################
-
-echo -e $"CONFIG: Create required Django tables." | tee -a "$log_file"
-	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' syncdb --noinput"
+	#sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' syncdb --noinput"
 	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' test --verbosity=2"
 echo -e $"✓ SUCCESS: Django Tables Created! \n" | tee -a "$log_file"
 
@@ -501,4 +497,6 @@ echo -e $"✓ SUCCESS: Now Starting LocalGround! \n" | tee -a "$log_file"
 service nginx restart
 
 #TODO: move to socket & config uWSGI in emperor mode.
-sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' runserver 0.0.0.0:8000"
+if [ "$development" = false ] ; then
+	sudo -u $USER bash -c "python $userDir'localground/apps/manage.py' runserver 0.0.0.0:8000"
+fi
