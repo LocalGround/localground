@@ -18,16 +18,21 @@ def get_metadata():
                          'type': 'field'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
-        'project_id': {'read_only': False, 'required': False, 'type': 'field'},
+        'project_id': {'read_only': True, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'},
         'form': {'read_only': True, 'required': False, 'type': 'field'},
+        'children': {'read_only': True, 'required': False, 'type': 'field'},
+        'attached_photos_ids': {'read_only': True, 'required': False, 'type': 'field'},
+        'attached_audio_ids': {'read_only': True, 'required': False, 'type': 'field'},
+        'attached_videos_ids': {'read_only': True, 'required': False, 'type': 'field'},
+        'attached_map_images_ids': {'read_only': True, 'required': False, 'type': 'field'},
         'field_1': {'read_only': False, 'required': False, 'type': 'string'},
         'field_2': {'read_only': False, 'required': False, 'type': 'integer'},
         'field_3': {'read_only': False, 'required': False, 'type': 'datetime'},
         'field_4': {'read_only': False, 'required': False, 'type': 'boolean'},
-        'field_5': {'read_only': False, 'required': False, 'type': 'decimal'},
+        'field_5': {'read_only': False, 'required': False, 'type': 'float'},
         'field_6': {'read_only': False, 'required': False, 'type': 'choice'},
         'field_7': {'read_only': False, 'required': False, 'type': 'choice'}
     }
@@ -98,7 +103,6 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
             }
             default_data.update(d)
             urls = self.urls
-            #print(api_settings.DATE_INPUT_FORMATS)
             for url in urls:
                 url = url + '?project_id={0}'.format(self.project.id)
                 response = self.client_user.post(
@@ -108,10 +112,7 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     content_type="application/x-www-form-urlencoded"    
                 )
                 new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
-                #print(models.MarkerWithAttributes.objects.all())
-                # print(new_marker.attributes)
-                # print(d.values()[0])
-                # print(response.data)
+              
                 self.assertEqual(
                     response.data[d.keys()[0]], d.values()[0]
                 )
@@ -144,11 +145,7 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     content_type="application/x-www-form-urlencoded"    
                 )
                 new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
-                #print(models.MarkerWithAttributes.objects.all())
-                #print(response.data)
-                
-                # print(new_marker.attributes)
-                # print(new_marker.id)
+            
                 '''
                 for i in range(0, dict_len):
                     self.assertEqual(
@@ -185,16 +182,13 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     content_type="application/x-www-form-urlencoded"    
                 )
                 new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
-                #print(models.MarkerWithAttributes.objects.all())
-                #print(response.data)
+             
                 '''
                 self.assertEqual(
                     new_marker.attributes[d.keys()[0]], d.values()[0]
                 )
                 '''
-                # print('failed for: ', d.keys()[0], response.status_code)
                 self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-                # print('failure test passed for: ', d.keys()[0])
 
     def test_allow_null_posts(self):
         # having difficulty getting Django to allow null values, 
@@ -223,11 +217,7 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     content_type="application/x-www-form-urlencoded"    
                 )
                 new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
-                #print(models.MarkerWithAttributes.objects.all())
-                # print('response: ', response.data)
-                # print()
-                # print('marker attrs: ', new_marker.attributes)
-                # print(new_marker.id)
+
                 for i in range(0, dict_len):
                     self.assertEqual(
                         new_marker.attributes[hstore_data.keys()[i]], hstore_data.values()[i]
@@ -351,9 +341,7 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     print('196: ', response.data)
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
-                #print(models.MarkerWithAttributes.objects.all().order_by('-id',))
-                #print(new_marker.id)
-                #print(response.data)
+
                 self.assertEqual(new_marker.name, name)
                 self.assertEqual(new_marker.description, description)
                 self.assertEqual(
@@ -412,15 +400,11 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 content_type="application/x-www-form-urlencoded"    
             )
             new_marker = models.MarkerWithAttributes.objects.all().order_by('-id',)[0]
-           
-            print(d)
-            print(response.data)
-            print('')
-            '''
+            
             self.assertEqual(
                 response.data[d.keys()[0]], d.values()[0]
             )
-            '''
+            
   
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -459,8 +443,8 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
         new_hstore_data_dict = {
             'field_1': 'new field_1 text',
-            'field_2': 88, # should not be a string?
-            'field_3': '2012-09-04 06:00:00', #Can't get DateTime to work
+            'field_2': 99, # should not be a string?
+            'field_3': '2012-09-04 07:00:00', #Can't get DateTime to work
             'field_4': False, # should not be a string?
             'field_5': 7777.7777, 
             'field_6': 1,
@@ -492,7 +476,6 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 key: new_data_item,
                 'caption': None,
             }
-
             response = self.client_user.put(
                     url,
                     data=urllib.urlencode(new_data),
@@ -505,9 +488,6 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             self.assertTrue(posted_data[marker_id][0] in response.data)
 
             # test hstore key/attribute value is correct
-            # having to cast to string and make everything lowercase to get matches
-            # ...seems like the wrong approach
-            print(response.data[posted_data[marker_id][0]])
             self.assertEqual(
                 response.data[posted_data[marker_id][0]], 
                 new_data_item)
@@ -528,9 +508,9 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
         new_hstore_data_dict = {
             'field_1': 'new field_1 text',
-            'field_2': 88, # should not be a string?
-            'field_3': '2012-09-04 06:00:00', #Can't get DateTime to work
-            'field_4': False, # should not be a string?
+            'field_2': 88, 
+            'field_3': "2012-09-04 07:00:00", #Can't get DateTime to work
+            'field_4': False,
             'field_5': 7777.7777, 
             'field_6': 1,
             'field_7': 'Democrat'
@@ -654,7 +634,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.create_relation(self.markerwattrs, self.photo1)
         self.create_relation(self.markerwattrs, self.audio1)
 
-        response = self.client_user.get(self.url)
+        response = self.client_user.get(self.urls[0])
         self.assertEqual(len(response.data['children']['photos']['data']), 1)
         self.assertEqual(len(response.data['children']['audio']['data']), 1)
 

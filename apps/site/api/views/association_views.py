@@ -13,7 +13,7 @@ def get_group_model(model_type):
         form_id = int(model_type)
         group_model = models.MarkerWithAttributes
     except ValueError:
-        group_model = models.Mar
+        group_model = models.Marker
     return group_model
 
 

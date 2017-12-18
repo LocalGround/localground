@@ -106,7 +106,7 @@ domain=localhost:7777
 protocol=http
 emailaddr=localgrounddev@mailinator.com
 userDir='/'
-rootDir=$domain
+rootDir=localground
 FILE_PATH="/vagrant/deploy_tools/"
 
 

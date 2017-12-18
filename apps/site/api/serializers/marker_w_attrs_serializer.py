@@ -47,7 +47,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     attached_photos_ids = serializers.SerializerMethodField()
     attached_audio_ids = serializers.SerializerMethodField()
     attached_videos_ids = serializers.SerializerMethodField()
-    attached_map_images_id = serializers.SerializerMethodField()
+    attached_map_images_ids = serializers.SerializerMethodField()
 
     
     project_id = serializers.PrimaryKeyRelatedField(
@@ -133,7 +133,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
         except:
             return None
 
-    def get_attached_map_images_id(self, obj):
+    def get_attached_map_images_ids(self, obj):
         try:
             return obj.map_image_array
         except:
@@ -169,7 +169,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
             ('attached_photos_ids',
              'attached_audio_ids',
              'attached_videos_ids',
-             'attached_map_images_id')
+             'attached_map_images_ids')
         depth = 0
 
     '''
@@ -201,6 +201,10 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
         # Override to handle HStore
         #print(validated_data)
         if 'attributes' in validated_data:
+            for key in validated_data['attributes'].keys():
+                val = validated_data['attributes'][key]
+                if isinstance(val, (datetime.datetime, datetime.date)):
+                    validated_data['attributes'][key] = val.isoformat()
             validated_data['attributes'] = HStoreDict(validated_data['attributes'])
         validated_data.update(self.get_presave_update_dictionary())
         return super(MarkerWAttrsSerializerMixin, self).update(
