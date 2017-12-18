@@ -50,7 +50,7 @@ def api_root(request, format=None, **kwargs):
     d['data-types'] = reverse('datatype-list', request=request, format=format)
     d['markers'] = reverse('marker-list', request=request, format=format)
 
-    d['markerwithattributes'] = reverse('markerwithattributes-list', request=request, format=format)
+    #d['markerwithattributes'] = reverse('markerwithattributes-list', request=request, format=format)
 
     d['map-images'] = reverse('mapimage-list', request=request, format=format)
     d['overlay-sources'] = reverse('overlaysource-list',
