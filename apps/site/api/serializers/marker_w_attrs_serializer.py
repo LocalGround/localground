@@ -1,4 +1,5 @@
-from localground.apps.site.api.serializers.base_serializer import GeometrySerializer
+from localground.apps.site.api.serializers.base_serializer \
+    import GeometrySerializer
 from rest_framework import serializers
 from django.conf import settings
 from rest_framework.reverse import reverse
@@ -21,35 +22,30 @@ class ChoiceIntField(serializers.ChoiceField):
         except e:
             self.fail('integer required', input=data)
 
+
 class CustomDataTimeField(serializers.DateTimeField):
     def to_representation(self, obj):
         datetime_object = datetime.datetime.strptime(obj, '%Y-%m-%dT%H:%M:%S')
         return str(datetime_object)
-    
-    # def to_internal_value(self, obj):
-    #     print(type(obj))
-    #     return obj.isoformat()
-        
 
 
 class MarkerWAttrsSerializerMixin(GeometrySerializer):
     update_metadata = serializers.SerializerMethodField()
-    #url = serializers.HyperlinkedIdentityField(view_name='markerwithattributes-detail', format='html')
+    # url = serializers.HyperlinkedIdentityField(
+    #    view_name='markerwithattributes-detail', format='html')
     '''
     Hack: can't use HyperlinkSerializer field for URLs with two
     dynamic parameters because of DRF limitations. So, we'll build
     the URL for ourselves:
     '''
-    url = serializers.SerializerMethodField()#'get_url')
+    url = serializers.SerializerMethodField()
     form = serializers.SerializerMethodField()
-    # name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     children = serializers.SerializerMethodField()
     attached_photos_ids = serializers.SerializerMethodField()
     attached_audio_ids = serializers.SerializerMethodField()
     attached_videos_ids = serializers.SerializerMethodField()
     attached_map_images_id = serializers.SerializerMethodField()
 
-    
     project_id = serializers.PrimaryKeyRelatedField(
         source='project',
         required=False,
@@ -62,6 +58,9 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
     def get_form(self, obj):
         return self.form.id
+
+    def get_overlay_type(self, obj):
+        return 'form_{0}'.format(obj.form.id)
 
     def get_children(self, obj):
         from django.contrib.contenttypes.models import ContentType
@@ -85,10 +84,10 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
     def get_photos(self, obj):
         from localground.apps.site.api.serializers import PhotoSerializer
-        
+
         data = PhotoSerializer(
             obj.photos,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.Photo, data)
 
     def get_videos(self, obj):
@@ -96,7 +95,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
         data = VideoSerializer(
             obj.videos,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.Video, data)
 
     def get_audio(self, obj):
@@ -104,41 +103,41 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
         data = AudioSerializer(
             obj.audio,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.Audio, data)
 
     def get_map_images(self, obj):
-        from localground.apps.site.api.serializers import MapImageSerializerUpdate
+        from localground.apps.site.api.serializers import \
+            MapImageSerializerUpdate
 
         data = MapImageSerializerUpdate(
             obj.map_images,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.MapImage, data)
 
     def get_attached_photos_ids(self, obj):
         try:
             return obj.photo_array
-        except:
+        except Exception:
             return None
 
     def get_attached_audio_ids(self, obj):
         try:
             return obj.audio_array
-        except:
+        except Exception:
             return None
 
     def get_attached_videos_ids(self, obj):
         try:
             return obj.video_array
-        except:
+        except Exception:
             return None
 
     def get_attached_map_images_id(self, obj):
         try:
             return obj.map_image_array
-        except:
+        except Exception:
             return None
-
 
     def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
                        model_name_plural=None):
@@ -160,10 +159,8 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
              obj.id,
              model_name_plural)}
 
-
     class Meta:
         model = models.MarkerWithAttributes
-        #read_only_fields = ('project_id',)
         fields = GeometrySerializer.Meta.fields + \
             ('form', 'extras', 'url', 'children') + \
             ('attached_photos_ids',
@@ -172,23 +169,16 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
              'attached_map_images_id')
         depth = 0
 
-    '''
-    if 'attributes' in validated_data:
-        for key in validated_data['attributes'].keys():
-            val = validated_data['attributes'][key]
-            if isinstance(val, (datetime.datetime, datetime.date)):
-                validated_data['attributes'][key] = val.strftime('%Y-%m-%dT%H:%M:%S')
-    '''
     def create(self, validated_data):
         # Override to handle HStore
         if 'attributes' in validated_data:
             for key in validated_data['attributes'].keys():
                 val = validated_data['attributes'][key]
                 if isinstance(val, (datetime.datetime, datetime.date)):
-                    # validated_data['attributes'][key] = val.strftime('%Y-%m-%dT%H:%M:%S')
                     validated_data['attributes'][key] = val.isoformat()
-                
-            validated_data['attributes'] = HStoreDict(validated_data['attributes'])
+            validated_data['attributes'] = HStoreDict(
+                validated_data['attributes'])
+
         validated_data.update(self.get_presave_create_dictionary())
         validated_data.update({
             'form': self.form,
@@ -199,9 +189,9 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
     def update(self, instance, validated_data):
         # Override to handle HStore
-        #print(validated_data)
         if 'attributes' in validated_data:
-            validated_data['attributes'] = HStoreDict(validated_data['attributes'])
+            validated_data['attributes'] = HStoreDict(
+                validated_data['attributes'])
         validated_data.update(self.get_presave_update_dictionary())
         return super(MarkerWAttrsSerializerMixin, self).update(
             instance, validated_data
@@ -209,15 +199,10 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
 
 class MarkerWAttrsSerializer(MarkerWAttrsSerializerMixin):
-    '''
-    def __init__(self, *args, **kwargs):
-        super(MarkerWAttrsSerializer, self).__init__(*args, **kwargs)
-    '''
 
     children = serializers.SerializerMethodField()
 
     class Meta:
-        #read_only_fields = ('project_id',)
         fields = MarkerWAttrsSerializerMixin.Meta.fields + ('children',)
 
     def get_children(self, obj):
@@ -259,15 +244,16 @@ def create_dynamic_serializer(form, **kwargs):
     class Meta:
         model = models.MarkerWithAttributes
         fields = MarkerWAttrsSerializerMixin.Meta.fields + \
-        tuple(field_names)
+            tuple(field_names)
         read_only_fields = ('display_name',)
 
     attrs = {
-        '__module__': 'localground.apps.site.api.serializers.MarkerWAttrsSerializer',
+        '__module__':
+            'localground.apps.site.api.serializers.MarkerWAttrsSerializer',
         'Meta': Meta,
         'form': form
     }
-        
+
     # functions to create custom hstore fields
     def createIntField():
         attrs.update({
@@ -290,7 +276,6 @@ def create_dynamic_serializer(form, **kwargs):
 
     def createRatingField():
         # https://github.com/encode/django-rest-framework/issues/1755
-        #print(field.extras)
         attrs.update({
             field.col_name: ChoiceIntField(
                 source='attributes.' + field.col_name,
@@ -300,7 +285,6 @@ def create_dynamic_serializer(form, **kwargs):
                 allow_null=True,
                 required=False)
         })
-        #print(list(map(lambda d: (d['value'], d['name']), field.extras)))
 
     def createTextField():
         attrs.update({
@@ -366,4 +350,6 @@ def create_dynamic_serializer(form, **kwargs):
             'get_display_name': get_display_name
         })
 
-    return type('DynamicMarkerSerializer', (MarkerWAttrsSerializerMixin, ), attrs)
+    return type(
+        'DynamicMarkerSerializer', (MarkerWAttrsSerializerMixin, ), attrs
+    )
