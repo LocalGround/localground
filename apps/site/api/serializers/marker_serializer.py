@@ -7,36 +7,61 @@ from django.conf import settings
 from localground.apps.site.api.metadata import CustomMetadata
 
 
-class MarkerSerializerMixin(GeometrySerializer):
+class MarkerSerializer(GeometrySerializer):
     update_metadata = serializers.SerializerMethodField()
+    attached_photos_ids = serializers.SerializerMethodField()
+    attached_audio_ids = serializers.SerializerMethodField()
+    attached_videos_ids = serializers.SerializerMethodField()
+    attached_map_images_id = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
-        fields = GeometrySerializer.Meta.fields + ('extras', )
+        fields = GeometrySerializer.Meta.fields + (
+            'update_metadata', 'extras', 'attached_photos_ids',
+            'attached_audio_ids', 'attached_videos_ids',
+            'attached_map_images_id'
+        )
         depth = 0
 
     def get_update_metadata(self, obj):
         m = CustomMetadata()
         return m.get_serializer_info(self)
 
+    def get_attached_photos_ids(self, obj):
+        try:
+            return obj.photo_array
+        except Exception:
+            return None
 
-class MarkerSerializer(MarkerSerializerMixin):
+    def get_attached_audio_ids(self, obj):
+        try:
+            return obj.audio_array
+        except Exception:
+            return None
+
+    def get_attached_videos_ids(self, obj):
+        try:
+            return obj.video_array
+        except Exception:
+            return None
+
+    def get_attached_map_images_id(self, obj):
+        try:
+            return obj.map_image_array
+        except Exception:
+            return None
+
+
+class MarkerSerializerDetail(MarkerSerializer):
 
     def __init__(self, *args, **kwargs):
         super(MarkerSerializer, self).__init__(*args, **kwargs)
 
     children = serializers.SerializerMethodField()
-    photo_count = serializers.SerializerMethodField()
-    audio_count = serializers.SerializerMethodField()
-    video_count = serializers.SerializerMethodField()
-    map_image_count = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
-        fields = MarkerSerializerMixin.Meta.fields + (
-            'children', 'photo_count', 'audio_count', 'video_count',
-            'map_image_count'
-        )
+        fields = MarkerSerializer.Meta.fields + ('children', )
         depth = 0
 
     def get_children(self, obj):
@@ -92,18 +117,6 @@ class MarkerSerializer(MarkerSerializerMixin):
             many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.MapImage, data)
 
-    def get_photo_count(self, obj):
-        return len(obj.photos)
-
-    def get_audio_count(self, obj):
-        return len(obj.audio)
-
-    def get_video_count(self, obj):
-        return len(obj.videos)
-
-    def get_map_image_count(self, obj):
-        return len(obj.map_images)
-
     def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
                        model_name_plural=None):
         if data is None or len(data) == 0:
@@ -119,97 +132,6 @@ class MarkerSerializer(MarkerSerializerMixin):
             'name': name,
             'overlay_type': overlay_type,
             'data': data,
-            'attach_url': '%s/api/0/markers/%s/%s/' %
-            (settings.SERVER_URL,
-             obj.id,
-             model_name_plural)}
-
-
-class MarkerSerializerCounts(MarkerSerializerMixin):
-    photo_count = serializers.SerializerMethodField()
-    audio_count = serializers.SerializerMethodField()
-    video_count = serializers.SerializerMethodField()
-    map_image_count = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Marker
-        fields = MarkerSerializerMixin.Meta.fields + \
-            ('photo_count', 'audio_count', 'video_count', 'map_image_count')
-        depth = 0
-
-    def get_photo_count(self, obj):
-        try:
-            return obj.photo_count
-        except Exception:
-            return None
-
-    def get_audio_count(self, obj):
-        try:
-            return obj.audio_count
-        except Exception:
-            return None
-
-    def get_video_count(self, obj):
-        try:
-            return obj.video_count
-        except Exception:
-            return None
-
-    def get_map_image_count(self, obj):
-        try:
-            return obj.map_image_count
-        except Exception:
-            return None
-
-
-class MarkerSerializerCountsWithMetadata(MarkerSerializerCounts):
-    class Meta:
-        model = models.Marker
-        fields = MarkerSerializerCounts.Meta.fields + ('update_metadata', )
-        depth = 0
-
-
-class MarkerSerializerLists(MarkerSerializerMixin):
-    attached_photos_ids = serializers.SerializerMethodField()
-    attached_audio_ids = serializers.SerializerMethodField()
-    attached_videos_ids = serializers.SerializerMethodField()
-    attached_map_images_id = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Marker
-        fields = MarkerSerializerMixin.Meta.fields + (
-            'attached_photos_ids', 'attached_audio_ids', 'attached_videos_ids',
-            'attached_map_images_id'
-        )
-        depth = 0
-
-    def get_attached_photos_ids(self, obj):
-        try:
-            return obj.photo_array
-        except Exception:
-            return None
-
-    def get_attached_audio_ids(self, obj):
-        try:
-            return obj.audio_array
-        except Exception:
-            return None
-
-    def get_attached_videos_ids(self, obj):
-        try:
-            return obj.video_array
-        except Exception:
-            return None
-
-    def get_attached_map_images_id(self, obj):
-        try:
-            return obj.map_image_array
-        except Exception:
-            return None
-
-
-class MarkerSerializerListsWithMetadata(MarkerSerializerLists):
-    class Meta:
-        model = models.Marker
-        fields = MarkerSerializerLists.Meta.fields + ('update_metadata', )
-        depth = 0
+            'attach_url': '%s/api/0/markers/%s/%s/' % (
+                settings.SERVER_URL, obj.id, model_name_plural)
+         }

@@ -37,10 +37,7 @@ class MarkerGeometryMixin(object):
 class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin):
     filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
     paginate_by = 100
-    serializers_class = serializers.MarkerSerializerListsWithMetadata
-
-    def get_serializer_class(self):
-        return serializers.MarkerSerializerListsWithMetadata
+    serializer_class = serializers.MarkerSerializer
 
     def get_queryset(self):
         from rest_framework.exceptions import APIException
@@ -62,7 +59,7 @@ class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin):
 class MarkerInstance(
         MarkerGeometryMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Marker.objects.select_related('owner', 'project')
-    serializer_class = serializers.MarkerSerializer
+    serializer_class = serializers.MarkerSerializerDetail
 
     def perform_update(self, serializer):
         d = self.get_geometry_dictionary(serializer)

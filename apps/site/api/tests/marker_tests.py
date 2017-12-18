@@ -10,11 +10,14 @@ from django.contrib.gis.geos import GEOSGeometry
 
 def get_metadata():
     return {
-        'photo_count': {'read_only': True, 'required': False, 'type': 'field'},
-        'audio_count': {'read_only': True, 'required': False, 'type': 'field'},
-        'map_image_count': {'read_only': True, 'required': False,
-                            'type': 'field'},
-        'video_count': {'read_only': True, 'required': False, 'type': 'field'},
+        'attached_photos_ids': {
+            'read_only': True, 'required': False, 'type': 'field'},
+        'attached_audio_ids': {
+            'read_only': True, 'required': False, 'type': 'field'},
+        'attached_videos_ids': {
+            'read_only': True, 'required': False, 'type': 'field'},
+        'attached_map_images_id': {
+            'read_only': True, 'required': False, 'type': 'field'},
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
@@ -25,7 +28,7 @@ def get_metadata():
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
-        'extras': {'read_only': False, 'required': False, 'type': 'json'}
+        'extras': {'read_only': False, 'required': False, 'type': 'json'},
     }
 
 
@@ -96,25 +99,6 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
             })
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_metadata_only_available_with_flag(self, **kwargs):
-        response = self.client_user.get(
-            self.urls[0], {
-                'marker_with_media_arrays': True,
-                'project_id': self.project.id
-            }
-        )
-        m = response.data.get("results")[0]
-        self.assertIsNone(m.get("update_metadata"))
-
-        response = self.client_user.get(
-            self.urls[0], {
-                'include_metadata': True,
-                'project_id': self.project.id
-            }
-        )
-        m = response.data.get("results")[0]
-        self.assertIsNotNone(m.get("update_metadata"))
-
     def test_arrays_available_when_flag_exists(self):
         # create some associations:
         self.photo1 = self.create_photo(self.user, self.project)
@@ -128,9 +112,9 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
             }
         )
         marker = response.data.get("results")[0]
-        self.assertEqual(len(marker.get('photo_array')), 1)
-        self.assertEqual(len(marker.get('audio_array')), 1)
-        self.assertTrue('map_image_array' in marker)
+        self.assertEqual(len(marker.get('attached_photos_ids')), 1)
+        self.assertEqual(len(marker.get('attached_audio_ids')), 1)
+        self.assertTrue('attached_map_images_id' in marker)
 
         # clean up:
         self.delete_relation(self.marker, self.photo1)
@@ -269,9 +253,9 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 self.assertEqual(
                     updated_marker.extras, json.loads(self.ExtrasGood)
                 )
-                self.assertEqual(result_json.get('photo_count'), 0)
-                self.assertEqual(result_json.get('audio_count'), 0)
-                self.assertEqual(result_json.get('map_image_count'), 0)
+                self.assertEqual(result_json.get('attached_photos_ids'), None)
+                self.assertEqual(result_json.get('attached_audio_ids'), None)
+                self.assertEqual(result_json.get('attached_video_ids'), None)
 
     def test_update_marker_using_patch(self, **kwargs):
         for k in ['Point', 'LineString', 'Polygon']:
