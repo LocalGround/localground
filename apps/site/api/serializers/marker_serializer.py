@@ -1,24 +1,24 @@
-from localground.apps.site.api.serializers.base_serializer import GeometrySerializer
+from localground.apps.site.api.serializers.base_serializer import \
+    GeometrySerializer
 from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 from django.conf import settings
 from localground.apps.site.api.metadata import CustomMetadata
 
-class MarkerSerializerMixin(GeometrySerializer):
-    #color = fields.ColorField(required=False)
-    color = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
-    update_metadata = serializers.SerializerMethodField()
 
+class MarkerSerializerMixin(GeometrySerializer):
+    update_metadata = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
-        fields = GeometrySerializer.Meta.fields + ('color', 'extras')
+        fields = GeometrySerializer.Meta.fields + ('extras', )
         depth = 0
 
     def get_update_metadata(self, obj):
         m = CustomMetadata()
         return m.get_serializer_info(self)
+
 
 class MarkerSerializer(MarkerSerializerMixin):
 
@@ -33,29 +33,16 @@ class MarkerSerializer(MarkerSerializerMixin):
 
     class Meta:
         model = models.Marker
-        fields = MarkerSerializerMixin.Meta.fields + \
-            ('children', 'photo_count', 'audio_count', 'video_count', 'map_image_count')
+        fields = MarkerSerializerMixin.Meta.fields + (
+            'children', 'photo_count', 'audio_count', 'video_count',
+            'map_image_count'
+        )
         depth = 0
 
     def get_children(self, obj):
         from django.contrib.contenttypes.models import ContentType
         from localground.apps.site import models
 
-        # raise Exception(obj.photos)
-
-        '''
-        candidates = [
-            models.Photo,
-            models.Audio,
-            models.Video,
-            models.MapImage,
-            models.Project,
-            models.Marker]
-
-        # this caches the ContentTypes so that we don't keep executing one-off
-        # queries
-        ContentType.objects.get_for_models(*candidates, concrete_model=False)
-        '''
         children = {}
         self.audio = self.get_audio(obj) or []
         self.photos = self.get_photos(obj) or []
@@ -74,10 +61,10 @@ class MarkerSerializer(MarkerSerializerMixin):
 
     def get_photos(self, obj):
         from localground.apps.site.api.serializers import PhotoSerializer
-        
+
         data = PhotoSerializer(
             obj.photos,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.Photo, data)
 
     def get_videos(self, obj):
@@ -85,7 +72,7 @@ class MarkerSerializer(MarkerSerializerMixin):
 
         data = VideoSerializer(
             obj.videos,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.Video, data)
 
     def get_audio(self, obj):
@@ -93,15 +80,16 @@ class MarkerSerializer(MarkerSerializerMixin):
 
         data = AudioSerializer(
             obj.audio,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.Audio, data)
 
     def get_map_images(self, obj):
-        from localground.apps.site.api.serializers import MapImageSerializerUpdate
+        from localground.apps.site.api.serializers import \
+            MapImageSerializerUpdate
 
         data = MapImageSerializerUpdate(
             obj.map_images,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.MapImage, data)
 
     def get_photo_count(self, obj):
@@ -136,6 +124,7 @@ class MarkerSerializer(MarkerSerializerMixin):
              obj.id,
              model_name_plural)}
 
+
 class MarkerSerializerCounts(MarkerSerializerMixin):
     photo_count = serializers.SerializerMethodField()
     audio_count = serializers.SerializerMethodField()
@@ -151,32 +140,34 @@ class MarkerSerializerCounts(MarkerSerializerMixin):
     def get_photo_count(self, obj):
         try:
             return obj.photo_count
-        except:
+        except Exception:
             return None
 
     def get_audio_count(self, obj):
         try:
             return obj.audio_count
-        except:
+        except Exception:
             return None
 
     def get_video_count(self, obj):
         try:
             return obj.video_count
-        except:
+        except Exception:
             return None
 
     def get_map_image_count(self, obj):
         try:
             return obj.map_image_count
-        except:
+        except Exception:
             return None
+
 
 class MarkerSerializerCountsWithMetadata(MarkerSerializerCounts):
     class Meta:
         model = models.Marker
         fields = MarkerSerializerCounts.Meta.fields + ('update_metadata', )
         depth = 0
+
 
 class MarkerSerializerLists(MarkerSerializerMixin):
     attached_photos_ids = serializers.SerializerMethodField()
@@ -186,33 +177,36 @@ class MarkerSerializerLists(MarkerSerializerMixin):
 
     class Meta:
         model = models.Marker
-        fields = MarkerSerializerMixin.Meta.fields + \
-            ('attached_photos_ids', 'attached_audio_ids', 'attached_videos_ids', 'attached_map_images_id')
+        fields = MarkerSerializerMixin.Meta.fields + (
+            'attached_photos_ids', 'attached_audio_ids', 'attached_videos_ids',
+            'attached_map_images_id'
+        )
         depth = 0
 
     def get_attached_photos_ids(self, obj):
         try:
             return obj.photo_array
-        except:
+        except Exception:
             return None
 
     def get_attached_audio_ids(self, obj):
         try:
             return obj.audio_array
-        except:
+        except Exception:
             return None
 
     def get_attached_videos_ids(self, obj):
         try:
             return obj.video_array
-        except:
+        except Exception:
             return None
 
     def get_attached_map_images_id(self, obj):
         try:
             return obj.map_image_array
-        except:
+        except Exception:
             return None
+
 
 class MarkerSerializerListsWithMetadata(MarkerSerializerLists):
     class Meta:

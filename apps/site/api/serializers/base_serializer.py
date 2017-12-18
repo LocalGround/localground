@@ -18,6 +18,8 @@ class MyClass(BaseClass, Mixin1, Mixin2):
 ...the Mixin2 class is the base class,
 extended by Mixin1 and finally by BaseClass.
 '''
+
+
 class AuditSerializerMixin(object):
     def get_presave_create_dictionary(self):
         return {
@@ -40,9 +42,12 @@ class AuditSerializerMixin(object):
     def update(self, instance, validated_data):
         # Extend to add auditing information:
         validated_data.update(self.get_presave_update_dictionary())
-        return super(AuditSerializerMixin, self).update(instance, validated_data)
+        return super(AuditSerializerMixin, self).update(
+            instance, validated_data)
 
-class BaseSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSerializer):
+
+class BaseSerializer(
+        AuditSerializerMixin, serializers.HyperlinkedModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(BaseSerializer, self).__init__(*args, **kwargs)
@@ -65,7 +70,6 @@ class BaseNamedSerializer(BaseSerializer):
         style={'base_template': 'tags.html'},
         help_text='Tag your object here'
     )
-    #name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     caption = serializers.CharField(
         source='description', required=False, allow_null=True, label='caption',
         style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
@@ -107,7 +111,7 @@ class GeometrySerializer(BaseNamedSerializer):
         source='point'
     )
     extras = JSONField(
-        help_text='Store arbitrary key / value pairs here in JSON form. Example: {"key": "value"}',
+        help_text='Store arbitrary key / value pairs, e.g. {"key": "value"}',
         allow_null=True,
         required=False,
         style={'base_template': 'json.html', 'rows': 5})
@@ -120,7 +124,6 @@ class GeometrySerializer(BaseNamedSerializer):
 
     def get_fields(self, *args, **kwargs):
         fields = super(GeometrySerializer, self).get_fields(*args, **kwargs)
-        #restrict project list at runtime:
         fields['project_id'].queryset = self.get_projects()
         return fields
 
@@ -131,22 +134,23 @@ class GeometrySerializer(BaseNamedSerializer):
 
 class MediaGeometrySerializer(GeometrySerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
-    file_name = serializers.CharField(source='file_name_new', required=False, read_only=True)
+    file_name = serializers.CharField(
+        source='file_name_new', required=False, read_only=True)
     media_file = serializers.CharField(
-        source='file_name_orig', required=True, style={'base_template': 'file.html'},
+        source='file_name_orig', required=True,
+        style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
     file_path_orig = serializers.SerializerMethodField()
 
     class Meta:
-        fields = GeometrySerializer.Meta.fields + ('attribution', 'file_name', 'media_file',
-                                                   'file_path_orig')
+        fields = GeometrySerializer.Meta.fields + (
+            'attribution', 'file_name', 'media_file', 'file_path_orig')
 
     def get_file_path_orig(self, obj):
         # original file gets renamed to file_name_new in storage
         # (spaces, etc. removed)
         return obj.encrypt_url(obj.file_name_new)
-
 
 
 class ExtentsSerializer(BaseNamedSerializer):
@@ -155,10 +159,10 @@ class ExtentsSerializer(BaseNamedSerializer):
         source='project',
         required=False)
     center = fields.GeometryField(
-                        help_text='Assign a GeoJSON string',
-                        required=False,
-                        style={'base_template': 'json.html', 'rows': 5}
-                    )
+        help_text='Assign a GeoJSON string',
+        required=False,
+        style={'base_template': 'json.html', 'rows': 5}
+    )
 
 
 class Meta:

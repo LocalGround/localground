@@ -280,9 +280,10 @@ class ModelMixin(object):
         m.save()
         return m
 
-    def create_marker_w_attrs(self, user=None, project=None, 
-                    name="Test Marker With Attrs", geoJSON=None, point=None, 
-                    extras={"random key": "random value"},tags=[], form=None):
+    def create_marker_w_attrs(
+        self, user=None, project=None,
+        name="Test Marker With Attrs", geoJSON=None, point=None,
+        extras={"random key": "random value"}, tags=[], form=None):
         from localground.apps.site import models
         geom = None
         user = user or self.user
@@ -458,42 +459,8 @@ class ModelMixin(object):
 
     def insert_form_data_record(self, form, project=None, photo=None,
                                 audio=None, name=None):
-
-        from django.contrib.gis.geos import Point
-        # create a marker:
-        lat = 37.87
-        lng = -122.28
-        project = project or self.project
-        record = form.TableModel()
-        record.point = Point(lng, lat, srid=4326)
-        if project:
-            record.project = project
-
-        # generate different dummy types depending on the data_type
-        for field in form.fields:
-            if field.data_type.id in [
-                    DataType.DataTypes.INTEGER,
-                    DataType.DataTypes.RATING]:
-                setattr(record, field.col_name, 5)
-            elif field.data_type.id == DataType.DataTypes.BOOLEAN:
-                setattr(record, field.col_name, True)
-            elif field.data_type.id == DataType.DataTypes.DATETIME:
-                setattr(
-                    record,
-                    field.col_name,
-                    get_timestamp_no_milliseconds())
-            elif field.data_type.id == DataType.DataTypes.DECIMAL:
-                setattr(record, field.col_name, 3.14159)
-            elif field.data_type.id == DataType.DataTypes.PHOTO:
-                setattr(record, field.col_name, photo)
-            elif field.data_type.id == DataType.DataTypes.AUDIO:
-                setattr(record, field.col_name, audio)
-            elif field.data_type.id == DataType.DataTypes.CHOICE:
-                setattr(record, field.col_name, 'blue')
-            else:
-                setattr(record, field.col_name, name or 'some text')
-        record.save(user=self.user)
-        return record
+        return self.create_marker_w_attrs(
+            project=project, form=form, name=name)
 
     def create_imageopt(self, mapimage):
         from localground.apps.site import models
