@@ -24,7 +24,6 @@ def get_metadata():
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
-        'color': {'read_only': False, 'required': False, 'type': 'string'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
@@ -147,7 +146,6 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
             params = {
                 'name': 'New Marker Name',
                 'caption': 'Test description',
-                'color': 'FF0000',
                 'geometry': self.Point,
                 'project_id': self.project.id,
                 'extras': self.ExtrasGood
@@ -169,7 +167,6 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         for i, url in enumerate(self.urls):
             name = 'New Marker 1'
             description = 'Test description1'
-            color = 'FF0000'
             for k in ['Point', 'LineString', 'Polygon']:
                 geom = getattr(self, k)
                 response = self.client_user.post(
@@ -178,7 +175,6 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                         'geometry': geom,
                         'name': name,
                         'caption': description,
-                        'color': color,
                         'project_id': self.project.id,
                         'extras': self.ExtrasGood
                     }),
@@ -190,7 +186,6 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 new_marker = models.Marker.objects.all().order_by('-id',)[0]
                 self.assertEqual(new_marker.name, name)
                 self.assertEqual(new_marker.description, description)
-                self.assertEqual(new_marker.color, color)
                 self.assertEqual(
                     new_marker.geometry,
                     GEOSGeometry(
@@ -231,7 +226,6 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             params = {
                 'name': 'New Marker Name',
                 'caption': 'Test description',
-                'color': 'FF0000',
                 'geometry': self.Point,
                 'extras': self.ExtrasGood
             }
@@ -251,15 +245,14 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         for k in ['Point', 'LineString', 'Polygon']:
             geom = getattr(self, k)
             for i, url in enumerate(self.urls):
-                name, description, color = 'New Marker Name', \
-                    'Test description', 'FF0000'
+                name, description = 'New Marker Name', \
+                    'Test description'
                 response = self.client_user.put(
                     url,
                     data=urllib.urlencode({
                         'geometry': geom,
                         'name': name,
                         'caption': description,
-                        'color': color,
                         'extras': self.ExtrasGood
                     }),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -269,7 +262,6 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 result_json = response.data
                 self.assertEqual(updated_marker.name, name)
                 self.assertEqual(updated_marker.description, description)
-                self.assertEqual(updated_marker.color, color)
                 self.assertEqual(
                     updated_marker.geometry,
                     GEOSGeometry(
