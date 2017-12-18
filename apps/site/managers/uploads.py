@@ -8,7 +8,7 @@ from localground.apps.lib.errors import GenericLocalGroundError
 
 class UploadMixin(ObjectMixin):
     related_fields = ['project', 'owner', 'last_updated_by']
-    prefetch_fields = []  # 'project__users__user']
+    prefetch_fields = []
 
 
 class MapImageMixin(UploadMixin):
@@ -54,8 +54,10 @@ class MapImageManager(models.GeoManager, MapImageMixin):
 class StyledMapMixin(UploadMixin):
     pass
 
+
 class StyledMapManager(models.GeoManager, StyledMapMixin):
     pass
+
 
 class PhotoMixin(UploadMixin):
     pass
@@ -71,13 +73,7 @@ class PrintPermissionsMixin(object):
             return [p.to_dict() for p in self]
 
 
-#class PhotoQuerySet(QuerySet, PhotoMixin):
-#    pass
-
-
 class PhotoManager(models.GeoManager, PhotoMixin):
-    #def get_queryset(self):
-    #    return PhotoQuerySet(self.model, using=self._db)
     pass
 
 
@@ -85,13 +81,7 @@ class AudioMixin(UploadMixin):
     pass
 
 
-#class AudioQuerySet(QuerySet, AudioMixin):
-#    pass
-
-
 class AudioManager(models.GeoManager, AudioMixin):
-    #def get_queryset(self):
-    #    return AudioQuerySet(self.model, using=self._db)
     pass
 
 
@@ -99,14 +89,9 @@ class VideoMixin(UploadMixin):
     pass
 
 
-#class VideoQuerySet(QuerySet, AudioMixin):
-#    pass
-
-
 class VideoManager(models.GeoManager, VideoMixin):
-    #def get_queryset(self):
-    #    return VideoQuerySet(self.model, using=self._db)
     pass
+
 
 class RecordMixin(UploadMixin, MarkerMixin):
 
@@ -129,23 +114,16 @@ class RecordMixin(UploadMixin, MarkerMixin):
         if request:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
-        q = self.append_extras(q, "count", project=project, forms=None, user=user)
+        q = self._append_extras(q, "array_agg")
 
         if ordering_field:
             q = q.order_by(ordering_field)
         return q
 
 
-#class RecordQuerySet(QuerySet, AudioMixin):
-#    pass
-
-
 class RecordManager(models.GeoManager, RecordMixin):
     related_fields = ['project', 'owner']
     pass
-
-#    def get_queryset(self):
-#        return RecordQuerySet(self.model, using=self._db)
 
     def get_objects_detailed(self, user, project=None, request=None,
                              context=None, ordering_field='-time_stamp',
