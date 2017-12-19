@@ -17,10 +17,20 @@ from rest_framework import serializers
 class ChoiceIntField(serializers.ChoiceField):
 
     def to_internal_value(self, data):
+        if data is None:
+            return None
         try:
             return int(data)
-        except e:
-            self.fail('integer required', input=data)
+        except Exception:
+            raise serializers.ValidationError(
+                'One of the following integers is required: {0}'.format(
+                    ', '.join([
+                        '{0} ({1})'.format(
+                            key, self.choices[key]
+                        ) for key in self.choices.keys()
+                    ])
+                )
+            )
 
 
 class CustomDataTimeField(serializers.DateTimeField):
@@ -171,6 +181,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
     def create(self, validated_data):
         # Override to handle HStore
+        # print 'CREATE:', validated_data
         if 'attributes' in validated_data:
             for key in validated_data['attributes'].keys():
                 val = validated_data['attributes'][key]
@@ -310,12 +321,12 @@ def create_dynamic_serializer(form, **kwargs):
 
     def createBooleanField():
         attrs.update({
-            field.col_name: serializers.BooleanField(
+            field.col_name: serializers.NullBooleanField(
                 source='attributes.' + field.col_name,
-                required=False,)
+                required=False)
         })
 
-    def createDecimalField():
+    def createFloatField():
         attrs.update({
             field.col_name: serializers.FloatField(
                 source='attributes.' + field.col_name,
@@ -327,7 +338,7 @@ def create_dynamic_serializer(form, **kwargs):
         models.DataType.DataTypes.TEXT: createTextField,
         models.DataType.DataTypes.DATETIME: createDateTimeField,
         models.DataType.DataTypes.BOOLEAN: createBooleanField,
-        models.DataType.DataTypes.DECIMAL: createDecimalField,
+        models.DataType.DataTypes.DECIMAL: createFloatField,
         models.DataType.DataTypes.RATING: createRatingField,
         models.DataType.DataTypes.CHOICE: createChoiceField
     }
