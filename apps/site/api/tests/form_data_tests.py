@@ -87,8 +87,8 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.metadata = get_metadata_records()
-        # self.metadata['photo_count'] = {'read_only': True, 'required': False, 'type': 'field' }
-        # self.metadata['audio_count'] = {'read_only': True, 'required': False, 'type': 'field' }
+        self.metadata['photo_count'] = {'read_only': True, 'required': False, 'type': 'field' }
+        self.metadata['audio_count'] = {'read_only': True, 'required': False, 'type': 'field' }
         self.form = self.create_form_with_fields(
             name="Class Form",
             num_fields=6)
@@ -130,8 +130,8 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         self.create_relation(self.mwa1, self.audio2)
 
         response = self.client_user.get(self.url)
-        # self.assertEqual(response.data['results'][0]['photo_count'], 1)
-        # self.assertEqual(response.data['results'][0]['audio_count'], 2)
+        self.assertEqual(response.data['results'][0]['photo_count'], 1)
+        self.assertEqual(response.data['results'][0]['audio_count'], 2)
 
         # clean up:
         self.delete_relation(self.mwa1, self.photo1)
@@ -149,7 +149,7 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         self.form = models.Form.objects.get(id=self.form.id)
         self.mwa1 = self.create_marker_w_attrs(self.user, self.project, form=self.form)
         # self.rec_1 = self.insert_form_data_record(form=self.form, project=self.project)
-        # self.assertEqual(len(self.form.TableModel.objects.all()), 1)
+        self.assertEqual(len(self.form.TableModel.objects.all()), 1)
         mwas = self.form.TableModel.objects.all()
         self.url = '/api/0/forms/%s/data/%s/' % (self.form.id, self.mwa1.id)
         self.urls = [self.url]
