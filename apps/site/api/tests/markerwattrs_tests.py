@@ -85,15 +85,15 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
     def tearDown(self):
         pass
         # delete method also removes files from file system:
-        # models.Photo.objects.all().delete()
-        # models.Audio.objects.all().delete()
+        models.Photo.objects.all().delete()
+        models.Audio.objects.all().delete()
 
     def test_post_individual_attrs(self):
         for d in [
             {'field_1': 'field_1 text'},
-            {'field_2': 77}, # should not be a string?
-            {'field_3': "2012-09-04 06:00:00"}, #Can't get DateTime to work
-            {'field_4': True}, # should not be a string?
+            {'field_2': 77},
+            {'field_3': "2012-09-04 06:00:00"},
+            {'field_4': True}, 
             {'field_5': 43124.543252},
             {'field_6': 2},
             {'field_7': 'Independent'}
@@ -122,7 +122,7 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
         hstore_data = {
             'field_1': 'field_1 text',
             'field_2': 77,
-            'field_3': '2012-09-04 06:00:00', #Can't get DateTime to work
+            'field_3': '2012-09-04 06:00:00',
             'field_4': True,
             'field_5': 43124.543252,
             'field_6': 2,
@@ -160,10 +160,10 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
 
     def test_post_fails_w_invalid_attrs(self):
         for d in [
-            #{'field_1': 33},
+            #{'field_1': 33}, # what is an example of an invalid sting value?
             {'field_2': 'some text'}, 
-            #{'field_3': '1990-12-31T23:59:60Z'}, #Can't get DateTime to work
-            {'field_4': 'invalid text'}, # should not be a string?
+            {'field_3': '199012-31T243:59:60Z'},
+            {'field_4': 'invalid text'},
             {'field_5': 'invalid text'},
             # {'field_6': 'nothing'}, # problems with ChoiceIntField exception handling
             {'field_7': 'Invalid text'}
@@ -368,9 +368,9 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.list_url = '/api/0/forms/%s/data/' % form.id
         self.hstore_data = [
             {'field_1': 'field_1 text'},
-            {'field_2': 77}, # should not be a string?
-            {'field_3': '2012-09-04 06:00:00'}, #Can't get DateTime to work
-            {'field_4': True}, # should not be a string?
+            {'field_2': 77},
+            {'field_3': '2012-09-04 06:00:00'},
+            {'field_4': True},
             {'field_5': 43124.543252}, 
             {'field_6': 2},
             {'field_7': 'Independent'}
@@ -443,9 +443,9 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
         new_hstore_data_dict = {
             'field_1': 'new field_1 text',
-            'field_2': 99, # should not be a string?
-            'field_3': '2012-09-04 07:00:00', #Can't get DateTime to work
-            'field_4': False, # should not be a string?
+            'field_2': 99,
+            'field_3': '2012-09-04 07:00:00',
+            'field_4': False,
             'field_5': 7777.7777, 
             'field_6': 1,
             'field_7': 'Democrat'
@@ -509,7 +509,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         new_hstore_data_dict = {
             'field_1': 'new field_1 text',
             'field_2': 88, 
-            'field_3': "2012-09-04 07:00:00", #Can't get DateTime to work
+            'field_3': "2012-09-04 07:00:00",
             'field_4': False,
             'field_5': 7777.7777, 
             'field_6': 1,
