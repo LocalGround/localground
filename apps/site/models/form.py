@@ -3,7 +3,6 @@ from django.db.models import Q
 from localground.apps.site.managers import FormManager
 from localground.apps.site.models import NamedMixin, BaseAudit, \
      ProjectMixin, MarkerWithAttributes
-from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 
