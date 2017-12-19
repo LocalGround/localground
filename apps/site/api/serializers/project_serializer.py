@@ -99,7 +99,6 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
         from localground.apps.site.api.serializers.marker_w_attrs_serializer import \
             create_dynamic_serializer
         records =  models.MarkerWithAttributes.objects.filter(form=form)
-        #raise Exception(form.TableModel.objects.get_objects(obj.owner, project=obj))
         return self.serialize_list(
             models.MarkerWithAttributes,
             create_dynamic_serializer(form),
