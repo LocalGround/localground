@@ -49,10 +49,6 @@ class ApiRelatedMediaListTest(
         self.photo = self.create_photo(self.user, self.project)
         self.audio = self.create_audio(self.user, self.project)
 
-    def tearDown(self):
-        for m in models.Form.objects.all():
-            m.remove_table_from_cache()
-
     def test_page_404_if_invalid_marker_id(self, **kwargs):
         urls = [
             '/api/0/markers/%s/%s/' % (999, 'photos'),
@@ -198,10 +194,6 @@ class ApiRelatedMediaInstanceTest(
         self.delete_relation(self.marker, self.audio1)
         self.delete_relation(self.markerwattrs, self.photo1)
         self.delete_relation(self.markerwattrs, self.audio1)
-
-        # delete custom forms:
-        for m in models.Form.objects.all():
-            m.remove_table_from_cache()
 
     def test_page_200_status_basic_user(self, **kwargs):
         ViewMixinAPI.test_page_200_status_basic_user(self)

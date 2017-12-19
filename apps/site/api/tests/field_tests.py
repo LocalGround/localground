@@ -44,10 +44,6 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
         self.metadata.update(get_base_metadata())
         self.view = views.FieldList.as_view()
 
-    def tearDown(self):
-        for m in models.Form.objects.all():
-            m.remove_table_from_cache()
-
     def test_reorders_fields_correctly(self, **kwargs):
         self.field3 = self.create_field(self.form, name="Field 3", ordering=4)
         self.field4 = self.create_field(self.form, name="Field 4", ordering=9)
@@ -118,30 +114,6 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
         new_obj = self.model.objects.all().order_by('-id',)[0]
         self.assertEqual(new_obj.col_alias, 'Field 3')
         self.assertEqual(new_obj.col_name, 'field_3')
-
-        # also check to see if the new column exists in the Dynamic table
-        # and that we can add data to it:
-        new_rec = new_obj.form.TableModel()
-        new_rec.project = self.project
-        new_rec.field_3 = "Testing!!"
-        new_rec.save(user=self.user)
-
-        same_rec = new_obj.form.TableModel.objects.all().order_by('-id',)[0]
-        self.assertEqual(same_rec.field_3, 'Testing!!')
-
-    '''
-    def test_out_of_bounds_ordering_throws_error_post(self, **kwargs):
-        response = self.client_user.post(self.url,
-                        data=urllib.urlencode({
-                            'col_alias': 'Field 3',
-                            'ordering': 20,
-                            'data_type': 'text'
-                        }),
-                        HTTP_X_CSRFTOKEN=self.csrf_token,
-                        content_type="application/x-www-form-urlencoded"
-                    )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST
-    '''
 
     def test_reserved_col_alias_throws_error_post(self, **kwargs):
         for col_alias in [

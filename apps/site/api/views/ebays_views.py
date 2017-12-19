@@ -17,7 +17,7 @@ class TrackList(generics.ListAPIView):
     def get_queryset(self):
         from django.db.models import Max
         form = models.Form.objects.get(id=84)
-        return (form.TableModel.objects
-                .distinct().values('col_4')
+        return (models.MarkerWithAttributes.objects
+                .distinct().filter(form=form).values('col_4')
                 .annotate(time_max=Max('col_1'))
                 .order_by('-time_max',))

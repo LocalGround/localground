@@ -423,10 +423,11 @@ class ModelMixin(object):
                              project=project)
         for i in range(0, num_fields):
             field_name = 'Field %s' % (i + 1)
-            fld = self.create_field(name=field_name,
-                                data_type=DataType.objects.get(id=(i + 1)),
-                                ordering=(i + 1),
-                                form=f)
+            fld = self.create_field(
+                name=field_name,
+                data_type=DataType.objects.get(id=(i + 1)),
+                ordering=(i + 1),
+                form=f)
             if i+1 == 6:
                 fld.extras = [{"name": "Bad", "value": 1},
                               {"name": "Ok", "value": 2},
@@ -437,7 +438,6 @@ class ModelMixin(object):
                               {"name": "Republican"},
                               {"name": "Independent"}]
             fld.save()
-        f.remove_table_from_cache()
         return f
 
     def create_field(self, form, name='Field 1', extras=None,
@@ -541,7 +541,7 @@ class ModelMixin(object):
         project = project or self.project
         video = models.Video(
             project=project,
-            #host=settings.SERVER_HOST,
+            # host=settings.SERVER_HOST,
             owner=user,
             last_updated_by=user,
             name=name,

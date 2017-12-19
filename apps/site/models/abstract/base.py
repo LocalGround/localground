@@ -98,15 +98,9 @@ class Base(models.Model):
             raise Exception(
                 'either model_name or model_name_plural argument is required'
             )
-        if name.find('form_') == -1:
-            return cls.__get_model_managed(
-                model_name=model_name,
-                model_name_plural=model_name_plural)
-        else:
-            id = name.split('_')[-1]
-            from localground.apps.site.models import Form
-            form = Form.objects.get(id=id)
-            return form.TableModel
+        return cls.__get_model_managed(
+            model_name=model_name,
+            model_name_plural=model_name_plural)
 
     @classmethod
     def get_filter_fields(cls):
