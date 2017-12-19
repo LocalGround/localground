@@ -6,7 +6,7 @@ from localground.apps.site.api.serializers.audio_serializer import AudioSerializ
 from localground.apps.site.api.serializers.record_serializer import create_record_serializer, \
     create_compact_record_serializer
 from localground.apps.site.api.metadata import CustomMetadata
-from localground.apps.site.api.serializers.marker_serializer import MarkerSerializerCounts, MarkerSerializerLists
+from localground.apps.site.api.serializers.marker_serializer import MarkerSerializer, MarkerSerializerDetail
 from rest_framework import serializers
 from localground.apps.site import models
 from django.conf import settings
@@ -154,12 +154,12 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
     def get_markers(self, obj):
         return self.serialize_list(
             models.Marker,
-            MarkerSerializerLists,
+            MarkerSerializer,
             models.Marker.objects.get_objects_with_lists(
                 project=obj,
             )
         )
-        
+
 
 
     def serialize_list(self, model_class, serializer_class, records,

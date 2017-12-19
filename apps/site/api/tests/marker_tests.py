@@ -10,11 +10,14 @@ from django.contrib.gis.geos import GEOSGeometry
 
 def get_metadata():
     return {
-        'photo_count': {'read_only': True, 'required': False, 'type': 'field'},
-        'audio_count': {'read_only': True, 'required': False, 'type': 'field'},
-        'map_image_count': {'read_only': True, 'required': False,
-                            'type': 'field'},
-        'video_count': {'read_only': True, 'required': False, 'type': 'field'},
+        'attached_photos_ids': {
+            'read_only': True, 'required': False, 'type': 'field'},
+        'attached_audio_ids': {
+            'read_only': True, 'required': False, 'type': 'field'},
+        'attached_videos_ids': {
+            'read_only': True, 'required': False, 'type': 'field'},
+        'attached_map_images_id': {
+            'read_only': True, 'required': False, 'type': 'field'},
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
@@ -24,9 +27,8 @@ def get_metadata():
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
-        'color': {'read_only': False, 'required': False, 'type': 'string'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
-        'extras': {'read_only': False, 'required': False, 'type': 'json'}
+        'extras': {'read_only': False, 'required': False, 'type': 'json'},
     }
 
 
@@ -97,25 +99,6 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
             })
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_metadata_only_available_with_flag(self, **kwargs):
-        response = self.client_user.get(
-            self.urls[0], {
-                'marker_with_media_arrays': True,
-                'project_id': self.project.id
-            }
-        )
-        m = response.data.get("results")[0]
-        self.assertIsNone(m.get("update_metadata"))
-
-        response = self.client_user.get(
-            self.urls[0], {
-                'include_metadata': True,
-                'project_id': self.project.id
-            }
-        )
-        m = response.data.get("results")[0]
-        self.assertIsNotNone(m.get("update_metadata"))
-
     def test_arrays_available_when_flag_exists(self):
         # create some associations:
         self.photo1 = self.create_photo(self.user, self.project)
@@ -129,9 +112,9 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
             }
         )
         marker = response.data.get("results")[0]
-        self.assertEqual(len(marker.get('photo_array')), 1)
-        self.assertEqual(len(marker.get('audio_array')), 1)
-        self.assertTrue('map_image_array' in marker)
+        self.assertEqual(len(marker.get('attached_photos_ids')), 1)
+        self.assertEqual(len(marker.get('attached_audio_ids')), 1)
+        self.assertTrue('attached_map_images_id' in marker)
 
         # clean up:
         self.delete_relation(self.marker, self.photo1)
@@ -147,7 +130,6 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
             params = {
                 'name': 'New Marker Name',
                 'caption': 'Test description',
-                'color': 'FF0000',
                 'geometry': self.Point,
                 'project_id': self.project.id,
                 'extras': self.ExtrasGood
@@ -169,7 +151,6 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         for i, url in enumerate(self.urls):
             name = 'New Marker 1'
             description = 'Test description1'
-            color = 'FF0000'
             for k in ['Point', 'LineString', 'Polygon']:
                 geom = getattr(self, k)
                 response = self.client_user.post(
@@ -178,7 +159,6 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                         'geometry': geom,
                         'name': name,
                         'caption': description,
-                        'color': color,
                         'project_id': self.project.id,
                         'extras': self.ExtrasGood
                     }),
@@ -190,7 +170,6 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 new_marker = models.Marker.objects.all().order_by('-id',)[0]
                 self.assertEqual(new_marker.name, name)
                 self.assertEqual(new_marker.description, description)
-                self.assertEqual(new_marker.color, color)
                 self.assertEqual(
                     new_marker.geometry,
                     GEOSGeometry(
@@ -231,7 +210,6 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             params = {
                 'name': 'New Marker Name',
                 'caption': 'Test description',
-                'color': 'FF0000',
                 'geometry': self.Point,
                 'extras': self.ExtrasGood
             }
@@ -251,15 +229,14 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         for k in ['Point', 'LineString', 'Polygon']:
             geom = getattr(self, k)
             for i, url in enumerate(self.urls):
-                name, description, color = 'New Marker Name', \
-                    'Test description', 'FF0000'
+                name, description = 'New Marker Name', \
+                    'Test description'
                 response = self.client_user.put(
                     url,
                     data=urllib.urlencode({
                         'geometry': geom,
                         'name': name,
                         'caption': description,
-                        'color': color,
                         'extras': self.ExtrasGood
                     }),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -269,7 +246,6 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 result_json = response.data
                 self.assertEqual(updated_marker.name, name)
                 self.assertEqual(updated_marker.description, description)
-                self.assertEqual(updated_marker.color, color)
                 self.assertEqual(
                     updated_marker.geometry,
                     GEOSGeometry(
@@ -277,9 +253,9 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 self.assertEqual(
                     updated_marker.extras, json.loads(self.ExtrasGood)
                 )
-                self.assertEqual(result_json.get('photo_count'), 0)
-                self.assertEqual(result_json.get('audio_count'), 0)
-                self.assertEqual(result_json.get('map_image_count'), 0)
+                self.assertEqual(result_json.get('attached_photos_ids'), None)
+                self.assertEqual(result_json.get('attached_audio_ids'), None)
+                self.assertEqual(result_json.get('attached_video_ids'), None)
 
     def test_update_marker_using_patch(self, **kwargs):
         for k in ['Point', 'LineString', 'Polygon']:

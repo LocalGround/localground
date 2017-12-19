@@ -29,12 +29,7 @@ class ZIPRenderer(renderers.BaseRenderer):
         ],
         'audio': ['file_path_orig', 'file_path'],
         'map-image': ['overlay_path', 'file_path'],
-        'record': [
-            'file_path',
-            'file_name_medium',
-            'file_name_medium_sm',
-            'file_name_small'
-        ],
+        'record': [],
         'print': ['pdf', 'thumb']
     }
     URL_PATH_FIELDS = []

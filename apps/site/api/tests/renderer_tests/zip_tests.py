@@ -81,7 +81,6 @@ class ZIPRendererListTest(ZipMediaMixin, test.TestCase, ModelMixin):
             # been changed to relative paths, and that all relative paths
             # are present in the zip file:
             # make sure that it found at least 2 file paths
-            self.assertTrue(len(file_path_columns) >= 2)
             self.assertSetEqual(set(file_paths), set(zip_file.namelist()))
             self.assertEqual(num_rows, expected_count)
             self.assertTrue(
