@@ -88,7 +88,7 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.form = self.create_form_with_fields(num_fields=7)
         self.markerwattrs = self.create_marker_w_attrs(
             self.user, self.project, form=self.form)
-        self.urls = ['/api/0/forms/%s/data/' % self.form.id]
+        self.urls = ['/api/0/datasets/%s/data/' % self.form.id]
 
     def tearDown(self):
         pass
@@ -314,10 +314,10 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.markerwattrs = self.create_marker_w_attrs(
             self.user, self.project, form=self.form)
         self.urls = [
-            '/api/0/forms/%s/data/%s/' %
+            '/api/0/datasets/%s/data/%s/' %
             (self.markerwattrs.form.id, self.markerwattrs.id)
         ]
-        self.list_url = '/api/0/forms/%s/data/' % self.form.id
+        self.list_url = '/api/0/datasets/%s/data/' % self.form.id
         self.hstore_data = [
             {'field_1': 'field_1 text'},
             {'field_2': 77},
@@ -560,7 +560,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
         # delete marker:
         response = self.client_user.delete(
-            '/api/0/forms/%s/data/%s/' % (form_id, marker_id),
+            '/api/0/datasets/%s/data/%s/' % (form_id, marker_id),
             HTTP_X_CSRFTOKEN=self.csrf_token
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)

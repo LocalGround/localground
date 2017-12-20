@@ -35,7 +35,7 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
         self.field1 = self.create_field(self.form, name="Field 1", ordering=1)
         self.field2 = self.create_field(self.form, name="Field 2", ordering=2)
         self.model = models.Field
-        self.url = '/api/0/forms/%s/fields/' % self.form.id
+        self.url = '/api/0/datasets/%s/fields/' % self.form.id
         self.urls = [self.url]
         self.metadata = {
             'data_type': {'read_only': False, 'required': False,
@@ -142,10 +142,10 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                     )
         self.field = self.create_field(self.form, name="Field 1")
         self.field2 = self.create_field(self.form, name="Field 2")
-        self.url = '/api/0/forms/%s/fields/%s/' % (
+        self.url = '/api/0/datasets/%s/fields/%s/' % (
             self.field.form.id, self.field.id
         )
-        self.url2 = '/api/0/forms/%s/fields/%s/' % (
+        self.url2 = '/api/0/datasets/%s/fields/%s/' % (
             self.field2.form.id, self.field2.id
         )
         self.urls = [self.url]

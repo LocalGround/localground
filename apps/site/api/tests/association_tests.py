@@ -27,10 +27,10 @@ class ApiRelatedMediaListTest(
         self.urls = [
             '/api/0/markers/%s/%s/' % (self.marker.id, 'photos'),
             '/api/0/markers/%s/%s/' % (self.marker.id, 'audio'),
-            '/api/0/forms/%s/data/%s/%s/' % (
+            '/api/0/datasets/%s/data/%s/%s/' % (
                 self.form.id, self.markerwattrs.id, 'photos'
             ),
-            '/api/0/forms/%s/data/%s/%s/' % (
+            '/api/0/datasets/%s/data/%s/%s/' % (
                 self.form.id, self.markerwattrs.id, 'audio'
             )
         ]
@@ -53,8 +53,8 @@ class ApiRelatedMediaListTest(
         urls = [
             '/api/0/markers/%s/%s/' % (999, 'photos'),
             '/api/0/markers/%s/%s/' % (999, 'audio'),
-            '/api/0/forms/%s/data/%s/%s/' % (self.form.id, 999, 'photos'),
-            '/api/0/forms/%s/data/%s/%s/' % (self.form.id, 999, 'audio')
+            '/api/0/datasets/%s/data/%s/%s/' % (self.form.id, 999, 'photos'),
+            '/api/0/datasets/%s/data/%s/%s/' % (self.form.id, 999, 'audio')
         ]
         for url in urls:
             response = self.client_user.get(url)
@@ -115,11 +115,11 @@ class ApiRelatedMediaListTest(
 
         urls = {
             '/api/0/markers/%s/markers/' % self.marker.id: m1.id,
-            '/api/0/forms/%s/data/%s/markers/' % (
+            '/api/0/datasets/%s/data/%s/markers/' % (
                 self.form.id, self.markerwattrs.id
             ): m1.id,
             '/api/0/markers/%s/%s/' % (self.marker.id, source_type): mwa1.id,
-            '/api/0/forms/%s/data/%s/%s/' % (
+            '/api/0/datasets/%s/data/%s/%s/' % (
                 self.form.id, self.markerwattrs.id, source_type
             ): mwa1.id
         }
@@ -174,10 +174,10 @@ class ApiRelatedMediaInstanceTest(
             '/api/0/markers/%s/%s/%s/' % (
                 self.marker.id, 'audio', self.audio1.id
             ),
-            '/api/0/forms/%s/data/%s/%s/%s/' % (
+            '/api/0/datasets/%s/data/%s/%s/%s/' % (
                 self.form.id, self.markerwattrs.id, 'photos', self.photo1.id
             ),
-            '/api/0/forms/%s/data/%s/%s/%s/' % (
+            '/api/0/datasets/%s/data/%s/%s/%s/' % (
                 self.form.id, self.markerwattrs.id, 'audio', self.audio1.id
             )
         ]
@@ -209,7 +209,7 @@ class ApiRelatedMediaInstanceTest(
             ): {
                 'source_model': self.marker, 'attach_model': self.photo1
             },
-            '/api/0/forms/%s/data/%s/photos/%s/' % (
+            '/api/0/datasets/%s/data/%s/photos/%s/' % (
                 self.form.id, self.markerwattrs.id, self.photo1.id
             ): {
                 'source_model': self.markerwattrs, 'attach_model': self.photo1
@@ -217,7 +217,7 @@ class ApiRelatedMediaInstanceTest(
             '/api/0/markers/%s/audio/%s/' % (self.marker.id, self.audio1.id): {
                 'source_model': self.marker, 'attach_model': self.audio1
             },
-            '/api/0/forms/%s/data/%s/audio/%s/' % (
+            '/api/0/datasets/%s/data/%s/audio/%s/' % (
                 self.form.id, self.markerwattrs, self.audio1.id
             ): {
                 'source_model': self.markerwattrs, 'attach_model': self.audio1
@@ -263,7 +263,7 @@ class ApiRelatedMediaInstanceTest(
             ): {
                 'source_model': self.marker, 'attach_model': self.photo1
             },
-            '/api/0/forms/%s/data/%s/photos/%s/' % (
+            '/api/0/datasets/%s/data/%s/photos/%s/' % (
                 self.form.id, self.markerwattrs.id, self.photo1.id
             ): {
                 'source_model': self.markerwattrs, 'attach_model': self.photo1
@@ -273,7 +273,7 @@ class ApiRelatedMediaInstanceTest(
             ): {
                 'source_model': self.marker, 'attach_model': self.audio1
             },
-            '/api/0/forms/%s/data/%s/audio/%s/' % (
+            '/api/0/datasets/%s/data/%s/audio/%s/' % (
                 self.form.id, self.markerwattrs.id, self.audio1.id
             ): {
                 'source_model': self.markerwattrs, 'attach_model': self.audio1

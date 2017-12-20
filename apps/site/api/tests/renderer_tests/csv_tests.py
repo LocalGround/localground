@@ -48,7 +48,7 @@ class CSVMixin(mixins.MediaMixin):
                     headers.remove('children') #for instances
             if test_record.get('overlay_type') not in types_without_lat_lngs:
                 headers += ['lat', 'lng']
-            if '/forms/' not in url:
+            if '/datasets/' not in url:
                 self.assertSetEqual(set(headers), set(header_row))
 
             # TEST 2: lat/lng are populated, if applicable:
@@ -60,9 +60,9 @@ class CSVMixin(mixins.MediaMixin):
             self.assertEqual(test_record.get('tags'), ', '.join(self.tags1))
 
     def _test_media_flattened_for_records(self, is_detail=False):
-        url = '/api/0/forms/{}/data/'.format(self.records[0].form.id)
+        url = '/api/0/datasets/{}/data/'.format(self.records[0].form.id)
         if is_detail:
-            url = '/api/0/forms/{}/data/{}/'.format(self.records[0].form.id, self.records[0].id)
+            url = '/api/0/datasets/{}/data/{}/'.format(self.records[0].form.id, self.records[0].id)
         response = self.client_user.get(url + '?format=csv')
         data = StringIO(response.content)
         reader = csv.DictReader(data)

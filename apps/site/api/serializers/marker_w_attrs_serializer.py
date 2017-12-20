@@ -63,7 +63,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     )
 
     def get_url(self, obj):
-        return '%s/api/0/forms/%s/data/%s' % \
+        return '%s/api/0/datasets/%s/data/%s' % \
                 (settings.SERVER_URL, obj.form.id, obj.id)
 
     def get_form(self, obj):
