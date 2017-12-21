@@ -77,6 +77,15 @@ class ZIPRenderer(renderers.BaseRenderer):
     def add_media_to_zip(self, zip_file, row, key):
         """
         Adds any URL media to the zip file:
+
+        What's new here?
+        What's new is that instead of storing images and audio files locally,
+        we're storing them on Amazon. Therefore, there are a few more steps
+        that we need to take:
+        1. Use the Python httplib and urllib to pull down each image into a
+           temporary directory (and set the source_file_path).
+           https://docs.python.org/3.1/howto/urllib2.html
+        2. Write the file to the zip_file
         """
         abs_file_path = self.get_abs_path(row, key)
         if not abs_file_path:
