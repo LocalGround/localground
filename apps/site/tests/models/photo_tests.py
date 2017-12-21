@@ -20,7 +20,7 @@ import urllib
 from urlparse import urlparse
 # by adding the json name, the error is different:
 # going from json not defined to attributeError: read when opening an image
-import simplejson as json
+import json
 
 
 class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
@@ -181,6 +181,6 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
         # exif_data = image.info['exif']
         tmp_file = 'test.jpg'
         image.save(tmp_file, "JPEG", quality=85, exif=json.dumps(d))
-        print(image)
-        im = Image.open(image)
+        im = Image.open(tmp_file)
         print(im._getexif())
+        self.assertTrue(False)
