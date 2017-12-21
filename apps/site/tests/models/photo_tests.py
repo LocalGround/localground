@@ -154,7 +154,6 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
         )
         self.assertEqual(self.model.__unicode__(), test_string)
 
-    '''
     def test_read_exif_data(self):
         from PIL.ExifTags import TAGS
 
@@ -176,10 +175,8 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
                 6: (0, 1)}
             }
         image = Image.new('RGB', (200, 100))
-        #exif_data = image.info['exif']
+        # exif_data = image.info['exif']
         tmp_file = 'test.jpg'
         image.save(tmp_file, "JPEG", quality=85, exif=json.dumps(d))
         im = Image.open(image)
         print(im._getexif())
-
-    '''

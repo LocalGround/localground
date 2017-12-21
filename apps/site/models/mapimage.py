@@ -42,7 +42,7 @@ class MapImage(BaseUploadedMedia):
         '''
         Used for displaying a previously generated thumbnail image
         '''
-        return self._encrypt_media_path(
+        return self._build_media_path(
             '%s%s' %
             (self.virtual_path, self.file_name_thumb))
 
@@ -61,7 +61,7 @@ class MapImage(BaseUploadedMedia):
         Used for displaying a previously generated image
         '''
         if self.processed_image:
-            return self._encrypt_media_path(
+            return self._build_media_path(
                 '%s%s' %
                 (self.virtual_path, self.processed_image.file_name_orig))
         else:
@@ -103,7 +103,7 @@ class ImageOpts(ExtentsMixin, MediaMixin, BaseAudit):
     def processed_map_url_path(self):
         host = self.source_mapimage.host
         # host = 'dev.localground.org' #just for debugging purposes
-        return self._encrypt_media_path(
+        return self._build_media_path(
             '%s%s' %
             (self.source_mapimage.virtual_path,
              self.file_name_orig),

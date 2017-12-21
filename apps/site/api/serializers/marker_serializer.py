@@ -1,57 +1,73 @@
-from localground.apps.site.api.serializers.base_serializer import GeometrySerializer
+from localground.apps.site.api.serializers.base_serializer import \
+    GeometrySerializer
 from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 from django.conf import settings
 from localground.apps.site.api.metadata import CustomMetadata
 
-class MarkerSerializerMixin(GeometrySerializer):
-    #color = fields.ColorField(required=False)
-    color = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
-    update_metadata = serializers.SerializerMethodField()
 
+class MarkerSerializer(GeometrySerializer):
+    update_metadata = serializers.SerializerMethodField()
+    attached_photos_ids = serializers.SerializerMethodField()
+    attached_audio_ids = serializers.SerializerMethodField()
+    attached_videos_ids = serializers.SerializerMethodField()
+    attached_map_images_id = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
-        fields = GeometrySerializer.Meta.fields + ('color', 'extras')
+        fields = GeometrySerializer.Meta.fields + (
+            'update_metadata', 'extras', 'attached_photos_ids',
+            'attached_audio_ids', 'attached_videos_ids',
+            'attached_map_images_id'
+        )
         depth = 0
 
     def get_update_metadata(self, obj):
         m = CustomMetadata()
         return m.get_serializer_info(self)
 
-class MarkerSerializer(MarkerSerializerMixin):
+    def get_attached_photos_ids(self, obj):
+        try:
+            return obj.photo_array
+        except Exception:
+            return None
+
+    def get_attached_audio_ids(self, obj):
+        try:
+            return obj.audio_array
+        except Exception:
+            return None
+
+    def get_attached_videos_ids(self, obj):
+        try:
+            return obj.video_array
+        except Exception:
+            return None
+
+    def get_attached_map_images_id(self, obj):
+        try:
+            return obj.map_image_array
+        except Exception:
+            return None
+
+
+class MarkerSerializerDetail(MarkerSerializer):
 
     def __init__(self, *args, **kwargs):
         super(MarkerSerializer, self).__init__(*args, **kwargs)
 
     children = serializers.SerializerMethodField()
-    photo_count = serializers.SerializerMethodField()
-    audio_count = serializers.SerializerMethodField()
-    video_count = serializers.SerializerMethodField()
-    map_image_count = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
-        fields = MarkerSerializerMixin.Meta.fields + \
-            ('children', 'photo_count', 'audio_count', 'video_count', 'map_image_count')
+        fields = MarkerSerializer.Meta.fields + ('children', )
         depth = 0
 
     def get_children(self, obj):
         from django.contrib.contenttypes.models import ContentType
         from localground.apps.site import models
 
-        candidates = [
-            models.Photo,
-            models.Audio,
-            models.Video,
-            models.MapImage,
-            models.Project,
-            models.Marker]
-
-        # this caches the ContentTypes so that we don't keep executing one-off
-        # queries
-        ContentType.objects.get_for_models(*candidates, concrete_model=False)
         children = {}
         self.audio = self.get_audio(obj) or []
         self.photos = self.get_photos(obj) or []
@@ -73,7 +89,7 @@ class MarkerSerializer(MarkerSerializerMixin):
 
         data = PhotoSerializer(
             obj.photos,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.Photo, data)
 
     def get_videos(self, obj):
@@ -81,7 +97,7 @@ class MarkerSerializer(MarkerSerializerMixin):
 
         data = VideoSerializer(
             obj.videos,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.Video, data)
 
     def get_audio(self, obj):
@@ -89,28 +105,17 @@ class MarkerSerializer(MarkerSerializerMixin):
 
         data = AudioSerializer(
             obj.audio,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.Audio, data)
 
     def get_map_images(self, obj):
-        from localground.apps.site.api.serializers import MapImageSerializerUpdate
+        from localground.apps.site.api.serializers import \
+            MapImageSerializerUpdate
 
         data = MapImageSerializerUpdate(
             obj.map_images,
-            many=True, context={ 'request': {} }).data
+            many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.MapImage, data)
-
-    def get_photo_count(self, obj):
-        return len(obj.photos)
-
-    def get_audio_count(self, obj):
-        return len(obj.audio)
-
-    def get_video_count(self, obj):
-        return len(obj.videos)
-
-    def get_map_image_count(self, obj):
-        return len(obj.map_images)
 
     def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
                        model_name_plural=None):
@@ -127,91 +132,6 @@ class MarkerSerializer(MarkerSerializerMixin):
             'name': name,
             'overlay_type': overlay_type,
             'data': data,
-            'attach_url': '%s/api/0/markers/%s/%s/' %
-            (settings.SERVER_URL,
-             obj.id,
-             model_name_plural)}
-
-class MarkerSerializerCounts(MarkerSerializerMixin):
-    photo_count = serializers.SerializerMethodField()
-    audio_count = serializers.SerializerMethodField()
-    video_count = serializers.SerializerMethodField()
-    map_image_count = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Marker
-        fields = MarkerSerializerMixin.Meta.fields + \
-            ('photo_count', 'audio_count', 'video_count', 'map_image_count')
-        depth = 0
-
-    def get_photo_count(self, obj):
-        try:
-            return obj.photo_count
-        except:
-            return None
-
-    def get_audio_count(self, obj):
-        try:
-            return obj.audio_count
-        except:
-            return None
-
-    def get_video_count(self, obj):
-        try:
-            return obj.video_count
-        except:
-            return None
-
-    def get_map_image_count(self, obj):
-        try:
-            return obj.map_image_count
-        except:
-            return None
-
-class MarkerSerializerCountsWithMetadata(MarkerSerializerCounts):
-    class Meta:
-        model = models.Marker
-        fields = MarkerSerializerCounts.Meta.fields + ('update_metadata', )
-        depth = 0
-
-class MarkerSerializerLists(MarkerSerializerMixin):
-    photo_array = serializers.SerializerMethodField()
-    audio_array = serializers.SerializerMethodField()
-    video_array = serializers.SerializerMethodField()
-    map_image_array = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Marker
-        fields = MarkerSerializerMixin.Meta.fields + \
-            ('photo_array', 'audio_array', 'video_array', 'map_image_array')
-        depth = 0
-
-    def get_photo_array(self, obj):
-        try:
-            return obj.photo_array
-        except:
-            return None
-
-    def get_audio_array(self, obj):
-        try:
-            return obj.audio_array
-        except:
-            return None
-
-    def get_video_array(self, obj):
-        try:
-            return obj.video_array
-        except:
-            return None
-
-    def get_map_image_array(self, obj):
-        try:
-            return obj.map_image_array
-        except:
-            return None
-
-class MarkerSerializerListsWithMetadata(MarkerSerializerLists):
-    class Meta:
-        model = models.Marker
-        fields = MarkerSerializerLists.Meta.fields + ('update_metadata', )
-        depth = 0
+            'attach_url': '%s/api/0/markers/%s/%s/' % (
+                settings.SERVER_URL, obj.id, model_name_plural)
+         }

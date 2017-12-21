@@ -5,8 +5,8 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from jsonfield import JSONField
 from localground.apps.site.models import DataType
 
-class Field(BaseAudit):
 
+class Field(BaseAudit):
     form = models.ForeignKey('Form')
     col_name_db = models.CharField(max_length=255, db_column="col_name")
     col_alias = models.CharField(max_length=255, verbose_name="column name")
@@ -68,14 +68,16 @@ class Field(BaseAudit):
         # column
         if is_new:
             import random
-            random_string = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 8))
+            random_string = ''.join(
+                random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 8))
             self.date_created = get_timestamp_no_milliseconds()
             self.col_name_db = 'col_placeholder_' + random_string
         else:
             o = Field.objects.get(id=self.id)
             if o.data_type != self.data_type:
                 raise Exception(
-                    'You are not allowed to change the column type of an existing column')
+                    'You are not allowed to change the column type of an ' +
+                    'existing column')
 
         self.time_stamp = get_timestamp_no_milliseconds()
         super(Field, self).save(*args, **kwargs)
@@ -84,53 +86,3 @@ class Field(BaseAudit):
         if is_new:
             self.col_name_db = 'col_%s' % self.id
             super(Field, self).save(update_fields=['col_name_db'])
-            self.add_column_to_table()
-
-        # 3. reset the application cache with the new table structure:
-        self.form.remove_table_from_cache()
-
-    def add_column_to_table(self):
-        if self.form.source_table_exists():
-            from django.db import connection, transaction, DatabaseError
-            from localground.apps.site.models import Photo, Audio
-            sql = []
-            sql.append(
-                'ALTER TABLE %s ADD COLUMN %s %s' %
-                (self.form.table_name, self.col_name_db, self.data_type.sql)
-            )
-            # Photo:
-            if self.data_type.id == DataType.DataTypes.PHOTO:
-                sql.append('''
-                    ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
-                    FOREIGN KEY(%(column_name)s)
-                    REFERENCES %(foreign_table)s(id) MATCH SIMPLE
-                    ''' % dict(
-                        table_name=self.form.table_name,
-                        column_name=self.col_name_db,
-                        foreign_table=Photo._meta.db_table
-                    )
-                )
-
-            # Audio:
-            if self.data_type.id == DataType.DataTypes.AUDIO:
-                sql.append('''
-                    ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
-                    FOREIGN KEY(%(column_name)s)
-                    REFERENCES %(foreign_table)s(id) MATCH SIMPLE
-                    ''' % dict(
-                        table_name=self.form.table_name,
-                        column_name=self.col_name_db,
-                        foreign_table=Audio._meta.db_table
-                    )
-                )
-
-            # EXECUTE QUERY
-            try:
-                cursor = connection.cursor()
-                for statement in sql:
-                    cursor.execute(statement)
-
-            except Exception as e:
-                import sys
-                sys.stderr.write('ERROR: %s' % e)
-                transaction.rollback()

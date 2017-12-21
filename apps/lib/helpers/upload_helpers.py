@@ -1,21 +1,22 @@
-import time, os, base64, stat
+import time
+import os
+import stat
 from django.conf import settings
 from pwd import getpwnam
 from rest_framework import exceptions
 from localground.apps.lib.helpers import generic
-
 '''
 Utility File Path Methods
 '''
-def encrypt_media_path(host, model_name_plural, path):
-    timestamp = int(time.time())
-    path = path + '#' + str(timestamp)
-    return '%s://%s/profile/%s/%s/' % (
+
+
+def build_media_path(host, model_name_plural, path):
+    return '%s://%s%s' % (
         settings.PROTOCOL,
         host,
-        model_name_plural.replace(' ', '-'),
-        base64.b64encode(path)
+        path
     )
+
 
 '''
 It looks like there are files being uploaded to localground first
@@ -24,12 +25,15 @@ upload the stuff to the amazon cloud server
 because file_root and user_media_dir points to
 the local server storage instead of the amazon s3 settings.
 
-Therefore, we have to make dradual changes
+Therefore, we have to make gradual changes
 that will transfer files to the cloud instead of keeping them
 inside the local server
 '''
+
+
 def get_absolute_path(virtual_path):
     return settings.FILE_ROOT + virtual_path
+
 
 def generate_relative_path(owner, model_name_plural, uuid=None):
     if uuid is None:
@@ -46,6 +50,7 @@ def generate_relative_path(owner, model_name_plural, uuid=None):
             uuid
         )
 
+
 def generate_absolute_path(owner, model_name_plural, uuid=None):
     if uuid is None:
         return '%s/media/%s/%s/' % (
@@ -60,6 +65,7 @@ def generate_absolute_path(owner, model_name_plural, uuid=None):
             model_name_plural,
             uuid
         )
+
 
 def make_directory(path):
     '''
@@ -79,9 +85,7 @@ def make_directory(path):
         while len(paths) > 0:
             p += paths.pop() + '/'
             if not os.path.exists(p):
-                # print '"%s" does not exist' % p
                 os.mkdir(p)
-                #os.chown(p, uid, gid)
                 os.chmod(p, permissions)
 
 
@@ -102,7 +106,6 @@ def save_file_to_disk(owner, model_name_plural, file, uuid=None):
 
     # derive file name:
     file_name, ext = os.path.splitext(file.name.lower())
-    file_name = file_name.split('/')[-1]
     file_name = ''.join(
         char for char in file_name if char.isalnum()).lower()
     if os.path.exists(media_path + '/%s%s' % (file_name, ext)):
@@ -118,17 +121,13 @@ def save_file_to_disk(owner, model_name_plural, file, uuid=None):
     destination.close()
     return file_name_new
 
+
 def validate_file(f, whitelist):
-    #try:
     if f:
         ext = os.path.splitext(f.name)[1]
         ext = ext.lower().replace('.', '')
         if ext not in whitelist:
-            raise exceptions.UnsupportedMediaType(f,
-                '{0} is not a valid map image file type. Valid options are: {1}'.format(
-                    ext, whitelist)
-            )
-    #except:
-    #    raise exceptions.UnsupportedMediaType(f,
-    #        '"media_file" data POST needs to be a File object'
-    #    )
+            msg = '{0} is not a valid map image file type. '
+            msg += 'Valid options are: {1}'
+            raise exceptions.UnsupportedMediaType(
+                f, msg.format(ext, whitelist))

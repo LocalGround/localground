@@ -14,6 +14,10 @@ from localground.apps.site.api.views.map_views import MapList, MapInstance, MapI
 
 
 from localground.apps.site.api.views.marker_views import MarkerList, MarkerInstance
+
+from localground.apps.site.api.views.marker_w_attrs_views import MarkerWAttrsList, MarkerWAttrsInstance
+
+
 from localground.apps.site.api.views.association_views import (
     RelatedMediaList, RelatedMediaInstance
 )
@@ -21,9 +25,6 @@ from localground.apps.site.api.views.ebays_views import TrackList
 from localground.apps.site.api.views.field_views import FieldList, FieldInstance
 from localground.apps.site.api.views.form_views import FormList, FormInstance
 from localground.apps.site.api.views.tile_views import TileSetList, TileSetInstance
-from localground.apps.site.api.views.form_data_views import (
-    FormDataList, FormDataInstance
-)
 from localground.apps.site.api.views.admin_views import (
     OverlaySourceViewSet, UserViewSet, GroupViewSet, DataTypeViewSet, ListUsernames
 )
@@ -45,6 +46,9 @@ def api_root(request, format=None, **kwargs):
     d['layouts'] = reverse('layout-list', request=request, format=format)
     d['data-types'] = reverse('datatype-list', request=request, format=format)
     d['markers'] = reverse('marker-list', request=request, format=format)
+
+    #d['markerwithattributes'] = reverse('markerwithattributes-list', request=request, format=format)
+
     d['map-images'] = reverse('mapimage-list', request=request, format=format)
     d['overlay-sources'] = reverse('overlaysource-list',
                                    request=request,

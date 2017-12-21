@@ -113,7 +113,7 @@ class GeometrySerializer(BaseNamedSerializer):
         source='point'
     )
     extras = JSONField(
-        help_text='Store arbitrary key / value pairs here in JSON form. Example: {"key": "value"}',
+        help_text='Store arbitrary key / value pairs, e.g. {"key": "value"}',
         allow_null=True,
         required=False,
         style={'base_template': 'json.html', 'rows': 5})
@@ -140,18 +140,22 @@ This is the old version of the class, which is used
 to store media within its own server.
 However, it will be depricated eventually
 '''
+
+
 class MediaGeometrySerializer(GeometrySerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
-    file_name = serializers.CharField(source='file_name_new', required=False, read_only=True)
+    file_name = serializers.CharField(
+        source='file_name_new', required=False, read_only=True)
     media_file = serializers.CharField(
-        source='file_name_orig', required=True, style={'base_template': 'file.html'},
+        source='file_name_orig', required=True,
+        style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
     file_path_orig = serializers.SerializerMethodField()
 
     class Meta:
-        fields = GeometrySerializer.Meta.fields + ('attribution', 'file_name', 'media_file',
-                                                   'file_path_orig')
+        fields = GeometrySerializer.Meta.fields + (
+            'attribution', 'file_name', 'media_file', 'file_path_orig')
 
     def get_file_path_orig(self, obj):
         # original file gets renamed to file_name_new in storage

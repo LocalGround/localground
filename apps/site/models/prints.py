@@ -64,15 +64,15 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
 
     def thumb(self):
         path = '%s%s' % (self.virtual_path, self.preview_image_path)
-        return self._encrypt_media_path(path)
+        return self._build_media_path(path)
 
     def map(self):
         path = '%s%s' % (self.virtual_path, self.map_image_path)
-        return self._encrypt_media_path(path)
+        return self._build_media_path(path)
 
     def pdf(self):
         path = '%s%s' % (self.virtual_path, self.pdf_path)
-        return self._encrypt_media_path(path)
+        return self._build_media_path(path)
 
     def delete(self, *args, **kwargs):
         # first remove directory, then delete from db:

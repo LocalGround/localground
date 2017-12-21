@@ -229,7 +229,7 @@ a.generate_acetate_layer_with_map()
             models.Marker.objects.filter(project__id=self.project_id)
         ]
         for form in forms:
-            layers.append(form.TableModel.objects.all())
+            layers.append(form.get_records())
 
         for layer in layers:
             pixels = self.get_pixel_coordinates_from_models(layer, self.zoom, extents.left, extents.top)

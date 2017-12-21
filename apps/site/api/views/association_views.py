@@ -11,11 +11,9 @@ def get_group_model(model_type):
     group_model = None
     try:
         form_id = int(model_type)
-        group_model = models.Form.objects.get(id=form_id).TableModel
+        group_model = models.MarkerWithAttributes
     except ValueError:
-        group_model = models.Base.get_model(
-            model_name_plural=model_type
-        )
+        group_model = models.Marker
     return group_model
 
 

@@ -87,10 +87,6 @@ class MediaMixin():
         self.print2.tags = self.tags2
         self.print2.save()
 
-    def tearDown(self):
-        for m in models.Form.objects.all():
-            m.remove_table_from_cache()
-
     def create_photo_with_media(self, name="f1", tags=[], point=None):
         import Image
         import tempfile

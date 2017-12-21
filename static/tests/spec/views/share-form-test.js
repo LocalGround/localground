@@ -30,6 +30,21 @@ define([
 
         };
 
+        var makeNewProject = function(){
+            var makeNewShareForm = new ShareForm({
+                app: this.app,
+                model: new Project({
+                    id: 8,
+                    time_stamp: new Date().toISOString().replace("Z", ""),
+                    date_created: new Date().toISOString().replace("Z", ""),
+                    access_authority: 1, // Private
+                    owner: "MrJBRPG"
+                })
+            });
+
+            return makeNewShareForm;
+        };
+
         describe("Initialization Test", function(){
             /*
             DO the following:
@@ -111,6 +126,38 @@ define([
 
                 fixture = setFixtures("<div></div>").append(newShareForm.$el);
                 expect(1).toEqual(1);
+            });
+        });
+
+        describe("Share Form: Project Title Slug", function(){
+            beforeEach(function(){
+                initSpies();
+                newShareForm = new ShareForm({
+                    app: this.app,
+                    model: new Project({
+                        id: 8,
+                        time_stamp: new Date().toISOString().replace("Z", ""),
+                        date_created: new Date().toISOString().replace("Z", ""),
+                        access_authority: 1,
+                        name: "My First Project",
+                        caption: "this is a test"
+                    })
+                });
+                newShareForm.app.username = "MrJBRPG";
+                newShareForm.render();
+            });
+
+            it("Shows an error when making an invalid slug for project", function(){
+                fixture = setFixtures("<div></div>").append(newShareForm.$el);
+                expect(fixture.find('.error').length).toEqual(0);
+                newShareForm.handleServerError(newShareForm.model, {
+                    responseText: '{"slug": ["Enter a valid \\"slug\\" consisting of letters, numbers, underscores or hyphens."]}'
+                })
+                expect(fixture.find('.error').length).toEqual(1);
+                expect(newShareForm.slugError).toEqual("Enter a valid \"slug\" consisting of letters, numbers, underscores or hyphens.")
+                expect(fixture.find('.errorMessage').html()).toEqual(
+                    "Enter a valid \"slug\" consisting of letters, numbers, underscores or hyphens."
+                );
             });
         });
 

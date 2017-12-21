@@ -79,7 +79,7 @@ class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
     # overriding from media mixin
     def test_absolute_virtual_path(self):
         self.model.file_name_new=''
-        abs_virt_path = upload_helpers.encrypt_media_path(
+        abs_virt_path = upload_helpers.build_media_path(
             self.model.host,
             self.model.model_name_plural,
             self.model.virtual_path + self.model.file_name_orig

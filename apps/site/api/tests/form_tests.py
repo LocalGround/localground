@@ -28,7 +28,7 @@ class ApiFormListTest(test.TestCase, ViewMixinAPI):
         self.form_1 = self.create_form_with_fields()
         self.project_1 = self.create_project()
         self.form_2 = self.create_form_with_fields(project=self.project_1)
-        self.urls = ['/api/0/forms/']
+        self.urls = ['/api/0/datasets/']
         self.view = views.FormList.as_view()
         self.metadata = get_metadata_form()
 

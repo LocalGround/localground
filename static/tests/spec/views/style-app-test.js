@@ -39,8 +39,6 @@ define([
             styleApp = new StyleApp({
                 dataManager: scope.dataManager
             });
-            console.log('initializing...');
-            styleApp.start(); // opts defined in spec-helpers
             fixture.append(styleApp.$el);
         };
 
@@ -133,7 +131,7 @@ define([
                 // unless we set them up exactly like this:
                 Backbone.history.stop(); //stop the router
               //  spyOn(Router.prototype, 'index'); //spy on our routes, and they won't get called
-             //   spyOn(Router.prototype, 'displayMap'); 
+             //   spyOn(Router.prototype, 'displayMap');
 
                // router = new StyleApp.prototype.Router(); // Set up the spies _before_ creating the router
                 Backbone.history.start();
@@ -152,4 +150,3 @@ define([
         */
 
     });
-

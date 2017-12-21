@@ -95,9 +95,12 @@ class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
             # ensure not empty
             self.assertTrue(len(new_object.file_name_new) > 5)
             self.assertEqual(settings.SERVER_HOST, new_object.host)
-            self.assertNotEqual(path.find('/profile/map-images/'), -1)
+            self.assertNotEqual(
+                path.find('/userdata/media/{0}/map-images/'.format(
+                    self.user.username)), -1)
+            #self.assertNotEqual(path.find('/profile/map-images/'), -1)
             self.assertNotEqual(path.find(new_object.host), -1)
-            self.assertTrue(len(path.split('/')[-2]) > 40)
+            self.assertTrue(len(path) > 50)
 
             # and also check the file exists in the file system:
             fname = new_object.original_image_filesystem()

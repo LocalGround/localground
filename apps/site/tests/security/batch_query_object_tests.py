@@ -169,7 +169,8 @@ class BatchMarkerQuerySecurityTest(test.TestCase, BatchQueryObjectMixin):
                 )
 
 
-class BatchRecordQuerySecurityTest(test.TestCase, BatchQueryObjectMixin):
+class BatchMarkerWithAttributesQuerySecurityTest(
+        test.TestCase, BatchQueryObjectMixin):
     model = None
 
     def setUp(self):
@@ -177,23 +178,23 @@ class BatchRecordQuerySecurityTest(test.TestCase, BatchQueryObjectMixin):
 
     def _create_objects(self):
         num_fields = 3
-        form = self.create_form_with_fields(num_fields=num_fields)
-        self.model = form.TableModel
+        self.form = self.create_form_with_fields(num_fields=num_fields)
+        self.model = models.MarkerWithAttributes
         self.objects = []
         for project in self.projects:
             for i, fn in enumerate(self.file_names):
                 self.objects.append(
-                    self.insert_form_data_record(form, project)
+                    self.insert_form_data_record(self.form, project)
                 )
 
-    def test_viewer_can_view_objects_detailed(self, ):
+    def test_viewer_can_view_objects(self, ):
         # grant user(1) view privs to project(0):
         self.add_group_viewer(self.projects[0], self.users[1])
 
         # user(1) should be able to view 6 projects....
         self.assertEqual(
-            6,
-            len(self.model.objects.get_objects_detailed(self.users[1]))
+            9,
+            len(self.model.objects.get_objects_with_lists(form=self.form))
         )
         # user(1) should only be able to edit 3 projects...
         self.assertEqual(

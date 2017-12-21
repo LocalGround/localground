@@ -33,7 +33,7 @@ class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
                     'ordering', 'data_type', 'url')
         
     def get_url(self, obj):
-        return '%s/api/0/forms/%s/fields/%s' % \
+        return '%s/api/0/datasets/%s/fields/%s' % \
                 (settings.SERVER_URL, obj.form.id, obj.id)
         
     def get_col_name(self, obj):

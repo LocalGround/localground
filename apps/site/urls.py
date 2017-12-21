@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 import sys
 from django.contrib import admin
 from localground.apps.site.views import document_view
+from django.conf.urls.static import static
 
 urlpatterns = patterns('',
 
@@ -36,3 +37,7 @@ urlpatterns = patterns('',
     url(r'^amazon-tester/$', document_view.DocumentCreateView.as_view(),
         name='home')
 )
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.USER_MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -280,6 +280,44 @@ class ModelMixin(object):
         m.save()
         return m
 
+    def create_marker_w_attrs(
+            self, user=None, project=None,
+            name="Test Marker With Attrs", geoJSON=None, point=None,
+            extras={"random key": "random value"}, tags=[], form=None):
+        from localground.apps.site import models
+        geom = None
+        user = user or self.user
+        project = project or self.project
+        form = form or self.create_form()
+        if geoJSON is None and point is None:
+            from django.contrib.gis.geos import Point
+            lat = 37.87
+            lng = -122.28
+            geom = Point(lng, lat, srid=4326)
+        elif point:
+            geom = point
+        else:
+            from django.contrib.gis.geos import GEOSGeometry
+            geom = GEOSGeometry(json.dumps(geoJSON))
+
+        mwa = models.MarkerWithAttributes(
+            project=project,
+            name=name,
+            owner=user,
+            extras=extras,
+            last_updated_by=user,
+            tags=tags,
+            form=form
+        )
+        if geom.geom_type == "Point":
+            mwa.point = geom
+        elif geom.geom_type == "LineString":
+            mwa.polyline = geom
+        else:
+            mwa.polygon = geom
+        mwa.save()
+        return mwa
+
     def get_marker(self, marker_id=1):
         from localground.apps.site import models
         return models.Marker.objects.get(id=marker_id)
@@ -335,7 +373,7 @@ class ModelMixin(object):
             models.TileSet.objects.get(id=map_provider),
             zoom,
             Point(lng, lat, srid=4326),
-            'http://localground.stage',
+            settings.SERVER_HOST,
             map_title=map_title,
             instructions=instructions,
             mapimage_ids=None
@@ -385,16 +423,24 @@ class ModelMixin(object):
                              project=project)
         for i in range(0, num_fields):
             field_name = 'Field %s' % (i + 1)
-            if i == 0: field_name = 'name'
-            fld = self.create_field(name=field_name,
-                                data_type=DataType.objects.get(id=(i + 1)),
-                                ordering=(i + 1),
-                                form=f)
+            fld = self.create_field(
+                name=field_name,
+                data_type=DataType.objects.get(id=(i + 1)),
+                ordering=(i + 1),
+                form=f)
+            if i+1 == 6:
+                fld.extras = [{"name": "Bad", "value": 1},
+                              {"name": "Ok", "value": 2},
+                              {"name": "Good", "value": 3}]
+
+            if i+1 == 7:
+                fld.extras = [{"name": "Democrat"},
+                              {"name": "Republican"},
+                              {"name": "Independent"}]
             fld.save()
-        f.remove_table_from_cache()
         return f
 
-    def create_field(self, form, name='Field 1',
+    def create_field(self, form, name='Field 1', extras=None,
                      data_type=None, ordering=1, is_display_field=False):
         from localground.apps.site import models
         data_type = data_type or DataType.objects.get(id=1)
@@ -405,49 +451,16 @@ class ModelMixin(object):
             is_display_field=is_display_field,
             form=form,
             owner=self.user,
-            last_updated_by=self.user
+            last_updated_by=self.user,
+            extras=extras
         )
         f.save()
         return f
 
     def insert_form_data_record(self, form, project=None, photo=None,
                                 audio=None, name=None):
-
-        from django.contrib.gis.geos import Point
-        # create a marker:
-        lat = 37.87
-        lng = -122.28
-        project = project or self.project
-        record = form.TableModel()
-        record.point = Point(lng, lat, srid=4326)
-        if project:
-            record.project = project
-
-        # generate different dummy types depending on the data_type
-        for field in form.fields:
-            if field.data_type.id in [
-                    DataType.DataTypes.INTEGER,
-                    DataType.DataTypes.RATING]:
-                setattr(record, field.col_name, 5)
-            elif field.data_type.id == DataType.DataTypes.BOOLEAN:
-                setattr(record, field.col_name, True)
-            elif field.data_type.id == DataType.DataTypes.DATETIME:
-                setattr(
-                    record,
-                    field.col_name,
-                    get_timestamp_no_milliseconds())
-            elif field.data_type.id == DataType.DataTypes.DECIMAL:
-                setattr(record, field.col_name, 3.14159)
-            elif field.data_type.id == DataType.DataTypes.PHOTO:
-                setattr(record, field.col_name, photo)
-            elif field.data_type.id == DataType.DataTypes.AUDIO:
-                setattr(record, field.col_name, audio)
-            elif field.data_type.id == DataType.DataTypes.CHOICE:
-                setattr(record, field.col_name, 'blue')
-            else:
-                setattr(record, field.col_name, name or 'some text')
-        record.save(user=self.user)
-        return record
+        return self.create_marker_w_attrs(
+            project=project, form=form, name=name)
 
     def create_imageopt(self, mapimage):
         from localground.apps.site import models
@@ -528,7 +541,7 @@ class ModelMixin(object):
         project = project or self.project
         video = models.Video(
             project=project,
-            #host=settings.SERVER_HOST,
+            # host=settings.SERVER_HOST,
             owner=user,
             last_updated_by=user,
             name=name,
@@ -542,7 +555,7 @@ class ModelMixin(object):
         return video
 
     def create_audio(self, user=None, project=None, name='Audio Name',
-                     file_name='my_audio.jpg', tags=[], point=None):
+                     file_name='my_audio.wav', tags=[], point=None):
         from localground.apps.site import models
         user = user or self.user
         project = project or self.project
@@ -566,17 +579,18 @@ class ModelMixin(object):
         from localground.apps.site.models import StyledMap
         from django.contrib.gis.geos import GEOSGeometry
         map = models.StyledMap(
-            center= GEOSGeometry('POINT(5 23)'),
+            center=GEOSGeometry('POINT(5 23)'),
             zoom=3,
             last_updated_by=self.user,
-            owner = self.user,
-            project = self.project,
+            owner=self.user,
+            project=self.project,
             name='Oakland Map'
         )
         map.save()
         return map
 
-    def create_relation(self, source_model, attach_model, ordering=1, turned_on=False):
+    def create_relation(
+            self, source_model, attach_model, ordering=1, turned_on=False):
         from localground.apps.site import models
         r = models.GenericAssociation(
             source_type=type(source_model).get_content_type(),
@@ -610,8 +624,9 @@ class ModelMixin(object):
             source_id=source_model.id
         ).first()
 
+
 class ViewAnonymousMixin(ModelMixin):
-    #fixtures = ['test_data.json']
+    # fixtures = ['test_data.json']
 
     def setUp(self, load_fixtures=False):
         ModelMixin.setUp(self, load_fixtures=load_fixtures)
@@ -620,7 +635,7 @@ class ViewAnonymousMixin(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
-            #print url
+            # print url
             response = self.client_user.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -636,8 +651,9 @@ class ViewAnonymousMixin(ModelMixin):
             # print url, func_name, view_name
             self.assertEqual(func_name, view_name)
 
+
 class ViewMixin(ViewAnonymousMixin):
-    #fixtures = ['test_data.json']
+    # fixtures = ['test_data.json']
 
     def setUp(self, load_fixtures=False):
         ViewAnonymousMixin.setUp(self, load_fixtures=load_fixtures)

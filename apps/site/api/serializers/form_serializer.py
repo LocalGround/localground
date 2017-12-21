@@ -29,10 +29,10 @@ class FormSerializerList(BaseNamedSerializer):
         depth = 0
 
     def get_data_url(self, obj):
-        return '%s/api/0/forms/%s/data/' % (settings.SERVER_URL, obj.pk)
+        return '%s/api/0/datasets/%s/data/' % (settings.SERVER_URL, obj.pk)
 
     def get_fields_url(self, obj):
-        return '%s/api/0/forms/%s/fields/' % (settings.SERVER_URL, obj.pk)
+        return '%s/api/0/datasets/%s/fields/' % (settings.SERVER_URL, obj.pk)
 
 
 class FormSerializerDetail(FormSerializerList):
