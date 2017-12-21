@@ -566,7 +566,9 @@ class ModelMixin(object):
             last_updated_by=user,
             name=name,
             description='Audio Description',
-            # file_name_orig=file_name,
+            # Unsure on what to do with filename orig
+            # besides being used for audio tests
+            file_name_orig=file_name,
             # file_name_new='new.jpg',
             tags=tags,
             point=point

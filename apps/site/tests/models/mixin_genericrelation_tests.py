@@ -24,12 +24,12 @@ class GenericRelationMixinTest(ModelMixin):
 
 
     def test_gen_rel_stash_and_grab(self):
-        
+
         marker = self.create_marker()
 
         # check that marker has no associations yet
         self.assertEqual(len(marker.entities.all()), 0)
-        
+
         # create and add photo to marker
         photo = self.create_photo()
         marker.stash(photo, self.user, 1)
@@ -42,6 +42,7 @@ class GenericRelationMixinTest(ModelMixin):
 
         # create and add audio to marker
         audio = self.create_audio()
+        print(audio)
         marker.stash(audio, self.user, 1)
 
         self.assertEqual(len(marker.entities.all()), 2)
@@ -53,6 +54,9 @@ class GenericRelationMixinTest(ModelMixin):
         # create and add another audio to marker
         audio2 = self.create_audio()
         marker.stash(audio2, self.user, 1)
+        print(marker.grab(Audio))
+        print(marker.grab(Audio)[0].file_name_orig)
+        print(marker.grab(Audio)[1].file_name_orig)
 
         # test grab()
         self.assertEqual(len(marker.grab(Audio)), 2)
@@ -71,5 +75,3 @@ class GenericRelationMixinTest(ModelMixin):
         self.assertEqual(
             marker.grab(Audio)[0].file_name_orig, 'my_audio.wav'
         )
-    
-
