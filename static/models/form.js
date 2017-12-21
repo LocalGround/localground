@@ -8,7 +8,7 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
                 checked: false
             }),
             errorMessage: null,
-            urlRoot: '/api/0/forms/',
+            urlRoot: '/api/0/datasets/',
             initialize: function (data, opts) {
                 if (this.get("id")) {
                     this.fields = new Fields(null, { id: this.get("id") });

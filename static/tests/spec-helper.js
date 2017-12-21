@@ -333,15 +333,15 @@ define(
             this.layers = this.testMap.get("layers");
             this.maps = new Maps([this.mapTest],{ projectID: 3 });
             this.form = new Form({
-                "url": "http://localhost:7777/api/0/forms/1/",
+                "url": "http://localhost:7777/api/0/datasets/1/",
                 "id": 1,
                 "name": "Test Form",
                 "caption": "Test Caption",
                 "overlay_type": "form",
                 "tags": [],
                 "owner": "MrJBRPG",
-                "data_url": "http://localhost:7777/api/0/forms/1/data/",
-                "fields_url": "http://localhost:7777/api/0/forms/1/fields/",
+                "data_url": "http://localhost:7777/api/0/datasets/1/data/",
+                "fields_url": "http://localhost:7777/api/0/datasets/1/fields/",
                 "slug": "slug_64358",
                 "project_id": 3,
                 "fields": [
@@ -353,7 +353,7 @@ define(
                         "is_display_field": true,
                         "ordering": 1,
                         "data_type": "text",
-                        "url": "http://localhost:7777/api/0/forms/1/fields/1"
+                        "url": "http://localhost:7777/api/0/datasets/1/fields/1"
                     },
                     {
                         "id": 2,
@@ -363,7 +363,7 @@ define(
                         "is_display_field": false,
                         "ordering": 2,
                         "data_type": "integer",
-                        "url": "http://localhost:7777/api/0/forms/1/fields/19"
+                        "url": "http://localhost:7777/api/0/datasets/1/fields/19"
                     },
                     {
                         "id": 3,
@@ -373,7 +373,7 @@ define(
                         "is_display_field": false,
                         "ordering": 3,
                         "data_type": "boolean",
-                        "url": "http://localhost:7777/api/0/forms/1/fields/20"
+                        "url": "http://localhost:7777/api/0/datasets/1/fields/20"
                     },
                     {
                         "id": 4,
@@ -420,15 +420,15 @@ define(
                     }]
             });
             this.form2 = new Form({
-                "url": "http://localhost:7777/api/0/forms/2/",
+                "url": "http://localhost:7777/api/0/datasets/2/",
                 "id": 2,
                 "name": "Animals",
                 "caption": "Test Caption",
                 "overlay_type": "form",
                 "tags": [],
                 "owner": "MrJBRPG",
-                "data_url": "http://localhost:7777/api/0/forms/2/data/",
-                "fields_url": "http://localhost:7777/api/0/forms/2/fields/",
+                "data_url": "http://localhost:7777/api/0/datasets/2/data/",
+                "fields_url": "http://localhost:7777/api/0/datasets/2/fields/",
                 "slug": "slug_64358",
                 "project_id": 3,
                 "fields": [{
@@ -439,7 +439,7 @@ define(
                     "is_display_field": true,
                     "ordering": 1,
                     "data_type": "text",
-                    "url": "http://localhost:7777/api/0/forms/2/fields/15"
+                    "url": "http://localhost:7777/api/0/datasets/2/fields/15"
                 }]
             });
             this.forms = new Forms([this.form, this.form2], { projectID: 1});

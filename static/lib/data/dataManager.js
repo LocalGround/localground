@@ -115,8 +115,8 @@ define(["underscore", "marionette", "models/project",
                 var fieldsURL,
                     collection;
                 opts.formID = parseInt(opts.dataType.split("_")[1]);
-                opts.url = '/api/0/forms/' + opts.formID + '/data/';
-                fieldsURL = '/api/0/forms/' + opts.formID + '/fields/';
+                opts.url = '/api/0/datasets/' + opts.formID + '/data/';
+                fieldsURL = '/api/0/datasets/' + opts.formID + '/fields/';
                 _.extend(opts, {
                     fillColor: this.getMarkerColor(),
                     fields: new Fields(opts.fields, { baseURL: fieldsURL }),

@@ -36,7 +36,7 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 name: "Untitled",
                 isVisible: true
             },
-            urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
+            urlRoot: null, /* /api/0/datasets/<form_id>/fields/.json */
             updateSchema: null,
             hiddenFields: [
                 "geometry",

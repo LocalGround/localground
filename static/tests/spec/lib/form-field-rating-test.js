@@ -26,7 +26,7 @@ define([
                 "col_name": "rating_test",
                 "ordering": 1,
                 "data_type": "rating",
-                "url": "http://localhost:7777/api/0/forms/1/fields/1",
+                "url": "http://localhost:7777/api/0/datasets/1/fields/1",
                 "val": rating,
                 "extras": JSON.stringify([
                     { "name": "One", "value": 1},
