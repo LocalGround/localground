@@ -6,6 +6,8 @@ import os
 from django.conf import settings
 from . import CSVRenderer
 import csv
+import urllib
+import httplib
 
 
 class ZIPRenderer(renderers.BaseRenderer):
@@ -87,6 +89,24 @@ class ZIPRenderer(renderers.BaseRenderer):
            https://docs.python.org/3.1/howto/urllib2.html
         2. Write the file to the zip_file
         """
+
+        '''
+        New method of getting Amazon Cloud files through url path
+        '''
+
+        # let's test using a simple open and read command
+        # and then print that opened file
+        test_response = urllib.request.urlopen(URL_PATH_FIELDS['photo'][0])
+        print (test_response)
+
+        # Need to use the opened url(s) of any media piece(s)
+        # to successfully transport them to a zip url download file
+        # the source file url is the media from Amazon Cloud
+        # the target file url is the zip that encompases them all.
+
+        '''
+        Old method of getting local source files
+        '''
         abs_file_path = self.get_abs_path(row, key)
         if not abs_file_path:
             return None
