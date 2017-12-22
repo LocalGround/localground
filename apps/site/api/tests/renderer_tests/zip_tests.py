@@ -31,7 +31,7 @@ class ZipMediaMixin(mixins.MediaMixin):
             self.assertIsNone(valid_if_none)
             zip_file.close()
 
-    def _all_media_files_present_in_zip_file(self, file_path_columns):
+    def _all_media_files_present_in_zip_file(self):
         for url in self.urls.keys():
             expected_count = self.urls.get(url)
             response = self.client_user.get(
@@ -44,15 +44,13 @@ class ZipMediaMixin(mixins.MediaMixin):
 
             # Check that all photo paths are in the zip file:
             file_paths = ['content.csv']
-            # file_path_columns = ZIPRenderer.URL_PATH_FIELDS
             num_rows = 0
             for row in reader:
                 key = row.get('overlay_type')
                 if 'form_' in key:
                     key = 'record'
                 num_rows += 1
-                if file_path_columns is None:
-                    file_path_columns = ZIPRenderer.PATH_FIELD_LOOKUP[key]
+                file_path_columns = ZIPRenderer.PATH_FIELD_LOOKUP.get(key) or []
                 for file_path_column in file_path_columns:
                     for column_header in row:
                         # "endswith" handles nested file paths, for example
@@ -61,16 +59,6 @@ class ZipMediaMixin(mixins.MediaMixin):
                             if row.get(column_header) != '':
                                 file_paths.append(row.get(column_header))
 
-            # Now do different test results
-            # depending on the file_path_columns
-
-            # Check that within the content.csv file, all file paths have
-            # been changed to relative paths, and that all relative paths
-            # are present in the zip file:
-            print (set(file_paths))
-            print (set(zip_file.namelist()))
-            print (file_path_columns)
-            print (zip_file.namelist())
             self.assertSetEqual(set(file_paths), set(zip_file.namelist()))
             self.assertEqual(num_rows, expected_count)
             if file_path_columns is ZIPRenderer.URL_PATH_FIELDS:
@@ -102,7 +90,7 @@ class ZIPRendererListTest(ZipMediaMixin, test.TestCase, ModelMixin):
         }
 
     def test_all_media_files_present_in_zip_file(self):
-        self._all_media_files_present_in_zip_file(None)
+        self._all_media_files_present_in_zip_file()
 
 
 
@@ -158,87 +146,4 @@ class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
         self.create_relation(self.marker1, self.audio2)
 
         file_path_columns = ZIPRenderer.URL_PATH_FIELDS
-        self._all_media_files_present_in_zip_file(file_path_columns)
-
-
-'''
-Compare the two pieces of code and find out similarities and differences:
-
-# From the Zip Render List Test
-
-for url in self.urls.keys():
-    expected_count = self.urls.get(url)
-    response = self.client_user.get(
-        url + '?format=zip&project_id={0}'.format(self.project.id)
-    )
-    data = StringIO(response.content)
-    zip_file = zipfile.ZipFile(data, 'r')
-    data = StringIO(zip_file.read('content.csv'))
-    reader = csv.DictReader(data)
-
-    # Check that all photo paths are in the zip file:
-    file_paths = ['content.csv']
-    file_path_columns = None
-    num_rows = 0
-    for row in reader:
-        key = row.get('overlay_type')
-        if 'form_' in key:
-            key = 'record'
-        num_rows += 1
-        file_path_columns = ZIPRenderer.PATH_FIELD_LOOKUP[key]
-        for file_path_column in file_path_columns:
-            for column_header in row:
-                # "endswith" handles nested file paths, for example
-                # when record objects reference photo objects
-                if column_header.endswith(file_path_column):
-                    file_paths.append(row.get(column_header))
-
-    # Check that within the content.csv file, all file paths have
-    # been changed to relative paths, and that all relative paths
-    # are present in the zip file:
-    # make sure that it found at least 2 file paths
-    self.assertSetEqual(set(file_paths), set(zip_file.namelist()))
-    self.assertEqual(num_rows, expected_count)
-    self.assertTrue(
-        len(zip_file.namelist()) >= (1 + len(file_path_columns))
-    )
-
-# From the Zip Render Instance Test
-
-for url in self.urls.keys():
-    expected_count = self.urls.get(url)
-    response = self.client_user.get(
-        url + '?format=zip&project_id={0}'.format(self.project.id)
-    )
-    data = StringIO(response.content)
-    zip_file = zipfile.ZipFile(data, 'r')
-    data = StringIO(zip_file.read('content.csv'))
-    reader = csv.DictReader(data)
-
-    # Check that all photo paths are in the zip file:
-    file_paths = ['content.csv']
-    # file_path_columns = ZIPRenderer.URL_PATH_FIELDS
-    num_rows = 0
-    for row in reader:
-        key = row.get('overlay_type')
-        if 'form_' in key:
-            key = 'record'
-        num_rows += 1
-        for file_path_column in file_path_columns:
-            for column_header in row:
-                # "endswith" handles nested file paths, for example
-                # when record objects reference photo objects
-                if column_header.endswith(file_path_column):
-                    if row.get(column_header) != '' and row.get('overlay_type') != 'print':
-                        file_paths.append(row.get(column_header))
-
-    # Check that within the content.csv file, all file paths have
-    # been changed to relative paths, and that all relative paths
-    # are present in the zip file:
-    print (set(file_paths))
-    print (set(zip_file.namelist()))
-    self.assertSetEqual(set(file_paths), set(zip_file.namelist()))
-    self.assertEqual(num_rows, expected_count)
-    self.assertTrue(num_rows > 4)
-
-'''
+        self._all_media_files_present_in_zip_file()
