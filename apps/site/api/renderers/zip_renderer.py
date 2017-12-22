@@ -32,7 +32,7 @@ class ZIPRenderer(renderers.BaseRenderer):
         'audio': ['file_path_orig', 'file_path'],
         'map-image': ['overlay_path', 'file_path'],
         'record': [],
-        'print': ['pdf', 'thumb']
+        'print': []  # ['pdf', 'thumb']
     }
     URL_PATH_FIELDS = []
     for key in PATH_FIELD_LOOKUP:
@@ -76,7 +76,7 @@ class ZIPRenderer(renderers.BaseRenderer):
         file_path = file_path.split('/')[-1]
         return '{}/{}'.format(folder, file_path)
 
-    def add_media_to_zip(self, zip_file, row, key):
+    def add_media_to_zip(self, zip_file, model_dict, key):
         """
         Adds any URL media to the zip file:
 
@@ -96,16 +96,22 @@ class ZIPRenderer(renderers.BaseRenderer):
 
         # let's test using a simple open and read command
         # and then print that opened file
+
+
         print key
-        print row
-        path = row[key]
+        print model_dict
+        path = model_dict[key]
         print path
         print self.URL_PATH_FIELDS
         #path = self.URL_PATH_FIELDS
         #print path
         # test_response = urllib.request.urlopen(URL_PATH_FIELDS['photo'][0])
         # print (test_response)
-        f = open('/tmp/test.jpg', 'wb')
+        source_file_path_split = path.rsplit('/', 1)  # replace with amazon database
+        print (source_file_path_split)
+        print (source_file_path_split[0])
+        print (source_file_path_split[1])
+        f = open(source_file_path, 'wb')
         f.write(urllib.urlopen(path).read())
         f.close()
 
@@ -114,19 +120,6 @@ class ZIPRenderer(renderers.BaseRenderer):
         # the source file url is the media from Amazon Cloud
         # the target file url is the zip that encompases them all.
 
-        '''
-        Old method of getting local source files
-        '''
-        abs_file_path = self.get_abs_path(row, key)
-        if not abs_file_path:
-            return None
-
-        source_file_path = '{}{}'.format(settings.FILE_ROOT, abs_file_path)
-        folder = self.get_media_folder_name(row.get("overlay_type"))
-        target_file_path = os.path.join(
-            folder,
-            source_file_path.split("/")[-1]
-        )
         if target_file_path not in zip_file.namelist():
             zip_file.write(source_file_path, target_file_path)
 
@@ -143,6 +136,7 @@ class ZIPRenderer(renderers.BaseRenderer):
         # Loop through, add media files to the zip file, and
         # update media paths to relative paths:
         for row in reader:
+            # if row.get('overlay_type') != 'print':
             for key in self.URL_PATH_FIELDS:
                 for cell in row:
                     # "endswith" handles nested file paths, for example
