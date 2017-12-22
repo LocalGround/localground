@@ -96,8 +96,18 @@ class ZIPRenderer(renderers.BaseRenderer):
 
         # let's test using a simple open and read command
         # and then print that opened file
-        test_response = urllib.request.urlopen(URL_PATH_FIELDS['photo'][0])
-        print (test_response)
+        print key
+        print row
+        path = row[key]
+        print path
+        print self.URL_PATH_FIELDS
+        #path = self.URL_PATH_FIELDS
+        #print path
+        # test_response = urllib.request.urlopen(URL_PATH_FIELDS['photo'][0])
+        # print (test_response)
+        f = open('/tmp/test.jpg', 'wb')
+        f.write(urllib.urlopen(path).read())
+        f.close()
 
         # Need to use the opened url(s) of any media piece(s)
         # to successfully transport them to a zip url download file
