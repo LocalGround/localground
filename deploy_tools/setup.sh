@@ -131,7 +131,7 @@ while getopts ":dp" opt; do
         domain=$(dig +short myip.opendns.com @resolver1.opendns.com).xip.io
         development=false
 		DJANGO_DEBUG=False
-		FILE_PATH = ""
+		FILE_PATH=""
 
 		## Email config
 		read -p "Enter your Email Address [localgrounddev@mailinator.com]: " email
