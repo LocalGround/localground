@@ -79,6 +79,11 @@ apt-get -y install libffi-dev
 ############################
 # Install PIP Dependencies #
 ############################
+# Configure Locales:
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+sudo dpkg-reconfigure locales
+
 ##TODO: Investigate, there may be some problems with the map script / map server install
 pip install -r $userDir$rootDir/deploy_tools/requirements.txt
 

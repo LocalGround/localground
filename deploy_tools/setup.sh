@@ -249,10 +249,10 @@ echo "CONFIG: Create Linux user." | tee -a "$log_file"
 	useradd -d /home/$USER $USER
 	sudo mkdir /home/$USER
 	sudo chown $USER:$USER /home/$USER
-	if [ "$development" = false ] ; then
-		sudo mkdir -p $userDir$rootDir
-		sudo chown $USER:$GROUP_ACCOUNT $userDir$rootDir
-	else
+	#if [ "$development" = false ] ; then
+	#	sudo mkdir -p $userDir$rootDir
+	#	sudo chown $USER:$GROUP_ACCOUNT $userDir$rootDir
+	if [ "$development" = true ] ; then
 		## Make sym
 		ln -s  /vagrant /localground
 	fi
@@ -300,6 +300,7 @@ if [ "$development" = false ] ; then
 		mkdir -p $userDir$rootDir
 		### give permission to root dir
 		chmod 755 $userDir$rootDir
+                sudo chown $USER:$GROUP_ACCOUNT $userDir$rootDir
 		### Clone  in the new domain dir
 	echo -e $"Cloning repository: $repository into $userDir$rootDir\n" | tee -a "$log_file"
 		if ! git clone -b $gitbranch --single-branch "$repository" "$userDir$rootDir"
@@ -374,7 +375,7 @@ else
 	chown -R $USER:www-data $userDir$rootDir
 fi
 	##TODO: fix the need for this
-ln -s  $userDir$rootDir localground
+ln -s  $userDir$rootDir $userDir"localground"
 
 	## enable website
 ln -s $sitesAvailable$domain $sitesEnabled$domain
