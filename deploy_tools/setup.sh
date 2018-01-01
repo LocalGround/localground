@@ -149,7 +149,7 @@ while getopts ":dp" opt; do
 		if [ "$development" = false ] ; then
 			read -p "Enter your Domain Name [$domain]: " name
 			domain=${name:-$domain}
-			SERVER_HOST=domain
+			SERVER_HOST=$domain
 			PROTOCOL=https
 			## Check if domain already exists
 			if [ -e $sitesAvailable$domain ]; then
