@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ##################################
-##				##
-#	Config & populate DB	 #
-##				##
+##				                ##
+#	Config & populate DB	     #
+##				                ##
 ##################################
 #
 # This section creates DB, user and grant perms
