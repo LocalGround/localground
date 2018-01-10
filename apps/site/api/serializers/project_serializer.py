@@ -85,7 +85,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
     def get_table_records(self, form):
         records = form.get_records()
         return self.serialize_list(
-            models.MarkerWithAttributes,
+            models.Record,
             create_dynamic_serializer(form),
             records,
             name=form.name,

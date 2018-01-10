@@ -15,7 +15,7 @@ class MarkerSerializer(GeometrySerializer):
     attached_map_images_id = serializers.SerializerMethodField()
 
     class Meta:
-        model = models.Marker
+        model = models.Record
         fields = GeometrySerializer.Meta.fields + (
             'update_metadata', 'extras', 'attached_photos_ids',
             'attached_audio_ids', 'attached_videos_ids',
@@ -60,7 +60,7 @@ class MarkerSerializerDetail(MarkerSerializer):
     children = serializers.SerializerMethodField()
 
     class Meta:
-        model = models.Marker
+        model = models.Record
         fields = MarkerSerializer.Meta.fields + ('children', )
         depth = 0
 

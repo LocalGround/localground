@@ -170,7 +170,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
              model_name_plural)}
 
     class Meta:
-        model = models.MarkerWithAttributes
+        model = models.Record
         fields = GeometrySerializer.Meta.fields + \
             ('form', 'extras', 'url', 'children') + \
             ('attached_photos_ids',
@@ -256,7 +256,7 @@ def create_dynamic_serializer(form, **kwargs):
         field_names.append(field.col_name)
 
     class Meta:
-        model = models.MarkerWithAttributes
+        model = models.Record
         fields = MarkerWAttrsSerializerMixin.Meta.fields + \
             tuple(field_names)
         read_only_fields = ('display_name',)

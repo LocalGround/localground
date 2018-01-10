@@ -46,9 +46,10 @@ class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin):
             raise APIException({
                 'project_id': ['A project_id is required']
             })
-        return models.Marker.objects.get_objects_with_lists(
+        return models.Record.objects.get_objects_with_lists(
             project=models.Project.objects.get(
-                id=int(r.get('project_id')))
+                id=int(r.get('project_id'))),
+            form=None
         )
 
     def perform_create(self, serializer):
@@ -58,7 +59,7 @@ class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin):
 
 class MarkerInstance(
         MarkerGeometryMixin, generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Marker.objects.select_related('owner', 'project')
+    queryset = models.Record.objects.select_related('owner', 'project')
     serializer_class = serializers.MarkerSerializerDetail
 
     def perform_update(self, serializer):

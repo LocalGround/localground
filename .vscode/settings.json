@@ -11,5 +11,6 @@
         "list.inactiveSelectionForeground": "#B3BA3D",
         
         
-    }  
+    },
+    "python.pythonPath": "/usr/bin/python"
 }
