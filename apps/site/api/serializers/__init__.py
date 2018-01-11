@@ -7,7 +7,7 @@ from localground.apps.site.api.serializers.base_serializer import \
     BaseSerializer, BaseNamedSerializer, MediaGeometrySerializer, \
     AuditSerializerMixin
 from localground.apps.site.api.serializers.icon_serializer import \
-    ProjectSerializer, ProjectDetailSerializer
+    IconSerializerList, IconSerializerUpdate
 from localground.apps.site.api.serializers.project_serializer import \
     ProjectSerializer, ProjectDetailSerializer
 from localground.apps.site.api.serializers.sharing_serializer import \
