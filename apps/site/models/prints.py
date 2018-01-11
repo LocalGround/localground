@@ -227,6 +227,7 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         map_image.paste(overlay_image, (0, 0), overlay_image)
         '''
 
+        '''
         a = AcetateLayer(
             file_path=path,
             center=self.center,
@@ -238,10 +239,12 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         overlay_image = a.generate_acetate_layer()
         if overlay_image is not None:
             map_image.paste(overlay_image, (0, 0), overlay_image)
+        '''
 
         if self.layout.is_data_entry:
             map_image = map_image.convert("L")  # convert to black and white
 
+        print path
         map_image.save(path + '/map.jpg')
 
         # add border around map:
@@ -272,9 +275,6 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
             is_landscape=self.layout.is_landscape,
             author=self.owner.username,
             title=self.name)
-        print(self.pdf_path_S3)
-        # Transfer the PDF from file system to Amazon S3
-        self.pdf_path_S3.save(self.pdf_path, File(open(self.pdf_path_S3)))
 
         ##########
         # Page 1 #
@@ -295,3 +295,8 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
             is_map_page=True)
 
         pdf_report.save()
+
+        file_path = pdf_report.path + '/' + pdf_report.file_name
+        print(pdf_report.path)
+        # Transfer the PDF from file system to Amazon S3
+        self.pdf_path_S3.save(pdf_report.file_name, File(open(file_path)))

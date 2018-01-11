@@ -1,4 +1,5 @@
-from localground.apps.site.api.serializers.base_serializer import ExtentsSerializer
+from localground.apps.site.api.serializers.base_serializer import \
+    ExtentsSerializer
 from rest_framework import serializers
 from localground.apps.site import models
 from django.forms import widgets
@@ -6,24 +7,39 @@ from localground.apps.site.api import fields
 
 
 class PrintSerializerMixin(serializers.ModelSerializer):
+
+    def __init__(self, *args, **kwargs):
+        super(PrintSerializerMixin, self).__init__(*args, **kwargs)
+        if not self.instance:
+            return
+        try:
+            model = self.instance[0]
+        except Exception:
+            model = self.instance
+        # Sets the storage location upon initialization:
+        model.media_file_orig.storage.location = model.get_storage_location()
+
     def get_fields(self, *args, **kwargs):
         fields = super(PrintSerializerMixin, self).get_fields(*args, **kwargs)
-        #note: queryset restricted at runtime
+        # note: queryset restricted at runtime
         fields['project_id'].queryset = self.get_projects()
         return fields
-    
+
     uuid = serializers.SerializerMethodField()
-    project_id = serializers.PrimaryKeyRelatedField(queryset=models.Project.objects.all(), source='project')
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(), source='project')
     layout_url = serializers.HyperlinkedRelatedField(
         view_name='layout-detail',
         source='layout',
         read_only=True)
-    layout = serializers.PrimaryKeyRelatedField(queryset=models.Layout.objects.all())
+    layout = serializers.PrimaryKeyRelatedField(
+        queryset=models.Layout.objects.all())
     map_provider_url = serializers.HyperlinkedRelatedField(
         view_name='tileset-detail',
         source='map_provider',
         read_only=True)
-    map_provider = serializers.PrimaryKeyRelatedField(queryset=models.TileSet.objects.all())
+    map_provider = serializers.PrimaryKeyRelatedField(
+        queryset=models.TileSet.objects.all())
     pdf = serializers.SerializerMethodField()
     thumb = serializers.SerializerMethodField()
     instructions = serializers.CharField(
@@ -31,7 +47,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         source='description',
         required=False,
         allow_blank=True,
-        style={'base_template':'textarea.html','rows': 5}
+        style={'base_template': 'textarea.html', 'rows': 5}
     )
     map_title = serializers.CharField(
         label='map_title',
@@ -47,14 +63,14 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         help_text='Tag your object here'
     )
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
-    #edit_url = serializers.SerializerMethodField('get_configuration_url')
+    # edit_url = serializers.SerializerMethodField('get_configuration_url')
     overlay_type = serializers.SerializerMethodField()
     center = fields.GeometryField(
                 help_text='Assign a GeoJSON center point',
                 style={'base_template': 'json.html', 'rows': 5},
                 required=True
             )
-    
+
     def get_pdf(self, obj):
         return obj.pdf()
 
@@ -64,14 +80,12 @@ class PrintSerializerMixin(serializers.ModelSerializer):
     def get_uuid(self, obj):
         return obj.uuid
 
-    #def get_configuration_url(self, obj):
+    # def get_configuration_url(self, obj):
     #    return obj.configuration_url
 
     def get_overlay_type(self, obj):
         return obj._meta.verbose_name
-    
-    
-    
+
     class Meta:
         abstract = True
         fields = (
@@ -90,7 +104,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
             'layout_url',
             'center',
             'overlay_type',
-            #'edit_url',
+            # 'edit_url',
             'project_id'
         )
 
@@ -110,14 +124,15 @@ class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
                 style={'base_template': 'json.html', 'rows': 5},
                 read_only=True
             )
-    zoom = serializers.IntegerField(min_value=1, max_value=20, default=17, read_only=True)
+    zoom = serializers.IntegerField(
+        min_value=1, max_value=20, default=17, read_only=True)
     layout = serializers.SerializerMethodField()
     map_provider = serializers.SerializerMethodField()
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
         required=False)
-    
+
     class Meta:
         model = models.Print
         fields = PrintSerializerMixin.Meta.fields
