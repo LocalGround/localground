@@ -11,6 +11,7 @@ from PIL import Image
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.geos import Polygon
 
+from django.core.files import File
 from localground.apps.site.fields import LGImageField
 from localground.apps.site.fields import LGFileField
 
@@ -160,6 +161,7 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         p.last_updated_by = user
         p.layout = layout
         p.host = host
+        p.map_image_path_S3 = 'map.jpg'
         p.map_image_path = 'map.jpg'
         p.pdf_path_S3 = 'Print_' + p.uuid + '.pdf'
         p.pdf_path = 'Print_' + p.uuid + '.pdf'
@@ -270,6 +272,9 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
             is_landscape=self.layout.is_landscape,
             author=self.owner.username,
             title=self.name)
+        print(self.pdf_path_S3)
+        # Transfer the PDF from file system to Amazon S3
+        self.pdf_path_S3.save(self.pdf_path, File(open(self.pdf_path_S3)))
 
         ##########
         # Page 1 #

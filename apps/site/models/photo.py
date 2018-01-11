@@ -34,7 +34,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
 
-
     def pil_to_django_file(self, im, file_name):
         from django.core.files.uploadedfile import InMemoryUploadedFile
         str_io = StringIO()
