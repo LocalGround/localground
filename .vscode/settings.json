@@ -2,7 +2,7 @@
 {
     "workbench.statusBar.visible": true,
     "editor.wordWrap": true,
-    "window.zoomLevel": -1,
+    "window.zoomLevel": 0,
     "workbench.colorTheme": "Hybrid Next",
     "workbench.colorCustomizations": {
         "activityBar.background": "#1C252A",

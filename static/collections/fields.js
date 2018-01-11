@@ -15,7 +15,7 @@ define(["models/field", "collections/basePageable"], function (Field, BasePageab
             if (this.baseURL) {
                 return this.baseURL;
             }
-            return '/api/0/forms/' + this.form.get("id") + '/fields/';
+            return '/api/0/datasets/' + this.form.get("id") + '/fields/';
         },
         comparator: function (item) {
             return item.get(this.sort_key);
@@ -27,7 +27,7 @@ define(["models/field", "collections/basePageable"], function (Field, BasePageab
             if (opts.baseURL) {
                 this.baseURL = opts.baseURL;
             } else if (opts.id) {
-                this.baseURL = '/api/0/forms/' + opts.id + '/fields/';
+                this.baseURL = '/api/0/datasets/' + opts.id + '/fields/';
             } else if (opts.form) {
                 this.form = opts.form;
             } else {

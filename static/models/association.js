@@ -32,7 +32,7 @@ define(["models/base"], function (Base) {
 	            this.urlRoot = '/api/0/markers/' + model.id + '/' + attachmentType + '/';
 			} else if (model.get("overlay_type").indexOf("form_") != -1) {
                 formID = model.get("overlay_type").split("_")[1];
-                this.urlRoot = '/api/0/forms/' + formID + '/data/' + model.id + "/" + attachmentType + '/';
+                this.urlRoot = '/api/0/datasets/' + formID + '/data/' + model.id + "/" + attachmentType + '/';
 			}
             if (attachmentID) {
                 this.idAttribute = 'object_id';
