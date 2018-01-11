@@ -1,13 +1,14 @@
 from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
-from localground.apps.site.managers.base import ObjectMixin, BaseMixin
+from localground.apps.site.managers.base import ObjectMixin
 from localground.apps.site.managers.overlays import MarkerMixin
 from localground.apps.lib.errors import GenericLocalGroundError
 
+
 class UploadMixin(ObjectMixin):
     related_fields = ['project', 'owner', 'last_updated_by']
-    prefetch_fields = []  # 'project__users__user']
+    prefetch_fields = []
 
 
 class MapImageMixin(UploadMixin):
@@ -48,13 +49,15 @@ class MapImageQuerySet(QuerySet, MapImageMixin):
 class MapImageManager(models.GeoManager, MapImageMixin):
     def get_queryset(self):
         return MapImageQuerySet(self.model, using=self._db)
-    
- 
+
+
 class StyledMapMixin(UploadMixin):
     pass
 
+
 class StyledMapManager(models.GeoManager, StyledMapMixin):
     pass
+
 
 class PhotoMixin(UploadMixin):
     pass
@@ -70,13 +73,7 @@ class PrintPermissionsMixin(object):
             return [p.to_dict() for p in self]
 
 
-#class PhotoQuerySet(QuerySet, PhotoMixin):
-#    pass
-
-
 class PhotoManager(models.GeoManager, PhotoMixin):
-    #def get_queryset(self):
-    #    return PhotoQuerySet(self.model, using=self._db)
     pass
 
 
@@ -84,13 +81,7 @@ class AudioMixin(UploadMixin):
     pass
 
 
-#class AudioQuerySet(QuerySet, AudioMixin):
-#    pass
-
-
 class AudioManager(models.GeoManager, AudioMixin):
-    #def get_queryset(self):
-    #    return AudioQuerySet(self.model, using=self._db)
     pass
 
 
@@ -98,16 +89,11 @@ class VideoMixin(UploadMixin):
     pass
 
 
-#class VideoQuerySet(QuerySet, AudioMixin):
-#    pass
-
-
 class VideoManager(models.GeoManager, VideoMixin):
-    #def get_queryset(self):
-    #    return VideoQuerySet(self.model, using=self._db)
     pass
 
 
+<<<<<<< HEAD
 class IconManager(models.GeoManager, BaseMixin):
      def get_objects_public(self, request=None, ordering_field='name', **kwargs):
         '''
@@ -125,6 +111,23 @@ class IconManager(models.GeoManager, BaseMixin):
 
 
 
+||||||| merged common ancestors
+class IconManager(models.GeoManager, BaseMixin):
+     def get_objects_public(self, request=None, ordering_field='name', **kwargs):
+        '''
+        This returns all generic icons that are owned by the system
+        '''
+        q = self.model.objects.filter(owner__id=1)
+        if request is not None:
+            q = self._apply_sql_filter(q, request, context)
+        if ordering_field:
+            q = q.order_by(ordering_field)
+        return q
+
+
+
+=======
+>>>>>>> master
 class RecordMixin(UploadMixin, MarkerMixin):
 
     def _get_objects(self, user, authority_id, project=None, request=None,
@@ -146,23 +149,16 @@ class RecordMixin(UploadMixin, MarkerMixin):
         if request:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
-        q = self.append_extras(q, "count", project=project, forms=None, user=user)
-            
+        q = self._append_extras(q, "array_agg")
+
         if ordering_field:
             q = q.order_by(ordering_field)
         return q
 
 
-#class RecordQuerySet(QuerySet, AudioMixin):
-#    pass
-
-
 class RecordManager(models.GeoManager, RecordMixin):
-    related_fields = ['project', 'owner'] #, 'form']
+    related_fields = ['project', 'owner']
     pass
-
-#    def get_queryset(self):
-#        return RecordQuerySet(self.model, using=self._db)
 
     def get_objects_detailed(self, user, project=None, request=None,
                              context=None, ordering_field='-time_stamp',
@@ -192,7 +188,7 @@ class RecordManager(models.GeoManager, RecordMixin):
         # if the form is public access, return all records.  Making a
         # data set publicly viewable means that EVERY record in the dataset
         # is public, regardless of the project permissions setting:
-        if form.can_view(access_key=access_key):
+        if form.project.can_view(access_key=access_key):
             #q = self.model.objects.distinct().select_related(*self.related_fields)
             q = self.model.objects.select_related(*self.related_fields)
             if request is not None:

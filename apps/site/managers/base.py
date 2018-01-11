@@ -100,10 +100,11 @@ class ObjectMixin(BaseMixin):
             raise GenericLocalGroundError('The user cannot be anonymous')
         q = (
             self.model.objects
-            .select_related(*self.related_fields)
-                .filter(
-                    Q(authuser__user=user) &
-                    Q(authuser__user_authority__id__gte=authority_id)
+            .select_related(*self.related_fields).filter(
+                (
+                    Q(project__authuser__user=user) &
+                    Q(project__authuser__user_authority__id__gte=authority_id)
+                ) | Q(owner=user)  # this line causes duplicates
             ))
         if project:
             q = q.filter(project=project)

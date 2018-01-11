@@ -1,0 +1,74 @@
+{{#ifequal this.dataType "categorical"}}
+
+<td><i class="fa fa-circle marker-icon jscolor" id="{{id}}" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>
+<td class="title-td">{{ title }}
+    <div id="ind-symbol-dropdown" class="ind-symbol-dropdown"></div>
+</td>
+<td>
+    <div class="selected-symbol-div">
+        <i class="fa fa-circle fa-fw" aria-hidden="true"></i>
+        <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>
+    </div>
+    <!--
+    <select class="marker-shape">
+    {{#each icons}}
+        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
+    {{/each}}
+    </select> 
+-->   
+</td>
+{{/ifequal}}
+
+
+{{#ifequal this.dataType "continuous"}}
+
+<td><i class="fa fa-circle marker-icon jscolor" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>
+<td class="title-td">{{ title }}
+    <div id="ind-symbol-dropdown" class="ind-symbol-dropdown"></div>
+</td>
+<td>
+    <div class="selected-symbol-div">
+        <i class="fa fa-circle fa-fw" aria-hidden="true"></i>
+        <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>
+    </div>
+    <!--
+    <select class="marker-shape">
+    {{#each icons}}
+        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
+    {{/each}}
+    </select>
+-->
+</td>
+
+{{/ifequal}}
+
+{{#ifequal this.dataType "basic"}}
+
+<td><i class="fa fa-circle marker-icon fa-lg jscolor" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>
+<td class="title-td">{{ title }}
+    <div id="ind-symbol-dropdown" class="ind-symbol-dropdown"></div>
+</td>
+<td>
+    
+    <div class="selected-symbol-div">
+        <i class="fa fa-circle fa-fw" aria-hidden="true"></i>
+        <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>
+    </div>
+    <!--
+    <select class="marker-shape">
+    {{#each icons}}
+        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
+    {{/each}}
+    </select>
+    -->
+</td>
+
+{{/ifequal}}
+
+
+{{#ifequal dataType "no-variable"}}
+
+<td>{{ title }}</td>
+<td>edit img</td>
+
+{{/ifequal}}

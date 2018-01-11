@@ -42,6 +42,7 @@ class PhotoSerializer(MediaGeometrySerializer):
     def get_path_marker_sm(self, obj):
         return obj.encrypt_url(obj.file_name_marker_sm)
     
+    '''
     def process_file(self, file, owner):
         from PIL import Image, ImageOps
         #save to disk:
@@ -67,7 +68,7 @@ class PhotoSerializer(MediaGeometrySerializer):
             abs_path = '%s/%s_%s%s' % (media_path, file_name, s, ext)
             im.save(abs_path)
             photo_paths.append('%s_%s%s' % (file_name, s, ext))
-        
+            
         return {
             'device': exif.get('model', None),
             'point': exif.get('point', None),
@@ -83,6 +84,7 @@ class PhotoSerializer(MediaGeometrySerializer):
             'content_type': ext.replace('.', ''),
             'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural)
         }
+    '''
         
     def create(self, validated_data):
         # Overriding the create method to handle file processing
@@ -93,7 +95,7 @@ class PhotoSerializer(MediaGeometrySerializer):
         upload_helpers.validate_file(f, self.ext_whitelist)
         
         # save it to disk
-        data = self.process_file(f, owner)
+        data = models.Photo.process_file(f, owner)
         data.update(self.get_presave_create_dictionary())
         data.update({
             'attribution': validated_data.get('attribution') or owner.username,
@@ -105,8 +107,3 @@ class PhotoSerializer(MediaGeometrySerializer):
     
 class PhotoSerializerUpdate(PhotoSerializer):
     media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
-    project_id = serializers.SerializerMethodField()
-    
-    def get_project_id(self, obj):
-        # Instance is read-only
-        return obj.project.id

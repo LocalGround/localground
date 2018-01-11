@@ -32,10 +32,6 @@ class Migration(migrations.Migration):
             name='tags',
         ),
         migrations.RemoveField(
-            model_name='presentation',
-            name='tags',
-        ),
-        migrations.RemoveField(
             model_name='print',
             name='tags',
         ),

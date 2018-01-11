@@ -17,7 +17,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameModel('ScanUser', 'MapImageUser'),
         migrations.RenameModel('Scan', 'MapImage'),
         migrations.AlterModelOptions(
             name='statuscode',

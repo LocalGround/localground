@@ -1,5 +1,5 @@
 PROJ_FILE=/usr/share/proj/epsg
-if grep -q "900913" $PROJ_FILE 
+if grep -q "900913" $PROJ_FILE
 then
     echo '$PROJ_FILE already configured'
 else

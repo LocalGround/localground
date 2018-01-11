@@ -4,7 +4,8 @@ from localground.apps.site.api.serializers.base_serializer import MediaGeometryS
 from localground.apps.site.api.fields import FileField
 from rest_framework import serializers
 from localground.apps.site import models
-from localground.apps.lib.helpers import get_timestamp_no_milliseconds, upload_helpers
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds, \
+    upload_helpers
 
 
 class AudioSerializer(MediaGeometrySerializer):
@@ -15,32 +16,6 @@ class AudioSerializer(MediaGeometrySerializer):
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
     
-    def process_file(self, file, owner):
-        
-        #save to disk:
-        model_name_plural = models.Audio.model_name_plural
-        file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file)
-        file_name, ext = os.path.splitext(file_name_new)
-        
-        # convert to MP3:
-        if ext != '.mp3':
-            # use ffmpeg to convert to mp3:
-            media_path = upload_helpers.generate_absolute_path(owner, model_name_plural)
-            path_to_be_converted = media_path + '/' + file_name_new
-            file_name_new = file_name + '.mp3'
-            path_to_mp3 = media_path + '/' + file_name_new
-            command = 'ffmpeg -loglevel panic -i \'%s\' -ab 32k -ar 22050 -y \'%s\'' % \
-                (path_to_be_converted, path_to_mp3)
-            result = os.popen(command)
-        
-        return {
-            'file_name_orig': file.name,
-            'name': self.initial_data.get('name') or file.name,
-            'file_name_new': file_name_new,
-            'content_type': ext.replace('.', ''),
-            'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural)
-        }
-        
     def create(self, validated_data):
         # Overriding the create method to handle file processing
         owner = self.context.get('request').user
@@ -50,7 +25,9 @@ class AudioSerializer(MediaGeometrySerializer):
         upload_helpers.validate_file(f, self.ext_whitelist)
         
         # save it to disk
-        extras = self.process_file(f, owner)
+        extras = models.Audio.process_file(
+            f, owner, name=self.initial_data.get('name')
+        )
         extras.update(self.get_presave_create_dictionary())
         extras.update({
             'attribution': validated_data.get('attribution') or owner.username,
@@ -73,10 +50,7 @@ class AudioSerializer(MediaGeometrySerializer):
 
 
 class AudioSerializerUpdate(AudioSerializer):
-    media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
-    project_id = serializers.SerializerMethodField()
-
-    def get_project_id(self, obj):
-        # Instance is read-only
-        return obj.project.id
+    media_file = serializers.CharField(
+        source='file_name_orig', required=False, read_only=True
+    )
 

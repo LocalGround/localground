@@ -38,11 +38,6 @@ class Migration(migrations.Migration):
             field=django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None),
         ),
         migrations.AddField(
-            model_name='presentation',
-            name='newtags',
-            field=django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None),
-        ),
-        migrations.AddField(
             model_name='print',
             name='newtags',
             field=django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None),

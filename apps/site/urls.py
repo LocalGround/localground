@@ -4,12 +4,14 @@ from django.shortcuts import render as direct_to_template
 from django.contrib.auth.decorators import login_required
 import sys
 from django.contrib import admin
+from django.conf.urls.static import static
 
 urlpatterns = patterns('',
 
     # mostly static html:
     (r'^$', direct_to_template, {'template_name': 'pages/splash.html'}),
     (r'^map/$', login_required(direct_to_template), {'template_name': 'pages/map.html'}),
+    (r'^data/$', login_required(direct_to_template), {'template_name': 'pages/data.html'}),
     (r'^gallery/$', login_required(direct_to_template), {'template_name': 'pages/gallery.html'}),
     (r'^table/$', login_required(direct_to_template), {'template_name': 'pages/spreadsheet.html'}),
     (r'^style/$', login_required(direct_to_template), {'template_name': 'pages/style.html'}),
@@ -24,10 +26,13 @@ urlpatterns = patterns('',
 
     # media server
     (
-        r'^profile/(?P<object_type>icons|photos|audio|videos|map-images|prints|tables)/(?P<hash>[=\w]+)/$',
+        r'^profile/(?P<object_type>photos|audio|videos|map-images|prints|tables)/(?P<hash>[=\w]+)/$',
         'localground.apps.site.views.mediaserver.serve_media'),
 
     # data API
     url(r'^api/0/', include('localground.apps.site.api.urls'))
 )
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.USER_MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

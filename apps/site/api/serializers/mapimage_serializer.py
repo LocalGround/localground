@@ -5,10 +5,10 @@ from django.forms.fields import FileField
 from localground.apps.lib.helpers import upload_helpers, generic, get_timestamp_no_milliseconds
 from localground.apps.site import models
 from localground.apps.site.api import fields
-from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer, AuditSerializerMixin, ProjectSerializerMixin
+from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer, AuditSerializerMixin
 
 
-class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
+class MapImageSerializerCreate(BaseNamedSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     media_file = serializers.CharField(
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
@@ -19,6 +19,11 @@ class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
         required=False,
         default=1,
         queryset=models.StatusCode.objects.all()
+    )
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(),
+        source='project',
+        required=False
     )
     source_print = serializers.PrimaryKeyRelatedField(
         queryset=models.Print.objects.all(),
@@ -36,10 +41,9 @@ class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
     overlay_path = serializers.SerializerMethodField()
     file_path = serializers.SerializerMethodField()
     file_name = serializers.SerializerMethodField()
-    #zoom = serializers.SerializerMethodField()
-    
+
     '''
-    Proposal: 
+    Proposal:
     I think that when an image is inserted, a default ImageOpts
     object should be created. This can be overwritten by the
     image processor. Sample code:
@@ -52,11 +56,17 @@ class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
         virtual_path=self.mapimage.virtual_path
     )
 
-    #pseudocode: 
+    #pseudocode:
 
     map_image.center = p.center
     map_image.save(user=self.user)
     '''
+
+    def get_fields(self, *args, **kwargs):
+        fields = super(MapImageSerializerCreate, self).get_fields(*args, **kwargs)
+        #restrict project list at runtime:
+        fields['project_id'].queryset = self.get_projects()
+        return fields
 
     class Meta:
         model = models.MapImage
@@ -65,14 +75,14 @@ class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
             'overlay_path', 'media_file', 'file_path', 'file_name', 'uuid', 'status'
         )
         read_only_fields = ('uuid',)
-        
+
     def process_file(self, file, owner):
         #save to disk:
         model_name_plural = models.MapImage.model_name_plural
         uuid = generic.generateID()
         file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file, uuid=uuid)
         file_name, ext = os.path.splitext(file_name_new)
-        
+
         # create thumbnail:
         from PIL import Image
         thumbnail_name = '%s_thumb.png' % file_name
@@ -80,7 +90,7 @@ class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
         im = Image.open(media_path + '/' + file_name_new)
         im.thumbnail([500, 500], Image.ANTIALIAS)
         im.save('%s/%s' % (media_path, thumbnail_name))
-        
+
         return {
             'uuid': uuid,
             'file_name_orig': file.name,
@@ -90,15 +100,15 @@ class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
             'content_type': ext.replace('.', ''),
             'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural, uuid=uuid)
         }
-        
+
     def create(self, validated_data):
         # Overriding the create method to handle file processing
         owner = self.context.get('request').user
         f = self.initial_data.get('media_file')
-        
+
         # ensure filetype is valid:
         upload_helpers.validate_file(f, self.ext_whitelist)
-        
+
         # save it to disk
         extras = self.process_file(f, owner)
         extras.update(self.get_presave_create_dictionary())
@@ -112,7 +122,7 @@ class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
         validated_data.update(self.validated_data)
         validated_data.update(extras)
         self.instance = self.Meta.model.objects.create(**validated_data)
-        
+
         from localground.apps.tasks import process_map
         result = process_map.delay(self.instance)
 
@@ -125,7 +135,8 @@ class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
         if obj.processed_image:
             return obj.processed_image.file_name_orig
         return None
-    
+
+    '''
     def get_north(self, obj):
         if obj.processed_image is None:
             return
@@ -150,22 +161,21 @@ class MapImageSerializerCreate(ProjectSerializerMixin, BaseNamedSerializer):
         else:
             return obj.processed_image.southwest.x
 
-    #def get_zoom(self, obj):
-    #    if obj.processed_image is None:
-    #        return
-    #    else:
-    #        return obj.processed_image.zoom
+    def get_zoom(self, obj):
+        if obj.processed_image is None:
+            return
+        else:
+            return obj.processed_image.zoom
+    '''
 
     def get_overlay_path(self, obj):
         return obj.processed_map_url_path()
-    
+
 class MapImageSerializerUpdate(MapImageSerializerCreate):
     media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
     status = serializers.PrimaryKeyRelatedField(
         queryset=models.StatusCode.objects.all(),
         read_only=False)
-    project_id = serializers.SerializerMethodField()
-    
     class Meta:
         model = models.MapImage
         fields = BaseNamedSerializer.Meta.fields + (
@@ -175,13 +185,11 @@ class MapImageSerializerUpdate(MapImageSerializerCreate):
         )
         read_only_fields = ('uuid',)
 
-    # overriding update 
+    # overriding update
     def update(self, instance, validated_data):
         instance = super(MapImageSerializerUpdate, self).update(instance, validated_data)
+
         from localground.apps.tasks import process_map
         result = process_map.delay(self.instance)
+
         return instance
-    
-    def get_project_id(self, obj):
-        # Instance is read-only
-        return obj.project.id

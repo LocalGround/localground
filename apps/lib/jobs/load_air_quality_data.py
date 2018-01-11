@@ -24,7 +24,7 @@ class Record:
             self.lng = None
         self.particulate_size = float(cells[3])
         self.value = float(cells[4])
-        
+
     def __str__(self):
         '''
         Prints our object in a nice way.
@@ -33,18 +33,18 @@ class Record:
                                         self.format_date(date_format='just-date'),
                                         self.point[0], self.point[1],
                                         self.particulate_size, self.value)
-        
+
     def to_date(self, str_date):
         '''
         takes a string version of a date (in the format %Y-%m-%d %H:%M:%S)
         and converts it to a datetime object.
-        
+
         Returns:  datetime object
         '''
         from datetime import datetime
         str_date = str_date.replace('"', '')
         return datetime.strptime(str_date, '%Y-%m-%d %H:%M:%S')
-        
+
     def format_date(self, date_format='default'):
         '''
         converts the a datetime object to a formatted string.
@@ -61,11 +61,11 @@ class Record:
             return self.time_stamp.strftime('%M')
         else:
             return self.time_stamp.strftime('%m/%d/%Y, %I:%M:%S %p')
-    
+
 class RecordManager:
     def __init__(self):
         pass
-    
+
     def load_records_from_file(self, file_path='the_file.txt'):
         recs = []
         num_recs = 0
@@ -78,7 +78,7 @@ class RecordManager:
         f.close()
         print('%s records have been loaded.' % num_recs)
         return recs
-        
+
     def load_records_from_directory(self, directory_path='files', start=0, end=10):
         import os
         import glob
@@ -88,16 +88,17 @@ class RecordManager:
             print('Loading records from %s' % infile)
             recs = self.load_records_from_file(file_path=infile)
             m.populate_database(recs)
-    
+
     def populate_database(self, recs):
         from django.contrib.auth.models import User
         from localground.apps.prints.models import Form
         from localground.apps.account.models import Project
+        from localground.apps.account.models import MarkerWithAttributes
         from django.contrib.gis.geos import Point
         prj = Project.objects.get(id=100)
         form = Form.objects.get(id=84) #get Air Quality Form:
         me = User.objects.get(id=1)
-        m = form.TableModel
+        m = MarkerWithAttributes
         i = 0
         list_of_dictionaries = []
         for rec in recs:

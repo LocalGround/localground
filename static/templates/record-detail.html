@@ -1,0 +1,182 @@
+<!-- VIEW MODE -->
+{{#ifequal mode "view"}}
+{{#compare screenType "presentation" operator="!="}}
+<h4>Preview</h4>
+{{/compare}}
+    {{#if mobileMode}}
+        <div class='parallax black touchevents parallax-contracted' {{#unless hasPhotos}}style="z-index: -100"{{/unless}}data-target-top='0%'>
+            <div class="top-section">
+                {{#if video_photo_count }}
+                    <div class="mobile-carousel carousel-videos-photos"></div>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="parallax body no-touchevents parallax-contracted" id="parallax-body" data-target-top="50%" style="color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}">
+            <div class="circle-wrapper">
+                <button class="circle" style="background-color: #{{title.backgroundColor}}">
+                    <i class="fa fa-angle-up fa-3x circle-icon" style="color: #{{paragraph.backgroundColor}}" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="contracted">
+                    {{#if hasPhotoOrAudio}}
+                        <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}}); background-color: {{paragraph.color}}">
+                            {{#if hasAudio}}
+                                <div class="thumbnail-play-circle">
+                                    <i class="fa fa-play fa-3x thumbnail-play" aria-hidden="true"></i>
+                                </div>
+                            {{/if}}
+                        </div>
+                    {{/if}}
+                <div class="header-info">
+                    <h3 id="drag-header" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
+                </div>
+            </div>
+            <div class="expanded" style='display:none;'>
+                <div class="mobile-wrapper">
+                        <section class="first mobile-section" style="color: #{{title.color}}; background-color: #{{title.backgroundColor}}">
+                            <div class="header-info">
+                                <h3 id="drag-header" style="color: #{{title.color}}; font-family: {{title.font}}">{{ name }}</h3>
+                            </div>
+                        </section>
+                        <section class="second mobile-section">
+                            {{#if fields }}
+                            <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
+                            {{#each fields}}
+                                <tr>
+                                    <td>{{ this.col_alias }}:</td>
+                                    <td>{{ this.val }}</td>
+                                </tr>
+                            {{/each}}
+                            {{#if tags}}
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        {{#each tags}}
+                                            <a class="tag"> {{this}} </a>
+                                        {{/each}}
+                                    </td>
+                                </tr>
+                            {{/if}}
+                            </table>
+                            {{else}}
+                            <div class="tag-container">
+                                {{#each tags}}
+                                <a class="tag"> {{this}} </a>
+                                {{/each}}
+                        </div>
+                        {{/if}}
+                        <div class="section">
+                            {{#if audio_count }}
+                            <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}">
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+            </div>
+        </div>
+    {{else}}
+        <div class="section">
+            <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}})">
+                {{#if hasAudio}}
+                <div class="thumbnail-play-circle">
+                    <i class="fa fa-play fa-3x thumbnail-play" aria-hidden="true"></i>
+                </div>
+                {{/if}}
+            </div>
+            <div class="header-info">
+                <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
+            </div>
+        </div>
+
+        <div class="section">
+
+            {{#if featuredImage}}
+                <img class="photo featured-photo" src='{{featuredImage.path_medium}}'>
+            {{/if}}
+            {{#if caption }}
+                <p style="font-style: italic">{{ caption }}</p>
+            {{/if}}
+            {{#if video_photo_count }}
+                <div class="carousel carousel-videos-photos" style="background-color: #{{paragraph.backgroundColor}}"></div>
+            {{/if}}
+            {{#if audio_count }}
+                <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}"></div>
+            {{/if}}
+        </div>
+        {{#if fields }}
+            <div class="section">
+                <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
+                {{#each fields}}
+                    <tr>
+                        <td>{{ this.col_alias }}:</td>
+                        <td>{{ this.val }}</td>
+                    </tr>
+                {{/each}}
+                {{#if tags}}
+                    <tr>
+                        <td></td>
+                        <td>
+                            {{#each tags}}
+                                <a class="tag"> {{this}} </a>
+                            {{/each}}
+                        </td>
+                    </tr>
+                {{/if}}
+                </table>
+            {{else}}
+                <div class="tag-container">
+                {{#each tags}}
+                    <a class="tag"> {{this}} </a>
+                {{/each}}
+                </div>
+            </div>
+        {{/if}}
+        <button class="button button-tertiary streetview">Show Street View</button>
+
+        {{#compare screenType "presentation" operator="!="}}
+            <div class="save-options">
+                <button class="edit-mode button-tertiary">Edit</button>
+            </div>
+        {{/compare}}
+
+    {{/if}}
+
+{{/ifequal}}
+
+
+<!-- EDIT MODE -->
+{{#ifequal mode "edit"}}
+    <h4>{{#if id}}Edit{{else}}Add New{{/if}}</h4>
+
+    {{#ifequal screenType "map"}}
+        {{#if geometry}}
+            <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>
+        {{else}}
+            <div class="add-lat-lng">
+                <button class="button-secondary add-marker-button" id="add-geometry">Add Location Marker</button>
+            </div>
+        {{/if}}
+        {{#if lat }}
+            <div class="latlong-container">
+            <p class="latlong" style="font-style: italic">
+                ({{lat}}, {{lng}})
+            </p>
+            </div>
+        {{/if}}
+    {{/ifequal}}
+
+    <div id="model-form"></div>
+
+    <button class="button button-tertiary streetview">Show Street View</button>
+
+    <div class = "save-options">
+        <button class="save-model button-primary pull-right">Save</button>
+        <button class="view-mode button-tertiary" id="preview">Preview</button>
+        <button class="button-tertiary button-warning delete-model" id="delete">Delete</button>
+    </div>
+{{/ifequal}}
+
+{{#ifequal screenType "map"}}
+    <div class="show-hide hide"></div>
+{{/ifequal}}

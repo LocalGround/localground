@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from localground.apps.site.api.serializers.base_serializer import BaseSerializer, ProjectSerializerMixin
+from localground.apps.site.api.serializers.base_serializer import BaseSerializer
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 
 
-class VideoSerializer(ProjectSerializerMixin, BaseSerializer):
+class VideoSerializer(BaseSerializer):
     VIDEO_PROVIDERS = (
         ('vimeo', 'Vimeo'),
         ('youtube', 'YouTube')
@@ -16,6 +16,13 @@ class VideoSerializer(ProjectSerializerMixin, BaseSerializer):
         style={'base_template': 'json.html', 'rows': 5},
         source='point'
     )
+
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(),
+        source='project',
+        required=True
+    )
+
 
     caption = serializers.CharField(
         source='description', required=False, allow_null=True, label='caption',
@@ -31,17 +38,17 @@ class VideoSerializer(ProjectSerializerMixin, BaseSerializer):
         help_text='Tag your object here'
     )
     owner = serializers.SerializerMethodField()
-    
-    overlay_type = serializers.SerializerMethodField()
-    
-    video_provider = serializers.ChoiceField(
-        source='provider', choices=VIDEO_PROVIDERS,)
 
     def get_owner(self, obj):
         return obj.owner.username
 
+    overlay_type = serializers.SerializerMethodField()
+
     def get_overlay_type(self, obj):
         return obj._meta.verbose_name
+
+    video_provider = serializers.ChoiceField(
+        source='provider', choices=VIDEO_PROVIDERS,)
 
     class Meta:
         model = models.Video

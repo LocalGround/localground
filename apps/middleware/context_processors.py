@@ -22,7 +22,8 @@ def persistant_queries(request):
         'JQUERY_PATH': settings.JQUERY_PATH,
         'JQUERY_UI_PATH': settings.JQUERY_UI_PATH,
         'BOOTSTRAP_JS_PATH': settings.BOOTSTRAP_JS_PATH,
-        'ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE': settings.ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE
+        'ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE': settings.ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE,
+        'DEBUG': settings.DEBUG
     }
     if request.user.is_authenticated():
         context.update({

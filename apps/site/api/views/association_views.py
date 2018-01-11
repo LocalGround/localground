@@ -6,23 +6,23 @@ from rest_framework.response import Response
 from django.db import IntegrityError
 from rest_framework.serializers import ValidationError
 
+
 def get_group_model(model_type):
     group_model = None
-    try: 
+    try:
         form_id = int(model_type)
-        group_model = models.Form.objects.get(id=form_id).TableModel
+        group_model = models.MarkerWithAttributes
     except ValueError:
-        group_model = models.Base.get_model(
-            model_name_plural=model_type
-        )
+        group_model = models.Marker
     return group_model
+
 
 class RelatedMediaList(generics.ListCreateAPIView):
     # return HttpResponse(self.kwargs.get('entity_name_plural'))
     model = models.GenericAssociation
     serializer_class = serializers.AssociationSerializer
     # http://stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service
-    
+
     def get_queryset(self):
         group_model = get_group_model(self.kwargs.get('group_name_plural'))
         try:
@@ -39,7 +39,7 @@ class RelatedMediaList(generics.ListCreateAPIView):
             entity_type=entity_type,
             source_type=group_model.get_content_type(),
             source_id=self.kwargs.get('source_id'))
-    
+
     def perform_create(self, serializer):
         d = {}
         group_model = get_group_model(self.kwargs.get('group_name_plural'))
@@ -65,8 +65,10 @@ class RelatedMediaList(generics.ListCreateAPIView):
             serializer.save(**d)
         except IntegrityError as e:
             raise ValidationError({
-                'non_field_errors': ['This relationship already exists in the system']
+                'non_field_errors':
+                    ['This relationship already exists in the system']
             })
+
 
 class RelatedMediaInstance(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.GenericAssociation.objects.all()

@@ -3,19 +3,18 @@ from django.conf import settings
 from pwd import getpwnam
 from rest_framework import exceptions
 from localground.apps.lib.helpers import generic
-    
+
+
 '''
 Utility File Path Methods
 '''
-def encrypt_media_path(host, model_name_plural, path):
-    timestamp = int(time.time())
-    path = path + '#' + str(timestamp)
-    return '%s://%s/profile/%s/%s/' % (
+def build_media_path(host, model_name_plural, path):
+    return '%s://%s%s' % (
         settings.PROTOCOL,
         host,
-        model_name_plural.replace(' ', '-'),
-        base64.b64encode(path)
+        path
     )
+
 
 def get_absolute_path(virtual_path):
     return settings.FILE_ROOT + virtual_path

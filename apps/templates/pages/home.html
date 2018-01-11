@@ -4,11 +4,11 @@
     <title>Local Ground Homepage</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/jquery-ui/jquery-ui.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/index-style.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/style.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/modal_new_project.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/jquery-ui/jquery-ui.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/index-style.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/style.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/modal_new_project.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/main.css" />
 </head>
 <body>
     <nav id="toolbar-main" class = "account"></nav>
@@ -18,20 +18,27 @@
         </div>
     </div>
     <div>
-        <main class="main-panel home-main-panel">
+        <main class="main-panel home">
             <!-- Projects go here goes here -->
         </main>
     </div>
     <div id="share-form">
         <!--The Share Form modal window will go here-->
     </div>
-    <script src="/static/redesign/external/require.js"></script>
-    <script>
-        var username = '{{ user.username }}';
-        require(['/static/redesign/apps/require-config.js'], function(){
-            require(['apps/home/kickoff']);
-        });
-    </script>
+    {% if DEBUG %}
+        <script>
+            var configPath = '../',
+                username = '{{ user.username }}';
+        </script>
+        <script data-main="/static/apps/home/kickoff.js" src="/static/external/require.js"></script>
+    {% else %}
+       <!-- Use minified, concatenated code -->
+        <script>
+            var configPath = '../apps/',
+                username = '{{ user.username }}';
+        </script>
+        <script data-main="/static/build/home.min.js" src="/static/external/require.js"></script>
+    {% endif %}
 
 </body>
 </html>

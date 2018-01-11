@@ -1,0 +1,10 @@
+<h5>Title</h5><input class="layer-title" type="text" value="{{title}}"></input>
+<h5>Data Source</h5>
+<select class="selected-data-source">
+    {{#each dataSource}}
+    <option value="{{this.id}}" {{#ifequal this.id ../currentDataSource }}SELECTED{{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}}>
+        {{this.name}} {{#unless this.hasData}} (no data){{/unless}}
+    </option>
+    {{/each}}
+
+</div>

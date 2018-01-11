@@ -43,7 +43,7 @@ class AssociationSerializer(AuditSerializerMixin, serializers.ModelSerializer):
         view = self.context.get('view')
         try: 
             form_id = int(view.kwargs.get('group_name_plural'))
-            return '%s/api/0/forms/%s/data/%s/%s/%s/' % (settings.SERVER_URL,
+            return '%s/api/0/datasets/%s/data/%s/%s/%s/' % (settings.SERVER_URL,
                         view.kwargs.get('group_name_plural'),
                         obj.source_id,
                         view.kwargs.get('entity_name_plural'),
@@ -68,7 +68,7 @@ class AssociationSerializerDetail(AssociationSerializer):
         view = self.context.get('view')
         try: 
             form_id = int(view.kwargs.get('group_name_plural'))
-            return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
+            return '%s/api/0/datasets/%s/data/%s/' % (settings.SERVER_URL,
                         view.kwargs.get('group_name_plural'),
                         obj.source_id)
         except ValueError:

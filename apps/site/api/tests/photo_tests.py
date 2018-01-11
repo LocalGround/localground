@@ -17,7 +17,7 @@ def get_metadata():
         "overlay_type": { "type": "field", "required": False, "read_only": True },
         "tags": { "type": "field", "required": False, "read_only": False },
         "owner": { "type": "field", "required": False, "read_only": True },
-        "project_id": { "type": "field", "required": True, "read_only": False },
+        "project_id": { "type": "field", "required": False, "read_only": False },
         "geometry": { "type": "geojson", "required": False, "read_only": False },
         "attribution": { "type": "string", "required": False, "read_only": False },
         "file_name": { "type": "string", "required": False, "read_only": True },
@@ -50,9 +50,21 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         self.view = views.PhotoList.as_view()
         self.metadata = get_metadata()
 
+    def test_page_500_status_basic_user(self, urls=None, **kwargs):
+        if urls is None:
+            urls = self.urls
+        for url in urls:
+            response = self.client_user.get(url)
+            self.assertEqual(response.status_code,
+                status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def test_page_200_status_basic_user(self, urls=None, **kwargs):
+        url = '/api/0/photos/?project_id={0}'.format(self.project.id)
+        response = self.client_user.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_create_photo_using_post(self, **kwargs):
-        from PIL import Image
-        import tempfile
+        import Image, tempfile
         image = Image.new('RGB', (100, 100))
         tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
         image.save(tmp_file)
@@ -60,7 +72,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         tags = "j,k,l"
         with open(tmp_file.name, 'rb') as data:
             response = self.client_user.post(
-                self.urls[0], 
+                self.urls[0],
                 {
                     'project_id': self.project.id,
                     'media_file' : data,
@@ -70,7 +82,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
                     'tags' : tags
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
-       
+
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             # a few more checks to make sure that file paths are being
             # generated correctly:
@@ -94,15 +106,17 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
                 response.data.get("path_marker_sm")
             ]
             for path in paths:
-                self.assertNotEqual(path.find('/profile/photos/'), -1)
+                self.assertNotEqual(
+                    path.find('/userdata/media/{0}/photos/'.format(
+                        self.user.username)), -1)
                 self.assertNotEqual(path.find(new_photo.host), -1)
-                self.assertTrue(len(path.split('/')[-2]) > 40)
-            
-            
+                self.assertTrue(len(path) > 50)
+
+
 class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def create_photo_with_file(self):
-        from PIL import Image
+        import Image
         image = Image.new('RGB', (200, 100))
         image.save('test.jpg')
         with open('test.jpg', 'rb') as data:
@@ -112,7 +126,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
                 HTTP_X_CSRFTOKEN=self.csrf_token
             )
             return models.Photo.objects.get(id=response.data.get("id"))
-    
+
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=False)
         self.photo = self.create_photo_with_file()
@@ -120,11 +134,8 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self.urls = [self.url]
         self.view = views.PhotoInstance.as_view()
         self.metadata = get_metadata()
-        self.metadata.update({
-            'media_file': { 'type': 'string', 'required': False, 'read_only': True },
-            'project_id': {'read_only': True, 'required': False, 'type': 'field'}
-        })
-        
+        self.metadata.update({"media_file": { "type": "string", "required": False, "read_only": True }})
+
     def tearDown(self):
         #delete method also removes files from file system:
         for photo in models.Photo.objects.all():
@@ -201,23 +212,23 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         except models.Photo.DoesNotExist:
             # trigger assertion success if photo is removed
             self.assertEqual(1, 1)
-    
+
     def test_rotate_photo_left_using_put(self, **kwargs):
         self._test_rotate_photo_using_put('/api/0/photos/%s/rotate-left/' % self.photo.id, **kwargs)
-        
+
     def test_rotate_photo_right_using_put(self, **kwargs):
         self._test_rotate_photo_using_put('/api/0/photos/%s/rotate-right/' % self.photo.id, **kwargs)
-            
+
     def _test_rotate_photo_using_put(self, rotation_url, **kwargs):
-        from PIL import Image
+        import Image
         img_path = '%s%s' % (self.photo.get_absolute_path(), self.photo.file_name_orig)
         img = Image.open(img_path)
         (width, height) = img.size
-        
+
         #check that the dimensions are as they should be:
         self.assertEqual(width, 200)
         self.assertEqual(height, 100)
-        
+
         #call rotate function:
         response = self.client_user.put(
                             rotation_url,
@@ -226,11 +237,9 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
                         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_photo = models.Photo.objects.get(id=self.photo.id)
-        
+
         img_path = '%s%s' % (updated_photo.get_absolute_path(), updated_photo.file_name_orig)
         img = Image.open(img_path)
         (width, height) = img.size
         self.assertEqual(width, 100)
         self.assertEqual(height, 200)
-        
-
