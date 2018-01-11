@@ -17,7 +17,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         except Exception:
             model = self.instance
         # Sets the storage location upon initialization:
-        model.media_file_orig.storage.location = model.get_storage_location()
+        model.pdf_path_S3.storage.location = model.get_storage_location()
 
     def get_fields(self, *args, **kwargs):
         fields = super(PrintSerializerMixin, self).get_fields(*args, **kwargs)
@@ -72,7 +72,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
             )
 
     def get_pdf(self, obj):
-        return obj.pdf()
+        return obj.pdf_path_S3.url
 
     def get_thumb(self, obj):
         return obj.thumb()
