@@ -295,8 +295,4 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
             is_map_page=True)
 
         pdf_report.save()
-
-        file_path = pdf_report.path + '/' + pdf_report.file_name
-        print(pdf_report.path)
-        # Transfer the PDF from file system to Amazon S3
-        self.pdf_path_S3.save(pdf_report.file_name, File(open(file_path)))
+        return pdf_report

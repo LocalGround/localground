@@ -20,6 +20,7 @@ class PrintList(QueryableListCreateAPIView):
 
     paginate_by = 100
 
+    '''
     def perform_create(self, serializer):
         from django.contrib.gis.geos import GEOSGeometry
         posted_data = serializer.validated_data
@@ -53,6 +54,7 @@ class PrintList(QueryableListCreateAPIView):
             'map_height': instance.map_height
         }
         serializer.save(**d)
+        '''
 
 
 class PrintInstance(generics.RetrieveUpdateDestroyAPIView):

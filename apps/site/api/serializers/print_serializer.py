@@ -4,6 +4,7 @@ from rest_framework import serializers
 from localground.apps.site import models
 from django.forms import widgets
 from localground.apps.site.api import fields
+from django.core.files import File
 
 
 class PrintSerializerMixin(serializers.ModelSerializer):
@@ -116,6 +117,72 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
         fields = PrintSerializerMixin.Meta.fields
         fields_read_only = ('id', 'uuid')
         depth = 0
+
+    def create(self, validated_data):
+        '''# Overriding the create method to handle file processing
+        owner = self.context.get('request').user
+
+        # looks like media_file is the only one being saved
+        # onto the amazon cloud storage, but not the others
+        f = self.initial_data.get('media_file')
+
+        # ensure filetype is valid:
+        upload_helpers.validate_file(f, self.ext_whitelist)
+
+        # Save it to Amazon S3 cloud
+        self.validated_data.update(self.get_presave_create_dictionary())
+        self.validated_data.update({
+            'attribution': validated_data.get('attribution') or owner.username
+        })
+        self.instance = self.Meta.model.objects.create(**self.validated_data)
+        self.instance.process_file(f)
+        '''
+        from django.contrib.gis.geos import GEOSGeometry
+        point = GEOSGeometry(validated_data.get('center'))
+        # Do some extra work to generate the PDF and calculate the map extents:
+        instance = models.Print.insert_print_record(
+            self.context.get('request').user,
+            validated_data.get('project'),
+            validated_data.get('layout'),
+            validated_data.get('map_provider'),
+            validated_data.get('zoom'),
+            validated_data.get('center'),
+            self.context.get('request').get_host(),
+            map_title=validated_data.get('name'),
+            instructions=validated_data.get('description'),
+            do_save=False
+        )
+        d = {
+            'uuid': instance.uuid,
+            'virtual_path': instance.virtual_path,
+            'layout': validated_data.get('layout'),
+            'map_provider': validated_data.get('map_provider'),
+            'zoom': validated_data.get('zoom'),
+            'center': validated_data.get('center'),
+            'project': validated_data.get('project'),
+            'northeast': instance.northeast,
+            'southwest': instance.southwest,
+            'extents': instance.extents,
+            'host': instance.host,
+            'map_image_path': instance.map_image_path,
+            'pdf_path': instance.pdf_path,
+            'preview_image_path': instance.preview_image_path,
+            'map_image_path': instance.map_image_path,
+            'map_width': instance.map_width,
+            'map_height': instance.map_height
+        }
+        d.update(self.get_presave_create_dictionary())
+        self.instance = self.Meta.model.objects.create(**d)
+        pdf_report = instance.generate_pdf()
+        pdf_file_path = pdf_report.path + '/' + pdf_report.file_name
+        print 'PDF Report saved at: ' + pdf_file_path
+
+        print(pdf_file_path)
+        # Transfer the PDF from file system to Amazon S3
+        self.instance.pdf_path_S3.save(pdf_report.file_name, File(open(pdf_file_path)))
+        print 'PDF Report saved to S3: ' + pdf_report.file_name
+        #serializer.save(**d)
+        return self.instance
 
 
 class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
