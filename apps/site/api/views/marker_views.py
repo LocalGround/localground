@@ -46,11 +46,14 @@ class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin):
             raise APIException({
                 'project_id': ['A project_id is required']
             })
-        return models.Record.objects.get_objects_with_lists(
+        #print('Rileys print', models.Record.objects.all())
+        record_set = models.Record.objects.get_objects_with_lists(
             project=models.Project.objects.get(
                 id=int(r.get('project_id'))),
             form=None
         )
+        #print record_set
+        return record_set
 
     def perform_create(self, serializer):
         d = self.get_geometry_dictionary(serializer)

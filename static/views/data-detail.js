@@ -246,6 +246,7 @@ define([
             }
             var i, f;
             if (this.model.get("overlay_type").indexOf("form_") != -1) {
+                var something = this.model.attributes;
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
                     f = this.model.get("fields")[i];

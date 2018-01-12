@@ -51,36 +51,36 @@ class ProjectSerializer(BaseNamedSerializer, ProjectSerializerMixin):
 class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
     slug = serializers.SlugField(
         max_length=100, label='friendly url', required=False)
-    children = serializers.SerializerMethodField()
+    datasets = serializers.SerializerMethodField()
     view = None
 
     class Meta:
         model = models.Project
         read_only_fields = ('time_stamp', 'date_created', 'last_updated_by')
-        fields = ProjectSerializer.Meta.fields + ('sharing_url', 'children')
+        fields = ProjectSerializer.Meta.fields + ('sharing_url', 'datasets')
         depth = 0
 
     def get_metadata(self, serializer_class):
         m = CustomMetadata()
         return m.get_serializer_info(serializer_class)
 
-    def get_children(self, obj):
+    def get_datasets(self, obj):
         forms = models.Form.objects.prefetch_related(
                 'field_set', 'field_set__data_type'
             ).filter(project=obj)
 
-        children = {
-            'photos': self.get_photos(obj),
-            'videos': self.get_videos(obj),
-            'audio': self.get_audio(obj),
+        datasets = {
+            # 'photos': self.get_photos(obj),
+            # 'videos': self.get_videos(obj),
+            # 'audio': self.get_audio(obj),
             'map_images': self.get_mapimages(obj),
             'markers': self.get_markers(obj)
         }
 
         # add table data:
         for form in forms:
-            children['form_%s' % form.id] = self.get_table_records(form)
-        return children
+            datasets['form_%s' % form.id] = self.get_table_records(form)
+        return datasets
 
     def get_table_records(self, form):
         records = form.get_records()
@@ -139,7 +139,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
         return self.serialize_list(
             models.Marker,
             MarkerSerializer,
-            models.Marker.objects.get_objects_with_lists(
+            models.Record.objects.get_objects_with_lists(
                 project=obj,
             )
         )
