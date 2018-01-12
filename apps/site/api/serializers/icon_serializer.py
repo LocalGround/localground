@@ -13,6 +13,11 @@ from PIL import Image, ImageOps
 # ProjectSerializerMixin
 class IconSerializerBase(BaseSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'png', 'svg']
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(),
+        source='project',
+        required=False
+    )
     icon_file = serializers.CharField(
         source='file_name_orig', required=True,
         style={'base_template': 'file.html'},
@@ -157,6 +162,7 @@ class IconSerializerList(IconSerializerBase):
             'virtual_path': upload_helpers.generate_relative_path(
                 owner, 'icons')
         })
+        print data
         # raise Exception(data)
 
         self.instance = self.Meta.model.objects.create(**data)
