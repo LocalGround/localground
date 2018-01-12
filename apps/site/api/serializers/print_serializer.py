@@ -65,20 +65,19 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         help_text='Tag your object here'
     )
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
-    # edit_url = serializers.SerializerMethodField('get_configuration_url')
     overlay_type = serializers.SerializerMethodField()
-    center = fields.GeometryField(
-                help_text='Assign a GeoJSON center point',
-                style={'base_template': 'json.html', 'rows': 5},
-                required=True
-            )
 
     def get_pdf(self, obj):
-        return obj.pdf_path_S3.url
+        try:
+            return obj.pdf_path_S3.url
+        except Exception:
+            return None
 
     def get_thumb(self, obj):
-        return obj.map_image_path_S3.url
-        # return obj.thumb()
+        try:
+            return obj.map_image_path_S3.url
+        except Exception:
+            return None
 
     def get_uuid(self, obj):
         return obj.uuid
@@ -121,24 +120,6 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
         depth = 0
 
     def create(self, validated_data):
-        '''# Overriding the create method to handle file processing
-        owner = self.context.get('request').user
-
-        # looks like media_file is the only one being saved
-        # onto the amazon cloud storage, but not the others
-        f = self.initial_data.get('media_file')
-
-        # ensure filetype is valid:
-        upload_helpers.validate_file(f, self.ext_whitelist)
-
-        # Save it to Amazon S3 cloud
-        self.validated_data.update(self.get_presave_create_dictionary())
-        self.validated_data.update({
-            'attribution': validated_data.get('attribution') or owner.username
-        })
-        self.instance = self.Meta.model.objects.create(**self.validated_data)
-        self.instance.process_file(f)
-        '''
         from django.contrib.gis.geos import GEOSGeometry
         point = GEOSGeometry(validated_data.get('center'))
         # Do some extra work to generate the PDF and calculate the map extents:
@@ -173,6 +154,7 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
             'map_height': instance.map_height
         }
         d.update(self.get_presave_create_dictionary())
+        raise Exception(d)
         self.instance = self.Meta.model.objects.create(**d)
         pdf_report = instance.generate_pdf()
         pdf_file_path = pdf_report.path + '/' + pdf_report.file_name

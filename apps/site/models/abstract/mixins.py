@@ -46,6 +46,7 @@ class PointMixin(models.Model):
         self.last_updated_by = user
         self.save()
 
+
 class ExtentsMixin(models.Model):
     """
     abstract class for uploads with lat/lng references.
@@ -57,7 +58,7 @@ class ExtentsMixin(models.Model):
 
     @property
     def geometry(self):
-        return self.extents
+        return self.center
 
     def remove_extents(self, user):
         self.extents = None
