@@ -11,6 +11,7 @@ import json
 from localground.apps.site import models
 from django.core import serializers
 from localground.apps.lib.helpers import generic
+from django.core.files import File
 
 
 """
@@ -366,6 +367,7 @@ class ModelMixin(object):
                      tags=[], generate_pdf=True):
         from localground.apps.site import models
         from django.contrib.gis.geos import Point
+        uuid = generic.generateID()
         p = models.Print.insert_print_record(
             self.user,
             self.project,
@@ -381,7 +383,20 @@ class ModelMixin(object):
         p.tags = tags
         p.save()
         if generate_pdf:
-            p.generate_pdf()
+            # This comes straight from print serializer
+            # because it is needed to work for test data
+
+            # create the instance with valid data
+            # the problem is that how can I get a uuid for use in test?
+
+            # create the report and save
+            pdf_report = p.generate_pdf()
+            pdf_file_path = pdf_report.path + '/' + pdf_report.file_name
+            thumb_file_path = pdf_report.path + '/' + 'thumbnail.jpg'
+            p.pdf_path_S3.save(
+                pdf_report.file_name, File(open(pdf_file_path)))
+            p.map_image_path_S3.save(
+                'thumbnail_' + uuid + '.jpg', File(open(thumb_file_path)))
         return p
 
     def create_form(self, name='A title',

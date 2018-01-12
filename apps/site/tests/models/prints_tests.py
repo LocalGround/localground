@@ -13,6 +13,10 @@ from localground.apps.site.tests.models import \
     MediaMixinTest, BaseAuditAbstractModelClassTest, ExtentsMixinTest, \
     ProjectMixinTest, GenericRelationMixinTest
 
+import httplib
+import urllib
+from urlparse import urlparse
+
 
 class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
     GenericRelationMixinTest, BaseAbstractModelClassTest, test.TestCase):
@@ -84,23 +88,46 @@ class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
         )
         self.assertEqual(abs_virt_path, self.model.absolute_virtual_path())
 
-    def test_pdf_save_S3(self):
-        '''
-        Make sure that the PDF saved goes
-        directly to the S3 endpoint
-        '''
-        # maybe the generate PDF might work, maybe not...
-        self.model.generate_pdf()
-        print('Check the PDF path')
-        print(self.model.pdf_path_S3)
-        pass
+    def test_remove_media_from_s3(self, **kwargs):
+        printModel = self.create_print(
+            map_title='A mapimage-linked print'
+        )
+        urls = [
+            printModel.pdf_path_S3.url,
+            printModel.map_image_path_S3.url
+        ]
+        # files should exist on S3:
 
-    def test_thumbnail_save_S3(self):
-        '''
-        Make sure that the thumbnail saved goes
-        directly to the S3 endpoint
-        '''
-        self.model.generate_pdf()
-        print('Check the thumbnail path')
-        print(self.model.map_image_path_S3)
-        pass
+        print('Check the map provider')
+        print(self.model.map_provider)
+        print('Check the center')
+        print(self.model.center)
+        for url in urls:
+            p = urlparse(url)
+            conn = httplib.HTTPConnection(p.netloc)
+            conn.request('HEAD', p.path)
+            print('Now checking for S3 URLs')
+            print(url)
+            print(p)
+            print(p.path)
+            print('End of S3 url inspection')
+            print('Now checking response data')
+            print(dir(conn.getresponse()))
+            '''
+            print(conn.getresponse().read)
+            print(conn.getresponse().reason)
+            print(conn.getresponse().msg)
+            print(conn.getresponse().status)
+            '''
+            # now I am getting an error of response not ready
+            self.assertEqual(conn.getresponse().status, 200)
+
+        # now delete photo:
+        printModel.delete()
+
+        # files should not exist on S3:
+        for url in urls:
+            p = urlparse(url)
+            conn = httplib.HTTPConnection(p.netloc)
+            conn.request('HEAD', p.path)
+            self.assertEqual(conn.getresponse().status, 403)
