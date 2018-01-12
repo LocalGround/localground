@@ -42,18 +42,11 @@ class QueryableListAPIView(generics.ListAPIView):
         except Exception:
             pass
         return ret
-<<<<<<< HEAD
-
-class QueryableRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-||||||| merged common ancestors
-    
-class QueryableRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-=======
 
 
 class QueryableRetrieveUpdateDestroyView(
         generics.RetrieveUpdateDestroyAPIView):
->>>>>>> master
+
     def metadata(self, request):
         # extend the existing metadata method in the parent class by adding a
         # list of available filters
