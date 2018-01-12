@@ -8,7 +8,7 @@ from localground.apps.site.api.metadata import CustomMetadata
 
 
 class MarkerSerializer(GeometrySerializer):
-    update_metadata = serializers.SerializerMethodField()
+    #update_metadata = serializers.SerializerMethodField()
     attached_photos_ids = serializers.SerializerMethodField()
     attached_audio_ids = serializers.SerializerMethodField()
     attached_videos_ids = serializers.SerializerMethodField()
@@ -17,15 +17,15 @@ class MarkerSerializer(GeometrySerializer):
     class Meta:
         model = models.Record
         fields = GeometrySerializer.Meta.fields + (
-            'update_metadata', 'extras', 'attached_photos_ids',
+            'extras', 'attached_photos_ids',
             'attached_audio_ids', 'attached_videos_ids',
             'attached_map_images_id'
         )
         depth = 0
 
-    def get_update_metadata(self, obj):
-        m = CustomMetadata()
-        return m.get_serializer_info(self)
+    # def get_update_metadata(self, obj):
+    #     m = CustomMetadata()
+    #     return m.get_serializer_info(self)
 
     def get_attached_photos_ids(self, obj):
         try:

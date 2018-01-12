@@ -164,9 +164,9 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             'overlay_type': overlay_type,
             'data': serializer.data
         }
-        d.update({
-            'update_metadata': self.get_metadata(serializer)
-        })
+        # d.update({
+        #     'update_metadata': self.get_metadata(serializer)
+        # })
         # if model_class == models.MarkerWithAttributes:
         #     raise Exception(d)
         return d
