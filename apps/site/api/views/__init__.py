@@ -45,7 +45,7 @@ def api_root(request, format=None, **kwargs):
     d['groups'] = reverse('group-list', request=request, format=format)
     d['layouts'] = reverse('layout-list', request=request, format=format)
     d['data-types'] = reverse('datatype-list', request=request, format=format)
-    d['markers'] = reverse('marker-list', request=request, format=format)
+    d['markers'] = reverse('record-list', request=request, format=format)
 
     #d['markerwithattributes'] = reverse('markerwithattributes-list', request=request, format=format)
 

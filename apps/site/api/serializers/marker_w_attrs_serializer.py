@@ -49,6 +49,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     the URL for ourselves:
     '''
     url = serializers.SerializerMethodField()
+    
     form = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
     attached_photos_ids = serializers.SerializerMethodField()
