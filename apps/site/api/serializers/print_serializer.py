@@ -19,6 +19,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
             model = self.instance
         # Sets the storage location upon initialization:
         model.pdf_path_S3.storage.location = model.get_storage_location()
+        model.map_image_path_S3.storage.location = model.get_storage_location()
 
     def get_fields(self, *args, **kwargs):
         fields = super(PrintSerializerMixin, self).get_fields(*args, **kwargs)
@@ -76,6 +77,8 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         return obj.pdf_path_S3.url
 
     def get_thumb(self, obj):
+        # eventual goal
+        # return obj.map_image_path_S3.url
         return obj.thumb()
 
     def get_uuid(self, obj):
@@ -167,7 +170,6 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
             'map_image_path': instance.map_image_path,
             'pdf_path': instance.pdf_path,
             'preview_image_path': instance.preview_image_path,
-            'map_image_path': instance.map_image_path,
             'map_width': instance.map_width,
             'map_height': instance.map_height
         }

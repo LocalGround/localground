@@ -197,6 +197,13 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         map_width = self.layout.map_width_pixels
         map_height = self.layout.map_height_pixels
         path = settings.USER_MEDIA_ROOT + '/prints/' + self.uuid
+        # Probably try out the new S3 path
+        # probably assign path based on map_image_path
+        # this new method is only hard code, but will need to change
+        # to fit in the new S3 hyperlink
+        # You cannot do a hard-coded link
+        # path = 's3test-assets.s3.amazonaws.com/media/MrJBRPG' + '/prints/' + self.uuid
+
         os.mkdir(path)  # create new directory
         file_name = 'Print_' + self.uuid + '.pdf'
 
@@ -257,6 +264,8 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         thumbnail = map_image.copy()
         thumbnail.thumbnail(size, Image.ANTIALIAS)
         thumbnail.save(path + '/thumbnail.jpg')
+        print self.map_image_path_S3
+        print self.map_image_path
 
         # generate QR code
         qr_image_1 = StaticMap.generate_qrcode(
