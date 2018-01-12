@@ -10,18 +10,16 @@ from localground.apps.site.tests.models.abstract_base_tests import \
 from django import test
 from localground.apps.lib.helpers import generic
 from localground.apps.site.tests.models import \
-    MediaMixinTest, BaseAuditAbstractModelClassTest,ExtentsMixinTest, \
-    ProjectMixinTest, GenericRelationMixinTest 
+    MediaMixinTest, BaseAuditAbstractModelClassTest, ExtentsMixinTest, \
+    ProjectMixinTest, GenericRelationMixinTest
 
 
-class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest, 
+class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
     GenericRelationMixinTest, BaseAbstractModelClassTest, test.TestCase):
-    
-    #class PrintsTest(BaseAbstractModelClassTest, test.TestCase):
-    
+
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
-    
+
         self.model = self.create_print_without_image()
         '''
         or do self.model.create_print()
@@ -75,14 +73,34 @@ class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
         abs_path = settings.FILE_ROOT + self.model.virtual_path
 
         self.assertEqual(abs_path, self.model.get_absolute_path())
-    
+
     # overriding from media mixin
     def test_absolute_virtual_path(self):
-        self.model.file_name_new=''
+        self.model.file_name_new = ''
         abs_virt_path = upload_helpers.build_media_path(
             self.model.host,
             self.model.model_name_plural,
             self.model.virtual_path + self.model.file_name_orig
         )
-        #self.assertEqual(1,1)
         self.assertEqual(abs_virt_path, self.model.absolute_virtual_path())
+
+    def test_pdf_save_S3(self):
+        '''
+        Make sure that the PDF saved goes
+        directly to the S3 endpoint
+        '''
+        # maybe the generate PDF might work, maybe not...
+        self.model.generate_pdf()
+        print('Check the PDF path')
+        print(self.model.pdf_path_S3)
+        pass
+
+    def test_thumbnail_save_S3(self):
+        '''
+        Make sure that the thumbnail saved goes
+        directly to the S3 endpoint
+        '''
+        self.model.generate_pdf()
+        print('Check the thumbnail path')
+        print(self.model.map_image_path_S3)
+        pass

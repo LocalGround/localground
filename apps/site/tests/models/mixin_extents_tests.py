@@ -12,9 +12,11 @@ class ExtentsMixinTest(object):
         field = ExtentsMixin._meta.get_field(prop_name)
         self.assertEqual(field.name, prop_name)
         self.assertEqual(type(field), prop_type)
-    
+
     def test_extent_geometry(self):
         self.model.extents = 'POLYGON(( 10 10, 10 20, 20 20, 20 15, 10 10))'
+        print(self.model.geometry)
+        print(self.model.extents)
         self.assertEqual(self.model.geometry, self.model.extents)
 
     def test_extent_remove_extents(self):
@@ -23,5 +25,3 @@ class ExtentsMixinTest(object):
         self.model.remove_extents(self.user)
         self.assertEqual(self.model.geometry, None)
         self.assertEqual(self.model.last_updated_by, self.user)
-
-
