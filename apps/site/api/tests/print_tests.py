@@ -121,6 +121,10 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI, PrintMixin):
                       .select_related('layout', 'map_provider')
                       .all()
                       .order_by('-id',))[0]
+        print (models.Print.objects.all())
+        print (new_object)  # the whole object should display everything
+        print (new_object.name)
+        print (map_title)
         self.assertEqual(new_object.name, map_title)
         self.assertEqual(new_object.host, 'testserver')
         self.assertEqual(

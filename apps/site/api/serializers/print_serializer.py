@@ -119,6 +119,12 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
         fields_read_only = ('id', 'uuid')
         depth = 0
 
+    center = fields.GeometryField(
+        help_text='Assign a GeoJSON string',
+        required=True,
+        style={'base_template': 'json.html', 'rows': 5}
+    )
+
     def create(self, validated_data):
         from django.contrib.gis.geos import GEOSGeometry
         point = GEOSGeometry(validated_data.get('center'))
@@ -139,6 +145,8 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
             'uuid': instance.uuid,
             'virtual_path': instance.virtual_path,
             'layout': validated_data.get('layout'),
+            'name': validated_data.get('name'),
+            'description': validated_data.get('description'),
             'map_provider': validated_data.get('map_provider'),
             'zoom': validated_data.get('zoom'),
             'center': validated_data.get('center'),
@@ -154,20 +162,16 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
             'map_height': instance.map_height
         }
         d.update(self.get_presave_create_dictionary())
-        raise Exception(d)
         self.instance = self.Meta.model.objects.create(**d)
         pdf_report = instance.generate_pdf()
         pdf_file_path = pdf_report.path + '/' + pdf_report.file_name
         thumb_file_path = pdf_report.path + '/' + 'thumbnail.jpg'
-        print 'PDF Report saved at: ' + pdf_file_path
 
-        print(pdf_file_path)
         # Transfer the PDF from file system to Amazon S3
         self.instance.pdf_path_S3.save(
             pdf_report.file_name, File(open(pdf_file_path)))
         self.instance.map_image_path_S3.save(
             'thumbnail_' + instance.uuid + '.jpg', File(open(thumb_file_path)))
-        print 'PDF Report saved to S3: ' + pdf_report.file_name
         # serializer.save(**d)
         return self.instance
 

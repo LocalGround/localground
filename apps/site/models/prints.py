@@ -251,7 +251,6 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         if self.layout.is_data_entry:
             map_image = map_image.convert("L")  # convert to black and white
 
-        print path
         map_image.save(path + '/map.jpg')
 
         # add border around map:
@@ -264,8 +263,6 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         thumbnail = map_image.copy()
         thumbnail.thumbnail(size, Image.ANTIALIAS)
         thumbnail.save(path + '/thumbnail.jpg')
-        print self.map_image_path_S3
-        print self.map_image_path
 
         # generate QR code
         qr_image_1 = StaticMap.generate_qrcode(
