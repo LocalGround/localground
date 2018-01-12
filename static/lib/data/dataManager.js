@@ -42,8 +42,8 @@ define(["underscore", "marionette", "models/project",
 
             initCollections: function () {
                 var opts, dataType, jsonData, collection;
-                for (dataType in this.model.get("children")) {
-                    opts = this.model.get("children")[dataType];
+                for (dataType in this.model.get("datasets")) {
+                    opts = this.model.get("datasets")[dataType];
                     jsonData = opts.data;
                     _.extend(opts, {
                         title: opts.name,
@@ -64,18 +64,18 @@ define(["underscore", "marionette", "models/project",
             initCollection: function (opts, jsonData) {
                 var collection;
                 switch (opts.dataType) {
-                    case "photos":
-                        opts.isMedia = true;
-                        collection = new Photos(jsonData, opts);
-                        break;
-                    case "audio":
-                        opts.isMedia = true;
-                        collection = new Audio(jsonData, opts);
-                        break;
-                    case "videos":
-                        opts.isMedia = true;
-                        collection = new Videos(jsonData, opts);
-                        break;
+                    // case "photos":
+                    //     opts.isMedia = true;
+                    //     collection = new Photos(jsonData, opts);
+                    //     break;
+                    // case "audio":
+                    //     opts.isMedia = true;
+                    //     collection = new Audio(jsonData, opts);
+                    //     break;
+                    // case "videos":
+                    //     opts.isMedia = true;
+                    //     collection = new Videos(jsonData, opts);
+                    //     break;
                     case "markers":
                         opts.isSite = true;
                         collection = new Markers(jsonData, opts);
@@ -178,9 +178,9 @@ define(["underscore", "marionette", "models/project",
                     }
                 };
                 lookup.push.apply(lookup, [
-                    { id: "photos", name: "Photos", hasData: this.getCollection("photos").length > 0 },
-                    { id: "audio", name: "Audio", hasData: this.getCollection("audio").length > 0 },
-                    { id: "videos", name: "Videos", hasData: this.getCollection("videos").length > 0 },
+                    // { id: "photos", name: "Photos", hasData: this.getCollection("photos").length > 0 },
+                    // { id: "audio", name: "Audio", hasData: this.getCollection("audio").length > 0 },
+                    // { id: "videos", name: "Videos", hasData: this.getCollection("videos").length > 0 },
                     { id: "map_images", name: "Map Images", hasData: this.getCollection("map_images").length > 0 }
                 ])
                 return lookup;
