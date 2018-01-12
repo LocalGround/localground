@@ -1,13 +1,15 @@
-import os, json
+import os
 from django import test
 from django.conf import settings
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 from localground.apps.site.api.fields.list_field import convert_tags_to_list
-
-import urllib, json, requests
+import urllib
+import json
+import requests
 from rest_framework import status
+
 
 def get_metadata():
     return {
@@ -26,6 +28,7 @@ def get_metadata():
         "anchor_y": {"type": "integer", "required": False, "read_only": False},
     }
 
+
 def create_temp_file(w, h):
     from PIL import Image
     import tempfile
@@ -34,13 +37,13 @@ def create_temp_file(w, h):
     image.save(tmp_file)
     return tmp_file
 
+
 class ApiIconListTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
         #self.urls = ['/api/0/icons/']
-        self.urls = ['/api/0/projects/%s/icons/' % self.project.id]
-        print self.urls
+        self.urls = ['/api/0/icons/?project_id=%s' % self.project.id]
         self.url = self.urls[0]
         self.create_icon(self.user, self.project, icon_file='icon1.jpg', name='test_icon_1', size=100, anchor_x=30, anchor_y=20)
         self.create_icon(self.user, self.project, icon_file='icon2.jpg', name='test_icon_2', size=200, anchor_x=100, anchor_y=100)
@@ -247,9 +250,12 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["anchor_x"], 3)
             self.assertEqual(response.data["anchor_y"], 125)
 
-    def test_cannot_create_icon_if_no_project_permissison_or_no_project_defined(self, **kwargs):
-        random_user=self.create_user(username="Rando")
-        random_project=self.create_project(random_user, name='Random Project')
+    def test_cannot_create_icon_if_no_prj_permissison_or_no_prj_defined(
+            self, **kwargs):
+        print self.urls[0]
+        random_user = self.create_user(username="Rando")
+        random_project = self.create_project(
+            random_user, name='Random Project')
         project_ids = [random_project.id, 999999999]
         for project_id in project_ids:
             tmp_file = create_temp_file(5, 200)
@@ -262,7 +268,9 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                         'owner': random_user
                     },
                     HTTP_X_CSRFTOKEN=self.csrf_token)
-                self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+                print response.data
+                self.assertEqual(
+                    status.HTTP_400_BAD_REQUEST, response.status_code)
                 self.assertEqual(
                     response.data['project_id'],
                     [u'Invalid pk "%s" - object does not exist.' % project_id]
@@ -271,13 +279,12 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
 
 class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
 
-
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=False)
-        self.icon1=self.create_icon_post()
-        self.icon2=self.create_icon_post()
-        self.url = '/api/0/icons/%s/' % self.icon1.id
-        #self.url = ['/api/0/projects/%s/icons/%y' % {'s': self.project.id, 'y' : self.icon1.id}]
+        self.icon1 = self.create_icon_post()
+        self.icon2 = self.create_icon_post()
+        self.url = '/api/0/icons/{0}/?project_id={1}'.format(
+            self.icon1.id, self.project.id)
         self.urls = [self.url]
         self.view = views.IconInstance.as_view()
         self.metadata = get_metadata()
@@ -423,4 +430,3 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                       HTTP_X_CSRFTOKEN=self.csrf_token
                                       )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-

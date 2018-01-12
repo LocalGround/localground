@@ -4,9 +4,17 @@ from localground.apps.site.api.views.abstract_views import MediaList, MediaInsta
 
 
 class IconList(MediaList):
+
     def get_queryset(self):
-        project_id = self.kwargs.get('project_id') #comes from the url path
+        from rest_framework.exceptions import APIException
+        r = self.request.GET or self.request.POST
+        project_id = r.get('project_id')
+        if not project_id:
+            raise APIException({
+                'project_id': ['A project_id is required']
+            })
         return models.Icon.objects.filter(project__id=project_id)
+
     serializer_class = IconSerializerList
     model = models.Icon
 

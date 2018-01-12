@@ -18,18 +18,11 @@ Hacky workaround - fixtures are deprecated, so I'm manually loading them here
 TODO: move fixture loading into actual python code, probably
 This is super duper slow and dumb
 """
-<<<<<<< HEAD
-fixture_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fixtures'))
-fixture_filenames = ['test_data.json'] #'database_initialization.json',
-||||||| merged common ancestors
-fixture_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fixtures'))
-fixture_filenames = ['test_data.json'] #'database_initialization.json', 
-=======
+
 fixture_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '../../fixtures'))
 fixture_filenames = ['test_data.json']  # 'database_initialization.json',
 
->>>>>>> master
 
 def load_test_fixtures():
     # print 'loading test fixtures...'
@@ -179,18 +172,10 @@ class ModelMixin(object):
             slug=slug)
         p.save()
         return p
-<<<<<<< HEAD
-
-    def grant_project_permissions_to_user(self, project, granted_to, authority_id=1):
-||||||| merged common ancestors
-    
-    def grant_project_permissions_to_user(self, project, granted_to, authority_id=1):
-=======
 
     def grant_project_permissions_to_user(self,
                                           project, granted_to, authority_id=1):
         from localground.apps.site import models
->>>>>>> master
         uao = models.UserAuthorityObject()
         uao.user = granted_to
         uao.authority = models.UserAuthority.objects.get(id=authority_id)
@@ -558,7 +543,6 @@ class ModelMixin(object):
         photo.save()
         return photo
 
-<<<<<<< HEAD
     def create_icon(self, user, project, icon_file='icon.jpg', name='test_icon', file_type='jpg', size=100, width=100, height=100, anchor_x=30, anchor_y=50):
         from localground.apps.site import models
         icon = models.Icon(
@@ -577,18 +561,10 @@ class ModelMixin(object):
         icon.save()
         return icon
 
-    def create_video(self, user, project, name='Video Name',
-                 provider='youtube', video_id='4232534',
-                 point=None, tags=[]):
-||||||| merged common ancestors
-    def create_video(self, user, project, name='Video Name',
-                 provider='youtube', video_id='4232534',
-                 point=None, tags=[]):
-=======
     def create_video(self, user=None, project=None, name='Video Name',
                      provider='youtube', video_id='4232534',
                      point=None, tags=[]):
->>>>>>> master
+
         from localground.apps.site import models
         user = user or self.user
         project = project or self.project
@@ -627,11 +603,6 @@ class ModelMixin(object):
         )
         audio.save()
         return audio
-<<<<<<< HEAD
-
-||||||| merged common ancestors
-    
-=======
 
     def create_styled_map(self):
         from localground.apps.site.models import StyledMap
@@ -647,7 +618,7 @@ class ModelMixin(object):
         map.save()
         return map
 
->>>>>>> master
+
     def create_relation(self, source_model, attach_model, ordering=1, turned_on=False):
         from localground.apps.site import models
         r = models.GenericAssociation(

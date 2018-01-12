@@ -16,7 +16,7 @@ class IconSerializerBase(BaseSerializer):
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
-        required=False
+        required=True
     )
     icon_file = serializers.CharField(
         source='file_name_orig', required=True,
@@ -162,8 +162,6 @@ class IconSerializerList(IconSerializerBase):
             'virtual_path': upload_helpers.generate_relative_path(
                 owner, 'icons')
         })
-        print data
-        # raise Exception(data)
 
         self.instance = self.Meta.model.objects.create(**data)
         return self.instance
