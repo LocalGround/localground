@@ -77,9 +77,8 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         return obj.pdf_path_S3.url
 
     def get_thumb(self, obj):
-        # eventual goal
-        # return obj.map_image_path_S3.url
-        return obj.thumb()
+        return obj.map_image_path_S3.url
+        # return obj.thumb()
 
     def get_uuid(self, obj):
         return obj.uuid
@@ -177,13 +176,17 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
         self.instance = self.Meta.model.objects.create(**d)
         pdf_report = instance.generate_pdf()
         pdf_file_path = pdf_report.path + '/' + pdf_report.file_name
+        thumb_file_path = pdf_report.path + '/' + 'thumbnail.jpg'
         print 'PDF Report saved at: ' + pdf_file_path
 
         print(pdf_file_path)
         # Transfer the PDF from file system to Amazon S3
-        self.instance.pdf_path_S3.save(pdf_report.file_name, File(open(pdf_file_path)))
+        self.instance.pdf_path_S3.save(
+            pdf_report.file_name, File(open(pdf_file_path)))
+        self.instance.map_image_path_S3.save(
+            'thumbnail_' + instance.uuid + '.jpg', File(open(thumb_file_path)))
         print 'PDF Report saved to S3: ' + pdf_report.file_name
-        #serializer.save(**d)
+        # serializer.save(**d)
         return self.instance
 
 
