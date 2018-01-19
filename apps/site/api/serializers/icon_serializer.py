@@ -146,9 +146,29 @@ class IconSerializerList(IconSerializerBase):
         owner = self.context.get('request').user
         f = self.initial_data.get('icon_file')
 
+        print(f)
+
         # ensure filetype is valid:
         upload_helpers.validate_file(f, self.ext_whitelist)
 
+        print(self.validated_data)
+
+        # Save it to Amazon S3 cloud
+        self.validated_data.update(self.get_presave_create_dictionary())
+        self.validated_data.update({
+            'host': settings.SERVER_HOST,
+            'file_name_orig': f.name,
+            'name': self.validated_data.get('name') or f.name,
+            'virtual_path': upload_helpers.generate_relative_path(
+                owner, 'icons'),
+            'width': 100,  # just placeholder values
+            'height': 100  # idealy, it would be self.size due to inheritence
+
+        })
+        self.instance = self.Meta.model.objects.create(**self.validated_data)
+        self.instance.process_file(f)  # Rough draft version of saving icon
+
+        '''
         # save it to disk
         data = self.get_presave_create_dictionary()
         data.update(validated_data)
@@ -164,6 +184,7 @@ class IconSerializerList(IconSerializerBase):
         })
 
         self.instance = self.Meta.model.objects.create(**data)
+        '''
         return self.instance
 
 

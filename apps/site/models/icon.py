@@ -4,6 +4,9 @@ from localground.apps.site.managers import IconManager
 import os
 
 
+from localground.apps.site.fields import LGImageField
+
+
 class Icon(ProjectMixin, MediaMixin, BaseAudit):
     FILE_TYPES = (
         ('svg', 'svg'),
@@ -23,6 +26,16 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
     anchor_x = models.FloatField(null=False, blank=False)
     anchor_y = models.FloatField(null=False, blank=False)
     objects = IconManager()
+    # S3 File fields
+    media_file_new = LGImageField(null=True)
+    media_file_resized = LGImageField(null=True)
+
+    def remove_icons_from_s3(self):
+        # eventual goal
+        '''
+        self.media_file_new.delete()
+        self.media_file_resized.delete()
+        '''
 
     def delete(self, *args, **kwargs):
         # remove images from file system:
@@ -35,9 +48,29 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
             for f in file_paths:
                 if os.path.exists(f):
                     os.remove(f)
+        # eventual goal
+        # self.remove_icons_from_s3()
 
         # execute default behavior
         super(Icon, self).delete(*args, **kwargs)
+
+    # Rough draft output for processing an icon
+    # may end up not beign needed
+    # However, despite that icon is an image,
+    # error claims that there is no definition for image
+    def process_file(self, file, name=None):
+        im = Image.open(file)
+
+        # read EXIF data:
+        exif = self.read_exif_data(im)
+        self.device = exif.get('model', None)
+        self.point = exif.get('point', None)
+
+        # Save file names to model
+        self.file_name_orig = file.name
+        self.name = name or file.name
+
+        self.save()
 
     class Meta:
         app_label = 'site'
