@@ -92,12 +92,12 @@ class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
         printModel = self.create_print(
             map_title='A mapimage-linked print'
         )
-        # assumes that the files exist on S3
-        # because in test mode, remove happens
-        # after the items are uploaded to S3
-        # maybe because the urls themselves
-        # contain incomplete data,
-        # which does not allow the data to be read entirely
+
+        '''
+        The files have been uploaded successfully
+        under the name 'tester' in the prints folder.
+        The files are present, however they are not properly read
+        '''
         urls = [
             printModel.pdf_path_S3.url,
             printModel.map_image_path_S3.url

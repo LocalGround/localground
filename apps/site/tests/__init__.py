@@ -360,6 +360,7 @@ class ModelMixin(object):
         p.save()
         return p
 
+    '''
     def create_print(self, layout_id=1, map_provider=1,
                      lat=55, lng=61.4, zoom=17,
                      map_title='A title',
@@ -380,6 +381,66 @@ class ModelMixin(object):
             instructions=instructions,
             mapimage_ids=None
         )
+        p.tags = tags
+        p.save()
+        if generate_pdf:
+            # This comes straight from print serializer
+            # because it is needed to work for test data
+
+            # create the instance with valid data
+            # the problem is that how can I get a uuid for use in test?
+
+            # create the report and save
+            pdf_report = p.generate_pdf()
+            pdf_file_path = pdf_report.path + '/' + pdf_report.file_name
+            thumb_file_path = pdf_report.path + '/' + 'thumbnail.jpg'
+            p.pdf_path_S3.save(
+                pdf_report.file_name, File(open(pdf_file_path)))
+            p.map_image_path_S3.save(
+                'thumbnail_' + uuid + '.jpg', File(open(thumb_file_path)))
+        return p
+    '''
+
+    def create_print(self, layout_id=1, map_provider=1,
+                     lat=55, lng=61.4, zoom=17,
+                     map_title='A title',
+                     instructions='A description',
+                     tags=[], generate_pdf=True):
+        from localground.apps.site import models
+        from django.contrib.gis.geos import Point
+        uuid = generic.generateID()
+        p = models.Print.insert_print_record(
+            self.user,
+            self.project,
+            models.Layout.objects.get(id=layout_id),
+            models.TileSet.objects.get(id=map_provider),
+            zoom,
+            Point(lng, lat, srid=4326),
+            settings.SERVER_HOST,
+            map_title=map_title,
+            instructions=instructions,
+            mapimage_ids=None
+        )
+        d = {
+            'uuid': p.uuid,
+            'virtual_path': p.virtual_path,
+            'layout': validated_data.get('layout'),
+            'name': validated_data.get('name'),
+            'description': validated_data.get('description'),
+            'map_provider': validated_data.get('map_provider'),
+            'zoom': validated_data.get('zoom'),
+            'center': validated_data.get('center'),
+            'project': validated_data.get('project'),
+            'northeast': p.northeast,
+            'southwest': p.southwest,
+            'extents': p.extents,
+            'host': p.host,
+            'map_image_path': p.map_image_path,
+            'pdf_path': p.pdf_path,
+            'preview_image_path': p.preview_image_path,
+            'map_width': p.map_width,
+            'map_height': p.map_height
+        }
         p.tags = tags
         p.save()
         if generate_pdf:
