@@ -46,6 +46,7 @@ class QueryableListAPIView(generics.ListAPIView):
 
 class QueryableRetrieveUpdateDestroyView(
         generics.RetrieveUpdateDestroyAPIView):
+
     def metadata(self, request):
         # extend the existing metadata method in the parent class by adding a
         # list of available filters

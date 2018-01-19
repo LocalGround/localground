@@ -19,6 +19,7 @@ Hacky workaround - fixtures are deprecated, so I'm manually loading them here
 TODO: move fixture loading into actual python code, probably
 This is super duper slow and dumb
 """
+
 fixture_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '../../fixtures'))
 fixture_filenames = ['test_data.json']  # 'database_initialization.json',
@@ -112,6 +113,15 @@ class ModelMixin(object):
                 username=user.username,
                 password=self.user_password)
             self._client_user.cookies['csrftoken'] = self.csrf_token
+        return self._client_user
+
+    def get_client_user(self, user):
+        #if self._client_user is None:
+        self._client_user = Client(enforce_csrf_checks=True)
+        self._client_user.login(
+            username=user.username,
+            password=self.user_password)
+        self._client_user.cookies['csrftoken'] = self.csrf_token
         return self._client_user
 
     @property
@@ -613,9 +623,28 @@ class ModelMixin(object):
         photo.save()
         return photo
 
+    def create_icon(self, user, project, icon_file='icon.jpg', name='test_icon', file_type='jpg', size=100, width=100, height=100, anchor_x=30, anchor_y=50):
+        from localground.apps.site import models
+        icon = models.Icon(
+            project=project,
+            owner=user,
+            last_updated_by=user,
+            file_name_orig=icon_file,
+            name=name,
+            file_type=file_type,
+            size=size,
+            width=width,
+            height=height,
+            anchor_x=anchor_x,
+            anchor_y=anchor_y
+        )
+        icon.save()
+        return icon
+
     def create_video(self, user=None, project=None, name='Video Name',
                      provider='youtube', video_id='4232534',
                      point=None, tags=[]):
+
         from localground.apps.site import models
         user = user or self.user
         project = project or self.project

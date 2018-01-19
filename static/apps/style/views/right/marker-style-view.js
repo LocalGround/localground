@@ -1,8 +1,8 @@
 define(["jquery",
-        "backbone",
         "marionette",
         "handlebars",
         "lib/maps/icon-lookup",
+        "collections/icons",
         "apps/style/views/right/marker-style-view-child",
         "apps/style/views/symbols/symbol-selection-layout-view",
         "text!../../templates/right/marker-style.html",
@@ -10,7 +10,13 @@ define(["jquery",
         'color-picker-eyecon',
         "palette"
     ],
+<<<<<<< HEAD:static/redesign/apps/style/views/right/marker-style-view.js
+    function ($, Marionette, Handlebars, IconLookup, Icons, MarkerStyleChildView, MarkerStyleTemplate, Symbols) {
+||||||| merged common ancestors
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, MarkerStyleTemplate, Symbols) {
+=======
     function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, SymbolSelectionLayoutView, MarkerStyleTemplate, Symbols) {
+>>>>>>> master:static/apps/style/views/right/marker-style-view.js
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
@@ -41,6 +47,14 @@ define(["jquery",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+<<<<<<< HEAD:static/redesign/apps/style/views/right/marker-style-view.js
+                this.icons = new Icons();
+                this.listenTo(this.icons, 'reset', this.render());
+                this.icons.fetch({ reset: true });
+                console.log('initialize', this.model.get('symbols'), this.collection);
+||||||| merged common ancestors
+                console.log('initialize', this.model.get('symbols'), this.collection);
+=======
 
 
                 /* reset layer type to 'basic' on initialize
@@ -57,12 +71,26 @@ define(["jquery",
                 }
 
                 // and set the variable
+>>>>>>> master:static/apps/style/views/right/marker-style-view.js
                 this.dataType = this.model.get('layer_type');
 
 
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
                 this.collection = new Symbols(this.model.get("symbols"));
 
+<<<<<<< HEAD:static/redesign/apps/style/views/right/marker-style-view.js
+                // builds correct palette on-load
+                // this.buildPalettes(this.getCatInfo().list.length);
+                this.createCorrectSymbols();
+
+                $('body').click(this.hideColorRamp);
+||||||| merged common ancestors
+                // builds correct palette on-load
+               // this.buildPalettes(this.getCatInfo().list.length);
+               this.createCorrectSymbols();
+             
+                $('body').click(this.hideColorRamp);
+=======
                 this.selectedProp = this.model.get('metadata').currentProp;
 
                 // important to render before createCorrectSymbol because createCorrectSymbol
@@ -81,6 +109,7 @@ define(["jquery",
                 }
 
                 $('body').click($.proxy(this.hideColorRamp, this));
+>>>>>>> master:static/apps/style/views/right/marker-style-view.js
 
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
                 this.listenTo(this.app.vent, 'update-map', this.updateMap);

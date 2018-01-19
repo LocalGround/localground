@@ -8,13 +8,16 @@ from localground.apps.site.models.abstract.mixins import ExtentsMixin, \
 # layers
 from localground.apps.site.models.layer import Layer
 
+from localground.apps.site.models.icon import Icon
+
 # lookups
 from localground.apps.site.models.lookups import StatusCode, UploadSource, \
     UploadType, ErrorCode, ObjectTypes
 
 # overlays
 from localground.apps.site.models.marker import Marker
-from localground.apps.site.models.marker_with_attributes import MarkerWithAttributes
+from localground.apps.site.models.marker_with_attributes \
+    import MarkerWithAttributes
 from localground.apps.site.models.tileset import OverlaySource, \
     OverlayType, TileSet
 

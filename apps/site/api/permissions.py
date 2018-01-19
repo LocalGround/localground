@@ -3,18 +3,18 @@ from localground.apps.site import models
 
 
 class CheckProjectPermissions(permissions.BasePermission):
-
     def has_object_permission(self, request, view, obj):
+        #return True
         if request.method in permissions.SAFE_METHODS:
             return obj.can_view(
-                request.user,
-                access_key=request.GET.get('access_key'))
+            request.user,
+            access_key=request.GET.get('access_key'))
         else:
             return obj.can_edit(request.user)
 
 class CheckProjectSharingPermissions(permissions.BasePermission):
-
     def has_object_permission(self, request, view, obj):
+        #return True
         return obj.can_view(request.user)
 
 '''
