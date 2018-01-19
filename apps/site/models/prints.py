@@ -92,22 +92,12 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         path = '%s%s' % (self.virtual_path, self.pdf_path)
         return self._build_media_path(path)
 
+    def remove_media_from_s3(self):
+        self.pdf_path_S3.delete()
+        self.map_image_path_S3.delete()
+
     def delete(self, *args, **kwargs):
-        # first remove directory, then delete from db:
-        import shutil
-        import os
-        path = self.get_abs_directory_path()
-        if os.path.exists(path):
-            dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
-            if os.path.exists(dest):
-                from localground.apps.lib.helpers import generic
-                dest = dest + '.dup.' + generic.generateID()
-            try:
-                shutil.move(path, dest)
-            except (Exception):
-                raise Exception(
-                    'error moving path from %s to %s' % (path, dest)
-                )
+        self.remove_media_from_s3()
         super(Print, self).delete(*args, **kwargs)
 
     class Meta:

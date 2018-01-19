@@ -92,9 +92,6 @@ class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
         printModel = self.create_print(
             map_title='A mapimage-linked print'
         )
-        import time
-        print 'sleeping for 5 seconds...'
-        time.sleep(5)
 
         '''
         The files have been uploaded successfully
