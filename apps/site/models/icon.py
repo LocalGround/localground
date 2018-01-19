@@ -32,22 +32,12 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
 
     def remove_icons_from_s3(self):
         # eventual goal
-        '''
+
         self.media_file_new.delete()
         self.media_file_resized.delete()
-        '''
+
 
     def delete(self, *args, **kwargs):
-        # remove images from file system:
-        path = self.get_absolute_path()
-        if len(path.split('/')) > 2:  # protects against empty file path
-            file_paths = [
-                '%s%s' % (path, self.file_name_orig),
-                '%s%s' % (path, self.file_name_new)
-            ]
-            for f in file_paths:
-                if os.path.exists(f):
-                    os.remove(f)
         # eventual goal
         # self.remove_icons_from_s3()
 

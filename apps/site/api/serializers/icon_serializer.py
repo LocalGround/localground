@@ -161,8 +161,6 @@ class IconSerializerList(IconSerializerBase):
             'name': self.validated_data.get('name') or f.name,
             'virtual_path': upload_helpers.generate_relative_path(
                 owner, 'icons'),
-            'width': 100,  # just placeholder values
-            'height': 100  # idealy, it would be self.size due to inheritence
 
         })
         self.instance = self.Meta.model.objects.create(**self.validated_data)
