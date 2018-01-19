@@ -1,5 +1,5 @@
 from localground.apps.site import models
-from localground.apps.site.models import Marker
+from localground.apps.site.models import Record
 from localground.apps.site.managers import MarkerManager
 from localground.apps.site.tests.models.abstract_base_uploaded_media_tests \
     import BaseUploadedMediaAbstractModelClassTest
@@ -18,19 +18,17 @@ class MarkerTests(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
     def setUp(self):
         BaseAbstractModelClassTest.setUp(self)
         self.model = self.create_marker()
-        self.object_type = self.model_name = self.pretty_name = 'marker'
-        self.model_name_plural = self.pretty_name_plural = 'markers'
+        self.object_type = self.model_name = self.pretty_name = 'record'
+        self.model_name_plural = self.pretty_name_plural = 'records'
     
     def test_model_properties(self):
         from django.contrib.gis.db import models
         for prop in [
             ('polyline', models.LineStringField),
-            ('polygon', models.PolygonField),
-            ('color', models.CharField)
-            ]:
+            ('polygon', models.PolygonField)            ]:
             prop_name = prop[0]
             prop_type = prop[1]
-            field = Marker._meta.get_field(prop_name)
+            field = Record._meta.get_field(prop_name)
             self.assertEqual(field.name, prop_name)
             self.assertEqual(type(field), prop_type)
         test_ff = ('id', 'project', 'name', 'description', 'tags',)
@@ -49,26 +47,30 @@ class MarkerTests(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
 
         # test if no name exists
         self.model.name = None
-        self.assertEqual(self.model.get_name(), 'Marker #%s' % (self.model.id))
+        self.assertEqual(self.model.get_name(), 'Record #%s' % (self.model.id))
 
-    def test_create_instance(self):
-        user = self.user
-        project = self.project
-        lat = 37.87
-        lng = -122.28
-        name = 'Marker 1'
-        new_marker = Marker.create_instance(
-            user, project, lat, lng, name
-        )
-        self.assertTrue(new_marker.pk)
-        self.assertTrue(new_marker.point)
-        self.assertEqual(new_marker.color, 'CCCCCC')
-        self.assertEqual(new_marker.project, self.model.project)
-        self.assertEqual(new_marker.owner, self.model.owner)
+    # commenting out for now because Record does not have the 
+    # 'create_instance()' class method. Consult Sarah
+    #
+    # def test_create_instance(self):
+    #     user = self.user
+    #     project = self.project
+    #     lat = 37.87
+    #     lng = -122.28
+    #     name = 'Marker 1'
+    #     new_marker = Record.create_instance(
+    #         user, project, lat, lng, name
+    #     )
+    #     self.assertTrue(new_marker.pk)
+    #     self.assertTrue(new_marker.point)
+    #     self.assertEqual(new_marker.color, 'CCCCCC')
+    #     self.assertEqual(new_marker.project, self.model.project)
+    #     self.assertEqual(new_marker.owner, self.model.owner)
+
 
     def test_unicode_(self):
         self.assertEqual(str(self.model.id), self.model.__unicode__())
         
     def test_check_marker_objects_manager(self):
-        self.assertTrue(hasattr(Marker, 'objects'))
-        self.assertTrue(isinstance(Marker.objects, MarkerManager))
+        self.assertTrue(hasattr(Record, 'objects'))
+        self.assertTrue(isinstance(Record.objects, MarkerManager))

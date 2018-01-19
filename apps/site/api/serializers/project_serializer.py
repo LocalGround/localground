@@ -52,12 +52,13 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
     slug = serializers.SlugField(
         max_length=100, label='friendly url', required=False)
     datasets = serializers.SerializerMethodField()
+    media = serializers.SerializerMethodField()
     view = None
 
     class Meta:
         model = models.Project
         read_only_fields = ('time_stamp', 'date_created', 'last_updated_by')
-        fields = ProjectSerializer.Meta.fields + ('sharing_url', 'datasets')
+        fields = ProjectSerializer.Meta.fields + ('sharing_url', 'datasets', 'media')
         depth = 0
 
     def get_metadata(self, serializer_class):
@@ -73,7 +74,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             # 'photos': self.get_photos(obj),
             # 'videos': self.get_videos(obj),
             # 'audio': self.get_audio(obj),
-            'map_images': self.get_mapimages(obj),
+            # 'map_images': self.get_mapimages(obj),
             'markers': self.get_markers(obj)
         }
 
@@ -81,6 +82,15 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
         for form in forms:
             datasets['form_%s' % form.id] = self.get_table_records(form)
         return datasets
+
+    def get_media(self, obj):
+        media = {
+            'photos': self.get_photos(obj),
+            'videos': self.get_videos(obj),
+            'audio': self.get_audio(obj),
+            'map_images': self.get_mapimages(obj)
+        }
+        return media
 
     def get_table_records(self, form):
         records = form.get_records()

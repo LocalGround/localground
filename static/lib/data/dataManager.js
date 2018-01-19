@@ -41,9 +41,12 @@ define(["underscore", "marionette", "models/project",
             },
 
             initCollections: function () {
+                var dataLists = {};
+                _.extend(dataLists, this.model.get('datasets'));
+                _.extend(dataLists, this.model.get('media'));
                 var opts, dataType, jsonData, collection;
-                for (dataType in this.model.get("datasets")) {
-                    opts = this.model.get("datasets")[dataType];
+                for (dataType in dataLists) {
+                    opts = dataLists[dataType];
                     jsonData = opts.data;
                     _.extend(opts, {
                         title: opts.name,
@@ -64,18 +67,18 @@ define(["underscore", "marionette", "models/project",
             initCollection: function (opts, jsonData) {
                 var collection;
                 switch (opts.dataType) {
-                    // case "photos":
-                    //     opts.isMedia = true;
-                    //     collection = new Photos(jsonData, opts);
-                    //     break;
-                    // case "audio":
-                    //     opts.isMedia = true;
-                    //     collection = new Audio(jsonData, opts);
-                    //     break;
-                    // case "videos":
-                    //     opts.isMedia = true;
-                    //     collection = new Videos(jsonData, opts);
-                    //     break;
+                    case "photos":
+                        opts.isMedia = true;
+                        collection = new Photos(jsonData, opts);
+                        break;
+                    case "audio":
+                        opts.isMedia = true;
+                        collection = new Audio(jsonData, opts);
+                        break;
+                    case "videos":
+                        opts.isMedia = true;
+                        collection = new Videos(jsonData, opts);
+                        break;
                     case "markers":
                         opts.isSite = true;
                         collection = new Markers(jsonData, opts);

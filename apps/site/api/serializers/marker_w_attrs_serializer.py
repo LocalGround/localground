@@ -40,7 +40,7 @@ class CustomDataTimeField(serializers.DateTimeField):
 
 
 class MarkerWAttrsSerializerMixin(GeometrySerializer):
-    update_metadata = serializers.SerializerMethodField()
+    # update_metadata = serializers.SerializerMethodField()
     # url = serializers.HyperlinkedIdentityField(
     #    view_name='markerwithattributes-detail', format='html')
     '''
@@ -49,7 +49,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
     the URL for ourselves:
     '''
     url = serializers.SerializerMethodField()
-    
+
     form = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
     attached_photos_ids = serializers.SerializerMethodField()

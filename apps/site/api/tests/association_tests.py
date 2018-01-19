@@ -243,7 +243,7 @@ class ApiRelatedMediaInstanceTest(
                 url, HTTP_X_CSRFTOKEN=self.csrf_token
             )
 
-            # print response.content
+            # print response.data
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
             # 3) ensure object has been removed from the marker:
@@ -298,6 +298,7 @@ class ApiRelatedMediaInstanceTest(
             updated_relation = models.GenericAssociation.objects.get(
                 id=relation.id
             )
+            print response.data
 
             # check that values have been updated:
             for key in params.keys():

@@ -262,11 +262,10 @@ class ModelMixin(object):
             from django.contrib.gis.geos import GEOSGeometry
             geom = GEOSGeometry(json.dumps(geoJSON))
 
-        m = models.Marker(
+        m = models.Record(
             project=project,
             name=name,
             owner=user,
-            color='CCCCCC',
             extras=extras,
             last_updated_by=user,
             tags=tags
@@ -300,7 +299,7 @@ class ModelMixin(object):
             from django.contrib.gis.geos import GEOSGeometry
             geom = GEOSGeometry(json.dumps(geoJSON))
 
-        mwa = models.MarkerWithAttributes(
+        mwa = models.Record(
             project=project,
             name=name,
             owner=user,
@@ -320,7 +319,7 @@ class ModelMixin(object):
 
     def get_marker(self, marker_id=1):
         from localground.apps.site import models
-        return models.Marker.objects.get(id=marker_id)
+        return models.Record.objects.get(id=marker_id)
 
     def create_print_without_image(
             self, layout_id=1, map_provider=1, lat=55, lng=61.4, zoom=17,

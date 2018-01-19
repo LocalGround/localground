@@ -11,7 +11,7 @@ def get_group_model(model_type):
     group_model = None
     try:
         form_id = int(model_type)
-        group_model = models.MarkerWithAttributes
+        group_model = models.Record
     except ValueError:
         group_model = models.Marker
     return group_model
