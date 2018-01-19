@@ -196,7 +196,11 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         m = StaticMap()
         map_width = self.layout.map_width_pixels
         map_height = self.layout.map_height_pixels
-        path = settings.USER_MEDIA_ROOT + '/prints/' + self.uuid
+        path = '{0}/media/{1}/{2}'.format(
+            settings.USER_MEDIA_ROOT,
+            self.owner.username,
+            self.uuid
+        )
         # Probably try out the new S3 path
         # probably assign path based on map_image_path
         # this new method is only hard code, but will need to change

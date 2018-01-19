@@ -424,13 +424,13 @@ class ModelMixin(object):
         d = {
             'uuid': p.uuid,
             'virtual_path': p.virtual_path,
-            'layout': validated_data.get('layout'),
-            'name': validated_data.get('name'),
-            'description': validated_data.get('description'),
-            'map_provider': validated_data.get('map_provider'),
-            'zoom': validated_data.get('zoom'),
-            'center': validated_data.get('center'),
-            'project': validated_data.get('project'),
+            'layout': models.Layout.objects.get(id=layout_id),
+            'name': 'Map Title!',
+            'description': 'Instructions!!!',
+            'map_provider': models.TileSet.objects.get(id=map_provider),
+            'zoom': 10,
+            'center': Point(lng, lat, srid=4326),
+            'project': self.project,
             'northeast': p.northeast,
             'southwest': p.southwest,
             'extents': p.extents,
@@ -456,8 +456,12 @@ class ModelMixin(object):
             thumb_file_path = pdf_report.path + '/' + 'thumbnail.jpg'
             p.pdf_path_S3.save(
                 pdf_report.file_name, File(open(pdf_file_path)))
+            print pdf_file_path
+            print p.pdf_path_S3.url
             p.map_image_path_S3.save(
                 'thumbnail_' + uuid + '.jpg', File(open(thumb_file_path)))
+            print thumb_file_path
+            print p.map_image_path_S3.url
         return p
 
     def create_form(self, name='A title',

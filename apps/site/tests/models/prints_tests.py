@@ -92,6 +92,9 @@ class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
         printModel = self.create_print(
             map_title='A mapimage-linked print'
         )
+        import time
+        print 'sleeping for 5 seconds...'
+        time.sleep(5)
 
         '''
         The files have been uploaded successfully
@@ -102,33 +105,12 @@ class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
             printModel.pdf_path_S3.url,
             printModel.map_image_path_S3.url
         ]
-        # files should exist on S3:
-
-        print('Check the map provider')
-        print(self.model.map_provider)
-        print('Check the center')
-        print(self.model.center)
+        # Successfully adds PDF and Image to S3
         for url in urls:
+            print 'Checking for....', url
             p = urlparse(url)
             conn = httplib.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
-            # this request is the cause of response not ready error
-            print('Now checking for S3 URLs')
-            print(url)
-            print(p)
-            print(p.path)
-            print('End of S3 url inspection')
-            print('Now checking response data')
-            print(dir(conn.getresponse()))
-            '''
-            print(conn.getresponse().read)
-            print(conn.getresponse().reason)
-            print(conn.getresponse().msg)
-            print(conn.getresponse().status)
-            '''
-            # now I am getting an error of response not ready
-            # probably because the same fake object is being used
-            # when enacting the media removal
             self.assertEqual(conn.getresponse().status, 200)
 
         # now delete photo:
