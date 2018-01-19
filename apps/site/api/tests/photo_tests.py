@@ -9,6 +9,10 @@ from localground.apps.site.api.fields.list_field import convert_tags_to_list
 import urllib, json, requests
 from rest_framework import status
 
+'''
+See the bottom of the file for test plans
+'''
+
 def get_metadata():
     return {
         "url": { "type": "field", "required": False, "read_only": True },
@@ -20,7 +24,6 @@ def get_metadata():
         "project_id": { "type": "field", "required": False, "read_only": False },
         "geometry": { "type": "geojson", "required": False, "read_only": False },
         "attribution": { "type": "string", "required": False, "read_only": False },
-        "file_name": { "type": "string", "required": False, "read_only": True },
         "caption": { "type": "memo", "required": False, "read_only": False },
         "path_large": { "type": "field", "required": False, "read_only": True },
         "path_medium": { "type": "field", "required": False, "read_only": True },
@@ -28,7 +31,7 @@ def get_metadata():
         "path_small": { "type": "field", "required": False, "read_only": True },
         "path_marker_lg": { "type": "field", "required": False, "read_only": True },
         "path_marker_sm": { "type": "field", "required": False, "read_only": True },
-        "file_path_orig": { "type": "field", "required": False, "read_only": True },
+        "file_path": { "type": "field", "required": False, "read_only": True },
         "media_file": { "type": "string", "required": True, "read_only": False },
         'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
@@ -96,7 +99,8 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(convert_tags_to_list(tags), new_photo.tags)
             self.assertEqual(file_name, new_photo.file_name_orig)
             self.assertTrue(len(new_photo.file_name_new) > 5) #ensure not empty
-            self.assertEqual(settings.SERVER_HOST, new_photo.host)
+            # replace this with an Amazon S3 equivalent
+            # self.assertEqual(settings.SERVER_HOST, new_photo.host)
             paths = [
                 response.data.get("path_large"),
                 response.data.get("path_medium"),
@@ -243,3 +247,18 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         (width, height) = img.size
         self.assertEqual(width, 100)
         self.assertEqual(height, 200)
+
+
+'''
+Plans for updating the photos api test
+
+Goal - replace filesystem based tests with ones that ensure photos
+       are completely uploaded onto the amazon S3 cloud storage
+
+       What kind of tests must be put to ensure proper photo upload?
+
+       Check that file name exists
+       Check that url includes the bucket name and the aws amazon s3 keywords
+       Check that all the image sizes have valid links
+
+'''

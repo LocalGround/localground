@@ -11,6 +11,10 @@ from PIL import Image
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.geos import Polygon
 
+from django.core.files import File
+from localground.apps.site.fields import LGImageField
+from localground.apps.site.fields import LGFileField
+
 
 class Print(ExtentsMixin, MediaMixin, ProjectMixin,
             GenericRelationMixin, BaseAudit):
@@ -37,6 +41,8 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
     map_height = models.IntegerField()
     map_image_path = models.CharField(max_length=255)
     pdf_path = models.CharField(max_length=255)
+    map_image_path_S3 = LGImageField(null=True)
+    pdf_path_S3 = LGFileField(null=True)
     preview_image_path = models.CharField(max_length=255)
     deleted = models.BooleanField(default=False)
 
@@ -51,7 +57,11 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         if not hasattr(self, '_embedded_mapimages'):
             self._embedded_mapimages = self.grab(MapImage)
         return self._embedded_mapimages
-
+    '''
+    Those old functions for local storage will eventually be removed
+    after successful implementation of the new path
+    to the Amazon S3 cloud.
+    '''
     def get_abs_directory_path(self):
         return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
 
@@ -61,7 +71,13 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
     def generate_relative_path(self):
         return '/%s/%s/%s/' % (settings.USER_MEDIA_DIR,
                                self._meta.verbose_name_plural, self.uuid)
+    '''
+    Thumb, Map, and PDF must change destination from
+    local ground's own storage to Amazon S3
 
+    Find a way to convert the original file source into boto
+    then put the destination from the file source to S3
+    '''
     def thumb(self):
         path = '%s%s' % (self.virtual_path, self.preview_image_path)
         return self._build_media_path(path)
@@ -70,6 +86,8 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         path = '%s%s' % (self.virtual_path, self.map_image_path)
         return self._build_media_path(path)
 
+    # move the PDF file from upload source endpoint to
+    # destination endpoint with Amazon S3
     def pdf(self):
         path = '%s%s' % (self.virtual_path, self.pdf_path)
         return self._build_media_path(path)
@@ -143,7 +161,9 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         p.last_updated_by = user
         p.layout = layout
         p.host = host
+        p.map_image_path_S3 = 'map.jpg'
         p.map_image_path = 'map.jpg'
+        p.pdf_path_S3 = 'Print_' + p.uuid + '.pdf'
         p.pdf_path = 'Print_' + p.uuid + '.pdf'
         p.preview_image_path = 'thumbnail.jpg'
         p.name = map_title
@@ -176,7 +196,18 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         m = StaticMap()
         map_width = self.layout.map_width_pixels
         map_height = self.layout.map_height_pixels
-        path = settings.USER_MEDIA_ROOT + '/prints/' + self.uuid
+        path = '{0}/media/{1}/{2}'.format(
+            settings.USER_MEDIA_ROOT,
+            self.owner.username,
+            self.uuid
+        )
+        # Probably try out the new S3 path
+        # probably assign path based on map_image_path
+        # this new method is only hard code, but will need to change
+        # to fit in the new S3 hyperlink
+        # You cannot do a hard-coded link
+        # path = 's3test-assets.s3.amazonaws.com/media/MrJBRPG' + '/prints/' + self.uuid
+
         os.mkdir(path)  # create new directory
         file_name = 'Print_' + self.uuid + '.pdf'
 
@@ -207,6 +238,7 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         map_image.paste(overlay_image, (0, 0), overlay_image)
         '''
 
+        '''
         a = AcetateLayer(
             file_path=path,
             center=self.center,
@@ -218,6 +250,7 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         overlay_image = a.generate_acetate_layer()
         if overlay_image is not None:
             map_image.paste(overlay_image, (0, 0), overlay_image)
+        '''
 
         if self.layout.is_data_entry:
             map_image = map_image.convert("L")  # convert to black and white
@@ -248,6 +281,7 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
         pdf_report = Report(
             path,
             file_name=self.pdf_path,
+            file_name_S3=self.pdf_path_S3,
             is_landscape=self.layout.is_landscape,
             author=self.owner.username,
             title=self.name)
@@ -271,3 +305,4 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
             is_map_page=True)
 
         pdf_report.save()
+        return pdf_report

@@ -4,6 +4,7 @@ from django.shortcuts import render as direct_to_template
 from django.contrib.auth.decorators import login_required
 import sys
 from django.contrib import admin
+from localground.apps.site.views import document_view
 from django.conf.urls.static import static
 
 urlpatterns = patterns('',
@@ -30,9 +31,13 @@ urlpatterns = patterns('',
         'localground.apps.site.views.mediaserver.serve_media'),
 
     # data API
-    url(r'^api/0/', include('localground.apps.site.api.urls'))
+    url(r'^api/0/', include('localground.apps.site.api.urls')),
+
+    # document
+    url(r'^amazon-tester/$', document_view.DocumentCreateView.as_view(),
+        name='home')
 )
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.USER_MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # Store static CSS, JS, etc. locally:
+    urlpatterns += static('/static/', document_root=settings.STATIC_ROOT)

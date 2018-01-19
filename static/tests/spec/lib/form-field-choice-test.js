@@ -26,7 +26,7 @@ define([
                 "col_name": "choice_test",
                 "ordering": 1,
                 "data_type": "choice",
-                "url": "http://localhost:7777/api/0/forms/1/fields/1",
+                "url": "http://localhost:7777/api/0/datasets/1/fields/1",
                 "val": choice,
                 "extras": JSON.stringify([
                     { "name": "Alpha" },

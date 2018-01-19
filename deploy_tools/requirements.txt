@@ -38,6 +38,14 @@ flower==0.9.0
 piexif==1.0.13
 
 
+##################
+# Amazon Storage #
+##################
+boto3==1.4.7
+django-storages==1.6.1
+python-decouple==3.0
+
+
 ###########################
 # Acetate Layer Libraries #
 ###########################

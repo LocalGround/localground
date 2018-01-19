@@ -70,6 +70,8 @@ class BaseNamedSerializer(BaseSerializer):
         style={'base_template': 'tags.html'},
         help_text='Tag your object here'
     )
+    name = serializers.CharField(
+        required=False, allow_null=True, label='name', allow_blank=True)
     caption = serializers.CharField(
         source='description', required=False, allow_null=True, label='caption',
         style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
@@ -124,12 +126,20 @@ class GeometrySerializer(BaseNamedSerializer):
 
     def get_fields(self, *args, **kwargs):
         fields = super(GeometrySerializer, self).get_fields(*args, **kwargs)
+        # restrict project list at runtime:
         fields['project_id'].queryset = self.get_projects()
         return fields
 
     class Meta:
         fields = BaseNamedSerializer.Meta.fields + \
             ('project_id', 'geometry', 'extras')
+
+
+'''
+This is the old version of the class, which is used
+to store media within its own server.
+However, it will be depricated eventually
+'''
 
 
 class MediaGeometrySerializer(GeometrySerializer):
@@ -153,17 +163,51 @@ class MediaGeometrySerializer(GeometrySerializer):
         return obj.encrypt_url(obj.file_name_new)
 
 
+'''
+This is the new version of the class,
+which sends files to the Amazon S3 cloud storage
+to make uploading, changing, and removing files easier
+This will eventually replace the old class
+'''
+
+
+class MediaGeometrySerializerNew(GeometrySerializer):
+    ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
+    media_file = serializers.CharField(
+        source='media_file_orig',
+        required=True,
+        style={'base_template': 'file.html'},
+        write_only=True,
+        help_text='Valid file types are: ' + ', '.join(ext_whitelist)
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(MediaGeometrySerializerNew, self).__init__(*args, **kwargs)
+        if not self.instance:
+            return
+        try:
+            model = self.instance[0]
+        except Exception:
+            model = self.instance
+        # Sets the storage location upon initialization:
+        model.media_file_orig.storage.location = model.get_storage_location()
+
+    class Meta:
+        fields = GeometrySerializer.Meta.fields + \
+            ('attribution', 'media_file')
+
+
 class ExtentsSerializer(BaseNamedSerializer):
     project_id = fields.ProjectField(
         label='project_id',
         source='project',
         required=False)
+
     center = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         required=False,
         style={'base_template': 'json.html', 'rows': 5}
     )
 
-
-class Meta:
-    fields = BaseNamedSerializer.Meta.fields + ('project_id', 'center')
+    class Meta:
+        fields = BaseNamedSerializer.Meta.fields + ('project_id', 'center')

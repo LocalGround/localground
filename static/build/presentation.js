@@ -4460,7 +4460,7 @@ define('models/base',["underscore", "jquery", "backbone", "form", "lib/maps/geom
                 name: "Untitled",
                 isVisible: true
             },
-            urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
+            urlRoot: null, /* /api/0/datasets/<form_id>/fields/.json */
             updateSchema: null,
             hiddenFields: [
                 "geometry",
@@ -6803,7 +6803,7 @@ define('models/association',["models/base"], function (Base) {
 	            this.urlRoot = '/api/0/markers/' + model.id + '/' + attachmentType + '/';
 			} else if (model.get("overlay_type").indexOf("form_") != -1) {
                 formID = model.get("overlay_type").split("_")[1];
-                this.urlRoot = '/api/0/forms/' + formID + '/data/' + model.id + "/" + attachmentType + '/';
+                this.urlRoot = '/api/0/datasets/' + formID + '/data/' + model.id + "/" + attachmentType + '/';
 			}
             if (attachmentID) {
                 this.idAttribute = 'object_id';
@@ -7309,7 +7309,7 @@ define('models/field',["underscore", "collections/dataTypes", "models/base"],
                 if (this.baseURL) {
                     return this.baseURL;
                 }
-                return '/api/0/forms/' + this.form.get("id") + '/fields/';
+                return '/api/0/datasets/' + this.form.get("id") + '/fields/';
             },
             initialize: function (data, opts) {
                 // This had to be made dynamic because there are different Fields
@@ -7317,7 +7317,7 @@ define('models/field',["underscore", "collections/dataTypes", "models/base"],
                 if (this.collection && this.collection.url) {
                     this.baseURL = this.collection.url();
                 } else if (opts.id) {
-                    this.baseURL = '/api/0/forms/' + opts.id + '/fields/';
+                    this.baseURL = '/api/0/datasets/' + opts.id + '/fields/';
                 } else if (opts.form) {
                     this.form =  opts.form;
                 } else {
@@ -7358,7 +7358,7 @@ define('collections/fields',["models/field", "collections/basePageable"], functi
             if (this.baseURL) {
                 return this.baseURL;
             }
-            return '/api/0/forms/' + this.form.get("id") + '/fields/';
+            return '/api/0/datasets/' + this.form.get("id") + '/fields/';
         },
         comparator: function (item) {
             return item.get(this.sort_key);
@@ -7370,7 +7370,7 @@ define('collections/fields',["models/field", "collections/basePageable"], functi
             if (opts.url) {
                 this.baseURL = opts.url;
             } else if (opts.id) {
-                this.baseURL = '/api/0/forms/' + opts.id + '/fields/';
+                this.baseURL = '/api/0/datasets/' + opts.id + '/fields/';
             } else if (opts.form) {
                 this.form = opts.form;
             } else {
@@ -7834,8 +7834,8 @@ define('lib/data/dataManager',["underscore", "marionette", "models/project", "co
                     // in addition to defining the collection, also define the fields:
                     if (key.indexOf("form_") != -1) {
                         var formID = key.split("_")[1],
-                            recordsURL = '/api/0/forms/' + formID + '/data/',
-                            fieldsURL = '/api/0/forms/' + formID + '/fields/',
+                            recordsURL = '/api/0/datasets/' + formID + '/data/',
+                            fieldsURL = '/api/0/datasets/' + formID + '/fields/',
                             records = new Records(data, {
                                 url: recordsURL,
                                 key: 'form_' + formID,

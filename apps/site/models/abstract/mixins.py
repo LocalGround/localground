@@ -58,7 +58,7 @@ class ExtentsMixin(models.Model):
 
     @property
     def geometry(self):
-        return self.extents
+        return self.center
 
     def remove_extents(self, user):
         self.extents = None

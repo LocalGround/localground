@@ -45,3 +45,6 @@ from localground.apps.site.models.video import Video
 
 # styled map
 from localground.apps.site.models.styledmap import StyledMap
+
+# document
+from localground.apps.site.models.document import Document

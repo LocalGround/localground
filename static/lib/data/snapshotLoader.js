@@ -26,7 +26,7 @@ define(["models/snapshot",
                     collectionOpts = { key: key, name: opts.name };
                     //A few special hacks for form data:
                     if (key.indexOf("form") !== -1) {
-                        collectionOpts.url = '/api/0/forms/' + key.split("_")[1] + '/data/';
+                        collectionOpts.url = '/api/0/datasets/' + key.split("_")[1] + '/data/';
                     }
                     this.collections[key] = new opts.Collection([], collectionOpts);
 
