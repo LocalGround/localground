@@ -48,26 +48,6 @@ class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
         # self.assertEqual(self.model.generate_relative_path(),'/userdata/prints//')
         pass
 
-    '''
-    Unfortunately, the encryption process for thumb, map, and pdf
-    always results in randomized links
-    '''
-
-    def test_thumb(self, **kwargs):
-        # print(self.model.thumb())
-        # self.assertEqual(self.model.thumb(),'http:///profile/prints/IzE1MDkxMzkzMDQ=/')
-        pass
-
-    def test_map(self, **kwargs):
-        # print(self.model.map())
-        # self.assertEqual(self.model.map(),'http:///profile/prints/IzE1MDkxMzkzMDU=/')
-        pass
-
-    def test_pdf(self, **kwargs):
-        # print(self.model.pdf())
-        # self.assertEqual(self.model.pdf(),'http:///profile/prints/IzE1MDkxMzkzMDM=/')
-        pass
-
     # overriding from media mixin
     def test_get_absolute_path(self):
         # Using the method to generate the absolute path. Good not to
@@ -104,7 +84,6 @@ class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
         ]
         # Successfully adds PDF and Image to S3
         for url in urls:
-            print 'Checking for....', url
             p = urlparse(url)
             conn = httplib.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
