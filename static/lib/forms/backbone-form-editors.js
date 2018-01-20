@@ -213,9 +213,14 @@ define([
                 fetch = function () {
                     that.model.fetch({reset: true});
                 };
+            const phot_ct = !this.model.get('attached_photos_ids') ? 0 : this.model.get('attached_photos_ids').length;
+            const aud_ct = !this.model.get('attached_audio_ids') ? 0 : this.model.get('attached_audio_ids').length;
             for (i = 0; i < models.length; ++i) {
                 console.log(models[i]);
-                ordering = this.model.get("photo_count") + this.model.get("audio_count");
+                //ordering = this.model.get("photo_count") + this.model.get("audio_count");
+                ordering = phot_ct + aud_ct;
+                console.log('ordering', ordering);
+                console.log(this.model);
                 this.model.attach(models[i], (ordering + i + 1));
             }
             //fetch and re-render model:

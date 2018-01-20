@@ -13,6 +13,7 @@ class MarkerSerializer(GeometrySerializer):
     attached_audio_ids = serializers.SerializerMethodField()
     attached_videos_ids = serializers.SerializerMethodField()
     attached_map_images_id = serializers.SerializerMethodField()
+    overlay_type = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Record
@@ -50,6 +51,9 @@ class MarkerSerializer(GeometrySerializer):
             return obj.map_image_array
         except Exception:
             return None
+
+    def get_overlay_type(self, obj):
+        return 'marker'
 
 
 class MarkerSerializerDetail(MarkerSerializer):
