@@ -26,6 +26,7 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
+            this.username = username;
         },
         initialize: function (options) {
             _.extend(this, options);

@@ -127,19 +127,14 @@ define(["jquery",
             },
 
             handleServerSuccess: function(model, response) {
-                // Unfortunately, neither of them are defined
-                console.log(this.app.user);
-                console.log(this.app.username);
                 this.createNewProjectUsers();
                 this.slugError = null;
-                console.log(this.model)
-                console.log(this.model.id)
                 var projID = this.model.id;
                 this.render();
                 // redirect to the map, assuming the location is the homepage
                 window.location.replace(window.location.href + 'data/?project_id=' + projID + '#/map');
-                this.app.vent.trigger('success-message', "Project Saved.");
-                this.app.vent.trigger('hide-modal');
+                // this.app.vent.trigger('success-message', "Project Saved.");
+                // this.app.vent.trigger('hide-modal');
 
             },
 
