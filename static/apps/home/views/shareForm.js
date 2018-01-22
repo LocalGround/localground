@@ -107,7 +107,6 @@ define(["jquery",
                     shareType = this.$el.find('#access_authority').val(),
                     caption = this.$el.find('#caption').val(),
                     slug = this.$el.find('#slug').val(),
-                    owner = this.$el.find('#owner').val(),
                     tags = this.$el.find('#tags').val(),
                     that = this;
                 if (this.blankInputs()) {
@@ -119,11 +118,16 @@ define(["jquery",
                 this.model.set('tags', tags);
                 this.model.set('caption', caption);
                 this.model.set('slug', this.setSlugValue(slug));
-                this.model.set('owner', owner);
+                this.model.set('owner', this.app.username);
                 this.model.save(null, {
                     success: this.handleServerSuccess.bind(this),
                     error: this.handleServerError.bind(this)
                 });
+            },
+
+            // redirect to the map, assuming the location is the homepage
+            redirectToMapPage: function(projID){
+                window.location.assign(window.location.href + 'data/?project_id=' + projID + '#/map');
             },
 
             handleServerSuccess: function(model, response) {
@@ -131,11 +135,7 @@ define(["jquery",
                 this.slugError = null;
                 var projID = this.model.id;
                 this.render();
-                // redirect to the map, assuming the location is the homepage
-                window.location.replace(window.location.href + 'data/?project_id=' + projID + '#/map');
-                // this.app.vent.trigger('success-message', "Project Saved.");
-                // this.app.vent.trigger('hide-modal');
-
+                this.redirectToMapPage(projID);
             },
 
             handleServerError: function (model, response) {
@@ -255,12 +255,10 @@ define(["jquery",
                 var blankFields = false,
                     projectName_ = this.$el.find('#projectName').val(),
                     shareType_ = this.$el.find('#access_authority').val(),
-                    slug_ = this.$el.find('#slug').val(),
-                    owner_ = this.$el.find('#owner').val();
+                    slug_ = this.$el.find('#slug').val();
 
                 this.$el.find('#projectName').prev().css("color", '#000000');
                 this.$el.find('#access_authority').prev().css("color", '#000000');
-                this.$el.find('#owner').prev().css("color", '#000000');
                 if (!($.trim(projectName_))) {
                     blankFields = true;
                     this.$el.find('#projectName').prev().css("color", '#FF0000');
@@ -269,12 +267,6 @@ define(["jquery",
                 if (!(shareType_)) {
                     blankFields = true;
                     this.$el.find('#access_authority').prev().css("color", '#FF0000');
-                }
-
-                // only validate owner on create project (not update project)
-                if (!this.model.get("id") && !($.trim(owner_))) {
-                    blankFields = true;
-                    this.$el.find('#owner').prev().css("color", '#FF0000');
                 }
                 return blankFields;
             },
