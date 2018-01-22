@@ -26,10 +26,11 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
-            this.username = username;
         },
         initialize: function (options) {
             _.extend(this, options);
+            this.username = username;
+
             Marionette.Application.prototype.initialize.apply(this, [options]);
 
             //add views to regions:
