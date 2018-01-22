@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.conf.urls import patterns, url
 from django.conf.urls import include
 from localground.apps.site.api import views
@@ -209,3 +211,7 @@ urlpatterns += format_suffix_patterns(patterns('',
     url(r'^videos/(?P<pk>[0-9]+)/$', views.VideoInstance.as_view(),
         name='video-detail'),
     ))
+
+if settings.DEBUG:
+   # Store static CSS, JS, etc. locally:
+   urlpatterns += static('/static/', document_root=settings.STATIC_ROOT)
