@@ -63,7 +63,7 @@ class ApiRelatedMediaListTest(
     def test_attach_media_to_marker(self, **kwargs):
         for i, url in enumerate(self.urls):
             if "markers" in url:
-                source_model = models.Marker
+                source_model = models.Record
                 source_id = self.marker.id
             else:
                 source_model = type(self.markerwattrs)

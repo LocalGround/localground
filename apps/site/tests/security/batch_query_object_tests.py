@@ -179,7 +179,7 @@ class BatchMarkerWithAttributesQuerySecurityTest(
     def _create_objects(self):
         num_fields = 3
         self.form = self.create_form_with_fields(num_fields=num_fields)
-        self.model = models.MarkerWithAttributes
+        self.model = models.Record
         self.objects = []
         for project in self.projects:
             for i, fn in enumerate(self.file_names):
