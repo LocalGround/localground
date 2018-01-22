@@ -2,15 +2,13 @@ import os
 import sys
 from django.conf import settings
 from localground.apps.site.api.serializers.base_serializer \
-    import BaseSerializer #, ProjectSerializerMixin
+    import BaseSerializer
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.lib.helpers import upload_helpers, generic
 from localground.apps.site.api import fields
-from PIL import Image, ImageOps
 
 
-# ProjectSerializerMixin
 class IconSerializerBase(BaseSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'png', 'svg']
     project_id = serializers.PrimaryKeyRelatedField(
@@ -23,94 +21,19 @@ class IconSerializerBase(BaseSerializer):
         style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
-    # set max and min sizes for icon
-    size_max = 250.0
-    size_min = 10.0
     size = serializers.IntegerField(
-        max_value=size_max, min_value=size_min, required=False)
+        max_value=models.Icon.size_max,
+        min_value=models.Icon.size_min,
+        required=False
+    )
     file_path = serializers.SerializerMethodField('get_file_path_new')
     owner = serializers.SerializerMethodField()
 
-    def resize_icon(self, owner, file_name_new, validated_data):
-        file_name, ext = os.path.splitext(file_name_new)
-        file_type = ext.replace('.', '').lower()
-        scale_ratio = 1.0
-        if file_type == 'jpeg':
-            file_type = 'jpg'
-        file_name_resized = file_name + '_resized.' + file_type
-        media_path = upload_helpers.generate_absolute_path(
-            owner, "icons")
-        # raise Exception(media_path + '/' + file_name_new)
-        im = Image.open(media_path + '/' + file_name_new)
-
-        # get largest and smallest value of image
-        icon_max = max(im.size) * 1.0
-        icon_min = min(im.size) * 1.0
-
-        # get size user entered.  If user didn't enter anything, use
-        # largest icon size or size_max.
-        # also check to make sure icon size is >= size_min
-        if validated_data.get('size'):
-            size = validated_data.get('size')
-        elif icon_max > self.size_max:
-            size = self.size_max
-        elif icon_max < self.size_min:
-            size = self.size_min
-        else:
-            size = icon_max
-
-        # calculate scale_ratio
-        if icon_max != size and icon_min > self.size_min:
-            scale_ratio = size / icon_max
-        elif icon_min < self.size_min:
-            scale_ratio = self.size_min / icon_min
-        else:
-            scale_ratio = 1.0
-        # print (size, icon_max, icon_min, scale_ratio)
-        # check for case where resizing by scale ratio would make icon_max
-        # too large. in this case, make icon small side as large as possible
-        # while keeping icon big side in range
-        if scale_ratio > self.size_max / icon_max:
-            scale_ratio = self.size_max / icon_max
-            size = size * scale_ratio
-
-        # raise Exception(size, scale_ratio)
-        # resize icon if needed
-        new_x = im.size[0]
-        new_y = im.size[1]
-        if scale_ratio != 1.0:
-            new_x = int(round((im.size)[0] * scale_ratio))
-            new_y = int(round((im.size)[1] * scale_ratio))
-            im = im.resize((new_x, new_y), Image.ANTIALIAS)
-            # im.thumbnail((new_x, new_y), Image.ANTIALIAS)
-            abs_path = '%s/%s' % (media_path, file_name_resized)
-            im.save(abs_path)
-        # set anchor point center of icon or user entered coordinates
-        anchor_x = im.size[0] / 2.0
-        anchor_y = im.size[1] / 2.0
-        validated_data_x = validated_data.get('anchor_x')
-        validated_data_y = validated_data.get('anchor_y')
-        if validated_data_x is not None and validated_data_x <= new_x:
-            anchor_x = validated_data_x
-            # validated_data['anchor_x'] = anchor_x
-        if validated_data_y is not None and validated_data_y <= new_y:
-            anchor_y = validated_data_y
-            # validated_data['anchor_y'] = anchor_y
-
-        return {
-            'width': im.size[0],
-            'height': im.size[1],
-            'anchor_x': anchor_x,
-            'anchor_y': anchor_y,
-            'size': size,
-            'file_name_new': file_name_new,
-            'file_name_resized': file_name_resized,
-            'file_type': file_type
-        }
-
     def get_file_path_new(self, obj):
-        # return obj.file_name_resized
-        return obj.encrypt_url(obj.file_name_resized)
+        try:
+            return obj.media_file_new.url
+        except Exception:
+            return None
 
     def get_owner(self, obj):
         return obj.owner.username
@@ -133,65 +56,42 @@ class IconSerializerList(IconSerializerBase):
                   'anchor_y')
         depth = 0
 
-    def create_file(self, file, owner, validated_data):
-            file_name = file.name
-            file_name_new = upload_helpers.save_file_to_disk(
-                owner, "icons", file)
-            resized_icon_parameters = self.resize_icon(
-                owner, file_name_new, validated_data)
-            return resized_icon_parameters
-
     def create(self, validated_data):
         # Overriding the create method to handle file processing
         owner = self.context.get('request').user
         f = self.initial_data.get('icon_file')
 
-        print(f)
-
         # ensure filetype is valid:
         upload_helpers.validate_file(f, self.ext_whitelist)
 
-        print(self.validated_data)
-
-        # Save it to Amazon S3 cloud
         self.validated_data.update(self.get_presave_create_dictionary())
         self.validated_data.update({
             'host': settings.SERVER_HOST,
             'file_name_orig': f.name,
             'name': self.validated_data.get('name') or f.name,
             'virtual_path': upload_helpers.generate_relative_path(
-                owner, 'icons'),
-
-        })
-        self.instance = self.Meta.model.objects.create(**self.validated_data)
-        self.instance.process_file(f)  # Rough draft version of saving icon
-
-        '''
-        # save it to disk
-        data = self.get_presave_create_dictionary()
-        data.update(validated_data)
-
-        resized_icon_parameters = self.create_file(f, owner, validated_data)
-        data.update(resized_icon_parameters)
-        data.update({
-            'host': settings.SERVER_HOST,
-            'file_name_orig': f.name,
-            'name': self.validated_data.get('name') or f.name,
-            'virtual_path': upload_helpers.generate_relative_path(
                 owner, 'icons')
-        })
 
-        self.instance = self.Meta.model.objects.create(**data)
-        '''
+        })
+        # create unsaved Icon instance
+        print 'Initializing instance...'
+        self.instance = models.Icon(**self.validated_data)
+
+        # Save it to Amazon S3 cloud
+        print 'Processing file...'
+        self.instance.process_file(f)
+
+        # Commit to database
+        self.instance.save()
         return self.instance
 
 
 class IconSerializerUpdate(IconSerializerBase):
     anchor_x = serializers.IntegerField(
-        allow_null=True, max_value=IconSerializerBase.size_max,
+        allow_null=True, max_value=models.Icon.size_max,
         min_value=0, required=False)
     anchor_y = serializers.IntegerField(
-        allow_null=True, max_value=IconSerializerBase.size_max,
+        allow_null=True, max_value=models.Icon.size_max,
         min_value=0, required=False)
     width = serializers.IntegerField(read_only=True)
     height = serializers.IntegerField(read_only=True)
