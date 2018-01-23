@@ -1,69 +1,101 @@
-from django.contrib.gis.db import models
-from django.conf import settings
-from localground.apps.site.managers import PhotoManager
-from localground.apps.site.models import ExtrasMixin
-from localground.apps.site.models import PointMixin
-from localground.apps.site.models import BaseUploadedMedia
-from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-from localground.apps.lib.helpers import upload_helpers
 import os
-from swampdragon.models import SelfPublishModel
-from localground.apps.site.api.realtime_serializers import PhotoRTSerializer
+import time
+from django.contrib.gis.db import models
+from localground.apps.site.managers import PhotoManager
+from localground.apps.site.models import ExtrasMixin, PointMixin, \
+    BaseUploadedMedia
+
+from django.core.files import File
+import Image
+import ImageOps
+from localground.apps.site.fields import LGImageField
 
 
 class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
+    # File System File fields (to be deleted eventually, after the full
+    # migration is completed Don't delete yet.)
     file_name_large = models.CharField(max_length=255)
     file_name_medium = models.CharField(max_length=255)
     file_name_medium_sm = models.CharField(max_length=255)
     file_name_small = models.CharField(max_length=255)
     file_name_marker_lg = models.CharField(max_length=255)
     file_name_marker_sm = models.CharField(max_length=255)
+
+    # S3 File fields
+    media_file_orig = LGImageField(null=True)
+    media_file_large = LGImageField(null=True)
+    media_file_medium = LGImageField(null=True)
+    media_file_medium_sm = LGImageField(null=True)
+    media_file_small = LGImageField(null=True)
+    media_file_marker_lg = LGImageField(null=True)
+    media_file_marker_sm = LGImageField(null=True)
     device = models.CharField(max_length=255, blank=True, null=True)
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
 
-    @classmethod
-    def process_file(cls, file, owner):
-        from PIL import Image, ImageOps
-        #save to disk:
-        model_name_plural = cls.model_name_plural
-        file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file)
-        file_name, ext = os.path.splitext(file_name_new)
+    def generate_thumbnail(self, im, size, file_name):
+        if size in [50, 25]:
+            # ensure that perfect squares:
+            im.thumbnail((size * 2, size * 2), Image.ANTIALIAS)
+            im = im.crop([0, 0, size - 2, size - 2])
+            # for some reason, ImageOps.expand throws an error
+            # for some files:
+            im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
+        else:
+            im.thumbnail((size, size), Image.ANTIALIAS)
+        return self.pil_to_django_file(im, file_name)
 
-        # create thumbnails:
-        media_path = upload_helpers.generate_absolute_path(owner, model_name_plural)
-        im = Image.open(media_path + '/' + file_name_new)
-        exif = cls.read_exif_data(im)
-        sizes = [1000, 500, 250, 128, 50, 20]
-        photo_paths = [file_name_new]
-        for s in sizes:
-            if s in [50, 25]:
-                # ensure that perfect squares:
-                im.thumbnail((s * 2, s * 2), Image.ANTIALIAS)
-                im = im.crop([0, 0, s - 2, s - 2])
-                # for some reason, ImageOps.expand throws an error for some files:
-                im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
-            else:
-                im.thumbnail((s, s), Image.ANTIALIAS)
-            abs_path = '%s/%s_%s%s' % (media_path, file_name, s, ext)
-            im.save(abs_path)
-            photo_paths.append('%s_%s%s' % (file_name, s, ext))
-            
-        return {
-            'device': exif.get('model', None),
-            'point': exif.get('point', None),
-            'file_name_orig': file.name,
-            'name': file.name,
-            'file_name_new': file_name_new,
-            'file_name_large': photo_paths[1],
-            'file_name_medium': photo_paths[2],
-            'file_name_medium_sm': photo_paths[3],
-            'file_name_small': photo_paths[4],
-            'file_name_marker_lg': photo_paths[5],
-            'file_name_marker_sm': photo_paths[6],
-            'content_type': ext.replace('.', ''),
-            'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural)
-        }
+    def generate_thumbnails(self, im, file_name, replace=False):
+        base_name, ext = os.path.splitext(file_name)
+        if replace:
+            self.remove_media_from_s3()
+
+        self.media_file_orig.save(
+            file_name,
+            self.pil_to_django_file(im, file_name)
+        )
+        self.media_file_large.save(
+            '{0}_1000.jpg'.format(base_name),
+            self.generate_thumbnail(im, 1000, '{0}_1000.jpg'.format(base_name))
+        )
+        self.media_file_medium.save(
+            '{0}_500.jpg'.format(base_name),
+            self.generate_thumbnail(im, 500, '{0}_500.jpg'.format(base_name))
+        )
+        self.media_file_medium_sm.save(
+            '{0}_250.jpg'.format(base_name),
+            self.generate_thumbnail(im, 250, '{0}_250.jpg'.format(base_name))
+        )
+        self.media_file_small.save(
+            '{0}_128.jpg'.format(base_name),
+            self.generate_thumbnail(im, 128, '{0}_128.jpg'.format(base_name))
+        )
+        self.media_file_marker_lg.save(
+            '{0}_50.jpg'.format(base_name),
+            self.generate_thumbnail(im, 50, '{0}_50.jpg'.format(base_name))
+        )
+        self.media_file_marker_sm.save(
+            '{0}_20.jpg'.format(base_name),
+            self.generate_thumbnail(im, 20, '{0}_20.jpg'.format(base_name))
+        )
+        self.content_type = 'JPG'
+
+    def process_file(self, file, name=None):
+        im = Image.open(file)
+
+        # read EXIF data:
+        exif = self.read_exif_data(im)
+        self.device = exif.get('model', None)
+        self.point = exif.get('point', None)
+
+        # generate thumbnails
+        self.generate_thumbnails(im, file.name)
+
+        # Save file names to model: Do we still need these fields?
+        self.file_name_orig = file.name
+        self.name = name or file.name
+
+        self.save()
 
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.file_name_orig)
@@ -74,116 +106,46 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         verbose_name = 'photo'
         verbose_name_plural = 'photos'
 
-    def thumb(self):
-        '''
-        Convenience function
-        '''
-        # return self.file_name_small
-        return self.encrypt_url(self.file_name_small)
-
-    def absolute_virtual_path_medium_sm(self):
-        '''
-        Convenience Function for the template
-        '''
-        if self.file_name_medium_sm is not None:
-            return self.encrypt_url(self.file_name_medium_sm)
-        else:
-            return self.absolute_virtual_path_medium()
-
-    def absolute_virtual_path_medium(self):
-        '''
-        Convenience Function for the template
-        '''
-        return self.encrypt_url(self.file_name_medium)
-
-    def absolute_virtual_path_large(self):
-        '''
-        Convenience Function for the template
-        '''
-        return self.encrypt_url(self.file_name_large)
-
-    def remove_media_from_file_system(self):
-        path = self.get_absolute_path()
-        if len(path.split('/')) > 2:  # protects against empty file path
-            file_paths = [
-                self.file_name_orig,
-                self.file_name_new,
-                self.file_name_large,
-                self.file_name_medium,
-                self.file_name_medium_sm,
-                self.file_name_small,
-                self.file_name_marker_lg,
-                self.file_name_marker_sm
-            ]
-            for f in file_paths:
-                p = '%s%s' % (path, f)
-                if (os.path.exists(p) and f is not None and
-                        len(f) > 0 and p.find(settings.USER_MEDIA_DIR) > 0):
-                    os.remove(p)
+    # Good basis for removing from S3 when saved in S3
+    # May be useful as abstract function from base
+    def remove_media_from_s3(self):
+        self.media_file_orig.delete()
+        self.media_file_large.delete()
+        self.media_file_medium.delete()
+        self.media_file_medium_sm.delete()
+        self.media_file_small.delete()
+        self.media_file_marker_lg.delete()
+        self.media_file_marker_sm.delete()
 
     def delete(self, *args, **kwargs):
-        self.remove_media_from_file_system()
+        self.remove_media_from_s3()
         super(Photo, self).delete(*args, **kwargs)
 
-    def rotate_left(self, user):
-        self.__rotate(user, degrees=90)
+    def rotate_left(self):
+        self.__rotate(degrees=90)
 
-    def rotate_right(self, user):
-        self.__rotate(user, degrees=270)
+    def rotate_right(self):
+        self.__rotate(degrees=270)
 
-    def __rotate(self, user, degrees):
-        from PIL import Image, ImageOps
-        import time
-        timestamp = int(time.time())
-        media_path = self.get_absolute_path()
+    def __rotate(self, degrees):
+        # 1. retrieve file from S3 and convert to PIL image:
+        im = self.django_file_field_to_pil(self.media_file_orig)
 
-        # 1) do the rotation:
-        im = Image.open(media_path + self.file_name_new)
-        file_name, ext = os.path.splitext(self.file_name_new)
+        # 2. Do the rotation:
         im = im.rotate(degrees)
-        im.save(media_path + self.file_name_new)
 
-        # 2) create thumbnails:
-        sizes = [1000, 500, 250, 128, 50, 20]
-        photo_paths = []
-        for s in sizes:
-            if s in [50, 25]:
-                # ensure that perfect squares:
-                im.thumbnail((s * 2, s * 2), Image.ANTIALIAS)
-                im = im.crop([0, 0, s - 2, s - 2])
-                im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
-            else:
-                im.thumbnail((s, s), Image.ANTIALIAS)
-            new_file_path = '%s_%s_%s%s' % (file_name, s, timestamp, ext)
-            im.save('%s%s' % (media_path, new_file_path))
-            photo_paths.append(new_file_path)
+        # 3. Generate the thumbnails
+        base_name, ext = os.path.splitext(self.media_file_orig.name)
+        # and salt
+        base_name = base_name.split('_t')[0]
+        base_name += '_t' + str(time.time()).split('.')[0][5:]
+        self.generate_thumbnails(
+            im, base_name + ext, replace=True)
 
-        # 3) delete old, pre-rotated files on file systems:
-        file_paths = [
-            '%s%s' % (media_path, self.file_name_large),
-            '%s%s' % (media_path, self.file_name_medium),
-            '%s%s' % (media_path, self.file_name_medium_sm),
-            '%s%s' % (media_path, self.file_name_small),
-            '%s%s' % (media_path, self.file_name_marker_lg),
-            '%s%s' % (media_path, self.file_name_marker_sm)
-        ]
-        for f in file_paths:
-            if os.path.exists(f) and f.find(settings.USER_MEDIA_DIR) > 0:
-                os.remove(f)
-
-        # 4) save pointers to new files in database:
-        self.file_name_large = photo_paths[0]
-        self.file_name_medium = photo_paths[1]
-        self.file_name_medium_sm = photo_paths[2]
-        self.file_name_small = photo_paths[3]
-        self.file_name_marker_lg = photo_paths[4]
-        self.file_name_marker_sm = photo_paths[5]
-        self.last_updated_by = user
-        self.time_stamp = get_timestamp_no_milliseconds()
+        # 3. Save:
         self.save()
 
-    @classmethod
-    def read_exif_data(cls, im):
+    def read_exif_data(self, im):
         from PIL.ExifTags import TAGS
         from datetime import datetime
         try:
@@ -197,8 +159,13 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
             decoded = TAGS.get(tag, tag)
             d[decoded] = value
         '''
-        keys = ['DateTimeOriginal', 'DateTimeDigitized', 'DateTime', 'Model',
-                'Orientation', 'GPSInfo']
+        keys = ['DateTimeOriginal',
+                'DateTimeDigitized',
+                'DateTime',
+                'Model',
+                'Orientation',
+                'GPSInfo'
+               ]
         '''
         return_dict = {}
         if d.get('GPSInfo') is not None:

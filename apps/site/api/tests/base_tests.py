@@ -61,12 +61,12 @@ class ViewMixinAPI(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
+            print url
             func = resolve(url).func
             func_name = '{}.{}'.format(func.__module__, func.__name__)
             view_name = '{}.{}'.format(
                 self.view.__module__,
                 self.view.__name__)
-            # print url, func_name, view_name
             self.assertEqual(func_name, view_name)
 
     def test_check_metadata(self):
@@ -81,7 +81,6 @@ class ViewMixinAPI(ModelMixin):
                 fields = response.data['actions'].get('PUT') or \
                          response.data['actions'].get('POST')
             except (Exception):
-                # print('no PUT or POST')
                 return
 
             # ensure that dictionary is not empty:

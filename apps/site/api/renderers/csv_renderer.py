@@ -68,7 +68,6 @@ class CSVRenderer(renderers.BaseRenderer):
                     row[header] = child[k]
                 del row[key]
 
-
     def render(self, data, media_type=None, renderer_context=None):
         """
         Renders serialized data into CSV. For a dictionary:

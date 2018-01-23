@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.conf import settings
 from django.http import Http404
 from localground.apps.lib.helpers import classproperty
 from django.contrib.contenttypes.models import ContentType
@@ -40,8 +41,8 @@ class Base(models.Model):
             raise Exception(
                 'Either model_name or model_name_plural is required here.')
 
-        from django.db.models import loading
-        models = loading.get_models()
+        from django.apps import apps
+        models = apps.get_models()
         if model_name_plural:
             for m in models:
                 try:
@@ -153,6 +154,13 @@ class BaseAudit(Base):
                                       db_column='last_updated')
     filter_fields = Base.filter_fields + \
         ('date_created', 'time_stamp', 'owner')
+
+    def get_storage_location(self):
+        return '/{0}/{1}/{2}/'.format(
+            settings.AWS_S3_MEDIA_BUCKET,
+            self.owner.username,
+            self.model_name_plural
+        )
 
     @classmethod
     def get_filter_fields(cls):

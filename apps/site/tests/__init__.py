@@ -11,6 +11,7 @@ import json
 from localground.apps.site import models
 from django.core import serializers
 from localground.apps.lib.helpers import generic
+from django.core.files import File
 
 
 """
@@ -18,6 +19,7 @@ Hacky workaround - fixtures are deprecated, so I'm manually loading them here
 TODO: move fixture loading into actual python code, probably
 This is super duper slow and dumb
 """
+
 fixture_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '../../fixtures'))
 fixture_filenames = ['test_data.json']  # 'database_initialization.json',
@@ -111,6 +113,15 @@ class ModelMixin(object):
                 username=user.username,
                 password=self.user_password)
             self._client_user.cookies['csrftoken'] = self.csrf_token
+        return self._client_user
+
+    def get_client_user(self, user):
+        #if self._client_user is None:
+        self._client_user = Client(enforce_csrf_checks=True)
+        self._client_user.login(
+            username=user.username,
+            password=self.user_password)
+        self._client_user.cookies['csrftoken'] = self.csrf_token
         return self._client_user
 
     @property
@@ -280,9 +291,9 @@ class ModelMixin(object):
         return m
 
     def create_marker_w_attrs(
-        self, user=None, project=None,
-        name="Test Marker With Attrs", geoJSON=None, point=None,
-        extras={"random key": "random value"}, tags=[], form=None):
+            self, user=None, project=None,
+            name="Test Marker With Attrs", geoJSON=None, point=None,
+            extras={"random key": "random value"}, tags=[], form=None):
         from localground.apps.site import models
         geom = None
         user = user or self.user
@@ -358,6 +369,7 @@ class ModelMixin(object):
         p.save()
         return p
 
+    '''
     def create_print(self, layout_id=1, map_provider=1,
                      lat=55, lng=61.4, zoom=17,
                      map_title='A title',
@@ -365,6 +377,7 @@ class ModelMixin(object):
                      tags=[], generate_pdf=True):
         from localground.apps.site import models
         from django.contrib.gis.geos import Point
+        uuid = generic.generateID()
         p = models.Print.insert_print_record(
             self.user,
             self.project,
@@ -380,7 +393,84 @@ class ModelMixin(object):
         p.tags = tags
         p.save()
         if generate_pdf:
-            p.generate_pdf()
+            # This comes straight from print serializer
+            # because it is needed to work for test data
+
+            # create the instance with valid data
+            # the problem is that how can I get a uuid for use in test?
+
+            # create the report and save
+            pdf_report = p.generate_pdf()
+            pdf_file_path = pdf_report.path + '/' + pdf_report.file_name
+            thumb_file_path = pdf_report.path + '/' + 'thumbnail.jpg'
+            p.pdf_path_S3.save(
+                pdf_report.file_name, File(open(pdf_file_path)))
+            p.map_image_path_S3.save(
+                'thumbnail_' + uuid + '.jpg', File(open(thumb_file_path)))
+        return p
+    '''
+
+    def create_print(self, layout_id=1, map_provider=1,
+                     lat=55, lng=61.4, zoom=17,
+                     map_title='A title',
+                     instructions='A description',
+                     tags=[], generate_pdf=True):
+        from localground.apps.site import models
+        from django.contrib.gis.geos import Point
+        uuid = generic.generateID()
+        p = models.Print.insert_print_record(
+            self.user,
+            self.project,
+            models.Layout.objects.get(id=layout_id),
+            models.TileSet.objects.get(id=map_provider),
+            zoom,
+            Point(lng, lat, srid=4326),
+            settings.SERVER_HOST,
+            map_title=map_title,
+            instructions=instructions,
+            mapimage_ids=None
+        )
+        d = {
+            'uuid': p.uuid,
+            'virtual_path': p.virtual_path,
+            'layout': models.Layout.objects.get(id=layout_id),
+            'name': 'Map Title!',
+            'description': 'Instructions!!!',
+            'map_provider': models.TileSet.objects.get(id=map_provider),
+            'zoom': 10,
+            'center': Point(lng, lat, srid=4326),
+            'project': self.project,
+            'northeast': p.northeast,
+            'southwest': p.southwest,
+            'extents': p.extents,
+            'host': p.host,
+            'map_image_path': p.map_image_path,
+            'pdf_path': p.pdf_path,
+            'preview_image_path': p.preview_image_path,
+            'map_width': p.map_width,
+            'map_height': p.map_height
+        }
+        p.tags = tags
+        p.save()
+        if generate_pdf:
+            # This comes straight from print serializer
+            # because it is needed to work for test data
+
+            # create the instance with valid data
+            # the problem is that how can I get a uuid for use in test?
+
+            # create the report and save
+            pdf_report = p.generate_pdf()
+            pdf_file_path = pdf_report.path + '/' + pdf_report.file_name
+            thumb_file_path = pdf_report.path + '/' + 'thumbnail.jpg'
+            p.pdf_path_S3.save(
+                pdf_report.file_name, File(open(pdf_file_path)))
+            print pdf_file_path
+            print p.pdf_path_S3.url
+            p.map_image_path_S3.save(
+                'thumbnail_' + uuid + '.jpg', File(open(thumb_file_path)))
+            print thumb_file_path
+            print p.map_image_path_S3.url
         return p
 
     def create_form(self, name='A title',
@@ -532,9 +622,28 @@ class ModelMixin(object):
         photo.save()
         return photo
 
+    def create_icon(self, user, project, icon_file='icon.jpg', name='test_icon', file_type='jpg', size=100, width=100, height=100, anchor_x=30, anchor_y=50):
+        from localground.apps.site import models
+        icon = models.Icon(
+            project=project,
+            owner=user,
+            last_updated_by=user,
+            file_name_orig=icon_file,
+            name=name,
+            file_type=file_type,
+            size=size,
+            width=width,
+            height=height,
+            anchor_x=anchor_x,
+            anchor_y=anchor_y
+        )
+        icon.save()
+        return icon
+
     def create_video(self, user=None, project=None, name='Video Name',
                      provider='youtube', video_id='4232534',
                      point=None, tags=[]):
+
         from localground.apps.site import models
         user = user or self.user
         project = project or self.project
@@ -560,16 +669,18 @@ class ModelMixin(object):
         project = project or self.project
         audio = models.Audio(
             project=project,
-            host=settings.SERVER_HOST,
+            # host=settings.SERVER_HOST,
             owner=user,
             last_updated_by=user,
             name=name,
             description='Audio Description',
+            # Unsure on what to do with filename orig
+            # besides being used for audio tests
             file_name_orig=file_name,
-            file_name_new='new.wav',
+            # file_name_new='new.jpg',
             tags=tags,
-            point=point,
-            virtual_path='/userdata/media/' + user.username + '/audio/'
+            point=point
+            # virtual_path='/userdata/media/' + user.username + '/audio/'
         )
         audio.save()
         return audio
@@ -578,17 +689,18 @@ class ModelMixin(object):
         from localground.apps.site.models import StyledMap
         from django.contrib.gis.geos import GEOSGeometry
         map = models.StyledMap(
-            center= GEOSGeometry('POINT(5 23)'),
+            center=GEOSGeometry('POINT(5 23)'),
             zoom=3,
             last_updated_by=self.user,
-            owner = self.user,
-            project = self.project,
+            owner=self.user,
+            project=self.project,
             name='Oakland Map'
         )
         map.save()
         return map
 
-    def create_relation(self, source_model, attach_model, ordering=1, turned_on=False):
+    def create_relation(
+            self, source_model, attach_model, ordering=1, turned_on=False):
         from localground.apps.site import models
         r = models.GenericAssociation(
             source_type=type(source_model).get_content_type(),
@@ -622,8 +734,9 @@ class ModelMixin(object):
             source_id=source_model.id
         ).first()
 
+
 class ViewAnonymousMixin(ModelMixin):
-    #fixtures = ['test_data.json']
+    # fixtures = ['test_data.json']
 
     def setUp(self, load_fixtures=False):
         ModelMixin.setUp(self, load_fixtures=load_fixtures)
@@ -632,7 +745,7 @@ class ViewAnonymousMixin(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
-            #print url
+            # print url
             response = self.client_user.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -648,8 +761,9 @@ class ViewAnonymousMixin(ModelMixin):
             # print url, func_name, view_name
             self.assertEqual(func_name, view_name)
 
+
 class ViewMixin(ViewAnonymousMixin):
-    #fixtures = ['test_data.json']
+    # fixtures = ['test_data.json']
 
     def setUp(self, load_fixtures=False):
         ViewAnonymousMixin.setUp(self, load_fixtures=load_fixtures)

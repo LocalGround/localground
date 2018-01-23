@@ -9,6 +9,7 @@ from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 from rest_framework import status
+from django.core.files import File
 
 
 def get_metadata():
@@ -17,19 +18,20 @@ def get_metadata():
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False,
                          'type': 'field'},
-        'file_path': {'read_only': True, 'required': False, 'type': 'field'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         "caption": {"type": "memo", "required": False, "read_only": False},
-        "file_path_orig": {"type": "field", "required": False,
-                           "read_only": True},
         "attribution": {"type": "string", "required": False,
                         "read_only": False},
-        "file_name": {"type": "string", "required": False, "read_only": True},
-        "media_file": {"type": "string", "required": True, "read_only": False},
+        "media_file": {"type": "string", "required": True,
+                       "read_only": False},
+        "file_path": {"type": "field", "required": False,
+                      "read_only": True},
+        "file_path_orig": {"type": "field", "required": False,
+                           "read_only": True},
         'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
 
@@ -39,6 +41,30 @@ ExtrasGood = '''{
     "video": "youtube.com",
     "order": 5
 }'''
+
+
+def makeTmpFile():
+    import wave
+    import random
+    import struct
+
+    # Create dummy audio file:
+    tmp_file = open('/tmp/test.wav', 'w')
+    noise_output = wave.open(tmp_file, 'w')
+    noise_output.setparams((2, 2, 44100, 0, 'NONE', 'not compressed'))
+    values = []
+    SAMPLE_LEN = 44100 * 5
+
+    for i in range(0, SAMPLE_LEN):
+        value = random.randint(-32767, 32767)
+        packed_value = struct.pack('h', value)
+        values.append(packed_value)
+        values.append(packed_value)
+
+    value_str = ''.join(values)
+    noise_output.writeframes(value_str)
+    noise_output.close()
+    return tmp_file
 
 
 class ApiAudioListTest(test.TestCase, ViewMixinAPI):
@@ -65,28 +91,14 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_audio_using_post(self, **kwargs):
-        import tempfile
-        tmp_file = tempfile.NamedTemporaryFile(suffix='.wav')
-        noise_output = wave.open(tmp_file, 'w')
-        noise_output.setparams((2, 2, 44100, 0, 'NONE', 'not compressed'))
-        values = []
-        SAMPLE_LEN = 44100 * 5
-
-        for i in range(0, SAMPLE_LEN):
-            value = random.randint(-32767, 32767)
-            packed_value = struct.pack('h', value)
-            values.append(packed_value)
-            values.append(packed_value)
-
-        value_str = ''.join(values)
-        noise_output.writeframes(value_str)
-        noise_output.close()
+        tmp_file = makeTmpFile()
+        f = File(open('/tmp/test.wav'))
         author_string = 'Author of the media file'
         with open(tmp_file.name, 'rb') as data:
             response = self.client_user.post(
                 self.urls[0], {
                     'project_id': self.project.id,
-                    'media_file': data,
+                    'media_file': f,
                     'attribution': author_string,
                     'extras': ExtrasGood
                 },
@@ -104,18 +116,16 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(file_name, new_audio.file_name_orig)
             # ensure not empty:
             self.assertTrue(len(new_audio.file_name_new) > 5)
-            self.assertEqual(settings.SERVER_HOST, new_audio.host)
-            self.assertNotEqual(path.find('/userdata/media/{0}/audio/'.format(
-                self.user.username)), -1)
-            self.assertNotEqual(path.find(new_audio.host), -1)
-            self.assertTrue(len(path) > 50)
 
 
 class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self, load_fixtures=True)
-        self.audio = models.Audio.objects.get(id=1)
+        ViewMixinAPI.setUp(self)
+        self.audio = self.create_audio()
+        tmp_file = makeTmpFile()
+        f = File(open('/tmp/test.wav'))
+        self.audio.process_file(f)
         self.url = '/api/0/audio/%s/' % self.audio.id
         self.urls = [self.url]
         self.view = views.AudioInstance.as_view()

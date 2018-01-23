@@ -39,7 +39,7 @@ define([
                     "col_name": "datetime_test",
                     "ordering": 1,
                     "data_type": "date-time",
-                    "url": "http://localhost:7777/api/0/forms/1/fields/1",
+                    "url": "http://localhost:7777/api/0/datasets/1/fields/1",
                     "val": t
                 }]
             });

@@ -1,56 +1,47 @@
-import os
-from django.conf import settings
-from localground.apps.site.api.serializers.base_serializer import MediaGeometrySerializer, GeometrySerializer
-from localground.apps.site.api.fields import FileField
+from localground.apps.site.api.serializers.base_serializer import \
+    MediaGeometrySerializerNew
 from rest_framework import serializers
 from localground.apps.site import models
-from localground.apps.lib.helpers import get_timestamp_no_milliseconds, \
-    upload_helpers
+from localground.apps.lib.helpers import upload_helpers
 
 
-class AudioSerializer(MediaGeometrySerializer):
-    ext_whitelist = ['m4a', 'mp3', 'mp4', 'mpeg', '3gp', 'aif', 'aiff', 'ogg', 'wav']
-    file_path = serializers.SerializerMethodField('get_file_path_new')
-    media_file = serializers.CharField(
-        source='file_name_orig', required=True, style={'base_template': 'file.html'},
-        help_text='Valid file types are: ' + ', '.join(ext_whitelist)
-    )
-    
+class AudioSerializer(MediaGeometrySerializerNew):
+    file_path = serializers.SerializerMethodField()
+    file_path_orig = serializers.SerializerMethodField()
+    ext_whitelist = [
+        'm4a', 'mp3', 'mp4', 'mpeg', '3gp', 'aif', 'aiff', 'ogg', 'wav'
+    ]
+
+    def get_file_path(self, obj):
+        return obj.media_file.url
+
+    def get_file_path_orig(self, obj):
+        return obj.media_file_orig.url
+
+    class Meta:
+        model = models.Audio
+        fields = MediaGeometrySerializerNew.Meta.fields + \
+            ('file_path', 'file_path_orig')
+        depth = 0
+
     def create(self, validated_data):
         # Overriding the create method to handle file processing
         owner = self.context.get('request').user
         f = self.initial_data.get('media_file')
-        
+
         # ensure filetype is valid:
         upload_helpers.validate_file(f, self.ext_whitelist)
-        
-        # save it to disk
-        extras = models.Audio.process_file(
-            f, owner, name=self.initial_data.get('name')
-        )
-        extras.update(self.get_presave_create_dictionary())
-        extras.update({
-            'attribution': validated_data.get('attribution') or owner.username,
-            'host': settings.SERVER_HOST
+
+        self.validated_data.update(self.get_presave_create_dictionary())
+        self.validated_data.update({
+            'attribution': validated_data.get('attribution') or owner.username
         })
-        validated_data = {}
-        validated_data.update(self.validated_data)
-        validated_data.update(extras)
-        self.instance = self.Meta.model.objects.create(**validated_data)
+        self.instance = self.Meta.model.objects.create(**self.validated_data)
+        self.instance.process_file(f)
         return self.instance
-
-    class Meta:
-        model = models.Audio
-        fields = MediaGeometrySerializer.Meta.fields + \
-            ('file_path', )
-        depth = 0
-
-    def get_file_path_new(self, obj):
-        return obj.encrypt_url(obj.file_name_new)
 
 
 class AudioSerializerUpdate(AudioSerializer):
     media_file = serializers.CharField(
         source='file_name_orig', required=False, read_only=True
     )
-

@@ -33,7 +33,6 @@ define([
         template: Handlebars.compile(ToolbarTemplate),
 
         templateHelpers: function () {
-            console.log(this.app.screenType);
             return {
                 mode: this.app.mode,
                 dataType: this.app.dataType,

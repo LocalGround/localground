@@ -34,7 +34,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 if (this.collection && this.collection.url) {
                     this.baseURL = this.collection.url();
                 } else if (opts.id) {
-                    this.baseURL = '/api/0/forms/' + opts.id + '/fields/';
+                    this.baseURL = '/api/0/datasets/' + opts.id + '/fields/';
                 } else if (opts.form) {
                     this.form =  opts.form;
                 } else {

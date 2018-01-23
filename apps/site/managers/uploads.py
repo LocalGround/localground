@@ -93,6 +93,22 @@ class VideoManager(models.GeoManager, VideoMixin):
     pass
 
 
+class IconManager(models.GeoManager, UploadMixin):
+     def get_objects_public(self, request=None, ordering_field='name', **kwargs):
+        '''
+        This returns all generic icons that are owned by the system
+        '''
+        q = self.model.objects.filter(owner__id=1)
+        if request is not None:
+            q = self._apply_sql_filter(q, request, context)
+        if ordering_field:
+            q = q.order_by(ordering_field)
+        return q
+
+     def get_project_icons(self, request=None, ordering_field='name', **kwargs):
+         pass
+
+
 class RecordMixin(UploadMixin, MarkerMixin):
 
     def _get_objects(self, user, authority_id, project=None, request=None,

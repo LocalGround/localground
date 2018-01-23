@@ -8,11 +8,14 @@ from localground.apps.site.models.abstract.mixins import ExtentsMixin, \
 # layers
 from localground.apps.site.models.layer import Layer
 
+from localground.apps.site.models.icon import Icon
+
 # lookups
 from localground.apps.site.models.lookups import StatusCode, UploadSource, \
     UploadType, ErrorCode, ObjectTypes
 
 # overlays
+
 from localground.apps.site.models.record import Record
 from localground.apps.site.models.tileset import OverlaySource, \
     OverlayType, TileSet
@@ -41,3 +44,6 @@ from localground.apps.site.models.video import Video
 
 # styled map
 from localground.apps.site.models.styledmap import StyledMap
+
+# document
+from localground.apps.site.models.document import Document

@@ -4,6 +4,9 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import ArrayField
 from localground.apps.lib.helpers import upload_helpers
 import operator
+from PIL import Image
+from StringIO import StringIO
+import ImageOps
 '''
 This file contains the following mixins:
     * PointMixin
@@ -46,6 +49,7 @@ class PointMixin(models.Model):
         self.last_updated_by = user
         self.save()
 
+
 class ExtentsMixin(models.Model):
     """
     abstract class for uploads with lat/lng references.
@@ -57,7 +61,7 @@ class ExtentsMixin(models.Model):
 
     @property
     def geometry(self):
-        return self.extents
+        return self.center
 
     def remove_extents(self, user):
         self.extents = None
@@ -200,6 +204,7 @@ class NamedMixin(models.Model):
 
 
 class MediaMixin(models.Model):
+    # TODO: deprecate host and virtual_path
     host = models.CharField(max_length=255)
     virtual_path = models.CharField(max_length=255)
     file_name_orig = models.CharField(max_length=255)
@@ -219,6 +224,33 @@ class MediaMixin(models.Model):
         related_query_name="%(app_label)s_%(class)s_related"
     )
     filter_fields = ('id', 'project', 'date_created', 'file_name_orig',)
+
+    def pil_to_django_file(self, im, file_name):
+        from django.core.files.uploadedfile import InMemoryUploadedFile
+        str_io = StringIO()
+        im.save(str_io, format='JPEG')
+        thumb_file = InMemoryUploadedFile(
+            str_io, None, file_name, 'image/jpeg', str_io.len, None)
+        return thumb_file
+
+    def django_file_field_to_pil(self, file_field):
+        import urllib
+        import cStringIO
+        # Retrieve our source image from a URL
+        fp = urllib.urlopen(file_field.url)
+
+        # Load the URL data into an image
+        s = cStringIO.StringIO(fp.read())
+
+        return Image.open(s)
+
+    def django_file_to_pil(self, file):
+        import cStringIO
+        output = cStringIO.StringIO()
+        for chunk in file.chunks():
+            output.write(chunk)
+        output.seek(0)
+        return Image.open(output)
 
     class Meta:
         abstract = True

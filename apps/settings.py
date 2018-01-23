@@ -4,12 +4,16 @@ import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-#GDAL_LIBRARY_PATH = os.environ.get('GDAL_PATH', '/usr/lib/libgdal.so')     #replace with your GDAL path
+# replace with your GDAL path
+# GDAL_LIBRARY_PATH = os.environ.get('GDAL_PATH', '/usr/lib/libgdal.so')
+
 
 ADMINS = (
-    ('Jane Admin', os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com')),
+    ('Jane Admin', os.environ.get(
+        'ADMIN_EMAIL_ADDRESS', 'email@yoursite.com')),
 )
-DEFAULT_FROM_EMAIL = '"Site Support" <%s>' % os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com')
+DEFAULT_FROM_EMAIL = '"Site Support" <%s>' % \
+    os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com')
 ADMIN_EMAILS = [os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com'), ]
 EMAIL_HOST = os.environ.get('HOST', '127.0.0.1')
 EMAIL_PORT = os.environ.get('EMAIL_PORT', '25')
@@ -24,7 +28,6 @@ ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE = False
 ACCOUNT_ACTIVATION_DAYS = 5
 SESSION_COOKIE_NAME = 'sessionid'
 
-#TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Custom Local Variables
@@ -46,37 +49,47 @@ FONT_ROOT = '%s/assets/fonts/' % STATIC_ROOT
 TEMP_DIR = '%s/tmp/' % FILE_ROOT
 QR_READER_PATH = '%s/lib/barcodereader' % APPS_ROOT
 
-TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR
+TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % \
+    STATIC_MEDIA_DIR
 
 # From Google Developer Console:
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'YOUR_CLIENT_KEY'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'YOUR_SECRET'
-MAPBOX_API_KEY = None #'YOUR_MAPBOX_KEY'
+MAPBOX_API_KEY = None  # 'YOUR_MAPBOX_KEY'
+AWS_ACCESS_KEY_ID = 'YOUR_AWS_ACCESS_KEY_ID'
+AWS_SECRET_ACCESS_KEY = 'YOUR_AWS_SECRET_ACCESS_KEY'
+AWS_STORAGE_BUCKET_NAME = 'YOUR_AWS_STORAGE_BUCKET_NAME'
+AWS_S3_MEDIA_BUCKET = 'media'
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
-#SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
+# SWAMP_DRAGON_CONNECTION = (
+#    'swampdragon.connections.sockjs_connection.DjangoSubscriberConnection',
+#    '/data')
 
 DEFAULT_BASEMAP_ID = 12
 
-#OS variables:
-USER_ACCOUNT = os.environ.get('USER', 'linux-user-account')     #account to use for creating new OS files / directories
-GROUP_ACCOUNT = os.environ.get('USER', 'linux-user-group')    #group to use for creating new OS files / directories
+# OS variables:
+# account to use for creating new OS files / directories
+USER_ACCOUNT = os.environ.get('USER', 'linux-user-account')
+# group to use for creating new OS files / directories
+GROUP_ACCOUNT = os.environ.get('USER', 'linux-user-group')
 
-FILE_UPLOAD_MAX_MEMORY_SIZE = 4621440                       #default is 2621440
+FILE_UPLOAD_MAX_MEMORY_SIZE = 4621440  # default is 2621440
 IS_GOOGLE_REGISTERED_NONPROFIT = False
 
 
 MANAGERS = ADMINS
 AUTH_PROFILE_MODULE = 'site.UserProfile'
 
-DB_HOST = os.environ.get('DB_HOST', '127.0.0.1')               #Your Database Host
-DB_PORT = os.environ.get('DB_PORT', '5432')                    #Your Database Port
-DB_USER = os.environ.get('DB_USER', 'DB_USER')         #Your Database Username
-DB_PASSWORD = os.environ.get('DB_PASSWORD', 'DB_PASSWORD')     #Your Database Password
-DB_NAME = os.environ.get('DB_NAME', 'DB_NAME')             #Your Database Name
+DB_HOST = os.environ.get('DB_HOST', '127.0.0.1')    # Your Database Host
+DB_PORT = os.environ.get('DB_PORT', '5432')         # Your Database Port
+DB_USER = os.environ.get('DB_USER', 'DB_USER')      # Your Database Username
+DB_PASSWORD = os.environ.get('DB_PASSWORD', 'DB_PASSWORD')  # Your DB Password
+DB_NAME = os.environ.get('DB_NAME', 'DB_NAME')      # Your Database Name
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis', #Code works w/PostGIS
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': DB_NAME,
         'USER': DB_USER,
         'PASSWORD': DB_PASSWORD,
@@ -94,10 +107,11 @@ DATABASES = {
 # system time zone.
 TIME_ZONE = 'UTC'
 
-DATE_INPUT_FORMATS = ('%m/%d/%Y', '%Y-%m-%d', '%m/%d/%y', '%m-%d-%y', '%m-%d-%Y')
+DATE_INPUT_FORMATS = (
+    '%m/%d/%Y', '%Y-%m-%d', '%m/%d/%y', '%m-%d-%y', '%m-%d-%Y')
 TIME_INPUT_FORMATS = ('%I:%M:%S %p', '%H:%M:%S', '%H:%M')
 
-#dynamically build datetime formats from tuples above:
+# dynamically build datetime formats from tuples above:
 DATETIME_INPUT_FORMATS = []
 for date_format in DATE_INPUT_FORMATS:
     for time_format in TIME_INPUT_FORMATS:
@@ -146,7 +160,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
-    'localground.apps.middleware.context_processors.persistant_queries', #for our application-level context objects
+    # for our application-level context objects
+    'localground.apps.middleware.context_processors.persistant_queries',
     'social.apps.django_app.context_processors.backends',
     'social.apps.django_app.context_processors.login_redirect',
 )
@@ -174,9 +189,6 @@ ROOT_URLCONF = 'localground.apps.site.urls'
 TEMPLATE_DIRS = (
     '%s/templates' % APPS_ROOT,
 )
-#FIXTURE_DIRS = (
-#    '%s/fixtures' % APPS_ROOT,
-#)
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -193,13 +205,15 @@ INSTALLED_APPS = (
     'localground.apps',
     'localground.apps.management',
     'localground.apps.site',
-    #'localground.apps.registration',        #taken from the django-registration module
-    'tagging',                              #for tagging of blog posts in Django
+    # taken from the django-registration module
+    # 'localground.apps.registration',
+    'tagging',  # for tagging of blog posts in Django
     'django.contrib.admin',
     'rest_framework',
     'corsheaders',
     'djcelery',
     'social.apps.django_app.default',
+    'storages',
     'django.contrib.postgres',
 )
 
@@ -208,7 +222,8 @@ REST_FRAMEWORK = {
     'PAGINATE_BY': 10,
     'PAGINATE_BY_PARAM': 'page_size',
     'MAX_PAGINATE_BY': 8000,
-    'DEFAULT_METADATA_CLASS': 'localground.apps.site.api.metadata.CustomMetadata',
+    'DEFAULT_METADATA_CLASS':
+        'localground.apps.site.api.metadata.CustomMetadata',
     'DEFAULT_RENDERER_CLASSES': (
         'localground.apps.site.api.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
@@ -229,10 +244,10 @@ REST_FRAMEWORK = {
     # Commenting out authentication classes for now. It was throwing a
     # really weird error for shared projects
     #
-    #'DEFAULT_AUTHENTICATION_CLASSES': (
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
     #    'rest_framework.authentication.BasicAuthentication',
     #    'rest_framework.authentication.SessionAuthentication',
-    #),
+    # ),
     'TEST_REQUEST_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'localground.apps.site.api.renderers.GeoJSONRenderer',
@@ -240,7 +255,9 @@ REST_FRAMEWORK = {
     )
 }
 '''
-SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
+SWAMP_DRAGON_CONNECTION = (
+    'swampdragon.connections.sockjs_connection.DjangoSubscriberConnection',
+    '/data')
 SWAMP_DRAGON_REDIS_PORT = 6379 #default
 SWAMP_DRAGON_PORT = 9999 #default
 DRAGON_URL='http://sd.localground.org:7777/' #remove port for prod
@@ -254,7 +271,9 @@ DRAGON_URL='http://sd.localground.org:7777/' #remove port for prod
 SWAMP_DRAGON = {'um': 'okay'}
 '''
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'localground.org', 'dev.localground.org', 'staging.localground.org']
+ALLOWED_HOSTS = [
+    '127.0.0.1', 'localhost', 'localground.org',
+    'dev.localground.org', 'staging.localground.org']
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_HEADERS = (
@@ -264,7 +283,7 @@ CORS_ALLOW_HEADERS = (
     'origin',
     'authorization',
     'x-csrftoken',
-    'accept-encoding' #needed for Safari to work
+    'accept-encoding'  # needed for Safari to work
 )
 
 ACCOUNT_ACTIVATION_DAYS = 7

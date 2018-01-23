@@ -258,7 +258,7 @@ define([
         render: function () {
             //re-render the child template:
             this.$el.empty().append(this.template({
-                children: this.model.get("children"),
+                media: this.model.get("media"),
                 featured_image: this.getFeaturedImage()
             }));
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
@@ -275,8 +275,8 @@ define([
                 that = this,
                 player,
                 $elem;
-            if (this.model.get("children") && this.model.get("children").audio) {
-                audio_attachments = this.model.get("children").audio.data;
+            if (this.model.get("media") && this.model.get("media").audio) {
+                audio_attachments = this.model.get("media").audio.data;
             }
             _.each(audio_attachments, function (item) {
                 $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];

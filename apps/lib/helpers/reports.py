@@ -40,7 +40,7 @@ class Report():
     gutter_size = 10
 
     def __init__(self, path, margin_x=48, margin_y=60, file_name='Untitled.pdf',
-                 is_landscape=False, author=None, title=None):
+                 file_name_S3='Untitled.pdf', is_landscape=False, author=None, title=None):
         self.path = path
         self.margin_x = self.origin_x = margin_x
         self.margin_y = self.origin_y = margin_y

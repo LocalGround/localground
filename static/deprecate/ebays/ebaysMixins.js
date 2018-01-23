@@ -2,7 +2,7 @@ localground.ebaysMixins = function(){ };
 
 localground.ebaysMixins.prototype.getAirQualityData = function(opts) {
 	var self = this;
-    $.getJSON('/api/0/forms/84/data/tracks/',
+    $.getJSON('/api/0/datasets/84/data/tracks/',
         function(result){
             self.tableManager = new localground.tableManager({
 				id: 84,

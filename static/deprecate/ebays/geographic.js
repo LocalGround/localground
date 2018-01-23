@@ -96,7 +96,7 @@ Map.prototype.get_icon = function(index, show_outline) {
 Map.prototype.render_data = function(val, idx) {
     var self = this;
     this.chart_id = 'chart_' + idx;
-    $.getJSON('/api/0/forms/84/data/.json',
+    $.getJSON('/api/0/datasets/84/data/.json',
         {
             'query': 'WHERE col_4 = \'' + val + '\'',
 	    'page_size': 8000

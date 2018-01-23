@@ -99,6 +99,13 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.PhotoList.as_view(),
         name='photo-list'),
     url(
+        r'^icons/(?P<pk>[0-9]+)/$',
+        views.IconInstance.as_view(),
+        name='icon-detail'),
+    url(r'^icons/$',
+        views.IconList.as_view(),
+        name='icon-list'),
+    url(
         r'^audio/(?P<pk>[0-9]+)/$',
         views.AudioInstance.as_view(),
         name='audio-detail'),
