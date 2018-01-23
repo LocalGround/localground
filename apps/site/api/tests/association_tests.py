@@ -298,7 +298,7 @@ class ApiRelatedMediaInstanceTest(
             updated_relation = models.GenericAssociation.objects.get(
                 id=relation.id
             )
-            print response.data
+            # print response.data
 
             # check that values have been updated:
             for key in params.keys():

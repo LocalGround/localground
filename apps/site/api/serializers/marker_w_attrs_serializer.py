@@ -42,7 +42,6 @@ class CustomDataTimeField(serializers.DateTimeField):
 class MarkerWAttrsSerializerMixin(GeometrySerializer):
     # update_metadata = serializers.SerializerMethodField()
     # url = serializers.HyperlinkedIdentityField(
-    #    view_name='markerwithattributes-detail', format='html')
     '''
     Hack: can't use HyperlinkSerializer field for URLs with two
     dynamic parameters because of DRF limitations. So, we'll build

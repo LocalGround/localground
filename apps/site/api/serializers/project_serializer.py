@@ -147,7 +147,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
 
     def get_markers(self, obj):
         return self.serialize_list(
-            models.Marker,
+            models.Record,
             MarkerSerializer,
             models.Record.objects.get_objects_with_lists(
                 project=obj,
@@ -166,17 +166,11 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
 
         serializer = serializer_class(
             records, many=True, context={'request': {}})
-        # if model_class == models.MarkerWithAttributes:
-        #     raise Exception(serializer.data)
+        
         d = {
             'id': model_name_plural,
             'name': name,
             'overlay_type': overlay_type,
             'data': serializer.data
         }
-        # d.update({
-        #     'update_metadata': self.get_metadata(serializer)
-        # })
-        # if model_class == models.MarkerWithAttributes:
-        #     raise Exception(d)
         return d

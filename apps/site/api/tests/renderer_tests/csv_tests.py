@@ -143,8 +143,8 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
             if not actual.get(key):
                 actual[key] = 0
             actual[key] += 1
-        print 'Expected', expected.keys()
-        print 'Actual', actual.keys()
+        # print 'Expected', expected.keys()
+        # print 'Actual', actual.keys()
         self.assertSetEqual(set(expected.keys()), set(actual.keys()))
         for key in expected.keys():
             self.assertEqual(expected[key], actual[key])
