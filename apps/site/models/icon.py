@@ -1,11 +1,9 @@
+import os
 from django.contrib.gis.db import models
 from localground.apps.site.models import ProjectMixin, BaseAudit, MediaMixin
 from localground.apps.site.managers import IconManager
 from localground.apps.lib.helpers import upload_helpers, generic
 from PIL import Image, ImageOps
-import os
-
-
 from localground.apps.site.fields import LGImageField
 
 
@@ -25,44 +23,45 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
     size = models.IntegerField(null=False, blank=False)
     width = models.FloatField(null=False, blank=False)
     height = models.FloatField(null=False, blank=False)
-    file_name_new = models.CharField(max_length=255)
-    file_name_resized = models.CharField(max_length=255)
     anchor_x = models.FloatField(null=False, blank=False)
     anchor_y = models.FloatField(null=False, blank=False)
-    objects = IconManager()
     # S3 File fields
     media_file_new = LGImageField(null=True)
     media_file_resized = LGImageField(null=True)
+    objects = IconManager()
+
+    def __init__(self, *args, **kwargs):
+        self.tmp_media_binary = None
+        self.tmp_resized_binary = None
+        super(Icon, self).__init__(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.remove_icons_from_s3()
+        super(Icon, self).delete(*args, **kwargs)
 
     def remove_icons_from_s3(self):
-        # eventual goal
-
         self.media_file_new.delete()
         self.media_file_resized.delete()
 
-    def process_file(self, file):
-        if not self.owner:
-            raise Exception('owner must be set')
-        file_name = file.name
-        print 'saving file to disk...'
-        file_name_new = upload_helpers.save_file_to_disk(
-            self.owner, "icons", file)
-        # self.media_file_new.save(file_name_new, file)
-        resized_icon_parameters = self.resize_icon(file_name_new)
+    def send_icons_to_s3(self):
+        self.media_file_new.save(
+            self.tmp_media_binary.name, self.tmp_media_binary)
+        self.media_file_resized.save(
+            self.tmp_resized_binary.name, self.tmp_resized_binary
+        )
 
-    def resize_icon(self, file_name_new):
-        if not self.owner:
-            raise Exception('owner must be set')
-        print 'resizing icon...'
-        file_name, ext = os.path.splitext(file_name_new)
+    def process_file(self, file):
+        # rename and temporarily store the binary file:
+        file.name = upload_helpers.simplify_filename(file)
+        self.tmp_media_binary = file
+
+        file_name, ext = os.path.splitext(file.name)
         file_type = ext.replace('.', '').lower()
         scale_ratio = 1.0
         if file_type == 'jpeg':
             file_type = 'jpg'
         file_name_resized = file_name + '_resized.' + file_type
-        media_path = upload_helpers.generate_absolute_path(
-            self.owner, "icons")
-        im = Image.open(media_path + '/' + file_name_new)
+        im = self.django_file_to_pil(file)
 
         # get largest and smallest value of image
         icon_max = max(im.size) * 1.0
@@ -87,7 +86,6 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
             scale_ratio = self.size_min / icon_min
         else:
             scale_ratio = 1.0
-        # print (size, icon_max, icon_min, scale_ratio)
         # check for case where resizing by scale ratio would make icon_max
         # too large. in this case, make icon small side as large as possible
         # while keeping icon big side in range
@@ -95,7 +93,6 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
             scale_ratio = self.size_max / icon_max
             size = size * scale_ratio
 
-        # raise Exception(size, scale_ratio)
         # resize icon if needed
         new_x = im.size[0]
         new_y = im.size[1]
@@ -103,8 +100,11 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
             new_x = int(round((im.size)[0] * scale_ratio))
             new_y = int(round((im.size)[1] * scale_ratio))
             im = im.resize((new_x, new_y), Image.ANTIALIAS)
-            abs_path = '%s/%s' % (media_path, file_name_resized)
-            im.save(abs_path)
+
+        self.tmp_resized_binary = self.pil_to_django_file(
+            im, file_name_resized
+        )
+        self.tmp_resized_binary.name = file_name_resized
         # set anchor point center of icon or user entered coordinates
         anchor_x = im.size[0] / 2.0
         anchor_y = im.size[1] / 2.0
@@ -112,26 +112,15 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
         validated_data_y = self.anchor_y
         if validated_data_x is not None and validated_data_x <= new_x:
             anchor_x = validated_data_x
-            # validated_data['anchor_x'] = anchor_x
         if validated_data_y is not None and validated_data_y <= new_y:
             anchor_y = validated_data_y
-            # validated_data['anchor_y'] = anchor_y
 
         self.width = im.size[0]
         self.height = im.size[1]
         self.anchor_x = anchor_x
         self.anchor_y = anchor_y
         self.size = size
-        self.file_name_new = file_name_new
-        self.file_name_resized = file_name_resized
         self.file_type = file_type
-
-    def delete(self, *args, **kwargs):
-        # eventual goal
-        # self.remove_icons_from_s3()
-
-        # execute default behavior
-        super(Icon, self).delete(*args, **kwargs)
 
     class Meta:
         app_label = 'site'

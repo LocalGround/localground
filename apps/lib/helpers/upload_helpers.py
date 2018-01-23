@@ -98,6 +98,13 @@ def simplify_file_name(file):
     return '{0}{1}'.format(file_name, ext)
 
 
+def simplify_filename(file):
+    file_name, ext = os.path.splitext(file.name.lower())
+    file_name = ''.join(
+        char for char in file_name if char.isalnum()).lower()
+    return '{0}{1}'.format(file_name, ext)
+
+
 def save_file_to_disk(owner, model_name_plural, file, uuid=None):
     # create directory if it doesn't exist:
     media_path = generate_absolute_path(owner, model_name_plural, uuid=uuid)

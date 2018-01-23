@@ -6,7 +6,6 @@ from localground.apps.site.api.serializers.base_serializer \
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.lib.helpers import upload_helpers, generic
-from localground.apps.site.api import fields
 
 
 class IconSerializerBase(BaseSerializer):
@@ -31,7 +30,7 @@ class IconSerializerBase(BaseSerializer):
 
     def get_file_path_new(self, obj):
         try:
-            return obj.media_file_new.url
+            return obj.media_file_resized.url
         except Exception:
             return None
 
@@ -74,15 +73,16 @@ class IconSerializerList(IconSerializerBase):
 
         })
         # create unsaved Icon instance
-        print 'Initializing instance...'
         self.instance = models.Icon(**self.validated_data)
 
         # Save it to Amazon S3 cloud
-        print 'Processing file...'
         self.instance.process_file(f)
 
         # Commit to database
         self.instance.save()
+
+        # Send binaries to Amazon:
+        self.instance.send_icons_to_s3()
         return self.instance
 
 

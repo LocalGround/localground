@@ -8,7 +8,6 @@ from localground.apps.site.models import ExtrasMixin, PointMixin, \
 from django.core.files import File
 import Image
 import ImageOps
-from StringIO import StringIO
 from localground.apps.site.fields import LGImageField
 
 
@@ -33,25 +32,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
     device = models.CharField(max_length=255, blank=True, null=True)
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
-
-    def pil_to_django_file(self, im, file_name):
-        from django.core.files.uploadedfile import InMemoryUploadedFile
-        str_io = StringIO()
-        im.save(str_io, format='JPEG')
-        thumb_file = InMemoryUploadedFile(
-            str_io, None, file_name, 'image/jpeg', str_io.len, None)
-        return thumb_file
-
-    def django_file_field_to_pil(self, file_field):
-        import urllib
-        import cStringIO
-        # Retrieve our source image from a URL
-        fp = urllib.urlopen(file_field.url)
-
-        # Load the URL data into an image
-        s = cStringIO.StringIO(fp.read())
-
-        return Image.open(s)
 
     def generate_thumbnail(self, im, size, file_name):
         if size in [50, 25]:
