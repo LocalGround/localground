@@ -191,7 +191,7 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.view = views.MarkerInstance.as_view()
         self.metadata = get_metadata()
         self.metadata.update({
-            'children': {'read_only': True, 'required': False,
+            'media': {'read_only': True, 'required': False,
                          'type': u'field'}
         })
 
@@ -304,8 +304,8 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.create_relation(self.marker, self.audio1)
 
         response = self.client_user.get(self.url)
-        self.assertEqual(len(response.data['children']['photos']['data']), 1)
-        self.assertEqual(len(response.data['children']['audio']['data']), 1)
+        self.assertEqual(len(response.data['media']['photos']['data']), 1)
+        self.assertEqual(len(response.data['media']['audio']['data']), 1)
 
         # clean up:
         self.delete_relation(self.marker, self.photo1)

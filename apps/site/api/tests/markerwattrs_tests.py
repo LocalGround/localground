@@ -24,7 +24,7 @@ def get_metadata():
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'},
         'form': {'read_only': True, 'required': False, 'type': 'field'},
-        'children': {'read_only': True, 'required': False, 'type': 'field'},
+        'media': {'read_only': True, 'required': False, 'type': 'field'},
         'attached_photos_ids': {
             'read_only': True, 'required': False, 'type': 'field'},
         'attached_audio_ids': {
@@ -582,8 +582,8 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.create_relation(self.markerwattrs, self.audio1)
 
         response = self.client_user.get(self.urls[0])
-        self.assertEqual(len(response.data['children']['photos']['data']), 1)
-        self.assertEqual(len(response.data['children']['audio']['data']), 1)
+        self.assertEqual(len(response.data['media']['photos']['data']), 1)
+        self.assertEqual(len(response.data['media']['audio']['data']), 1)
 
         # clean up:
         self.delete_relation(self.markerwattrs, self.photo1)
@@ -632,10 +632,10 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             response = self.client_user.get(self.list_url + '%s/' % marker_id)
 
             self.assertEqual(
-                response.data['children']['photos']['data'][0]['url'],
+                response.data['media']['photos']['data'][0]['url'],
                 "/api/0/photos/" + '%s/' % self.photo1.id)
             self.assertEqual(
-                response.data['children']['audio']['data'][0]['url'],
+                response.data['media']['audio']['data'][0]['url'],
                 "/api/0/audio/" + '%s/' % self.audio1.id)
 
             self.assertEqual(

@@ -44,8 +44,8 @@ class CSVMixin(mixins.MediaMixin):
                 headers = response.data['actions'].get('POST').keys()
             else:
                 headers = response.data['actions'].get('PUT').keys()
-                if 'children' in headers:
-                    headers.remove('children') #for instances
+                if 'media' in headers:
+                    headers.remove('media') #for instances
             if test_record.get('overlay_type') not in types_without_lat_lngs:
                 headers += ['lat', 'lng']
             if '/datasets/' not in url:
@@ -143,8 +143,8 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
             if not actual.get(key):
                 actual[key] = 0
             actual[key] += 1
-        # print 'Expected', expected.keys()
-        # print 'Actual', actual.keys()
+        print 'Expected', expected.keys()
+        print 'Actual', actual.keys()
         self.assertSetEqual(set(expected.keys()), set(actual.keys()))
         for key in expected.keys():
             self.assertEqual(expected[key], actual[key])

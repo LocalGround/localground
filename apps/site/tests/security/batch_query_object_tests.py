@@ -154,7 +154,7 @@ class BatchAudioQuerySecurityTest(test.TestCase, BatchQueryObjectMixin):
 
 
 class BatchMarkerQuerySecurityTest(test.TestCase, BatchQueryObjectMixin):
-    model = models.Marker
+    model = models.Record
 
     def setUp(self):
         BatchQueryObjectMixin.setUp(self)
