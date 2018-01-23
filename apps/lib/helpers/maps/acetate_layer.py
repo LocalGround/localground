@@ -226,7 +226,7 @@ a.generate_acetate_layer_with_map()
         layers = [
             models.Photo.objects.filter(project__id=self.project_id),
             models.Audio.objects.filter(project__id=self.project_id),
-            models.Marker.objects.filter(project__id=self.project_id)
+            models.Record.objects.filter(project__id=self.project_id)
         ]
         for form in forms:
             layers.append(form.get_records())

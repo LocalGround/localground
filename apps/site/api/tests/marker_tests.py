@@ -167,7 +167,7 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 if response.status_code != status.HTTP_201_CREATED:
                     print response.data
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-                new_marker = models.Marker.objects.all().order_by('-id',)[0]
+                new_marker = models.Record.objects.all().order_by('-id',)[0]
                 self.assertEqual(new_marker.name, name)
                 self.assertEqual(new_marker.description, description)
                 self.assertEqual(
@@ -191,7 +191,7 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.view = views.MarkerInstance.as_view()
         self.metadata = get_metadata()
         self.metadata.update({
-            'children': {'read_only': True, 'required': False,
+            'media': {'read_only': True, 'required': False,
                          'type': u'field'}
         })
 
@@ -242,7 +242,7 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded")
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
-                updated_marker = models.Marker.objects.get(id=self.marker.id)
+                updated_marker = models.Record.objects.get(id=self.marker.id)
                 result_json = response.data
                 self.assertEqual(updated_marker.name, name)
                 self.assertEqual(updated_marker.description, description)
@@ -268,7 +268,7 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                     content_type="application/x-www-form-urlencoded"
                 )
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
-                updated_marker = models.Marker.objects.get(id=self.marker.id)
+                updated_marker = models.Record.objects.get(id=self.marker.id)
                 self.assertEqual(
                     updated_marker.geometry,
                     GEOSGeometry(
@@ -278,7 +278,7 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         marker_id = self.marker.id
 
         # ensure marker exists:
-        models.Marker.objects.get(id=marker_id)
+        models.Record.objects.get(id=marker_id)
 
         # delete marker:
         response = self.client_user.delete(
@@ -289,11 +289,11 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
         # check to make sure it's gone:
         try:
-            models.Marker.objects.get(id=marker_id)
+            models.Record.objects.get(id=marker_id)
             # throw assertion error if marker still in database
             print 'Marker not deleted'
             self.assertEqual(1, 0)
-        except models.Marker.DoesNotExist:
+        except models.Record.DoesNotExist:
             # trigger assertion success if marker is removed
             self.assertEqual(1, 1)
 
@@ -304,8 +304,8 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.create_relation(self.marker, self.audio1)
 
         response = self.client_user.get(self.url)
-        self.assertEqual(len(response.data['children']['photos']['data']), 1)
-        self.assertEqual(len(response.data['children']['audio']['data']), 1)
+        self.assertEqual(len(response.data['media']['photos']['data']), 1)
+        self.assertEqual(len(response.data['media']['audio']['data']), 1)
 
         # clean up:
         self.delete_relation(self.marker, self.photo1)

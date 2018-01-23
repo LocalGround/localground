@@ -6,7 +6,7 @@ define(["jquery", "backbone",
         model: Form,
         name: 'Forms',
         key: 'forms',
-        url: '/api/0/forms/',
+        url: '/api/0/datasets/',
         parse: function (response) {
             return response.results;
         }

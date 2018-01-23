@@ -6,15 +6,8 @@ from rest_framework.response import Response
 from django.db import IntegrityError
 from rest_framework.serializers import ValidationError
 
-
 def get_group_model(model_type):
-    group_model = None
-    try:
-        form_id = int(model_type)
-        group_model = models.MarkerWithAttributes
-    except ValueError:
-        group_model = models.Marker
-    return group_model
+    return models.Record
 
 
 class RelatedMediaList(generics.ListCreateAPIView):

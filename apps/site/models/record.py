@@ -8,26 +8,26 @@ from localground.apps.site.models import PointMixin, ExtrasMixin, \
 from django.contrib.postgres.fields import HStoreField
 
 
-class MarkerWithAttributes(ExtrasMixin, PointMixin, ProjectMixin, NamedMixin,
+class Record(ExtrasMixin, PointMixin, ProjectMixin, NamedMixin,
              GenericRelationMixin, BaseAudit):
     """
-    Markers are association objects with a geometry (either point,
-    line, or polygon).  Markers can be associated with one or more photos,
+    Records are association objects with a geometry (either point,
+    line, or polygon).  Records can be associated with one or more photos,
     audio files, data records, etc.  This object needs
     to be re-factored to inherit from account/Group Model, since it's an
     association of other media objects (and should behave like a project or a view).
     """
     polyline = models.LineStringField(blank=True, null=True)
     polygon = models.PolygonField(blank=True, null=True)
-    form = models.ForeignKey('Form')
+    form = models.ForeignKey('Form', null=True)
 
     objects = MarkerManager()
     filter_fields = ('id', 'project', 'name', 'description', 'tags',)
     attributes = HStoreField(default={})
 
     class Meta:
-        verbose_name = 'marker with attributes'
-        verbose_name_plural = 'marker with attributes'
+        verbose_name = 'record'
+        verbose_name_plural = 'records'
         ordering = ['id']
         app_label = 'site'
 
@@ -37,8 +37,9 @@ class MarkerWithAttributes(ExtrasMixin, PointMixin, ProjectMixin, NamedMixin,
 
     def get_name(self):
         if self.name is None or len(self.name) == 0:
-            return 'Marker #%s' % (self.id)
+            return 'Record #%s' % (self.id)
         return self.name
 
     def __unicode__(self):
         return str(self.id)
+    

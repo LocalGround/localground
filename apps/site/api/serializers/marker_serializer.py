@@ -8,24 +8,25 @@ from localground.apps.site.api.metadata import CustomMetadata
 
 
 class MarkerSerializer(GeometrySerializer):
-    update_metadata = serializers.SerializerMethodField()
+    #update_metadata = serializers.SerializerMethodField()
     attached_photos_ids = serializers.SerializerMethodField()
     attached_audio_ids = serializers.SerializerMethodField()
     attached_videos_ids = serializers.SerializerMethodField()
     attached_map_images_id = serializers.SerializerMethodField()
+    overlay_type = serializers.SerializerMethodField()
 
     class Meta:
-        model = models.Marker
+        model = models.Record
         fields = GeometrySerializer.Meta.fields + (
-            'update_metadata', 'extras', 'attached_photos_ids',
+            'extras', 'attached_photos_ids',
             'attached_audio_ids', 'attached_videos_ids',
             'attached_map_images_id'
         )
         depth = 0
 
-    def get_update_metadata(self, obj):
-        m = CustomMetadata()
-        return m.get_serializer_info(self)
+    # def get_update_metadata(self, obj):
+    #     m = CustomMetadata()
+    #     return m.get_serializer_info(self)
 
     def get_attached_photos_ids(self, obj):
         try:
@@ -51,38 +52,41 @@ class MarkerSerializer(GeometrySerializer):
         except Exception:
             return None
 
+    def get_overlay_type(self, obj):
+        return 'marker'
+
 
 class MarkerSerializerDetail(MarkerSerializer):
 
     def __init__(self, *args, **kwargs):
         super(MarkerSerializer, self).__init__(*args, **kwargs)
 
-    children = serializers.SerializerMethodField()
+    media = serializers.SerializerMethodField()
 
     class Meta:
-        model = models.Marker
-        fields = MarkerSerializer.Meta.fields + ('children', )
+        model = models.Record
+        fields = MarkerSerializer.Meta.fields + ('media', )
         depth = 0
 
-    def get_children(self, obj):
+    def get_media(self, obj):
         from django.contrib.contenttypes.models import ContentType
         from localground.apps.site import models
 
-        children = {}
+        media = {}
         self.audio = self.get_audio(obj) or []
         self.photos = self.get_photos(obj) or []
         self.videos = self.get_videos(obj) or []
         self.map_images = self.get_map_images(obj) or []
         if self.audio:
-            children['audio'] = self.audio
+            media['audio'] = self.audio
         if self.photos:
-            children['photos'] = self.photos
+            media['photos'] = self.photos
         if self.videos:
-            children['videos'] = self.videos
+            media['videos'] = self.videos
         if self.map_images:
-            children['map_images'] = self.map_images
+            media['map_images'] = self.map_images
 
-        return children
+        return media
 
     def get_photos(self, obj):
         from localground.apps.site.api.serializers import PhotoSerializer

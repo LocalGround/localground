@@ -49,7 +49,7 @@ class MarkerWAttrsGeometryMixin(object):
 
     def get_queryset(self):
         #raise Exception(dir(self.request))
-        return models.MarkerWithAttributes.objects \
+        return models.Record.objects \
                              .get_objects_with_lists(self.kwargs.get('form_id'))
 
 

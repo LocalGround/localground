@@ -24,7 +24,7 @@ def get_metadata():
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'},
         'form': {'read_only': True, 'required': False, 'type': 'field'},
-        'children': {'read_only': True, 'required': False, 'type': 'field'},
+        'media': {'read_only': True, 'required': False, 'type': 'field'},
         'attached_photos_ids': {
             'read_only': True, 'required': False, 'type': 'field'},
         'attached_audio_ids': {
@@ -405,7 +405,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         for marker_id in mwa_ids:
 
             # first just check for some pre-existing default data
-            marker = models.MarkerWithAttributes.objects.get(id=marker_id)
+            marker = models.Record.objects.get(id=marker_id)
             '''
             self.assertEqual(
                 json.loads(marker.geometry.geojson),
@@ -442,7 +442,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 new_data_item)
 
             # finally, check that other fields are replaced (nulled)
-            marker = models.MarkerWithAttributes.objects.get(id=marker_id)
+            marker = models.Record.objects.get(id=marker_id)
             self.assertEqual(marker.description, 'None')
             self.assertEqual(response.data['caption'], 'None')
             '''
@@ -468,7 +468,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         for marker_id in mwa_ids:
 
             # first just check for some pre-existing default data
-            marker = models.MarkerWithAttributes.objects.get(id=marker_id)
+            marker = models.Record.objects.get(id=marker_id)
             self.assertEqual(
                 json.loads(marker.geometry.geojson),
                 self.Point
@@ -501,7 +501,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 new_data_item)
 
             # finally, check that other fields have not been replaced (nulled)
-            marker = models.MarkerWithAttributes.objects.get(id=marker_id)
+            marker = models.Record.objects.get(id=marker_id)
             self.assertEqual(marker.description, 'this is the caption text')
             self.assertEqual(
                 response.data['caption'], 'this is the caption text')
@@ -544,7 +544,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                     content_type="application/x-www-form-urlencoded"
                 )
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
-                updated_marker = models.MarkerWithAttributes.objects.get(
+                updated_marker = models.Record.objects.get(
                     id=self.markerwattrs.id)
                 self.assertEqual(
                     updated_marker.geometry,
@@ -556,7 +556,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         form_id = self.markerwattrs.form.id
 
         # ensure marker exists:
-        models.MarkerWithAttributes.objects.get(id=marker_id)
+        models.Record.objects.get(id=marker_id)
 
         # delete marker:
         response = self.client_user.delete(
@@ -567,11 +567,11 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
         # check to make sure it's gone:
         try:
-            models.MarkerWithAttributes.objects.get(id=marker_id)
+            models.Record.objects.get(id=marker_id)
             # throw assertion error if marker still in database
             print 'Marker not deleted'
             self.assertEqual(1, 0)
-        except models.MarkerWithAttributes.DoesNotExist:
+        except models.Record.DoesNotExist:
             # trigger assertion success if marker is removed
             self.assertEqual(1, 1)
 
@@ -582,8 +582,8 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.create_relation(self.markerwattrs, self.audio1)
 
         response = self.client_user.get(self.urls[0])
-        self.assertEqual(len(response.data['children']['photos']['data']), 1)
-        self.assertEqual(len(response.data['children']['audio']['data']), 1)
+        self.assertEqual(len(response.data['media']['photos']['data']), 1)
+        self.assertEqual(len(response.data['media']['audio']['data']), 1)
 
         # clean up:
         self.delete_relation(self.markerwattrs, self.photo1)
@@ -607,7 +607,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
         for marker_id in mwa_ids:
             # first just check for some pre-existing default data
-            marker = models.MarkerWithAttributes.objects.get(id=marker_id)
+            marker = models.Record.objects.get(id=marker_id)
 
             photo_url = self.list_url + '%s/' % marker_id + 'photos/'
             audio_url = self.list_url + '%s/' % marker_id + 'audio/'
@@ -632,10 +632,10 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             response = self.client_user.get(self.list_url + '%s/' % marker_id)
 
             self.assertEqual(
-                response.data['children']['photos']['data'][0]['url'],
+                response.data['media']['photos']['data'][0]['url'],
                 "/api/0/photos/" + '%s/' % self.photo1.id)
             self.assertEqual(
-                response.data['children']['audio']['data'][0]['url'],
+                response.data['media']['audio']['data'][0]['url'],
                 "/api/0/audio/" + '%s/' % self.audio1.id)
 
             self.assertEqual(

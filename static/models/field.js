@@ -25,7 +25,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 if (this.baseURL) {
                     return this.baseURL;
                 }
-                return '/api/0/forms/' + this.form.get("id") + '/fields/';
+                return '/api/0/datasets/' + this.form.get("id") + '/fields/';
             },
 
             initialize: function (data, opts) {
