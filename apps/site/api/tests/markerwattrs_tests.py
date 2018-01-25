@@ -628,7 +628,6 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 photo_response.status_code, status.HTTP_201_CREATED)
             self.assertEqual(
                 audio_response.status_code, status.HTTP_201_CREATED)
-
             response = self.client_user.get(self.list_url + '%s/' % marker_id)
 
             self.assertEqual(

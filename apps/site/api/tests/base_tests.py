@@ -61,7 +61,7 @@ class ViewMixinAPI(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
-            print url
+            # print url
             func = resolve(url).func
             func_name = '{}.{}'.format(func.__module__, func.__name__)
             view_name = '{}.{}'.format(

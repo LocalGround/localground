@@ -604,7 +604,7 @@ class ModelMixin(object):
 
     def create_photo(self, user=None, project=None, name='Photo Name',
                      file_name='myphoto.jpg', device='HTC',
-                     point=None, tags=[]):
+                     point=None, tags=[], with_media=False):
         from localground.apps.site import models
         user = user or self.user
         project = project or self.project
@@ -620,6 +620,11 @@ class ModelMixin(object):
             tags=tags
         )
         photo.save()
+        if with_media:
+            import Image
+            image = Image.new('RGB', (200, 100))
+            image.save('test.jpg')
+            photo.process_file(image)
         return photo
 
     def create_icon(self, user, project, icon_file='icon.jpg', name='test_icon', file_type='jpg', size=100, width=100, height=100, anchor_x=30, anchor_y=50):
