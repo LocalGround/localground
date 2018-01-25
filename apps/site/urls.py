@@ -41,3 +41,5 @@ urlpatterns = patterns('',
 if settings.DEBUG:
     # Store static CSS, JS, etc. locally:
     urlpatterns += static('/static/', document_root=settings.STATIC_ROOT)
+    # TODO: when S3 fully migrated, remove this path:
+    urlpatterns += static('/userdata/', document_root=settings.USER_MEDIA_ROOT)

@@ -47,25 +47,46 @@ class PhotoSerializer(MediaGeometrySerializerNew):
         return self.instance
 
     def get_path(self, obj):
-        return obj.media_file_orig.url
+        try:
+            return obj.media_file_orig.url
+        except Exception:
+            return None
 
     def get_path_large(self, obj):
-        return obj.media_file_large.url
+        try:
+            return obj.media_file_large.url
+        except Exception:
+            return None
 
     def get_path_medium(self, obj):
-        return obj.media_file_medium.url
+        try:
+            return obj.media_file_medium.url
+        except Exception:
+            return None
 
     def get_path_medium_sm(self, obj):
-        return obj.media_file_medium_sm.url
+        try:
+            return obj.media_file_medium_sm.url
+        except Exception:
+            return None
 
     def get_path_small(self, obj):
-        return obj.media_file_small.url
+        try:
+            return obj.media_file_small.url
+        except Exception:
+            return None
 
     def get_path_marker_lg(self, obj):
-        return obj.media_file_marker_lg.url
+        try:
+            return obj.media_file_marker_lg.url
+        except Exception:
+            return None
 
     def get_path_marker_sm(self, obj):
-        return obj.media_file_marker_sm.url
+        try:
+            return obj.media_file_marker_sm.url
+        except Exception:
+            return None
 
 
 class PhotoSerializerUpdate(PhotoSerializer):
