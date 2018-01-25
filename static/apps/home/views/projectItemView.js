@@ -14,14 +14,10 @@ define(["marionette",
             initialize: function (opts) {
                 _.extend(this, opts);
                 Marionette.ItemView.prototype.initialize.call(this);
-                //console.log(new Date(this.model.get("time_stamp") + "Z"));
-                //console.log(new Date(this.model.get("date_created") + "Z"));
-                //console.log(new Date());
                 this.currentDate = new Date();
                 this.timeStamp = new Date(this.model.get("time_stamp") + "Z");
                 this.dateCreated = new Date(this.model.get("date_created") + "Z");
                 this.lastEditedString = this.lastEdited();
-                //console.log(this.lastEditedString);
             },
 
             template: Handlebars.compile(ItemTemplate),
@@ -72,19 +68,31 @@ define(["marionette",
                 var timeStampMonth = this.timeStamp.getMonth();
                 var timeStampDay = this.timeStamp.getDate();
 
-                var diffYears = this.currentDate.getFullYear() - timeStampYear;
-                var diffMonths = this.currentDate.getMonth() - timeStampMonth;
-                var diffDays = this.currentDate.getDate() - timeStampDay;
+                var currentYear = this.currentDate.getFullYear();
+                var currentMonth = this.currentDate.getMonth();
+                var currentDay = this.currentDate.getDate();
 
-                if (diffDays > 29){
-                    diffMonths = 1;
+                // Intent to give positive difference
+                // to ensure no negative values come up
+                var diffYears = currentYear - timeStampYear;
+                var diffMonths = currentMonth - timeStampMonth;
+                var diffDays = currentDay - timeStampDay;
+
+                if (diffMonths < 0){
+                    diffMonths += 12;
+                    diffYears --;
                 }
 
-                if (diffYears > 0){
+                if (diffDays < 0){
+                    diffDays += this.daysPerMonth(this.currentDate);
+                    diffMonths --;
+                }
+
+                if (diffYears > 0 && !(diffMonths < 0)){
                     addPlural = diffYears > 1 ? "s" : "";
                     lastEditString = diffYears + " Year" + addPlural + " ago";
                 }
-                else if (diffMonths > 0){
+                else if (diffMonths > 0 && !(diffDays < 0)){
                     addPlural = diffMonths > 1 ? "s" : "";
                     lastEditString = diffMonths + " Month" + addPlural + " ago";
                 }

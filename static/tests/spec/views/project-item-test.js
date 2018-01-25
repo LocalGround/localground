@@ -43,7 +43,6 @@ define([
                 newProjectItemView = new ProjectItemView({
                     model: this.projects.at(0)
                 });
-                console.log(newProjectItemView.model);
                 expect (newProjectItemView).not.toEqual(undefined);
             });
         });
@@ -68,7 +67,6 @@ define([
             });
 
             it ("Last edited on new project: 1 day ago", function(){
-                console.log(newProjectItemView.timeStamp);
                 var prevDay = newProjectItemView.timeStamp.getDate() - 1;
                 newProjectItemView.timeStamp.setDate(prevDay);
                 var lastEditedString = newProjectItemView.lastEdited();
@@ -77,7 +75,13 @@ define([
             });
 
             it ("Last edited on new project: 1 month ago", function(){
-                var prevMonth = newProjectItemView.timeStamp.getMonth() - 1;
+                var prevMonth = (newProjectItemView.timeStamp.getMonth() - 1) % 12;
+                // In case the current month is January, also set back one full year
+                if (prevMonth < 0){
+                    prevMonth += 12;
+                    newProjectItemView.timeStamp.setFullYear(
+                        newProjectItemView.timeStamp.getFullYear() - 1);
+                }
                 newProjectItemView.timeStamp.setMonth(prevMonth);
                 var lastEditedString = newProjectItemView.lastEdited();
                 expect(lastEditedString).toEqual("1 Month ago");

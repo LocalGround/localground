@@ -27,6 +27,9 @@ define([
             spyOn(ShareForm.prototype,'addUserButton').and.callThrough();
             spyOn(ShareForm.prototype,'blankInputs').and.callThrough();
             spyOn(ShareForm.prototype,'deleteProject').and.callThrough();
+            spyOn(ShareForm.prototype,'handleServerSuccess').and.callThrough();
+            spyOn(ShareForm.prototype,'handleServerError').and.callThrough();
+            spyOn(ShareForm.prototype,'redirectToMapPage');
 
         };
 
@@ -37,8 +40,7 @@ define([
                     id: 8,
                     time_stamp: new Date().toISOString().replace("Z", ""),
                     date_created: new Date().toISOString().replace("Z", ""),
-                    access_authority: 1, // Private
-                    owner: "MrJBRPG"
+                    access_authority: 1 // Private
                 })
             });
 
@@ -46,24 +48,6 @@ define([
         };
 
         describe("Initialization Test", function(){
-            /*
-            DO the following:
-            When project created,
-            the following fields should be left undefined -
-            title = "Untitled"
-            owner = The curret user on computer (username)
-            access authority is private by default
-            All else blank
-
-            When editing existing project (model exists)
-            make sure information is same as model
-            include the following functions for testing
-            make sure they are called once
-
-            this.model.getProjectUsers();
-            this.attachCollectionEventHandlers();
-
-            */
 
             beforeEach(function(){
                 initSpies();
@@ -76,12 +60,10 @@ define([
                         id: 8,
                         time_stamp: new Date().toISOString().replace("Z", ""),
                         date_created: new Date().toISOString().replace("Z", ""),
-                        access_authority: 1, // Private
-                        owner: "MrJBRPG"
+                        access_authority: 1 // Private
                     })
                 });
                 expect(newShareForm.model.get("name")).toEqual("Untitled");
-                expect(newShareForm.model.get("owner")).toEqual("MrJBRPG");
                 expect(newShareForm.model.get("access_authority")).toEqual(1);
 
             });
@@ -96,13 +78,10 @@ define([
                 expect(newShareForm.model.get("access_authority")).toEqual(fixture.find("#access_authority").val());
                 expect(newShareForm.model.get("caption")).toEqual(fixture.find("#caption").val());
                 expect(newShareForm.model.get("tags")).toEqual(fixture.find("#tags").val());
-                expect(fixture.find("#owner").val()).toBeUndefined();
             });
         });
 
         describe("Share Form: Project User List", function() {
-            //
-            //
             /*
               To look for project users inside the project itself,
               look for the attribute "sharing_url" that leads to the users list
@@ -112,7 +91,7 @@ define([
               http://localhost:7777/api/0/projects/
               http://localhost:7777/api/0/user-profile/
               // Sample example
-              http://localhost:7777/api/0/projects/5/users/
+              http://localhost:7777/data/?project_id=2/users
             */
             beforeEach(function(){
                 initSpies();
@@ -158,6 +137,57 @@ define([
                 expect(fixture.find('.errorMessage').html()).toEqual(
                     "Enter a valid \"slug\" consisting of letters, numbers, underscores or hyphens."
                 );
+            });
+        });
+
+        describe("Share Form: Redirect Project to Map", function(){
+            beforeEach(function(){
+                initSpies();
+                newShareForm = new ShareForm({
+                    app: this.app,
+                    model: new Project({
+                        id: 8,
+                        time_stamp: new Date().toISOString().replace("Z", ""),
+                        date_created: new Date().toISOString().replace("Z", ""),
+                        access_authority: 1,
+                        name: "My First Project",
+                        caption: "this is a test"
+                    })
+                });
+                newShareForm.app.username = "MrJBRPG";
+                newShareForm.render();
+            });
+
+            it("Successfully redirects to the map page of the project when successfully saved", function(){
+                fixture = setFixtures("<div></div>").append(newShareForm.$el);
+                newShareForm.saveProjectSettings();
+                expect(ShareForm.prototype.handleServerSuccess).toHaveBeenCalledTimes(1);
+                expect(ShareForm.prototype.redirectToMapPage).toHaveBeenCalledTimes(1);
+            });
+        });
+
+        describe("Share Form: Save Project", function(){
+            beforeEach(function(){
+                initSpies();
+                newShareForm = new ShareForm({
+                    app: this.app,
+                    model: new Project({
+                        id: 8,
+                        time_stamp: new Date().toISOString().replace("Z", ""),
+                        date_created: new Date().toISOString().replace("Z", ""),
+                        access_authority: 1,
+                        name: "My First Project",
+                        caption: "this is a test"
+                    })
+                });
+                newShareForm.app.username = "MrJBRPG";
+                newShareForm.render();
+            });
+
+            it("Owner of project is automatically generated", function(){
+                fixture = setFixtures("<div></div>").append(newShareForm.$el);
+                newShareForm.saveProjectSettings();
+                expect(newShareForm.model.get('owner')).toEqual(newShareForm.app.username);
             });
         });
 
