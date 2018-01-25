@@ -193,7 +193,6 @@ define([
                     else {
                         //console.log("The current form of adding marker on empty form is buggy");
                     }
-                    debugger;
                     that.icon = new Icon({
                         shape: shape,
                         strokeWeight: 6,
