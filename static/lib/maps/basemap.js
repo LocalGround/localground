@@ -46,10 +46,14 @@ define(["marionette",
                 this.listenTo(this.tilesets, 'reset', this.onShow);
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
-                this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
-                this.listenTo(this.app.vent, 'add-rectangle', this.initDrawingManager);
                 this.listenTo(this.app.vent, 'show-streetview', this.showStreetView);
                 this.listenTo(this.app.vent, 'hide-streetview', this.hideStreetView);
+                
+                // for adding points, lines, polygons, and rectangles to the map:
+                this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
+                this.listenTo(this.app.vent, 'add-rectangle', this.initRectangleMode);
+                this.listenTo(this.app.vent, 'add-polyline', this.initPolylineMode);
+                this.listenTo(this.app.vent, 'add-polygon', this.initPolygonMode);
 
                 // call parent:
                 Marionette.View.prototype.initialize.call(this);
@@ -66,10 +70,25 @@ define(["marionette",
                 worldPoint = new google.maps.Point(point.x / scale + bottomLeft.x, point.y / scale + topRight.y);
                 return this.map.getProjection().fromPointToLatLng(worldPoint);
             },
-            initDrawingManager: function () {
+
+            initRectangleMode: function() {
+                this.initDrawingManager(google.maps.drawing.OverlayType.RECTANGLE);
+            },
+            initPolylineMode: function() {
+                this.initDrawingManager(google.maps.drawing.OverlayType.POLYLINE);
+            },
+            initPolygonMode: function() {
+                this.initDrawingManager(google.maps.drawing.OverlayType.POLYGON);
+            },
+            initDrawingManager: function (drawingMode) {
                 var that = this;
+                if (this.drawingManager) {
+                    this.drawingManager.setMap(this.map);
+                    this.drawingManager.setDrawingMode(drawingMode);
+                    return;
+                }
                 this.drawingManager = new google.maps.drawing.DrawingManager({
-                    drawingMode: google.maps.drawing.OverlayType.RECTANGLE,
+                    drawingMode: drawingMode,
                     drawingControl: false,
                     markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
                     rectangleOptions: {
@@ -81,6 +100,16 @@ define(["marionette",
                         editable: true,
                         zIndex: 1
                     }
+                });
+                google.maps.event.addListener(this.drawingManager, 'polygoncomplete', function (rect) {
+                    //do a .save() here
+                    // see line 161 ish
+                    // set geometry on model, then save it.
+                    // look for helper functinos to convert to geojson
+                    console.log('polygon complete');
+                });
+                google.maps.event.addListener(this.drawingManager, 'polylinecomplete', function (rect) {
+                    console.log('polyline complete');
                 });
                 google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', function (rect) {
                     rect.setOptions({ editable: false });

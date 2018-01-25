@@ -35,8 +35,21 @@ define([
             "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView',
             "click .thumbnail-play-circle": 'playAudio',
-            'click .circle': 'openExpanded'
+            'click .circle': 'openExpanded',
+            // add event listeners for various geometry requests
+            'click #add-polyline': 'triggerPolyline',
+            'click #add-polygon': 'triggerPolygon',
+
         },
+        triggerPolyline: function(e) {
+            this.app.vent.trigger('add-polyline');
+            e.preventDefault();
+        },
+        triggerPolygon: function(e) {
+            this.app.vent.trigger('add-polygon');
+            e.preventDefault();
+        },
+
         getTemplate: function () {
             console.log(this.dataType, this.mobileView );
             if (this.dataType == "photos") {
