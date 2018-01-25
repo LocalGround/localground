@@ -552,31 +552,37 @@ class ImageUtilities(General):
 
         return False
 
-
     @staticmethod
     def get_angles(polygon):
-        #http://stackoverflow.com/questions/1211212/how-to-calculate-an-angle-from-three-points
+        # http://stackoverflow.com/questions/1211212/how-to-calculate-an-angle-from-three-points
         if polygon is None:
             return None
         points = ImageUtilities.sort_points(polygon)
         line_groups = []
         for i in range(0, 4):
-            ranges = [[i%4, i%4-1], [(i + 1)%4, i%4], [(i + 1)%4, i%4-1] ]
+            ranges = [
+                [i % 4, i % 4 - 1],
+                [(i + 1) % 4, i % 4],
+                [(i + 1) % 4, i % 4 - 1]
+            ]
             lines = []
             for r in ranges:
                 start, end = r[0], r[1]
-                lines.append(math.sqrt(math.pow(points[start][0]-points[end][0],2) + math.pow(points[start][1]-points[end][1],2)))
+                lines.append(math.sqrt(
+                    math.pow(points[start][0] - points[end][0], 2) +
+                    math.pow(points[start][1] - points[end][1], 2)
+                ))
             line_groups.append(lines)
 
         angles = []
         for lines in line_groups:
-            num = math.pow(lines[0],2)+math.pow(lines[1],2)-math.pow(lines[2],2)
+            num = math.pow(
+                lines[0], 2) + math.pow(lines[1], 2) - math.pow(lines[2], 2)
             denom = 2*lines[0]*lines[1]
             theta = math.acos(num/denom)*180/math.pi
             angles.append(abs(90-theta))
-        #print 'ANGLES:', angles, 'SCORE:', sum(angles)
+        # print 'ANGLES:', angles, 'SCORE:', sum(angles)
         return angles
-
 
     @staticmethod
     def get_right_angle_score(polygon):
@@ -604,7 +610,7 @@ class ImageUtilities(General):
 
 class RectangleFinder(General):
     def __init__(self, pil_image, logger):
-        General.__init__(self)    #has some generic functions (lik a logger)
+        General.__init__(self)   # has some generic functions (lik a logger)
         self.rectangles = []
         self.logger = logger
         self.pil_image = pil_image
@@ -622,19 +628,24 @@ class RectangleFinder(General):
                                 kernel_size, logger=self.logger)
             new_rectangles = ImageUtilities.make_unique(new_rectangles)
 
-            self.logger.log('%s rectangles found for threshold: %s, past_peak: %s, num_rectangles: %s' % \
-                (len(new_rectangles), threshold, past_peak, len(self.rectangles)))
+            self.logger.log(
+                '%s rectangles found for threshold: %s, \
+                past_peak: %s, num_rectangles: %s' %
+                (
+                    len(new_rectangles),
+                    threshold, past_peak, len(self.rectangles)))
 
-            # if we've already found the rectangles, don't continue past a few more
-            # iterations, to speed things up.
-            if len(self.rectangles) >= 12 and len(new_rectangles) <= len(self.rectangles):
+            # if we've already found the rectangles, don't continue past a few
+            # more iterations, to speed things up.
+            if len(self.rectangles) >= 12 and \
+                    len(new_rectangles) <= len(self.rectangles):
                 past_peak = past_peak + 1
 
             if past_peak >= 2:
                 self.logger.log('Past peak')
                 break
 
-            #ensure rectangle list is unique:
+            # ensure rectangle list is unique:
             for r in new_rectangles:
                 if not ImageUtilities.already_exists(r, self.rectangles):
                     self.rectangles.append(r)
@@ -645,20 +656,20 @@ class RectangleFinder(General):
         self.qr_rect = None
         # checks 2 things:
         # - that the QR code is the "squarest" square in the rectangle array
-        # - that the ratio of the area QR code relative to the image size is ~1%
+        # - that the ratio of the area QR code relative to image size is ~1%
         self.logger.log('getting the QR rectangle...')
-        ratio_best = 0 #initialize to 0 (an impossible ratio)
+        ratio_best = 0  # initialize to 0 (an impossible ratio)
         cv_image = self.pil2cv(self.pil_image)
-        size = cv.GetSize(cv_image);
+        size = cv.GetSize(cv_image)
         total_area = size[0]*size[1]
         self.logger.log('total area: %s' % (total_area))
         for rect in self.rectangles:
-            area = math.fabs( cv.ContourArea(rect) )
+            area = math.fabs(cv.ContourArea(rect))
             perimeter = cv.ArcLength(rect, isClosed=True)
             ratio_this = area/(perimeter/4)**2
-            #print rect, area, perimeter, ratio_this
+            # print rect, area, perimeter, ratio_this
             print 'perimeter_area_ratio_this:', ratio_this
-            #print 'snippet_to_total_area_ratio:', area/total_area
+            # print 'snippet_to_total_area_ratio:', area/total_area
             if ratio_this > ratio_best and .01 <= area/total_area <= .05:
                 self.logger.log('best area ratio: %s' % ratio_this)
                 self.qr_rect = rect
@@ -667,10 +678,12 @@ class RectangleFinder(General):
 
     def get_map_rectangle(self, source_print):
         self.logger.log('Getting map rectangle...')
-        self.map_rect = self.select_rectangle(source_print, .2, .7, in_first_third=True)
+        self.map_rect = self.select_rectangle(
+            source_print, .2, .7, in_first_third=True)
         return self.map_rect
 
-    def select_rectangle(self, source_print, min_area, max_area, in_first_third=True):
+    def select_rectangle(
+            self, source_print, min_area, max_area, in_first_third=True):
         """
         Finds the rectangle that corresponds to the map_rect; assumes that the
         image has already been rotated.
@@ -681,26 +694,27 @@ class RectangleFinder(General):
 
         selected_rect = None
         total_area = self.pil_image.size[0]*self.pil_image.size[1]
-        ratio_best = 0 #dummy value for impossibly low ratio
+        ratio_best = 0  # dummy value for impossibly low ratio
         for rect in self.rectangles:
-            area = math.fabs( cv.ContourArea(rect) )
+            area = math.fabs(cv.ContourArea(rect))
             perimeter = cv.ArcLength(rect, isClosed=True)
             ratio_this = area/(perimeter/4)**2
-            #check to see if the rectangle exists in the first third of the
-            #image:
+            # check to see if the rectangle exists in the first third of the
+            # image:
             min_y = min([p[1] for p in rect])
-            position_match = (min_y < self.pil_image.size[1]/3) == in_first_third or \
-                            not in_first_third == (min_y >= self.pil_image.size[1]/3) or \
-                            in_first_third is None
+            position_match = (
+                min_y < self.pil_image.size[1]/3) == in_first_third or \
+                not in_first_third == (min_y >= self.pil_image.size[1]/3) or \
+                in_first_third is None
 
-            # if (1) the total area of the rectangle is within the area range and
-            # (2) the rectangle is the most rectangular choice (to exclude trapezoid looking shapes) *and*
+            # if (1) the total area of rectangle is within the area range and
+            # (2) the rectangle is most rectangular choice (to exclude
+            #     trapezoid looking shapes) *and*
             # (3) rectangle starts on second half of the page.
             print ratio_best, ':', ratio_this, area/total_area, position_match
             if min_area < area/total_area < max_area and \
                     ratio_this > ratio_best and \
                     position_match:
-                    #ImageUtilities.is_more_rectangular(self.map_rect, rect) and \
                 ratio_best = ratio_this
                 selected_rect = rect
 
@@ -710,36 +724,39 @@ class RectangleFinder(General):
     def scale_rectangles(self):
         sf = self.pil_image.size[0]/(self.pil_thumb.size[0]*1.0)
         for i in range(0, len(self.rectangles)):
-            self.rectangles[i] = [(int(p[0]*sf), int(p[1]*sf)) for p in self.rectangles[i]]
+            self.rectangles[i] = [
+                (int(p[0]*sf), int(p[1]*sf)) for p in self.rectangles[i]]
 
     def draw_rectangles(self):
-        color = (0,255,0)
+        color = (0, 255, 0)
         im = self.pil_image.copy()
         cv_image = self.pil2cv(im)
-        #output all rectangles:
+        # output all rectangles:
         for rectangle in self.rectangles:
             cv.PolyLine(cv_image, [rectangle], True, color, 1, cv.CV_AA, 0)
 
-        #output qr-code rectangle (if exists):
+        # output qr-code rectangle (if exists):
         if self.qr_rect is not None:
             r = Quadrilateral(self.qr_rect)
-            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (0, 0, 255), 1, cv.CV_AA, 0)
+            cv.PolyLine(
+                cv_image, [r.to_cv_poly()], True, (0, 0, 255), 1, cv.CV_AA, 0)
 
-        #output map rectangle (if exists):
+        # output map rectangle (if exists):
         if self.map_rect is not None:
             r = Quadrilateral(self.map_rect, contract_by=12)
-            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (255, 0, 0), 1, cv.CV_AA, 0)
+            cv.PolyLine(
+                cv_image, [r.to_cv_poly()], True, (255, 0, 0), 1, cv.CV_AA, 0)
 
         if self.logger.is_debug:
-            cv.SaveImage(self.logger.tmp_directory + 'rectangles.png', cv_image)
-
+            cv.SaveImage(
+                self.logger.tmp_directory + 'rectangles.png', cv_image)
 
 
 class QrCodeUtils(General):
 
     def __init__(self, mapimage, pil_image, logger):
-        General.__init__(self)      #has some generic functions (lik a logger)
-        self.mapimage = mapimage            #mapimage is being passed in by reference
+        General.__init__(self)    # has some generic functions (lik a logger)
+        self.mapimage = mapimage  # mapimage is being passed in by reference
         self.pil_image = pil_image
         self.logger = logger
 
@@ -755,10 +772,11 @@ class QrCodeUtils(General):
             return [float(points[0]), float(points[1])]
 
         import subprocess
-        cmd = ['java',
+        cmd = [
+            'java',
             '-cp',
-            '%(path)s/javase.jar:%(path)s/core.jar' % \
-                dict(path=settings.QR_READER_PATH),
+            '%(path)s/javase.jar:%(path)s/core.jar' % dict(
+                path=settings.QR_READER_PATH),
             'com.google.zxing.client.j2se.CommandLineRunner',
             img_path
         ]
@@ -766,18 +784,18 @@ class QrCodeUtils(General):
         cmd = [
             'java', '-version'
         ]
-        #cmd = ['ldd' '/usr/lib/jvm/java-6-openjdk/jre/bin/java']
+        # cmd = ['ldd' '/usr/lib/jvm/java-6-openjdk/jre/bin/java']
         process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, env=os.environ)
         output, error = process.communicate()
-        #self.logger.log(output)
-        #self.logger.log(error)
-        #process.wait()
-        #self.logger.log(process.stdout.read())
-        #r = subprocess.Popen('echo "Hello world!"', shell=True)
+        # self.logger.log(output)
+        # self.logger.log(error)
+        # process.wait()
+        # self.logger.log(process.stdout.read())
+        # r = subprocess.Popen('echo "Hello world!"', shell=True)
 
-        #self.logger.log(subprocess.check_output(["echo", "Hello World!"]))
-        #subprocess.Popen(['echo','1']).wait()
+        # self.logger.log(subprocess.check_output(["echo", "Hello World!"]))
+        # subprocess.Popen(['echo','1']).wait()
 
         self.logger.log('About to read the QR code from the image...')
         decoded, points = None, []
@@ -786,9 +804,9 @@ class QrCodeUtils(General):
               (settings.QR_READER_PATH, settings.QR_READER_PATH, img_path)
 
         self.logger.log(cmd)
-        r  = os.popen(cmd)
+        r = os.popen(cmd)
 
-        #result points:  2 on the top, one on the left:
+        # result points:  2 on the top, one on the left:
         for line in r.readlines():
             val = line.strip()
             self.logger.log(val)
@@ -801,35 +819,38 @@ class QrCodeUtils(General):
 
         self.logger.log(points)
 
-        #save rotated image:
+        # save rotated image:
         theta = self.get_rotation_angle(points)
 
         return decoded, theta
 
     def get_rotation_angle(self, points):
-        if points is None or len(points) == 0: return None
+        if points is None or len(points) == 0:
+            return None
         x, y = 0, 1
         a = points[1]
         b = points[2]
         c = points[0]
         distance = math.fabs(a[x]-b[x])
 
-        #Find the degree of the rotation that is needed
+        # Find the degree of the rotation that is needed
 
-        #b = [b[x]-0.1, b[y]]
+        # b = [b[x]-0.1, b[y]]
         p = math.fabs(a[x]-b[x])
         q = math.fabs(a[y]-b[y])
         if p != 0:
             theta = math.degrees(math.atan(1.0*q/p))
             if theta == 0:
-                if a[x]-b[x] > 0: theta = 180
+                if a[x]-b[x] > 0:
+                    theta = 180
                 return theta
         else:
             theta = 90
-            if a[y]-b[y] > 0: theta = -90
+            if a[y]-b[y] > 0:
+                theta = -90
             return theta
 
-        #if rotated slightly, figure out angle:
+        # if rotated slightly, figure out angle:
         if b[x] < a[x] and a[y] < b[y]:
             theta = 180-theta
             self.logger.log('condition 1: %s' % (theta))
@@ -842,9 +863,8 @@ class QrCodeUtils(General):
 
         return theta
 
-
     def read_qr(self, qr_rect):
-        #this function tries to read the qr code and returns:
+        # this function tries to read the qr code and returns:
         # 1) the qr code
         # 2) the rotation angle of the qr code relative to the orientation
         #       on the original print
@@ -855,20 +875,20 @@ class QrCodeUtils(General):
             self.logger.log('No QR Rectangle could be found')
             return None, None
 
-        #crop to QR Code image:
+        # crop to QR Code image:
         self.logger.log("Cropping the QR Code....")
         qr_image = self.pil_image.copy()
         quad = Quadrilateral(qr_rect)
-        #bbox = ImageUtilities.rect_to_pil_bbox(qr_rect)
+        # bbox = ImageUtilities.rect_to_pil_bbox(qr_rect)
         qr_image = qr_image.crop(quad.to_pil_bbox())
 
-        #save the qr-code to disk, and read it:
+        # save the qr-code to disk, and read it:
         path = '%sqr_%s.png' % (self.mapimage.get_abs_directory_path(), 1)
         self.logger.log(path)
         qr_image.save(path)
         print_id, theta = self.execute_reader(path)
 
-        #try again:
+        # try again:
         if print_id is None:
             # sometimes, the qr-image needs to be resized to something smaller
             # (which is counter-intuitive to me) in order for it to be read:
@@ -879,12 +899,13 @@ class QrCodeUtils(General):
             q.save(path)
             print_id, theta = self.execute_reader(path)
 
-        #try reading the entire image:
+        # try reading the entire image:
         if print_id is None:
             # sometimes, the qr-image needs to be resized to something smaller
             # (which is counter-intuitive to me) in order for it to be read:
             q = self.pil_image.copy()
-            path = '%sqr_whole_image_%s.png' % (self.mapimage.get_abs_directory_path(), 3)
+            path = '%sqr_whole_image_%s.png' % (
+                self.mapimage.get_abs_directory_path(), 3)
             self.logger.log(path)
             q.save(path)
             print_id, theta = self.execute_reader(path)
@@ -894,38 +915,45 @@ class QrCodeUtils(General):
             page_num = int(print_id.split('_')[1])
             print_id = print_id.split('_')[0]
 
-        #print print_id, theta, page_num
+        # print print_id, theta, page_num
         return print_id, theta, page_num
 
 
 class ImageUtils(General):
     @staticmethod
     def subtract_grayscale(img, threshold=20):
-        ## Threshold ~= max( max(R,G,B) - min(R,G,B) ) of grays.
-        ## For a mapimage (high quality image), a threshold of 14 seems to work well.
-        ## A value of 17 seems good and conservative for an indoor iPhoto.
-        ## While 20, or 22, should be the max threshold even for poor quality photos
+        # Threshold ~= max( max(R,G,B) - min(R,G,B) ) of grays.
+        # For a mapimage (high quality image), threshold of 14 seems to work
+        # well.
+        # A value of 17 seems good and conservative for an indoor iPhoto.
+        # While 20, or 22, should be the max threshold even for poor quality
+        # photos
 
-        ## split the image into individual bands
+        # split the image into individual bands
         source = img.split()
         R, G, B, A = 0, 1, 2, 3
 
-        ## Create gray subtraction mask using the "difference" and "point" operations.
-        ## The function given in the point operation sets all pixel values satisfying
-        ## the expression (i <= threshold) to 255, else 0.
-        maskRG = ImageChops.difference(source[R],source[G]).point(lambda i: i <= threshold and 255)
-        maskGB = ImageChops.difference(source[G],source[B]).point(lambda i: i <= threshold and 255)
-        maskBR = ImageChops.difference(source[B],source[R]).point(lambda i: i <= threshold and 255)
+        # Create gray subtraction mask using "difference" and "point" methods.
+        # The function given in the point method sets all pixel values
+        # satisfying the expression (i <= threshold) to 255, else 0.
+        maskRG = ImageChops.difference(
+            source[R], source[G]).point(lambda i: i <= threshold and 255)
+        maskGB = ImageChops.difference(
+            source[G], source[B]).point(lambda i: i <= threshold and 255)
+        maskBR = ImageChops.difference(
+            source[B], source[R]).point(lambda i: i <= threshold and 255)
         maskRGB = ImageChops.multiply(maskRG, maskGB)
         maskRGBR = ImageChops.multiply(maskRGB, maskBR)
 
-        ## Paste transparent white into gray areas of original image, as represented by mask
-        img.paste((255,255,255,0),None,maskRGBR)
+        # Paste transparent white into gray areas of original image, as
+        # represented by mask
+        img.paste((255, 255, 255, 0), None, maskRGBR)
         return img
 
     @staticmethod
     def color_to_alpha(img, color):
         img = img.convert('RGBA')
+
         def difference1(source, color):
             """When source is bigger than color"""
             return (source - color) / (255.0 - color)
@@ -939,9 +967,9 @@ class ImageUtils(General):
         color = map(float, color)
         img_bands = [band.convert("F") for band in img.split()]
 
-        # Find the maximum difference rate between source and color. I had to use two
-        # difference functions because ImageMath.eval only evaluates the expression
-        # once.
+        # Find the maximum difference rate between source and color.
+        # I had to use two difference functions because ImageMath.eval
+        # only evaluates the expression once.
         alpha = ImageMath.eval(
             """float(
                 max(
@@ -963,21 +991,21 @@ class ImageUtils(General):
             )""",
             difference1=difference1,
             difference2=difference2,
-            red_band = img_bands[0],
-            green_band = img_bands[1],
-            blue_band = img_bands[2],
-            cred_band = color[0],
-            cgreen_band = color[1],
-            cblue_band = color[2]
+            red_band=img_bands[0],
+            green_band=img_bands[1],
+            blue_band=img_bands[2],
+            cred_band=color[0],
+            cgreen_band=color[1],
+            cblue_band=color[2]
         )
 
-        # Calculate the new image colors after the removal of the selected color
+        # Calculate the new image colors after the removal of selected color
         new_bands = [
             ImageMath.eval(
                 "convert((img - color) / alpha + color, 'L')",
-                img = img_bands[i],
-                color = color[i],
-                alpha = alpha
+                img=img_bands[i],
+                color=color[i],
+                alpha=alpha
             )
             for i in xrange(3)
         ]
@@ -985,16 +1013,17 @@ class ImageUtils(General):
         # Add the new alpha band
         new_bands.append(ImageMath.eval(
             "convert(alpha_band * alpha, 'L')",
-            alpha = alpha,
-            alpha_band = img_bands[3]
+            alpha=alpha,
+            alpha_band=img_bands[3]
         ))
 
         img = Image.merge('RGBA', new_bands)
         return img
 
+
 class MapUtils(General):
 
-    #Map types (be sure to sync w/overlays_wmsoverlay table):
+    # Map types (be sure to sync w/overlays_wmsoverlay table):
 
     def __init__(self, mapimage, pil_image, logger):
         General.__init__(self)
@@ -1005,69 +1034,71 @@ class MapUtils(General):
         self.map_rect = None
         self.color_threshold = 20
 
-        #to be set:
+        # to be set:
         self.pil_image_color_to_alpha = None
         self.pil_image_grayscale_subtracted = None
         self.pil_image_hollowed_with_margins = None
 
         self.image_records = {}
 
-
     def process_map_image(self, map_rect):
         self.map_rect = Quadrilateral(map_rect, contract_by=12)
 
-        #IMPORTANT: set processed_image to None or else "cascade delete" will
+        # IMPORTANT: set processed_image to None or else "cascade delete" will
         #           delete the mapimage itself (cascade delete not customizable
         #           'til Django 1.3)
-        #clear out all old map images:
+        # clear out all old map images:
         self.mapimage.processed_image = None
         self.mapimage.save()
         models.ImageOpts.objects.filter(source_mapimage=self.mapimage).delete()
 
-        #get image statistics, to assist with color processing:
+        # get image statistics, to assist with color processing:
         self.stats = ImageQuality(self.pil_image, logger=self.logger)
 
-        #perform color-to-alpha calc:
+        # perform color-to-alpha calc:
         self.pil_image_color_to_alpha = ImageUtils.color_to_alpha(
                                             self.pil_image.copy(),
                                             self.stats.brightest_cluster)
 
-        #perform subtract grayscale calc:
+        # perform subtract grayscale calc:
         if self.stats.image_quality == ImageQuality.BAD_PHOTO:
             self.color_threshold = 30
         self.pil_image_grayscale_subtracted = ImageUtils.subtract_grayscale(
                                                 self.pil_image.copy(),
                                                 threshold=self.color_threshold)
 
-        northeast, southwest, extents, img = self.generate_image_with_map_margins()
+        northeast, southwest, extents, img = \
+            self.generate_image_with_map_margins()
         self.pil_image_hollowed_with_margins = img
 
-        ###########################
-        #save images to database: #
-        ###########################
+        ############################
+        # save images to database: #
+        ############################
         types = ImageProcessingTypes
 
-        #cropped original map
+        # cropped original map
         img = self.map_rect.crop_to_shape(self.pil_image.copy(), rotate=True)
         self.image_records.update({
             types.ORIG: self.save_processed_image(img, types.ORIG)
         })
 
-        #original map with margins:
+        # original map with margins:
         img = self.pil_image
         self.image_records.update({
-            types.WITH_MARGINS: self.save_processed_image(img, types.WITH_MARGINS,
-                                    northeast=northeast, southwest=southwest,
-                                    extents=extents)
+            types.WITH_MARGINS: self.save_processed_image(
+                img, types.WITH_MARGINS,
+                northeast=northeast, southwest=southwest, extents=extents)
         })
 
-        #color_to_alpha cropped:
-        img = self.map_rect.crop_to_shape(self.pil_image_color_to_alpha.copy(), rotate=True)
+        # color_to_alpha cropped:
+        img = self.map_rect.crop_to_shape(
+            self.pil_image_color_to_alpha.copy(), rotate=True)
         self.image_records.update({
-            types.COLOR_TO_ALPHA: self.save_processed_image(img, types.COLOR_TO_ALPHA)
+            types.COLOR_TO_ALPHA: self.save_processed_image(
+                img, types.COLOR_TO_ALPHA)
         })
 
-        #color_to_alpha full extent:
+        # color_to_alpha full extent:
         img = self.pil_image_color_to_alpha
         self.image_records.update({
             types.COLOR_TO_ALPHA_WITH_MARGINS:
@@ -1076,10 +1107,11 @@ class MapUtils(General):
                     northeast=northeast, southwest=southwest, extents=extents)
         })
 
-        #color_to_alpha with solid margins:
+        # color_to_alpha with solid margins:
         img = self.pil_image_color_to_alpha.copy()
-        img.paste(self.pil_image_hollowed_with_margins, img.getbbox(),
-                    mask=self.pil_image_hollowed_with_margins)
+        img.paste(
+            self.pil_image_hollowed_with_margins, img.getbbox(),
+            mask=self.pil_image_hollowed_with_margins)
         self.image_records.update({
             types.COLOR_TO_ALPHA_WITH_SOLID_MARGINS:
                 self.save_processed_image(
@@ -1087,16 +1119,15 @@ class MapUtils(General):
                     northeast=northeast, southwest=southwest, extents=extents)
         })
 
-
-        #grayscale_subtracted cropped:
-        img = self.map_rect.crop_to_shape(self.pil_image_grayscale_subtracted.copy(),
-                                          rotate=True)
+        # grayscale_subtracted cropped:
+        img = self.map_rect.crop_to_shape(
+            self.pil_image_grayscale_subtracted.copy(), rotate=True)
         self.image_records.update({
             types.GRAYSCALE_SUBTRACTED: self.save_processed_image(
                                             img, types.GRAYSCALE_SUBTRACTED)
         })
 
-        #grayscale_subtracted full extent:
+        # grayscale_subtracted full extent:
         img = self.pil_image_grayscale_subtracted
         self.image_records.update({
             types.GRAYSCALE_SUBTRACTED_WITH_MARGINS:
@@ -1105,10 +1136,10 @@ class MapUtils(General):
                     northeast=northeast, southwest=southwest, extents=extents)
         })
 
-        #grayscale_subtracted with solid margins:
+        # grayscale_subtracted with solid margins:
         img = self.pil_image_grayscale_subtracted.copy()
         img.paste(self.pil_image_hollowed_with_margins, img.getbbox(),
-                    mask=self.pil_image_hollowed_with_margins)
+                  mask=self.pil_image_hollowed_with_margins)
         self.image_records.update({
             types.GRAYSCALE_SUBTRACTED_WITH_SOLID_MARGINS:
                 self.save_processed_image(
@@ -1135,27 +1166,27 @@ class MapUtils(General):
         from localground.apps.lib.helpers.units import Units
         from django.contrib.gis.geos import Polygon
 
-        #determine the width of the map margins (given the current scaling):
+        # determine the width of the map margins (given the current scaling):
         top, left, bottom, right = self.map_rect.get_margins(self.pil_image)
 
-        #scale image to its original print size:
+        # scale image to its original print size:
         zoom = self.mapimage.source_print.zoom
         old_width = self.mapimage.source_print.map_width
         old_height = self.mapimage.source_print.map_height
 
-        self.logger.log('old width: %s, old height: %s, zoom: %s' \
+        self.logger.log('old width: %s, old height: %s, zoom: %s'
                         % (old_width, old_height, zoom))
 
-        #determine scale factor based on current cropped map:  how much should
-        #current image size be increased / decreased?
+        # determine scale factor based on current cropped map: how much should
+        # current image size be increased / decreased?
         w, h = self.map_rect.get_width(), self.map_rect.get_height()
         sf_w = (1.0*old_width)/w
         sf_h = (1.0*old_height)/h
-        self.logger.log('scale factor width: %s, scale factor height: %s' % (sf_w, sf_h))
+        self.logger.log(
+            'scale factor width: %s, scale factor height: %s' % (sf_w, sf_h))
 
-        #scale margins:
+        # scale margins:
         top, left, bottom, right = top*sf_h, left*sf_w, bottom*sf_h, right*sf_w
-
 
         center = self.mapimage.source_print.center
         northeast = Units.add_pixels_to_latlng(
@@ -1168,18 +1199,17 @@ class MapUtils(General):
         bbox = [element for tupl in bbox for element in tupl]
         extents = Polygon.from_bbox(bbox)
 
-        #punch holes in image:
+        # punch holes in image:
         hollowed_image = self.pil_image.copy()
-        mask=Image.new('L', hollowed_image.size, color=255)
-        draw=ImageDraw.Draw(mask)
+        mask = Image.new('L', hollowed_image.size, color=255)
+        draw = ImageDraw.Draw(mask)
         draw.polygon(self.map_rect.to_cv_poly(), fill=0)
         hollowed_image.putalpha(mask)
         return northeast, southwest, extents, hollowed_image
 
-
-
-    def save_processed_image(self, img, file_name, northeast=None, southwest=None,
-                                extents=None):
+    def save_processed_image(
+            self, img, file_name, northeast=None, southwest=None,
+            extents=None):
         path = self.mapimage.get_abs_directory_path() + file_name
         self.logger.log('Saving map image and inserting to database: ' + path)
         img.save(path)
@@ -1193,22 +1223,29 @@ class MapUtils(General):
             virtual_path=self.mapimage.virtual_path
         )
 
-        if extents is not None: map_image.extents = extents
-        else: map_image.extents = p.extents
+        if extents is not None:
+            map_image.extents = extents
+        else:
+            map_image.extents = p.extents
 
-        if northeast is not None: map_image.northeast = northeast
-        else: map_image.northeast = p.northeast
+        if northeast is not None:
+                map_image.northeast = northeast
+        else:
+            map_image.northeast = p.northeast
 
-        if southwest is not None: map_image.southwest = southwest
-        else: map_image.southwest = p.southwest
+        if southwest is not None:
+            map_image.southwest = southwest
+        else:
+            map_image.southwest = p.southwest
 
         map_image.center = p.center
 
         map_image.save(user=self.mapimage.owner)
         return map_image
 
+
 class ImageQuality():
-    HIGH_QUALITY_SCAN =  4
+    HIGH_QUALITY_SCAN = 4
     MEDIUM_QUALITY_SCAN = 3
     GOOD_PHOTO = 2
     BAD_PHOTO = 1
@@ -1220,9 +1257,11 @@ class ImageQuality():
         self.brightest_cluster = kwargs.get('brightest_cluster', None)
         self.dif_brightest_pixel_brightest_cluster = kwargs.get(
             'dif_brightest_pixel_brightest_cluster', None)
-        self.brightest_cluster_range = kwargs.get('brightest_cluster_range', None)
+        self.brightest_cluster_range = kwargs.get(
+            'brightest_cluster_range', None)
         self.image_quality = kwargs.get('image_quality', None)
-        self.brightest_cluster_average = kwargs.get('brightest_cluster_average', None)
+        self.brightest_cluster_average = kwargs.get(
+            'brightest_cluster_average', None)
 
         self.init_image_statistics()
 
@@ -1235,14 +1274,13 @@ class ImageQuality():
 
         self.logger.log('Getting image statistics...')
 
-        #reduce image size to shorten processing time
+        # reduce image size to shorten processing time
         im = self.pil_image.copy()
         im.thumbnail([200, 200])
 
         stat = ImageStat.Stat(im)
-        self.brightest_pixel = (stat.extrema[0][1], stat.extrema[1][1],
-                            stat.extrema[2][1])
-
+        self.brightest_pixel = (
+            stat.extrema[0][1], stat.extrema[1][1], stat.extrema[2][1])
 
         ar = scipy.misc.fromimage(im)
         shape = ar.shape
