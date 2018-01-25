@@ -1,12 +1,6 @@
 <nav id="toolbar-main" class="account">
     <div>
         <a class="logotype" href="/">Local Ground</a>
-        {% if not user.is_authenticated %}
-            <div class="reg-button-panel">
-                <a href="/accounts/register" class="button-primary button-main-action button-wide pull-right">Create Account</a>
-                <a href="/accounts/login" class="button-secondary pull-right">Sign In</a>
-            </div>
-        {% endif %}
         <ul class="right-nav">
             <li>
                 <a href="/about">About</a>
@@ -16,9 +10,16 @@
             </li>
             {% if user.is_authenticated %}
             <li>
-                <a class="account" id="toggle-button"><i class="fa fa-caret-down" aria-hidden="true"></i> vanwars</a>
+                <a class="account" id="toggle-button"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ user.username }}</a>
                 <div class="dropdown-menu" style="display:none;" id="account-options">
                     <a href="/accounts/logout/">Logout</a>
+                </div>
+            </li>
+            {% else %}
+            <li>
+                <div class="reg-button-panel">
+                    <a href="/accounts/register" class="button-primary button-main-action button-wide pull-right">Create Account</a>
+                    <a href="/accounts/login" class="button-secondary pull-right">Sign In</a>
                 </div>
             </li>
             {% endif %}
