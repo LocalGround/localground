@@ -15,6 +15,9 @@ define(["models/base", "underscore"], function (Base, _) {
         getExtension: function () {
             return _.last(this.get('file_name').split('.'));
         },
+        getDataTypePlural: function() {
+            return 'audio';
+        },
         defaults: _.extend({}, Base.prototype.defaults, {
             checked: false
         })
