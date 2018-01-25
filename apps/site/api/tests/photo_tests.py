@@ -31,7 +31,6 @@ def get_metadata():
         "path_small": { "type": "field", "required": False, "read_only": True },
         "path_marker_lg": { "type": "field", "required": False, "read_only": True },
         "path_marker_sm": { "type": "field", "required": False, "read_only": True },
-        "file_path": { "type": "field", "required": False, "read_only": True },
         "media_file": { "type": "string", "required": True, "read_only": False },
         'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
