@@ -193,6 +193,7 @@ define([
                     else {
                         //console.log("The current form of adding marker on empty form is buggy");
                     }
+                    debugger;
                     that.icon = new Icon({
                         shape: shape,
                         strokeWeight: 6,
@@ -256,8 +257,8 @@ define([
         },
 
         modelEvents: {
-            "change:children": "render",
-            "commit-data-no-save": "commitForm"
+            'change:media': 'render',
+            'commit-data-no-save': 'commitForm'
         },
         switchToViewMode: function () {
             this.app.mode = "view";
