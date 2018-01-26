@@ -43,10 +43,12 @@ define([
         },
         triggerPolyline: function(e) {
             this.app.vent.trigger('add-polyline');
+            this.app.vent.trigger("add-new-marker", this.model);
             e.preventDefault();
         },
         triggerPolygon: function(e) {
             this.app.vent.trigger('add-polygon');
+            this.app.vent.trigger("add-new-marker", this.model);
             e.preventDefault();
         },
 
@@ -259,6 +261,7 @@ define([
             }
             var i, f;
             if (this.model.get("overlay_type").indexOf("form_") != -1) {
+                console.log(this.model.get("fields"));
                 var something = this.model.attributes;
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */

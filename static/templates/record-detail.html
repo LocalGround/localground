@@ -150,9 +150,9 @@
     <h4>{{#if id}}Edit{{else}}Add New{{/if}}</h4>
 
     {{#ifequal screenType "map"}}
-    <button class="button-secondary add-marker-button" id="add-polyline">Add Polyline Marker</button>
-    <button class="button-secondary add-marker-button" id="add-polygon">Add Polygon Marker</button>
-    <button class="button-secondary add-marker-button" id="add-geometry">Add Point Marker</button>
+    <button class="button-secondary" id="add-polyline">Polyline</button>
+    <button class="button-secondary" id="add-polygon">Polygon</button>
+    <button class="button-secondary" id="add-geometry">Point</button>
         {{#if geometry}}
             <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>
         {{else}}

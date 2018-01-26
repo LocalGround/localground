@@ -101,14 +101,32 @@ define(["marionette",
                         zIndex: 1
                     }
                 });
-                google.maps.event.addListener(this.drawingManager, 'polygoncomplete', function (rect) {
-                    //do a .save() here
+                google.maps.event.addListener(this.drawingManager, 'polygoncomplete', function (polygon) {
                     // see line 161 ish
-                    // set geometry on model, then save it.
-                    // look for helper functinos to convert to geojson
-                    console.log('polygon complete');
+                    // 1. look for helper functions to convert to geojson
+                    // 2. set geometry on model 
+                    // 3. then save() it.
+                    console.log('polygon complete', polygon.getPath());
+                    const polygonToGeoJSON = (polygon) => {
+                        var pathCoords = polygon.getPath().getArray(),
+                            coords = [],
+                            i = 0;
+                        for (i; i < pathCoords.length; i++) {
+                            coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+                        }
+                        //add last coordinate again:
+                        coords.push([pathCoords[0].lng(), pathCoords[0].lat()]);
+                        return { type: 'Polygon', coordinates: [coords] };
+                    };
+                    const polygonGeoJSON = polygonToGeoJSON(polygon);
+                    that.targetedModel.set('geometry', polygonGeoJSON);
+                    //that.targetedModel.trigger('show-marker');
+                    that.targetedModel.save();
+                    that.addMarkerClicked = false;
+                    that.targetedModel = null;
+                    console.log(polygonGeoJSON);
                 });
-                google.maps.event.addListener(this.drawingManager, 'polylinecomplete', function (rect) {
+                google.maps.event.addListener(this.drawingManager, 'polylinecomplete', function (polyline) {
                     console.log('polyline complete');
                 });
                 google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', function (rect) {
