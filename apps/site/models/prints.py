@@ -191,12 +191,6 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
             self.owner.username,
             self.uuid
         )
-        # Probably try out the new S3 path
-        # probably assign path based on map_image_path
-        # this new method is only hard code, but will need to change
-        # to fit in the new S3 hyperlink
-        # You cannot do a hard-coded link
-        # path = 's3test-assets.s3.amazonaws.com/media/MrJBRPG' + '/prints/' + self.uuid
 
         os.mkdir(path)  # create new directory
         file_name = 'Print_' + self.uuid + '.pdf'

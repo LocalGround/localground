@@ -77,11 +77,35 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         read_only_fields = ('uuid',)
 
     def process_file(self, file, owner):
-        #save to disk:
+        #save to disk: Will eventually be removed
         model_name_plural = models.MapImage.model_name_plural
         uuid = generic.generateID()
         file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file, uuid=uuid)
         file_name, ext = os.path.splitext(file_name_new)
+
+        '''
+        # eventual goal for process file:
+        # self.instance.send_map_images_to_S3()
+
+        # Seems that map image serializer is similar to
+        # photo serializer that it takes an image
+        # but also seems to should act like print serializer
+        # because the file path has to be generated
+        # before it can be properly saved to the Amazon S3 Cloud
+
+        # Some mock code that seems to follow the other updated serializers
+
+        # ensure filetype is valid:
+        upload_helpers.validate_file(f, self.ext_whitelist)
+
+        # Save it to Amazon S3 cloud
+        self.validated_data.update(self.get_presave_create_dictionary())
+        self.validated_data.update({
+            'attribution': validated_data.get('attribution') or owner.username
+        })
+        self.instance = self.Meta.model.objects.create(**self.validated_data)
+
+        '''
 
         # create thumbnail:
         from PIL import Image

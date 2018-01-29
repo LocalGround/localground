@@ -12,6 +12,7 @@ from localground.apps.site.models import (
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
 from django.contrib.contenttypes import generic
+from localground.apps.site.fields import LGImageField
 
 
 class MapImage(BaseUploadedMedia):
@@ -30,6 +31,9 @@ class MapImage(BaseUploadedMedia):
     qr_code = models.CharField(max_length=8, blank=True, null=True)
     map_rect = models.CharField(max_length=255, blank=True, null=True)
     processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
+    # S3 File fields
+    media_file_thumb = LGImageField(null=True)
+    media_file_scaled = LGImageField(null=True)
     objects = MapImageManager()
 
     class Meta:
@@ -46,6 +50,7 @@ class MapImage(BaseUploadedMedia):
             '%s%s' %
             (self.virtual_path, self.file_name_thumb))
 
+    # These filesystem functions will eventually be replaced by Amazon S3
     def get_abs_directory_path(self):
         return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
 
@@ -67,6 +72,30 @@ class MapImage(BaseUploadedMedia):
         else:
             return None
 
+    # Made a small rough function to only get an idea
+    # because the functions that process the save files
+    # does not seem consistent when integrating with
+    # existing functions or comparing them to the older code
+    # that uses the file system method
+
+    # Still needs work on having proper save procedures
+    def send_map_images_to_S3(self):
+        # maybe make a new directory for map images
+        path = '{0}/media/{1}/{2}'.format(
+            settings.USER_MEDIA_ROOT,
+            self.owner.username,
+            self.uuid
+        )
+        os.mkdir(path)  # create new directory
+        file_name = 'MapImage_' + self.uuid + 'jpg'
+
+        self.media_file_thumb.save('Test_thumb.jpg')
+        self.media_file_scaled.save('Test_scaled.jpg')
+
+    def remove_map_image_from_S3(self):
+        self.media_file_thumb.delete()
+        self.media_file_scaled.delete()
+
     def delete(self, *args, **kwargs):
         # first remove directory, then delete from db:
         import shutil
@@ -78,6 +107,8 @@ class MapImage(BaseUploadedMedia):
                 from localground.apps.lib.helpers import generic
                 dest = dest + '.dup.' + generic.generateID()
             shutil.move(path, dest)
+        # Eventual goal:
+        # self.remove_map_image_from_S3()
 
         super(MapImage, self).delete(*args, **kwargs)
 
@@ -140,4 +171,3 @@ class ImageOpts(ExtentsMixin, MediaMixin, BaseAudit):
 
     def can_edit(self, user):
         return self.source_mapimage.can_edit(user)
-    
