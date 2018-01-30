@@ -23,13 +23,13 @@ class MarkerGeometryMixin(object):
             else:
                 raise serializers.ValidationError('Unsupported geometry type')
 
-            # clear out existing geometries (marker can either be a
-            # point, polyline, or polygon), but not more than one
-            d = {
-                'point': point,
-                'polyline': polyline,
-                'polygon': polygon
-            }
+        # clear out existing geometries (marker can either be a
+        # point, polyline, or polygon), but not more than one
+        d = {
+            'point': point,
+            'polyline': polyline,
+            'polygon': polygon
+        }
         d.update(serializer.validated_data)
         return d
 
