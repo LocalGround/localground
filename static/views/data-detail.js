@@ -277,8 +277,7 @@ define([
             console.log(this.model.get('geometry'));
             console.log(this.model);
             this.commitForm();
-            debugger;
-            //this.model.save();
+            this.model.save();
             this.render();
 
         },
