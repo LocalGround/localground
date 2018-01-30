@@ -14,7 +14,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
 
         this.createOverlay = function (isShowingOnMap) {
             this._googleOverlay = new google.maps.Polygon({
-                path: this.getGoogleGeometryFromModel(),
+                path: this.getGoogleLatLngFromModel(),
                 strokeColor: '#' + this.model.get("fillColor"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,

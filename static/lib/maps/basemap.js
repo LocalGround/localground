@@ -107,7 +107,8 @@ define(["marionette",
                     // 2. set geometry on model 
                     // 3. then save() it.
                     console.log('polygon complete', polygon.getPath());
-                    const polygonToGeoJSON = (polygon) => {
+                    console.log(that.targetedModel);
+                    const googlePolygonToGeoJSON = (polygon) => {
                         var pathCoords = polygon.getPath().getArray(),
                             coords = [],
                             i = 0;
@@ -118,16 +119,33 @@ define(["marionette",
                         coords.push([pathCoords[0].lng(), pathCoords[0].lat()]);
                         return { type: 'Polygon', coordinates: [coords] };
                     };
-                    const polygonGeoJSON = polygonToGeoJSON(polygon);
+                    const polygonGeoJSON = googlePolygonToGeoJSON(polygon);
                     that.targetedModel.set('geometry', polygonGeoJSON);
                     //that.targetedModel.trigger('show-marker');
                     that.targetedModel.save();
                     that.addMarkerClicked = false;
                     that.targetedModel = null;
-                    console.log(polygonGeoJSON);
                 });
                 google.maps.event.addListener(this.drawingManager, 'polylinecomplete', function (polyline) {
                     console.log('polyline complete');
+                    console.log(that.targetedModel);
+                    const googlePolylineToGeoJSON = (polyline) => {
+                        var pathCoords = polyline.getPath().getArray(),
+                            coords = [],
+                            i = 0;
+                        for (i; i < pathCoords.length; i++) {
+                            coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+                        }
+                        return { type: 'LineString', coordinates: coords };
+                    }
+                    const polylineGeoJSON = googlePolylineToGeoJSON(polyline);
+                    that.targetedModel.set('geometry', polylineGeoJSON);
+                    that.targetedModel.save();
+                    console.log(that.targetedModel);
+                    that.addMarkerClicked = false;
+                    that.targetedModel = null;
+
+
                 });
                 google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', function (rect) {
                     rect.setOptions({ editable: false });
@@ -182,6 +200,7 @@ define(["marionette",
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
                 this.targetedModel.trigger('show-marker');
                 this.targetedModel.save();
+                this.app.vent.trigger('placed-marker');
                 this.addMarkerClicked = false;
                 this.targetedModel = null;
             },
@@ -225,6 +244,7 @@ define(["marionette",
             activateMarker: function (model) {
                 this.addMarkerClicked = true;
                 this.targetedModel = model;
+                console.log(this.targetedModel);
             },
 
             renderMap: function () {
