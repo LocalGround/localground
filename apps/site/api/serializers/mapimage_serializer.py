@@ -76,6 +76,7 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         )
         read_only_fields = ('uuid',)
 
+    # Will eventually delete because instance is now taking care of process
     def process_file(self, file, owner):
         #save to disk: Will eventually be removed
         model_name_plural = models.MapImage.model_name_plural
@@ -113,6 +114,8 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         media_path = upload_helpers.generate_absolute_path(owner, model_name_plural, uuid=uuid)
         im = Image.open(media_path + '/' + file_name_new)
         im.thumbnail([500, 500], Image.ANTIALIAS)
+        # Looks similar to the LGFileField parameters for save
+        # except that it has to be tweaked to match S3 standards
         im.save('%s/%s' % (media_path, thumbnail_name))
 
         return {
@@ -133,7 +136,8 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         # ensure filetype is valid:
         upload_helpers.validate_file(f, self.ext_whitelist)
 
-        # save it to disk
+        '''
+        # save it to disk (Old process will be erased...)
         extras = self.process_file(f, owner)
         extras.update(self.get_presave_create_dictionary())
         extras.update({
@@ -149,6 +153,26 @@ class MapImageSerializerCreate(BaseNamedSerializer):
 
         from localground.apps.tasks import process_map
         result = process_map.delay(self.instance)
+        '''
+
+        extras = self.process_file(f, owner)
+        extras.update(self.get_presave_create_dictionary())
+        extras.update({
+            'status': models.StatusCode.objects.get(id=models.StatusCode.READY_FOR_PROCESSING), #Make writeable field in serializer?
+            'upload_source': models.UploadSource.objects.get(id=models.UploadSource.WEB_FORM),
+            'attribution': validated_data.get('attribution') or owner.username,
+            'host': settings.SERVER_HOST
+        })
+        validated_data = {}
+        validated_data.update(self.validated_data)
+        validated_data.update(extras)
+        self.instance = self.Meta.model.objects.create(**validated_data)
+        self.instance.process_mapImage_to_S3(f);
+        # Somehow, there has to be some way that
+        # the process map can be integrated with
+        # some changes
+        # otherwise it is a lot like uploading an image
+        # and the process_map might not be needed
 
         return self.instance
 

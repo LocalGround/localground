@@ -29,9 +29,6 @@ class PhotoSerializer(MediaGeometrySerializerNew):
     def create(self, validated_data):
         # Overriding the create method to handle file processing
         owner = self.context.get('request').user
-
-        # looks like media_file is the only one being saved
-        # onto the amazon cloud storage, but not the others
         f = self.initial_data.get('media_file')
 
         # ensure filetype is valid:

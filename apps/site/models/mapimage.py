@@ -20,8 +20,11 @@ class MapImage(BaseUploadedMedia):
     source_print = models.ForeignKey('Print', blank=True, null=True)
     status = models.ForeignKey('StatusCode',
                                default=StatusCode.READY_FOR_PROCESSING)
+    # looks like file_name_thumb was the primary key
+    # whereas file_name_scaled is never used elsewhere
     file_name_thumb = models.CharField(max_length=255, blank=True, null=True)
     file_name_scaled = models.CharField(max_length=255, blank=True, null=True)
+    # file name chars will eventually be replaced
     scale_factor = models.FloatField(blank=True, null=True)
     upload_source = models.ForeignKey('UploadSource', default=1)
     email_sender = models.CharField(max_length=255, blank=True, null=True)
@@ -33,6 +36,7 @@ class MapImage(BaseUploadedMedia):
     processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
     # S3 File fields
     media_file_thumb = LGImageField(null=True)
+    # no need for scaled since there is no known use of it
     media_file_scaled = LGImageField(null=True)
     objects = MapImageManager()
 
@@ -42,6 +46,7 @@ class MapImage(BaseUploadedMedia):
         verbose_name = 'map-image'
         verbose_name_plural = 'map-images'
 
+    # Never used elsewhere besides mapimage test
     def thumb(self):
         '''
         Used for displaying a previously generated thumbnail image
@@ -89,8 +94,42 @@ class MapImage(BaseUploadedMedia):
         os.mkdir(path)  # create new directory
         file_name = 'MapImage_' + self.uuid + 'jpg'
 
-        self.media_file_thumb.save('Test_thumb.jpg')
-        self.media_file_scaled.save('Test_scaled.jpg')
+        self.media_file_thumb.save(filename, 'Test_thumb.jpg')
+        self.media_file_scaled.save(filename, 'Test_scaled.jpg')
+
+    def generate_mapimage(im, size, file_name):
+        if size in [50, 25]:
+            # ensure that perfect squares:
+            im.thumbnail((size * 2, size * 2), Image.ANTIALIAS)
+            im = im.crop([0, 0, size - 2, size - 2])
+            # for some reason, ImageOps.expand throws an error
+            # for some files:
+            im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
+        else:
+            im.thumbnail((size, size), Image.ANTIALIAS)
+        return self.pil_to_django_file(im, file_name)
+
+    # Making sure that the new process file will
+    # work consistently with other methods
+    # of uploading files to S3
+    def process_mapImage_to_S3(self, file, name=None):
+        # WIP on creating thumbnail to save onto S3
+        from PIL import Image
+
+        im = Image.open(file)
+        basename, ext = os.path.splitext(file.name)
+
+        saved_filename = '{0}.jpg'.format(basename)
+        generated_image = self.generate_mapimage(
+            im, 500, '{0}.jpg'.format(basename)
+        )
+
+        self.media_file_thumb.save(saved_filename, generated_image)
+
+        self.file_name_orig = file.name
+        self.name = name or file.name
+
+        self.save()
 
     def remove_map_image_from_S3(self):
         self.media_file_thumb.delete()
