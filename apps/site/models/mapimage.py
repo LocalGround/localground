@@ -112,17 +112,29 @@ class MapImage(BaseUploadedMedia):
     # Making sure that the new process file will
     # work consistently with other methods
     # of uploading files to S3
+
+    '''
+    Test Candidate to upload the mapinage to S3
+    '''
     def process_mapImage_to_S3(self, file, name=None):
         # WIP on creating thumbnail to save onto S3
+
+        self.uuid = generic.generateID()
+        path = '{0}/media/{1}/{2}'.format(
+            settings.USER_MEDIA_ROOT,
+            self.owner.username,
+            self.uuid
+        )
+        os.mkdir(path)  # create new directory
+
         from PIL import Image
 
         im = Image.open(file)
         basename, ext = os.path.splitext(file.name)
 
-        saved_filename = '{0}.jpg'.format(basename)
+        saved_filename = '{0}_{1}.jpg'.format(basename, self.uuid)
         generated_image = self.generate_mapimage(
-            im, 500, '{0}.jpg'.format(basename)
-        )
+            im, 500, saved_filename)
 
         self.media_file_thumb.save(saved_filename, generated_image)
 
