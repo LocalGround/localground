@@ -59,14 +59,13 @@ define([
         },
 
         triggerPolyline: function(e) {
-            this.app.vent.trigger('add-polyline');
-            this.app.vent.trigger("add-new-marker", this.model);
+            this.app.vent.trigger('add-polyline', this.model);
             this.hideGeometryOptions();
             e.preventDefault();
         },
         triggerPolygon: function(e) {
-            this.app.vent.trigger('add-polygon');
-            this.app.vent.trigger("add-new-marker", this.model);
+            //this.app.vent.trigger("add-new-marker", this.model);
+            this.app.vent.trigger('add-polygon', this.model);
             this.hideGeometryOptions();
             e.preventDefault();
         },
@@ -104,7 +103,7 @@ define([
 
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
-            this.listenTo(this.app.vent, 'placed-marker', this.render);
+            this.listenTo(this.app.vent, 'rerender-data-detail', this.render);
         },
 
         templateHelpers: function () {
@@ -427,6 +426,7 @@ define([
 
         onRender: function () {
             console.log('render data detail');
+            //debugger;
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {

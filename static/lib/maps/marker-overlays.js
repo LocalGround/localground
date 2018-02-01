@@ -50,6 +50,7 @@ define(['marionette',
             // overriding the "addChild" method so that data elements w/o
             // geometries won't render.
             addChild: function (child, ChildView, index) {
+                console.log("MARKER-OVERLAYS: ", child.get('geometry'));
                 if (child.get('geometry') != null) {
                     return Marionette.CollectionView.prototype.addChild.call(this, child, ChildView, index);
                 }

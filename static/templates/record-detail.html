@@ -150,11 +150,6 @@
     <h4>{{#if id}}Edit{{else}}Add New{{/if}}</h4>
 
     {{#ifequal screenType "map"}}
-    <!--
-    <button class="button-secondary" id="add-polyline">Polyline</button>
-    <button class="button-secondary" id="add-polygon">Polygon</button>
-    <button class="button-secondary" id="add-geometry">Point</button>
-    -->
         {{#if geometry}}
             <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>
         {{else}}
@@ -174,7 +169,7 @@
                         <span>POINT</span>
                     </div>
                     <div id="add-polyline">
-                        <svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <svg width="25px" height="25px" viewBox="0 0 25 25">
                             <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                 <g id="Polyline" stroke="#818181">
                                     <path d="M3.5,21.5 L7.5,14.5" id="Line" stroke-linecap="square"></path>
@@ -190,7 +185,7 @@
                         <span>LINE</span>
                     </div>
                     <div id="add-polygon">
-                        <svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1">
                             <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                 <g id="Polygon" stroke="#818181">
                                     <path d="M4.5,20.5 L10.5,5.5" id="Line" stroke-linecap="square"></path>

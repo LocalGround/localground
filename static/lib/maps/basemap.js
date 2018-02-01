@@ -74,19 +74,23 @@ define(["marionette",
             initRectangleMode: function() {
                 this.initDrawingManager(google.maps.drawing.OverlayType.RECTANGLE);
             },
-            initPolylineMode: function() {
+            initPolylineMode: function(model) {
+                this.activateMarker(model);
                 this.initDrawingManager(google.maps.drawing.OverlayType.POLYLINE);
             },
-            initPolygonMode: function() {
+            initPolygonMode: function(model) {
+                this.activateMarker(model);
+                console.log('init polygon');
                 this.initDrawingManager(google.maps.drawing.OverlayType.POLYGON);
             },
             initDrawingManager: function (drawingMode) {
                 var that = this;
-                if (this.drawingManager) {
-                    this.drawingManager.setMap(this.map);
-                    this.drawingManager.setDrawingMode(drawingMode);
-                    return;
-                }
+                // if (this.drawingManager) {
+                //     console.log('this.drawingManager already exists');
+                //     this.drawingManager.setMap(this.map);
+                //     this.drawingManager.setDrawingMode(drawingMode);
+                //     return;
+                // }
                 this.drawingManager = new google.maps.drawing.DrawingManager({
                     drawingMode: drawingMode,
                     drawingControl: false,
@@ -98,14 +102,23 @@ define(["marionette",
                         strokeWeight: 4,
                         clickable: false,
                         editable: true,
+                        draggable: true,
                         zIndex: 1
+                    },
+                    polygonOptions: {
+                        strokeColor: that.targetedModel.collection.fillColor,
+                        fillColor: that.targetedModel.collection.fillColor,
+                        editable: true,
+                        draggable: true
+                    },
+                    polylineOptions: {
+                        strokeColor: that.targetedModel.collection.fillColor,
+                        fillColor: that.targetedModel.collection.fillColor,
+                        editable: true,
+                        draggable: true
                     }
                 });
                 google.maps.event.addListener(this.drawingManager, 'polygoncomplete', function (polygon) {
-                    // see line 161 ish
-                    // 1. look for helper functions to convert to geojson
-                    // 2. set geometry on model 
-                    // 3. then save() it.
                     console.log('polygon complete', polygon.getPath());
                     console.log(that.targetedModel);
                     const googlePolygonToGeoJSON = (polygon) => {
@@ -120,11 +133,26 @@ define(["marionette",
                         return { type: 'Polygon', coordinates: [coords] };
                     };
                     const polygonGeoJSON = googlePolygonToGeoJSON(polygon);
+
+                    polygon.setOptions({strokeWeight: 2.0, fillColor: 'green'});
+
+                    // hide the polygon because we are manually displaying 
+                    // the map ourselves via 'that.targetedModel.trigger('show-marker');'
+
                     that.targetedModel.set('geometry', polygonGeoJSON);
-                    //that.targetedModel.trigger('show-marker');
+                    that.targetedModel.trigger('show-marker');
                     that.targetedModel.save();
                     that.addMarkerClicked = false;
                     that.targetedModel = null;
+                    
+                    that.app.vent.trigger('rerender-data-detail');
+
+                    // exit drawingMode
+                    that.drawingManager.setOptions({
+                        drawingMode: null,
+                        drawingControl: false
+                    });
+                    polygon.setMap(null);
                 });
                 google.maps.event.addListener(this.drawingManager, 'polylinecomplete', function (polyline) {
                     console.log('polyline complete');
@@ -139,11 +167,25 @@ define(["marionette",
                         return { type: 'LineString', coordinates: coords };
                     }
                     const polylineGeoJSON = googlePolylineToGeoJSON(polyline);
+
+                    // hide the polyline because we are manually displaying 
+                    // the map ourselves via 'that.targetedModel.trigger('show-marker');'
+                    polyline.setMap(null);
+
                     that.targetedModel.set('geometry', polylineGeoJSON);
+                    that.targetedModel.trigger('show-marker');
                     that.targetedModel.save();
                     console.log(that.targetedModel);
                     that.addMarkerClicked = false;
                     that.targetedModel = null;
+
+                    that.app.vent.trigger('rerender-data-detail');
+
+                    // exit drawingMode
+                    that.drawingManager.setOptions({
+                        drawingMode: null,
+                        drawingControl: false
+                    });
 
 
                 });
@@ -164,6 +206,9 @@ define(["marionette",
                             };
                         },
                         r = getGeoJSONFromBounds(rect);
+                    
+                    // hide the rectangle because we are manually displaying 
+                    // the map ourselves via 'that.targetedModel.trigger('show-marker');'
                     rect.setMap(null);
                     that.targetedModel.set("geometry", r);
                     that.targetedModel.trigger('show-marker');
@@ -176,6 +221,7 @@ define(["marionette",
             },
 
             doHighlight: function (model) {
+                console.log('DO HIGHLIGHT');
                 if (this.activeModel) {
                     this.activeModel.set("active", false);
                 }
@@ -200,7 +246,7 @@ define(["marionette",
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
                 this.targetedModel.trigger('show-marker');
                 this.targetedModel.save();
-                this.app.vent.trigger('placed-marker');
+                this.app.vent.trigger('rerender-data-detail');
                 this.addMarkerClicked = false;
                 this.targetedModel = null;
             },

@@ -13,21 +13,36 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         };
 
         this.createOverlay = function (isShowingOnMap) {
+            //debugger;
+            console.log('creating the polygon');
             this._googleOverlay = new google.maps.Polygon({
                 path: this.getGoogleLatLngFromModel(),
-                strokeColor: '#' + this.model.get("fillColor"),
+                //strokeColor: '#' + this.model.get("fillColor"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
-                fillColor: '#' + this.model.get("fillColor"),
+                //fillColor: '#' + this.model.get("fillColor"),
                 fillOpacity: 0.35,
-                map: isShowingOnMap ? this.map : null
+                map: isShowingOnMap ? this.map : null,
+                draggable: true,
+                editable: true,
+                strokeColor: '#0000FF',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#0000FF',
+                fillOpacity: 0.35,
             });
         };
 
         this.redraw = function () {
             this._googleOverlay.setOptions({
-                strokeColor: '#' + this.model.get("strokeColor"),
-                fillColor: '#' + this.model.get("fillColor")
+                // strokeColor: '#' + this.model.get("strokeColor"),
+                // fillColor: '#' + this.model.get("fillColor")
+                strokeColor: this.model.collection.fillColor,
+                fillColor: this.model.collection.fillColor,
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                draggable: this.model.get("active")? true : false,
+                editable: this.model.get("active")? true : false
             });
         };
         /**
