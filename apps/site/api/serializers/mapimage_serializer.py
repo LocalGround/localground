@@ -136,17 +136,26 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         # ensure filetype is valid:
         upload_helpers.validate_file(f, self.ext_whitelist)
 
+        owner = self.context.get('request').user
+        validated_data = {}
         validated_data.update(self.validated_data)
         validated_data.update(self.get_presave_create_dictionary())
-        # validated_data.update(extras)
+        validated_data.update({
+            'uuid': generic.generateID(),
+            'status': models.StatusCode.objects.get(
+                id=models.StatusCode.READY_FOR_PROCESSING),
+            'upload_source': models.UploadSource.objects.get(
+                id=models.UploadSource.WEB_FORM),
+            'attribution': validated_data.get('attribution') or owner.username,
+            'host': settings.SERVER_HOST
+        })
         self.instance = self.Meta.model.objects.create(**validated_data)
 
         # process map onto the instance
-        from localground.apps.tasks import process_map
-        result = process_map.delay(self.instance)
+        # from localground.apps.tasks import process_map
+        # result = process_map.delay(self.instance)
         # now save the map_image to S3
         self.instance.process_mapImage_to_S3(f)
-
         return self.instance
 
     def get_file_path(self, obj):

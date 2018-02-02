@@ -13,6 +13,7 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
 from django.contrib.contenttypes import generic
 from localground.apps.site.fields import LGImageField
+from PIL import Image
 
 
 class MapImage(BaseUploadedMedia):
@@ -83,37 +84,9 @@ class MapImage(BaseUploadedMedia):
     # existing functions or comparing them to the older code
     # that uses the file system method
 
-    # Still needs work on having proper save procedures
-    def send_map_images_to_S3(self):
-        # maybe make a new directory for map images
-        path = '{0}/media/{1}/{2}'.format(
-            settings.USER_MEDIA_ROOT,
-            self.owner.username,
-            self.uuid
-        )
-        os.mkdir(path)  # create new directory
-        file_name = 'MapImage_' + self.uuid + 'jpg'
-
-        self.media_file_thumb.save(filename, 'Test_thumb.jpg')
-        self.media_file_scaled.save(filename, 'Test_scaled.jpg')
-
-    '''
-    def generate_mapimage(im, size, file_name):
-        if size in [50, 25]:
-            # ensure that perfect squares:
-            im.thumbnail((size * 2, size * 2), Image.ANTIALIAS)
-            im = im.crop([0, 0, size - 2, size - 2])
-            # for some reason, ImageOps.expand throws an error
-            # for some files:
-            im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
-        else:
-            im.thumbnail((size, size), Image.ANTIALIAS)
+    def generate_mapimage(self, im, size, file_name):
+        im.thumbnail((size, size), Image.ANTIALIAS)
         return self.pil_to_django_file(im, file_name)
-
-    # Making sure that the new process file will
-    # work consistently with other methods
-    # of uploading files to S3
-    '''
 
     '''
     Test Candidate to upload the mapinage to S3
@@ -122,23 +95,20 @@ class MapImage(BaseUploadedMedia):
         # WIP on creating thumbnail to save onto S3
         from localground.apps.lib.helpers import generic
         self.uuid = generic.generateID()
-        path = '{0}/media/{1}/{2}'.format(
-            settings.USER_MEDIA_ROOT,
-            self.owner.username,
-            self.uuid
-        )
-        os.mkdir(path)  # create new directory
 
-        from PIL import Image
 
         im = Image.open(file)
         basename, ext = os.path.splitext(file.name)
 
         saved_filename = '{0}_{1}.jpg'.format(basename, self.uuid)
         generated_image = self.generate_mapimage(
-            im, 500, saved_filename)
+            im, 300, saved_filename)
 
+        # 300 pixels wide:
         self.media_file_thumb.save(saved_filename, generated_image)
+
+        # original file size:
+        self.media_file_scaled.save(file.name, file)
 
         self.file_name_orig = file.name
         self.name = name or file.name
