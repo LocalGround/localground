@@ -130,15 +130,15 @@ class MapImageSerializerCreate(BaseNamedSerializer):
 
     def create(self, validated_data):
         # Overriding the create method to handle file processing
-        owner = self.context.get('request').user
+        # owner = self.context.get('request').user
         f = self.initial_data.get('media_file')
 
         # ensure filetype is valid:
         upload_helpers.validate_file(f, self.ext_whitelist)
 
-        validated_data = {}
         validated_data.update(self.validated_data)
-        validated_data.update(extras)
+        validated_data.update(self.get_presave_create_dictionary())
+        # validated_data.update(extras)
         self.instance = self.Meta.model.objects.create(**validated_data)
 
         # process map onto the instance

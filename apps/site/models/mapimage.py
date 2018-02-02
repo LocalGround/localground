@@ -97,6 +97,7 @@ class MapImage(BaseUploadedMedia):
         self.media_file_thumb.save(filename, 'Test_thumb.jpg')
         self.media_file_scaled.save(filename, 'Test_scaled.jpg')
 
+    '''
     def generate_mapimage(im, size, file_name):
         if size in [50, 25]:
             # ensure that perfect squares:
@@ -112,13 +113,14 @@ class MapImage(BaseUploadedMedia):
     # Making sure that the new process file will
     # work consistently with other methods
     # of uploading files to S3
+    '''
 
     '''
     Test Candidate to upload the mapinage to S3
     '''
     def process_mapImage_to_S3(self, file, name=None):
         # WIP on creating thumbnail to save onto S3
-
+        from localground.apps.lib.helpers import generic
         self.uuid = generic.generateID()
         path = '{0}/media/{1}/{2}'.format(
             settings.USER_MEDIA_ROOT,
