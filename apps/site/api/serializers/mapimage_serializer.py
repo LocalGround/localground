@@ -42,26 +42,6 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     file_path = serializers.SerializerMethodField()
     file_name = serializers.SerializerMethodField()
 
-    '''
-    Proposal:
-    I think that when an image is inserted, a default ImageOpts
-    object should be created. This can be overwritten by the
-    image processor. Sample code:
-    -----------------------------------------------------------
-    map_image = models.ImageOpts(
-        source_mapimage=self.mapimage,
-        file_name_orig=file_name,
-        zoom=p.zoom,
-        host=self.mapimage.host,
-        virtual_path=self.mapimage.virtual_path
-    )
-
-    #pseudocode:
-
-    map_image.center = p.center
-    map_image.save(user=self.user)
-    '''
-
     def get_fields(self, *args, **kwargs):
         fields = super(MapImageSerializerCreate, self).get_fields(*args, **kwargs)
         #restrict project list at runtime:
@@ -83,30 +63,6 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         uuid = generic.generateID()
         file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file, uuid=uuid)
         file_name, ext = os.path.splitext(file_name_new)
-
-        '''
-        # eventual goal for process file:
-        # self.instance.send_map_images_to_S3()
-
-        # Seems that map image serializer is similar to
-        # photo serializer that it takes an image
-        # but also seems to should act like print serializer
-        # because the file path has to be generated
-        # before it can be properly saved to the Amazon S3 Cloud
-
-        # Some mock code that seems to follow the other updated serializers
-
-        # ensure filetype is valid:
-        upload_helpers.validate_file(f, self.ext_whitelist)
-
-        # Save it to Amazon S3 cloud
-        self.validated_data.update(self.get_presave_create_dictionary())
-        self.validated_data.update({
-            'attribution': validated_data.get('attribution') or owner.username
-        })
-        self.instance = self.Meta.model.objects.create(**self.validated_data)
-
-        '''
 
         # create thumbnail:
         from PIL import Image
@@ -155,7 +111,7 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         # from localground.apps.tasks import process_map
         # result = process_map.delay(self.instance)
         # now save the map_image to S3
-        self.instance.process_mapImage_to_S3(f)
+        self.instance.process_mapImage_to_S3(f, validated_data)
         return self.instance
 
     def get_file_path(self, obj):
@@ -166,40 +122,20 @@ class MapImageSerializerCreate(BaseNamedSerializer):
             return obj.processed_image.file_name_orig
         return None
 
-    '''
-    def get_north(self, obj):
-        if obj.processed_image is None:
-            return
-        else:
-            return obj.processed_image.northeast.y
-
-    def get_east(self, obj):
-        if obj.processed_image is None:
-            return
-        else:
-            return obj.processed_image.northeast.x
-
-    def get_south(self, obj):
-        if obj.processed_image is None:
-            return
-        else:
-            return obj.processed_image.southwest.y
-
-    def get_west(self, obj):
-        if obj.processed_image is None:
-            return
-        else:
-            return obj.processed_image.southwest.x
-
-    def get_zoom(self, obj):
-        if obj.processed_image is None:
-            return
-        else:
-            return obj.processed_image.zoom
-    '''
-
     def get_overlay_path(self, obj):
         return obj.processed_map_url_path()
+
+    def get_thumb(self, obj):
+        try:
+            return obj.media_file_thumb.url
+        except Exception:
+            return None
+
+    def get_thumb_scaled(self, obj):
+        try:
+            return obj.media_file_scaled.url
+        except Exception:
+            return None
 
 class MapImageSerializerUpdate(MapImageSerializerCreate):
     media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)

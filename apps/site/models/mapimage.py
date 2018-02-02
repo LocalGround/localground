@@ -91,11 +91,10 @@ class MapImage(BaseUploadedMedia):
     '''
     Test Candidate to upload the mapinage to S3
     '''
-    def process_mapImage_to_S3(self, file, name=None):
+    def process_mapImage_to_S3(self, file, validated_data, name=None):
         # WIP on creating thumbnail to save onto S3
         from localground.apps.lib.helpers import generic
         self.uuid = generic.generateID()
-
 
         im = Image.open(file)
         basename, ext = os.path.splitext(file.name)
@@ -112,6 +111,12 @@ class MapImage(BaseUploadedMedia):
 
         self.file_name_orig = file.name
         self.name = name or file.name
+
+        # Simply a little test for showing the S3 path
+        # by changing existing file, but to no avail
+        validated_data.update({
+            'file_path': self.media_file_thumb.url
+        })
 
         self.save()
 
