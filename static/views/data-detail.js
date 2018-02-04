@@ -102,7 +102,7 @@ define([
             this.isMobile();
 
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
-            this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
+            this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
             this.listenTo(this.app.vent, 'rerender-data-detail', this.render);
         },
 
@@ -425,7 +425,7 @@ define([
         },
 
         onRender: function () {
-            console.log('render data detail');
+            console.log('************************render data detail');
             //debugger;
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();

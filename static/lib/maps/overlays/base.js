@@ -116,6 +116,7 @@ define(["marionette",
             return this.getGoogleOverlay().getMap() != null && this.displayOverlay;
         },
         reRender: function () {
+            console.log('re-rendering model geom:', this.model.get('geometry'));
             this.render();
         },
 

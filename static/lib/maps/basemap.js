@@ -48,7 +48,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
                 this.listenTo(this.app.vent, 'show-streetview', this.showStreetView);
                 this.listenTo(this.app.vent, 'hide-streetview', this.hideStreetView);
-                
+
                 // for adding points, lines, polygons, and rectangles to the map:
                 this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
                 this.listenTo(this.app.vent, 'add-rectangle', this.initRectangleMode);
@@ -79,18 +79,25 @@ define(["marionette",
                 this.initDrawingManager(google.maps.drawing.OverlayType.POLYLINE);
             },
             initPolygonMode: function(model) {
+                console.log('initPolygonMode:', model);
                 this.activateMarker(model);
                 console.log('init polygon');
                 this.initDrawingManager(google.maps.drawing.OverlayType.POLYGON);
             },
             initDrawingManager: function (drawingMode) {
-                var that = this;
-                // if (this.drawingManager) {
-                //     console.log('this.drawingManager already exists');
-                //     this.drawingManager.setMap(this.map);
-                //     this.drawingManager.setDrawingMode(drawingMode);
-                //     return;
-                // }
+                if (this.drawingManager) {
+                     console.log('this.drawingManager already exists');
+                     this.drawingManager.setMap(this.map);
+                     this.drawingManager.setDrawingMode(drawingMode);
+                     return;
+                }
+                var polyOpts = {
+                    strokeWeight: 2,
+                    strokeColor: this.targetedModel.collection.fillColor,
+                    fillColor: this.targetedModel.collection.fillColor,
+                    editable: true,
+                    draggable: true
+                };
                 this.drawingManager = new google.maps.drawing.DrawingManager({
                     drawingMode: drawingMode,
                     drawingControl: false,
@@ -105,119 +112,99 @@ define(["marionette",
                         draggable: true,
                         zIndex: 1
                     },
-                    polygonOptions: {
-                        strokeColor: that.targetedModel.collection.fillColor,
-                        fillColor: that.targetedModel.collection.fillColor,
-                        editable: true,
-                        draggable: true
-                    },
-                    polylineOptions: {
-                        strokeColor: that.targetedModel.collection.fillColor,
-                        fillColor: that.targetedModel.collection.fillColor,
-                        editable: true,
-                        draggable: true
-                    }
+                    polygonOptions: polyOpts,
+                    polylineOptions: polyOpts
                 });
-                google.maps.event.addListener(this.drawingManager, 'polygoncomplete', function (polygon) {
-                    console.log('polygon complete', polygon.getPath());
-                    console.log(that.targetedModel);
-                    const googlePolygonToGeoJSON = (polygon) => {
-                        var pathCoords = polygon.getPath().getArray(),
-                            coords = [],
-                            i = 0;
-                        for (i; i < pathCoords.length; i++) {
-                            coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
-                        }
-                        //add last coordinate again:
-                        coords.push([pathCoords[0].lng(), pathCoords[0].lat()]);
-                        return { type: 'Polygon', coordinates: [coords] };
-                    };
-                    const polygonGeoJSON = googlePolygonToGeoJSON(polygon);
-
-                    polygon.setOptions({strokeWeight: 2.0, fillColor: 'green'});
-
-                    // hide the polygon because we are manually displaying 
-                    // the map ourselves via 'that.targetedModel.trigger('show-marker');'
-
-                    that.targetedModel.set('geometry', polygonGeoJSON);
-                    that.targetedModel.trigger('show-marker');
-                    that.targetedModel.save();
-                    that.addMarkerClicked = false;
-                    that.targetedModel = null;
-                    
-                    that.app.vent.trigger('rerender-data-detail');
-
-                    // exit drawingMode
-                    that.drawingManager.setOptions({
-                        drawingMode: null,
-                        drawingControl: false
-                    });
-                    polygon.setMap(null);
-                });
-                google.maps.event.addListener(this.drawingManager, 'polylinecomplete', function (polyline) {
-                    console.log('polyline complete');
-                    console.log(that.targetedModel);
-                    const googlePolylineToGeoJSON = (polyline) => {
-                        var pathCoords = polyline.getPath().getArray(),
-                            coords = [],
-                            i = 0;
-                        for (i; i < pathCoords.length; i++) {
-                            coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
-                        }
-                        return { type: 'LineString', coordinates: coords };
-                    }
-                    const polylineGeoJSON = googlePolylineToGeoJSON(polyline);
-
-                    // hide the polyline because we are manually displaying 
-                    // the map ourselves via 'that.targetedModel.trigger('show-marker');'
-                    polyline.setMap(null);
-
-                    that.targetedModel.set('geometry', polylineGeoJSON);
-                    that.targetedModel.trigger('show-marker');
-                    that.targetedModel.save();
-                    console.log(that.targetedModel);
-                    that.addMarkerClicked = false;
-                    that.targetedModel = null;
-
-                    that.app.vent.trigger('rerender-data-detail');
-
-                    // exit drawingMode
-                    that.drawingManager.setOptions({
-                        drawingMode: null,
-                        drawingControl: false
-                    });
-
-
-                });
-                google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', function (rect) {
-                    rect.setOptions({ editable: false });
-                    that.drawingManager.setDrawingMode(null);
-                    var getGeoJSONFromBounds = function (r) {
-                            var bounds = r.getBounds().toJSON(),
-                                north = bounds.north,
-                                south = bounds.south,
-                                east = bounds.east,
-                                west = bounds.west;
-                            return {
-                                "type": "Polygon",
-                                "coordinates": [[
-                                    [east, north], [east, south], [west, south], [west, north], [east, north]
-                                ]]
-                            };
-                        },
-                        r = getGeoJSONFromBounds(rect);
-                    
-                    // hide the rectangle because we are manually displaying 
-                    // the map ourselves via 'that.targetedModel.trigger('show-marker');'
-                    rect.setMap(null);
-                    that.targetedModel.set("geometry", r);
-                    that.targetedModel.trigger('show-marker');
-                    that.addMarkerClicked = false;
-                    that.targetedModel = null;
-                    that.drawingManager.setMap(null);
-                    $('body').css({ cursor: 'auto' });
-                });
+                google.maps.event.addListener(this.drawingManager, 'polygoncomplete', this.polygonComplete.bind(this));
+                google.maps.event.addListener(this.drawingManager, 'polylinecomplete', this.polylineComplete.bind(this));
+                google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', this.rectangleComplete.bind(this));
                 this.drawingManager.setMap(this.map);
+            },
+
+            polygonComplete: function (temporaryPolygon) {
+                console.log('temporaryPolygon complete', temporaryPolygon.getPath());
+                console.log(this.targetedModel);
+                //internal function to convert google to geoJSON:
+                const googlePolygonToGeoJSON = (polygon) => {
+                    var pathCoords = polygon.getPath().getArray(),
+                        coords = [],
+                        i = 0;
+                    for (i; i < pathCoords.length; i++) {
+                        coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+                    }
+                    //add last coordinate again:
+                    coords.push([pathCoords[0].lng(), pathCoords[0].lat()]);
+                    return { type: 'Polygon', coordinates: [coords] };
+                };
+                const polygonGeoJSON = googlePolygonToGeoJSON(temporaryPolygon);
+
+                // may want to clear temp poly after server post (not before)
+                var that = this;
+                temporaryPolygon.setMap(null);
+                this.targetedModel.save({ 'geometry': polygonGeoJSON }, { success: function () {
+                    that.finishingTouches();
+                }});
+
+            },
+
+            polylineComplete: function (temporaryPolyline) {
+                console.log('polyline complete');
+                console.log(this.targetedModel);
+                const googlePolylineToGeoJSON = (polyline) => {
+                    var pathCoords = polyline.getPath().getArray(),
+                        coords = [],
+                        i = 0;
+                    for (i; i < pathCoords.length; i++) {
+                        coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+                    }
+                    return { type: 'LineString', coordinates: coords };
+                }
+                const polylineGeoJSON = googlePolylineToGeoJSON(temporaryPolyline);
+
+                var that = this;
+                temporaryPolyline.setMap(null);
+                this.targetedModel.save({ 'geometry': polylineGeoJSON }, { success: function () {
+                    that.finishingTouches();
+                }});
+            },
+
+            rectangleComplete: function (rect) {
+                rect.setOptions({ editable: false });
+                this.drawingManager.setDrawingMode(null);
+                var getGeoJSONFromBounds = function (r) {
+                        var bounds = r.getBounds().toJSON(),
+                            north = bounds.north,
+                            south = bounds.south,
+                            east = bounds.east,
+                            west = bounds.west;
+                        return {
+                            "type": "Polygon",
+                            "coordinates": [[
+                                [east, north], [east, south], [west, south], [west, north], [east, north]
+                            ]]
+                        };
+                    },
+                    r = getGeoJSONFromBounds(rect);
+
+                // hide the rectangle because we are manually displaying
+                // the map ourselves via 'that.targetedModel.trigger('show-marker');'
+                rect.setMap(null);
+                this.targetedModel.set("geometry", r);
+                //this.targetedModel.trigger('show-marker');
+                this.addMarkerClicked = false;
+                this.targetedModel = null;
+                this.drawingManager.setMap(null);
+                $('body').css({ cursor: 'auto' });
+            },
+            finishingTouches: function () {
+                this.app.vent.trigger('rerender-data-detail');
+                // exit drawingMode
+                this.drawingManager.setOptions({
+                    drawingMode: null,
+                    drawingControl: false
+                });
+                this.addMarkerClicked = false;
+                this.targetedModel = null;  // this may be suspect.
             },
 
             doHighlight: function (model) {
@@ -288,9 +275,9 @@ define(["marionette",
             },
 
             activateMarker: function (model) {
+                console.log('activating model...', model);
                 this.addMarkerClicked = true;
                 this.targetedModel = model;
-                console.log(this.targetedModel);
             },
 
             renderMap: function () {
@@ -320,7 +307,7 @@ define(["marionette",
                     mapOptions);
                 //setTimeout(function () {
                 //    $("#map").css({"position": "fixed"});
-                //s}, 500);                
+                //s}, 500);
                 this.initTileManager();
             },
             showStreetView: function (model) {
