@@ -41,10 +41,12 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     overlay_path = serializers.SerializerMethodField()
     file_path = serializers.SerializerMethodField()
     file_name = serializers.SerializerMethodField()
+    media_thumb_url = serializers.SerializerMethodField()
+    media_scaled_url = serializers.SerializerMethodField()
 
     def get_fields(self, *args, **kwargs):
         fields = super(MapImageSerializerCreate, self).get_fields(*args, **kwargs)
-        #restrict project list at runtime:
+        # restrict project list at runtime:
         fields['project_id'].queryset = self.get_projects()
         return fields
 
@@ -52,7 +54,8 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         model = models.MapImage
         fields = BaseNamedSerializer.Meta.fields + (
             'overlay_type', 'source_print', 'project_id', 'geometry',
-            'overlay_path', 'media_file', 'file_path', 'file_name', 'uuid', 'status'
+            'overlay_path', 'media_file', 'file_path', 'file_name',
+            'uuid', 'status', 'media_thumb_url', 'media_scaled_url'
         )
         read_only_fields = ('uuid',)
 
@@ -125,13 +128,13 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     def get_overlay_path(self, obj):
         return obj.processed_map_url_path()
 
-    def get_thumb(self, obj):
+    def get_media_thumb_url(self, obj):
         try:
             return obj.media_file_thumb.url
         except Exception:
             return None
 
-    def get_thumb_scaled(self, obj):
+    def get_media_scaled_url(self, obj):
         try:
             return obj.media_file_scaled.url
         except Exception:

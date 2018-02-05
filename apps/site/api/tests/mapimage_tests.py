@@ -7,6 +7,10 @@ from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import json
 import os.path
 
+'''
+Somehow, there has to be test files that involve serializers
+although I did prepare model tests that check for successful upload and removal
+'''
 
 def get_metadata():
     return {

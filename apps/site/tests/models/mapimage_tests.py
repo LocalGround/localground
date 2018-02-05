@@ -76,6 +76,13 @@ class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
             '/media/tester/map-images/' +
             self.model.processed_image.file_name_orig
         )
+    '''
+    Create tests for the following:
+
+    Successfully uploading the files to S3
+    Successfully removing the files from S3 (requires upload first before delete)
+
+    '''
 
     '''
     TODO: Next Sprint: write tests for Processor
