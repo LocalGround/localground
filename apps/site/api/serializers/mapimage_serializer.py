@@ -119,12 +119,16 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         return self.instance
 
     def get_file_path(self, obj):
-        return obj.encrypt_url(obj.file_name_new)
+        try:
+            return obj.media_file_thumb.url
+        except Exception:
+            return None
 
     def get_file_name(self, obj):
-        if obj.processed_image:
-            return obj.processed_image.file_name_orig
-        return None
+        try:
+            return obj.media_file_thumb.name
+        except Exception:
+            return None
 
     def get_overlay_path(self, obj):
         return obj.processed_map_url_path()
