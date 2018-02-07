@@ -73,6 +73,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         image.save(tmp_file)
         author_string = 'Author of the media file'
         tags = "j,k,l"
+        print(json.dumps(point))
         with open(tmp_file.name, 'rb') as data:
             response = self.client_user.post(
                 self.urls[0],
