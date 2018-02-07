@@ -32,7 +32,7 @@ inside the local server
 
 
 def get_absolute_path(virtual_path):
-    return settings.FILE_ROOT + virtual_path + "/"
+    return settings.FILE_ROOT + virtual_path
 
 
 def generate_relative_path(owner, model_name_plural, uuid=None):
