@@ -97,7 +97,7 @@ class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(len(new_object.uuid), 8)
             self.assertEqual(file_name, new_object.file_name_orig)
             # ensure not empty
-            self.assertTrue(len(new_object.file_name_new) > 5)
+            # self.assertTrue(len(new_object.file_name_new) > 5)
             self.assertEqual(settings.SERVER_HOST, new_object.host)
             self.assertNotEqual(
                 path.find('/userdata/media/{0}/map-images/'.format(
