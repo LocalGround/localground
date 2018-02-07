@@ -9,6 +9,18 @@ from localground.apps.site.api.serializers.base_serializer import BaseNamedSeria
 
 
 class MapImageSerializerCreate(BaseNamedSerializer):
+
+    def __init__(self, *args, **kwargs):
+        super(MapImageSerializerCreate, self).__init__(*args, **kwargs)
+        if not self.instance:
+            return
+        try:
+            model = self.instance[0]
+        except Exception:
+            model = self.instance
+        # Sets the storage location upon initialization:
+        model.media_file_thumb.storage.location = model.get_storage_location()
+
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     media_file = serializers.CharField(
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
