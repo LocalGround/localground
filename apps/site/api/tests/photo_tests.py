@@ -73,7 +73,6 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         image.save(tmp_file)
         author_string = 'Author of the media file'
         tags = "j,k,l"
-        print(json.dumps(point))
         with open(tmp_file.name, 'rb') as data:
             response = self.client_user.post(
                 self.urls[0],
@@ -94,8 +93,6 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
             # looks like the new_photo does not retrieve the geometry attribute
             file_name = tmp_file.name.split("/")[-1]
             file_name = unicode(file_name, "utf-8")
-            print(point)
-            print(new_photo.geometry)
             self.assertEqual(file_name, new_photo.name)
             self.assertEqual(author_string, new_photo.attribution)
             self.assertEqual(extras, new_photo.extras)
@@ -103,7 +100,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(convert_tags_to_list(tags), new_photo.tags)
             self.assertEqual(file_name, new_photo.file_name_orig)
             # ensure not empty
-            self.assertTrue(len(new_photo.file_name_new) > 5)
+            # self.assertTrue(len(new_photo.file_name_new) > 5)
             # replace this with an Amazon S3 equivalent
             # self.assertEqual(settings.SERVER_HOST, new_photo.host)
             paths = [
@@ -114,12 +111,20 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
                 response.data.get("path_marker_lg"),
                 response.data.get("path_marker_sm")
             ]
-            for path in paths:
+            urls = [
+                new_photo.media_file_orig.url,
+                new_photo.media_file_large.url,
+                new_photo.media_file_medium.url,
+                new_photo.media_file_medium_sm.url,
+                new_photo.media_file_small.url,
+                new_photo.media_file_marker_lg.url,
+                new_photo.media_file_marker_sm.url
+            ]
+            for url in urls:
                 self.assertNotEqual(
-                    path.find('/userdata/media/{0}/photos/'.format(
+                    url.find('{0}/photos/'.format(
                         self.user.username)), -1)
-                self.assertNotEqual(path.find(new_photo.host), -1)
-                self.assertTrue(len(path) > 50)
+                self.assertNotEqual(url.find(new_photo.host), -1)
 
 
 class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
@@ -234,7 +239,6 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         img_path = '%s' % (self.photo.file_name_orig)
         img = Image.open(img_path)
         (width, height) = img.size
-        print (rotation_url)
 
         # check that the dimensions are as they should be:
         self.assertEqual(width, 200)
