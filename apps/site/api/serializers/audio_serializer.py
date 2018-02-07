@@ -13,10 +13,16 @@ class AudioSerializer(MediaGeometrySerializerNew):
     ]
 
     def get_file_path(self, obj):
-        return obj.media_file.url
+        try:
+            return obj.media_file.url
+        except Exception:
+            return None
 
     def get_file_path_orig(self, obj):
-        return obj.media_file_orig.url
+        try:
+            return obj.media_file_orig.url
+        except Exception:
+            return None
 
     class Meta:
         model = models.Audio

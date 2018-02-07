@@ -15,6 +15,18 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 tags: 'Text'
             },
             getDataTypePlural: function () {
+
+                // 1/24/2018
+                // the following condition handles newly-uploaded photos which 
+                // appear not to have a properly attributes 'collection' attribute
+                // Problem should probably be handled upstream.
+                // if (typeof this.collection.getDataType == 'undefined') {
+                //     console.log(this.get('overlay_type'));
+                //     console.log(this.attributes.overlay_type);
+                //     return this.attributes.overlay_type;
+                // }
+
+
                 if (this.collection && this.collection.getDataType()) {
                     return this.collection.getDataType();
                 }

@@ -37,32 +37,55 @@ class PhotoSerializer(MediaGeometrySerializerNew):
         # Save it to Amazon S3 cloud
         self.validated_data.update(self.get_presave_create_dictionary())
         self.validated_data.update({
-            'attribution': validated_data.get('attribution') or owner.username
+            'attribution': owner.username
         })
+        self.validated_data.update(validated_data)
+        print self.validated_data
         self.instance = self.Meta.model.objects.create(**self.validated_data)
         self.instance.process_file(f)
         return self.instance
 
     def get_path(self, obj):
-        return obj.media_file_orig.url
+        try:
+            return obj.media_file_orig.url
+        except Exception:
+            return None
 
     def get_path_large(self, obj):
-        return obj.media_file_large.url
+        try:
+            return obj.media_file_large.url
+        except Exception:
+            return None
 
     def get_path_medium(self, obj):
-        return obj.media_file_medium.url
+        try:
+            return obj.media_file_medium.url
+        except Exception:
+            return None
 
     def get_path_medium_sm(self, obj):
-        return obj.media_file_medium_sm.url
+        try:
+            return obj.media_file_medium_sm.url
+        except Exception:
+            return None
 
     def get_path_small(self, obj):
-        return obj.media_file_small.url
+        try:
+            return obj.media_file_small.url
+        except Exception:
+            return None
 
     def get_path_marker_lg(self, obj):
-        return obj.media_file_marker_lg.url
+        try:
+            return obj.media_file_marker_lg.url
+        except Exception:
+            return None
 
     def get_path_marker_sm(self, obj):
-        return obj.media_file_marker_sm.url
+        try:
+            return obj.media_file_marker_sm.url
+        except Exception:
+            return None
 
 
 class PhotoSerializerUpdate(PhotoSerializer):

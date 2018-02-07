@@ -41,9 +41,12 @@ define(["underscore", "marionette", "models/project",
             },
 
             initCollections: function () {
+                var dataLists = {};
+                _.extend(dataLists, this.model.get('datasets'));
+                _.extend(dataLists, this.model.get('media'));
                 var opts, dataType, jsonData, collection;
-                for (dataType in this.model.get("children")) {
-                    opts = this.model.get("children")[dataType];
+                for (dataType in dataLists) {
+                    opts = dataLists[dataType];
                     jsonData = opts.data;
                     _.extend(opts, {
                         title: opts.name,
@@ -178,9 +181,9 @@ define(["underscore", "marionette", "models/project",
                     }
                 };
                 lookup.push.apply(lookup, [
-                    { id: "photos", name: "Photos", hasData: this.getCollection("photos").length > 0 },
-                    { id: "audio", name: "Audio", hasData: this.getCollection("audio").length > 0 },
-                    { id: "videos", name: "Videos", hasData: this.getCollection("videos").length > 0 },
+                    // { id: "photos", name: "Photos", hasData: this.getCollection("photos").length > 0 },
+                    // { id: "audio", name: "Audio", hasData: this.getCollection("audio").length > 0 },
+                    // { id: "videos", name: "Videos", hasData: this.getCollection("videos").length > 0 },
                     { id: "map_images", name: "Map Images", hasData: this.getCollection("map_images").length > 0 }
                 ])
                 return lookup;

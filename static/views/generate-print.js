@@ -60,32 +60,55 @@ define(["marionette",
                     overlays,
                     key,
                     entry,
-                    dm = this.app.dataManager,
-                    dataSources = dm.getDataSources();
-                for (i = 0; i < dataSources.length; i++) {
-                    fillColor = null;
-                    key = dataSources[i].value;
-                    entry = dm.getData(key);
-                    if (key.indexOf("form_") != -1) {
-                        fillColor = formColors[colorCounter];
-                        ++colorCounter;
-                    }
-                    if (entry.collection.length === 0) { continue; }
+                    dm = this.app.dataManager;//,
+                    //dataSources = dm.getDataSources();
+                console.log(dm);
+                
+                // the old, non-functioning
+                // for (i = 0; i < dataSources.length; i++) {
+                //     fillColor = null;
+                //     key = dataSources[i].value;
+                //     entry = dm.getData(key);
+                //     if (key.indexOf("form_") != -1) {
+                //         fillColor = formColors[colorCounter];
+                //         ++colorCounter;
+                //     }
+                //     if (entry.collection.length === 0) { continue; }
+                //     overlays = new MarkerOverlays({
+                //         collection: entry.collection,
+                //         app: this.app,
+                //         map: this.basemapView.map,
+                //         dataType: entry.collection.key,
+                //         isShowing: true,
+                //         _icon: new Icon({
+                //             shape: entry.collection.key,
+                //             //fillColor: fillColor,
+                //             fillColor: entry.collection.fillColor,
+                //             width: entry.collection.size,
+                //             height: entry.collection.size
+                //         })
+                //     });
+                // }
+
+                // Riley's attempt at fixing
+                dm.each((collection) => {
                     overlays = new MarkerOverlays({
-                        collection: entry.collection,
+                        collection: collection,
                         app: this.app,
                         map: this.basemapView.map,
-                        dataType: entry.collection.key,
+                        dataType: collection.overlay_type,
                         isShowing: true,
                         _icon: new Icon({
-                            shape: entry.collection.key,
-                            //fillColor: fillColor,
-                            fillColor: entry.collection.fillColor,
-                            width: entry.collection.size,
-                            height: entry.collection.size
-                        })
+                            shape: collection.getDataType(),
+                            fillColor: collection.fillColor,
+                            width: collection.size,
+                            height: collection.size
+                        }),
+                        displayOverlays: true
                     });
-                }
+                });
+
+                
                 console.log("show overlays");
             },
 

@@ -86,7 +86,8 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         # read EXIF data:
         exif = self.read_exif_data(im)
         self.device = exif.get('model', None)
-        self.point = exif.get('point', None)
+        if exif.get('point'):
+            self.point = exif.get('point')
 
         # generate thumbnails
         self.generate_thumbnails(im, file.name)

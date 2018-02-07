@@ -51,41 +51,51 @@ class ProjectSerializer(BaseNamedSerializer, ProjectSerializerMixin):
 class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
     slug = serializers.SlugField(
         max_length=100, label='friendly url', required=False)
-    children = serializers.SerializerMethodField()
+    datasets = serializers.SerializerMethodField()
+    media = serializers.SerializerMethodField()
     view = None
 
     class Meta:
         model = models.Project
         read_only_fields = ('time_stamp', 'date_created', 'last_updated_by')
-        fields = ProjectSerializer.Meta.fields + ('sharing_url', 'children')
+        fields = ProjectSerializer.Meta.fields + ('sharing_url', 'datasets', 'media')
         depth = 0
 
     def get_metadata(self, serializer_class):
         m = CustomMetadata()
         return m.get_serializer_info(serializer_class)
 
-    def get_children(self, obj):
+    def get_datasets(self, obj):
         forms = models.Form.objects.prefetch_related(
                 'field_set', 'field_set__data_type'
             ).filter(project=obj)
 
-        children = {
-            'photos': self.get_photos(obj),
-            'videos': self.get_videos(obj),
-            'audio': self.get_audio(obj),
-            'map_images': self.get_mapimages(obj),
+        datasets = {
+            # 'photos': self.get_photos(obj),
+            # 'videos': self.get_videos(obj),
+            # 'audio': self.get_audio(obj),
+            # 'map_images': self.get_mapimages(obj),
             'markers': self.get_markers(obj)
         }
 
         # add table data:
         for form in forms:
-            children['form_%s' % form.id] = self.get_table_records(form)
-        return children
+            datasets['form_%s' % form.id] = self.get_table_records(form)
+        return datasets
+
+    def get_media(self, obj):
+        media = {
+            'photos': self.get_photos(obj),
+            'videos': self.get_videos(obj),
+            'audio': self.get_audio(obj),
+            'map_images': self.get_mapimages(obj)
+        }
+        return media
 
     def get_table_records(self, form):
         records = form.get_records()
         return self.serialize_list(
-            models.MarkerWithAttributes,
+            models.Record,
             create_dynamic_serializer(form),
             records,
             name=form.name,
@@ -137,9 +147,9 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
 
     def get_markers(self, obj):
         return self.serialize_list(
-            models.Marker,
+            models.Record,
             MarkerSerializer,
-            models.Marker.objects.get_objects_with_lists(
+            models.Record.objects.get_objects_with_lists(
                 project=obj,
             )
         )
@@ -156,17 +166,11 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
 
         serializer = serializer_class(
             records, many=True, context={'request': {}})
-        # if model_class == models.MarkerWithAttributes:
-        #     raise Exception(serializer.data)
+        
         d = {
             'id': model_name_plural,
             'name': name,
             'overlay_type': overlay_type,
             'data': serializer.data
         }
-        d.update({
-            'update_metadata': self.get_metadata(serializer)
-        })
-        # if model_class == models.MarkerWithAttributes:
-        #     raise Exception(d)
         return d

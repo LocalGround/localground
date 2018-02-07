@@ -213,9 +213,14 @@ define([
                 fetch = function () {
                     that.model.fetch({reset: true});
                 };
+            const phot_ct = !this.model.get('attached_photos_ids') ? 0 : this.model.get('attached_photos_ids').length;
+            const aud_ct = !this.model.get('attached_audio_ids') ? 0 : this.model.get('attached_audio_ids').length;
             for (i = 0; i < models.length; ++i) {
                 console.log(models[i]);
-                ordering = this.model.get("photo_count") + this.model.get("audio_count");
+                //ordering = this.model.get("photo_count") + this.model.get("audio_count");
+                ordering = phot_ct + aud_ct;
+                console.log('ordering', ordering);
+                console.log(this.model);
                 this.model.attach(models[i], (ordering + i + 1));
             }
             //fetch and re-render model:
@@ -253,7 +258,7 @@ define([
         render: function () {
             //re-render the child template:
             this.$el.empty().append(this.template({
-                children: this.model.get("children"),
+                media: this.model.get("media"),
                 featured_image: this.getFeaturedImage()
             }));
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
@@ -270,8 +275,8 @@ define([
                 that = this,
                 player,
                 $elem;
-            if (this.model.get("children") && this.model.get("children").audio) {
-                audio_attachments = this.model.get("children").audio.data;
+            if (this.model.get("media") && this.model.get("media").audio) {
+                audio_attachments = this.model.get("media").audio.data;
             }
             _.each(audio_attachments, function (item) {
                 $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];

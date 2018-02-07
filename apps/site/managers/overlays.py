@@ -8,13 +8,20 @@ from localground.apps.site.managers.base import BaseMixin, \
 
 
 class MarkerMixin():
+    # Sarah wants to refactor this into two functions. 
+    # It currently handles filtering of:
+    # 1) Records with attributes (i.e. Markers with Attributes)
+    # 2) Records without attributes (i.e. plain Markers)
     def _get_objects_with_extras(
             self, aggregation_type, form=None, project=None,
             ordering_field=None):
         if form:
+            # return Records belonging to a specific form
             q = self.filter(form=form)
-        elif project:
-            q = self.filter(project=project)
+
+        elif project and form==None:
+            # only return Records with NO forms, i.e. records without hstore attributes
+            q = self.filter(project=project).filter(form=None)
         else:
             raise Exception("either a form or a project must be passed in")
 

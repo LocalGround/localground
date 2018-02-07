@@ -23,13 +23,13 @@ class MarkerGeometryMixin(object):
             else:
                 raise serializers.ValidationError('Unsupported geometry type')
 
-            # clear out existing geometries (marker can either be a
-            # point, polyline, or polygon), but not more than one
-            d = {
-                'point': point,
-                'polyline': polyline,
-                'polygon': polygon
-            }
+        # clear out existing geometries (marker can either be a
+        # point, polyline, or polygon), but not more than one
+        d = {
+            'point': point,
+            'polyline': polyline,
+            'polygon': polygon
+        }
         d.update(serializer.validated_data)
         return d
 
@@ -46,10 +46,12 @@ class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin):
             raise APIException({
                 'project_id': ['A project_id is required']
             })
-        return models.Marker.objects.get_objects_with_lists(
+        record_set = models.Record.objects.get_objects_with_lists(
             project=models.Project.objects.get(
-                id=int(r.get('project_id')))
+                id=int(r.get('project_id'))),
+            form=None
         )
+        return record_set
 
     def perform_create(self, serializer):
         d = self.get_geometry_dictionary(serializer)
@@ -58,7 +60,7 @@ class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin):
 
 class MarkerInstance(
         MarkerGeometryMixin, generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Marker.objects.select_related('owner', 'project')
+    queryset = models.Record.objects.select_related('owner', 'project')
     serializer_class = serializers.MarkerSerializerDetail
 
     def perform_update(self, serializer):

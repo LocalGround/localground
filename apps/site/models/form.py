@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from django.db.models import Q
 from localground.apps.site.managers import FormManager
 from localground.apps.site.models import NamedMixin, BaseAudit, \
-     ProjectMixin, MarkerWithAttributes
+     ProjectMixin, Record
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 
@@ -45,7 +45,7 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
         return self._fields
 
     def get_records(self):
-        return MarkerWithAttributes.objects.filter(form=self)
+        return Record.objects.filter(form=self)
 
     def get_fields(self, ordering='ordering', print_only=False):
         if print_only:

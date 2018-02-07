@@ -44,8 +44,8 @@ class CSVMixin(mixins.MediaMixin):
                 headers = response.data['actions'].get('POST').keys()
             else:
                 headers = response.data['actions'].get('PUT').keys()
-                if 'children' in headers:
-                    headers.remove('children') #for instances
+                if 'media' in headers:
+                    headers.remove('media') #for instances
             if test_record.get('overlay_type') not in types_without_lat_lngs:
                 headers += ['lat', 'lng']
             if '/datasets/' not in url:

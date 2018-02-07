@@ -192,11 +192,6 @@ class GenericRelationMixin(models.Model):
         from localground.apps.site.models.mapimage import MapImage
         return self.grab(MapImage)
 
-    @property
-    def markers(self):
-        from localground.apps.site.models.marker import Marker
-        return self.grab(Marker)
-
 
 class NamedMixin(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)

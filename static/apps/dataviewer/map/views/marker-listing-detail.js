@@ -60,7 +60,10 @@ define(["jquery",
                     screenType: this.app.screenType,
                     icon: this.icon,
                     name: this.model.get("name") || this.model.get("display_name"),
-                    displayOverlay: this.displayOverlay
+                    displayOverlay: this.displayOverlay,
+                    isPoint: this.geometryType() === "Point",
+                    isPolygon: this.geometryType() === "Polygon",
+                    isPolyline: this.geometryType() === "LineString"
                 };
                 if (this.icon) {
                     _.extend(opts, {
@@ -70,6 +73,14 @@ define(["jquery",
                 }
                 return opts;
             },
+
+            geometryType: function() {
+                // don't check 'geometry.type' is 'geometry' is nullthis.geometryType === "Point",
+                if (this.model.get('geometry')) {
+                    return this.model.get('geometry').type;
+                }
+            },
+
             hoverHighlight: function () {
                 this.clearHoverHighlight();
                 if (!this.$el.find('a').hasClass('highlight')) {

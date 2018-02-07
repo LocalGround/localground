@@ -31,6 +31,7 @@ define([
             }
         },
         dataDetail: function (screenType, dataType, id) {
+            // debugger;
             this.app.screenType = screenType;
             this.app.dataType = dataType;
             var dm = this.app.dataManager,
@@ -53,6 +54,7 @@ define([
                 model: this.app.dataManager.getModel(dataType, parseInt(id)),
                 app: this.app
             });
+            console.log('DATA DETAIL');
             this.app.vent.trigger("show-detail", detailView, false);
 
             //2. for spreadsheet:

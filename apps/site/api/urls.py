@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.conf.urls import patterns, url
 from django.conf.urls import include
 from localground.apps.site.api import views
@@ -130,24 +132,15 @@ urlpatterns += format_suffix_patterns(patterns('',
     url(
         r'^markers/(?P<pk>[0-9]+)/$',
         views.MarkerInstance.as_view(),
-        name='marker-detail'),
+        name='record-detail'),
     url(r'^markers/$',
         views.MarkerList.as_view(),
-        name='marker-list'),
-    #url(
-    #    r'^markerwithattrs/(?P<pk>[0-9]+)/$',
-    #    views.MarkerWAttrsInstance.as_view(),
-    #    name='markerwithattributes-detail'),
-    #url(r'^markerwithattrs/$',
-    #    views.MarkerWAttrsList.as_view(),
-    #    name='markerwithattributes-list'),
+        name='record-list'),
     url(
         r'^datasets/(?P<form_id>[0-9]+)/data/(?P<pk>[0-9]+)/$',
-        views.MarkerWAttrsInstance.as_view(),
-        name='markerwithattributes-detail'),
+        views.MarkerWAttrsInstance.as_view()),
     url(r'^datasets/(?P<form_id>[0-9]+)/data/$',
-        views.MarkerWAttrsList.as_view(),
-        name='markerwithattributes-list'),
+        views.MarkerWAttrsList.as_view()),
     url(
         r'^prints/(?P<pk>[0-9]+)/$',
         views.PrintInstance.as_view(),
@@ -216,3 +209,7 @@ urlpatterns += format_suffix_patterns(patterns('',
     url(r'^videos/(?P<pk>[0-9]+)/$', views.VideoInstance.as_view(),
         name='video-detail'),
     ))
+
+if settings.DEBUG:
+   # Store static CSS, JS, etc. locally:
+   urlpatterns += static('/static/', document_root=settings.STATIC_ROOT)

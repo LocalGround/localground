@@ -30,13 +30,46 @@ define([
             'click .show': 'showMapPanel',
             'click .rotate-left': 'rotatePhoto',
             'click .rotate-right': 'rotatePhoto',
-            "click #add-geometry": "activateMarkerTrigger",
             "click #delete-geometry": "deleteMarker",
             "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView',
             "click .thumbnail-play-circle": 'playAudio',
-            'click .circle': 'openExpanded'
+            'click .circle': 'openExpanded',
+
+            // add event listeners for various geometry requests
+            // first, a trigger to display dropdown menu
+            "click #add-geometry": "displayGeometryOptions",
+            // add point, polyline, or polygon
+            'click #add-point': 'activateMarkerTrigger',
+            'click #add-polyline': 'triggerPolyline',
+            'click #add-polygon': 'triggerPolygon',
+            'click': 'hideGeometryOptions'
         },
+
+        displayGeometryOptions: function(e) {
+            this.$el.find('.add-marker-button').css({background: '#bbbbbb'});
+            this.$el.find('.geometry-options').css({display: 'block'});
+        },
+
+        hideGeometryOptions: function(e) {
+            if (e && !$(e.target).hasClass('add-marker-button')) {
+                this.$el.find('.add-marker-button').css({background: '#fafafc'});
+                this.$el.find('.geometry-options').css({display: 'none'});
+            };
+        },
+
+        triggerPolyline: function(e) {
+            this.app.vent.trigger('add-polyline', this.model);
+            this.hideGeometryOptions();
+            e.preventDefault();
+        },
+        triggerPolygon: function(e) {
+            //this.app.vent.trigger("add-new-marker", this.model);
+            this.app.vent.trigger('add-polygon', this.model);
+            this.hideGeometryOptions();
+            e.preventDefault();
+        },
+
         getTemplate: function () {
             console.log(this.dataType, this.mobileView );
             if (this.dataType == "photos") {
@@ -69,7 +102,8 @@ define([
             this.isMobile();
 
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
-            this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
+            this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
+            this.listenTo(this.app.vent, 'rerender-data-detail', this.render);
         },
 
         templateHelpers: function () {
@@ -91,6 +125,7 @@ define([
                 dataType: this.dataType,
                 audioMode: "detail",
                 name: this.model.get("name") || this.model.get("display_name"),
+                geometry: !!this.model.get('geometry'),
                 screenType: this.app.screenType,
                 lat: lat,
                 lng: lng,
@@ -232,12 +267,18 @@ define([
             $(window).mousemove(mm.start.bind(mm));
             $follower.click(mm.stop);
             this.app.vent.trigger("add-new-marker", this.model);
+            this.hideGeometryOptions();
         },
 
         deleteMarker: function () {
-            this.model.set("geometry", null);
+            this.model.set('geometry', null);
+            //Backbone.Model.prototype.set.call(this.model, "geoometry", null);
+            console.log(this.model.get('geometry'));
+            console.log(this.model);
             this.commitForm();
             this.model.save();
+            this.render();
+
         },
 
         bindFields: function () {
@@ -246,6 +287,8 @@ define([
             }
             var i, f;
             if (this.model.get("overlay_type").indexOf("form_") != -1) {
+                console.log(this.model.get("fields"));
+                var something = this.model.attributes;
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
                     f = this.model.get("fields")[i];
@@ -255,8 +298,8 @@ define([
         },
 
         modelEvents: {
-            "change:children": "render",
-            "commit-data-no-save": "commitForm"
+            'change:media': 'render',
+            'commit-data-no-save': 'commitForm'
         },
         switchToViewMode: function () {
             this.app.mode = "view";
@@ -382,6 +425,8 @@ define([
         },
 
         onRender: function () {
+            console.log('************************render data detail');
+            //debugger;
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {

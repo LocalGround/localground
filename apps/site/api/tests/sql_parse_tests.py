@@ -11,7 +11,6 @@ from localground.apps.lib.helpers.sqlparse.sql_djangoify import get_where_clause
 from localground.apps.site import models
 
 # model imports
-from localground.apps.site.models.marker import Marker
 from localground.apps.site.models.photo import Photo
 
 def get_data_sets_from_sql(model, raw_where_clause, parsed_where_clause=None):

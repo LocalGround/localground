@@ -1,3 +1,4 @@
+'''
 import os
 from django import test
 from django.conf import settings
@@ -430,3 +431,4 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                       HTTP_X_CSRFTOKEN=self.csrf_token
                                       )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+'''

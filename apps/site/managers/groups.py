@@ -33,7 +33,7 @@ class ProjectMixin(GroupMixin):
                     'audio_count': sql.format('audio'),
                     'video_count': sql.format('video'),
                     'processed_maps_count': sql.format('mapimage'),
-                    'marker_count': sql.format('marker'),
+                    'record_count': sql.format('record'),
                     'shared_with': 'select shared_with from v_projects_shared_with WHERE v_projects_shared_with.id = site_project.id'
                 },
             )

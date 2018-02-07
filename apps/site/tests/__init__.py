@@ -273,11 +273,10 @@ class ModelMixin(object):
             from django.contrib.gis.geos import GEOSGeometry
             geom = GEOSGeometry(json.dumps(geoJSON))
 
-        m = models.Marker(
+        m = models.Record(
             project=project,
             name=name,
             owner=user,
-            color='CCCCCC',
             extras=extras,
             last_updated_by=user,
             tags=tags
@@ -311,7 +310,7 @@ class ModelMixin(object):
             from django.contrib.gis.geos import GEOSGeometry
             geom = GEOSGeometry(json.dumps(geoJSON))
 
-        mwa = models.MarkerWithAttributes(
+        mwa = models.Record(
             project=project,
             name=name,
             owner=user,
@@ -331,7 +330,7 @@ class ModelMixin(object):
 
     def get_marker(self, marker_id=1):
         from localground.apps.site import models
-        return models.Marker.objects.get(id=marker_id)
+        return models.Record.objects.get(id=marker_id)
 
     def create_print_without_image(
             self, layout_id=1, map_provider=1, lat=55, lng=61.4, zoom=17,
@@ -605,7 +604,7 @@ class ModelMixin(object):
 
     def create_photo(self, user=None, project=None, name='Photo Name',
                      file_name='myphoto.jpg', device='HTC',
-                     point=None, tags=[]):
+                     point=None, tags=[], with_media=False):
         from localground.apps.site import models
         user = user or self.user
         project = project or self.project
@@ -621,6 +620,11 @@ class ModelMixin(object):
             tags=tags
         )
         photo.save()
+        if with_media:
+            import Image
+            image = Image.new('RGB', (200, 100))
+            image.save('test.jpg')
+            photo.process_file(image)
         return photo
 
     def create_icon(self, user, project, icon_file='icon.jpg', name='test_icon', file_type='jpg', size=100, width=100, height=100, anchor_x=30, anchor_y=50):

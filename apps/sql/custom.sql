@@ -50,7 +50,7 @@ SELECT setval(pg_get_serial_sequence('"site_statuscode"','id'), coalesce(max("id
 SELECT setval(pg_get_serial_sequence('"site_uploadsource"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_uploadsource";
 SELECT setval(pg_get_serial_sequence('"site_uploadtype"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_uploadtype";
 SELECT setval(pg_get_serial_sequence('"site_errorcode"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_errorcode";
-SELECT setval(pg_get_serial_sequence('"site_marker"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_marker";
+--SELECT setval(pg_get_serial_sequence('"site_marker"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_marker";
 SELECT setval(pg_get_serial_sequence('"site_overlaysource"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_overlaysource";
 SELECT setval(pg_get_serial_sequence('"site_overlaytype"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_overlaytype";
 SELECT setval(pg_get_serial_sequence('"site_tileset"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_tileset";

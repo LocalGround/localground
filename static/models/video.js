@@ -22,6 +22,9 @@ define(["models/base"], function (Base) {
             },
             tags: { type: 'List', itemType: 'Text' }
         },
+        getDataTypePlural: function() {
+            return 'videos';
+        },
         getFormSchema: function () {
             return this.schema;
         }

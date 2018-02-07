@@ -8,14 +8,6 @@
     <label for="projectName">Description: </label>
     <textarea placeholder="Type description of project" id="caption">{{ caption }}</textarea>
 </div>
-{{#if id}}
-    <!-- owner isn't an editable field -->
-{{ else }}
-    <div class="inline-form owner">
-        <label for="owner">Owner: </label>
-        <input type="text" placeholder="TODO: Auto-detect this" id="owner" value="{{ username }}" />
-    </div>
-{{/if}}
 <div class="inline-form projectName">
     <label for="projectName">Tags: </label>
     <input type="text" placeholder="put some tags for easy search" id="tags" value="{{ tags }}">

@@ -26,13 +26,22 @@ define(["jquery"], function ($) {
                 strokeColor: '#' + this.model.get("strokeColor"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
-                map: isShowingOnMap ? this.map : null
+                map: isShowingOnMap ? this.map : null,
+                //editable: true,
+                draggable: true
+
             });
         };
 
         this.redraw = function () {
+            console.log('REDRAW POLYLINE');
             this._googleOverlay.setOptions({
-                strokeColor: '#' + this.model.get("strokeColor")
+                //strokeColor: '#' + this.model.get("strokeColor")
+                strokeColor: this.model.collection.fillColor,
+                strokeOpacity: 1.0,
+                strokeWeight: 5,
+                draggable: this.model.get("active")? true : false,
+                editable: this.model.get("active")? true : false,
             });
         };
 
@@ -144,6 +153,7 @@ define(["jquery"], function ($) {
         };
 
         this.makeEditable = function (model) {
+            console.log('polyline MAKE EDITABLE');
             var that = this;
             google.maps.event.clearListeners(this._googleOverlay.getPath());
 			this._googleOverlay.setOptions({'draggable': false, 'editable': true});

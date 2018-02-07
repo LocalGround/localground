@@ -12,6 +12,9 @@ define(["models/base", "jquery"], function (Base, $) {
             attribution: { type: 'TextArea', title: "Attribution" },
             tags: { type: 'List', itemType: 'Text' }
         },
+        getDataTypePlural: function() {
+            return 'photos';
+        },
         rotate: function (direction, callback) {
             $.ajax({
                 url: '/api/0/photos/' + this.id + '/rotate-' + direction + '/.json',

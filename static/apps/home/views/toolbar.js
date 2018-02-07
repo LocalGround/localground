@@ -12,9 +12,15 @@ define([
         events: {
             'click #toggle-button': 'toggleVisibility'
         },
+        /*
+        Looks like there are conflicting names to represent username
+        username is the old version of getting user name
+        user.username is the new way to get user name
+        */
         templateHelpers: function () {
             return {
-                username: this.app.username
+                username: this.app.username,
+                user: this.app.user
             };
         },
 
