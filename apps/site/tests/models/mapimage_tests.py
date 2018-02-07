@@ -1,4 +1,5 @@
 from localground.apps.site.models import MapImage
+from localground.apps.site.models import StatusCode
 from django.conf import settings
 from django.contrib.gis.db import models
 from localground.apps.site.tests.models import \
@@ -6,11 +7,12 @@ from localground.apps.site.tests.models import \
 from django import test
 import Image
 from localground.apps.site.fields import LGImageField
-from django.contrib.contenttypes import generic
+from localground.apps.lib.helpers import generic
 from rest_framework import status
 from django.core.files import File
 import httplib
 import urllib
+from urlparse import urlparse
 
 
 class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
@@ -44,11 +46,11 @@ class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
                 # according to test error despite that
                 # generic has the function
                 'uuid': generic.generateID(),
-                'status': models.StatusCode.objects.get(
-                    id=models.StatusCode.READY_FOR_PROCESSING),
+                'status': StatusCode.objects.get(
+                    id=StatusCode.READY_FOR_PROCESSING),
             }
-            map_image = models.MapImage.objects.create(**photo_data)
-            map_image.process_file(File(data))
+            map_image = MapImage.objects.create(**photo_data)
+            map_image.process_mapImage_to_S3(File(data))
         return map_image
 
     # A streamlined approach to checking all the properties
@@ -110,22 +112,14 @@ class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
             '/media/tester/map-images/' +
             self.model.processed_image.file_name_orig
         )
-    '''
-    Create tests for the following:
-
-    Successfully uploading the files to S3
-    Successfully removing the files from S3
-        (requires upload first before delete)
-
-    '''
 
     def test_remove_map_images_from_S3(self, **kwargs):
         # The process_map_image needs parameters
         # Need fake validated_data to work
         map_image = self.generate_map_image(**kwargs)
         urls = [
-            map_image.media_file_thumb,
-            map_image.media_file_scaled
+            map_image.media_file_thumb.url,
+            map_image.media_file_scaled.url
         ]
 
         # files should exist on S3:
@@ -136,7 +130,7 @@ class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
             self.assertEqual(conn.getresponse().status, 200)
 
         # now delete map images
-        map_image.remove_map_image_from_S3()
+        map_image.delete()
 
         # files should not exist on S3:
         for url in urls:

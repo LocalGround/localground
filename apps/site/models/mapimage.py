@@ -77,12 +77,6 @@ class MapImage(BaseUploadedMedia):
         else:
             return None
 
-    # Made a small rough function to only get an idea
-    # because the functions that process the save files
-    # does not seem consistent when integrating with
-    # existing functions or comparing them to the older code
-    # that uses the file system method
-
     def generate_mapimage(self, im, size, file_name):
         im.thumbnail((size, size), Image.ANTIALIAS)
         return self.pil_to_django_file(im, file_name)
@@ -120,19 +114,7 @@ class MapImage(BaseUploadedMedia):
         self.media_file_scaled.delete()
 
     def delete(self, *args, **kwargs):
-        # first remove directory, then delete from db:
-        import shutil
-        import os
-        path = self.get_abs_directory_path()
-        if os.path.exists(path):
-            dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
-            if os.path.exists(dest):
-                from localground.apps.lib.helpers import generic
-                dest = dest + '.dup.' + generic.generateID()
-            shutil.move(path, dest)
-        # Eventual goal:
-        # self.remove_map_image_from_S3()
-
+        self.remove_map_image_from_S3()
         super(MapImage, self).delete(*args, **kwargs)
 
     def process(self):
