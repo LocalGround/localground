@@ -37,7 +37,6 @@ class MapImage(BaseUploadedMedia):
     processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
     # S3 File fields
     media_file_thumb = LGImageField(null=True)
-    # no need for scaled since there is no known use of it
     media_file_scaled = LGImageField(null=True)
     objects = MapImageManager()
 
@@ -91,7 +90,8 @@ class MapImage(BaseUploadedMedia):
     '''
     Test Candidate to upload the mapinage to S3
     '''
-    def process_mapImage_to_S3(self, file, validated_data, name=None):
+    # Could not find use of validated_data so far
+    def process_mapImage_to_S3(self, file, name=None):
         # WIP on creating thumbnail to save onto S3
         from localground.apps.lib.helpers import generic
         self.uuid = generic.generateID()

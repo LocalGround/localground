@@ -113,8 +113,9 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         # process map onto the instance
         # from localground.apps.tasks import process_map
         # result = process_map.delay(self.instance)
+
         # now save the map_image to S3
-        self.instance.process_mapImage_to_S3(f, validated_data)
+        self.instance.process_mapImage_to_S3(f)
         return self.instance
 
     def get_file_path(self, obj):

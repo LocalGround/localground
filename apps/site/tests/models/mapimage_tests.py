@@ -4,6 +4,13 @@ from django.contrib.gis.db import models
 from localground.apps.site.tests.models import \
     BaseUploadedMediaAbstractModelClassTest
 from django import test
+import Image
+from localground.apps.site.fields import LGImageField
+from django.contrib.contenttypes import generic
+from rest_framework import status
+from django.core.files import File
+import httplib
+import urllib
 
 
 class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
@@ -16,6 +23,33 @@ class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
         self.pretty_name = 'map image'
         self.model_name_plural = 'map-images'
         self.pretty_name_plural = 'map images'
+
+    def generate_map_image(self, **kwargs):
+        user = self.user
+        project = self.project
+        # Attempting to make fake image
+        image = Image.new('RGB', (200, 100))
+        tmp_file = 'test.jpg'
+        image.save(tmp_file)
+        author_string = 'Author of the media file'
+        tags = "j,k,l"
+        with open(tmp_file, 'rb') as data:
+            photo_data = {
+                'attribution': user.username,
+                'host': settings.SERVER_HOST,
+                'owner': user,
+                'last_updated_by': user,
+                'project': self.project,
+                # generic does not have 'generateID'
+                # according to test error despite that
+                # generic has the function
+                'uuid': generic.generateID(),
+                'status': models.StatusCode.objects.get(
+                    id=models.StatusCode.READY_FOR_PROCESSING),
+            }
+            map_image = models.MapImage.objects.create(**photo_data)
+            map_image.process_file(File(data))
+        return map_image
 
     # A streamlined approach to checking all the properties
     # from the class being tested on
@@ -80,9 +114,36 @@ class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
     Create tests for the following:
 
     Successfully uploading the files to S3
-    Successfully removing the files from S3 (requires upload first before delete)
+    Successfully removing the files from S3
+        (requires upload first before delete)
 
     '''
+
+    def test_remove_map_images_from_S3(self, **kwargs):
+        # The process_map_image needs parameters
+        # Need fake validated_data to work
+        map_image = self.generate_map_image(**kwargs)
+        urls = [
+            map_image.media_file_thumb,
+            map_image.media_file_scaled
+        ]
+
+        # files should exist on S3:
+        for url in urls:
+            p = urlparse(url)
+            conn = httplib.HTTPConnection(p.netloc)
+            conn.request('HEAD', p.path)
+            self.assertEqual(conn.getresponse().status, 200)
+
+        # now delete map images
+        map_image.remove_map_image_from_S3()
+
+        # files should not exist on S3:
+        for url in urls:
+            p = urlparse(url)
+            conn = httplib.HTTPConnection(p.netloc)
+            conn.request('HEAD', p.path)
+            self.assertEqual(conn.getresponse().status, 403)
 
     '''
     TODO: Next Sprint: write tests for Processor
