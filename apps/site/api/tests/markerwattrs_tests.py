@@ -469,6 +469,9 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
             # first just check for some pre-existing default data
             marker = models.Record.objects.get(id=marker_id)
+            print ('First Run with marker geometry')
+            print (marker)
+            print (marker.geometry)
             self.assertEqual(
                 json.loads(marker.geometry.geojson),
                 self.Point
@@ -499,9 +502,14 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             self.assertEqual(
                 response.data[posted_data[marker_id][0]],
                 new_data_item)
+            print ('Posted Data')
+            print(response.data)
 
             # finally, check that other fields have not been replaced (nulled)
             marker = models.Record.objects.get(id=marker_id)
+            print ('Second Run with marker geometry')
+            print (marker)
+            print (marker.geometry)
             self.assertEqual(marker.description, 'this is the caption text')
             self.assertEqual(
                 response.data['caption'], 'this is the caption text')
