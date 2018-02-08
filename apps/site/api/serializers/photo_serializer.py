@@ -21,7 +21,7 @@ class PhotoSerializer(MediaGeometrySerializerNew):
     class Meta:
         model = models.Photo
         fields = MediaGeometrySerializerNew.Meta.fields + (
-            'path', 'path_large', 'path_medium', 'path_medium_sm',
+            'media_file', 'path', 'path_large', 'path_medium', 'path_medium_sm',
             'path_small', 'path_marker_lg', 'path_marker_sm'
         )
         depth = 0
@@ -40,9 +40,8 @@ class PhotoSerializer(MediaGeometrySerializerNew):
             'attribution': owner.username
         })
         self.validated_data.update(validated_data)
-        print self.validated_data
         self.instance = self.Meta.model.objects.create(**self.validated_data)
-        self.instance.process_file(f)
+        self.instance.process_file(f, name=self.validated_data.get('name'))
         return self.instance
 
     def get_path(self, obj):
