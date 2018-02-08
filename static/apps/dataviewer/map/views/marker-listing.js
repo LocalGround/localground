@@ -54,8 +54,10 @@ define(["marionette",
                     this.displayOverlays = true;
                     this.isShowing = true;
                 }
+                console.log('before restore state:', this.displayOverlays);
                 this.stateKey += this.collection.getDataType();
                 this.restoreState();
+                console.log('after restore state:', this.displayOverlays);
             },
             templateHelpers: function () {
                 return {
@@ -85,11 +87,12 @@ define(["marionette",
             },
 
             childViewOptions: function () {
+                console.log(this.displayOverlays);
                 var opts = {
                     app: this.app,
                     title: this.title,
                     icon: this.icon,
-                    displayOverlay: this.displayOverlays
+                    parent: this
                 };
                 return opts;
             },

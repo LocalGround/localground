@@ -125,10 +125,10 @@ define(["marionette",
             this.redraw();
             console.log(this.displayOverlay);
             console.log(this);
-            //if (this.displayOverlay) {
+            if (this.displayOverlay) {
                 console.log('base show');
                 this.show();
-            //}
+            }
         },
 
         /** shows the google.maps overlay on the map. */

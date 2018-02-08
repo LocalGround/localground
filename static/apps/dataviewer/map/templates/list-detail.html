@@ -1,7 +1,7 @@
 <a href="#/{{screenType}}/{{dataType}}/{{id}}" {{#if active }}class="highlight"{{/if}}  {{#ifnot displayOverlay}}style="opacity: 0.50"{{/ifnot}}>
     {{#if geometry }}
         <p>{{geometryType}}</p>
-        
+
         {{#if isPoint}}
             <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ width }}">
                 <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
@@ -42,9 +42,4 @@
         <i class="fa fa-question-circle" aria-hidden="true"></i>
     {{/if}}
 <p>{{truncate name 30}}</p>
-{{#if displayOverlay}}
-    <i class="fa fa-eye toggle-visibility"></i>
-{{else}}
-    <i class="fa fa-eye-slash toggle-visibility"></i>
-{{/if}}
 </a>
