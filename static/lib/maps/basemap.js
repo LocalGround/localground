@@ -85,12 +85,8 @@ define(["marionette",
                 this.initDrawingManager(google.maps.drawing.OverlayType.POLYGON);
             },
             initDrawingManager: function (drawingMode) {
-                if (this.drawingManager) {
-                     console.log('this.drawingManager already exists');
-                     this.drawingManager.setMap(this.map);
-                     this.drawingManager.setDrawingMode(drawingMode);
-                     return;
-                }
+                console.log('initDRawMAnage', this.targetedModel);
+
                 var polyOpts = {
                     strokeWeight: 2,
                     strokeColor: this.targetedModel.collection.fillColor,
@@ -98,6 +94,20 @@ define(["marionette",
                     editable: true,
                     draggable: true
                 };
+
+                if (this.drawingManager) {
+                    console.log('this.drawingManager already exists');
+
+                    // make sure we're using the correct fill and stroke colors
+                    this.drawingManager.polygonOptions = polyOpts;
+                    this.drawingManager.polylineOptions = polyOpts;
+
+
+                    this.drawingManager.setMap(this.map);
+                    this.drawingManager.setDrawingMode(drawingMode);
+                    return;
+                }
+                
                 this.drawingManager = new google.maps.drawing.DrawingManager({
                     drawingMode: drawingMode,
                     drawingControl: false,
@@ -141,9 +151,20 @@ define(["marionette",
                 // may want to clear temp poly after server post (not before)
                 var that = this;
                 temporaryPolygon.setMap(null);
-                this.targetedModel.save({ 'geometry': polygonGeoJSON }, { success: function () {
-                    that.finishingTouches();
-                }});
+                // this.targetedModel.save({ 'geometry': polygonGeoJSON }, { success: function () {
+                //     that.finishingTouches();
+                // }});
+                
+                (async function () {
+                    try {
+                      await that.targetedModel.save({ 'geometry': polygonGeoJSON });
+                      console.log('Success');
+                      console.log(that.targetedModel);
+                      that.finishingTouches();
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  })();
 
             },
 

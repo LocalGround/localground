@@ -43,6 +43,29 @@ define(["jquery"], function ($) {
                 draggable: this.model.get("active")? true : false,
                 editable: this.model.get("active")? true : false,
             });
+            if (this.model.get("active")) {
+                this.addEvents();
+            }
+        };
+
+        this.addEvents = function() {
+            console.log('add listeners');
+            google.maps.event.addListener(
+                this._googleOverlay, 'dragend', this.geometrySave.bind(this)
+            );
+            google.maps.event.addListener(
+                this._googleOverlay.getPath(), 'set_at', this.geometrySave.bind(this)
+            );
+            google.maps.event.addListener(
+                this._googleOverlay.getPath(), 'insert_at', this.geometrySave.bind(this)
+            );
+        };
+
+        this.geometrySave = function() {
+            this.model.trigger('commit-data-no-save');
+            const geoJSON = this.getGeoJSON();
+            this.model.set('geometry', geoJSON);
+            this.model.save();
         };
 
         /**

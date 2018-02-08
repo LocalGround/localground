@@ -22,11 +22,14 @@ define(['marionette',
             },
 
             initialize: function (opts) {
+                console.log('marker overlays initialize');
                 _.extend(this, opts);
                 this.collection = opts.collection;
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.childViewOptions = opts;
+
+                // this is required, otherwise markers will disappear after being placed
                 this.childViewOptions.displayOverlay = opts.displayOverlays;
 
                 this.render();
@@ -39,6 +42,12 @@ define(['marionette',
             },
 
             geometryUpdated: function (model) {
+                //debugger;
+                console.log('geometry updated', this.childViewOptions.displayOverlay);
+
+                // for some reason this already gets set to true for Markers (w/o attrs), but not Markers w/ attrs
+                //this.childViewOptions.displayOverlay = true;
+
                 if (!this.children.findByModel(model)) {
                     this.addChild(model, this.childView);
                 } else if (!model.get("geometry")) {
@@ -51,6 +60,7 @@ define(['marionette',
             // geometries won't render.
             addChild: function (child, ChildView, index) {
                 console.log("MARKER-OVERLAYS: ", child.get('geometry'));
+                console.log(child, ChildView, index);
                 if (child.get('geometry') != null) {
                     return Marionette.CollectionView.prototype.addChild.call(this, child, ChildView, index);
                 }

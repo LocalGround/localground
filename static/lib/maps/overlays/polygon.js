@@ -34,6 +34,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         };
 
         this.redraw = function () {
+            console.log('REDRAW() in POLYGON');
             this._googleOverlay.setOptions({
                 // strokeColor: '#' + this.model.get("strokeColor"),
                 // fillColor: '#' + this.model.get("fillColor")
@@ -44,7 +45,32 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
                 draggable: this.model.get("active")? true : false,
                 editable: this.model.get("active")? true : false
             });
+
+            if (this.model.get("active")) {
+                this.addEvents();
+            }
         };
+
+        this.addEvents = function() {
+            console.log('add listeners');
+            google.maps.event.addListener(
+                this._googleOverlay, 'dragend', this.geometrySave.bind(this)
+            );
+            google.maps.event.addListener(
+                this._googleOverlay.getPath(), 'set_at', this.geometrySave.bind(this)
+            );
+            google.maps.event.addListener(
+                this._googleOverlay.getPath(), 'insert_at', this.geometrySave.bind(this)
+            );
+        };
+
+        this.geometrySave = function() {
+            this.model.trigger('commit-data-no-save');
+            const geoJSON = this.getGeoJSON();
+            this.model.set('geometry', geoJSON);
+            this.model.save();
+        };
+
         /**
          * Method that converts a GeoJSON Linestring into
          * an array of google.maps.LatLng objects.

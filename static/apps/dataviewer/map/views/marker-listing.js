@@ -27,7 +27,7 @@ define(["marionette",
                 this.template = Handlebars.compile(ListTemplate);
 
                 Marionette.CompositeView.prototype.initialize.call(this);
-                console.log(this.collection.getDataType());
+                console.log(this.collection.fillColor);
                 if (!this.isMapImageCollection()) {
                     this.icon = new Icon({
                         shape: this.collection.getDataType(),
