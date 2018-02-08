@@ -106,9 +106,11 @@ class IconSerializerUpdate(IconSerializerBase):
     def update(self, instance, validated_data):
         data = self.get_presave_update_dictionary()
         data.update(validated_data)
-        # raise Exception(instance.file_name_new, validated_data)
-        resized_icon_parameters = self.resize_icon(
-            instance.owner, instance.file_name_new, validated_data)
+        # The closest to having the resized_icon parameters extracted
+        # but it does not overwrite the existing icon
+        resized_icon_parameters = self.instance.process_file(
+            instance.media_file_new)
+
         data.update(resized_icon_parameters)
         return super(IconSerializerBase, self).update(instance, data)
 

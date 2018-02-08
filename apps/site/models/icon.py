@@ -50,6 +50,9 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
             self.tmp_resized_binary.name, self.tmp_resized_binary
         )
 
+    # Will likely have to make resize_icon its own function
+    # inside the instance of the object
+
     def process_file(self, file):
         # rename and temporarily store the binary file:
         file.name = upload_helpers.simplify_filename(file)
@@ -121,6 +124,19 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
         self.anchor_y = anchor_y
         self.size = size
         self.file_type = file_type
+
+        # Attempted to make a return with the specified parameters
+        # However, it failed to resize existing icons
+        return {
+            'width': im.size[0],
+            'height': im.size[1],
+            'anchor_x': anchor_x,
+            'anchor_y': anchor_y,
+            'size': size,
+            'file_name_new': self.media_file_new,
+            'file_name_resized': self.media_file_resized,
+            'file_type': self.file_type
+        }
 
     class Meta:
         app_label = 'site'

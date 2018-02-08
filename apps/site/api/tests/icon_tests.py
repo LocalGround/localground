@@ -330,7 +330,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        #print response.data
+        print(response.data)  # Error reads that IconSerializerUpdate has no attribute 'resize_icon'
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon_new')
@@ -347,7 +347,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        #print response.data
+        print(response.data)  # Error reads that IconSerializerUpdate has no attribute 'resize_icon'
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon_patch')
@@ -362,7 +362,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        #print response.data
+        print(response.data)  # Error reads that IconSerializerUpdate has no attribute 'resize_icon'
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon1')
