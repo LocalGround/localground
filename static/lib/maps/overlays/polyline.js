@@ -34,7 +34,6 @@ define(["jquery"], function ($) {
         };
 
         this.redraw = function () {
-            console.log('REDRAW POLYLINE');
             this._googleOverlay.setOptions({
                 //strokeColor: '#' + this.model.get("strokeColor")
                 strokeColor: this.model.collection.fillColor,
@@ -49,7 +48,6 @@ define(["jquery"], function ($) {
         };
 
         this.addEvents = function() {
-            console.log('add listeners');
             google.maps.event.addListener(
                 this._googleOverlay, 'dragend', this.geometrySave.bind(this)
             );
@@ -176,7 +174,6 @@ define(["jquery"], function ($) {
         };
 
         this.makeEditable = function (model) {
-            console.log('polyline MAKE EDITABLE');
             var that = this;
             google.maps.event.clearListeners(this._googleOverlay.getPath());
 			this._googleOverlay.setOptions({'draggable': false, 'editable': true});

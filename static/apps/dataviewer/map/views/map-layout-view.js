@@ -44,7 +44,6 @@ define(["marionette",
                 });
             },
             showDetail: function (view) {
-                console.log("ACTIVE");
                 this.rightRegion.show(view);
                 this.unhideDetail();
                 view.model.set("active", true);
@@ -52,7 +51,6 @@ define(["marionette",
             },
             onShow: function () {
                 this.mapRegion.show(this.basemapView);
-                console.log(this.app.dataManager.dataDictionary);
                 this.showMarkerListManager();
             },
 

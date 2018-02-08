@@ -126,12 +126,10 @@ define(["jquery", "lib/sqlParser", "underscore", "backbone"], function ($, SqlPa
             return this.isMedia;
         },
         getModel: function (id) {
-            console.log(id);
             var model = this.get(id);
             if (!model) {
                 model = this.createNewModel();
             }
-            console.log(model);
             return model;
         },
         createNewModel: function () {

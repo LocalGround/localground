@@ -71,7 +71,6 @@ define([
         },
 
         getTemplate: function () {
-            console.log(this.dataType, this.mobileView );
             if (this.dataType == "photos") {
                 return Handlebars.compile(PhotoTemplate);
             }
@@ -159,7 +158,6 @@ define([
 
 
         remove: function () {
-            console.log("destroying scrollEventListener...");
             window.removeEventListener('scroll', this.scrollEventListener);
             Backbone.View.prototype.remove.call(this);
         },
@@ -273,8 +271,6 @@ define([
         deleteMarker: function () {
             this.model.set('geometry', null);
             //Backbone.Model.prototype.set.call(this.model, "geoometry", null);
-            console.log(this.model.get('geometry'));
-            console.log(this.model);
             this.commitForm();
             this.model.save();
             this.render();
@@ -287,7 +283,6 @@ define([
             }
             var i, f;
             if (this.model.get("overlay_type").indexOf("form_") != -1) {
-                console.log(this.model.get("fields"));
                 var something = this.model.attributes;
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
@@ -425,15 +420,12 @@ define([
         },
 
         onRender: function () {
-            console.log('************************render data detail');
-            //debugger;
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {
                 this.editRender();
             }
             if (this.dataType == "audio") {
-                console.log("Audio player initialized")
                 var player = new AudioPlayer({
                     model: this.model,
                     audioMode: "detail",
@@ -451,7 +443,6 @@ define([
             var that = this;
             $.fn.moveIt = function () {
                 if (that.scrollEventListener) {
-                    console.log('removing...');
                     window.removeEventListener("scroll", that.scrollEventListener);
                 }
                 var $window = $(window),
@@ -517,7 +508,6 @@ define([
             }
             this.model.destroy({
                 success: function () {
-                    console.log("about to hide details'")
                     //trigger an event that clears out the deleted model's detail:
                     that.app.vent.trigger('hide-detail');
                 }
@@ -557,12 +547,10 @@ define([
             if (this.$el.find('.thumbnail-play').hasClass('fa-play')) {
                 this.$el.find('.thumbnail-play').addClass("fa-pause");
                 this.$el.find('.thumbnail-play').removeClass("fa-play");
-                console.log("play audio");
                 audio.play();
             } else {
                 this.$el.find('.thumbnail-play').addClass("fa-play");
                 this.$el.find('.thumbnail-play').removeClass("fa-pause");
-                console.log("pause audio");
                 audio.pause();
             }
         }

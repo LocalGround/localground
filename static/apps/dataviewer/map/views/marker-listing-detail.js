@@ -53,7 +53,6 @@ define(["jquery",
                     isPolygon: this.geometryType() === "Polygon",
                     isPolyline: this.geometryType() === "LineString"
                 };
-                console.log('parent redraw', this.parent.displayOverlays);
                 if (this.icon) {
                     _.extend(opts, {
                         width: 15 * this.icon.getScale(),

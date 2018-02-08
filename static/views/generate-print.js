@@ -62,7 +62,7 @@ define(["marionette",
                     entry,
                     dm = this.app.dataManager;//,
                     //dataSources = dm.getDataSources();
-                console.log(dm);
+                //console.log(dm);
                 
                 // the old, non-functioning
                 // for (i = 0; i < dataSources.length; i++) {
@@ -90,7 +90,7 @@ define(["marionette",
                 //     });
                 // }
 
-                // Riley's attempt at fixing
+                // attempt at fixing
                 dm.each((collection) => {
                     overlays = new MarkerOverlays({
                         collection: collection,
@@ -109,7 +109,7 @@ define(["marionette",
                 });
 
                 
-                console.log("show overlays");
+                //console.log("show overlays");
             },
 
             showBasemap: function () {

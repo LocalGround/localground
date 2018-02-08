@@ -27,7 +27,6 @@ define(["marionette",
                 this.template = Handlebars.compile(ListTemplate);
 
                 Marionette.CompositeView.prototype.initialize.call(this);
-                console.log(this.collection.fillColor);
                 if (!this.isMapImageCollection()) {
                     this.icon = new Icon({
                         shape: this.collection.getDataType(),
@@ -54,10 +53,8 @@ define(["marionette",
                     this.displayOverlays = true;
                     this.isShowing = true;
                 }
-                console.log('before restore state:', this.displayOverlays);
                 this.stateKey += this.collection.getDataType();
                 this.restoreState();
-                console.log('after restore state:', this.displayOverlays);
             },
             templateHelpers: function () {
                 return {
@@ -87,7 +84,6 @@ define(["marionette",
             },
 
             childViewOptions: function () {
-                console.log(this.displayOverlays);
                 var opts = {
                     app: this.app,
                     title: this.title,
@@ -111,7 +107,6 @@ define(["marionette",
                 this.$el.find('.list-header > .fa-eye-slash').removeClass('fa-eye-slash').addClass('fa-eye');
             },
             route: function (e) {
-                console.log('routing', e);
                 this.app.vent.trigger('route', e);
                 e.preventDefault();
             },

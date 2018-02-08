@@ -79,14 +79,10 @@ define(["marionette",
                 this.initDrawingManager(google.maps.drawing.OverlayType.POLYLINE);
             },
             initPolygonMode: function(model) {
-                console.log('initPolygonMode:', model);
                 this.activateMarker(model);
-                console.log('init polygon');
                 this.initDrawingManager(google.maps.drawing.OverlayType.POLYGON);
             },
             initDrawingManager: function (drawingMode) {
-                console.log('initDRawMAnage', this.targetedModel);
-
                 var polyOpts = {
                     strokeWeight: 2,
                     strokeColor: this.targetedModel.collection.fillColor,
@@ -96,7 +92,6 @@ define(["marionette",
                 };
 
                 if (this.drawingManager) {
-                    console.log('this.drawingManager already exists');
 
                     // make sure we're using the correct fill and stroke colors
                     this.drawingManager.polygonOptions = polyOpts;
@@ -132,8 +127,6 @@ define(["marionette",
             },
 
             polygonComplete: function (temporaryPolygon) {
-                console.log('temporaryPolygon complete', temporaryPolygon.getPath());
-                console.log(this.targetedModel);
                 //internal function to convert google to geoJSON:
                 const googlePolygonToGeoJSON = (polygon) => {
                     var pathCoords = polygon.getPath().getArray(),
@@ -151,26 +144,12 @@ define(["marionette",
                 // may want to clear temp poly after server post (not before)
                 var that = this;
                 temporaryPolygon.setMap(null);
-                // this.targetedModel.save({ 'geometry': polygonGeoJSON }, { success: function () {
-                //     that.finishingTouches();
-                // }});
-                
-                (async function () {
-                    try {
-                      await that.targetedModel.save({ 'geometry': polygonGeoJSON });
-                      console.log('Success');
-                      console.log(that.targetedModel);
-                      that.finishingTouches();
-                    } catch (e) {
-                      console.error(e);
-                    }
-                  })();
-
+                this.targetedModel.save({ 'geometry': polygonGeoJSON }, { success: function () {
+                    that.finishingTouches();
+                }});
             },
 
             polylineComplete: function (temporaryPolyline) {
-                console.log('polyline complete');
-                console.log(this.targetedModel);
                 const googlePolylineToGeoJSON = (polyline) => {
                     var pathCoords = polyline.getPath().getArray(),
                         coords = [],
@@ -229,7 +208,6 @@ define(["marionette",
             },
 
             doHighlight: function (model) {
-                console.log('DO HIGHLIGHT');
                 if (this.activeModel) {
                     this.activeModel.set("active", false);
                 }
@@ -296,7 +274,6 @@ define(["marionette",
             },
 
             activateMarker: function (model) {
-                console.log('activating model...', model);
                 this.addMarkerClicked = true;
                 this.targetedModel = model;
             },

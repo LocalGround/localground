@@ -116,24 +116,18 @@ define(["marionette",
             return this.getGoogleOverlay().getMap() != null && this.displayOverlay;
         },
         reRender: function () {
-            console.log('base reRender()');
             this.render();
         },
 
         render: function () {
-            console.log('base render');
             this.redraw();
-            console.log(this.displayOverlay);
-            console.log(this);
             if (this.displayOverlay) {
-                console.log('base show');
                 this.show();
             }
         },
 
         /** shows the google.maps overlay on the map. */
         show: function () {
-            console.log('base show')
             this.displayOverlay = true;
             this._overlay.displayOverlay = true;
             this._overlay.show();

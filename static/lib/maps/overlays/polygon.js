@@ -13,8 +13,6 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         };
 
         this.createOverlay = function (isShowingOnMap) {
-            //debugger;
-            console.log('creating the polygon');
             this._googleOverlay = new google.maps.Polygon({
                 path: this.getGoogleLatLngFromModel(),
                 //strokeColor: '#' + this.model.get("fillColor"),
@@ -34,7 +32,6 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         };
 
         this.redraw = function () {
-            console.log('REDRAW() in POLYGON');
             this._googleOverlay.setOptions({
                 // strokeColor: '#' + this.model.get("strokeColor"),
                 // fillColor: '#' + this.model.get("fillColor")
@@ -52,7 +49,6 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         };
 
         this.addEvents = function() {
-            console.log('add listeners');
             google.maps.event.addListener(
                 this._googleOverlay, 'dragend', this.geometrySave.bind(this)
             );
