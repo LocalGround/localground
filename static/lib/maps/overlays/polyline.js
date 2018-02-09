@@ -9,6 +9,13 @@ define(["jquery"], function ($) {
         this._googleOverlay = null;
         this.model = null;
         this.map = null;
+        this.mouseupEvent = null;
+        this.mousedownEvent = null;
+        this.rightClickEvent = null;
+
+        // See this.deleteVertex(). 
+        // A Polyline cannot have fewer than 2 vertices
+        this.minimumVertices = 2
 
         this.getShapeType = function () {
             return "Polyline";
@@ -47,23 +54,72 @@ define(["jquery"], function ($) {
             }
         };
 
-        this.addEvents = function() {
-            google.maps.event.addListener(
-                this._googleOverlay, 'dragend', this.geometrySave.bind(this)
+        /**
+        * We want to save polyline/polygon coordinates after the following 4 events:
+        * 1. dragging the entire polyline/polygon
+        * 2. dragging (editing) individual vertices
+        * 3. adding a new vertex
+        * 4. Deleting a vertex (right click)
+        */
+       this.addEvents = function() {
+            // clear previous right click listeners
+            if (this.rightClickEvent) {
+                google.maps.event.clearListeners(this._googleOverlay, 'rightclick');
+            }
+            this.rightClickEvent = google.maps.event.addListener(
+                this._googleOverlay, 'rightclick', this.deleteVertex.bind(this)
             );
-            google.maps.event.addListener(
-                this._googleOverlay.getPath(), 'set_at', this.geometrySave.bind(this)
-            );
-            google.maps.event.addListener(
-                this._googleOverlay.getPath(), 'insert_at', this.geometrySave.bind(this)
+
+            // clear previous listeners of the mousedown event
+            if (this.mousedownEvent) {
+                google.maps.event.clearListeners(this._googleOverlay, 'mousedown');
+            }
+            // We will only register a mouseup event after a mousedown event has ocurred.
+            // Since mouseup events can be rather buggy, this helps keep things clean
+            // and prevents errant mouseup events from creating duplicate events and other proplems
+            this.mousedownEvent = google.maps.event.addListener(
+                this._googleOverlay, 'mousedown', this.registerMouseUpEvent.bind(this)
             );
         };
 
+        this.registerMouseUpEvent = function() {
+            // clear any previous mouse up events
+            if (this.mouseupEvent) {
+                google.maps.event.clearListeners(this._googleOverlay, 'mouseup');
+            }
+            // register mouseup event and callback
+            this.mouseupEvent = google.maps.event.addListener(
+                this._googleOverlay, 'mouseup', this.geometrySave.bind(this)
+            );
+        };
         this.geometrySave = function() {
-            this.model.trigger('commit-data-no-save');
-            const geoJSON = this.getGeoJSON();
-            this.model.set('geometry', geoJSON);
-            this.model.save();
+
+            // A slight delay is needed here to make sure any new coordinate values
+            // finish updating the _googleOverlay object before we attempt to save
+            setTimeout(() => {
+                this.model.trigger('commit-data-no-save');
+
+                // get the coordinated from the _googleOverlay
+                const geoJSON = this.getGeoJSON();
+
+                // We only update and save the model if its current geometry coordinates
+                // are different from those of the _googleOverlay
+                if (!_.isEqual(this.model.get('geometry'), geoJSON)) {
+                    this.model.set('geometry', geoJSON);
+                    this.model.save();
+                    // console.log('sent to server');
+                }
+            }, 100);
+        };
+
+        this.deleteVertex = function(ev) {
+            // slight delay needed to prevent multiple events from being triggered
+            setTimeout(() => {
+                                                // line must have at least 2 vertices 
+                if (ev.vertex != null && this._googleOverlay.getPath().getLength() > this.minimumVertices) {
+                    this._googleOverlay.getPath().removeAt(ev.vertex);
+                }
+            }, 100);
         };
 
         /**

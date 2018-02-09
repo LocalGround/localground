@@ -6,7 +6,13 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
      * @class Polygon
      */
     var Polygon = function (app, opts) {
+        // Polygon inherits most of its functionality, 
+        // including event handling, from Polyline
         Polyline.call(this, app, opts);
+
+        // See this.deleteVertex() inherited from Polyline. 
+        // A Polygon cannot have fewer than 3 vertices
+        this.minimumVertices = 3
 
         this.getShapeType = function () {
             return "Polygon";
@@ -46,25 +52,6 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             if (this.model.get("active")) {
                 this.addEvents();
             }
-        };
-
-        this.addEvents = function() {
-            google.maps.event.addListener(
-                this._googleOverlay, 'dragend', this.geometrySave.bind(this)
-            );
-            google.maps.event.addListener(
-                this._googleOverlay.getPath(), 'set_at', this.geometrySave.bind(this)
-            );
-            google.maps.event.addListener(
-                this._googleOverlay.getPath(), 'insert_at', this.geometrySave.bind(this)
-            );
-        };
-
-        this.geometrySave = function() {
-            this.model.trigger('commit-data-no-save');
-            const geoJSON = this.getGeoJSON();
-            this.model.set('geometry', geoJSON);
-            this.model.save();
         };
 
         /**
