@@ -82,7 +82,7 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
         # However, it results in more inconsistencies
         # in test results
         # need to explore deeper into the parameters
-        size = valid_data.get('size') or icon_min
+        size = valid_data.get('size') or self.size
         validated_data_x = valid_data.get('anchor_x') or self.anchor_x
         validated_data_y = valid_data.get('anchor_y') or self.anchor_y
 
