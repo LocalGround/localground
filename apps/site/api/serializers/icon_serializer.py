@@ -110,6 +110,9 @@ class IconSerializerUpdate(IconSerializerBase):
         # but it does not overwrite the existing icon
         resized_icon_parameters = self.instance.process_file(
             instance.media_file_new)
+        print('**** RESIZED ICON PARAMETERS ****')
+        print(resized_icon_parameters)  # Extract necessary icon data
+        print('**** RESIZED ICON PARAMETERS ****')
 
         data.update(resized_icon_parameters)
         return super(IconSerializerBase, self).update(instance, data)

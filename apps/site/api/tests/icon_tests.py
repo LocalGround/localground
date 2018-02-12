@@ -319,6 +319,16 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
 
     #put/patch - update
     #set anchor and size, not anything else
+
+    '''
+    The following tests involving client_user.put and patch,
+    based on data dictionary,
+    fails to apply the changes from the dictionary to an updated object
+    because we are trying to modify an existing image
+    which requires it to be opened manually(?)
+    Based on the django test api:
+    https://docs.djangoproject.com/en/2.0/topics/testing/tools/
+    '''
     def test_required_params_and_resize_using_put(self, **kwargs):
         response = self.client_user.put(self.url,
                                         data=urllib.urlencode({
@@ -330,7 +340,9 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        print(response.data)  # Error reads that IconSerializerUpdate has no attribute 'resize_icon'
+        print('**** ICON TEST REQUIRED PARAMS AND RESIZE USING PUT ****')
+        print(response.data)
+        print('**** ICON TEST REQUIRED PARAMS AND RESIZE USING PUT ****')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon_new')
@@ -347,7 +359,9 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        print(response.data)  # Error reads that IconSerializerUpdate has no attribute 'resize_icon'
+        print('**** ICON TEST PATCH NAME ****')
+        print(response.data)
+        print('**** ICON TEST PATCH NAME ****')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon_patch')
@@ -362,7 +376,9 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        print(response.data)  # Error reads that IconSerializerUpdate has no attribute 'resize_icon'
+        print('**** ICON TEST PATCH RESIZE ****')
+        print(response.data)
+        print('**** ICON TEST PATCH RESIZE ****')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon1')
