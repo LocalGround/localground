@@ -257,6 +257,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
         random_project = self.create_project(
             random_user, name='Random Project')
         project_ids = [random_project.id, 999999999]
+        print(self.urls)
         for project_id in project_ids:
             tmp_file = create_temp_file(5, 200)
             with open(tmp_file.name, 'rb') as binaryImage:
@@ -340,9 +341,6 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        print('**** ICON TEST REQUIRED PARAMS AND RESIZE USING PUT ****')
-        print(response.data)
-        print('**** ICON TEST REQUIRED PARAMS AND RESIZE USING PUT ****')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon_new')
@@ -359,9 +357,6 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        print('**** ICON TEST PATCH NAME ****')
-        print(response.data)
-        print('**** ICON TEST PATCH NAME ****')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon_patch')
@@ -376,9 +371,6 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        print('**** ICON TEST PATCH RESIZE ****')
-        print(response.data)
-        print('**** ICON TEST PATCH RESIZE ****')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon1')
