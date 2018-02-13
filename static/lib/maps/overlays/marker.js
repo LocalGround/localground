@@ -13,6 +13,7 @@ define([
 
         initialize: function (opts) {
             Base.prototype.initialize.apply(this, arguments);
+            // this is what redraws a marker when you select it
             this.redraw();
         },
 

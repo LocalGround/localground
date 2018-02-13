@@ -6,7 +6,13 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
      * @class Polygon
      */
     var Polygon = function (app, opts) {
+        // Polygon inherits most of its functionality, 
+        // including event handling, from Polyline
         Polyline.call(this, app, opts);
+
+        // See this.deleteVertex() inherited from Polyline. 
+        // A Polygon cannot have fewer than 3 vertices
+        this.minimumVertices = 3
 
         this.getShapeType = function () {
             return "Polygon";
@@ -14,22 +20,40 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
 
         this.createOverlay = function (isShowingOnMap) {
             this._googleOverlay = new google.maps.Polygon({
-                path: this.getGoogleGeometryFromModel(),
-                strokeColor: '#' + this.model.get("fillColor"),
+                path: this.getGoogleLatLngFromModel(),
+                //strokeColor: '#' + this.model.get("fillColor"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
-                fillColor: '#' + this.model.get("fillColor"),
+                //fillColor: '#' + this.model.get("fillColor"),
                 fillOpacity: 0.35,
-                map: isShowingOnMap ? this.map : null
+                map: isShowingOnMap ? this.map : null,
+                draggable: true,
+                editable: true,
+                strokeColor: '#0000FF',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#0000FF',
+                fillOpacity: 0.35,
             });
         };
 
         this.redraw = function () {
             this._googleOverlay.setOptions({
-                strokeColor: '#' + this.model.get("strokeColor"),
-                fillColor: '#' + this.model.get("fillColor")
+                // strokeColor: '#' + this.model.get("strokeColor"),
+                // fillColor: '#' + this.model.get("fillColor")
+                strokeColor: this.model.collection.fillColor,
+                fillColor: this.model.collection.fillColor,
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                draggable: this.model.get("active")? true : false,
+                editable: this.model.get("active")? true : false
             });
+
+            if (this.model.get("active")) {
+                this.addEvents();
+            }
         };
+
         /**
          * Method that converts a GeoJSON Linestring into
          * an array of google.maps.LatLng objects.

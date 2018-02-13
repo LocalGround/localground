@@ -27,6 +27,8 @@ define(['marionette',
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.childViewOptions = opts;
+
+                // this is required, otherwise markers will disappear after being placed
                 this.childViewOptions.displayOverlay = opts.displayOverlays;
 
                 this.render();

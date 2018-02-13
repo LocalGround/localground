@@ -30,15 +30,47 @@ define([
             'click .show': 'showMapPanel',
             'click .rotate-left': 'rotatePhoto',
             'click .rotate-right': 'rotatePhoto',
-            "click #add-geometry": "activateMarkerTrigger",
             "click #delete-geometry": "deleteMarker",
             "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView',
             "click .thumbnail-play-circle": 'playAudio',
-            'click .circle': 'openExpanded'
+            'click .circle': 'openExpanded',
+
+            // add event listeners for various geometry requests
+            // first, a trigger to display dropdown menu
+            "click #add-geometry": "displayGeometryOptions",
+            // add point, polyline, or polygon
+            'click #add-point': 'activateMarkerTrigger',
+            'click #add-polyline': 'triggerPolyline',
+            'click #add-polygon': 'triggerPolygon',
+            'click': 'hideGeometryOptions'
         },
+
+        displayGeometryOptions: function(e) {
+            this.$el.find('.add-marker-button').css({background: '#bbbbbb'});
+            this.$el.find('.geometry-options').css({display: 'block'});
+        },
+
+        hideGeometryOptions: function(e) {
+            if (e && !$(e.target).hasClass('add-marker-button')) {
+                this.$el.find('.add-marker-button').css({background: '#fafafc'});
+                this.$el.find('.geometry-options').css({display: 'none'});
+            };
+        },
+
+        triggerPolyline: function(e) {
+            this.app.vent.trigger('add-polyline', this.model);
+            this.hideGeometryOptions();
+            e.preventDefault();
+        },
+        triggerPolygon: function(e) {
+            //this.app.vent.trigger("add-new-marker", this.model);
+            this.app.vent.trigger('add-polygon', this.model);
+            this.hideGeometryOptions();
+            e.preventDefault();
+        },
+
         getTemplate: function () {
-            console.log(this.dataType, this.mobileView );
             if (this.dataType == "photos") {
                 return Handlebars.compile(PhotoTemplate);
             }
@@ -69,7 +101,8 @@ define([
             this.isMobile();
 
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
-            this.listenTo(this.app.vent, 'streetview-hidden',           this.updateStreetViewButton);
+            this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
+            this.listenTo(this.app.vent, 'rerender-data-detail', this.render);
         },
 
         templateHelpers: function () {
@@ -91,6 +124,7 @@ define([
                 dataType: this.dataType,
                 audioMode: "detail",
                 name: this.model.get("name") || this.model.get("display_name"),
+                geometry: !!this.model.get('geometry'),
                 screenType: this.app.screenType,
                 lat: lat,
                 lng: lng,
@@ -124,7 +158,6 @@ define([
 
 
         remove: function () {
-            console.log("destroying scrollEventListener...");
             window.removeEventListener('scroll', this.scrollEventListener);
             Backbone.View.prototype.remove.call(this);
         },
@@ -232,12 +265,16 @@ define([
             $(window).mousemove(mm.start.bind(mm));
             $follower.click(mm.stop);
             this.app.vent.trigger("add-new-marker", this.model);
+            this.hideGeometryOptions();
         },
 
         deleteMarker: function () {
-            this.model.set("geometry", null);
+            this.model.set('geometry', null);
+            //Backbone.Model.prototype.set.call(this.model, "geoometry", null);
             this.commitForm();
             this.model.save();
+            this.render();
+
         },
 
         bindFields: function () {
@@ -256,8 +293,8 @@ define([
         },
 
         modelEvents: {
-            "change:children": "render",
-            "commit-data-no-save": "commitForm"
+            'change:media': 'render',
+            'commit-data-no-save': 'commitForm'
         },
         switchToViewMode: function () {
             this.app.mode = "view";
@@ -389,7 +426,6 @@ define([
                 this.editRender();
             }
             if (this.dataType == "audio") {
-                console.log("Audio player initialized")
                 var player = new AudioPlayer({
                     model: this.model,
                     audioMode: "detail",
@@ -407,7 +443,6 @@ define([
             var that = this;
             $.fn.moveIt = function () {
                 if (that.scrollEventListener) {
-                    console.log('removing...');
                     window.removeEventListener("scroll", that.scrollEventListener);
                 }
                 var $window = $(window),
@@ -473,7 +508,6 @@ define([
             }
             this.model.destroy({
                 success: function () {
-                    console.log("about to hide details'")
                     //trigger an event that clears out the deleted model's detail:
                     that.app.vent.trigger('hide-detail');
                 }
@@ -513,12 +547,10 @@ define([
             if (this.$el.find('.thumbnail-play').hasClass('fa-play')) {
                 this.$el.find('.thumbnail-play').addClass("fa-pause");
                 this.$el.find('.thumbnail-play').removeClass("fa-play");
-                console.log("play audio");
                 audio.play();
             } else {
                 this.$el.find('.thumbnail-play').addClass("fa-play");
                 this.$el.find('.thumbnail-play').removeClass("fa-pause");
-                console.log("pause audio");
                 audio.pause();
             }
         }

@@ -95,6 +95,17 @@ class ImageOpts(ExtentsMixin, MediaMixin, BaseAudit):
     opacity = models.FloatField(default=1)
     name = models.CharField(max_length=255, null=True, blank=True)
 
+    '''
+    1. add new field:
+    file_path_s3 = LGImageField(null=True)
+    2. Send to s3 helper function:
+        def send_overlay_to_s3(self, media_file):
+            self.file_path_s3.save(
+                media_file.name, self.media_file
+            )
+        print self.file_path_s3.url //for example of how this works
+    '''
+
     class Meta:
         app_label = 'site'
         verbose_name = 'map-image'

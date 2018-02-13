@@ -115,6 +115,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             });
         };
 
+        // converts coordinates from GeoJSON to Google's format
         this.getBoundsFromGeoJSON = function () {
             var coordinates = this.model.get("geometry").coordinates[0],
                 north = coordinates[0][1],
