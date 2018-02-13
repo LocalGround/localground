@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-from localground.apps.site.models.abstract.audit import BaseAudit
+from localground.apps.site.models.abstract.base import BaseAudit
 from localground.apps.site.models.abstract.mixins import ProjectMixin
 from django.contrib.postgres.fields import ArrayField
 from localground.apps.lib.helpers import upload_helpers
