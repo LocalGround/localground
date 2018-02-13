@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 from django.conf import settings
 import localground.apps.lib.helpers
-#import localground.apps.site.models.abstract.media
+import localground.apps.site.models.abstract.media
 
 
 class Migration(migrations.Migration):
