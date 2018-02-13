@@ -6,6 +6,8 @@ from localground.apps.site.api.serializers.user_profile_serializer import \
     UserProfileSerializer
 from django.core.exceptions import ValidationError
 from rest_framework.exceptions import APIException
+from localground.apps.site.api.permissions import \
+    CheckProjectPermissions, CheckUserCanPostToProject
 
 
 class QueryableListCreateAPIView(generics.ListCreateAPIView):
@@ -65,6 +67,7 @@ class QueryableRetrieveUpdateDestroyView(
 
 class MediaList(QueryableListCreateAPIView):
     filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
+    permission_classes = (CheckProjectPermissions, CheckUserCanPostToProject)
     ext_whitelist = []
 
     def get_queryset(self):

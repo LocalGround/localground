@@ -35,6 +35,7 @@ class CSVMixin(mixins.MediaMixin):
                 self.assertEqual(cnt_track_both_objects_present, 1)
 
             # get fields:
+            print url
             response = self.client_user.options(
                 url,
                 HTTP_X_CSRFTOKEN=self.csrf_token,

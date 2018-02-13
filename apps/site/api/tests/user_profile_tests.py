@@ -13,7 +13,7 @@ p = { "type": "Point", "coordinates": [12.49, 41.89] }
 email = 'test@test.org'
 first_name = 'Amy'
 last_name = 'Jones'
-        
+
 class UserProfileList(APITestCase, ViewMixinAPI):
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -21,7 +21,7 @@ class UserProfileList(APITestCase, ViewMixinAPI):
         self.url = self.urls[0]
         self.view = views.UserProfileList.as_view()
         self.metadata = {}
-    
+
     def test_get_user_profile_list(self):
         response = self.client_user.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -32,7 +32,7 @@ class UserProfileList(APITestCase, ViewMixinAPI):
     def test_create_user_profile_list_fails(self):
         response = self.client_user.post(self.url, HTTP_X_CSRFTOKEN=self.csrf_token)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-  
+
 class UserProfileInstance(APITestCase, ViewMixinAPI):
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -83,7 +83,7 @@ class UserProfileInstance(APITestCase, ViewMixinAPI):
     def test_delete_user_profile_fails(self):
         response = self.client_user.delete(self.url, HTTP_X_CSRFTOKEN=self.csrf_token)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        
+
     def test_can_only_access_ones_own_userprofile_unless_superuser(self):
         tester1 = self.create_user(username='tester1')
         superuser = self.create_superuser()
@@ -105,12 +105,12 @@ class UserProfileInstance(APITestCase, ViewMixinAPI):
         }
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode(params), 
+            data=urllib.urlencode(params),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         #ensure response dictionary:
         data = json.loads(response.content)
         self.assertEqual(data.get('first_name'), first_name)
@@ -119,7 +119,7 @@ class UserProfileInstance(APITestCase, ViewMixinAPI):
         self.assertEqual(data.get('default_view_authority'), 2)
         self.assertEqual(data.get('default_location'), p)
         self.assertEqual(data.get('email_announcements'), True)
-        
+
         # ensure database commit:
         user_profile = models.UserProfile.objects.get(id=self.user_profile.id)
         self.assertEqual(user_profile.user.first_name, first_name)
@@ -136,19 +136,18 @@ class UserProfileInstance(APITestCase, ViewMixinAPI):
         }
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode(params), 
+            data=urllib.urlencode(params),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         #ensure response dictionary:
         data = json.loads(response.content)
         self.assertEqual(data.get('email'), email)
         self.assertEqual(data.get('default_location'), p)
-        
+
         # ensure database commit:
         user_profile = models.UserProfile.objects.get(id=self.user_profile.id)
         self.assertEqual(user_profile.user.email, email)
         self.assertEqual(user_profile.default_location, GEOSGeometry(json.dumps(p)))
-

@@ -758,6 +758,7 @@ class ViewAnonymousMixin(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
+            url = url.split('?')[0]
             func = resolve(url).func
             func_name = '{}.{}'.format(func.__module__, func.__name__)
             view_name = '{}.{}'.format(

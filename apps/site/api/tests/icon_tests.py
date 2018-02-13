@@ -252,12 +252,10 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
 
     def test_cannot_create_icon_if_no_prj_permissison_or_no_prj_defined(
             self, **kwargs):
-        print self.urls[0]
         random_user = self.create_user(username="Rando")
         random_project = self.create_project(
             random_user, name='Random Project')
         project_ids = [random_project.id, 999999999]
-        print(self.urls)
         for project_id in project_ids:
             tmp_file = create_temp_file(5, 200)
             with open(tmp_file.name, 'rb') as binaryImage:
@@ -269,12 +267,11 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                         'owner': random_user
                     },
                     HTTP_X_CSRFTOKEN=self.csrf_token)
-                print response.data
                 self.assertEqual(
-                    status.HTTP_400_BAD_REQUEST, response.status_code)
+                    status.HTTP_403_FORBIDDEN, response.status_code)
                 self.assertEqual(
-                    response.data['project_id'],
-                    [u'Invalid pk "%s" - object does not exist.' % project_id]
+                    response.data['detail'],
+                    u'You do not have permission to perform this action.'
                 )
 
 
