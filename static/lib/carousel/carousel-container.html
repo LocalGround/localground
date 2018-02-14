@@ -7,6 +7,12 @@
         <div class="carouselbox spreadsheet">
             <ol class="carousel-content"></ol>
         </div>
+
+        <div class="carousel-buttons hover-to-show">
+            <i class="fa fa-chevron-left prev"></i>
+            <i class="fa fa-chevron-right next"></i>
+        </div>
+
         <div class="circle-buttons">
             <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
             {{#times 1 num_children}}
@@ -19,7 +25,7 @@
     <div class="carouselbox">
         <ol class="carousel-content"></ol>
     </div>
-    
+
     {{#compare num_children 1 operator=">"}}
     <div class="circle-buttons">
         <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0" style="color: #{{paragraph.color}}"></i>

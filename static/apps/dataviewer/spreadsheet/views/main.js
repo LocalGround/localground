@@ -318,10 +318,14 @@ define(["jquery",
             },
 
             mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
-                var model = this.getModelFromCell(instance, row),
-                    photoCount = model.get("photo_count") || 0,
-                    audioCount = model.get("audio_count") || 0,
-                    videoCount = model.get("video_count") || 0,
+                var model = this.getModelFromCell(instance, row);
+                console.log(model);
+                var photoIds= model.get("attached_photos_ids"),
+                    audioIds= model.get("attached_audio_ids"),
+                    videoIds= model.get("attached_videos_ids");
+                var photoCount = photoIds != null ? photoIds.length : 0,
+                    audioCount = audioIds != null ? audioIds.length : 0,
+                    videoCount = videoIds != null ? videoIds.length : 0,
                     i;
 
                 td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
@@ -364,9 +368,9 @@ define(["jquery",
                 this.currentModel.fetch({
                     success: function () {
                         collection = new Backbone.Collection();
-                        collection.add(that.currentModel.get("children").photos.data);
-                        collection.add(that.currentModel.get("children").audio.data);
-                        collection.add(that.currentModel.get("children").videos.data);
+                        collection.add(that.currentModel.get("media").photos.data);
+                        collection.add(that.currentModel.get("media").audio.data);
+                        collection.add(that.currentModel.get("media").videos.data);
 
                         var carousel = new Carousel({
                             model: that.currentModel,
@@ -479,7 +483,13 @@ define(["jquery",
                     i = 0,
                     ordering;
                 for (i = 0; i < models.length; i++) {
-                    ordering = this.currentModel.get("photo_count") + this.currentModel.get("audio_count");
+                    var photoIds= this.currentModel.get("attached_photos_ids"),
+                        audioIds= this.currentModel.get("attached_audio_ids"),
+                        videoIds= this.currentModel.get("attached_videos_ids");
+                    var photoCount = photoIds != null ? photoIds.length : 0,
+                        audioCount = audioIds != null ? audioIds.length : 0,
+                        videoCount = videoIds != null ? videoIds.length : 0,
+                        ordering = photoCount + audioCount + videoCount;
                     this.currentModel.attach(models[i], (ordering + i + 1), function () {
                         that.currentModel.fetch({
                             success: function(){

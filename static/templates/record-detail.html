@@ -132,7 +132,10 @@
                 </div>
             </div>
         {{/if}}
-        <button class="button button-tertiary streetview">Show Street View</button>
+        {{#ifequal screenType "map"}}
+            <button class="button button-tertiary streetview">Show Street View</button>
+        {{/ifequal}}
+
 
         {{#compare screenType "presentation" operator="!="}}
             <div class="save-options">
@@ -165,7 +168,7 @@
                                     <circle id="Oval-Copy-6" cx="12" cy="12" r="8"></circle>
                                 </g>
                             </g>
-                        </svg>                       
+                        </svg>
                         <span>POINT</span>
                     </div>
                     <div id="add-polyline">
@@ -215,7 +218,9 @@
 
     <div id="model-form"></div>
 
-    <button class="button button-tertiary streetview">Show Street View</button>
+    {{#ifequal screenType "map"}}
+        <button class="button button-tertiary streetview">Show Street View</button>
+    {{/ifequal}}
 
     <div class = "save-options">
         <button class="save-model button-primary pull-right">Save</button>
