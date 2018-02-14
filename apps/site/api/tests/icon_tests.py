@@ -254,7 +254,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self, **kwargs):
         random_user = self.create_user(username="Rando")
         random_project = self.create_project(
-            random_user, name='Random Project')
+            user=random_user, name='Random Project')
         project_ids = [random_project.id, 999999999]
         for project_id in project_ids:
             tmp_file = create_temp_file(5, 200)

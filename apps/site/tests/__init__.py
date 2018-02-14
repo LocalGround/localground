@@ -157,6 +157,8 @@ class ModelMixin(object):
 
     def create_project(self, user=None, name='Test Project',
                        authority_id=1, tags=[]):
+        '''START HERE'''
+        print user.username
         import random
         from localground.apps.site import models
         slug = ''.join(
@@ -172,6 +174,7 @@ class ModelMixin(object):
                 id=authority_id),
             slug=slug)
         p.save()
+        print p.owner.username
         return p
 
     def grant_project_permissions_to_user(self,

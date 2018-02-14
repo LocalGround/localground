@@ -3,6 +3,7 @@ from localground.apps.site import models
 
 
 class CheckUserCanPostToProject(permissions.BasePermission):
+
     def has_permission(self, request, view):
         if request.method == 'POST':
             r = request.POST.copy()
@@ -12,6 +13,9 @@ class CheckUserCanPostToProject(permissions.BasePermission):
             project_id = r.get('project_id')
             try:
                 project = models.Project.objects.get(id=project_id)
+                print 'project owner: ' + project.owner.username
+                print 'current user: ' + request.user.username
+                print project.can_edit(request.user)
                 return project.can_edit(request.user)
             except Exception:
                 return False
