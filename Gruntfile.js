@@ -4,34 +4,10 @@ module.exports = function (grunt) {
 	    requirejs: {
 	        home: {
                 options: {
-                    out: './static/redesign/build/home.js',
-                    baseUrl: "./static/redesign/",
-                    mainConfigFile: "./static/redesign/apps/require-config.js",
+                    out: './static/build/home.js',
+                    baseUrl: "./static/",
+                    mainConfigFile: "./static/apps/require-config.js",
                     name: 'apps/home/kickoff',
-                    removeCombined: 'true',
-                    findNestedDependencies: 'true',
-                    wrapShim: 'true',
-                    optimize: 'none'
-                }
-	        },
-            gallery: {
-                options: {
-                    out: './static/redesign/build/gallery.js',
-                    baseUrl: "./static/redesign/",
-                    mainConfigFile: "./static/redesign/apps/require-config.js",
-                    name: 'apps/gallery/kickoff',
-                    removeCombined: 'true',
-                    findNestedDependencies: 'true',
-                    wrapShim: 'true',
-                    optimize: 'none'
-                }
-	        },
-            map: {
-                options: {
-                    out: './static/redesign/build/map.js',
-                    baseUrl: "./static/redesign/",
-                    mainConfigFile: "./static/redesign/apps/require-config.js",
-                    name: 'apps/map/kickoff',
                     removeCombined: 'true',
                     findNestedDependencies: 'true',
                     wrapShim: 'true',
@@ -40,9 +16,9 @@ module.exports = function (grunt) {
 	        },
             style: {
                 options: {
-                    out: './static/redesign/build/style.js',
-                    baseUrl: "./static/redesign/",
-                    mainConfigFile: "./static/redesign/apps/require-config.js",
+                    out: './static/build/style.js',
+                    baseUrl: "./static/",
+                    mainConfigFile: "./static/apps/require-config.js",
                     name: 'apps/style/kickoff',
                     removeCombined: 'true',
                     findNestedDependencies: 'true',
@@ -50,12 +26,12 @@ module.exports = function (grunt) {
                     optimize: 'none'
                 }
 	        },
-	        spreadsheet: {
+	        dataviewer: {
                 options: {
-                    out: './static/redesign/build/spreadsheet.js',
-                    baseUrl: "./static/redesign/",
-                    mainConfigFile: "./static/redesign/apps/require-config.js",
-                    name: 'apps/spreadsheet/kickoff',
+                    out: './static/build/dataviewer.js',
+                    baseUrl: "./static/",
+                    mainConfigFile: "./static/apps/require-config.js",
+                    name: 'apps/dataviewer/kickoff',
                     removeCombined: 'true',
                     findNestedDependencies: 'true',
                     wrapShim: 'true',
@@ -64,9 +40,9 @@ module.exports = function (grunt) {
 	        },
             presentation: {
                 options: {
-                    out: './static/redesign/build/presentation.js',
-                    baseUrl: "./static/redesign/",
-                    mainConfigFile: "./static/redesign/apps/require-config.js",
+                    out: './static/build/presentation.js',
+                    baseUrl: "./static/",
+                    mainConfigFile: "./static/apps/require-config.js",
                     name: 'apps/presentation/kickoff',
                     removeCombined: 'true',
                     findNestedDependencies: 'true',
@@ -79,40 +55,30 @@ module.exports = function (grunt) {
 		uglify: {
 			home: {
 				files: {
-                    './static/redesign/build/home.min.js':
-						['./static/redesign/build/home.js']
+                    './static/build/home.min.js':
+						['./static/build/home.js']
 				}
 			},
-            gallery: {
-				files: {
-                    './static/redesign/build/gallery.min.js':
-						['./static/redesign/build/gallery.js']
-				}
-			},
-            map: {
-				files: {
-                    './static/redesign/build/map.min.js':
-						['./static/redesign/build/map.js']
-				}
-			},
+            //Note: minification doesn't work for ES6. Need a transpiler
+            // task
             /*style: {
 				files: {
-                    './static/redesign/build/style.min.js':
-						['./static/redesign/build/style.js']
+                    './static/build/style.min.js':
+						['./static/build/style.js']
 				}
-			},*/
-			spreadsheet: {
+			},
+			dataviewer: {
 				files: {
-                    './static/redesign/build/spreadsheet.min.js':
-						['./static/redesign/build/spreadsheet.js']
+                    './static/build/dataviewer.min.js':
+						['./static/build/dataviewer.js']
 				}
 			},
 			presentation: {
 				files: {
-                    './static/redesign/build/presentation.min.js':
-						['./static/redesign/build/presentation.js']
+                    './static/build/presentation.min.js':
+						['./static/build/presentation.js']
 				}
-			}
+			}*/
 		}
 
     });
