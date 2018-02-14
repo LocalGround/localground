@@ -116,7 +116,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                     'size': 120
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
-            #print response.data
+
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             self.assertEqual(response.data["size"], 120)
             self.assertEqual(response.data["anchor_x"], 50 )
@@ -136,7 +136,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                     'anchor_y':9
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
-            #print response.data
+
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             self.assertEqual(response.data["size"], 15)
             self.assertEqual(response.data["anchor_x"], 8)
@@ -156,7 +156,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                     'anchor_x': 0
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
-            #print response.data
+
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             self.assertEqual(response.data["size"], 16)
             self.assertEqual(response.data["anchor_x"], 0)
@@ -177,7 +177,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                     'anchor_y': 50
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
-            #print response.data
+
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             self.assertEqual(response.data["size"], 16)
             self.assertEqual(response.data["anchor_x"], 8)
@@ -301,11 +301,8 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
     def create_icon_post(self):
         tmp_file = create_temp_file(30, 30)
         with open(tmp_file.name, 'rb') as binaryImage:
-            #new_url = ['/api/0/projects/%s/icons/' % self.project.id]
-            #print new_url
             response = self.client_user.post(
                 '/api/0/icons/',
-                #new_url,
                 {
                     'icon_file': binaryImage,
                     'project_id': self.project.id,

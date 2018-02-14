@@ -164,8 +164,7 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     }),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded")
-                if response.status_code != status.HTTP_201_CREATED:
-                    print response.data
+
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 new_marker = models.Record.objects.all().order_by('-id',)[0]
                 self.assertEqual(new_marker.name, name)
