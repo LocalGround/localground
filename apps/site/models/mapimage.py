@@ -12,6 +12,8 @@ from localground.apps.site.models import (
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
 from django.contrib.contenttypes import generic
+from localground.apps.site.fields import LGImageField
+from PIL import Image
 
 
 class MapImage(BaseUploadedMedia):
@@ -19,8 +21,11 @@ class MapImage(BaseUploadedMedia):
     source_print = models.ForeignKey('Print', blank=True, null=True)
     status = models.ForeignKey('StatusCode',
                                default=StatusCode.READY_FOR_PROCESSING)
+    # looks like file_name_thumb was the primary key
+    # whereas file_name_scaled is never used elsewhere
     file_name_thumb = models.CharField(max_length=255, blank=True, null=True)
     file_name_scaled = models.CharField(max_length=255, blank=True, null=True)
+    # file name chars will eventually be replaced
     scale_factor = models.FloatField(blank=True, null=True)
     upload_source = models.ForeignKey('UploadSource', default=1)
     email_sender = models.CharField(max_length=255, blank=True, null=True)
@@ -30,6 +35,9 @@ class MapImage(BaseUploadedMedia):
     qr_code = models.CharField(max_length=8, blank=True, null=True)
     map_rect = models.CharField(max_length=255, blank=True, null=True)
     processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
+    # S3 File fields
+    media_file_thumb = LGImageField(null=True)
+    media_file_scaled = LGImageField(null=True)
     objects = MapImageManager()
 
     class Meta:
@@ -38,6 +46,7 @@ class MapImage(BaseUploadedMedia):
         verbose_name = 'map-image'
         verbose_name_plural = 'map-images'
 
+    # Never used elsewhere besides mapimage test
     def thumb(self):
         '''
         Used for displaying a previously generated thumbnail image
@@ -46,6 +55,7 @@ class MapImage(BaseUploadedMedia):
             '%s%s' %
             (self.virtual_path, self.file_name_thumb))
 
+    # These filesystem functions will eventually be replaced by Amazon S3
     def get_abs_directory_path(self):
         return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
 
@@ -67,18 +77,44 @@ class MapImage(BaseUploadedMedia):
         else:
             return None
 
-    def delete(self, *args, **kwargs):
-        # first remove directory, then delete from db:
-        import shutil
-        import os
-        path = self.get_abs_directory_path()
-        if os.path.exists(path):
-            dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
-            if os.path.exists(dest):
-                from localground.apps.lib.helpers import generic
-                dest = dest + '.dup.' + generic.generateID()
-            shutil.move(path, dest)
+    def generate_mapimage(self, im, size, file_name):
+        im.thumbnail((size, size), Image.ANTIALIAS)
+        return self.pil_to_django_file(im, file_name)
 
+    '''
+    Test Candidate to upload the mapinage to S3
+    '''
+    # Could not find use of validated_data so far
+    def process_mapImage_to_S3(self, file, name=None):
+        # WIP on creating thumbnail to save onto S3
+        from localground.apps.lib.helpers import generic
+        self.uuid = generic.generateID()
+        self.model_name_plural = 'map-images'
+
+        im = Image.open(file)
+        basename, ext = os.path.splitext(file.name)
+
+        saved_filename = '{0}_{1}.jpg'.format(basename, self.uuid)
+        generated_image = self.generate_mapimage(
+            im, 300, saved_filename)
+
+        # 300 pixels wide:
+        self.media_file_thumb.save(saved_filename, generated_image)
+
+        # original file size:
+        self.media_file_scaled.save(file.name, file)
+
+        self.file_name_orig = file.name
+        self.name = name or file.name
+
+        self.save()
+
+    def remove_map_image_from_S3(self):
+        self.media_file_thumb.delete()
+        self.media_file_scaled.delete()
+
+    def delete(self, *args, **kwargs):
+        self.remove_map_image_from_S3()
         super(MapImage, self).delete(*args, **kwargs)
 
     def process(self):
@@ -151,4 +187,3 @@ class ImageOpts(ExtentsMixin, MediaMixin, BaseAudit):
 
     def can_edit(self, user):
         return self.source_mapimage.can_edit(user)
-    

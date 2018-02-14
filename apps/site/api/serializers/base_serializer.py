@@ -177,7 +177,7 @@ class MediaGeometrySerializerNew(GeometrySerializer):
         source='media_file_orig',
         required=True,
         style={'base_template': 'file.html'},
-        write_only=True,
+        # write_only=True,
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
 

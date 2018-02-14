@@ -364,6 +364,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             posted_data[new_marker.id] = [d.keys()[0], d.values()[0]]
 
             # return some information about the newly created markers
+        #print mwa_ids, posted_data
         return mwa_ids, posted_data
 
     def test_get(self):

@@ -86,7 +86,8 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         # read EXIF data:
         exif = self.read_exif_data(im)
         self.device = exif.get('model', None)
-        self.point = exif.get('point', None)
+        if exif.get('point'):
+            self.point = exif.get('point')
 
         # generate thumbnails
         self.generate_thumbnails(im, file.name)
@@ -128,6 +129,7 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.__rotate(degrees=270)
 
     def __rotate(self, degrees):
+        print('rotating')
         # 1. retrieve file from S3 and convert to PIL image:
         im = self.django_file_field_to_pil(self.media_file_orig)
 

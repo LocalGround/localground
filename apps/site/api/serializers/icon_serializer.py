@@ -76,7 +76,7 @@ class IconSerializerList(IconSerializerBase):
         self.instance = models.Icon(**self.validated_data)
 
         # Save it to Amazon S3 cloud
-        self.instance.process_file(f)
+        self.instance.process_file(f, self.validated_data)
 
         # Commit to database
         self.instance.save()
@@ -106,9 +106,14 @@ class IconSerializerUpdate(IconSerializerBase):
     def update(self, instance, validated_data):
         data = self.get_presave_update_dictionary()
         data.update(validated_data)
-        # raise Exception(instance.file_name_new, validated_data)
-        resized_icon_parameters = self.resize_icon(
-            instance.owner, instance.file_name_new, validated_data)
+        # The closest to having the resized_icon parameters extracted
+        # but it does not overwrite the existing icon
+        resized_icon_parameters = self.instance.process_file(
+            instance.media_file_new, validated_data)
+        print('**** RESIZED ICON PARAMETERS ****')
+        print(resized_icon_parameters)  # Extract necessary icon data
+        print('**** RESIZED ICON PARAMETERS ****')
+
         data.update(resized_icon_parameters)
         return super(IconSerializerBase, self).update(instance, data)
 

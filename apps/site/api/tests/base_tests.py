@@ -37,6 +37,7 @@ class ViewMixinAPISuperuser(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
+            url = url.split('?')[0]
             func = resolve(url).func
             func_name = '{}.{}'.format(func.__module__, func.__name__)
             view_name = '{}.{}'.format(
@@ -61,7 +62,8 @@ class ViewMixinAPI(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
-            # print url
+            url = url.split('?')[0]
+            print(url)
             func = resolve(url).func
             func_name = '{}.{}'.format(func.__module__, func.__name__)
             view_name = '{}.{}'.format(

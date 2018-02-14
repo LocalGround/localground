@@ -7,6 +7,7 @@ from django.contrib.gis.geos import Point
 from localground.apps.site.api.tests.renderer_tests import mixins
 from localground.apps.site import models
 
+
 class CSVMixin(mixins.MediaMixin):
 
     def test_csv_is_valid_for_objects(self):
@@ -23,7 +24,8 @@ class CSVMixin(mixins.MediaMixin):
             for row in reader:
                 if row.get('name') == 'f1' or row.get('map_title') == 'f1':
                     test_record = row
-                if row.get('name') in ['f1', 'f2'] or row.get('map_title') in ['f1', 'f2']:
+                if row.get('name') in ['f1', 'f2'] \
+                        or row.get('map_title') in ['f1', 'f2']:
                     cnt_track_both_objects_present += 1
 
             # test that the expected models are present in CSV file:
@@ -33,7 +35,9 @@ class CSVMixin(mixins.MediaMixin):
                 self.assertEqual(cnt_track_both_objects_present, 1)
 
             # get fields:
-            response = self.client_user.options(url,
+            print url
+            response = self.client_user.options(
+                url,
                 HTTP_X_CSRFTOKEN=self.csrf_token,
                 content_type="application/x-www-form-urlencoded"
             )
@@ -45,7 +49,7 @@ class CSVMixin(mixins.MediaMixin):
             else:
                 headers = response.data['actions'].get('PUT').keys()
                 if 'media' in headers:
-                    headers.remove('media') #for instances
+                    headers.remove('media')  # for instances
             if test_record.get('overlay_type') not in types_without_lat_lngs:
                 headers += ['lat', 'lng']
             if '/datasets/' not in url:
@@ -62,7 +66,8 @@ class CSVMixin(mixins.MediaMixin):
     def _test_media_flattened_for_records(self, is_detail=False):
         url = '/api/0/datasets/{}/data/'.format(self.records[0].form.id)
         if is_detail:
-            url = '/api/0/datasets/{}/data/{}/'.format(self.records[0].form.id, self.records[0].id)
+            url = '/api/0/datasets/{}/data/{}/'.format(
+                self.records[0].form.id, self.records[0].id)
         response = self.client_user.get(url + '?format=csv')
         data = StringIO(response.content)
         reader = csv.DictReader(data)
@@ -90,8 +95,10 @@ class CSVRendererListTest(CSVMixin, test.TestCase, ModelMixin):
         self.urls = [
             '/api/0/photos/?project_id={0}&format=csv'.format(self.project.id),
             '/api/0/audio/?project_id={0}&format=csv'.format(self.project.id),
-            '/api/0/map-images/?project_id={0}&format=csv'.format(self.project.id),
-            '/api/0/markers/?project_id={0}&format=csv'.format(self.project.id),
+            '/api/0/map-images/?project_id={0}&format=csv'.format(
+                self.project.id),
+            '/api/0/markers/?project_id={0}&format=csv'.format(
+                self.project.id),
             '/api/0/projects/?format=csv',
             '/api/0/prints/?project_id={0}&format=csv'.format(self.project.id)
         ]

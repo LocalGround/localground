@@ -11,7 +11,6 @@ class TileViewSet(viewsets.ModelViewSet):
         'overlay_source').all()
     serializer_class = serializers.TileSetSerializer
     filter_backends = (SQLFilterBackend,)
-    #permission_classes = (permissions.IsAdminUser,)
 
 class OverlaySourceViewSet(viewsets.ModelViewSet):
     queryset = models.OverlaySource.objects.all()

@@ -1,4 +1,3 @@
-'''
 import os
 from django import test
 from django.conf import settings
@@ -253,7 +252,6 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
 
     def test_cannot_create_icon_if_no_prj_permissison_or_no_prj_defined(
             self, **kwargs):
-        print self.urls[0]
         random_user = self.create_user(username="Rando")
         random_project = self.create_project(
             random_user, name='Random Project')
@@ -269,12 +267,11 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                         'owner': random_user
                     },
                     HTTP_X_CSRFTOKEN=self.csrf_token)
-                print response.data
                 self.assertEqual(
-                    status.HTTP_400_BAD_REQUEST, response.status_code)
+                    status.HTTP_403_FORBIDDEN, response.status_code)
                 self.assertEqual(
-                    response.data['project_id'],
-                    [u'Invalid pk "%s" - object does not exist.' % project_id]
+                    response.data['detail'],
+                    u'You do not have permission to perform this action.'
                 )
 
 
@@ -320,6 +317,16 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
 
     #put/patch - update
     #set anchor and size, not anything else
+
+    '''
+    The following tests involving client_user.put and patch,
+    based on data dictionary,
+    fails to apply the changes from the dictionary to an updated object
+    because we are trying to modify an existing image
+    which requires it to be opened manually(?)
+    Based on the django test api:
+    https://docs.djangoproject.com/en/2.0/topics/testing/tools/
+    '''
     def test_required_params_and_resize_using_put(self, **kwargs):
         response = self.client_user.put(self.url,
                                         data=urllib.urlencode({
@@ -331,7 +338,6 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        #print response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon_new')
@@ -348,7 +354,6 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        #print response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon_patch')
@@ -363,7 +368,6 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
                                         content_type="application/x-www-form-urlencoded"
                                         )
-        #print response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
         self.assertEqual(updated_icon.name, 'icon1')
@@ -431,4 +435,3 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                       HTTP_X_CSRFTOKEN=self.csrf_token
                                       )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-'''

@@ -43,7 +43,7 @@ class AudioSerializer(MediaGeometrySerializerNew):
             'attribution': validated_data.get('attribution') or owner.username
         })
         self.instance = self.Meta.model.objects.create(**self.validated_data)
-        self.instance.process_file(f)
+        self.instance.process_file(f, name=self.validated_data.get('name'))
         return self.instance
 
 
