@@ -42,7 +42,6 @@ class GenericRelationMixinTest(ModelMixin):
 
         # create and add audio to marker
         audio = self.create_audio()
-        print(audio)
         marker.stash(audio, self.user, 1)
 
         self.assertEqual(len(marker.entities.all()), 2)
@@ -54,9 +53,6 @@ class GenericRelationMixinTest(ModelMixin):
         # create and add another audio to marker
         audio2 = self.create_audio()
         marker.stash(audio2, self.user, 1)
-        print(marker.grab(Audio))
-        print(marker.grab(Audio)[0].file_name_orig)
-        print(marker.grab(Audio)[1].file_name_orig)
 
         # test grab()
         self.assertEqual(len(marker.grab(Audio)), 2)

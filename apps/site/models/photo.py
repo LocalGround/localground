@@ -129,7 +129,6 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         self.__rotate(degrees=270)
 
     def __rotate(self, degrees):
-        print('rotating')
         # 1. retrieve file from S3 and convert to PIL image:
         im = self.django_file_field_to_pil(self.media_file_orig)
 

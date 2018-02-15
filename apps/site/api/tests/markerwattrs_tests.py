@@ -190,7 +190,7 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded"
                 )
-                #print response.data
+
                 new_marker = self.form.get_records().order_by('-id',)[0]
                 '''
                 self.assertEqual(
@@ -286,9 +286,7 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     }),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded")
-                if response.status_code != status.HTTP_201_CREATED:
-                    print('196: ', response.data)
-                    print('196: ', response.data)
+
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 new_marker = self.form.get_records().order_by('-id',)[0]
 
@@ -364,7 +362,6 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             posted_data[new_marker.id] = [d.keys()[0], d.values()[0]]
 
             # return some information about the newly created markers
-        #print mwa_ids, posted_data
         return mwa_ids, posted_data
 
     def test_get(self):

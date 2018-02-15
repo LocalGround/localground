@@ -1,6 +1,8 @@
-from localground.apps.site.api.serializers import IconSerializerList, IconSerializerUpdate
+from localground.apps.site.api.serializers import \
+    IconSerializerList, IconSerializerUpdate
 from localground.apps.site import models
-from localground.apps.site.api.views.abstract_views import MediaList, MediaInstance
+from localground.apps.site.api.views.abstract_views import \
+    MediaList, MediaInstance
 
 
 class IconList(MediaList):

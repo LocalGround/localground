@@ -7,6 +7,7 @@
         <div class="carouselbox spreadsheet">
             <ol class="carousel-content"></ol>
         </div>
+
         <div class="circle-buttons">
             <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
             {{#times 1 num_children}}
@@ -14,12 +15,13 @@
             {{/times}}
         </div>
     {{/compare}}
+
 {{else}}
 
     <div class="carouselbox">
         <ol class="carousel-content"></ol>
     </div>
-    
+
     {{#compare num_children 1 operator=">"}}
     <div class="circle-buttons">
         <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0" style="color: #{{paragraph.color}}"></i>

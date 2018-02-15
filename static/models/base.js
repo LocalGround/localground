@@ -17,7 +17,7 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
             getDataTypePlural: function () {
 
                 // 1/24/2018
-                // the following condition handles newly-uploaded photos which 
+                // the following condition handles newly-uploaded photos which
                 // appear not to have a properly attributes 'collection' attribute
                 // Problem should probably be handled upstream.
                 // if (typeof this.collection.getDataType == 'undefined') {
@@ -150,6 +150,8 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 switch(this.get("overlay_type")) {
                     case "photo":
                         return "photos";
+                    case "video":
+                        return "videos";
                     case "audio":
                         return "audio";
                     case "marker":

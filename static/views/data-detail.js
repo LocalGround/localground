@@ -341,9 +341,9 @@ define([
             return null;
         },
         getPhotos: function () {
-            var children = this.model.get("children") || {},
+            var media = this.model.get("media") || {},
                 featuredImage = this.getFeaturedImage(),
-                photos = children.photos ? new Photos(children.photos.data,
+                photos = media.photos ? new Photos(media.photos.data,
                     { projectID: this.app.getProjectID() }) : new Photos([],
                     { projectID: this.app.getProjectID() });
             if (featuredImage) {
@@ -352,14 +352,14 @@ define([
             return photos;
         },
         getAudio: function () {
-            var children = this.model.get("children") || {};
-            return children.audio ? new Audio(children.audio.data,
+            var media = this.model.get("media") || {};
+            return media.audio ? new Audio(media.audio.data,
                 { projectID: this.app.getProjectID() }) : new Audio([],
                 { projectID: this.app.getProjectID() });
         },
         getVideos: function () {
-            var children = this.model.get("children") || {};
-            return children.videos ? new Videos(children.videos.data,
+            var media = this.model.get("media") || {};
+            return media.videos ? new Videos(media.videos.data,
                 { projectID: this.app.getProjectID() }) : new Videos([],
                 { projectID: this.app.getProjectID() });
         },
@@ -377,8 +377,8 @@ define([
             if (this.panelStyles) {
                 panelStyles = this.panelStyles;
             }
-
             if (photos.length > 0 || videos.length > 0) {
+                console.log("Finding carousel photos / videos")
                 genericList = [];
                 genericList = genericList.concat(photos.toJSON());
                 genericList = genericList.concat(videos.toJSON());
@@ -395,6 +395,7 @@ define([
                 this.$el.find(".carousel-videos-photos").append(c.$el);
             }
             if (audio.length > 0) {
+                console.log("Finding carousel audio")
                 audio.forEach(function (audioTrack) {
                     c = new AudioPlayer({
                         model: audioTrack,

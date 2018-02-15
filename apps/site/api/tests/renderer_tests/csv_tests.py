@@ -35,7 +35,6 @@ class CSVMixin(mixins.MediaMixin):
                 self.assertEqual(cnt_track_both_objects_present, 1)
 
             # get fields:
-            print url
             response = self.client_user.options(
                 url,
                 HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -134,7 +133,6 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
         url = '/api/0/projects/{}/'.format(self.project.id)
         response = self.client_user.get(url + '?format=csv')
         data = StringIO(response.content)
-        # print data
         reader = csv.DictReader(data)
         expected = {
             'form_{}'.format(self.form.id): 8,
@@ -150,8 +148,7 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
             if not actual.get(key):
                 actual[key] = 0
             actual[key] += 1
-        # print 'Expected', expected.keys()
-        # print 'Actual', actual.keys()
+
         self.assertSetEqual(set(expected.keys()), set(actual.keys()))
         for key in expected.keys():
             self.assertEqual(expected[key], actual[key])

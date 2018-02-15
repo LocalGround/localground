@@ -11,7 +11,6 @@ class SaveMixin(object):
             model_instance.owner.username,
             model_instance.model_name_plural
         )
-        # print self.storage.location
         return super(SaveMixin, self).pre_save(model_instance, add)
 
 

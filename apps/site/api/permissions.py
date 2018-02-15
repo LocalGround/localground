@@ -6,8 +6,8 @@ class CheckUserCanPostToProject(permissions.BasePermission):
 
     def has_permission(self, request, view):
         if request.method == 'POST':
-            r = request.POST.copy()
-            r.update(request.GET)
+            r = request.GET.copy()
+            r.update(request.POST)
             # Make sure user has permission to create new record
             # associated with the project
             project_id = r.get('project_id')

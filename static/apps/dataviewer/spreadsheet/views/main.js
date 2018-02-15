@@ -6,6 +6,7 @@ define(["jquery",
         "views/create-media",
         "models/record",
         "models/marker",
+        "models/audio",
         "collections/photos",
         "collections/audio",
         "collections/videos",
@@ -18,7 +19,7 @@ define(["jquery",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
-        Record, Marker, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
+        Record, Marker, AudioModel, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
         SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
@@ -180,11 +181,6 @@ define(["jquery",
                     data.push(rec);
                 });
 
-                /*console.log(this.getColumns())
-                console.log(this.getColumnHeaders())
-                console.log(this.getColumnWidths())
-                console.log(data)*/
-
                 this.table = new Handsontable(grid, {
                     data: data,
                     fixedRowsTop: 0,
@@ -318,11 +314,49 @@ define(["jquery",
             },
 
             mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
-                var model = this.getModelFromCell(instance, row),
-                    photoCount = model.get("photo_count") || 0,
-                    audioCount = model.get("audio_count") || 0,
-                    videoCount = model.get("video_count") || 0,
+                var model = this.getModelFromCell(instance, row);
+                console.log(model);
+
+                // There are two possible places to extract
+                // count of media types
+                var photoIds= model.get("attached_photos_ids"),
+                    audioIds= model.get("attached_audio_ids"),
+                    videoIds= model.get("attached_videos_ids");
+
+                var photoCollection = null,
+                    audioCollection = null,
+                    videoCollection = null;
+                    if (model.get("media")){
+                        photoCollection = model.get("media").photos
+                        audioCollection = model.get("media").audio
+                        videoCollection = model.get("media").videos
+                    }
+
+                var photoCount = 0,
+                    audioCount = 0,
+                    videoCount = 0,
                     i;
+
+                // Make sure to check for two sources for length of media:
+                // option 1 - #media#_ids.length
+                // option 2 - #media#Collection.data.length
+                if (photoIds){
+                    photoCount = photoIds.length;
+                } else if (photoCollection){
+                    photoCount = photoCollection.data.length;
+                }
+
+                if (audioIds){
+                    audioCount = audioIds.length;
+                } else if (audioCollection){
+                    audioCount = audioCollection.data.length;
+                }
+
+                if (videoIds){
+                    videoCount = audioIds.length;
+                } else if (videoCollection){
+                    videoCount = videoCollection.data.length;
+                }
 
                 td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
                 for (i = 0; i < photoCount; ++i) {
@@ -360,20 +394,51 @@ define(["jquery",
                     rowIndex = $(e.target).attr("row-index"),
                     collection;
                 this.currentModel = this.collection.at(parseInt(rowIndex));
-                console.log(rowIndex, this.currentModel);
+                console.log(this.currentModel, rowIndex);
                 this.currentModel.fetch({
                     success: function () {
                         collection = new Backbone.Collection();
-                        collection.add(that.currentModel.get("children").photos.data);
-                        collection.add(that.currentModel.get("children").audio.data);
-                        collection.add(that.currentModel.get("children").videos.data);
+                        var photoCollection = that.currentModel.get("media").photos,
+                            audioCollection = that.currentModel.get("media").audio,
+                            videoCollection = that.currentModel.get("media").videos;
+                        if (photoCollection){
+                            collection.add(that.currentModel.get("media").photos.data);
+                        }
+                        if (videoCollection){
+                            collection.add(that.currentModel.get("media").videos.data);
+                        }
+
+                        /*
+                        So the carousel development has to be expanded
+                        so that it matches with data detail's
+                        carousel expansion
+                        */
 
                         var carousel = new Carousel({
                             model: that.currentModel,
                             app: that.app,
                             collection: collection
                         });
+
                         that.showModal(carousel);
+
+                        // Let's test this little experimentation out
+                        var a;
+                        if (audioCollection && audioCollection.data.length > 0) {
+                            console.log("Finding carousel audio")
+                            audioCollection.data.forEach(function (audioTrack, i) {
+                                console.log(audioTrack, audioTrack, that.app);
+                                a = new AudioPlayer({
+                                    model: new AudioModel(audioTrack),
+                                    app: that.app,
+                                    audioMode: "detail",
+                                    className: "audio-detail"
+                                });
+                                console.log(i, a.$el.html());
+                                carousel.$el.append(a.$el);
+                            });
+                        }
+                        //carousel.append(c.$el);
                     }
                 });
             },
@@ -479,7 +544,13 @@ define(["jquery",
                     i = 0,
                     ordering;
                 for (i = 0; i < models.length; i++) {
-                    ordering = this.currentModel.get("photo_count") + this.currentModel.get("audio_count");
+                    var photoIds= this.currentModel.get("attached_photos_ids"),
+                        audioIds= this.currentModel.get("attached_audio_ids"),
+                        videoIds= this.currentModel.get("attached_videos_ids");
+                    var photoCount = photoIds != null ? photoIds.length : 0,
+                        audioCount = audioIds != null ? audioIds.length : 0,
+                        videoCount = videoIds != null ? videoIds.length : 0,
+                        ordering = photoCount + audioCount + videoCount;
                     this.currentModel.attach(models[i], (ordering + i + 1), function () {
                         that.currentModel.fetch({
                             success: function(){
