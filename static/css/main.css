@@ -1971,6 +1971,11 @@ li .player-container {
 
 .carousel-modal.spreadsheet .audio-container {
     background: none;
+    color: #FFF !important;
+}
+
+.carousel-modal.spreadsheet .audio-container p, span {
+    color: #FFF !important;
 }
 
 /****************************************************************************************/
