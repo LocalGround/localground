@@ -33,7 +33,6 @@ class Record(ExtrasMixin, PointMixin, ProjectMixin, NamedMixin,
 
     @property
     def geometry(self):
-        #print (self.point)
         return self.point or self.polyline or self.polygon
 
     def get_name(self):
