@@ -393,10 +393,6 @@ define(["jquery",
                     rowIndex = $(e.target).attr("row-index"),
                     collection;
                 this.currentModel = this.collection.at(parseInt(rowIndex));
-                console.log(this)
-                console.log("*** Current Model");
-                console.log(rowIndex, this.currentModel);
-                console.log("*** Current Model");
                 this.currentModel.fetch({
                     success: function () {
                         collection = new Backbone.Collection();
@@ -413,11 +409,32 @@ define(["jquery",
                             collection.add(that.currentModel.get("media").videos.data);
                         }
 
+                        /*
+                        So the carousel development has to be expanded
+                        so that it matches with data detail's
+                        carousel expansion
+                        */
+
                         var carousel = new Carousel({
                             model: that.currentModel,
                             app: that.app,
                             collection: collection
                         });
+
+                        // Let's test this little experimentation out
+                        if (audioCollection.data.length > 0) {
+                            console.log("Finding carousel audio")
+                            audioCollection.data.forEach(function (audioTrack) {
+                                console.log(audioTrack);
+                                var a = new AudioPlayer({
+                                    model: audioTrack,
+                                    app: that.app,
+                                    audioMode: "detail",
+                                    className: "audio-detail"
+                                });
+                                that.$el.find(".carousel-audio").append(a.$el);
+                            });
+                        }
                         that.showModal(carousel);
                     }
                 });

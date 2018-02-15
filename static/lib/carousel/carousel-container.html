@@ -8,11 +8,6 @@
             <ol class="carousel-content"></ol>
         </div>
 
-        <div class="carousel-buttons hover-to-show">
-            <i class="fa fa-chevron-left prev"></i>
-            <i class="fa fa-chevron-right next"></i>
-        </div>
-
         <div class="circle-buttons">
             <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
             {{#times 1 num_children}}
@@ -20,6 +15,14 @@
             {{/times}}
         </div>
     {{/compare}}
+    <!--
+    For the carousel to really work on the spreadsheet level to mimic
+    the one from data, detail, get the necessary information from the
+    record detail HTML page with the carousel tags
+    and the data detail JS file at the view render function
+    by making modifications at the spreadsheet/views/main.js at makeCarousel
+    -->
+    <div class="carousel carousel-audio"></div>
 {{else}}
 
     <div class="carouselbox">

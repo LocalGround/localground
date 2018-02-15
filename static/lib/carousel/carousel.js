@@ -54,9 +54,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 }, 100);
             },
             closeCarousel: function(){
-                // The problem is that the current item is still active upon closure
-                // it can be only erased when calling the new carousel by opening it again...
-                console.log("Close carousel called");
                 resetCurrentFrame();
                 var $items = this.$el.find('.carousel-content li');
                 $items.removeClass('current').hide();
