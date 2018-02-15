@@ -6,6 +6,7 @@ define(["jquery",
         "views/create-media",
         "models/record",
         "models/marker",
+        "models/audio",
         "collections/photos",
         "collections/audio",
         "collections/videos",
@@ -18,7 +19,7 @@ define(["jquery",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
-        Record, Marker, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
+        Record, Marker, AudioModel, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
         SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
@@ -393,6 +394,7 @@ define(["jquery",
                     rowIndex = $(e.target).attr("row-index"),
                     collection;
                 this.currentModel = this.collection.at(parseInt(rowIndex));
+                console.log(this.currentModel, rowIndex);
                 this.currentModel.fetch({
                     success: function () {
                         collection = new Backbone.Collection();
@@ -421,21 +423,25 @@ define(["jquery",
                             collection: collection
                         });
 
+                        that.showModal(carousel);
+
                         // Let's test this little experimentation out
-                        if (audioCollection.data.length > 0) {
+                        var a;
+                        if (audioCollection && audioCollection.data.length > 0) {
                             console.log("Finding carousel audio")
                             audioCollection.data.forEach(function (audioTrack) {
-                                console.log(audioTrack);
-                                var a = new AudioPlayer({
-                                    model: audioTrack,
+                                console.log(audioTrack, audioTrack, that.app);
+                                a = new AudioPlayer({
+                                    model: new AudioModel(audioTrack),
                                     app: that.app,
                                     audioMode: "detail",
                                     className: "audio-detail"
                                 });
+                                console.log(a);
                                 that.$el.find(".carousel-audio").append(a.$el);
                             });
                         }
-                        that.showModal(carousel);
+                        //carousel.append(c.$el);
                     }
                 });
             },
