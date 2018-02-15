@@ -259,13 +259,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             random_user, name='Random Project')
         project_ids = [random_project.id, 999999999]
         for project_id in project_ids:
-            print('*** PROJECT ID ***')
-            print(project_id)
-            print('*** PROJECT ID ***')
             tmp_file = create_temp_file(5, 200)
-            print('*** TMP FILE ***')
-            print(tmp_file)
-            print('*** TMP FILE ***')
             with open(tmp_file.name, 'rb') as binaryImage:
                 response = self.client_user.post(
                     self.urls[0],
@@ -275,26 +269,6 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                         'owner': random_user
                     },
                     HTTP_X_CSRFTOKEN=self.csrf_token)
-                print('*** RESPONSE ***')
-                print('* context - project_id *')
-                '''
-                I could not get the project id from context['project_id']
-
-                but I did discover that there are more than 1 project
-                being shared when creating an icon
-                project_id = PrimaryKeyRelatedField(queryset=[
-                <Project: 1. My First Project>,
-                <Project: 10260. My First Project>,
-                <Project: 10261. Test Project>,
-                <Project: 10262. My First Project>,
-                <Project: 10263. Random Project>],
-                required=True, source='project')
-
-                '''
-                print(response.context)
-                print('* status code *')
-                print(response.status_code)
-                print('*** RESPONSE ***')
                 self.assertEqual(
                     status.HTTP_403_FORBIDDEN, response.status_code)
                 self.assertEqual(
