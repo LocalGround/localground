@@ -1962,6 +1962,17 @@ li .player-container {
     display: block;
 }
 
+/**************************************/
+/*       AUDIO SPREADSHEET STYLES     */
+/**************************************/
+.carousel-modal.spreadsheet .play {
+    color: #FFF;
+}
+
+.carousel-modal.spreadsheet .audio-container {
+    background: none;
+}
+
 /****************************************************************************************/
 /*                                            AUDIO                                     */
 /****************************************************************************************/

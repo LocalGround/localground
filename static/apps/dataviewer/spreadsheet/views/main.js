@@ -404,9 +404,6 @@ define(["jquery",
                         if (photoCollection){
                             collection.add(that.currentModel.get("media").photos.data);
                         }
-                        if (audioCollection){
-                            collection.add(that.currentModel.get("media").audio.data);
-                        }
                         if (videoCollection){
                             collection.add(that.currentModel.get("media").videos.data);
                         }
@@ -429,7 +426,7 @@ define(["jquery",
                         var a;
                         if (audioCollection && audioCollection.data.length > 0) {
                             console.log("Finding carousel audio")
-                            audioCollection.data.forEach(function (audioTrack) {
+                            audioCollection.data.forEach(function (audioTrack, i) {
                                 console.log(audioTrack, audioTrack, that.app);
                                 a = new AudioPlayer({
                                     model: new AudioModel(audioTrack),
@@ -437,8 +434,8 @@ define(["jquery",
                                     audioMode: "detail",
                                     className: "audio-detail"
                                 });
-                                console.log(a);
-                                that.$el.find(".carousel-audio").append(a.$el);
+                                console.log(i, a.$el.html());
+                                carousel.$el.append(a.$el);
                             });
                         }
                         //carousel.append(c.$el);
