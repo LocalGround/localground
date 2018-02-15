@@ -119,7 +119,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
 
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             self.assertEqual(response.data["size"], 120)
-            self.assertEqual(response.data["anchor_x"], 50 )
+            self.assertEqual(response.data["anchor_x"], 50)
             self.assertEqual(response.data["anchor_y"], 60)
 
     def test_check_user_size_user_2_anchors(self, **kwargs):
@@ -133,7 +133,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                     'owner': self.user,
                     'size': 15,
                     'anchor_x': 8,
-                    'anchor_y':9
+                    'anchor_y': 9
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
 
@@ -143,7 +143,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["anchor_y"], 9)
 
     def test_check_user_size_user_1_anchors(self, **kwargs):
-    #uses anchor given, calculates other at midpoint of icon
+        # uses anchor given, calculates other at midpoint of icon
         tmp_file = create_temp_file(32, 20)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
@@ -163,7 +163,8 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["anchor_y"], 5)
 
     def test_check_user_size_user_bad_anchors(self, **kwargs):
-        #if anchors are outside of icon, calculates anchors at midpoint of icon
+        # if anchors are outside of icon,
+        # calculates anchors at midpoint of icon
         tmp_file = create_temp_file(32, 20)
         with open(tmp_file.name, 'rb') as binaryImage:
             response = self.client_user.post(
@@ -214,7 +215,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["size"], 250)
             self.assertEqual(response.data["anchor_x"], 125)
 
-    #case below tests as written.  Sarah asked to rewrite to give error
+    #  case below tests as written.  Sarah asked to rewrite to give error
     def test_check_if_no_size_icon_too_small_then_use_min_size_set_anchors(self, **kwargs):
         tmp_file = create_temp_file(8, 5)
         with open(tmp_file.name, 'rb') as binaryImage:
@@ -231,7 +232,7 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(response.data["anchor_x"], 8)
             self.assertEqual(response.data["anchor_y"], 5)
 
-    #case below tests as written.  Sarah asked to rewrite to give error
+    #  case below tests as written.  Sarah asked to rewrite to give error
     def test_if_no_size_icon_too_small_one_side_then_scale_set_anchors(self, **kwargs):
         tmp_file = create_temp_file(5, 200)
         with open(tmp_file.name, 'rb') as binaryImage:
@@ -244,8 +245,9 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-            #ensure that icon is scaled to make icon small side as large as possible
-            #while keeping the large side within the maximum size allowed
+            # ensure that icon is scaled to make icon
+            # small side as large as possible
+            # while keeping the large side within the maximum size allowed
             self.assertEqual(response.data["size"], 250)
             self.assertEqual(response.data["anchor_x"], 3)
             self.assertEqual(response.data["anchor_y"], 125)
@@ -257,7 +259,13 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
             random_user, name='Random Project')
         project_ids = [random_project.id, 999999999]
         for project_id in project_ids:
+            print('*** PROJECT ID ***')
+            print(project_id)
+            print('*** PROJECT ID ***')
             tmp_file = create_temp_file(5, 200)
+            print('*** TMP FILE ***')
+            print(tmp_file)
+            print('*** TMP FILE ***')
             with open(tmp_file.name, 'rb') as binaryImage:
                 response = self.client_user.post(
                     self.urls[0],
@@ -267,6 +275,26 @@ class ApiIconListTest(test.TestCase, ViewMixinAPI):
                         'owner': random_user
                     },
                     HTTP_X_CSRFTOKEN=self.csrf_token)
+                print('*** RESPONSE ***')
+                print('* context - project_id *')
+                '''
+                I could not get the project id from context['project_id']
+
+                but I did discover that there are more than 1 project
+                being shared when creating an icon
+                project_id = PrimaryKeyRelatedField(queryset=[
+                <Project: 1. My First Project>,
+                <Project: 10260. My First Project>,
+                <Project: 10261. Test Project>,
+                <Project: 10262. My First Project>,
+                <Project: 10263. Random Project>],
+                required=True, source='project')
+
+                '''
+                print(response.context)
+                print('* status code *')
+                print(response.status_code)
+                print('*** RESPONSE ***')
                 self.assertEqual(
                     status.HTTP_403_FORBIDDEN, response.status_code)
                 self.assertEqual(
@@ -287,12 +315,20 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
         self.view = views.IconInstance.as_view()
         self.metadata = get_metadata()
         self.metadata.update({
-            'icon_file': {'type': 'string', 'required': False, 'read_only': True},
-            'project_id': {'read_only': True, 'required': False, 'type': 'field'}
+            'icon_file': {
+                'type': 'string',
+                'required': False,
+                'read_only': True
+            },
+            'project_id': {
+                'read_only': True,
+                'required': False,
+                'type': 'field'
+            }
         })
 
     def tearDown(self):
-        #delete method also removes files from file system:
+        # delete method also removes files from file system:
         for icon in models.Icon.objects.all():
             icon.delete()
         if os.path.exists('icon1.jpg'):
@@ -312,18 +348,9 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                 HTTP_X_CSRFTOKEN=self.csrf_token)
         return models.Icon.objects.get(id=response.data.get('id'))
 
-    #put/patch - update
-    #set anchor and size, not anything else
+    # put/patch - update
+    # set anchor and size, not anything else
 
-    '''
-    The following tests involving client_user.put and patch,
-    based on data dictionary,
-    fails to apply the changes from the dictionary to an updated object
-    because we are trying to modify an existing image
-    which requires it to be opened manually(?)
-    Based on the django test api:
-    https://docs.djangoproject.com/en/2.0/topics/testing/tools/
-    '''
     def test_required_params_and_resize_using_put(self, **kwargs):
         response = self.client_user.put(self.url,
                                         data=urllib.urlencode({
