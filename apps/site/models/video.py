@@ -29,6 +29,21 @@ class Video(ProjectMixin, NamedMixin, PointMixin, BaseAudit):
     )
     objects = VideoManager()
 
+    def can_view(self, user, access_key=None):
+        return self.project.can_view(user=user, access_key=access_key) or \
+            self.owner == user
+
+    def can_edit(self, user):
+        return self.project.can_edit(user) or \
+            self.owner == user
+
+    def can_delete(self, user):
+        return self.can_edit(user)
+
+    def can_manage(self, user):
+        return self.project.can_manage(user) or \
+            self.owner == user
+
     def __str__(self):
         return '{0}: {1} ({2}: {3})'.format(
             self.id, self.name, self.video_id, self.provider
