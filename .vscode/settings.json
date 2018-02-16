@@ -6,11 +6,19 @@
     "workbench.colorTheme": "Hybrid Next",
     "workbench.colorCustomizations": {
         "activityBar.background": "#1C252A",
-        "list.inactiveSelectionBackground": "#222E34",
-        "list.activeSelectionBackground": "#222E34",
+        "list.inactiveSelectionBackground": "#53606d",
+        "list.activeSelectionBackground": "#53606d",
         "list.inactiveSelectionForeground": "#B3BA3D",
+        "list.activeSelectionForeground": "#B3BA3D"
         
         
     },
-    "python.pythonPath": "/usr/bin/python"
+    "python.pythonPath": "/usr/bin/python",
+    "liveSassCompile.settings.formats": [
+        {
+          "format": "expanded",
+          "extensionName": ".css",
+          "savePath": "~/../"
+        }
+      ] 
 }

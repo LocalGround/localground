@@ -125,7 +125,7 @@ define(["marionette",
                 var days_per_month = 0;
 
                 if (month == 1){
-                    if (daysPerYear(date) == 366){
+                    if (this.daysPerYear(date) == 366){
                         days_per_month = 29;
                     } else {
                         days_per_month = 28;

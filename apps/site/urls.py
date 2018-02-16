@@ -11,6 +11,7 @@ urlpatterns = patterns('',
 
     # mostly static html:
     (r'^$', direct_to_template, {'template_name': 'pages/splash.html'}),
+    (r'^main/$', login_required(direct_to_template), {'template_name': 'pages/main.html'}),
     (r'^map/$', login_required(direct_to_template), {'template_name': 'pages/map.html'}),
     (r'^data/$', login_required(direct_to_template), {'template_name': 'pages/data.html'}),
     (r'^gallery/$', login_required(direct_to_template), {'template_name': 'pages/gallery.html'}),

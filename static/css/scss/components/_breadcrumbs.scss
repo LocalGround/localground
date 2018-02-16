@@ -1,0 +1,58 @@
+$icon-line-height: 22px;
+
+.breadcrumb-container {
+    display: inline-flex;
+    padding: 20px 30px;
+}
+
+.breadcrumb-level-container {
+    display: inline-flex;
+    position: relative;
+
+    .fa-angle-right {
+        padding: 0px 15px;
+        line-height: $icon-line-height;
+    }
+
+    .fa-angle-down {
+        line-height: $icon-line-height;
+        padding: 0px 8px;
+        font-weight: 600;
+    }
+}
+
+.breadcrumb-hover {
+    height: 28px;
+    border-radius: 3px;
+    padding: 0px 5px;
+    &:hover {
+        background: #f3f3f3;;
+    }
+}
+
+.breadcrumb-text {
+    font-size: 14px;
+    font-weight: 300;
+    display: inline-block;
+}
+
+.breadcrumb-text_current {
+    @extend .breadcrumb-text;
+    font-weight: 600;
+  
+}
+
+.bread-crumb_maplist {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    left: 36px;
+    top: 27px;
+    z-index: 500;
+    background: white;
+    padding: 10px;
+    width: 100%;
+    box-shadow: 0 2px 10px rgba(0,0,0,.2);
+}
+
+
