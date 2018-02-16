@@ -1974,7 +1974,8 @@ li .player-container {
     color: #FFF !important;
 }
 
-.carousel-modal.spreadsheet .audio-container p, span {
+.carousel-modal.spreadsheet .audio-container p,
+.carousel-modal.spreadsheet .audio-container span {
     color: #FFF !important;
 }
 
