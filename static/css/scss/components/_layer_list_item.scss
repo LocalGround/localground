@@ -1,0 +1,28 @@
+.list-item {
+    border-bottom: 1px solid #ebebeb;
+    font-size: 12px;
+    list-style: none;
+    background-color: #f7f7f7;
+
+    &:hover {
+        background: #EEE;
+        color: #444;
+    }
+
+    a {
+        text-decoration: none;
+        padding: 6px 22px;
+        display: inline-block;
+        width: 100%;
+    }
+    p {
+        display: inline-block;
+        margin-top: 3px;
+        vertical-align: middle;
+    }
+}
+
+.layer-datasource {
+    font-size: 11px;
+    margin-left: 20px;
+}

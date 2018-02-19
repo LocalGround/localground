@@ -8,6 +8,7 @@ define(["jquery",
         'use strict';
         var LayerListChild =  Marionette.ItemView.extend({
             initialize: function (opts) {
+                console.log('opts: ', opts);
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
@@ -17,12 +18,26 @@ define(["jquery",
                     this.showOverlays();
                 }
                 console.log('layer list childview initlize');
+                console.log(this);
+                this.dataset = this.app.dataManager.getCollection(this.model.get('data_source'));
+                console.log(this.dataset);
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
          //   className: "layer-column",
             templateHelpers: function () {
+                let defaultField = this.dataset.fields ? this.dataset.fields.models[1].get('col_name') : 'id'; 
+                let simpleDataset = this.dataset.models.map(item => {
+                    return {
+                        property: item.get(defaultField),
+                        id: item.get('id')
+                    }
+                });
+                console.log(defaultField);
+                console.log(simpleDataset);
                 return {
+                    name: this.dataset.name,
+                    dataList: simpleDataset,
                     isChecked: this.model.get("metadata").isShowing
                 };
             },

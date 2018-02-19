@@ -2,7 +2,7 @@ define(["marionette",
         "handlebars",
         'color-picker-eyecon',
         "models/map",
-        "apps/style/visibility-mixin",
+        "apps/main/visibility-mixin",
         "text!../../templates/left/panel-styles.html"
     ],
     function (Marionette, Handlebars, colorPicker, Map, PanelVisibilityExtensions, PanelStylesTemplate) {

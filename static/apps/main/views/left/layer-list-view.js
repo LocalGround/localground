@@ -2,7 +2,7 @@ define(["marionette",
         "handlebars",
         "collections/layers",
         "models/layer",
-        "apps/style/views/left/layer-list-child-view",
+        "apps/main/views/left/layer-list-child-view",
         "text!../../templates/left/layer-list.html"
     ],
     function (Marionette, Handlebars, Layers, Layer, LayerListChild,
@@ -30,6 +30,7 @@ define(["marionette",
 
             initialize: function (opts) {
                 console.log('layer list view initlize');
+                console.log(this);
                 this.app = opts.app;
                 this.model = opts.model;
 

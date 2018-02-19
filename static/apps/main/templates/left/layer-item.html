@@ -4,5 +4,20 @@
     <a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
     <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a>
 </div>
+<div>
+    <span class="layer-datasource" >data source: {{name}}</span>
+</div>
+<ul>
+    {{#each dataList}}
+    <li class="list-item">
+        <a>
+            <p>{{this.property}}
+                {{#ifequal this.property ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
 
+            </p>
+        </a>
+        
+    </li>
+    {{/each}}
+</ul>
 

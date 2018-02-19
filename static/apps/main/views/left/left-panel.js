@@ -1,10 +1,10 @@
 define(["jquery",
         "marionette",
         "handlebars",
-        "apps/style/views/left/select-map-view",
-        "apps/style/views/left/layer-list-view",
-        "apps/style/views/left/skin-view",
-        "apps/style/views/left/panel-styles-view",
+        "apps/main/views/left/select-map-view",
+        "apps/main/views/left/layer-list-view",
+        "apps/main/views/left/skin-view",
+        "apps/main/views/left/panel-styles-view",
         "text!../../templates/left/left-panel-layout.html"
     ],
     function ($, Marionette, Handlebars, SelectMapView, LayerListView, SkinView, PanelStylesView, LeftPanelLayoutTemplate) {
@@ -49,6 +49,8 @@ define(["jquery",
                         app: this.app,
                         model: model
                     });
+                console.log('create layer list');
+                console.log(this);
                 this.lv = new LayerListView({
                     app: this.app,
                     model: model,

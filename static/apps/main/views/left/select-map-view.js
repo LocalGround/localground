@@ -5,7 +5,7 @@ define(["jquery",
         "collections/maps",
         "models/layer",
         "collections/layers",
-        "apps/style/views/left/new-map-modal-view",
+        "apps/main/views/left/new-map-modal-view",
         "text!../../templates/left/select-map.html",
         "lib/modals/modal"
     ],
@@ -44,6 +44,7 @@ define(["jquery",
             modal: null,
 
             initialize: function (opts) {
+                console.log('this map view');
                 var that = this;
                 _.extend(this, opts);
                 if (!this.collection) {

@@ -1,8 +1,17 @@
 $icon-line-height: 22px;
 
+.breadcrumb {
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 rgba(0, 0, 0, 0), 0 2px 4px -1px rgba(0, 0, 0, 0);
+    z-index: 2;
+    position: absolute;
+    width: 100%;
+}
+
 .breadcrumb-container {
     display: inline-flex;
-    padding: 20px 30px;
+    padding: 10px 30px;
+    height: 20px;
+
 }
 
 .breadcrumb-level-container {
@@ -29,6 +38,8 @@ $icon-line-height: 22px;
         background: #f3f3f3;;
     }
 }
+
+
 
 .breadcrumb-text {
     font-size: 14px;

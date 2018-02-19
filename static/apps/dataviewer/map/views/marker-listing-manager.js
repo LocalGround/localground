@@ -31,6 +31,7 @@ define(["marionette",
                     overlayView,
                     dm = this.app.dataManager;
                 dm.each((collection) => {
+                    console.log('collection (data manager item)', collection);
                     overlayView = new MarkerListing({
                         collection: collection,
                         fields: collection.getFields(),
