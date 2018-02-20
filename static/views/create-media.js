@@ -25,6 +25,8 @@ define([
 
     var CreateMediaView = Marionette.CompositeView.extend({
         models: [],
+        // There must be some way to dynamically determine the template
+        // dependong on data type
         template: Handlebars.compile(CreateMediaTemplate),
         getChildView: function () {
             return Marionette.ItemView.extend({
@@ -247,6 +249,12 @@ define([
                 this.options.dataType = opts.dataType;
             }
             $('#warning-message-text').empty();
+            // Cannot change template through initalize
+            console.log(opts.dataType);
+            console.log(this.options.dataType);
+            if (opts.dataType == "video"){
+                this.template = Handlebars.compile(CreateVideoTemplate);
+            }
             this.render();
             /*
             Going to need some changes to consider either create media mode
