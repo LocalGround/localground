@@ -24,6 +24,8 @@ define([
             // if datatype is photo, audio, or videos, trigger a new uploader modal
             if (dataType == "photos" || dataType == "audio") {
                 this.createMediaUploadModal();
+            } else if (dataType == "videos") {
+                this.createVideoLinkModal();
             } else if (dataType == "map_images") {
                 this.createMapImageUploadModal();
             } else {
@@ -70,6 +72,23 @@ define([
             this.modal.update({
                 view: uploadMediaForm,
                 title: 'Upload Media',
+                closeButtonText: "Done",
+                showSaveButton: false,
+                showDeleteButton: false
+            });
+            this.modal.show();
+        },
+
+        createVideoLinkModal: function (title, dataType) {
+            var modalTitle = title != null ? title : "Get Video Link";
+            var setDatType = dataType != null ? dataType : "default";
+            var uploadMediaForm = new CreateMedia({
+                app: this.app
+            });
+            this.modal.update({
+                dataType: 'videos',
+                view: uploadMediaForm,
+                title: 'Get Video',
                 closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false
