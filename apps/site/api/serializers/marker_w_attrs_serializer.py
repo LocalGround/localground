@@ -198,13 +198,21 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
         return self.instance
 
     def update(self, instance, validated_data):
-        # Override to handle HStore
+        # Override to handle HStore (for put and patch)
         if 'attributes' in validated_data:
             for key in validated_data['attributes'].keys():
                 val = validated_data['attributes'][key]
+                # special code for date datatype:
                 if isinstance(val, (datetime.datetime, datetime.date)):
                     validated_data['attributes'][key] = val.isoformat()
-            validated_data['attributes'] = HStoreDict(validated_data['attributes'])
+            if self.context['request'].method == 'PATCH':
+                d = dict(instance.attributes)
+                d.update(validated_data['attributes'])
+                validated_data['attributes'] = HStoreDict(d)
+            else:
+                # PUT = replace entire object
+                validated_data['attributes'] = \
+                    HStoreDict(validated_data['attributes'])
         validated_data.update(self.get_presave_update_dictionary())
         return super(MarkerWAttrsSerializerMixin, self).update(
             instance, validated_data

@@ -331,6 +331,25 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         models.Photo.objects.all().delete()
         models.Audio.objects.all().delete()
 
+    def post_hstore_data_all(self, hstore_data):
+        default_data = {
+            'project_id': self.project.id,
+            'geometry': self.Point,
+            'caption': 'this is the caption text'
+        }
+        default_data.update(hstore_data)
+
+        url = self.list_url + '?project_id={0}'.format(self.project.id)
+        response = self.client_user.post(
+            url,
+            data=urllib.urlencode(default_data),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
+        new_marker = self.form.get_records().order_by('-id',)[0]
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        return new_marker
+
     def post_hstore_data(self, hstore_data):
         mwa_ids = []
         posted_data = {}
@@ -449,62 +468,60 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             '''
 
     def test_patch(self):
-        # run  self.post_hstore_data() and get info
-        mwa_ids, posted_data = self.post_hstore_data(self.hstore_data)
-
-        new_hstore_data_dict = {
+        marker = self.post_hstore_data_all({
+            'field_1': 'field_1 text',
+            'field_2': 77,
+            'field_3': '2012-09-04 06:00:00',
+            'field_4': True,
+            'field_5': 43124.543252,
+            'field_6': 2,
+            'field_7': 'Independent'
+        })
+        self.assertEqual(marker.description, 'this is the caption text')
+        self.assertEqual(
+            json.loads(marker.geometry.geojson),
+            self.Point
+        )
+        url = self.list_url + '%s/' % marker.id
+        new_data = {
             'field_1': 'new field_1 text',
-            'field_2': 88,
-            'field_3': "2012-09-04 07:00:00",
+            'field_2': 99,
+            'field_3': '2012-09-04 07:00:00',
             'field_4': False,
             'field_5': 7777.7777,
             'field_6': 1,
             'field_7': 'Democrat'
         }
-
-        # now, test PATCH for each new marker (replace)
-        for marker_id in mwa_ids:
-
-            # first just check for some pre-existing default data
-            marker = models.Record.objects.get(id=marker_id)
-            self.assertEqual(
-                json.loads(marker.geometry.geojson),
-                self.Point
-            )
-
-            self.assertEqual(
-                marker.description,
-                'this is the caption text'
-            )
-
-            url = self.list_url + '%s/' % marker_id
-            key = posted_data[marker_id][0]
-            new_data_item = new_hstore_data_dict[key]
-            new_data = {key: new_data_item}
-
+        for key in new_data:
             response = self.client_user.patch(
                     url,
-                    data=urllib.urlencode(new_data),
+                    data=urllib.urlencode({
+                        key: new_data[key]
+                    }),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded")
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
             # test contains the hstore key/attribute
-            self.assertTrue(posted_data[marker_id][0] in response.data)
+            self.assertTrue(key in response.data)
 
             # test hstore key/attribute value is correct
-            self.assertEqual(
-                response.data[posted_data[marker_id][0]],
-                new_data_item)
+            self.assertEqual(response.data[key], new_data[key])
 
             # finally, check that other fields have not been replaced (nulled)
-            marker = models.Record.objects.get(id=marker_id)
+            marker = models.Record.objects.get(id=marker.id)
             self.assertEqual(marker.description, 'this is the caption text')
             self.assertEqual(
                 response.data['caption'], 'this is the caption text')
             self.assertEqual(json.loads(marker.geometry.geojson), self.Point)
             self.assertEqual(response.data['geometry'], self.Point)
+
+        # Check that at the end of this process, all key-value
+        # pairs have persisted:
+        response = self.client_user.get(url)
+        for key in new_data:
+            self.assertEqual(response.data.get(key), new_data[key])
 
     def test_bad_json_update_fails(self, **kwargs):
         # 1. define a series of bad JSON dictionaries
