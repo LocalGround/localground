@@ -370,6 +370,10 @@ define([
             var provider;
             var uniqueKey;
             var idSplit;
+            var $vidID = this.$el.find('input[name="video_id"]');
+            var $vidProvider = this.$el.find('select[name="video_provider"]');
+            console.log($vidID);
+            console.log($vidProvider);
             if (link.search("youtube") != -1){
                 provider = "youtube"
                 idSplit = link.split("v=");
@@ -385,7 +389,8 @@ define([
                 + "\n Unique Key: " + uniqueKey
             // Next step is to place them inside the settings
             // for provider and video ID
-            alert(alertString);
+            $($vidID).val(uniqueKey);
+            $($vidProvider).val(provider);
         },
 
         viewRender: function () {
