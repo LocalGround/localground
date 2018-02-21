@@ -5,16 +5,28 @@ define([
     "handlebars",
     "models/photo",
     "models/audio",
+    "models/video",
     "text!templates/create-media.html",
+    "text!templates/create-video.html",
     "text!templates/new-media.html",
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
-], function ($, Marionette, Backbone, Handlebars, Photo, Audio, CreateMediaTemplate, NewMediaItemTemplate, loadImage) {
+], function ($, Marionette, Backbone, Handlebars, Photo, Audio, Video,
+    CreateMediaTemplate, CreateVideoTemplate, NewMediaItemTemplate, loadImage) {
     'use strict';
+
+    /*
+    Decided to go forth with another view incolving video link
+    Making a very rough draft version of create video layout
+    with an html, but requires some configuration to choose between
+    create media template and create video template
+    */
 
     var CreateMediaView = Marionette.CompositeView.extend({
         models: [],
+        // There must be some way to dynamically determine the template
+        // dependong on data type
         template: Handlebars.compile(CreateMediaTemplate),
         getChildView: function () {
             return Marionette.ItemView.extend({
@@ -51,6 +63,8 @@ define([
                         url = 'map-images/';
                     } else if (isAudio) {
                         url =  'audio/';
+                    } else if (this.options.dataType == 'videos') {
+                        url = 'videos/';
                     }
                     return baseURL + url;
                 },
@@ -235,7 +249,18 @@ define([
                 this.options.dataType = opts.dataType;
             }
             $('#warning-message-text').empty();
+            // Cannot change template through initalize
+            console.log(opts.dataType);
+            console.log(this.options.dataType);
+            if (opts.dataType == "video"){
+                this.template = Handlebars.compile(CreateVideoTemplate);
+            }
             this.render();
+            /*
+            Going to need some changes to consider either create media mode
+            between media (photo and audio) or video links
+            for setting up the template
+            */
             console.log(this.$el.find("#fileupload"));
             this.$el.find('#fileupload').fileupload({
                 dataType: 'json',

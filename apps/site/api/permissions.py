@@ -8,6 +8,12 @@ class CheckUserCanPostToProject(permissions.BasePermission):
         print 'CheckUserCanPostToProject'
         # print request.GET
         # print request.POST
+        '''
+        Unforntately, There seems to be a problem from the post
+        command in the rest framework when it comes to
+        placing videos from the internet
+        also the query set is empty (r)
+        '''
         if request.method == 'POST':
             r = request.GET.copy()
             r.update(request.POST)
@@ -15,6 +21,7 @@ class CheckUserCanPostToProject(permissions.BasePermission):
             # associated with the project
             project_id = r.get('project_id')
             print r
+            print ("accesing query filters")
             try:
                 project = models.Project.objects.get(id=project_id)
                 print project

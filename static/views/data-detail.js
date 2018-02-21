@@ -43,7 +43,8 @@ define([
             'click #add-point': 'activateMarkerTrigger',
             'click #add-polyline': 'triggerPolyline',
             'click #add-polygon': 'triggerPolygon',
-            'click': 'hideGeometryOptions'
+            'click': 'hideGeometryOptions',
+            'mouseleave input[name="video_link"]': 'setVideoAttribute'
         },
 
         displayGeometryOptions: function(e) {
@@ -363,6 +364,30 @@ define([
                 { projectID: this.app.getProjectID() }) : new Videos([],
                 { projectID: this.app.getProjectID() });
         },
+
+        setVideoAttribute: function(e){
+            var link = $(e.target).val();
+            var provider;
+            var uniqueKey;
+            var idSplit;
+            if (link.search("youtube") != -1){
+                provider = "youtube"
+                idSplit = link.split("v=");
+                uniqueKey = idSplit[1];
+                console.log("Unique ID: " + uniqueKey);
+            } else if (link.search("vimeo") != -1){
+                provider = "vimeo"
+                idSplit = link.split(".com/");
+                uniqueKey = idSplit[1];
+                console.log("Unique ID: " + uniqueKey);
+            }
+            var alertString = "Video Provider: " + provider
+                + "\n Unique Key: " + uniqueKey
+            // Next step is to place them inside the settings
+            // for provider and video ID
+            alert(alertString);
+        },
+
         viewRender: function () {
             //return;
             //any extra view logic. Carousel functionality goes here
