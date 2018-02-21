@@ -213,35 +213,58 @@ define(["jquery",
                 source = source.split(".");
                 source = source[source.length - 1];
                 var i, idx, key, oldVal, newVal, model, geoJSON;
-                if (_.contains(["edit", "autofill", "fill", "undo", "redo", "paste"], source)) {
+                if (_.contains([
+                            "edit",
+                            "autofill",
+                            "fill",
+                            "undo",
+                            "redo",
+                            "paste"
+                        ], source)) {
+                    if (source === "paste") {
+                        console.log(changes);
+                    }
+                    var changedModels = {};
                     for (i = 0; i < changes.length; i++) {
                         idx = changes[i][0];
                         key = changes[i][1];
                         oldVal = changes[i][2];
                         newVal = changes[i][3];
-                        if (oldVal !== newVal) {
-                            //Note: relies on the fact that the first column is the ID column
-                            //      see the getColumns() function below
-                            model = this.getModelFromCell(null, idx);
-                            if (key === 'lat' || key === 'lng') {
-                                //SV TODO: To handle polygons and polylines, only set latLng if current
-                                //          geometry is null of of type "Point." Still TODO.
-                                // Good article: https://handsontable.com/blog/articles/4-ways-to-handle-read-only-cells
-                                model.set(key, newVal);
-                                if (model.get("lat") && model.get("lng")) {
-                                    geoJSON = model.setPointFromLatLng(model.get("lat"), model.get("lng"));
-                                    model.save({ geometry: JSON.stringify(geoJSON) }, {patch: true, wait: true});
-                                } else {
-                                    model.set("geometry", null);
-                                    if (!model.get("lat") && !model.get("lng")) {
-                                        model.save({ geometry: null }, {patch: true, wait: true});
-                                    }
-                                }
-                            } else {
-                                model.set(key, newVal);
-                                model.save(model.changedAttributes(), { patch: true, wait: true});
-                            }
+                        if (oldVal === newVal) {
+                            continue;
                         }
+                        //Note: relies on the fact that the first column is the ID column
+                        //      see the getColumns() function below
+                        model = this.getModelFromCell(null, idx);
+                        if (!changedModels[model.id]) {
+                            changedModels[model.id] = {
+                                model: model,
+                                changedAttributes: {}
+                            };
+                        }
+                        if (key === 'lat' || key === 'lng') {
+                            //SV TODO: To handle polygons and polylines, only set latLng if current
+                            //          geometry is null of of type "Point." Still TODO.
+                            // Good article: https://handsontable.com/blog/articles/4-ways-to-handle-read-only-cells
+                            model.set(key, newVal);
+                            if (model.get("lat") && model.get("lng")) {
+                                geoJSON = model.setPointFromLatLng(model.get("lat"), model.get("lng"));
+                                changedModels[model.id].changedAttributes.geometry = JSON.stringify(geoJSON);
+                            } else {
+                                if (!model.get("lat") && !model.get("lng")) {
+                                    model.set("geometry", null);
+                                    changedModels[model.id].changedAttributes.geometry = null;
+                                }
+                            }
+                        } else {
+                            changedModels[model.id].changedAttributes[key] = newVal;
+                        }
+                    }
+                    // Commit to database all at once:
+                    for (key in changedModels) {
+                        var m = changedModels[key].model;
+                        var changedAttributes = changedModels[key].changedAttributes
+                        m.save(changedAttributes, { patch: true, wait: true});
                     }
                 }
             },

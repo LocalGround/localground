@@ -198,25 +198,26 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
         return self.instance
 
     def update(self, instance, validated_data):
-        # Override to handle HStore (for put and patch)
-        if 'attributes' in validated_data:
-            for key in validated_data['attributes'].keys():
-                val = validated_data['attributes'][key]
-                # special code for date datatype:
-                if isinstance(val, (datetime.datetime, datetime.date)):
-                    validated_data['attributes'][key] = val.isoformat()
-            if self.context['request'].method == 'PATCH':
-                d = dict(instance.attributes)
-                d.update(validated_data['attributes'])
-                validated_data['attributes'] = HStoreDict(d)
-            else:
-                # PUT = replace entire object
-                validated_data['attributes'] = \
-                    HStoreDict(validated_data['attributes'])
+        from rest_framework.utils import model_meta
         validated_data.update(self.get_presave_update_dictionary())
-        return super(MarkerWAttrsSerializerMixin, self).update(
-            instance, validated_data
-        )
+        info = model_meta.get_field_info(instance)
+
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                field = getattr(instance, attr)
+                field.set(value)
+            elif attr == 'attributes':
+                # stringify all attribute values before DB commit:
+                for key in value:
+                    if isinstance(
+                            value[key], (datetime.datetime, datetime.date)):
+                        value[key] = value[key].isoformat()
+                    value[key] = str(value[key])
+                instance.attributes.update(value)
+            else:
+                setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 class MarkerWAttrsSerializer(MarkerWAttrsSerializerMixin):
