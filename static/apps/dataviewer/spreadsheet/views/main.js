@@ -26,6 +26,7 @@ define(["jquery",
             template: function () {
                 return Handlebars.compile(SpreadsheetTemplate);
             },
+            invalidCells: {},
             table: null,
             className: 'main-panel',
             currentModel: null,
@@ -149,6 +150,7 @@ define(["jquery",
                 // Alert that there is no collection
                 // for the sole purpose of unit testing
                 //console.log(this.collection.length);
+                var that = this;
                 if (!this.collection) {
                     this.$el.find('#grid').html("Collection is not defined");
                     return;
@@ -195,9 +197,23 @@ define(["jquery",
                     autoRowSize: true,
                     columnSorting: true,
                     undo: true,
+                    afterValidate: function (isValid, value, rowIndex, prop, source) {
+                        // because of limitations in Hansontable, we need to
+                        // manually track which cells are valid / invalid:
+                        if (!isValid) {
+                            var model = that.getModelFromCell(null, rowIndex);
+                            if (!that.invalidCells[model.id]) {
+                                that.invalidCells[model.id] = [];
+                            }
+                            that.invalidCells[model.id].push(prop)
+                            if (prop === 'lat' || prop === 'lng') {
+                                that.invalidCells[model.id].push('geometry');
+                            }
+                        }
+                    },
                     afterChange: function (changes, source) {
                         that.saveChanges(changes, source);
-                        if (changes && changes[0] && changes[0].length > 1 && changes[0][1] == "video_provider") {
+                        if (changes && changes[0] && changes[0].length > 1 && changes[0][1] === "video_provider") {
                             that.table.render();
                         }
                     }
@@ -262,10 +278,20 @@ define(["jquery",
                     }
                     // Commit to database all at once:
                     for (key in changedModels) {
-                        var m = changedModels[key].model;
-                        var changedAttributes = changedModels[key].changedAttributes
-                        m.save(changedAttributes, { patch: true, wait: true});
+                        var m = changedModels[key].model,
+                            changedAttributes = changedModels[key].changedAttributes,
+                            invalidAttributes = this.invalidCells[m.id] || [];
+                        //remove any staged changes that are invalid:
+                        invalidAttributes.forEach(function (prop) {
+                            delete changedAttributes[prop];
+                        });
+                        if (Object.values(changedAttributes) === 0) {
+                            continue;
+                        }
+                        m.save(changedAttributes, { patch: true, wait: true });
                     }
+                    //clear out invalidCells:
+                    this.invalidCells = {};
                 }
             },
             getModelFromCell: function (table, index) {
@@ -338,7 +364,6 @@ define(["jquery",
 
             mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
                 var model = this.getModelFromCell(instance, row);
-                console.log(model);
 
                 // There are two possible places to extract
                 // count of media types
