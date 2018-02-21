@@ -8,8 +8,13 @@ from localground.apps.site import models
 class MarkerGeometryMixin(object):
 
     def get_geometry_dictionary(self, serializer):
-        d = {}
+        # If method is PATCH and geom is None, don't clear out
+        # existing geometry:
         geom = serializer.validated_data.get('point')
+        if self.request.method == 'PATCH' and geom is None:
+            return serializer.validated_data
+
+        d = {}
         if geom:
             del serializer.validated_data['point']
         point, polyline, polygon = None, None, None

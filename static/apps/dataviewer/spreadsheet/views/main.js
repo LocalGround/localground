@@ -267,10 +267,7 @@ define(["jquery",
                                 geoJSON = model.setPointFromLatLng(model.get("lat"), model.get("lng"));
                                 changedModels[model.id].changedAttributes.geometry = JSON.stringify(geoJSON);
                             } else {
-                                if (!model.get("lat") && !model.get("lng")) {
-                                    model.set("geometry", null);
-                                    changedModels[model.id].changedAttributes.geometry = null;
-                                }
+                                changedModels[model.id].changedAttributes.geometry = null;
                             }
                         } else {
                             changedModels[model.id].changedAttributes[key] = newVal;
