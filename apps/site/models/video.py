@@ -38,18 +38,6 @@ class Video(ProjectMixin, NamedMixin, PointMixin, BaseAudit):
         return self.project.can_edit(user) or \
             self.owner == user
 
-    def convertVideoLink(self):
-        # Check for provider link:
-        idSplit = ""
-        if "youtube" in video_link:
-            provider = "youtube"
-            idSplit = video_link.split("v=")
-            video_id = idSplit[1]
-        elif "vimeo" in video_link:
-            provider = "vimeo"
-            idSplit = video_link.split(".com/")
-            video_id = idSplit[1]
-
     def can_delete(self, user):
         return self.can_edit(user)
 
