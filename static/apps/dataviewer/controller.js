@@ -24,9 +24,13 @@ define([
             // if datatype is photo, audio, or videos, trigger a new uploader modal
             if (dataType == "photos" || dataType == "audio") {
                 this.createMediaUploadModal();
-            } else if (dataType == "videos") {
+            }
+            /*
+            else if (dataType == "videos") {
                 this.createVideoLinkModal();
-            } else if (dataType == "map_images") {
+            }
+            */
+            else if (dataType == "map_images") {
                 this.createMapImageUploadModal();
             } else {
                 this.dataDetail(screenType, dataType);

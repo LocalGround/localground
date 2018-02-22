@@ -43,8 +43,7 @@ define([
             'click #add-point': 'activateMarkerTrigger',
             'click #add-polyline': 'triggerPolyline',
             'click #add-polygon': 'triggerPolygon',
-            'click': 'hideGeometryOptions',
-            'mouseleave input[name="video_link"]': 'setVideoAttribute'
+            'click': 'hideGeometryOptions'
         },
 
         displayGeometryOptions: function(e) {
@@ -365,30 +364,6 @@ define([
                 { projectID: this.app.getProjectID() });
         },
 
-        setVideoAttribute: function(e){
-            var link = $(e.target).val();
-            var provider;
-            var uniqueKey;
-            var idSplit;
-            var $vidID = this.$el.find('input[name="video_id"]');
-            var $vidProvider = this.$el.find('select[name="video_provider"]');
-            console.log($vidID);
-            console.log($vidProvider);
-            if (link.search("youtube") != -1){
-                provider = "youtube"
-                idSplit = link.split("v=");
-                uniqueKey = idSplit[1];
-                console.log("Unique ID: " + uniqueKey);
-            } else if (link.search("vimeo") != -1){
-                provider = "vimeo"
-                idSplit = link.split(".com/");
-                uniqueKey = idSplit[1];
-                console.log("Unique ID: " + uniqueKey);
-            }
-            $($vidID).val(uniqueKey);
-            $($vidProvider).val(provider);
-        },
-
         viewRender: function () {
             //return;
             //any extra view logic. Carousel functionality goes here
@@ -510,6 +485,7 @@ define([
         saveModel: function () {
             var that = this,
                 isNew = this.model.get("id") ? false : true;
+            console.log(isNew);
             this.commitForm();
             this.model.save(null, {
                 success: function (model, response) {

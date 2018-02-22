@@ -10,17 +10,7 @@ define(["models/base"], function (Base) {
             name: { type: 'Text', title: "Name" },
             caption:  { type: 'TextArea', title: "Caption" },
             attribution: { type: 'Text', title: "Attribution" },
-            video_link: { type: 'Text', title: "Video Link" },
-            video_id: {type: 'Text', validators: ['required'] },
-            video_provider: {
-                type: 'Select',
-                validators: ['required'],
-                options: {
-                    '': '--Select Provider--',
-                    vimeo: 'Vimeo',
-                    youtube: 'YouTube'
-                }
-            },
+            video_link: { type: 'Text', title: "Video Link", validators: ['required'] },
             tags: { type: 'List', itemType: 'Text' }
         },
         getDataTypePlural: function() {

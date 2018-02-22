@@ -90,3 +90,14 @@ class VideoSerializer(BaseSerializer):
             'id', 'url', 'name', 'caption', 'tags', 'video_link',
             'video_id', 'video_provider', 'geometry', 'project_id',
             'owner', 'overlay_type', 'attribution')
+
+class VideoUpdateSerializer(VideoSerializer):
+    # Make the video link read only
+
+    class Meta:
+        model = models.Video
+        read_only_fields = ('video_id', 'video_provider', 'video_link')
+        fields = (
+            'id', 'url', 'name', 'caption', 'tags', 'video_link',
+            'video_id', 'video_provider', 'geometry', 'project_id',
+            'owner', 'overlay_type', 'attribution')
