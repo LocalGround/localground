@@ -385,10 +385,6 @@ define([
                 uniqueKey = idSplit[1];
                 console.log("Unique ID: " + uniqueKey);
             }
-            var alertString = "Video Provider: " + provider
-                + "\n Unique Key: " + uniqueKey
-            // Next step is to place them inside the settings
-            // for provider and video ID
             $($vidID).val(uniqueKey);
             $($vidProvider).val(provider);
         },

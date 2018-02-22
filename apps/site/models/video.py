@@ -11,6 +11,7 @@ class Video(ProjectMixin, NamedMixin, PointMixin, BaseAudit):
         ('vimeo', 'Vimeo'),
         ('youtube', 'YouTube')
     )
+    video_link = models.CharField(null=False, blank=False, max_length=255)
     video_id = models.CharField(null=False, blank=False, max_length=255)
     provider = models.CharField(
         max_length=63, null=False, blank=False, choices=VIDEO_PROVIDERS,
@@ -36,6 +37,18 @@ class Video(ProjectMixin, NamedMixin, PointMixin, BaseAudit):
     def can_edit(self, user):
         return self.project.can_edit(user) or \
             self.owner == user
+
+    def convertVideoLink(self):
+        # Check for provider link:
+        idSplit = ""
+        if "youtube" in video_link:
+            provider = "youtube"
+            idSplit = video_link.split("v=")
+            video_id = idSplit[1]
+        elif "vimeo" in video_link:
+            provider = "vimeo"
+            idSplit = video_link.split(".com/")
+            video_id = idSplit[1]
 
     def can_delete(self, user):
         return self.can_edit(user)

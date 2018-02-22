@@ -631,17 +631,9 @@ define([
                 });
                 newDataDetail.render();
                 fixture.append(newDataDetail.$el);
-                // Make sure the forms are empty
-                console.log(fixture);
-                // Dummy test designed to fail
-                // must make use of the mouseleave and input[name="video_link"]
-                // to properly call the set video attributes
                 var vidLink = fixture.find('input[name="video_link"]');
                 var vidID = fixture.find('input[name="video_id"]');
                 var vidProvider = fixture.find('select[name="video_provider"]');
-                console.log(vidLink);
-                console.log(vidProvider);
-                console.log(vidID);
                 var $vidLink = $(vidLink);
                 var $vidProvider = $(vidProvider);
                 var $vidID = $(vidID);
@@ -650,7 +642,6 @@ define([
 
                 vidLink.trigger('mouseenter');
                 vidLink.trigger('click');
-                // Making a test link for youtube
                 $vidLink.val('https://www.youtube.com/watch?v=jNQXAC9IVRw');
                 vidLink.trigger('mouseleave');
                 expect(newDataDetail.setVideoAttribute).toHaveBeenCalledTimes(1);
@@ -666,17 +657,9 @@ define([
                 });
                 newDataDetail.render();
                 fixture.append(newDataDetail.$el);
-                // Make sure the forms are empty
-                console.log(fixture);
-                // Dummy test designed to fail
-                // must make use of the mouseleave and input[name="video_link"]
-                // to properly call the set video attributes
                 var vidLink = fixture.find('input[name="video_link"]');
                 var vidID = fixture.find('input[name="video_id"]');
                 var vidProvider = fixture.find('select[name="video_provider"]');
-                console.log(vidLink);
-                console.log(vidProvider);
-                console.log(vidID);
                 var $vidLink = $(vidLink);
                 var $vidProvider = $(vidProvider);
                 var $vidID = $(vidID);
@@ -685,7 +668,6 @@ define([
 
                 vidLink.trigger('mouseenter');
                 vidLink.trigger('click');
-                // Making a test link for youtube
                 $vidLink.val('https://vimeo.com/108679294');
                 vidLink.trigger('mouseleave');
                 expect(newDataDetail.setVideoAttribute).toHaveBeenCalledTimes(1);

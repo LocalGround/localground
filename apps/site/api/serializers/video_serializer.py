@@ -23,11 +23,9 @@ class VideoSerializer(BaseSerializer):
         required=True
     )
 
-
     caption = serializers.CharField(
         source='description', required=False, allow_null=True, label='caption',
-        style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
-    )    
+        style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True)
 
     tags = fields.ListField(
         child=serializers.CharField(),
@@ -52,4 +50,6 @@ class VideoSerializer(BaseSerializer):
 
     class Meta:
         model = models.Video
-        fields = ('id', 'url', 'name', 'caption', 'tags', 'video_id', 'video_provider', 'geometry', 'project_id', 'owner', 'overlay_type', 'attribution')
+        fields = ('id', 'url', 'name', 'caption', 'tags', 'video_link',
+             'video_id', 'video_provider', 'geometry', 'project_id',
+             'owner', 'overlay_type', 'attribution')
