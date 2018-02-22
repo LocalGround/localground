@@ -12,14 +12,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='icon',
-            name='file_name_new',
-        ),
-        migrations.RemoveField(
-            model_name='icon',
-            name='file_name_resized',
-        ),
         migrations.AddField(
             model_name='imageopts',
             name='file_path_s3',
