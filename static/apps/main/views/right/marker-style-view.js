@@ -170,6 +170,18 @@ define(["jquery",
                // 'click .palette-list *': 'selectPalette'
             },
 
+            // modelEvents: {
+            //     'change:symbols': 'saveChanges'
+            // },
+
+            // saveChanges: function() {
+            //     var that = this;
+            //     setTimeout(function() { 
+            //         that.model.save(); 
+            //         console.log('MSV SAVE');
+            //     }, 2000);
+            // },
+
             showSymbols: function (e) {
                 this.symbolsView = new SymbolSelectionLayoutView({
                     app: this,
@@ -459,7 +471,7 @@ define(["jquery",
 
 
                 // since we're reassigning this.collection above, it's no longer pointing
-                // to model.get('symbols'), so we eed to sync the model symbols to the new collection
+                // to model.get('symbols'), so we need to sync the model symbols to the new collection
                 this.syncModelSymbsToCollection();
                 this.updateMapAndRender();
             },

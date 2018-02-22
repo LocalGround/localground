@@ -23,12 +23,14 @@ define(["marionette",
 
             childViewOptions: function () {
                 return {
-                    app: this.app,
-                    collection: this.collection
+                    app: this.app//,
+                    //collection: this.collection
                 };
             },
 
             initialize: function (opts) {
+                // In this view, this.model = the selected map, 
+                // this.collection = all the map's layers
                 console.log('layer list view initlize');
                 console.log(this);
                 this.app = opts.app;

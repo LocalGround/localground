@@ -111,7 +111,7 @@
 
 .list-item a {
   text-decoration: none;
-  padding: 6px 22px;
+  padding: 6px 32px;
   display: inline-block;
   width: 100%;
 }
@@ -125,6 +125,28 @@
 .layer-datasource {
   font-size: 11px;
   margin-left: 20px;
+}
+
+.layer-style-by {
+  font-size: 11px;
+  margin-left: 20px;
+}
+
+.sort-by {
+  width: 100%;
+  font-size: 12px;
+  padding: 8px 20px;
+  /* margin: 10px 0px; */
+  display: inline-block;
+  background-color: #f7f7f7;
+  font-weight: 600;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.style-by-menu {
+  position: absolute;
+  background: white;
+  left: 50px;
 }
 
 .top-wrapper {

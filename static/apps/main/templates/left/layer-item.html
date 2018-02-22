@@ -5,9 +5,10 @@
     <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a>
 </div>
 <div>
-    <span class="layer-datasource" >data source: {{name}}</span>
+    <p class="layer-datasource" >data source: {{name}}</p>
+    <a><p class="layer-style-by" id="layer-style-by" >sorted by: {{layer_type}}</p></a>
 </div>
-<ul>
+<ul id="symbols-list">
     {{#each dataList}}
     <li class="list-item">
         <a>

@@ -11,7 +11,7 @@
 
     a {
         text-decoration: none;
-        padding: 6px 22px;
+        padding: 6px 32px;
         display: inline-block;
         width: 100%;
     }
@@ -23,6 +23,11 @@
 }
 
 .layer-datasource {
+    font-size: 11px;
+    margin-left: 20px;
+}
+
+.layer-style-by {
     font-size: 11px;
     margin-left: 20px;
 }
