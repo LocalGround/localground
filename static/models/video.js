@@ -13,6 +13,16 @@ define(["models/base"], function (Base) {
             video_link: { type: 'Text', title: "Video Link", validators: ['required'] },
             tags: { type: 'List', itemType: 'Text' }
         },
+        initialize: function (data, opts) {
+            Base.prototype.initialize.call(this);
+            console.log(this.toJSON());
+            this.projectID = this.projectID || this.get('project_id');
+            if (!this.projectID ) {
+                console.error("projectID is required");
+                alert("projectID is required");
+                return;
+            }
+        },
         getDataTypePlural: function() {
             return 'videos';
         },

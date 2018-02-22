@@ -1,6 +1,8 @@
 from localground.apps.site.api.serializers import VideoSerializer
 from localground.apps.site.api.serializers import VideoUpdateSerializer
 from localground.apps.site import models
+from localground.apps.site.api.permissions import \
+    CheckProjectPermissions, CheckUserCanPostToProject
 from localground.apps.site.api.views.abstract_views import \
     MediaList, MediaInstance
 
@@ -8,6 +10,7 @@ from localground.apps.site.api.views.abstract_views import \
 class VideoList(MediaList):
     serializer_class = VideoSerializer
     model = models.Video
+    permission_classes = (CheckUserCanPostToProject,)
 
 
 class VideoInstance(MediaInstance):

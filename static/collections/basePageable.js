@@ -71,10 +71,12 @@ define([
     // and finally, need to override fetch from BaseMixin in a way that calls the parent class
     _.extend(BasePageable.prototype, {
         fetch: function (options) {
+            console.log('fetch');
             //override fetch and append query parameters:
             options = options || {};
             options.data = options.data || {};
             if (this.projectID) {
+                console.log('project_id:', this.projectID)
                 options.data = {
                     project_id: this.projectID
                 };

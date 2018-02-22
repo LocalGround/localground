@@ -133,6 +133,7 @@ define(["jquery", "lib/sqlParser", "underscore", "backbone"], function ($, SqlPa
             return model;
         },
         createNewModel: function () {
+            console.log(this.model);
             var ModelClass = this.model,
                 model = new ModelClass();
             model.collection = this;
