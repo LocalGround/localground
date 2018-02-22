@@ -26,7 +26,6 @@ fixture_filenames = ['test_data.json']  # 'database_initialization.json',
 
 
 def load_test_fixtures():
-    # print 'loading test fixtures...'
     for fixture_filename in fixture_filenames:
         fixture_file = os.path.join(fixture_dir, fixture_filename)
 
@@ -465,12 +464,8 @@ class ModelMixin(object):
             thumb_file_path = pdf_report.path + '/' + 'thumbnail.jpg'
             p.pdf_path_S3.save(
                 pdf_report.file_name, File(open(pdf_file_path)))
-            print pdf_file_path
-            print p.pdf_path_S3.url
             p.map_image_path_S3.save(
                 'thumbnail_' + uuid + '.jpg', File(open(thumb_file_path)))
-            print thumb_file_path
-            print p.map_image_path_S3.url
         return p
 
     def create_form(self, name='A title',
@@ -750,7 +745,6 @@ class ViewAnonymousMixin(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
-            # print url
             response = self.client_user.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -758,12 +752,12 @@ class ViewAnonymousMixin(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
+            url = url.split('?')[0]
             func = resolve(url).func
             func_name = '{}.{}'.format(func.__module__, func.__name__)
             view_name = '{}.{}'.format(
                 self.view.__module__,
                 self.view.__name__)
-            # print url, func_name, view_name
             self.assertEqual(func_name, view_name)
 
 

@@ -50,7 +50,18 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
             self.tmp_resized_binary.name, self.tmp_resized_binary
         )
 
-    def process_file(self, file):
+    # Will likely have to make resize_icon its own function
+    # inside the instance of the object
+
+    '''
+    SOMETIMES THE USER WRITES IN NONSENSE
+
+    So make sure to make fail-safe default values
+    when passing in validated data
+
+    Start off with the icon_tests to gather required data
+    '''
+    def process_file(self, file, valid_data):
         # rename and temporarily store the binary file:
         file.name = upload_helpers.simplify_filename(file)
         self.tmp_media_binary = file
@@ -67,10 +78,20 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
         icon_max = max(im.size) * 1.0
         icon_min = min(im.size) * 1.0
 
+        # Set up some fail-safe default values from validated data
+        # However, it results in more inconsistencies
+        # in test results
+        # need to explore deeper into the parameters
+        size = valid_data.get('size') or self.size
+        validated_data_x = valid_data.get('anchor_x') or self.anchor_x
+        validated_data_y = valid_data.get('anchor_y') or self.anchor_y
+
         # get size user entered.  If user didn't enter anything, use
         # largest icon size or size_max.
         # also check to make sure icon size is >= size_min
-        if self.size:
+        if size:
+            pass
+        elif self.size:
             size = self.size
         elif icon_max > Icon.size_max:
             size = Icon.size_max
@@ -108,8 +129,6 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
         # set anchor point center of icon or user entered coordinates
         anchor_x = im.size[0] / 2.0
         anchor_y = im.size[1] / 2.0
-        validated_data_x = self.anchor_x
-        validated_data_y = self.anchor_y
         if validated_data_x is not None and validated_data_x <= new_x:
             anchor_x = validated_data_x
         if validated_data_y is not None and validated_data_y <= new_y:
@@ -121,6 +140,19 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
         self.anchor_y = anchor_y
         self.size = size
         self.file_type = file_type
+
+        # Attempted to make a return with the specified parameters
+        # However, it failed to resize existing icons
+        return {
+            'width': im.size[0],
+            'height': im.size[1],
+            'anchor_x': anchor_x,
+            'anchor_y': anchor_y,
+            'size': size,
+            'file_name_new': self.media_file_new,
+            'file_name_resized': self.media_file_resized,
+            'file_type': self.file_type
+        }
 
     class Meta:
         app_label = 'site'

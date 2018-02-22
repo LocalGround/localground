@@ -3596,7 +3596,7 @@ define('apps/presentation/controller',[
         initialize: function (options) {
             this.app = options.app;
         },
-        dataDetail: function (dataType, id) {
+        dataDetail: function (screenType, dataType, id) {
             this.app.vent.trigger("show-detail", {
                 id: id,
                 dataType: dataType
@@ -3606,11 +3606,11 @@ define('apps/presentation/controller',[
             this.app.vent.trigger("show-list", dataType);
         },
         fetchMap: function (slug) {
-            //alert(slug);
             this.app.vent.trigger("fetch-map", slug);
         }
     });
 });
+
 define('apps/presentation/router',[
     "jquery",
     "marionette",
@@ -3620,7 +3620,7 @@ define('apps/presentation/router',[
     "use strict";
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
-            ':dataType/:id': 'dataDetail',
+            ':screenType/:dataType/:id': 'dataDetail',
             //'/^[\w-]+/': 'fetchMap'//,
             //new RegExp('^([\w-]+)'): 'fetchMap',
             ':slug': 'fetchMap'
@@ -3644,6 +3644,7 @@ define('apps/presentation/router',[
     });
     return Router;
 });
+
 define('lib/maps/controls/searchBox',['jquery'], function ($) {
     "use strict";
     /**
@@ -3820,11 +3821,14 @@ define('lib/maps/basemap',["marionette",
                 this.listenTo(this.tilesets, 'reset', this.onShow);
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
-                this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
-                this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
-                this.listenTo(this.app.vent, 'add-rectangle', this.initDrawingManager);
                 this.listenTo(this.app.vent, 'show-streetview', this.showStreetView);
                 this.listenTo(this.app.vent, 'hide-streetview', this.hideStreetView);
+
+                // for adding points, lines, polygons, and rectangles to the map:
+                this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
+                this.listenTo(this.app.vent, 'add-rectangle', this.initRectangleMode);
+                this.listenTo(this.app.vent, 'add-polyline', this.initPolylineMode);
+                this.listenTo(this.app.vent, 'add-polygon', this.initPolygonMode);
 
                 // call parent:
                 Marionette.View.prototype.initialize.call(this);
@@ -3841,10 +3845,41 @@ define('lib/maps/basemap',["marionette",
                 worldPoint = new google.maps.Point(point.x / scale + bottomLeft.x, point.y / scale + topRight.y);
                 return this.map.getProjection().fromPointToLatLng(worldPoint);
             },
-            initDrawingManager: function () {
-                var that = this;
+
+            initRectangleMode: function() {
+                this.initDrawingManager(google.maps.drawing.OverlayType.RECTANGLE);
+            },
+            initPolylineMode: function(model) {
+                this.activateMarker(model);
+                this.initDrawingManager(google.maps.drawing.OverlayType.POLYLINE);
+            },
+            initPolygonMode: function(model) {
+                this.activateMarker(model);
+                this.initDrawingManager(google.maps.drawing.OverlayType.POLYGON);
+            },
+            initDrawingManager: function (drawingMode) {
+                var polyOpts = {
+                    strokeWeight: 2,
+                    strokeColor: this.targetedModel.collection.fillColor,
+                    fillColor: this.targetedModel.collection.fillColor,
+                    editable: true,
+                    draggable: true
+                };
+
+                if (this.drawingManager) {
+
+                    // make sure we're using the correct fill and stroke colors
+                    this.drawingManager.polygonOptions = polyOpts;
+                    this.drawingManager.polylineOptions = polyOpts;
+
+
+                    this.drawingManager.setMap(this.map);
+                    this.drawingManager.setDrawingMode(drawingMode);
+                    return;
+                }
+                
                 this.drawingManager = new google.maps.drawing.DrawingManager({
-                    drawingMode: google.maps.drawing.OverlayType.RECTANGLE,
+                    drawingMode: drawingMode,
                     drawingControl: false,
                     markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
                     rectangleOptions: {
@@ -3854,35 +3889,97 @@ define('lib/maps/basemap',["marionette",
                         strokeWeight: 4,
                         clickable: false,
                         editable: true,
+                        draggable: true,
                         zIndex: 1
-                    }
+                    },
+                    polygonOptions: polyOpts,
+                    polylineOptions: polyOpts
                 });
-                google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', function (rect) {
-                    rect.setOptions({ editable: false });
-                    that.drawingManager.setDrawingMode(null);
-                    var getGeoJSONFromBounds = function (r) {
-                            var bounds = r.getBounds().toJSON(),
-                                north = bounds.north,
-                                south = bounds.south,
-                                east = bounds.east,
-                                west = bounds.west;
-                            return {
-                                "type": "Polygon",
-                                "coordinates": [[
-                                    [east, north], [east, south], [west, south], [west, north], [east, north]
-                                ]]
-                            };
-                        },
-                        r = getGeoJSONFromBounds(rect);
-                    rect.setMap(null);
-                    that.targetedModel.set("geometry", r);
-                    that.targetedModel.trigger('show-marker');
-                    that.addMarkerClicked = false;
-                    that.targetedModel = null;
-                    that.drawingManager.setMap(null);
-                    $('body').css({ cursor: 'auto' });
-                });
+                google.maps.event.addListener(this.drawingManager, 'polygoncomplete', this.polygonComplete.bind(this));
+                google.maps.event.addListener(this.drawingManager, 'polylinecomplete', this.polylineComplete.bind(this));
+                google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', this.rectangleComplete.bind(this));
                 this.drawingManager.setMap(this.map);
+            },
+
+            polygonComplete: function (temporaryPolygon) {
+                //internal function to convert google to geoJSON:
+                const googlePolygonToGeoJSON = (polygon) => {
+                    var pathCoords = polygon.getPath().getArray(),
+                        coords = [],
+                        i = 0;
+                    for (i; i < pathCoords.length; i++) {
+                        coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+                    }
+                    //add last coordinate again:
+                    coords.push([pathCoords[0].lng(), pathCoords[0].lat()]);
+                    return { type: 'Polygon', coordinates: [coords] };
+                };
+                const polygonGeoJSON = googlePolygonToGeoJSON(temporaryPolygon);
+
+                // may want to clear temp poly after server post (not before)
+                var that = this;
+                temporaryPolygon.setMap(null);
+                this.targetedModel.save({ 'geometry': polygonGeoJSON }, { success: function () {
+                    that.finishingTouches();
+                }});
+            },
+
+            polylineComplete: function (temporaryPolyline) {
+                const googlePolylineToGeoJSON = (polyline) => {
+                    var pathCoords = polyline.getPath().getArray(),
+                        coords = [],
+                        i = 0;
+                    for (i; i < pathCoords.length; i++) {
+                        coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+                    }
+                    return { type: 'LineString', coordinates: coords };
+                }
+                const polylineGeoJSON = googlePolylineToGeoJSON(temporaryPolyline);
+
+                var that = this;
+                temporaryPolyline.setMap(null);
+                this.targetedModel.save({ 'geometry': polylineGeoJSON }, { success: function () {
+                    that.finishingTouches();
+                }});
+            },
+
+            rectangleComplete: function (rect) {
+                rect.setOptions({ editable: false });
+                this.drawingManager.setDrawingMode(null);
+                var getGeoJSONFromBounds = function (r) {
+                        var bounds = r.getBounds().toJSON(),
+                            north = bounds.north,
+                            south = bounds.south,
+                            east = bounds.east,
+                            west = bounds.west;
+                        return {
+                            "type": "Polygon",
+                            "coordinates": [[
+                                [east, north], [east, south], [west, south], [west, north], [east, north]
+                            ]]
+                        };
+                    },
+                    r = getGeoJSONFromBounds(rect);
+
+                // hide the rectangle because we are manually displaying
+                // the map ourselves via 'that.targetedModel.trigger('show-marker');'
+                rect.setMap(null);
+                this.targetedModel.set("geometry", r);
+                //this.targetedModel.trigger('show-marker');
+                this.addMarkerClicked = false;
+                this.targetedModel = null;
+                this.drawingManager.setMap(null);
+                $('body').css({ cursor: 'auto' });
+            },
+            finishingTouches: function () {
+                this.app.vent.trigger('rerender-data-detail');
+                // exit drawingMode
+                this.drawingManager.setOptions({
+                    drawingMode: null,
+                    drawingControl: false
+                });
+                this.addMarkerClicked = false;
+                this.targetedModel = null;  // this may be suspect.
             },
 
             doHighlight: function (model) {
@@ -3910,6 +4007,7 @@ define('lib/maps/basemap',["marionette",
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
                 this.targetedModel.trigger('show-marker');
                 this.targetedModel.save();
+                this.app.vent.trigger('rerender-data-detail');
                 this.addMarkerClicked = false;
                 this.targetedModel = null;
             },
@@ -3955,17 +4053,12 @@ define('lib/maps/basemap',["marionette",
                 this.targetedModel = model;
             },
 
-            deleteMarker: function (model) {
-                //model.trigger('hide-marker');
-                model.set("geometry", null);
-                model.save();
-            },
-
             renderMap: function () {
                 var mapOptions = {
                     scrollwheel: false,
                     minZoom: this.minZoom,
                     streetViewControl: true,
+                    fullscreenControl: false,
                     //scaleControl: true,
                     panControl: false,
                     zoomControlOptions: this.zoomControlOptions || {
@@ -3985,6 +4078,9 @@ define('lib/maps/basemap',["marionette",
 
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.mapID),
                     mapOptions);
+                //setTimeout(function () {
+                //    $("#map").css({"position": "fixed"});
+                //s}, 500);
                 this.initTileManager();
             },
             showStreetView: function (model) {
@@ -4439,7 +4535,19 @@ define('models/base',["underscore", "jquery", "backbone", "form", "lib/maps/geom
                 tags: 'Text'
             },
             getDataTypePlural: function () {
-                if (this.collection && this.collection.getDataType) {
+
+                // 1/24/2018
+                // the following condition handles newly-uploaded photos which 
+                // appear not to have a properly attributes 'collection' attribute
+                // Problem should probably be handled upstream.
+                // if (typeof this.collection.getDataType == 'undefined') {
+                //     console.log(this.get('overlay_type'));
+                //     console.log(this.attributes.overlay_type);
+                //     return this.attributes.overlay_type;
+                // }
+
+
+                if (this.collection && this.collection.getDataType()) {
                     return this.collection.getDataType();
                 }
                 var type = this.get("overlay_type");
@@ -4560,7 +4668,7 @@ define('models/base',["underscore", "jquery", "backbone", "form", "lib/maps/geom
                     return this.collection.key;
                 }
                 switch(this.get("overlay_type")) {
-                    case "photo": 
+                    case "photo":
                         return "photos";
                     case "audio":
                         return "audio";
@@ -4707,7 +4815,6 @@ define('models/projectUser',["underscore", "models/base"], function (_, Base) {
             checked: false
         }),
         initialize: function (data, opts) {
-            console.log(data, opts);
             // This had to be made dynamic because there are different users
             // for each project
             if (this.collection && this.collection.url) {
@@ -4724,12 +4831,8 @@ define('models/projectUser',["underscore", "models/base"], function (_, Base) {
 			      Base.prototype.initialize.apply(this, arguments);
 		    },
         destroy: function (options) {
-            //this.set("id", 1); //BUG: the ID needs to be set in order for the destroy to work.
-            // needed to override the destroy method because the ProjectUser
-            // endpoint doesn't have an ID, which Backbone requires:
+
             var opts = _.extend({url: this.urlRoot + this.get("user") + "/"}, options || {});
-            console.log(this.get("user"));
-            console.log(opts);
             return Backbone.Model.prototype.destroy.call(this, opts);
         }
     });
@@ -6343,7 +6446,6 @@ define('collections/baseMixin',["jquery", "lib/sqlParser", "underscore", "backbo
                 type: 'OPTIONS',
                 data: { _method: 'OPTIONS' },
                 success: function (data) {
-                    console.log("success");
                     that.generateFilterSchema(data.filters);
                 }
             });
@@ -6364,6 +6466,50 @@ define('collections/baseMixin',["jquery", "lib/sqlParser", "underscore", "backbo
                 }
             }
             this.trigger("filter-form-updated", this.filterSchema);
+        },
+        /*getCollection: function () {
+            return this;
+        },*/
+        getTitle: function () {
+            return this.title;
+        },
+        getDataType: function () {
+            return this.dataType;
+        },
+        getModelType: function () {
+            return this.overlayType;
+        },
+        getFields: function () {
+            return this.fields;
+        },
+        getIsCustomType: function () {
+            return this.isCustomType;
+        },
+        getIsSite: function () {
+            return this.isSite;
+        },
+        getIsMedia: function () {
+            return this.isMedia;
+        },
+        getModel: function (id) {
+            var model = this.get(id);
+            if (!model) {
+                model = this.createNewModel();
+            }
+            return model;
+        },
+        createNewModel: function () {
+            var ModelClass = this.model,
+                model = new ModelClass();
+            model.collection = this;
+            model.set("overlay_type", this.getModelType());
+            model.set("project_id", this.projectID);
+
+            // If we get the form, pass in the custom field
+            if (this.isCustomType) {
+                model.set("fields", this.fields.toJSON());
+            }
+            return model;
         }
     };
 });
@@ -6374,12 +6520,11 @@ define('collections/basePageable',[
     "collections/baseMixin"
 ], function (_, BackbonePageable, BaseMixin) {
     "use strict";
-    var PageableCollection = BackbonePageable.extend({
-        getDataType: function () {
-            return this.key;
-        },
-        getTitle: function () {
-            return this.name || "Sites";
+    var BasePageable = BackbonePageable.extend({
+        initialize: function (recs, opts) {
+            opts = opts || {};
+            _.extend(this, opts);
+            BackbonePageable.prototype.initialize.apply(this, arguments);
         },
         fillColor: "#ed867d",
         size: 23,
@@ -6422,37 +6567,41 @@ define('collections/basePageable',[
              *     for samples of valid queries.
              */
 
-            this.query ="WHERE name like %" + term +
+            this.query +="WHERE name like %" + term +
                         "% OR caption like %" + term +
                         "% OR attribution like %" + term +
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
-            this.query += " AND project = " + projectID;
+            //this.query = " AND project_id = " + projectID;
             this.fetch({ reset: true });
         },
 
         clearSearch: function(projectID){
-            this.query = "WHERE project = " + projectID;
+            this.query = "";//WHERE project_id = " + projectID;
             this.fetch({ reset: true });
         }
 
     });
-    _.extend(PageableCollection.prototype, BaseMixin);
+    _.extend(BasePageable.prototype, BaseMixin);
 
     // and finally, need to override fetch from BaseMixin in a way that calls the parent class
-    _.extend(PageableCollection.prototype, {
+    _.extend(BasePageable.prototype, {
         fetch: function (options) {
             //override fetch and append query parameters:
+            options = options || {};
+            options.data = options.data || {};
+            if (this.projectID) {
+                options.data = {
+                    project_id: this.projectID
+                };
+            }
             if (this.query) {
-                // apply some additional options to the fetch:
-                options = options || {};
-                options.data = options.data || {};
-                options.data = { query: this.query };
+                options.data.query = this.query;
             }
             return BackbonePageable.prototype.fetch.call(this, options);
         }
     });
-    return PageableCollection;
+    return BasePageable;
 });
 
 define(
@@ -6516,23 +6665,15 @@ define(
                 });
             },
 
-            // Apparently, there is not a way to get the array of users
-            // from the project object directly
-            // using inheritance-based ways
             getProjectUserCount: function () {
                 return this.projectUsers.length;
             },
 
-            // we get a collection of users by setting up
-            // a temporary dummy user that has nothing inside
-            // However, it returns undefined
+
             getProjectUsers: function () {
                 this.projectUsers.fetch({ reset: true });
             },
 
-            // we get a collection of users by setting up
-            // a temporary dummy user that has nothing inside
-            // However, it returns undefined
             getProjectUserByUsername: function (username) {
                 var i, pu, u;
                 for (i = 0; i < this.projectUsers.length; i++) {
@@ -6564,12 +6705,17 @@ define('models/photo',["models/base", "jquery"], function (Base, $) {
             attribution: { type: 'TextArea', title: "Attribution" },
             tags: { type: 'List', itemType: 'Text' }
         },
-        rotate: function (direction) {
+        getDataTypePlural: function() {
+            return 'photos';
+        },
+        rotate: function (direction, callback) {
             $.ajax({
                 url: '/api/0/photos/' + this.id + '/rotate-' + direction + '/.json',
                 type: 'PUT',
-                success: function(data) {
+                success: function (data) {
+                    console.log('callback!!!!');
                     this.set(data);
+                    callback();
                 }.bind(this),
                 notmodified: function(data) { console.error('Photo Not modified'); },
                 error: function(data) { console.error('Error: Rotation failed'); }
@@ -6651,6 +6797,9 @@ define('models/audio',["models/base", "underscore"], function (Base, _) {
         getExtension: function () {
             return _.last(this.get('file_name').split('.'));
         },
+        getDataTypePlural: function() {
+            return 'audio';
+        },
         defaults: _.extend({}, Base.prototype.defaults, {
             checked: false
         })
@@ -6658,12 +6807,33 @@ define('models/audio',["models/base", "underscore"], function (Base, _) {
     return Audio;
 });
 
-define('collections/audio',["backbone", "models/audio", "collections/base", "collections/basePageable"], function (Backbone, Audio, Base, BasePageable) {
+define('collections/basePageableWithProject',[
+    "underscore",
+    "collections/basePageable"
+], function (_, BasePageable) {
+    "use strict";
+    var BasePageableWithProject = BasePageable.extend({
+        initialize: function (recs, opts) {
+            opts = opts || {};
+            _.extend(this, opts);
+            if (!this.projectID) {
+                console.error("projectID is required: " + this.key);
+                return;
+            }
+            BasePageable.prototype.initialize.apply(this, arguments);
+        }
+    });
+    return BasePageableWithProject;
+});
+
+define('collections/audio',["backbone", "models/audio",
+        "collections/base", "collections/basePageableWithProject"],
+    function (Backbone, Audio, Base, BasePageableWithProject) {
     "use strict";
     /**
      * @class localground.collections.AudioFiles
      */
-    var AudioFiles = BasePageable.extend({
+    var AudioFiles = BasePageableWithProject.extend({
         model: Audio,
         overlay_type: 'audio',
         fillColor: "#62929E",
@@ -6699,6 +6869,9 @@ define('models/video',["models/base"], function (Base) {
             },
             tags: { type: 'List', itemType: 'Text' }
         },
+        getDataTypePlural: function() {
+            return 'videos';
+        },
         getFormSchema: function () {
             return this.schema;
         }
@@ -6706,12 +6879,13 @@ define('models/video',["models/base"], function (Base) {
     return Video;
 });
 
-define('collections/videos',["models/video", "collections/basePageable"], function (Video, BasePageable) {
+define('collections/videos',["models/video", "collections/basePageableWithProject"],
+function (Video, BasePageableWithProject) {
     "use strict";
     /**
      * @class localground.collections.VideoFiles
      */
-    var Videos = BasePageable.extend({
+    var Videos = BasePageableWithProject.extend({
         model: Video,
         overlay_type: 'video',
         fillColor: "#92374D",
@@ -6786,6 +6960,7 @@ define('models/association',["models/base"], function (Base) {
             attachmentType: type of attached media ("photos" or "audio")
             attachmentID: attached media id (OPTIONAL)
             */
+			console.log(data);
             var model = data.model,
                 attachmentType = data.attachmentType,
                 attachmentID = data.attachmentID,
@@ -6831,7 +7006,8 @@ define('models/marker',["models/base",
     var Marker = Base.extend({
         urlRoot: '/api/0/markers/',
 		defaults: _.extend({}, Base.prototype.defaults, {
-			color: "CCCCCC" // rough draft color
+			color: "CCCCCC",
+			overlay_type: "marker" // rough draft color
 		}),
         schema: {
             name: { type: 'TextArea', title: "Name" },
@@ -6949,13 +7125,13 @@ define('models/marker',["models/base",
     return Marker;
 });
 
-define('collections/markers',["models/marker", "collections/basePageable"],
-function (Marker, BasePageable) {
+define('collections/markers',["models/marker", "collections/basePageableWithProject"],
+function (Marker, BasePageableWithProject) {
     "use strict";
     /**
      * @class localground.collections.Markers
      */
-    var Markers = BasePageable.extend({
+    var Markers = BasePageableWithProject.extend({
         model: Marker,
         overlay_type: 'marker',
         name: 'Sites',
@@ -6977,12 +7153,12 @@ function (Marker, BasePageable) {
                         "% OR caption like %" + term +
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
-            this.query += " AND project = " + projectID;
+            //this.query += " AND project_id = " + projectID;
             this.fetch({ reset: true });
         },
 
         clearSearch: function(projectID){
-            this.query = "WHERE project = " + projectID;
+            this.query = ""; //WHERE project_id = " + projectID;
             this.fetch({ reset: true });
         }
     });
@@ -7014,14 +7190,7 @@ define('models/record',["models/base",
                 }
             },
             url: function () {
-                /*
-                 Terrible hack to accommodate the Django REST Framework. Before the
-                 browser issues a POST, PUT, or PATCH request, it first issues an
-                 OPTIONS request to ensure that the request is legal. For some reason,
-                 the Local Ground produces an error for this OPTIONS request if a
-                 '/.json' footer isn't attached to the end. Hence this function overrides
-                 the based url() function in backbone
-                 */
+
                 var base =
                     _.result(this, 'urlRoot') ||
                     _.result(this.collection, 'url') || urlError(),
@@ -7131,13 +7300,13 @@ define('models/record',["models/base",
 
 define('collections/records',[
     "underscore",
-    "collections/basePageable",
+    "collections/basePageableWithProject",
     "models/record",
     "jquery",
     "collections/baseMixin"
-], function (_, BasePageable, Record, $, CollectionMixin) {
+], function (_, BasePageableWithProject, Record, $, CollectionMixin) {
     "use strict";
-    var Records = BasePageable.extend({
+    var Records = BasePageableWithProject.extend({
         model: Record,
         columns: null,
         key: 'form_?',
@@ -7156,7 +7325,7 @@ define('collections/records',[
                 alert("The Records collection requires a key parameter upon initialization");
                 return;
             }
-            BasePageable.prototype.initialize.apply(this, arguments);
+            BasePageableWithProject.prototype.initialize.apply(this, arguments);
         },
         state: {
             currentPage: 1,
@@ -7195,7 +7364,7 @@ define('collections/records',[
             if (!fields) return;
 
             this.query = "WHERE " + this.addFieldQuery(fields, term);
-            this.query += " AND project = " + projectID
+            //this.query += " AND project_id = " + projectID
             this.fetch({ reset: true });
         },
 
@@ -7232,7 +7401,7 @@ define('collections/records',[
         },
 
         clearSearch: function(projectID){
-            this.query = "WHERE project = " + projectID;
+            this.query = ""; //WHERE project_id = " + projectID;
             this.fetch({ reset: true });
         }
     });
@@ -7253,7 +7422,7 @@ define('collections/records',[
 					query: this.query
 				});
             }
-            BasePageable.__super__.fetch.apply(this, arguments);
+            BasePageableWithProject.__super__.fetch.apply(this, arguments);
         }
     });
     return Records;
@@ -7305,12 +7474,14 @@ define('models/field',["underscore", "collections/dataTypes", "models/base"],
                 has_snippet_field: 'Hidden',
                 ordering: 'Hidden'
             },
+            errorMessage: null,
             urlRoot: function () {
                 if (this.baseURL) {
                     return this.baseURL;
                 }
                 return '/api/0/datasets/' + this.form.get("id") + '/fields/';
             },
+
             initialize: function (data, opts) {
                 // This had to be made dynamic because there are different Fields
                 // for each form
@@ -7329,14 +7500,109 @@ define('models/field',["underscore", "collections/dataTypes", "models/base"],
                     this.url = this.urlRoot() + this.get("field") + "/";
                 }
                 Base.prototype.initialize.apply(this, arguments);
-            }/*,
-            toJSON: function () {
-                var json = Base.prototype.toJSON.call(this);
-                if (json.extras !== null) {
-                    json.extras = JSON.stringify(json.extras);
+            },
+            validate: function (attrs, options) {
+                // These attributes will be transferred
+                // to the error message function so it will be displayed on eachField
+                this.set("errorFieldName", false);
+                this.set("errorFieldType", false);
+                this.set("errorRatingName", false);
+                this.set("errorRatingValue", false);
+                this.set("errorMissingRatings", false);
+                this.set("errorMissingChoices", false);
+                // reset error message each time in case
+                // for no error or new one
+                this.errorMessage = "";
+
+                // variables to keep track of the errorMessage
+
+                var errorName, errorType,
+                    errorRatingName, errorRatingValue, errorChoice,
+                    errorMissingRatings, errorMissingChoices;
+
+                var emptyName = attrs.col_alias.trim() === "";
+                var unselectedType = attrs.data_type === "-1" || !attrs.data_type;
+
+                this.set("errorFieldName", emptyName);
+                this.set("errorFieldType", unselectedType);
+                this.validateRating(attrs);
+                this.validateChoice(attrs);
+                errorName = this.get("errorFieldName");
+                errorType = this.get("errorFieldType");
+                errorRatingName = this.get("errorRatingName");
+                errorRatingValue = this.get("errorRatingValue");
+                errorChoice = this.get("errorChoice");
+                errorMissingRatings = this.get("errorMissingRatings");
+                errorMissingChoices = this.get("errorMissingChoices");
+
+                if (errorName && errorType) return this.getErrorMessage("errorField");
+                if (errorName) return this.getErrorMessage("errorFieldName");
+                if (errorType) return this.getErrorMessage("errorFieldType");
+                if (errorRatingName && errorRatingValue) return this.getErrorMessage("errorRating");
+                if (errorRatingName) return this.getErrorMessage("errorRatingName");
+                if (errorRatingValue) return this.getErrorMessage("errorRatingValue");
+                if (errorChoice) return this.getErrorMessage("errorChoice");
+                if (errorMissingRatings) return this.getErrorMessage("errorMissingRatings");
+                if (errorMissingChoices) return this.getErrorMessage("errorMissingChoices");
+
+
+            },
+            getErrorMessage: function (key) {
+                // Use this as the basis for its own template
+                // will eventually cut down uneccessary logic
+                // so that errors will simply be outputted
+                var messages = {
+                    "errorField": "Both field name and type are required",
+                    "errorFieldName": "A field name is required",
+                    "errorFieldType": "A field type is required",
+                    "errorRating": "Both rating name and value are required",
+                    "errorRatingName": "A rating name is required",
+                    "errorRatingValue": "A rating value (integer) is required",
+                    "errorChoice": "A choice name is required",
+                    "errorMissingRatings": "One or more ratings are needed for this field",
+                    "errorMissingChoices": "One or more choices are needed for this field"
                 }
-                return json;
-            }*/
+                this.errorMessage = messages[key];
+                return this.errorMessage;
+            },
+
+            validateRating: function (attrs) {
+                // No need to check if incorrect type
+                if (attrs.data_type !== "rating") return true;
+                if (!attrs.extras || attrs.extras.length === 0) {
+                    this.set("errorMissingRatings", true);
+                    return false;
+                }
+                var rating_item_blank = false;
+                for (var i = 0; i < attrs.extras.length; ++i) {
+                    if (attrs.extras[i].name.trim() === "") {
+                        this.set("errorRatingName", true);
+                        rating_item_blank = true;
+                    }
+                    if (isNaN(parseInt(attrs.extras[i].value))){
+                        this.set("errorRatingValue", true);
+                        rating_item_blank = true;
+                    }
+                    if (rating_item_blank) return false;
+                }
+                return true;
+            },
+
+            validateChoice: function (attrs) {
+                // No need to check if incorrect type
+                if (attrs.data_type !== "choice") return true;
+                if (!attrs.extras || attrs.extras.length === 0) {
+                    this.set("errorMissingChoices", true);
+                    return false;
+                }
+                for (var i = 0; i < attrs.extras.length; ++i) {
+                    if (attrs.extras[i].name.trim() === "") {
+                        this.set("errorChoice", true);
+                        return false;
+                    }
+                }
+                return true;
+            }
         });
         return Field;
     });
@@ -7367,8 +7633,8 @@ define('collections/fields',["models/field", "collections/basePageable"], functi
             return this.find(function (model) { return model.get(key) === val; });
         },
         initialize: function (recs, opts) {
-            if (opts.url) {
-                this.baseURL = opts.url;
+            if (opts.baseURL) {
+                this.baseURL = opts.baseURL;
             } else if (opts.id) {
                 this.baseURL = '/api/0/datasets/' + opts.id + '/fields/';
             } else if (opts.form) {
@@ -7739,139 +8005,210 @@ define('collections/tilesets',["underscore", "models/tileset", "collections/base
     return TileSets;
 });
 
-define('lib/data/dataManager',["underscore", "marionette", "models/project", "collections/photos",
-        "collections/audio", "collections/videos", "collections/mapimages", "collections/markers",
-        "collections/records", "collections/fields", "collections/tilesets"],
-    function (_, Marionette, Project, Photos, Audio, Videos, MapImages, Markers, Records, Fields, TileSets) {
+define('lib/data/dataManager',["underscore", "marionette", "models/project",
+            "collections/photos", "collections/audio", "collections/videos",
+            "collections/mapimages", "collections/markers",
+            "collections/records", "collections/fields",
+            "collections/tilesets"],
+    function (_, Marionette, Project, Photos, Audio, Videos, MapImages, Markers,
+                Records, Fields, TileSets) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
             formColors: ['#60C7CC', '#CF2045', '#A3A737', '#F27CA5'],
             colorCounter: 0,
+            dataLoaded: false,
             template: false,
-            isEmpty: function () {
-                return Object.keys(this.dataDictionary).length === 0;
-            },
             initialize: function (opts) {
-                //todo: remove app dependency and pass in projectID and vent
                 _.extend(this, opts);
                 if (typeof this.projectID === 'undefined') {
                     window.location = '/';
                     return false;
                 }
+                this.initProject();
+                this.initTilesets();
+                this.listenTo(this.vent, "delete-collection", this.deleteCollection);
+                this.listenTo(this.vent, "create-collection", this.addNewRecordsCollection);
+            },
+            isEmpty: function () {
+                return Object.keys(this.dataDictionary).length === 0;
+            },
+            initProject: function () {
                 if (!this.model) {
                     this.model = new Project({ id: this.projectID });
-                    this.model.fetch({ success: this.setCollections.bind(this) });
+                    this.model.fetch({ success: this.initCollections.bind(this) });
                 } else {
-                    this.setCollections();
+                    this.initCollections();
                 }
+            },
+
+            initTilesets: function () {
                 this.tilesets = new TileSets();
                 this.tilesets.fetch({reset: 'true'});
             },
-            setCollections: function () {
-                var that = this,
-                    extras;
-                _.each(this.model.get("children"), function (entry, key) {
-                    that.dataDictionary[key] = entry;
-                    extras = that.initCollection(key, entry.data, entry.fields, entry.overlay_type);
-                    _.extend(that.dataDictionary[key], extras);
-                    delete entry.data;
-                });
+
+            initCollections: function () {
+                var dataLists = {};
+                _.extend(dataLists, this.model.get('datasets'));
+                _.extend(dataLists, this.model.get('media'));
+                var opts, dataType, jsonData, collection;
+                for (dataType in dataLists) {
+                    opts = dataLists[dataType];
+                    jsonData = opts.data;
+                    _.extend(opts, {
+                        title: opts.name,
+                        overlayType: opts.overlay_type,
+                        isSite: false,
+                        isCustomType: false,
+                        isMedia: false,
+                        dataType: dataType,
+                        projectID: this.model.id
+                    });
+                    collection = this.initCollection(opts, jsonData);
+                    this.dataDictionary[dataType] = collection;
+                    //delete opts.data;
+                }
+                this.dataLoaded = true;
                 this.vent.trigger('data-loaded');
             },
-            getDataSources: function () {
-                var dataSources = [
-                    { value: "markers", name: "Sites" }
-                ];
-                _.each(this.dataDictionary, function (entry, key) {
-                    if (key.includes("form_")) {
-                        dataSources.push({
-                            value: key,
-                            name: entry.name
-                        });
-                    }
-                });
-                dataSources = dataSources.concat([
-                    { value: "photos", name: "Photos" },
-                    { value: "audio", name: "Audio" },
-                    { value: "videos", name: "Videos" },
-                    { value: "map_images", name: "Map Images" }
-                ]);
-                return dataSources;
-            },
-            getData: function (key) {
-                console.log(key);
-                var entry = this.dataDictionary[key];
-                if (entry) {
-                    return entry;
-                }
-                throw new Error("No entry found for " + key);
-            },
-            getCollection: function (key) {
-                var entry = this.dataDictionary[key];
-                console.log(this.dataDictionary);
-                if (entry) {
-                    return entry.collection;
-                }
-                throw new Error("No entry found for " + key);
-            },
-            initCollection: function (key, data, fieldCollection, overlay_type) {
-                switch (key) {
-                case "photos":
-                    return { collection: new Photos(data) };
-                case "audio":
-                    return { collection: new Audio(data) };
-                case "videos":
-                    return { collection: new Videos(data) };
-                case "markers":
-                    return {
-                        collection: new Markers(data),
-                        isSite: true
-                    };
-                case "map_images":
-                    return { collection: new MapImages(data) };
-                default:
-                    // in addition to defining the collection, also define the fields:
-                    if (key.indexOf("form_") != -1) {
-                        var formID = key.split("_")[1],
-                            recordsURL = '/api/0/datasets/' + formID + '/data/',
-                            fieldsURL = '/api/0/datasets/' + formID + '/fields/',
-                            records = new Records(data, {
-                                url: recordsURL,
-                                key: 'form_' + formID,
-                                overlay_type: overlay_type
-                            }),
-                            fields = fieldCollection || new Fields(null, {url: fieldsURL }),
-                            that = this;
-                        records.fillColor = this.formColors[this.colorCounter++];
-                        if (fields.length == 0) {
-                            fields.fetch({ reset: true, success: function () {
-                                that.attachFieldsToRecords(records, fields);
-                            }});
+            initCollection: function (opts, jsonData) {
+                var collection;
+                switch (opts.dataType) {
+                    case "photos":
+                        opts.isMedia = true;
+                        collection = new Photos(jsonData, opts);
+                        break;
+                    case "audio":
+                        opts.isMedia = true;
+                        collection = new Audio(jsonData, opts);
+                        break;
+                    case "videos":
+                        opts.isMedia = true;
+                        collection = new Videos(jsonData, opts);
+                        break;
+                    case "markers":
+                        opts.isSite = true;
+                        collection = new Markers(jsonData, opts);
+                        break;
+                    case "map_images":
+                        opts.isMedia = true;
+                        collection = new MapImages(jsonData, opts);
+                        break;
+                    default:
+                        if (opts.dataType.includes("form_")) {
+                            collection = this.createRecordsCollection(jsonData, opts);
                         } else {
-                            this.attachFieldsToRecords(records, fields);
+                            throw new Error("case not handled");
                         }
-                        return {
-                            collection: records,
-                            fields: fields,
-                            isCustomType: true,
-                            isSite: true
-                        };
-                    }
-                    throw new Error("case not handled");
-                    return null;
+                        break;
                 }
+                return collection;
             },
-            attachFieldsToRecords: function (records, fields) {
+
+            attachFieldsToRecord: function (fields, record) {
+                fields.each(function (field) {
+                    field.set("val", record.get(field.get("col_name")));
+                });
+                record.set('fields', fields.toJSON());
+            },
+
+            attachFieldsToRecords:  function (fields, records) {
                 // some extra post-processing for custom datatypes so that
                 // it's easier to loop through fields and output corresponding
                 // values
-                records.each(function (record) {
-                    fields.each(function (field) {
-                        field.set("val", record.get(field.get("col_name")));
-                    });
-                    record.set('fields', fields.toJSON());
+                records.each((record) => {
+                    this.attachFieldsToRecord(fields, record);
                 });
+            },
+
+            createRecordsCollection:  function (jsonData, opts) {
+                var fieldsURL,
+                    collection;
+                opts.formID = parseInt(opts.dataType.split("_")[1]);
+                opts.url = '/api/0/datasets/' + opts.formID + '/data/';
+                fieldsURL = '/api/0/datasets/' + opts.formID + '/fields/';
+                _.extend(opts, {
+                    fillColor: this.getMarkerColor(),
+                    fields: new Fields(opts.fields, { baseURL: fieldsURL }),
+                    isCustomType: true,
+                    isSite: true,
+                    key: opts.dataType
+                });
+                collection = new Records(jsonData, opts);
+                if (opts.fields.length == 0) {
+                    opts.fields.fetch({ reset: true, success: () => {
+                        this.attachFieldsToRecords(opts.fields, collection);
+                    }});
+                } else {
+                    this.attachFieldsToRecords(opts.fields, collection);
+                }
+                return collection
+            },
+
+            getMarkerColor: function () {
+                var index = this.colorCounter++ % this.formColors.length;
+                return this.formColors[index];
+            },
+
+            deleteCollection: function (dataType) {
+                delete this.dataDictionary[dataType];
+                this.vent.trigger('datamanager-modified');
+            },
+
+            /*addNewRecordsCollection: function (dataType) {
+                this.dataDictionary[dataType] = this.createRecordsCollection(dataType);
+                this.vent.trigger('datamanager-modified');
+            },*/
+
+            each: function (f) {
+                this.getLookup().forEach((obj) => {
+                    f(this.getCollection(obj.id));
+                });
+            },
+
+            getLookup: function () {
+                /*
+                Because order matters, returns a list of
+                id / name pairs in the correct order. First
+                sites, then custom data types, then media.
+                */
+                var collection,
+                    dataType,
+                    lookup = [
+                        { id: "markers", name: "Sites", hasData: this.getCollection("markers").length > 0 }
+                    ];
+                for (dataType in this.dataDictionary) {
+                    collection = this.dataDictionary[dataType];
+                    if (collection.getIsCustomType()) {
+                        lookup.push({
+                            id: collection.getDataType(),
+                            name: collection.getTitle(),
+                            hasData: collection.length > 0
+                        });
+                    }
+                };
+                lookup.push.apply(lookup, [
+                    // { id: "photos", name: "Photos", hasData: this.getCollection("photos").length > 0 },
+                    // { id: "audio", name: "Audio", hasData: this.getCollection("audio").length > 0 },
+                    // { id: "videos", name: "Videos", hasData: this.getCollection("videos").length > 0 },
+                    { id: "map_images", name: "Map Images", hasData: this.getCollection("map_images").length > 0 }
+                ])
+                return lookup;
+            },
+
+            getCollection: function (dataType) {
+                if (!this.dataDictionary[dataType]) {
+                    throw new Error("No collection found for " + dataType);
+                }
+                return this.dataDictionary[dataType];
+            },
+
+            getModel: function (dataType, id) {
+                return this.dataDictionary[dataType].getModel(id);
+            },
+
+            getCollections: function () {
+                return Object.entries(this.dataDictionary);
             }
         });
         return DataManager;
@@ -8048,7 +8385,6 @@ define('lib/maps/overlays/icon',["marionette", "underscore", "lib/maps/icon-look
         },
         getScale: function () {
             var scale = this.width / this.baseWidth;
-            //console.log(scale);
             return scale;
         },
         generateGoogleIcon: function () {
@@ -8077,6 +8413,7 @@ define('lib/maps/overlays/icon',["marionette", "underscore", "lib/maps/icon-look
     });
     return Icon;
 });
+
 define('models/symbol',['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
     function (Backbone, _, SqlParser, Icon) {
         'use strict';
@@ -8215,7 +8552,6 @@ define('models/layer',["models/base", "models/symbol", "collections/symbols"], f
             this.buildSymbolMap();
         },
         buildSymbolMap: function () {
-            console.log('building symbol map...', this.get("symbols"));
             //set the basic flag:
             if (this.get("symbols").length == 1) {
                 this.basic = true;
@@ -8282,13 +8618,14 @@ define('models/layer',["models/base", "models/symbol", "collections/symbols"], f
             return json;
         },
         save: function (attrs, opts) {
-            console.log(this.attributes);
+            //console.log(this.attributes);
             Base.prototype.save.apply(this, arguments);
-            console.log("done");
+            //console.log("done");
         }
     });
     return Layer;
 });
+
 define('collections/layers',["models/layer", "collections/base"], function (Layer, Base) {
     "use strict";
     /**
@@ -8348,7 +8685,7 @@ define('models/map',["models/base", "collections/layers"], function (Base, Layer
                     display_legend: true,
                     title: {type: "title", font: "Lato", fw: "bold", color: "ffffff", backgroundColor: "4e70d4", size: "15"},
                     subtitle: {type: "subtitle", font: "Lato", fw: "regular", color: "666", backgroundColor: "f7f7f7", size: "12"},
-                    paragraph: {type: "paragraph", font: "Lato", fw: "regular", color: "3d3d3d", backgroundColor: "f7f7f7", size: "12"},
+                    paragraph: {type: "paragraph", font: "Lato", fw: "regular", color: "666", backgroundColor: "f0f1f5", size: "12"},
                     tags: {type: "tags", font: "Lato", fw: "regular", color: "3d3d3d", backgroundColor: "f7f7f7", size: "10"}
                 }
             });
@@ -11777,6 +12114,13 @@ define('lib/maps/overlays/polyline',["jquery"], function ($) {
         this._googleOverlay = null;
         this.model = null;
         this.map = null;
+        this.mouseupEvent = null;
+        this.mousedownEvent = null;
+        this.rightClickEvent = null;
+
+        // See this.deleteVertex(). 
+        // A Polyline cannot have fewer than 2 vertices
+        this.minimumVertices = 2
 
         this.getShapeType = function () {
             return "Polyline";
@@ -11794,14 +12138,93 @@ define('lib/maps/overlays/polyline',["jquery"], function ($) {
                 strokeColor: '#' + this.model.get("strokeColor"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
-                map: isShowingOnMap ? this.map : null
+                map: isShowingOnMap ? this.map : null,
+                //editable: true,
+                draggable: true
+
             });
         };
 
         this.redraw = function () {
             this._googleOverlay.setOptions({
-                strokeColor: '#' + this.model.get("strokeColor")
+                //strokeColor: '#' + this.model.get("strokeColor")
+                strokeColor: this.model.collection.fillColor,
+                strokeOpacity: 1.0,
+                strokeWeight: 5,
+                draggable: this.model.get("active")? true : false,
+                editable: this.model.get("active")? true : false,
             });
+            if (this.model.get("active")) {
+                this.addEvents();
+            }
+        };
+
+        /**
+        * We want to save polyline/polygon coordinates after the following 4 events:
+        * 1. dragging the entire polyline/polygon
+        * 2. dragging (editing) individual vertices
+        * 3. adding a new vertex
+        * 4. Deleting a vertex (right click)
+        */
+       this.addEvents = function() {
+            // clear previous right click listeners
+            if (this.rightClickEvent) {
+                google.maps.event.clearListeners(this._googleOverlay, 'rightclick');
+            }
+            this.rightClickEvent = google.maps.event.addListener(
+                this._googleOverlay, 'rightclick', this.deleteVertex.bind(this)
+            );
+
+            // clear previous listeners of the mousedown event
+            if (this.mousedownEvent) {
+                google.maps.event.clearListeners(this._googleOverlay, 'mousedown');
+            }
+            // We will only register a mouseup event after a mousedown event has ocurred.
+            // Since mouseup events can be rather buggy, this helps keep things clean
+            // and prevents errant mouseup events from creating duplicate events and other proplems
+            this.mousedownEvent = google.maps.event.addListener(
+                this._googleOverlay, 'mousedown', this.registerMouseUpEvent.bind(this)
+            );
+        };
+
+        this.registerMouseUpEvent = function() {
+            // clear any previous mouse up events
+            if (this.mouseupEvent) {
+                google.maps.event.clearListeners(this._googleOverlay, 'mouseup');
+            }
+            // register mouseup event and callback
+            this.mouseupEvent = google.maps.event.addListener(
+                this._googleOverlay, 'mouseup', this.geometrySave.bind(this)
+            );
+        };
+        this.geometrySave = function() {
+
+            // A slight delay is needed here to make sure any new coordinate values
+            // finish updating the _googleOverlay object before we attempt to save
+            setTimeout(() => {
+                this.model.trigger('commit-data-no-save');
+
+                // get the coordinated from the _googleOverlay
+                const geoJSON = this.getGeoJSON();
+
+                // We only update and save the model if its current geometry coordinates
+                // are different from those of the _googleOverlay
+                if (!_.isEqual(this.model.get('geometry'), geoJSON)) {
+                    this.model.set('geometry', geoJSON);
+                    this.model.save();
+                    // console.log('sent to server');
+                }
+            }, 100);
+        };
+
+        this.deleteVertex = function(ev) {
+            // slight delay needed to prevent multiple events from being triggered
+            setTimeout(() => {
+                                                // line must have at least 2 vertices 
+                if (ev.vertex != null && this._googleOverlay.getPath().getLength() > this.minimumVertices) {
+                    this._googleOverlay.getPath().removeAt(ev.vertex);
+                }
+            }, 100);
         };
 
         /**
@@ -11967,7 +12390,13 @@ define('lib/maps/overlays/polygon',["lib/maps/overlays/polyline"], function (Pol
      * @class Polygon
      */
     var Polygon = function (app, opts) {
+        // Polygon inherits most of its functionality, 
+        // including event handling, from Polyline
         Polyline.call(this, app, opts);
+
+        // See this.deleteVertex() inherited from Polyline. 
+        // A Polygon cannot have fewer than 3 vertices
+        this.minimumVertices = 3
 
         this.getShapeType = function () {
             return "Polygon";
@@ -11975,22 +12404,40 @@ define('lib/maps/overlays/polygon',["lib/maps/overlays/polyline"], function (Pol
 
         this.createOverlay = function (isShowingOnMap) {
             this._googleOverlay = new google.maps.Polygon({
-                path: this.getGoogleGeometryFromModel(),
-                strokeColor: '#' + this.model.get("fillColor"),
+                path: this.getGoogleLatLngFromModel(),
+                //strokeColor: '#' + this.model.get("fillColor"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
-                fillColor: '#' + this.model.get("fillColor"),
+                //fillColor: '#' + this.model.get("fillColor"),
                 fillOpacity: 0.35,
-                map: isShowingOnMap ? this.map : null
+                map: isShowingOnMap ? this.map : null,
+                draggable: true,
+                editable: true,
+                strokeColor: '#0000FF',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#0000FF',
+                fillOpacity: 0.35,
             });
         };
 
         this.redraw = function () {
             this._googleOverlay.setOptions({
-                strokeColor: '#' + this.model.get("strokeColor"),
-                fillColor: '#' + this.model.get("fillColor")
+                // strokeColor: '#' + this.model.get("strokeColor"),
+                // fillColor: '#' + this.model.get("fillColor")
+                strokeColor: this.model.collection.fillColor,
+                fillColor: this.model.collection.fillColor,
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                draggable: this.model.get("active")? true : false,
+                editable: this.model.get("active")? true : false
             });
+
+            if (this.model.get("active")) {
+                this.addEvents();
+            }
         };
+
         /**
          * Method that converts a GeoJSON Linestring into
          * an array of google.maps.LatLng objects.
@@ -12160,6 +12607,7 @@ define('lib/maps/overlays/ground-overlay',["lib/maps/overlays/polyline"], functi
             });
         };
 
+        // converts coordinates from GeoJSON to Google's format
         this.getBoundsFromGeoJSON = function () {
             var coordinates = this.model.get("geometry").coordinates[0],
                 north = coordinates[0][1],
@@ -12316,7 +12764,7 @@ define('lib/maps/overlays/base',["marionette",
         attachEventHandlers: function () {
             var that = this;
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.app.router.navigate("//" + that.model.getDataTypePlural() + "/" + that.model.get("id"));
+                that.app.router.navigate("//" + that.app.screenType + "/" + that.model.getDataTypePlural() + "/" + that.model.get("id"));
             });
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
                 that.infoBubble.showTip();
@@ -12441,6 +12889,7 @@ define('lib/maps/overlays/base',["marionette",
     });
     return Base;
 });
+
 define('lib/maps/overlays/marker',[
     "underscore",
     "lib/maps/overlays/infobubbles/marker",
@@ -12456,6 +12905,7 @@ define('lib/maps/overlays/marker',[
 
         initialize: function (opts) {
             Base.prototype.initialize.apply(this, arguments);
+            // this is what redraws a marker when you select it
             this.redraw();
         },
 
@@ -12490,6 +12940,7 @@ define('lib/maps/overlays/marker',[
     });
     return Marker;
 });
+
 define('lib/maps/marker-overlays',['marionette',
         'underscore',
         'lib/maps/overlays/marker'
@@ -12519,6 +12970,8 @@ define('lib/maps/marker-overlays',['marionette',
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.childViewOptions = opts;
+
+                // this is required, otherwise markers will disappear after being placed
                 this.childViewOptions.displayOverlay = opts.displayOverlays;
 
                 this.render();
@@ -12549,7 +13002,6 @@ define('lib/maps/marker-overlays',['marionette',
             },
 
             showAll: function () {
-                console.log('showAll');
                 this.children.each(function (overlay) {
                     overlay.show();
                 });
@@ -13041,7 +13493,10 @@ define('apps/presentation/views/legend-symbol-entry',['marionette',
                 var that = this, matchedCollection;
                 this.template = Handlebars.compile(SymbolTemplate);
                 this.data = this.app.dataManager.getCollection(this.data_source);
-                matchedCollection = new this.data.constructor(null, { url: "dummy" });
+                matchedCollection = new this.data.constructor(null, {
+                    url: "dummy",
+                    projectID: that.app.getProjectID()
+                });
 
                 this.data.each(function (model) {
                     if (that.model.checkModel(model)) {
@@ -13104,7 +13559,7 @@ define('apps/presentation/views/legend-layer-entry',['marionette',
     });
 
 
-define('text!apps/presentation/templates/legend-container.html',[],function () { return '<div class="legend-top">\n    <p class="legend-top-text">Legend</p>\n    <i class="fa fa-angle-down legend-toggle" aria-hidden="true"></i>\n</div>';});
+define('text!apps/presentation/templates/legend-container.html',[],function () { return '<div class="legend-wrapper">\n    <div class="legend-top">\n        <p class="legend-top-text">Legend</p>\n        <i class="fa fa-angle-down legend-toggle" aria-hidden="true"></i>\n    </div>\n</div>';});
 
 define('apps/presentation/views/layer-list-manager',["marionette",
         "underscore",
@@ -13122,7 +13577,7 @@ define('apps/presentation/views/layer-list-manager',["marionette",
                 console.log("Layer List Manager Called");
             },
             events: {
-                'click .legend-toggle': 'toggleLegend',
+                'click .legend-top': 'toggleLegend',
                 'click this': 'toggleLegend'
             },
             childViewOptions: function () {
@@ -13135,7 +13590,7 @@ define('apps/presentation/views/layer-list-manager',["marionette",
             toggleLegend: function () {
                 console.log("toggle legend", $('#legend').css('height'));
                 if ($('#legend').css('height') == '20px') {
-                    $('#legend').css({'height': 'auto', 'width': 'auto'});
+                    $('#legend').css({'height': 'auto', 'min-width': 'auto'});
                 } else {
                     $('#legend').css({'height': '20px', 'width': '90px'});
                 }
@@ -13184,22 +13639,22 @@ define('apps/presentation/views/map-header',["underscore",
         return MapHeader;
     });
 
-define('text!apps/gallery/templates/photo-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    {{#compare screenType "presentation" operator="!="}}\n        <h4>Preview</h4>\n    {{/compare}}\n    <div class="section">\n        <h3>{{ name }}</h3>\n    </div>\n\n    <div class="img-card">\n        <div class="photo-single">\n            <img src="{{this.path_medium}}" />\n        </div>\n        <p class="photo-caption">{{ caption }}</p>\n    </div>\n\n    <div class="section-card">\n        <p>\n        Attribution: {{ attribution }} <br>\n        {{#each tags}}\n            <a class="tag"> {{this}} </a>\n        {{/each}}\n        <!-- Three curly braces if you don\'t want to escape HTML -->\n    </div>\n    {{#compare screenType "presentation" operator="!="}}\n        <div class="save-options">\n            <button class="edit-mode button-tertiary ">Edit</button>\n        </div>\n    {{/compare}}\n{{/ifequal}}\n\n{{#ifequal mode "presentation"}}\n    <div class="section">\n        <h3>{{ name }}</h3>\n        <p style="font-style: italic">{{ caption }}</p>\n    </div>\n    <div class="img-card">\n        <div class="photo-single">\n            <img src="{{this.path_medium}}" />\n        </div>\n        <p class="photo-caption">{{ caption }}</p>\n    </div>\n    <div class="section-card">\n        <p>Tags:\n        {{#each tags}}\n            <!-- <p>{{this}}<br></p> -->\n            <a class="tag"> {{this}} </a>\n        {{/each}}\n        </p>\n        <!-- Three curly braces if you don\'t want to escape HTML -->\n    </div>\n{{/ifequal}}\n\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>\n        {{#if id}}\n        Edit\n        {{else}}\n        Add New\n        {{/if}}\n        Media Details\n    </h4>\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n            <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n            <div class="add-lat-lng">\n                <button class="button-secondary add-marker-button" id="add-geometry">\n                    Add Location Marker\n                </button>\n            </div>\n        {{/if}}\n        {{#if lat}}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n\n    <div class="img-card single-photo">\n        <div class="photo-container">\n            <img class="edit-photo" src="{{ path_medium }}" />\n        </div>\n        <div class="rotate-message">\n            <p>rotating photo...</p>\n            <i class="fa fa-refresh fa-spin fa-2x"></i>\n        </div>\n    </div>\n\n    <div class="rotate-photo">\n        <a class="rotate-left" rotation="left" ><i rotation="left" class="fa fa-rotate-left" aria-hidden="true"></i></a>\n        <a class="rotate-right" rotation="right" ><i rotation="right" class="fa fa-rotate-right" aria-hidden="true"></i></a>\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n             go to the redesign/models/photo.js / audio.js and modify\n             the form. Instructions re: how to use the Backbone Forms\n             library here:\n             https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n\n    <div class="save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
+define('text!templates/photo-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    {{#compare screenType "presentation" operator="!="}}\n        <h4>Preview</h4>\n    {{/compare}}\n    <div class="section">\n        <h3>{{ name }}</h3>\n    </div>\n\n    <div class="img-card">\n        <div class="photo-single">\n            <img src="{{this.path_medium}}" />\n        </div>\n        <p class="photo-caption">{{ caption }}</p>\n    </div>\n\n    <div class="section-card">\n        <p>\n        Attribution: {{ attribution }} <br>\n        {{#each tags}}\n            <a class="tag"> {{this}} </a>\n        {{/each}}\n    </div>\n    {{#compare screenType "presentation" operator="!="}}\n        <div class="save-options">\n            <button class="edit-mode button-tertiary ">Edit</button>\n        </div>\n    {{/compare}}\n{{/ifequal}}\n\n{{#ifequal mode "presentation"}}\n    <div class="section">\n        <h3>{{ name }}</h3>\n        <p style="font-style: italic">{{ caption }}</p>\n    </div>\n    <div class="img-card">\n        <div class="photo-single">\n            <img src="{{this.path_medium}}" />\n        </div>\n        <p class="photo-caption">{{ caption }}</p>\n    </div>\n    <div class="section-card">\n        <p>Tags:\n        {{#each tags}}\n            <!-- <p>{{this}}<br></p> -->\n            <a class="tag"> {{this}} </a>\n        {{/each}}\n        </p>\n        <!-- Three curly braces if you don\'t want to escape HTML -->\n    </div>\n{{/ifequal}}\n\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>{{#if id}}Edit{{else}}Add New{{/if}} Media Details</h4>\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n            <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n            <div class="add-lat-lng">\n                <button class="button-secondary add-marker-button" id="add-geometry">\n                    Add Location Marker\n                </button>\n            </div>\n        {{/if}}\n        {{#if lat}}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n\n    <div class="img-card single-photo">\n        <div class="photo-container">\n            <img class="edit-photo" src="{{ path_medium }}" />\n        </div>\n        <div class="rotate-message">\n            <p>rotating photo...</p>\n            <i class="fa fa-refresh fa-spin fa-2x"></i>\n        </div>\n    </div>\n\n    <div class="rotate-photo">\n        <a class="rotate-left" rotation="left" ><i rotation="left" class="fa fa-rotate-left" aria-hidden="true"></i></a>\n        <a class="rotate-right" rotation="right" ><i rotation="right" class="fa fa-rotate-right" aria-hidden="true"></i></a>\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n             go to the redesign/models/photo.js / audio.js and modify\n             the form. Instructions re: how to use the Backbone Forms\n             library here:\n             https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n\n    <div class="save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
 
 
-define('text!apps/gallery/templates/audio-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    <h4>Preview</h4>\n    <div class="player-container audio-detail"></div>\n    <br>\n    {{tags}}\n    <br>\n    <div class="save-options">\n        <button class="edit-mode button-tertiary ">Edit</button>\n    </div>\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>\n        {{#if id}}\n        Edit\n        {{else}}\n        Add New\n        {{/if}}\n    </h4>\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n        <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n        <div class="add-lat-lng">\n            <button class="button-secondary add-marker-button" id="add-geometry">\n                Add Location Marker\n            </button>\n        </div>\n        {{/if}}\n        \n        {{#if lat}}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n    <div class="player-container audio-detail">\n\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n            go to the redesign/models/photo.js and/or audio.js and modify\n            the form. Instructions re: how to use the Backbone Forms\n            library here:\n            https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n    <div class = "save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
+define('text!templates/audio-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    <h4>Preview</h4>\n    <div class="player-container audio-detail"></div>\n    <br>\n    {{tags}}\n    <br>\n    <div class="save-options">\n        <button class="edit-mode button-tertiary ">Edit</button>\n    </div>\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>{{#if id}}Edit{{else}}Add New{{/if}}</h4>\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n        <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n        <div class="add-lat-lng">\n            <button class="button-secondary add-marker-button" id="add-geometry">\n                Add Location Marker\n            </button>\n        </div>\n        {{/if}}\n\n        {{#if lat}}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n    <div class="player-container audio-detail">\n\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n            go to the redesign/models/photo.js and/or audio.js and modify\n            the form. Instructions re: how to use the Backbone Forms\n            library here:\n            https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n    <div class = "save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
 
 
-define('text!apps/gallery/templates/video-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    <h4>Preview</h4>\n    <div>\n        {{name}}\n        <br>\n        {{caption}}\n        <br>\n        {{#ifequal video_provider "vimeo"}}\n            <iframe src="https://player.vimeo.com/video/{{video_id}}"\n            width="350" height="200"\n            frameborder="0"\n            webkitallowfullscreen mozallowfullscreen allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n\n\n        {{#ifequal video_provider "youtube"}}\n            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n            width="350" height="200"\n            frameborder="0" allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n    </div>\n    <br>\n    {{tags}}\n    <br>\n    <div class="save-options">\n        <button class="edit-mode button-tertiary ">Edit</button>\n    </div>\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>\n        {{#if id}}\n        Edit\n        {{else}}\n        Add New\n        {{/if}}\n    </h4>\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n        <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n        <div class="add-lat-lng">\n            <button class="button-secondary add-marker-button" id="add-geometry">\n                Add Location Marker\n            </button>\n        </div>\n        {{/if}}\n\n        {{#if lat}}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n    <div>\n            {{#ifequal video_provider "vimeo"}}\n                <iframe src="https://player.vimeo.com/video/{{video_id}}"\n                style="width: 100%" height="250"\n                frameborder="0"\n                webkitallowfullscreen mozallowfullscreen allowfullscreen>\n                </iframe>\n            {{/ifequal}}\n\n\n            {{#ifequal video_provider "youtube"}}\n                <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n                style="width: 100%" height="250"\n                frameborder="0" allowfullscreen>\n                </iframe>\n            {{/ifequal}}\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n            go to the redesign/models/photo.js and/or audio.js and modify\n            the form. Instructions re: how to use the Backbone Forms\n            library here:\n            https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n    <div class = "save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
+define('text!templates/video-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    <h4>Preview</h4>\n    <div>\n        {{name}}\n        <br>\n        {{caption}}\n        <br>\n        {{#ifequal video_provider "vimeo"}}\n            <iframe src="https://player.vimeo.com/video/{{video_id}}"\n            width="350" height="200"\n            frameborder="0"\n            webkitallowfullscreen mozallowfullscreen allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n\n\n        {{#ifequal video_provider "youtube"}}\n            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n            width="350" height="200"\n            frameborder="0" allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n    </div>\n    <br>\n    {{tags}}\n    <br>\n    <div class="save-options">\n        <button class="edit-mode button-tertiary ">Edit</button>\n    </div>\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>{{#if id}}Edit{{else}}Add New{{/if}}</h4>\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n        <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n        <div class="add-lat-lng">\n            <button class="button-secondary add-marker-button" id="add-geometry">Add Location Marker</button>\n        </div>\n        {{/if}}\n\n        {{#if lat}}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n    <div>\n            {{#ifequal video_provider "vimeo"}}\n                <iframe src="https://player.vimeo.com/video/{{video_id}}"\n                style="width: 100%" height="250"\n                frameborder="0"\n                webkitallowfullscreen mozallowfullscreen allowfullscreen>\n                </iframe>\n            {{/ifequal}}\n\n\n            {{#ifequal video_provider "youtube"}}\n                <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n                style="width: 100%" height="250"\n                frameborder="0" allowfullscreen>\n                </iframe>\n            {{/ifequal}}\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n            go to the redesign/models/photo.js and/or audio.js and modify\n            the form. Instructions re: how to use the Backbone Forms\n            library here:\n            https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n    <div class = "save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
 
 
-define('text!apps/gallery/templates/record-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    {{#compare screenType "presentation" operator="!="}}\n        <h4>Preview</h4>\n    {{/compare}}\n\n    <div class="section">\n        <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>\n\n        {{#if featuredImage}}\n            <img class="photo featured-photo" src=\'{{featuredImage.path_medium}}\'>\n        {{/if}}\n        {{#if caption }}\n            <p style="font-style: italic">{{ caption }}</p>\n        {{/if}}\n\n        {{#if video_count }}\n            <div class="carousel carousel-video" style="background-color: #{{paragraph.backgroundColor}}"></div>\n        {{/if}}\n        {{#if photo_count }}\n            <!-- This is where we need to make changes inside to ensure that featured image is not part of the carousel -->\n            <div class="carousel carousel-photo" style="background-color: #{{paragraph.backgroundColor}}"></div>\n        {{/if}}\n        {{#if audio_count }}\n            <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}"></div>\n        {{/if}}\n    </div>\n\n    {{#if fields }}\n        <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">\n        {{#each fields}}\n            <tr>\n                <td>{{ this.col_alias }}:</td>\n                <td>{{ this.val }}</td>\n            </tr>\n        {{/each}}\n        {{#if tags}}\n            <tr>\n                <td></td>\n                <td>\n                    {{#each tags}}\n                        <a class="tag"> {{this}} </a>\n                    {{/each}}\n                </td>\n            </tr>\n        {{/if}}\n        </table>\n    {{else}}\n        <div class="tag-container">\n        {{#each tags}}\n            <a class="tag"> {{this}} </a>\n        {{/each}}\n        </div>\n    {{/if}}\n    <button class="button button-tertiary streetview">Show Street View</button>\n\n    {{#compare screenType "presentation" operator="!="}}\n        <div class="save-options">\n            <button class="edit-mode button-tertiary">Edit</button>\n        </div>\n    {{/compare}}\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>\n        {{#if id}}\n        Edit\n        {{else}}\n        Add New\n        {{/if}}\n    </h4>\n\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n            <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n            <div class="add-lat-lng">\n                <button class="button-secondary add-marker-button" id="add-geometry">\n                    Add Location Marker\n                </button>\n            </div>\n        {{/if}}\n        {{#if lat }}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n\n    <div id="model-form"></div>\n    \n    <button class="button button-tertiary streetview">Show Street View</button>\n\n    <div class = "save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary" id="preview">Preview</button>\n        <button class="button-tertiary button-warning delete-model" id="delete">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
+define('text!templates/record-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n{{#compare screenType "presentation" operator="!="}}\n<h4>Preview</h4>\n{{/compare}}\n    {{#if mobileMode}}\n        <div class=\'parallax black touchevents parallax-contracted\' {{#unless hasPhotos}}style="z-index: -100"{{/unless}}data-target-top=\'0%\'>\n            <div class="top-section">\n                {{#if video_photo_count }}\n                    <div class="mobile-carousel carousel-videos-photos"></div>\n                {{/if}}\n            </div>\n        </div>\n\n        <div class="parallax body no-touchevents parallax-contracted" id="parallax-body" data-target-top="50%" style="color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}">\n            <div class="circle-wrapper">\n                <button class="circle" style="background-color: #{{title.backgroundColor}}">\n                    <i class="fa fa-angle-up fa-3x circle-icon" style="color: #{{paragraph.backgroundColor}}" aria-hidden="true"></i>\n                </button>\n            </div>\n            <div class="contracted">\n                    {{#if hasPhotoOrAudio}}\n                        <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}}); background-color: {{paragraph.color}}">\n                            {{#if hasAudio}}\n                                <div class="thumbnail-play-circle">\n                                    <i class="fa fa-play fa-3x thumbnail-play" aria-hidden="true"></i>\n                                </div>\n                            {{/if}}\n                        </div>\n                    {{/if}}\n                <div class="header-info">\n                    <h3 id="drag-header" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>\n                </div>\n            </div>\n            <div class="expanded" style=\'display:none;\'>\n                <div class="mobile-wrapper">\n                        <section class="first mobile-section" style="color: #{{title.color}}; background-color: #{{title.backgroundColor}}">\n                            <div class="header-info">\n                                <h3 id="drag-header" style="color: #{{title.color}}; font-family: {{title.font}}">{{ name }}</h3>\n                            </div>\n                        </section>\n                        <section class="second mobile-section">\n                            {{#if fields }}\n                            <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">\n                            {{#each fields}}\n                                <tr>\n                                    <td>{{ this.col_alias }}:</td>\n                                    <td>{{ this.val }}</td>\n                                </tr>\n                            {{/each}}\n                            {{#if tags}}\n                                <tr>\n                                    <td></td>\n                                    <td>\n                                        {{#each tags}}\n                                            <a class="tag"> {{this}} </a>\n                                        {{/each}}\n                                    </td>\n                                </tr>\n                            {{/if}}\n                            </table>\n                            {{else}}\n                            <div class="tag-container">\n                                {{#each tags}}\n                                <a class="tag"> {{this}} </a>\n                                {{/each}}\n                        </div>\n                        {{/if}}\n                        <div class="section">\n                            {{#if audio_count }}\n                            <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}">\n                            </div>\n                            {{/if}}\n                        </div>\n                    </div>\n            </div>\n        </div>\n    {{else}}\n        <div class="section">\n            <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}})">\n                {{#if hasAudio}}\n                <div class="thumbnail-play-circle">\n                    <i class="fa fa-play fa-3x thumbnail-play" aria-hidden="true"></i>\n                </div>\n                {{/if}}\n            </div>\n            <div class="header-info">\n                <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>\n            </div>\n        </div>\n\n        <div class="section">\n\n            {{#if featuredImage}}\n                <img class="photo featured-photo" src=\'{{featuredImage.path_medium}}\'>\n            {{/if}}\n            {{#if caption }}\n                <p style="font-style: italic">{{ caption }}</p>\n            {{/if}}\n            {{#if video_photo_count }}\n                <div class="carousel carousel-videos-photos" style="background-color: #{{paragraph.backgroundColor}}"></div>\n            {{/if}}\n            {{#if audio_count }}\n                <div class="carousel carousel-audio" style="background-color: #{{paragraph.backgroundColor}}"></div>\n            {{/if}}\n        </div>\n        {{#if fields }}\n            <div class="section">\n                <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">\n                {{#each fields}}\n                    <tr>\n                        <td>{{ this.col_alias }}:</td>\n                        <td>{{ this.val }}</td>\n                    </tr>\n                {{/each}}\n                {{#if tags}}\n                    <tr>\n                        <td></td>\n                        <td>\n                            {{#each tags}}\n                                <a class="tag"> {{this}} </a>\n                            {{/each}}\n                        </td>\n                    </tr>\n                {{/if}}\n                </table>\n            {{else}}\n                <div class="tag-container">\n                {{#each tags}}\n                    <a class="tag"> {{this}} </a>\n                {{/each}}\n                </div>\n            </div>\n        {{/if}}\n        <button class="button button-tertiary streetview">Show Street View</button>\n\n        {{#compare screenType "presentation" operator="!="}}\n            <div class="save-options">\n                <button class="edit-mode button-tertiary">Edit</button>\n            </div>\n        {{/compare}}\n\n    {{/if}}\n\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>{{#if id}}Edit{{else}}Add New{{/if}}</h4>\n\n    {{#ifequal screenType "map"}}\n        {{#if geometry}}\n            <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>\n        {{else}}\n            <div class="add-lat-lng">\n                <button class="button-secondary add-marker-button" id="add-geometry">Add Location Marker</button>\n            </div>\n            <div class="geometry-options" style="display: none">\n                <div class="geometry-list-wrapper">\n                    <div id="add-point">\n                        <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1">\n                            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">\n                                <g id="Circle" fill="#818181">\n                                    <circle id="Oval-Copy-6" cx="12" cy="12" r="8"></circle>\n                                </g>\n                            </g>\n                        </svg>                       \n                        <span>POINT</span>\n                    </div>\n                    <div id="add-polyline">\n                        <svg width="25px" height="25px" viewBox="0 0 25 25">\n                            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">\n                                <g id="Polyline" stroke="#818181">\n                                    <path d="M3.5,21.5 L7.5,14.5" id="Line" stroke-linecap="square"></path>\n                                    <path d="M18.5,11.5 L21.5,4.5" id="Line-Copy-2" stroke-linecap="square"></path>\n                                    <path d="M11.0961538,12.75 L15.9038462,12.25" id="Line-Copy" stroke-linecap="square"></path>\n                                    <circle id="Oval-Copy-2" fill="#FFFFFF" cx="3" cy="22" r="2"></circle>\n                                    <circle id="Oval-Copy-4" fill="#FFFFFF" cx="9" cy="13" r="2"></circle>\n                                    <circle id="Oval-Copy-6" fill="#FFFFFF" cx="22" cy="3" r="2"></circle>\n                                    <circle id="Oval-Copy-5" fill="#FFFFFF" cx="18" cy="12" r="2"></circle>\n                                </g>\n                            </g>\n                        </svg>\n                        <span>LINE</span>\n                    </div>\n                    <div id="add-polygon">\n                        <svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1">\n                            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">\n                                <g id="Polygon" stroke="#818181">\n                                    <path d="M4.5,20.5 L10.5,5.5" id="Line" stroke-linecap="square"></path>\n                                    <path d="M17.5,17.5 L21.5,7.5" id="Line-Copy-3" stroke-linecap="square"></path>\n                                    <path d="M18.5,6.5 L13.5,4.5" id="Line-Copy-2" stroke-linecap="square"></path>\n                                    <path d="M6.09615385,20.75 L16.5,19.5" id="Line-Copy" stroke-linecap="square"></path>\n                                    <circle id="Oval-Copy-2" fill="#FFFFFF" cx="4" cy="21" r="2"></circle>\n                                    <circle id="Oval-Copy-4" fill="#FFFFFF" cx="17" cy="19" r="2"></circle>\n                                    <circle id="Oval-Copy-6" fill="#FFFFFF" cx="12" cy="4" r="2"></circle>\n                                    <circle id="Oval-Copy-5" fill="#FFFFFF" cx="21" cy="8" r="2"></circle>\n                                </g>\n                            </g>\n                        </svg>\n                        <span>POLYGON</span>\n                    </div>\n                </div>\n            </div>\n        {{/if}}\n        {{#if lat }}\n            <div class="latlong-container">\n            <p class="latlong" style="font-style: italic">\n                ({{lat}}, {{lng}})\n            </p>\n            </div>\n        {{/if}}\n    {{/ifequal}}\n\n    <div id="model-form"></div>\n\n    <button class="button button-tertiary streetview">Show Street View</button>\n\n    <div class = "save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary" id="preview">Preview</button>\n        <button class="button-tertiary button-warning delete-model" id="delete">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
 
 
-define('text!apps/gallery/templates/map-image-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    <h4>Preview</h4>\n    <div class="section">\n        <h3>{{ name }}</h3>\n    </div>\n\n    <div class="img-card">\n        <div class="photo-single">\n            <img src="{{this.overlay_path}}" />\n        </div>\n        <p class="photo-caption">{{ caption }}</p>\n    </div>\n    {{#each tags}}\n        <a class="tag"> {{this}} </a>\n    {{/each}}\n    <br>\n    <div class="save-options">\n        <button class="edit-mode button-tertiary ">Edit</button>\n    </div>\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>\n        {{#if id}}\n        Edit\n        {{else}}\n        Add New\n        {{/if}}\n    </h4>\n    {{#if geometry}}\n        <button class="button-secondary delete-marker-button" id="delete-geometry">Detach Overlay From Map</button>\n    {{else}}\n        <div class="add-bounding-box">\n            <button class="button-secondary add-marker-button" id="add-rectangle">\n                Place Overlay\n            </button>\n        </div>\n    {{/if}}\n    <div class="img-card map-image">\n    {{#if overlay_path}}\n        <img src="{{ overlay_path }}" />\n    {{else}}\n        <img src="{{ file_path }}" />\n    {{/if}}\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n             go to the redesign/models/photo.js and/or audio.js and modify\n             the form. Instructions re: how to use the Backbone Forms\n             library here:\n             https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n    <div class="save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
+define('text!templates/map-image-detail.html',[],function () { return '<!-- VIEW MODE -->\n{{#ifequal mode "view"}}\n    <h4>Preview</h4>\n    <div class="section">\n        <h3>{{ name }}</h3>\n    </div>\n\n    <div class="img-card">\n        <div class="photo-single">\n            <img src="{{this.overlay_path}}" />\n        </div>\n        <p class="photo-caption">{{ caption }}</p>\n    </div>\n    {{#each tags}}\n        <a class="tag"> {{this}} </a>\n    {{/each}}\n    <br>\n    <div class="save-options">\n        <button class="edit-mode button-tertiary ">Edit</button>\n    </div>\n{{/ifequal}}\n\n\n<!-- EDIT MODE -->\n{{#ifequal mode "edit"}}\n    <h4>\n        {{#if id}}\n        Edit\n        {{else}}\n        Add New\n        {{/if}}\n    </h4>\n    {{#if geometry}}\n        <button class="button-secondary delete-marker-button" id="delete-geometry">Detach Overlay From Map</button>\n    {{else}}\n        <div class="add-bounding-box">\n            <button class="button-secondary add-marker-button" id="add-rectangle">\n                Place Overlay\n            </button>\n        </div>\n    {{/if}}\n    <div class="img-card map-image">\n    {{#if overlay_path}}\n        <img src="{{ overlay_path }}" />\n    {{else}}\n        <img src="{{ file_path }}" />\n    {{/if}}\n    </div>\n\n    <div id="model-form">\n        <!-- Form goes here. To modify the fields that are editable,\n             go to the redesign/models/photo.js and/or audio.js and modify\n             the form. Instructions re: how to use the Backbone Forms\n             library here:\n             https://github.com/powmedia/backbone-forms#custom-editors\n        -->\n    </div>\n    <div class="save-options">\n        <button class="save-model button-primary pull-right">Save</button>\n        <button class="view-mode button-tertiary">Preview</button>\n        <button class="button-tertiary button-warning delete-model">Delete</button>\n    </div>\n{{/ifequal}}\n\n{{#ifequal screenType "map"}}\n    <div class="show-hide hide"></div>\n{{/ifequal}}\n';});
 
 
-define('text!lib/audio/audio-player.html',[],function () { return '{{#ifequal audioMode "basic"}}\n    <audio controls preload class="audio">\n        <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n    <div>\n        <div class="play-ctrls">\n            <div class="play fa fa-play fa-2x" aria-hidden="true"></div>\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal audioMode "simple"}}\n    <audio controls preload class="audio">\n      <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n    <div>\n        <div class="play-ctrls">\n            <!-- i class="fa fa-play play" aria-hidden="true" style="font-size:2em;"></i -->\n            <div class="play fa fa-play fa-3x" aria-hidden="true"></div>\n        </div>\n        <div class="audio-progress">\n            <div class="progress-container">\n                <div class="audio-progress-bar"></div>\n                <div class="audio-progress-duration"></div>\n                <div class="audio-progress-circle"></div>\n            </div>\n            <div class="audio-labels time-current"></div>\n           <!-- <span class="audio-labels time-duration" style="right: 10px;"></span> -->\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal audioMode "detail"}}\n    <audio controls preload class="audio">\n      <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n\n    <div class="audio-container" style="color: #{{paragraph.color}}">\n        <div class="audio-progress">\n            <div class="play-ctrls">\n                <!--   <i class="fa fa-backward fwd-back skip-back" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n          <!-- <i class="fa fa-play fa-2x play" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n                <i class="fa fa-play fa-lg play" aria-hidden="true" style="color: #{{paragraph.color}}"></i>\n                <!-- <i class="play" aria-hidden="true" style="font-size:0.5em; border-color: transparent transparent transparent #{{paragraph.color}}"></i> -->\n         <!--   <i class="fa fa-forward fwd-back skip-fwd" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n            </div>\n            <div class="progress-container">\n                <div class="audio-progress-bar" style="background-color: #{{paragraph.backgroundColor}}; border-color: #{{paragraph.color}}"></div>\n                <div class="audio-progress-duration" style="background-color: #{{paragraph.color}}; border-color: #{{paragraph.color}}"></div>\n                <div class="audio-progress-circle" style="border-color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}"></div>\n            </div>\n         <!--   <span class="audio-labels time-current" style="left: 10px; color: #{{paragraph.color}};"></span>  -->\n         <!--   <span class="audio-labels time-duration" style="right: 10px; color: #{{paragraph.color}};"></span> -->\n        </div>\n        <div class="info-container">\n            <p class="audio-info" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}{{#if caption}}: {{ caption }} {{/if}}</p>\n            <span class="audio-labels time-current" style="float: right; color: #{{paragraph.color}}; font-family: {{paragraph.font}}"></span>\n        </div>\n        \n\n    </div>\n{{/ifequal}}\n';});
+define('text!lib/audio/audio-player.html',[],function () { return '{{#ifequal audioMode "basic"}}\n    <audio controls preload class="audio">\n        <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n    <div>\n        <div class="play-ctrls">\n            <div class="play fa fa-play fa-2x" aria-hidden="true"></div>\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal audioMode "simple"}}\n    <audio controls preload class="audio">\n      <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n    <div>\n        <div class="play-ctrls">\n            <!-- i class="fa fa-play play" aria-hidden="true" style="font-size:2em;"></i -->\n            <div class="play fa fa-play fa-3x" aria-hidden="true"></div>\n        </div>\n        <div class="audio-progress">\n            <div class="progress-container">\n                <div class="audio-progress-bar"></div>\n                <div class="audio-progress-duration"></div>\n                <div class="audio-progress-circle"></div>\n            </div>\n            <div class="audio-labels time-current"></div>\n           <!-- <span class="audio-labels time-duration" style="right: 10px;"></span> -->\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal audioMode "detail"}}\n    <audio controls preload class="audio">\n      <source src="{{file_path}}" type="audio/mpeg" />\n    </audio>\n\n    <div class="audio-container" style="color: #{{paragraph.color}}">\n        <div class="audio-progress">\n            <div class="play-ctrls">\n                <!--   <i class="fa fa-backward fwd-back skip-back" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n          <!-- <i class="fa fa-play fa-2x play" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n                <i class="fa fa-play fa-lg play" aria-hidden="true" style="color: #{{paragraph.color}}"></i>\n                <!-- <i class="play" aria-hidden="true" style="font-size:0.5em; border-color: transparent transparent transparent #{{paragraph.color}}"></i> -->\n         <!--   <i class="fa fa-forward fwd-back skip-fwd" aria-hidden="true" style="color: #{{paragraph.color}}"></i> -->\n            </div>\n            <div class="progress-container">\n                <div class="audio-progress-bar" style="background-color: #{{paragraph.backgroundColor}}; border-color: #{{paragraph.color}}"></div>\n                <div class="audio-progress-duration" style="background-color: #{{paragraph.color}}; border-color: #{{paragraph.color}}"></div>\n                <div class="audio-progress-circle" style="border-color: #{{paragraph.color}}; background-color: #{{paragraph.backgroundColor}}"></div>\n            </div>\n         <!--   <span class="audio-labels time-current" style="left: 10px; color: #{{paragraph.color}};"></span>  -->\n         <!--   <span class="audio-labels time-duration" style="right: 10px; color: #{{paragraph.color}};"></span> -->\n        </div>\n        <div class="info-container">\n            <span class="audio-labels time-current" style="float: right; color: #{{paragraph.color}}; font-family: {{paragraph.font}}"></span>\n            <p class="audio-info" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</p>\n\n           {{#if caption}}\n            <p class="audio-caption" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}"> \n                {{ caption }}\n            </p>\n            {{/if}}\n            \n        </div>\n        \n\n    </div>\n{{/ifequal}}\n';});
 
 define('lib/handlebars-helpers',["handlebars"],
     function (Handlebars) {
@@ -13445,7 +13900,6 @@ define('lib/audio/audio-player',["underscore", "marionette", "handlebars", "text
                 this.$el.find(".play").removeClass("fa-pause");
             },
             togglePlay: function () {
-                console.log("play toggle");
                 if (this.audio.paused) {
                     this.audio.play();
                     this.showPauseButton();
@@ -13464,8 +13918,9 @@ define('lib/audio/audio-player',["underscore", "marionette", "handlebars", "text
                 this.suspendUIUpdate = false;
                 var $progressContainer = this.$el.find('.progress-container'),
                     posX = $progressContainer.offset().left,
-                    w = (e.pageX - posX) / $progressContainer.width();
-                this.audio.currentTime = w * this.audio.duration;
+                    w = (e.pageX - posX) / $progressContainer.width(),
+                    duration = !isNaN(this.audio.duration) ? this.audio.duration : 5000; //spoof duration for test
+                this.audio.currentTime = w * duration;
                 if (this.audio.paused) {
                     this.showPauseButton();
                     this.audio.play();
@@ -13527,38 +13982,38 @@ define('lib/audio/audio-player',["underscore", "marionette", "handlebars", "text
 define('text!lib/carousel/carousel-container.html',[],function () { return '{{#if isSpreadsheet}}\n    {{#compare num_children 1 operator="=="}}\n        <div class="carousel-content img-card"></div>\n    {{/compare}}\n\n    {{#compare num_children 1 operator=">"}}\n        <div class="carouselbox spreadsheet">\n            <ol class="carousel-content"></ol>\n        </div>\n        <div class="circle-buttons">\n            <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n            {{#times 1 num_children}}\n                <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}"></i>\n            {{/times}}\n        </div>\n    {{/compare}}\n{{else}}\n\n    <div class="carouselbox">\n        <ol class="carousel-content"></ol>\n    </div>\n    \n    {{#compare num_children 1 operator=">"}}\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0" style="color: #{{paragraph.color}}"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}" data-id="{{this.id}}" style="color: #{{../paragraph.color}}"></i>\n        {{/times}}\n    </div>\n    <p class="carousel-caption" style="font-family: {{paragraph.font}}">{{this.caption }}</p>\n    {{/compare}}\n\n{{/if}}\n';});
 
 
-define('text!lib/carousel/carousel-container-audio.html',[],function () { return '\n{{#if isSpreadsheet}}\n    {{#compare num_children 1 operator="=="}}\n        <div class="carousel-content"></div>\n    {{/compare}}\n\n    {{#compare num_children 1 operator=">"}}\n    <div class="carouselbox spreadsheet audio">\n        <ol class="carousel-content"></ol>\n    </div>\n<!--    \n    <div class="carousel-buttons hover-to-show">\n        <i class="fa fa-chevron-left prev"></i>\n        <i class="fa fa-chevron-right next"></i>\n    </div>\n-->\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>\n        {{/times}}\n    </div>\n    {{/compare}}\n{{else}}\n    <div class="carouselbox audio">\n        <ol class="carousel-content"></ol>\n    </div>\n\n    {{#compare num_children 1 operator=">"}}\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>\n        {{/times}}\n    </div>\n    {{/compare}}\n\n{{/if}}\n';});
-
-
-define('text!lib/carousel/carousel-video-item.html',[],function () { return '{{#ifequal video_provider "vimeo"}}\n    <iframe class="photo" src="https://player.vimeo.com/video/{{video_id}}"\n    style="width:100%" height="200"\n    frameborder="0"\n    webkitallowfullscreen mozallowfullscreen allowfullscreen>\n    </iframe>\n{{/ifequal}}\n\n{{#ifequal video_provider "youtube"}}\n    <iframe class="photo" src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n    style="width:100%" height="200"\n    frameborder="0" allowfullscreen>\n    </iframe>\n{{/ifequal}}\n<p class="carousel-caption" style="color: {{paragraph.color}}; font-family: {{paragraph.font}}">{{this.caption }}</p>';});
+define('text!lib/carousel/carousel-video-item.html',[],function () { return '{{#ifequal video_provider "vimeo"}}\n    <iframe class="photo" src="https://player.vimeo.com/video/{{video_id}}"\n    style="width:100%" height="200"\n    frameborder="0"\n    webkitallowfullscreen mozallowfullscreen allowfullscreen>\n    </iframe>\n{{/ifequal}}\n\n{{#ifequal video_provider "youtube"}}\n    <iframe class="photo" src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n    style="width:100%" height="200"\n    frameborder="0" allowfullscreen>\n    </iframe>\n{{/ifequal}}\n<div class="carousel-caption-wrapper">\n    <p class="carousel-caption" style="color: {{paragraph.color}}; font-family: {{paragraph.font}}">{{this.caption }}</p>\n</div>';});
 
 
 define('text!lib/carousel/carousel-photo-item.html',[],function () { return '<div class="photo" style="background: url(\'{{this.path_medium}}\');"></div>\n<div class="carousel-caption-wrapper">\n    <p class="carousel-caption" style="color: {{paragraph.color}}; font-family: {{paragraph.font}}">{{this.caption }}</p>\n<div>\n';});
 
+
+define('text!lib/carousel/carousel-container-audio.html',[],function () { return '\n{{#if isSpreadsheet}}\n    {{#compare num_children 1 operator="=="}}\n        <div class="carousel-content"></div>\n    {{/compare}}\n\n    {{#compare num_children 1 operator=">"}}\n    <div class="carouselbox spreadsheet audio">\n        <ol class="carousel-content"></ol>\n    </div>\n<!--    \n    <div class="carousel-buttons hover-to-show">\n        <i class="fa fa-chevron-left prev"></i>\n        <i class="fa fa-chevron-right next"></i>\n    </div>\n-->\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>\n        {{/times}}\n    </div>\n    {{/compare}}\n{{else}}\n    <div class="carouselbox audio">\n        <ol class="carousel-content"></ol>\n    </div>\n\n    {{#compare num_children 1 operator=">"}}\n    <div class="circle-buttons">\n        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>\n        {{#times 1 num_children}}\n            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>\n        {{/times}}\n    </div>\n    {{/compare}}\n\n{{/if}}\n';});
+
 define('lib/carousel/carousel',["jquery", "underscore", "marionette", "handlebars",
         "lib/audio/audio-player",
         "text!../carousel/carousel-container.html",
-        "text!../carousel/carousel-container-audio.html",
         "text!../carousel/carousel-video-item.html",
-        "text!../carousel/carousel-photo-item.html"],
+        "text!../carousel/carousel-photo-item.html",
+        "text!../carousel/carousel-container-audio.html"
+    ],
     function ($, _, Marionette, Handlebars, AudioPlayer,
-              CarouselContainerTemplate, CarouselContainerAudioTemplate, VideoItemTemplate, PhotoItemTemplate) {
+              CarouselContainerTemplate, VideoItemTemplate, PhotoItemTemplate, CarouselContainerAudioTemplate) {
         'use strict';
         var Carousel = Marionette.CompositeView.extend({
             events: {
                 "click .next": "next",
                 "click .prev": "prev",
                 "click .show-slide": "jump",
+                "click .close": "closeCarousel",
                 'mouseover .carouselbox': 'showArrows',
                 'mouseout .carouselbox': 'hideArrows'
             },
             counter: 0,
             className: "active-slide",
-            mode: "photos",
             childViewContainer: ".carousel-content",
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this);
                 if (this.mode == "photos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
                 } else if (this.mode == "videos") {
@@ -13567,40 +14022,39 @@ define('lib/carousel/carousel',["jquery", "underscore", "marionette", "handlebar
                     this.template = Handlebars.compile(CarouselContainerAudioTemplate);
                 }
                 this.render();
-                //this.$el.addClass('active-slide');
-                if (this.collection.length == 1 && this.mode !== "audio") {
-                    this.$el.addClass('short');
-                }
                 this.navigate(0);
             },
 
             showArrows: function () {
-                if (this.mode === "audio" || this.collection.length === 1) {
-                    return;
-                }
                 var $leftArrow, $rightArrow;
                 if (this.timeout) {
                     clearTimeout(this.timeout);
                     this.timeout = null;
                 } else {
-                    $leftArrow = $('<i class="fa fa-chevron-left prev"></i>');
-                    $rightArrow = $('<i class="fa fa-chevron-right next"></i>');
-                    this.$el.find('.carouselbox').append($leftArrow).append($rightArrow);
+                    if (this.collection.length > 1) {
+                        $leftArrow = $('<i class="fa fa-chevron-left prev"></i>');
+                        $rightArrow = $('<i class="fa fa-chevron-right next"></i>');
+                        this.$el.find('.carouselbox').append($leftArrow).append($rightArrow);
+                    }
                 }
             },
             hideArrows: function () {
-                if (this.mode === "audio" || this.collection.length === 1) {
-                    return;
-                }
                 var that = this;
                 this.timeout = setTimeout(function () {
                     that.$el.find('.fa-chevron-left, .fa-chevron-right').remove();
                     that.timeout = null;
                 }, 100);
             },
+            closeCarousel: function(){
+                // The problem is that the current item is still active upon closure
+                // it can be only erased when calling the new carousel by opening it again...
+                console.log("Close carousel called");
+                resetCurrentFrame();
+                var $items = this.$el.find('.carousel-content li');
+                $items.removeClass('current').hide();
+            },
             childViewOptions: function () {
                 return {
-                    mode: this.mode,
                     app: this.app,
                     num_children: this.collection.length,
                     parent: this,
@@ -13611,29 +14065,27 @@ define('lib/carousel/carousel',["jquery", "underscore", "marionette", "handlebar
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        if (this.mode == "photos") {
+                        if (this.model.get("overlay_type") == "photo") {
                             this.template = Handlebars.compile(PhotoItemTemplate);
-                        } else if (this.mode == "videos") {
+                        } else if (this.model.get("overlay_type") == "video") {
                             this.template = Handlebars.compile(VideoItemTemplate);
-                        } else {
+                        } else if (this.model.get("overlay_type") == "audio"){
                             this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
                         }
                     },
                     templateHelpers: function () {
-                        console.log(this);
                         var paragraph;
                         if (this.panelStyles) {
                             paragraph = this.panelStyles.paragraph;
                         }
                         return {
                             num_children: this.num_children,
-                            mode: this.mode, 
                             paragraph: paragraph
                         };
                     },
                     tagName: "li",
                     onRender: function () {
-                        if (this.mode == "audio") {
+                        if (this.model.get("overlay_type") == "audio") {
                             var player = new AudioPlayer({
                                 model: this.model,
                                 audioMode: "detail",
@@ -13647,7 +14099,6 @@ define('lib/carousel/carousel',["jquery", "underscore", "marionette", "handlebar
             },
 
             templateHelpers: function () {
-                console.log(this);
                 var paragraph;
                 if (this.panelStyles) {
                     paragraph = this.panelStyles.paragraph;
@@ -13660,9 +14111,6 @@ define('lib/carousel/carousel',["jquery", "underscore", "marionette", "handlebar
             },
 
             navigate: function () {
-                if (this.mode == "audio") {
-                    this.app.vent.trigger('audio-carousel-advanced');
-                }
                 var $items = this.$el.find('.carousel-content li'),
                     amount = this.collection.length;
                 $items.removeClass('current').hide();
@@ -13677,7 +14125,7 @@ define('lib/carousel/carousel',["jquery", "underscore", "marionette", "handlebar
             },
 
             resetCurrentFrame: function () {
-                //needed to stop playing iFrame videos:
+                //needed to stop playing media
                 this.children.findByIndex(this.counter).render();
             },
 
@@ -13710,13 +14158,114 @@ define('lib/carousel/carousel',["jquery", "underscore", "marionette", "handlebar
         return Carousel;
     });
 
+define('lib/parallax',[
+    "jquery"
+], function ($) {
+    "use strict";
 
-define('text!apps/gallery/templates/table.html',[],function () { return '{{#ifequal dataType "photos"}}  \n    <td><img src="{{ path_medium }}" class="thumbnail-img"></td>\n{{/ifequal}}\n\n{{#ifequal dataType "audio"}}\n    <td><i class="fa fa-2x fa-volume-up" aria-hidden="true"></i></td>\n{{/ifequal}}\n\n{{#ifequal dataType "videos"}}\n    <td>\n        {{#ifequal video_provider "vimeo"}}\n            <i class="fa fa-2x fa-vimeo" aria-hidden="true"></i>\n        {{ else }}\n            <i class="fa fa-2x fa-youtube" aria-hidden="true"></i>\n        {{/ifequal}}\n    </td>\n{{/ifequal}}\n\n<td>{{ name }}</td>\n<td>{{ caption }}</td>\n<td>{{ tags }}</td>\n<td>{{ overlay_type }}</td>\n<td>{{ owner }}</td>\n\n';});
+    var MoveItItem = function ($el, that) {
+
+        var bgColor = that.$el.find('.circle').css('background-color');
+        var mainColor = that.$el.find('.circle-icon').css('color');
+        this.$el = $el;
+        this.initialPosition = $el.position().top;
+        this.initPosition = function () {
+            this.targetTop = this.$el.attr('data-target-top').replace("%", "");
+            this.finalPosition = parseFloat(this.targetTop, 10) * $(window).height() / 100;
+            that.distance = this.initialPosition - this.finalPosition;
+            that.scrollDistance = Math.abs($(window).height() - $(document).height());
+            this.speed = that.distance / that.scrollDistance;
+            this.className = this.$el.get(0).className;
+            this.lastDirection = "up";
+            this.lastScrollTop = 0;
+             console.log("--------------------");
+             console.log("className", this.className);
+             console.log("initialPosition", this.initialPosition);
+             console.log("finalPosition", this.finalPosition);
+             console.log("scrollDistance", that.scrollDistance);
+             console.log("distance", that.distance);
+             console.log("speed", this.speed);
+        };
+        this.$el.css({
+            position: "absolute"
+        });
+        this.holdOff = false;
+        this.updateTimeout;
+
+        this.initPosition();
+        this.expand = function () {
+            this.$el.find('.expanded').show();
+            this.$el.find('.contracted').hide();
+            this.$el.find('.parallax').removeClass('parallax-contracted');
+            this.$el.find('.parallax').addClass('parallax-expanded');
+            this.$el.find('.circle-icon').addClass("icon-rotate");
+
+            // swap colors
+            this.$el.find('.circle').css('background-color', mainColor);
+            this.$el.find('.circle-icon').css('color', bgColor);
+        };
+
+        this.contract = function () {
+            this.$el.find('.expanded').hide();
+            this.$el.find('.contracted').show();
+            this.$el.find('.parallax').removeClass('parallax-expanded');
+            this.$el.find('.parallax').addClass('parallax-contracted');
+            this.$el.find(".circle-icon").removeClass("icon-rotate");
+            // swap colors
+            this.$el.find('.circle').css('background-color', bgColor);
+            this.$el.find('.circle-icon').css('color', mainColor);
+        };
+        this.update = function (scrollTop) {
+            if (that.holdOff) {
+                return;
+            }
+            var direction = (scrollTop > this.lastScrollTop) ? "up": "down";
+            console.log(this.className, direction, scrollTop, this.lastScrollTop);
+            var initialDivHeight = 90;
+            //var endScroll = that.scrollDistance - initialDivHeight;
+            //console.log(that.scrollDistance , initialDivHeight, endScroll, $('.black').css('top'), $('.body').css('top'), scrollTop);
+
+            if (direction !== this.lastDirection) {
+                var me = this;
+                this.holdOff = true;
+                if (me.updateTimeout) {
+                    clearTimeout(this.updateTimeout);
+                }
+                me.updateTimeout = setTimeout(function () {
+                    console.log("timeout!!");
+                    me.holdOff = false;
+                }, 500);
+            }
 
 
-define('text!apps/gallery/templates/thumb.html',[],function () { return '{{#ifequal dataType "photos"}}\n    <a href="#/{{ dataType }}/{{id}}">\n        <div class="card-img-preview" style="background-image: url(\'{{ path_medium }}\');" />\n    </a>\n    <h1>\n        {{ name }}\n    </h1>\n    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}\n    <h2>\n        {{owner}}\n    </h2>\n\n\n{{/ifequal}}\n\n{{#ifequal dataType "audio"}}\n<a href="#/{{ dataType }}/{{id}}" id="audio-card">\n    <div class="player-container audio-simple">\n\n    </div>\n\n    <h1>\n        {{ name }}\n    </h1>\n    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}\n    <h2>\n        {{owner}}\n    </h2>\n</a>\n{{/ifequal}}\n\n\n{{#ifequal dataType "videos"}}\n<a href="#/{{ dataType }}/{{id}}" class="video-simple">\n    <div class="video-simple">\n        {{#ifequal video_provider "vimeo"}}\n            <iframe src="https://player.vimeo.com/video/{{video_id}}"\n            style="width:100%" height="200"\n            frameborder="0"\n            webkitallowfullscreen mozallowfullscreen allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n\n        {{#ifequal video_provider "youtube"}}\n            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n            style="width:100%" height="200"\n            frameborder="0" allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n    </div>\n\n    <h1>\n        {{ name }}\n    </h1>\n    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}\n    <h2>\n        {{owner}}\n    </h2>\n</a>\n{{/ifequal}}\n\n{{#ifcontains dataType "markers"}}\n    <div class="card-site-field">\n\n        <a href="#/{{ dataType }}/{{id}}">\n\n            <table>\n                   <tr>\n                       <td>Name</td>\n                       <td>{{ this.name }}</td>\n                   </tr>\n\n                   <tr>\n                       <td>Caption</td>\n                       <td>{{truncate this.caption 42}}</td>\n                   </tr>\n\n                   <tr>\n                       <td>Tags</td>\n                       <td>{{ this.tags }}</td>\n                   </tr>\n\n                   <tr>\n                       <td>Coordinates</td>\n                       <td>{{ coords }}</td>\n                   </tr>\n            </table>\n\n            <h1>\n                {{ name }}\n            </h1>\n            <h2>\n                {{owner}}\n            </h2>\n\n        </a>\n    </div>\n{{/ifcontains}}\n\n{{#ifcontains dataType "form_"}}\n    <div class="card-site-field">\n\n        <a href="#/{{ dataType }}/{{id}}">\n            <table>\n\n                {{#each fields}}\n                    <tr>\n                        <td>{{ this.col_alias }}</td>\n                        <td>{{ this.val }}</td>\n                    </tr>\n                {{/each}}\n                <tr>\n                    <td>Coordinates</td>\n                    <td>{{ coords }}</td>\n                </tr>\n            </table>\n\n            <h1>\n                {{display_name}}\n            </h1>\n            <h2>\n                {{owner}}\n            </h2>\n\n        </a>\n    </div>\n{{/ifcontains}}\n';});
+            if (this.holdOff) {
+                console.log(this.holdOff);
+                return;
+            }
+            console.log(this.holdOff, direction);
+            if (direction === "down") {
+                this.contract();
+                console.log("showSmallTemplate", that.distance, this.initialPosition - scrollTop * this.speed);
+            } else {
+                this.expand();
+                console.log("showBigTemplate", that.distance, this.initialPosition - scrollTop * this.speed);
+            }
+            this.$el.css('top', this.initialPosition - scrollTop * this.speed);
 
-define ('apps/gallery/views/media-browser-child-view',[
+            this.lastDirection = direction;
+            this.lastScrollTop = scrollTop;
+        };
+    };
+    return MoveItItem;
+});
+
+
+define('text!templates/table.html',[],function () { return '{{#ifequal dataType "photos"}}  \n    <td><img src="{{ path_medium }}" class="thumbnail-img"></td>\n{{/ifequal}}\n\n{{#ifequal dataType "audio"}}\n    <td><i class="fa fa-2x fa-volume-up" aria-hidden="true"></i></td>\n{{/ifequal}}\n\n{{#ifequal dataType "videos"}}\n    <td>\n        {{#ifequal video_provider "vimeo"}}\n            <i class="fa fa-2x fa-vimeo" aria-hidden="true"></i>\n        {{ else }}\n            <i class="fa fa-2x fa-youtube" aria-hidden="true"></i>\n        {{/ifequal}}\n    </td>\n{{/ifequal}}\n\n<td>{{ name }}</td>\n<td>{{ caption }}</td>\n<td>{{ tags }}</td>\n<td>{{ overlay_type }}</td>\n<td>{{ owner }}</td>\n\n';});
+
+
+define('text!templates/thumb.html',[],function () { return '{{#ifequal dataType "photos"}}\n    <a href="#/{{screenType}}/{{dataType}}/{{id}}">\n        <div class="card-img-preview" style="background-image: url(\'{{ path_medium }}\');" />\n    </a>\n    <h1>\n        {{ name }}\n    </h1>\n    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}\n    <h2>\n        {{owner}}\n    </h2>\n\n\n{{/ifequal}}\n\n{{#ifequal dataType "audio"}}\n<a href="#/{{screenType}}/{{dataType}}/{{id}}" id="audio-card">\n    <div class="player-container audio-simple">\n\n    </div>\n\n    <h1>\n        {{ name }}\n    </h1>\n    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}\n    <h2>\n        {{owner}}\n    </h2>\n</a>\n{{/ifequal}}\n\n\n{{#ifequal dataType "videos"}}\n<a href="#/{{screenType}}/{{dataType}}/{{id}}" class="video-simple">\n    <div class="video-simple">\n        {{#ifequal video_provider "vimeo"}}\n            <iframe src="https://player.vimeo.com/video/{{video_id}}"\n            style="width:100%" height="200"\n            frameborder="0"\n            webkitallowfullscreen mozallowfullscreen allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n\n        {{#ifequal video_provider "youtube"}}\n            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"\n            style="width:100%" height="200"\n            frameborder="0" allowfullscreen>\n            </iframe>\n        {{/ifequal}}\n    </div>\n\n    <h1>\n        {{ name }}\n    </h1>\n    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}\n    <h2>\n        {{owner}}\n    </h2>\n</a>\n{{/ifequal}}\n\n{{#ifcontains dataType "markers"}}\n    <div class="card-site-field">\n\n        <a href="#/{{screenType}}/{{dataType}}/{{id}}">\n\n            <table>\n                   <tr>\n                       <td>Name</td>\n                       <td>{{ this.name }}</td>\n                   </tr>\n\n                   <tr>\n                       <td>Caption</td>\n                       <td>{{truncate this.caption 42}}</td>\n                   </tr>\n\n                   <tr>\n                       <td>Tags</td>\n                       <td>{{ this.tags }}</td>\n                   </tr>\n\n                   <tr>\n                       <td>Coordinates</td>\n                       <td>{{ coords }}</td>\n                   </tr>\n            </table>\n\n            <h1>\n                {{ name }}\n            </h1>\n            <h2>\n                {{owner}}\n            </h2>\n\n        </a>\n    </div>\n{{/ifcontains}}\n\n{{#ifcontains dataType "form_"}}\n    <div class="card-site-field">\n\n        <a href="#/{{screenType}}/{{dataType}}/{{id}}">\n            <table>\n\n                {{#each fields}}\n                    <tr>\n                        <td>{{ this.col_alias }}</td>\n                        <td>{{ this.val }}</td>\n                    </tr>\n                {{/each}}\n                <tr>\n                    <td>Coordinates</td>\n                    <td>{{ coords }}</td>\n                </tr>\n            </table>\n\n            <h1>\n                {{display_name}}\n            </h1>\n            <h2>\n                {{owner}}\n            </h2>\n\n        </a>\n    </div>\n{{/ifcontains}}\n';});
+
+define ('views/media-browser-child-view',[
     "underscore",
     "marionette",
     "handlebars",
@@ -13738,9 +14287,7 @@ define ('apps/gallery/views/media-browser-child-view',[
                 return Handlebars.compile(TableTemplate);
             },
             events: {
-                'click .card-img-preview' : 'doSelection',
-                'click .audio-simple' : 'doSelection',
-                'click .video-simple' : 'doSelection',
+                'click' : 'doSelection',
                 'click td' : "doSelection"
             },
 
@@ -13831,9 +14378,9 @@ define ('apps/gallery/views/media-browser-child-view',[
     });
 
 
-define('text!apps/gallery/templates/media-list-add.html',[],function () { return '<div class="filter">\n    <form class="modal-search-form">\n        <input type="text" id="searchTerm" value="{{searchTerm}}" placeholder="Filter data and media">\n    \t<button id="toolbar-search"><i class="fa fa-search" aria-hidden="true"></i></button>\n    </form>\n    <button id="card-view-button-modal" class="button-secondary database-view-buttons-modal"><i class="fa fa-th" aria-hidden="true"></i></button>\n    <button id="table-view-button-modal" class="button-secondary database-view-buttons-modal active"><i class="fa fa-bars" aria-hidden="true"></i></button>\n    <button id="media-videos" class="button-secondary fetch-btn" data-value="videos">Videos</button>\n    <button id="media-audio" class="button-secondary fetch-btn" data-value="audio">Audio</button>\n    <button id="media-photos" class="button-secondary fetch-btn" data-value="photos">Photos</button>\n</div>\n\n\n{{#ifequal viewMode "thumb"}}\n<div class="container-wrapper">\n    <div class="container" id="gallery-main">\n        <br>\n        <div id="loading-animation">\n            <i class="fa fa-cog fa-5x fa-spin"></i>\n        </div>\n    </div>\n</div>\n{{/ifequal}}\n\n\n\n{{#ifequal viewMode "table"}}\n<div class="container">\n    <div id="table-view-modal" class="database-views-modal" style="display: block;">\n        <table>\n            <thead>\n                <tr>\n                    <th></th>\n                    <th>Name</th>\n                    <th>Description</th>\n                    <th>Tags</th>\n                    <th>Kind</th>\n                    <th>Author</th>\n                </tr>\n            </thead>\n\n            <tbody id="gallery-main">\n            </tbody>\n        </table>\n        <br>\n        <div id="loading-animation">\n            <i class="fa fa-cog fa-5x fa-spin"></i>\n        </div>\n    </div>\n</div>\n{{/ifequal}}\n';});
+define('text!templates/media-list-add.html',[],function () { return '<div class="filter">\n    <form class="modal-search-form">\n        <input type="text" id="searchTerm" value="{{searchTerm}}" placeholder="Filter data and media">\n    \t<button id="toolbar-search"><i class="fa fa-search" aria-hidden="true"></i></button>\n    </form>\n    <button id="card-view-button-modal" class="button-secondary database-view-buttons-modal"><i class="fa fa-th" aria-hidden="true"></i></button>\n    <button id="table-view-button-modal" class="button-secondary database-view-buttons-modal active"><i class="fa fa-bars" aria-hidden="true"></i></button>\n    <button id="media-videos" class="button-secondary fetch-btn" data-value="videos">Videos</button>\n    <button id="media-audio" class="button-secondary fetch-btn" data-value="audio">Audio</button>\n    <button id="media-photos" class="button-secondary fetch-btn" data-value="photos">Photos</button>\n</div>\n\n\n{{#ifequal viewMode "thumb"}}\n<div class="container-wrapper">\n    <div class="container" id="gallery-main"></div>\n</div>\n{{/ifequal}}\n\n\n\n{{#ifequal viewMode "table"}}\n<div class="container">\n    <div id="table-view-modal" class="database-views-modal" style="display: block;">\n        <table>\n            <thead>\n                <tr>\n                    <th></th>\n                    <th>Name</th>\n                    <th>Description</th>\n                    <th>Tags</th>\n                    <th>Kind</th>\n                    <th>Author</th>\n                </tr>\n            </thead>\n\n            <tbody id="gallery-main">\n            </tbody>\n        </table>\n        <br>\n        <div id="loading-animation">\n            <i class="fa fa-cog fa-5x fa-spin"></i>\n        </div>\n    </div>\n</div>\n{{/ifequal}}\n';});
 
-define('apps/gallery/views/media_browser',[
+define('views/media_browser',[
     "jquery",
     "underscore",
     "marionette",
@@ -13841,7 +14388,7 @@ define('apps/gallery/views/media_browser',[
     "collections/photos",
     "collections/audio",
     "collections/videos",
-    "apps/gallery/views/media-browser-child-view",
+    "views/media-browser-child-view",
     "text!../templates/media-list-add.html"],
     function ($, _, Marionette, Handlebars, Photos, Audio, Videos,
             MediaBrowserChildView, ParentTemplate) {
@@ -13854,7 +14401,7 @@ define('apps/gallery/views/media_browser',[
             childViewContainer: "#gallery-main",
             searchTerm: null,
             events: {
-                "click .fetch-btn" : "fetchMedia",
+                "click .fetch-btn" : "toggleMedia",
                 'click #card-view-button-modal' : 'displayCards',
                 'click #table-view-button-modal' : 'displayTable',
                 'click #toolbar-search': 'doSearch'
@@ -13864,7 +14411,7 @@ define('apps/gallery/views/media_browser',[
                 _.extend(this, opts);
                 Marionette.CompositeView.prototype.initialize.call(this);
                 this.template = Handlebars.compile(ParentTemplate);
-                this.displayMedia();
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
 
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
@@ -13905,7 +14452,6 @@ define('apps/gallery/views/media_browser',[
             displayCards: function () {
                 this.viewMode = "thumb";
                 this.render();
-                this.hideLoadingMessage();
             },
 
             displayTable: function () {
@@ -13920,13 +14466,13 @@ define('apps/gallery/views/media_browser',[
 
             displayMedia: function () {
                 if (this.currentMedia == 'photos') {
-                    this.collection = new Photos();
+                    this.collection = new Photos(null, { projectID: this.app.getProjectID() });
                 } else if (this.currentMedia == 'audio') {
-                    this.collection = new Audio();
+                    this.collection = new Audio(null, { projectID: this.app.getProjectID() });
                 } else {
-                    this.collection = new Videos();
+                    this.collection = new Videos(null, { projectID: this.app.getProjectID() });
                 }
-                this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
+                //this.collection.setServerQuery("WHERE project_id = " + this.app.getProjectID());
                 this.collection.fetch({reset: true});
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
@@ -13942,10 +14488,10 @@ define('apps/gallery/views/media_browser',[
                 this.collection.clearSearch(this.app.getProjectID());
             },
 
-            fetchMedia: function (e) {
+            toggleMedia: function (e) {
                 this.currentMedia = $(e.target).attr('data-value');
                 this.collection = this.app.dataManager.getCollection(this.currentMedia);
-                this.displayMedia();
+                this.render();
                 e.preventDefault();
             },
 
@@ -13956,7 +14502,10 @@ define('apps/gallery/views/media_browser',[
                         selectedModels.push(model);
                     }
                 });
+                //for gallery:
                 this.parentModel.trigger('add-models-to-marker', selectedModels);
+                //for spreadsheet:
+                this.app.vent.trigger('add-models-to-marker', selectedModels);
             }
 
         });
@@ -13965,10 +14514,10 @@ define('apps/gallery/views/media_browser',[
     });
 
 
-define('text!apps/gallery/templates/create-media.html',[],function () { return '<div class="alert failure-message ">There were errors when uploading your files. See below.</div>\n<div class="alert warning-message"></div>\n<div id="dropzone">\n    <div id="nothing-here">\n        <h4>Drag files here or</h4>\n        <button type="button" class="button-tertiary" id="upload-button">\n            Select files from your computer\n        </button>        \n    </div>\n</div>\n<input id="fileupload" type="file" name="media_file" multiple="">\n';});
+define('text!templates/create-media.html',[],function () { return '<div class="alert failure-message ">There were errors when uploading your files. See below.</div>\n<div class="alert warning-message"></div>\n<div id="dropzone">\n    <div id="nothing-here">\n        <h4>Drag files here or</h4>\n        <button type="button" class="button-tertiary" id="upload-button">\n            Select files from your computer\n        </button>        \n    </div>\n</div>\n<input id="fileupload" type="file" name="media_file" multiple="">\n';});
 
 
-define('text!apps/gallery/templates/new-media.html',[],function () { return '{{#ifequal mode "begin"}}\n    <div class="file-container">\n        <div class="img-polaroid thumbnail">\n            <div class="img-container">\n                <img class="preview" src="{{ imageSerial }}" />\n            </div>\n            <p>\n                {{ file_name }}<br>\n                {{ file_size }}<br>\n            </p>\n        </div>\n        <div class="progress">\n            <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: 10%;"></div>\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal mode "end"}}\n    <div class="file-container">\n        <div class="img-polaroid thumbnail">\n            <div class="img-container">\n                <div class="badge success-icon">\n                    <i class="fa fa-check"></i>\n                </div>\n                <img class="preview" src="{{ imageSerial }}" />\n            </div>\n            <p>\n                {{ file_name }}<br>\n                {{ file_size }}<br>\n                <a href="#" class="delete">delete</a>\n            </p>\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal mode "error"}}\n    <div class="file-container">\n        <div class="img-polaroid thumbnail">\n            <div class="img-container">\n                <div class="failure-icon">\n                    <i class="fa fa-exclamation"></i>\n                </div>\n                <img class="preview" src="{{ imageSerial }}" />\n            </div>\n           <div class="error-holder">{{ errorMessage }}</div>\n        </div>\n    </div>\n{{/ifequal}}';});
+define('text!templates/new-media.html',[],function () { return '{{#ifequal mode "begin"}}\n    <div class="file-container">\n        <div class="img-polaroid thumbnail">\n            <div class="img-container">\n                <img class="preview" src="{{ imageSerial }}" />\n            </div>\n            <p>\n                {{ file_name }}<br>\n                {{ file_size }}<br>\n            </p>\n        </div>\n        <div class="progress">\n            <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: 10%;"></div>\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal mode "end"}}\n    <div class="file-container">\n        <div class="img-polaroid thumbnail">\n            <div class="img-container">\n                <div class="badge success-icon">\n                    <i class="fa fa-check"></i>\n                </div>\n                <img class="preview" src="{{ imageSerial }}" />\n            </div>\n            <p>\n                {{ file_name }}<br>\n                {{ file_size }}<br>\n                <a href="#" class="delete">delete</a>\n            </p>\n        </div>\n    </div>\n{{/ifequal}}\n\n{{#ifequal mode "error"}}\n    <div class="file-container">\n        <div class="img-polaroid thumbnail">\n            <div class="img-container">\n                <div class="failure-icon">\n                    <i class="fa fa-exclamation"></i>\n                </div>\n                <img class="preview" src="{{ imageSerial }}" />\n            </div>\n           <div class="error-holder">{{ errorMessage }}</div>\n        </div>\n    </div>\n{{/ifequal}}';});
 
 (function(a){"use strict";var b=function(a,c,d){var e=document.createElement("img"),f,g;return e.onerror=c,e.onload=function(){g&&b.revokeObjectURL(g),c(b.scale(e,d))},window.Blob&&a instanceof Blob||window.File&&a instanceof File?f=g=b.createObjectURL(a):f=a,f?(e.src=f,e):b.readFile(a,function(a){e.src=a})},c=window.createObjectURL&&window||window.URL&&URL||window.webkitURL&&webkitURL;b.scale=function(a,b){b=b||{};var c=document.createElement("canvas"),d=Math.max((b.minWidth||a.width)/a.width,(b.minHeight||a.height)/a.height);return d>1&&(a.width=parseInt(a.width*d,10),a.height=parseInt(a.height*d,10)),d=Math.min((b.maxWidth||a.width)/a.width,(b.maxHeight||a.height)/a.height),d<1&&(a.width=parseInt(a.width*d,10),a.height=parseInt(a.height*d,10)),!b.canvas||!c.getContext?a:(c.width=a.width,c.height=a.height,c.getContext("2d").drawImage(a,0,0,a.width,a.height),c)},b.createObjectURL=function(a){return c?c.createObjectURL(a):!1},b.revokeObjectURL=function(a){return c?c.revokeObjectURL(a):!1},b.readFile=function(a,b){if(window.FileReader&&FileReader.prototype.readAsDataURL){var c=new FileReader;return c.onload=function(a){b(a.target.result)},c.readAsDataURL(a),c}return!1},typeof define!="undefined"&&define.amd?define('load-image',[],function(){return b}):a.loadImage=b})(this);
 (function(a){"use strict";var b=window.MozBlobBuilder||window.WebKitBlobBuilder||window.BlobBuilder,c=/^image\/(jpeg|png)$/,d=function(a,e,f){f=f||{};if(a.toBlob)return a.toBlob(e,f.type),!0;if(a.mozGetAsFile){var g=f.name;return e(a.mozGetAsFile(c.test(f.type)&&g||(g&&g.replace(/\..+$/,"")||"blob")+".png",f.type)),!0}return a.toDataURL&&b&&window.atob&&window.ArrayBuffer&&window.Uint8Array?(e(d.dataURItoBlob(a.toDataURL(f.type))),!0):!1};d.dataURItoBlob=function(a){var c,d,e,f,g,h;a.split(",")[0].indexOf("base64")>=0?c=atob(a.split(",")[1]):c=decodeURIComponent(a.split(",")[1]),d=new ArrayBuffer(c.length),e=new Uint8Array(d);for(f=0;f<c.length;f+=1)e[f]=c.charCodeAt(f);return g=new b,g.append(d),h=a.split(",")[0].split(":")[1].split(";")[0],g.getBlob(h)},typeof define!="undefined"&&define.amd?define('canvas-to-blob',[],function(){return d}):a.canvasToBlob=d})(this);
@@ -15572,15 +16121,15 @@ $.each( { show: "fadeIn", hide: "fadeOut" }, function( method, defaultEffect ) {
 
 }));
 
-define('apps/gallery/views/create-media',[
+define('views/create-media',[
     "jquery",
     "marionette",
     "backbone",
     "handlebars",
     "models/photo",
     "models/audio",
-    "text!../templates/create-media.html",
-    "text!../templates/new-media.html",
+    "text!templates/create-media.html",
+    "text!templates/new-media.html",
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
@@ -15988,9 +16537,9 @@ define('apps/gallery/views/create-media',[
                 sourceCollection = null;
             model.set(attributes);
             if (model.get("overlay_type") == "photo") {
-                sourceCollection = this.app.dataManager.getData("photos").collection;
+                sourceCollection = this.app.dataManager.getCollection("photos");
             } else {
-                sourceCollection = this.app.dataManager.getData("audio").collection;
+                sourceCollection = this.app.dataManager.getCollection("audio");
             }
             model.urlRoot = sourceCollection.url;
             delete model.attributes.data;
@@ -16001,9 +16550,7 @@ define('apps/gallery/views/create-media',[
         addModels: function () {
             var selectedModels = [];
             this.collection.each(function (model) {
-                // if (model.get("isSelected")) {
-                    selectedModels.push(model);
-                // }
+                selectedModels.push(model);
             });
             this.parentModel.trigger('add-models-to-marker', selectedModels);
         }
@@ -16013,14 +16560,13 @@ define('apps/gallery/views/create-media',[
 });
 
 
-define('text!apps/gallery/templates/media-browser-layout.html',[],function () { return '<nav>\n    <ul>\n        <li id="upload-tab-li">\n            <a href="#" class="add-media-tabs" id="upload-tab">\n                Upload\n            </a>\n        </li>\n        <li id="database-tab-li">\n            <a href="#" class="add-media-tabs" id="database-tab">\n                Select from Database\n            </a>\n        </li>\n    </ul>\n</nav>\n\n<section id="uploader"></section>\n    \n<section id="media_browser"></section>\n    \n';});
+define('text!templates/media-browser-layout.html',[],function () { return '<nav>\n    <ul>\n        <li id="upload-tab-li">\n            <a href="#" class="add-media-tabs" id="upload-tab">\n                Upload\n            </a>\n        </li>\n        <li id="database-tab-li">\n            <a href="#" class="add-media-tabs" id="database-tab">\n                Select from Database\n            </a>\n        </li>\n    </ul>\n</nav>\n\n<section id="uploader"></section>\n    \n<section id="media_browser"></section>\n    \n';});
 
-define('apps/gallery/views/add-media',["marionette",
+define('views/add-media',["marionette",
         "handlebars",
-        "apps/gallery/views/media_browser",
-     //   "apps/gallery/views/media-browser-uploader",
-        "apps/gallery/views/create-media",
-        "text!../templates/media-browser-layout.html",
+        "views/media_browser",
+        "views/create-media",
+        "text!templates/media-browser-layout.html",
         "models/layer"
     ],
     function (Marionette, Handlebars, MediaBrowserView, UploaderView, AddMediaModalTemplate)  {
@@ -17358,7 +17904,7 @@ define('apps/gallery/views/add-media',["marionette",
 define('text!lib/forms/templates/date-time-template.html',[],function () { return '<input class="datepicker input-small-custom" value="{{ dateString }}" type="text" />\n<br>\n<table class="time-table">\n    <tr>\n        <td>\n        <input class="hours" value="{{ hoursString }}" type="number" min="01" max="12"/>\n        </td>\n        <td>\n        <input class="minutes" value="{{ minutesString }}" type="number"  min="00" max="59"/>\n        </td>\n        <td>\n        <input class="seconds" value="{{ secondsString }}" type="number"  min="00" max="59"/>\n        </td>\n        <td>\n        <select class="am_pm">\n          <option value="AM" {{#ifnot isPm}}selected{{/ifnot}}>AM</option>\n          <option value="PM" {{#if isPm}}selected{{/if}}>PM</option>\n        </select>\n\n        </td>\n    </tr>\n    <tr>\n        <td>\n            hours\n        </td>\n        <td>\n            minutes\n        </td>\n        <td>\n            seconds\n        </td>\n        <td>\n        </td>\n    </tr>\n</table>\n\n<!-- Somehow, we have to figure out how to make this AM/PM work because\n    12AM is 0 military and 12PM is 12 military\n    could be achieved by doing 12 modulo (%) but have 0 become 12\n    along with the general 24 modulo to ensure accurate hours\n-->\n';});
 
 
-define('text!lib/forms/templates/media-editor-template.html',[],function () { return '<h2 style="margin:20px 30px 0px 0px;">Add Media{{ selected_photo }}</h2>\n<div class="attached-media-container">\n    <div class="upload-spot" id="left-panel-upload">\n        <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>\n    </div>\n    {{#each children.photos.data}}\n        <div class="attached-container photo-attached">\n            <div class="attached-media" style="background: url(\'{{this.path_medium}}\');"></div>\n            <div class="attached-media-overlay">\n                <div class="hover-to-show {{#ifequal ../featured_image this.id}}featured{{/ifequal}}">\n                    <i class="fa {{#ifequal ../featured_image this.id}}fa-star{{else}}fa-star-o{{/ifequal}} featured" title="Click to select / unselect featured image" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>\n                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>\n                    <p>Featured</p>\n                </div>\n            </div>\n        </div>\n    {{/each}}\n    {{#each children.audio.data}}\n        <div class="attached-container audio-attached">\n            <div class="player-container audio-basic" data-id="{{this.id}}">\n                <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->\n            </div>\n            <div class="attached-media-overlay">\n                <div class="hover-to-show">\n                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="audio" media-name="{{this.name}}"></i>\n                </div>\n            </div>\n        </div>\n    {{/each}}\n    {{#each children.videos.data}}\n        <div class="attached-container photo-attached">\n            <div class="attached-media" data-id="{{this.id}}">\n                {{#ifequal this.video_provider "vimeo"}}\n                    <iframe src="https://player.vimeo.com/video/{{this.video_id}}"\n                    style="width:100%;height:100%"\n                    frameborder="0">\n                    </iframe>\n                {{/ifequal}}\n        \n                {{#ifequal this.video_provider "youtube"}}\n                    <iframe src="https://www.youtube.com/embed/{{this.video_id}}?ecver=1"\n                    style="width:100%;height:100%"\n                    frameborder="0">\n                    </iframe>\n                {{/ifequal}}\n            </div>\n            <div class="attached-media-overlay video-hover">\n                <div class="hover-to-show video-hover">\n                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="videos" media-name="{{this.name}}"></i>\n                </div>\n            </div>\n        </div>\n    {{/each}}\n</div>\n';});
+define('text!lib/forms/templates/media-editor-template.html',[],function () { return '<h2 style="margin:20px 30px 0px 0px;">Add Media{{ selected_photo }}</h2>\n<div class="attached-media-container">\n    <div class="upload-spot" id="left-panel-upload">\n        <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>\n    </div>\n    {{#each media.photos.data}}\n        <div class="attached-container photo-attached">\n            <div class="attached-media" style="background: url(\'{{this.path_medium}}\');"></div>\n            <div class="attached-media-overlay">\n                <div class="hover-to-show {{#ifequal ../featured_image this.id}}featured{{/ifequal}}">\n                    <i class="fa {{#ifequal ../featured_image this.id}}fa-star{{else}}fa-star-o{{/ifequal}} featured" title="Click to select / unselect featured image" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>\n                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>\n                    <p>Featured</p>\n                </div>\n            </div>\n        </div>\n    {{/each}}\n    {{#each media.audio.data}}\n        <div class="attached-container audio-attached">\n            <div class="player-container audio-basic" data-id="{{this.id}}">\n                <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->\n            </div>\n            <div class="attached-media-overlay">\n                <div class="hover-to-show">\n                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="audio" media-name="{{this.name}}"></i>\n                </div>\n            </div>\n        </div>\n    {{/each}}\n    {{#each media.videos.data}}\n        <div class="attached-container photo-attached">\n            <div class="attached-media" data-id="{{this.id}}">\n                {{#ifequal this.video_provider "vimeo"}}\n                    <iframe src="https://player.vimeo.com/video/{{this.video_id}}"\n                    style="width:100%;height:100%"\n                    frameborder="0">\n                    </iframe>\n                {{/ifequal}}\n\n                {{#ifequal this.video_provider "youtube"}}\n                    <iframe src="https://www.youtube.com/embed/{{this.video_id}}?ecver=1"\n                    style="width:100%;height:100%"\n                    frameborder="0">\n                    </iframe>\n                {{/ifequal}}\n            </div>\n            <div class="attached-media-overlay video-hover">\n                <div class="hover-to-show video-hover">\n                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="videos" media-name="{{this.name}}"></i>\n                </div>\n            </div>\n        </div>\n    {{/each}}\n</div>\n';});
 
 define('lib/forms/backbone-form-editors',[
     "jquery",
@@ -17366,7 +17912,7 @@ define('lib/forms/backbone-form-editors',[
     "handlebars",
     "models/association",
     "models/audio",
-    "apps/gallery/views/add-media",
+    "views/add-media",
     "lib/audio/audio-player",
     "external/pikaday-forked",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
@@ -17546,6 +18092,7 @@ define('lib/forms/backbone-form-editors',[
             this.app = this.form.app;
             this.listenTo(this.model, 'add-models-to-marker', this.attachModels);
             this.template = Handlebars.compile(MediaTemplate);
+            this.model.fetch({reset: true});
         },
         attachModels: function (models) {
             var errors = this.form.commit({ validate: true }),
@@ -17574,8 +18121,14 @@ define('lib/forms/backbone-form-editors',[
                 fetch = function () {
                     that.model.fetch({reset: true});
                 };
+            const phot_ct = !this.model.get('attached_photos_ids') ? 0 : this.model.get('attached_photos_ids').length;
+            const aud_ct = !this.model.get('attached_audio_ids') ? 0 : this.model.get('attached_audio_ids').length;
             for (i = 0; i < models.length; ++i) {
-                ordering = this.model.get("photo_count") + this.model.get("audio_count");
+                console.log(models[i]);
+                //ordering = this.model.get("photo_count") + this.model.get("audio_count");
+                ordering = phot_ct + aud_ct;
+                console.log('ordering', ordering);
+                console.log(this.model);
                 this.model.attach(models[i], (ordering + i + 1));
             }
             //fetch and re-render model:
@@ -17597,8 +18150,8 @@ define('lib/forms/backbone-form-editors',[
             });
             this.app.vent.trigger("show-modal", {
                 title: 'Media Browser',
-                width: 1100,
-                height: 400,
+                //width: 1100,
+                //height: 400,
                 view: addMediaLayoutView,
                 saveButtonText: "Add",
                 showSaveButton: true,
@@ -17613,7 +18166,7 @@ define('lib/forms/backbone-form-editors',[
         render: function () {
             //re-render the child template:
             this.$el.empty().append(this.template({
-                children: this.model.get("children"),
+                media: this.model.get("media"),
                 featured_image: this.getFeaturedImage()
             }));
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
@@ -17630,8 +18183,8 @@ define('lib/forms/backbone-form-editors',[
                 that = this,
                 player,
                 $elem;
-            if (this.model.get("children") && this.model.get("children").audio) {
-                audio_attachments = this.model.get("children").audio.data;
+            if (this.model.get("media") && this.model.get("media").audio) {
+                audio_attachments = this.model.get("media").audio.data;
             }
             _.each(audio_attachments, function (item) {
                 $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
@@ -17729,9 +18282,29 @@ define('lib/forms/backbone-form',[
     return DataForm;
 });
 
-define('apps/gallery/views/data-detail',[
+(function(root) {
+define("touchPunch", ["jquery.ui"], function() {
+  return (function() {
+/*!
+ * jQuery UI Touch Punch 0.2.3
+ *
+ * Copyright 2011–2014, Dave Furfero
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ *
+ * Depends:
+ *  jquery.ui.widget.js
+ *  jquery.ui.mouse.js
+ */
+!function(a){function f(a,b){if(!(a.originalEvent.touches.length>1)){a.preventDefault();var c=a.originalEvent.changedTouches[0],d=document.createEvent("MouseEvents");d.initMouseEvent(b,!0,!0,window,1,c.screenX,c.screenY,c.clientX,c.clientY,!1,!1,!1,!1,0,null),a.target.dispatchEvent(d)}}if(a.support.touch="ontouchend"in document,a.support.touch){var e,b=a.ui.mouse.prototype,c=b._mouseInit,d=b._mouseDestroy;b._touchStart=function(a){var b=this;!e&&b._mouseCapture(a.originalEvent.changedTouches[0])&&(e=!0,b._touchMoved=!1,f(a,"mouseover"),f(a,"mousemove"),f(a,"mousedown"))},b._touchMove=function(a){e&&(this._touchMoved=!0,f(a,"mousemove"))},b._touchEnd=function(a){e&&(f(a,"mouseup"),f(a,"mouseout"),this._touchMoved||f(a,"click"),e=!1)},b._mouseInit=function(){var b=this;b.element.bind({touchstart:a.proxy(b,"_touchStart"),touchmove:a.proxy(b,"_touchMove"),touchend:a.proxy(b,"_touchEnd")}),c.call(b)},b._mouseDestroy=function(){var b=this;b.element.unbind({touchstart:a.proxy(b,"_touchStart"),touchmove:a.proxy(b,"_touchMove"),touchend:a.proxy(b,"_touchEnd")}),d.call(b)}}}(jQuery);
+
+  }).apply(root, arguments);
+});
+}(this));
+
+define('views/data-detail',[
     "jquery",
     "underscore",
+    "backbone",
     "handlebars",
     "marionette",
     "collections/photos", "collections/audio", "collections/videos",
@@ -17743,9 +18316,12 @@ define('apps/gallery/views/data-detail',[
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
-    "lib/forms/backbone-form"
-], function ($, _, Handlebars, Marionette, Photos, Audio, Videos, PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
-        MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
+    "lib/parallax",
+    "lib/forms/backbone-form",
+    "touchPunch"
+], function ($, _, Backbone, Handlebars, Marionette, Photos, Audio, Videos,
+        PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
+        MapImageTemplate, AudioPlayer, Carousel, Icon, MoveItItem, DataForm, TouchPunch) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -17757,13 +18333,47 @@ define('apps/gallery/views/data-detail',[
             'click .show': 'showMapPanel',
             'click .rotate-left': 'rotatePhoto',
             'click .rotate-right': 'rotatePhoto',
-            "click #add-geometry": "activateMarkerTrigger",
-            "click #delete-geometry": "deleteMarkerTrigger",
+            "click #delete-geometry": "deleteMarker",
             "click #add-rectangle": "activateRectangleTrigger",
-            "click .streetview": 'showStreetView'
+            "click .streetview": 'showStreetView',
+            "click .thumbnail-play-circle": 'playAudio',
+            'click .circle': 'openExpanded',
+
+            // add event listeners for various geometry requests
+            // first, a trigger to display dropdown menu
+            "click #add-geometry": "displayGeometryOptions",
+            // add point, polyline, or polygon
+            'click #add-point': 'activateMarkerTrigger',
+            'click #add-polyline': 'triggerPolyline',
+            'click #add-polygon': 'triggerPolygon',
+            'click': 'hideGeometryOptions'
         },
+
+        displayGeometryOptions: function(e) {
+            this.$el.find('.add-marker-button').css({background: '#bbbbbb'});
+            this.$el.find('.geometry-options').css({display: 'block'});
+        },
+
+        hideGeometryOptions: function(e) {
+            if (e && !$(e.target).hasClass('add-marker-button')) {
+                this.$el.find('.add-marker-button').css({background: '#fafafc'});
+                this.$el.find('.geometry-options').css({display: 'none'});
+            };
+        },
+
+        triggerPolyline: function(e) {
+            this.app.vent.trigger('add-polyline', this.model);
+            this.hideGeometryOptions();
+            e.preventDefault();
+        },
+        triggerPolygon: function(e) {
+            //this.app.vent.trigger("add-new-marker", this.model);
+            this.app.vent.trigger('add-polygon', this.model);
+            this.hideGeometryOptions();
+            e.preventDefault();
+        },
+
         getTemplate: function () {
-            console.log(this.dataType);
             if (this.dataType == "photos") {
                 return Handlebars.compile(PhotoTemplate);
             }
@@ -17777,16 +18387,110 @@ define('apps/gallery/views/data-detail',[
                 return Handlebars.compile(MapImageTemplate);
             }
             return Handlebars.compile(SiteTemplate);
+
         },
         featuredImageID: null,
         initialize: function (opts) {
+            this.mobileView = null;
+            this.expanded = false;
+            this.clickNum = 1;
             _.extend(this, opts);
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
+            $('#marker-detail-panel').addClass('mobile-minimize');
+            $(window).on("resize", _.bind(this.screenSize, this));
+
+            this.isMobile();
+
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
+            this.listenTo(this.app.vent, 'rerender-data-detail', this.render);
         },
+
+        templateHelpers: function () {
+            var lat, lng, paragraph, title;
+            if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
+                lat =  this.model.get("geometry").coordinates[1].toFixed(4);
+                lng =  this.model.get("geometry").coordinates[0].toFixed(4);
+            }
+
+            if (this.panelStyles) {
+                paragraph = this.panelStyles.paragraph;
+                title = this.panelStyles.title;
+                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
+                this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
+            }
+
+            return {
+                mode: this.app.mode,
+                dataType: this.dataType,
+                audioMode: "detail",
+                name: this.model.get("name") || this.model.get("display_name"),
+                geometry: !!this.model.get('geometry'),
+                screenType: this.app.screenType,
+                lat: lat,
+                lng: lng,
+                paragraph: paragraph,
+                title: title,
+                expanded: this.expanded,
+                hasPhotoOrAudio: this.getPhotos().length > 0 || this.getAudio().length > 0,
+                featuredImage: this.getFeaturedImage(),
+                thumbnail: this.getThumbnail(),
+                photo_count: this.getPhotos().length,
+                audio_count: this.getAudio().length,
+                video_count: this.getVideos().length,
+                mobileMode: this.mobileMode,
+                hasAudio: this.getAudio().length,
+                hasPhotos: this.getPhotos().length,
+                video_photo_count: this.getVideos().length + this.getPhotos().length
+            };
+        },
+
+        openExpanded: function (event) {
+            if ($(window).scrollTop() < 40) {
+                $("html, body").animate({ scrollTop: this.scrollDistance - 60}, 600);
+                this.$el.find(".circle-icon").addClass("icon-rotate");
+            } else {
+               $("html, body").animate({ scrollTop: "0" }, 600);
+               this.$el.find(".circle-icon").removeClass("icon-rotate");
+            }
+        },
+
+
+
+
+        remove: function () {
+            window.removeEventListener('scroll', this.scrollEventListener);
+            Backbone.View.prototype.remove.call(this);
+        },
+
+        isMobile: function () {
+            if ($(window).width() >= 900) {
+                this.mobileMode = false;
+            } else if ($(window).width() <= 900) {
+                this.mobileMode = true;
+            }
+        },
+
+        screenSize: function () {
+            if (this.oldWidth) {
+                if (this.oldWidth < 900 && $(window).width() > 900) {
+                    this.mobileMode = false;
+                    this.render();
+                } else if (this.oldWidth > 900 && $(window).width() < 900) {
+                    this.mobileMode = true;
+                    this.render();
+                } else {
+                    return;
+                }
+            } else {
+                this.oldWidth = $(window).width();
+                this.screenSize();
+            }
+            this.oldWidth = $(window).width();
+        },
+
         activateRectangleTrigger: function () {
             $('body').css({ cursor: 'crosshair' });
             this.app.vent.trigger("add-new-marker", this.model);
@@ -17806,7 +18510,7 @@ define('apps/gallery/views/data-detail',[
             //Define Class:
             var that = this, MouseMover, $follower, mm;
             MouseMover = function ($follower) {
-                var icon;
+
                 this.generateIcon = function () {
                     var template, shape;
                     template = Handlebars.compile('<svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
@@ -17823,18 +18527,18 @@ define('apps/gallery/views/data-detail',[
                     }
                     //*/
                     else {
-                        console.log("The current form of adding marker on empty form is buggy");
+                        //console.log("The current form of adding marker on empty form is buggy");
                     }
-                    icon = new Icon({
+                    that.icon = new Icon({
                         shape: shape,
                         strokeWeight: 6,
                         fillColor: that.model.collection.fillColor,
                         width: that.model.collection.size,
                         height: that.model.collection.size
                     }).generateGoogleIcon();
-                    icon.width *= 1.5;
-                    icon.height *= 1.5;
-                    $follower.html(template(icon));
+                    that.icon.width *= 1.5;
+                    that.icon.height *= 1.5;
+                    $follower.html(template(that.icon));
                     $follower.show();
                 };
                 this.start = function () {
@@ -17851,8 +18555,8 @@ define('apps/gallery/views/data-detail',[
                 };
                 this.mouseListener = function (event) {
                     $follower.css({
-                        top: event.clientY - icon.height * 3 / 4 + 4,
-                        left: event.clientX - icon.width * 3 / 4
+                        top: event.clientY - that.icon.height * 3 / 4 + 4,
+                        left: event.clientX - that.icon.width * 3 / 4
                     });
                 };
             };
@@ -17864,11 +18568,16 @@ define('apps/gallery/views/data-detail',[
             $(window).mousemove(mm.start.bind(mm));
             $follower.click(mm.stop);
             this.app.vent.trigger("add-new-marker", this.model);
+            this.hideGeometryOptions();
         },
 
-        deleteMarkerTrigger: function () {
+        deleteMarker: function () {
+            this.model.set('geometry', null);
+            //Backbone.Model.prototype.set.call(this.model, "geoometry", null);
             this.commitForm();
-            this.app.vent.trigger("delete-marker", this.model);
+            this.model.save();
+            this.render();
+
         },
 
         bindFields: function () {
@@ -17877,6 +18586,7 @@ define('apps/gallery/views/data-detail',[
             }
             var i, f;
             if (this.model.get("overlay_type").indexOf("form_") != -1) {
+                var something = this.model.attributes;
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
                     f = this.model.get("fields")[i];
@@ -17886,8 +18596,8 @@ define('apps/gallery/views/data-detail',[
         },
 
         modelEvents: {
-            "change:children": "render",
-            "commit-data-no-save": "commitForm"
+            'change:media': 'render',
+            'commit-data-no-save': 'commitForm'
         },
         switchToViewMode: function () {
             this.app.mode = "view";
@@ -17903,33 +18613,20 @@ define('apps/gallery/views/data-detail',[
             this.app.mode = "add";
             this.render();
         },
-        templateHelpers: function () {
-            var lat, lng, paragraph;
-            if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
-                lat =  this.model.get("geometry").coordinates[1].toFixed(4);
-                lng =  this.model.get("geometry").coordinates[0].toFixed(4);
-            }
 
-            if (this.panelStyles) {
-                paragraph = this.panelStyles.paragraph;
-                this.$el.find('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
-                this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
+        getThumbnail: function () {
+            if (this.getFeaturedImage()) {
+                return this.getFeaturedImage();
+            } else if (!_.isEmpty(this.model.get("children"))) {
+                if (this.model.get("children").photos) {
+                    var photoData = this.model.get("children").photos.data;
+                    return photoData[0];
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
             }
-
-            return {
-                mode: this.app.mode,
-                dataType: this.dataType,
-                audioMode: "detail",
-                name: this.model.get("name") || this.model.get("display_name"),
-                screenType: this.app.screenType,
-                lat: lat,
-                lng: lng,
-                paragraph: paragraph,
-                featuredImage: this.getFeaturedImage(),
-                photo_count: this.getPhotos().length,
-                audio_count: this.getAudio().length,
-                video_count: this.getVideos().length,
-            };
         },
 
         getFeaturedImage: function () {
@@ -17949,7 +18646,9 @@ define('apps/gallery/views/data-detail',[
         getPhotos: function () {
             var children = this.model.get("children") || {},
                 featuredImage = this.getFeaturedImage(),
-                photos = children.photos ? new Photos(children.photos.data) : new Photos([]);
+                photos = children.photos ? new Photos(children.photos.data,
+                    { projectID: this.app.getProjectID() }) : new Photos([],
+                    { projectID: this.app.getProjectID() });
             if (featuredImage) {
                 photos.remove(photos.get(featuredImage.id));
             }
@@ -17957,55 +18656,48 @@ define('apps/gallery/views/data-detail',[
         },
         getAudio: function () {
             var children = this.model.get("children") || {};
-            return children.audio ? new Audio(children.audio.data) : new Audio([]);
+            return children.audio ? new Audio(children.audio.data,
+                { projectID: this.app.getProjectID() }) : new Audio([],
+                { projectID: this.app.getProjectID() });
         },
         getVideos: function () {
             var children = this.model.get("children") || {};
-            return children.videos ? new Videos(children.videos.data) : new Videos([]);
+            return children.videos ? new Videos(children.videos.data,
+                { projectID: this.app.getProjectID() }) : new Videos([],
+                { projectID: this.app.getProjectID() });
         },
         viewRender: function () {
+            //return;
             //any extra view logic. Carousel functionality goes here
             var c,
                 photos = this.getPhotos(),
                 videos = this.getVideos(),
-                audio = this.getAudio(), 
-                that = this;
-                console.log(audio);
+                audio = this.getAudio(),
+                that = this,
+                panelStyles,
+                genericList,
+                i;
             if (this.panelStyles) {
-                var panelStyles = this.panelStyles;
+                panelStyles = this.panelStyles;
             }
 
-            if (photos.length > 0) {
-                c = new Carousel({
-                    model: this.model,
-                    app: this.app,
-                    featuredImage: this.getFeaturedImage(),
-                    mode: "photos",
-                    collection: photos,
-                    panelStyles: panelStyles
-                });
-                this.$el.find(".carousel-photo").append(c.$el);
-            }
-            if (videos.length > 0) {
+            if (photos.length > 0 || videos.length > 0) {
+                genericList = [];
+                genericList = genericList.concat(photos.toJSON());
+                genericList = genericList.concat(videos.toJSON());
+                for (i = 0; i < genericList.length; i++) {
+                    genericList[i].id = (i + 1);
+                }
                 c = new Carousel({
                     model: this.model,
                     app: this.app,
                     mode: "videos",
-                    collection: videos,
+                    collection: new Backbone.Collection(genericList),
                     panelStyles: panelStyles
                 });
-                this.$el.find(".carousel-video").append(c.$el);
+                this.$el.find(".carousel-videos-photos").append(c.$el);
             }
             if (audio.length > 0) {
-                /*
-                c = new Carousel({
-                    model: this.model,
-                    app: this.app,
-                    mode: "audio",
-                    collection: audio,
-                    panelStyles: panelStyles
-                });
-                */
                 audio.forEach(function (audioTrack) {
                     c = new AudioPlayer({
                         model: audioTrack,
@@ -18015,7 +18707,7 @@ define('apps/gallery/views/data-detail',[
                         className: "audio-detail"
                     });
                     that.$el.find(".carousel-audio").append(c.$el);
-                });                
+                });
             }
         },
         editRender: function () {
@@ -18044,7 +18736,34 @@ define('apps/gallery/views/data-detail',[
                 });
                 this.$el.find(".player-container").append(player.$el);
             }
-
+            // setTimeout necessary to register DOM element
+            //setTimeout(this.initDraggable.bind(this), 50);
+            if ($(window).width() < 900) {
+                setTimeout(this.initParallax.bind(this), 10);
+            }
+        },
+        initParallax: function () {
+            var that = this;
+            $.fn.moveIt = function () {
+                if (that.scrollEventListener) {
+                    window.removeEventListener("scroll", that.scrollEventListener);
+                }
+                var $window = $(window),
+                    instances = [],
+                    moveItem;
+                $(this).each(function () {
+                    moveItem = new MoveItItem($(this), that);
+                    moveItem.initPosition();
+                    instances.push(moveItem);
+                });
+                window.addEventListener("scroll", function () {
+                    var scrollTop = $window.scrollTop();
+                    instances.forEach(function (inst) {
+                        inst.update(scrollTop);
+                    });
+                });
+            };
+            that.$el.find('.parallax').moveIt();
         },
 
         rotatePhoto: function (e) {
@@ -18054,7 +18773,7 @@ define('apps/gallery/views/data-detail',[
             this.$el.find(".edit-photo").css({
                 filter: "brightness(0.4)"
             });
-            this.model.rotate(rotation);
+            this.model.rotate(rotation, this.render);
         },
         commitForm: function () {
             var errors = this.form.commit({ validate: true });
@@ -18124,6 +18843,19 @@ define('apps/gallery/views/data-detail',[
         },
         updateStreetViewButton: function () {
             this.$el.find('.streetview').html('Show Street View');
+        },
+
+        playAudio: function () {
+            var audio = this.$el.find(".audio").first().get(0);
+            if (this.$el.find('.thumbnail-play').hasClass('fa-play')) {
+                this.$el.find('.thumbnail-play').addClass("fa-pause");
+                this.$el.find('.thumbnail-play').removeClass("fa-play");
+                audio.play();
+            } else {
+                this.$el.find('.thumbnail-play').addClass("fa-play");
+                this.$el.find('.thumbnail-play').removeClass("fa-pause");
+                audio.pause();
+            }
         }
     });
     return MediaEditor;
@@ -18374,7 +19106,7 @@ define('apps/presentation/presentation-app',[
     //"apps/presentation/views/marker-overlays",
     "apps/presentation/views/layer-list-manager",
     "apps/presentation/views/map-header",
-    "apps/gallery/views/data-detail",
+    "views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, Basemap, DataManager, Map, Layers,
@@ -18388,6 +19120,7 @@ define('apps/presentation/presentation-app',[
             mapRegion: "#map-panel",
             sideRegion: "#marker-detail-panel"
         },
+
         screenType: "presentation",
         showLeft: false,
         mode: "view",
@@ -18454,6 +19187,7 @@ define('apps/presentation/presentation-app',[
             } else {
                 this.showLegend();
             }
+        //    $('#marker-detail-panel').addClass('parallax').attr('data-scroll-speed', '1');
         },
 
         showBasemap: function () {
@@ -18465,6 +19199,8 @@ define('apps/presentation/presentation-app',[
                     lat: this.model.get("center").coordinates[1],
                     lng: this.model.get("center").coordinates[0]
                 },
+                showDropdownControl: false,
+                showFullscreenControl: false,
                 showSearchControl: false,
                 zoomControlOptions: {
                     style: google.maps.ZoomControlStyle.SMALL,
@@ -18477,6 +19213,10 @@ define('apps/presentation/presentation-app',[
                     position: google.maps.ControlPosition.LEFT_BOTTOM
                 }
             });
+            setTimeout(function () {
+                $("#map").css({"position": "fixed",
+            'z-index': '0'});
+            }, 500);
             this.mapRegion.show(this.basemapView);
         },
 
@@ -18520,8 +19260,7 @@ define('apps/presentation/presentation-app',[
             });
         },
         showMediaDetail: function (opts) {
-            var dataEntry = this.dataManager.getData(opts.dataType),
-                collection = dataEntry.collection,
+            var collection = this.dataManager.getCollection(opts.dataType),
                 model = collection.get(opts.id);
             if (opts.dataType == "markers" || opts.dataType.indexOf("form_") != -1) {
                 if (!model.get("children")) {
@@ -18529,11 +19268,10 @@ define('apps/presentation/presentation-app',[
                 }
             }
             if (opts.dataType.indexOf("form_") != -1) {
-                model.set("fields", dataEntry.fields.toJSON());
+                model.set("fields", collection.fields.toJSON());
             }
             model.set("active", true);
             this.vent.trigger('highlight-marker', model);
-            console.log(opts, opts.dataType, dataEntry, this.model);
             this.detailView = new DataDetail({
                 model: model,
                 app: this,
@@ -18543,11 +19281,11 @@ define('apps/presentation/presentation-app',[
 
 
             var paragraph = this.model.get('panel_styles').paragraph;
-            if (paragraph) {
+            if (paragraph && $(window).width() >= 900) {
                 console.log(paragraph.color);
                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
             }
-        
+
             this.sideRegion.show(this.detailView);
             this.unhideDetail();
         },

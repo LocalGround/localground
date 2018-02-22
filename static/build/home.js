@@ -4028,7 +4028,7 @@ define('text',['module'], function (module) {
 });
 
 
-define('text!apps/home/templates/project-item.html',[],function () { return '<div class="project-overview" >\n    <a href="/map/?project_id={{ id }}">\n        \n        <h2 class="map-title" >{{ name }}</h2>\n        <span class = "owner">Owner: {{ owner }}</span>\n        <p>{{ caption }}</p>\n        <a class="action">\n            <i class="fa fa-edit"></i> Edit\n        </a>\n    </a>\n    <div class="project-detail">\n        <a class="tag action">\n            {{#ifequal access_authority 1}}\n                <i class="fa fa-lock"></i>\n                Private\n            {{ else }}\n                <i class="fa fa-globe"></i>\n                Public\n            {{/ifequal}}\n        </a>\n        <span class="time-stamp"><i class="fa fa-clock-o" aria-hidden="true"></i> {{timeAgo}}</span>\n    </div>\n</div>\n';});
+define('text!apps/home/templates/project-item.html',[],function () { return '<div class="project-overview" >\n    <a href="/data/?project_id={{ id }}#/map">\n\n        <h2 class="map-title" >{{ name }}</h2>\n        <span class = "owner">Owner: {{ owner }}</span>\n        <p>{{ caption }}</p>\n        <a class="action">\n            <i class="fa fa-edit"></i> Edit\n        </a>\n    </a>\n    <div class="project-detail">\n        <a class="tag action">\n            {{#ifequal access_authority 1}}\n                <i class="fa fa-lock"></i>\n                Private\n            {{ else }}\n                <i class="fa fa-globe"></i>\n                Public\n            {{/ifequal}}\n        </a>\n        <span class="time-stamp"><i class="fa fa-clock-o" aria-hidden="true"></i> {{timeAgo}}</span>\n    </div>\n</div>\n';});
 
 define('apps/home/views/projectItemView',["marionette",
         "underscore",
@@ -4046,20 +4046,15 @@ define('apps/home/views/projectItemView',["marionette",
             initialize: function (opts) {
                 _.extend(this, opts);
                 Marionette.ItemView.prototype.initialize.call(this);
-                //console.log(new Date(this.model.get("time_stamp") + "Z"));
-                //console.log(new Date(this.model.get("date_created") + "Z"));
-                //console.log(new Date());
                 this.currentDate = new Date();
                 this.timeStamp = new Date(this.model.get("time_stamp") + "Z");
                 this.dateCreated = new Date(this.model.get("date_created") + "Z");
                 this.lastEditedString = this.lastEdited();
-                //console.log(this.lastEditedString);
             },
 
             template: Handlebars.compile(ItemTemplate),
             events: {
-                'click .action': 'shareModal'//,
-                //'click #delete_project': 'deleteProjectView'
+                'click .action': 'shareModal'
             },
 
 
@@ -4105,17 +4100,31 @@ define('apps/home/views/projectItemView',["marionette",
                 var timeStampMonth = this.timeStamp.getMonth();
                 var timeStampDay = this.timeStamp.getDate();
 
-                var diffYears = this.currentDate.getFullYear() - timeStampYear;
-                var diffMonths = this.currentDate.getMonth() - timeStampMonth;
-                var diffDays = this.currentDate.getDate() - timeStampDay;
-                //console.log(diffYears);
-                //console.log(diffMonths);
-                //console.log(diffDays);
-                if (diffYears > 0){
+                var currentYear = this.currentDate.getFullYear();
+                var currentMonth = this.currentDate.getMonth();
+                var currentDay = this.currentDate.getDate();
+
+                // Intent to give positive difference
+                // to ensure no negative values come up
+                var diffYears = currentYear - timeStampYear;
+                var diffMonths = currentMonth - timeStampMonth;
+                var diffDays = currentDay - timeStampDay;
+
+                if (diffMonths < 0){
+                    diffMonths += 12;
+                    diffYears --;
+                }
+
+                if (diffDays < 0){
+                    diffDays += this.daysPerMonth(this.currentDate);
+                    diffMonths --;
+                }
+
+                if (diffYears > 0 && !(diffMonths < 0)){
                     addPlural = diffYears > 1 ? "s" : "";
                     lastEditString = diffYears + " Year" + addPlural + " ago";
                 }
-                else if (diffMonths > 0){
+                else if (diffMonths > 0 && !(diffDays < 0)){
                     addPlural = diffMonths > 1 ? "s" : "";
                     lastEditString = diffMonths + " Month" + addPlural + " ago";
                 }
@@ -4148,7 +4157,7 @@ define('apps/home/views/projectItemView',["marionette",
                 var days_per_month = 0;
 
                 if (month == 1){
-                    if (daysPerYear(date) == 366){
+                    if (this.daysPerYear(date) == 366){
                         days_per_month = 29;
                     } else {
                         days_per_month = 28;
@@ -4449,7 +4458,19 @@ define('models/base',["underscore", "jquery", "backbone", "form", "lib/maps/geom
                 tags: 'Text'
             },
             getDataTypePlural: function () {
-                if (this.collection && this.collection.getDataType) {
+
+                // 1/24/2018
+                // the following condition handles newly-uploaded photos which 
+                // appear not to have a properly attributes 'collection' attribute
+                // Problem should probably be handled upstream.
+                // if (typeof this.collection.getDataType == 'undefined') {
+                //     console.log(this.get('overlay_type'));
+                //     console.log(this.attributes.overlay_type);
+                //     return this.attributes.overlay_type;
+                // }
+
+
+                if (this.collection && this.collection.getDataType()) {
                     return this.collection.getDataType();
                 }
                 var type = this.get("overlay_type");
@@ -4570,7 +4591,7 @@ define('models/base',["underscore", "jquery", "backbone", "form", "lib/maps/geom
                     return this.collection.key;
                 }
                 switch(this.get("overlay_type")) {
-                    case "photo": 
+                    case "photo":
                         return "photos";
                     case "audio":
                         return "audio";
@@ -4717,7 +4738,6 @@ define('models/projectUser',["underscore", "models/base"], function (_, Base) {
             checked: false
         }),
         initialize: function (data, opts) {
-            console.log(data, opts);
             // This had to be made dynamic because there are different users
             // for each project
             if (this.collection && this.collection.url) {
@@ -4734,12 +4754,8 @@ define('models/projectUser',["underscore", "models/base"], function (_, Base) {
 			      Base.prototype.initialize.apply(this, arguments);
 		    },
         destroy: function (options) {
-            //this.set("id", 1); //BUG: the ID needs to be set in order for the destroy to work.
-            // needed to override the destroy method because the ProjectUser
-            // endpoint doesn't have an ID, which Backbone requires:
+
             var opts = _.extend({url: this.urlRoot + this.get("user") + "/"}, options || {});
-            console.log(this.get("user"));
-            console.log(opts);
             return Backbone.Model.prototype.destroy.call(this, opts);
         }
     });
@@ -6353,7 +6369,6 @@ define('collections/baseMixin',["jquery", "lib/sqlParser", "underscore", "backbo
                 type: 'OPTIONS',
                 data: { _method: 'OPTIONS' },
                 success: function (data) {
-                    console.log("success");
                     that.generateFilterSchema(data.filters);
                 }
             });
@@ -6374,6 +6389,50 @@ define('collections/baseMixin',["jquery", "lib/sqlParser", "underscore", "backbo
                 }
             }
             this.trigger("filter-form-updated", this.filterSchema);
+        },
+        /*getCollection: function () {
+            return this;
+        },*/
+        getTitle: function () {
+            return this.title;
+        },
+        getDataType: function () {
+            return this.dataType;
+        },
+        getModelType: function () {
+            return this.overlayType;
+        },
+        getFields: function () {
+            return this.fields;
+        },
+        getIsCustomType: function () {
+            return this.isCustomType;
+        },
+        getIsSite: function () {
+            return this.isSite;
+        },
+        getIsMedia: function () {
+            return this.isMedia;
+        },
+        getModel: function (id) {
+            var model = this.get(id);
+            if (!model) {
+                model = this.createNewModel();
+            }
+            return model;
+        },
+        createNewModel: function () {
+            var ModelClass = this.model,
+                model = new ModelClass();
+            model.collection = this;
+            model.set("overlay_type", this.getModelType());
+            model.set("project_id", this.projectID);
+
+            // If we get the form, pass in the custom field
+            if (this.isCustomType) {
+                model.set("fields", this.fields.toJSON());
+            }
+            return model;
         }
     };
 });
@@ -6384,12 +6443,11 @@ define('collections/basePageable',[
     "collections/baseMixin"
 ], function (_, BackbonePageable, BaseMixin) {
     "use strict";
-    var PageableCollection = BackbonePageable.extend({
-        getDataType: function () {
-            return this.key;
-        },
-        getTitle: function () {
-            return this.name || "Sites";
+    var BasePageable = BackbonePageable.extend({
+        initialize: function (recs, opts) {
+            opts = opts || {};
+            _.extend(this, opts);
+            BackbonePageable.prototype.initialize.apply(this, arguments);
         },
         fillColor: "#ed867d",
         size: 23,
@@ -6432,37 +6490,41 @@ define('collections/basePageable',[
              *     for samples of valid queries.
              */
 
-            this.query ="WHERE name like %" + term +
+            this.query +="WHERE name like %" + term +
                         "% OR caption like %" + term +
                         "% OR attribution like %" + term +
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
-            this.query += " AND project = " + projectID;
+            //this.query = " AND project_id = " + projectID;
             this.fetch({ reset: true });
         },
 
         clearSearch: function(projectID){
-            this.query = "WHERE project = " + projectID;
+            this.query = "";//WHERE project_id = " + projectID;
             this.fetch({ reset: true });
         }
 
     });
-    _.extend(PageableCollection.prototype, BaseMixin);
+    _.extend(BasePageable.prototype, BaseMixin);
 
     // and finally, need to override fetch from BaseMixin in a way that calls the parent class
-    _.extend(PageableCollection.prototype, {
+    _.extend(BasePageable.prototype, {
         fetch: function (options) {
             //override fetch and append query parameters:
+            options = options || {};
+            options.data = options.data || {};
+            if (this.projectID) {
+                options.data = {
+                    project_id: this.projectID
+                };
+            }
             if (this.query) {
-                // apply some additional options to the fetch:
-                options = options || {};
-                options.data = options.data || {};
-                options.data = { query: this.query };
+                options.data.query = this.query;
             }
             return BackbonePageable.prototype.fetch.call(this, options);
         }
     });
-    return PageableCollection;
+    return BasePageable;
 });
 
 define(
@@ -6526,23 +6588,15 @@ define(
                 });
             },
 
-            // Apparently, there is not a way to get the array of users
-            // from the project object directly
-            // using inheritance-based ways
             getProjectUserCount: function () {
                 return this.projectUsers.length;
             },
 
-            // we get a collection of users by setting up
-            // a temporary dummy user that has nothing inside
-            // However, it returns undefined
+
             getProjectUsers: function () {
                 this.projectUsers.fetch({ reset: true });
             },
 
-            // we get a collection of users by setting up
-            // a temporary dummy user that has nothing inside
-            // However, it returns undefined
             getProjectUserByUsername: function (username) {
                 var i, pu, u;
                 for (i = 0; i < this.projectUsers.length; i++) {
@@ -6615,7 +6669,7 @@ define('collections/projects',["models/project", "collections/base", "collection
 define('text!apps/home/templates/project-list.html',[],function () { return '<div class="container-search">\n\t<div class="container-center">\n\t\t<div class="row">\n\t\t    <form class="search-form">\n\t\t        <input id="searchTerm" type="text" placeholder="Search Projects" value="{{ searchTerm }}">\n\t\t        <button id="search">\n\t\t\t        <i class="fa fa-search" aria-hidden="true"></i>\n\t\t\t    </button>\n\t\t    </form>\n\t\t\t\t<!--This button normally leads to add new project, but will be used for the share-form html and js-->\n\t\t    <button class="button-primary button-main-action click-to-open button-wide" data-modal="modal-new-map" id="add-project">New Project</button>\n\t\t</div>\n\t</div>\n</div>\n\n\n<div class="container-projects">\n\t<div class = "container-center" id="gallery-main">\n    \t<!--project data inserted here -->\n    </div>\n</div>';});
 
 
-define('text!apps/home/templates/share-form.html',[],function () { return '<!--Global template helper variables go here before HTML structure-->\n\n<div class="inline-form">\n    <label for="projectName">Title: </label>\n    <input type="text" placeholder="Type name of project" id="projectName" value="{{name}}">\n</div>\n<div class="inline-form">\n    <label for="projectName">Description: </label>\n    <textarea placeholder="Type description of project" id="caption">{{ caption }}</textarea>\n</div>\n{{#if id}}\n    <!-- owner isn\'t an editable field -->\n{{ else }}\n    <div class="inline-form owner">\n        <label for="owner">Owner: </label>\n        <input type="text" placeholder="TODO: Auto-detect this" id="owner" value="{{ username }}" />\n    </div>\n{{/if}}\n<div class="inline-form projectName">\n    <label for="projectName">Tags: </label>\n    <input type="text" placeholder="put some tags for easy search" id="tags" value="{{ tags }}">\n</div>\n\n<div class = "inline-form slug {{#if slugError}}error{{/if}}">\n    <label>Friendly URL:</label>\n    <input id="slug" type="text" value="{{ slug }}" placeholder="put name or leave blank for autofill">\n</div>\n{{#if slugError}}\n    <p class="errorMessage">{{slugError}}</p>\n{{/if}}\n\n<div class = "inline-form share_type">\n    <label for="share_type">Sharing Permissions:</label>\n    <div id="share_type" class = "container-3-4">\n        <select id="access_authority">\n            <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>\n            <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>\n        </select>\n    </div>\n</div>\n<div  class="inline-form">\n    <div class="container-1-4">\n    </div>\n    <div class="container-3-4">\n        <div id="userTableDiv">\n            <table class="userTable">\n                <thead>\n                    <tr>\n                        <th>User</th>\n                        <th>Role</th>\n                        <th></th>\n                    </tr>\n                </thead>\n                <tbody id="userList"></tbody>\n            </table>\n        </div>\n        <div id="addNewUser">\n            <a class="new_user_button button-tertiary"><i class="fa fa-plus add" aria-hidden="true"></i>Add new user</a>\n        </div>\n    </div>\n</div>\n\n{{#if projectSaveSuccess}}\n    <p class="projectSaveSuccess successMessage">{{projectSaveSuccess}}</p>\n{{/if}}\n';});
+define('text!apps/home/templates/share-form.html',[],function () { return '<!--Global template helper variables go here before HTML structure-->\n\n<div class="inline-form">\n    <label for="projectName">Title: </label>\n    <input type="text" placeholder="Type name of project" id="projectName" value="{{name}}">\n</div>\n<div class="inline-form">\n    <label for="projectName">Description: </label>\n    <textarea placeholder="Type description of project" id="caption">{{ caption }}</textarea>\n</div>\n<div class="inline-form projectName">\n    <label for="projectName">Tags: </label>\n    <input type="text" placeholder="put some tags for easy search" id="tags" value="{{ tags }}">\n</div>\n\n<div class = "inline-form slug {{#if slugError}}error{{/if}}">\n    <label>Friendly URL:</label>\n    <input id="slug" type="text" value="{{ slug }}" placeholder="put name or leave blank for autofill">\n</div>\n{{#if slugError}}\n    <p class="errorMessage">{{slugError}}</p>\n{{/if}}\n\n<div class = "inline-form share_type">\n    <label for="share_type">Sharing Permissions:</label>\n    <div id="share_type" class = "container-3-4">\n        <select id="access_authority">\n            <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>\n            <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>\n        </select>\n    </div>\n</div>\n<div  class="inline-form">\n    <div class="container-1-4">\n    </div>\n    <div class="container-3-4">\n        <div id="userTableDiv">\n            <table class="userTable">\n                <thead>\n                    <tr>\n                        <th>User</th>\n                        <th>Role</th>\n                        <th></th>\n                    </tr>\n                </thead>\n                <tbody id="userList"></tbody>\n            </table>\n        </div>\n        <div id="addNewUser">\n            <a class="new_user_button button-tertiary"><i class="fa fa-plus add" aria-hidden="true"></i>Add new user</a>\n        </div>\n    </div>\n</div>\n\n{{#if projectSaveSuccess}}\n    <p class="projectSaveSuccess successMessage">{{projectSaveSuccess}}</p>\n{{/if}}\n';});
 
 define('apps/home/views/main',["marionette",
         "underscore",
@@ -6692,7 +6746,7 @@ define('apps/home/views/main',["marionette",
             },
 
             getDefaultQueryString: function () {
-                return "WHERE project = " + this.app.getProjectID();
+                return ""; //"WHERE project_id = " + this.app.getProjectID();
             },
             templateHelpers: function () {
                 return {
@@ -6737,7 +6791,7 @@ define('apps/home/views/main',["marionette",
     });
 
 
-define('text!apps/home/templates/toolbar.html',[],function () { return '<a class="logotype" href="/">Local Ground</a>\n<ul class="right-nav">\n    <li>\n        <a href="/about">About</a>\n    </li>\n    <li>\n        <a href="/documentation">How it works</a>\n    </li>\n    <li>\n        <a class="account" id="toggle-button"><i class="fa fa-caret-down" aria-hidden="true"></i> {{ username }}</a>\n        <div class="dropdown-menu" style="display:none;" id="account-options">\n            <!--a>Your Profile</a>\n            <a>Settings</a-->\n            <a href="/accounts/logout/">Sign out</a>\n        </div>\n    </li>\n</ul>';});
+define('text!apps/home/templates/toolbar.html',[],function () { return '<a class="logotype" href="/">Local Ground</a>\n<ul class="right-nav">\n    <li>\n        <a href="/about">About</a>\n    </li>\n    <li>\n        <a href="/documentation">How it works</a>\n    </li>\n    <li>\n        <a class="account" id="toggle-button">\n            <i class="fa fa-caret-down" aria-hidden="true"></i>\n            {{ username }}\n        </a>\n        <div class="dropdown-menu" style="display:none;" id="account-options">\n            <a href="/accounts/logout/">Logout</a>\n        </div>\n    </li>\n</ul>\n';});
 
 define('apps/home/views/toolbar',[
     "underscore",
@@ -6753,9 +6807,15 @@ define('apps/home/views/toolbar',[
         events: {
             'click #toggle-button': 'toggleVisibility'
         },
+        /*
+        Looks like there are conflicting names to represent username
+        username is the old version of getting user name
+        user.username is the new way to get user name
+        */
         templateHelpers: function () {
             return {
-                username: this.app.username
+                username: this.app.username,
+                user: this.app.user
             };
         },
 
@@ -6771,6 +6831,7 @@ define('apps/home/views/toolbar',[
     });
     return ToolbarDataView;
 });
+
 
 define('text!apps/home/templates/project-user-item.html',[],function () { return '<td>\n    {{#if user }}\n        <span class="username">{{user}}</span>\n    {{else}}\n        <input type="text" class="username" placeholder="username" value="{{ user }}"></td>\n    {{/if}}\n<td>\n    <select class="authority">\n        <option value>Select One</option>\n        <option value= "1" {{#ifequal authority 1}} SELECTED {{/ifequal}}>Can View</option>\n        <option value= "2" {{#ifequal authority 2}} SELECTED {{/ifequal}}>Can Edit</option>\n        <option value= "3" {{#ifequal authority 3}} SELECTED {{/ifequal}}>Can Manage</option>\n    </select>\n</td>\n<td><a href="#" class="delete-project-user">&times;</a></td>\n';});
 
@@ -6844,12 +6905,25 @@ define('apps/home/views/shareForm',["jquery",
             childViewOptions: function () {
                 return this.model.toJSON();
             },
+
+            /* Make the slug based on project title */
             generateSlug: function () {
-                var name = this.$el.find('#projectName').val(),
-                    slug = name.toLowerCase().replace(/\s+/g, "-");
-                if (this.$el.find('#slug').val().length == 0) {
-                    this.$el.find('#slug').val(slug);
+
+                if (this.$el.find('#slug').val().length > 0){
+                    return;
                 }
+
+                var name = this.$el.find('#projectName').val(),
+                    nameSplit = name.toLowerCase().split(" ");
+
+                // Remove all junk characters between words
+                for(var idx in nameSplit){
+                    nameSplit[idx] = nameSplit[idx].replace(/\W+/g, "").trim();
+                }
+                // clean up extra spaces and complete slug name
+                var slug = nameSplit.join(" ").trim().replace(/\s+/g, "-");
+
+                this.$el.find('#slug').val(slug);
             },
             childView: ProjectUserView,
             attachCollectionEventHandlers: function () {
@@ -6887,7 +6961,6 @@ define('apps/home/views/shareForm',["jquery",
                     helpers.projectUsers = this.model.projectUsers.toJSON();
                 }
                 helpers.slugError = this.slugError;
-                //helpers.projectSaveSuccess = this.projectSaveSuccess;
                 return helpers;
             },
 
@@ -6898,36 +6971,45 @@ define('apps/home/views/shareForm',["jquery",
                     shareType = this.$el.find('#access_authority').val(),
                     caption = this.$el.find('#caption').val(),
                     slug = this.$el.find('#slug').val(),
-                    owner = this.$el.find('#owner').val(),
                     tags = this.$el.find('#tags').val(),
                     that = this;
                 if (this.blankInputs()) {
+                    console.log("required items not filled: Need Name, Owner, and User");
                     return;
                 }
-                console.log(this.model.collection);
                 this.model.set('name', projectName);
                 this.model.set('access_authority', shareType);
                 this.model.set('tags', tags);
                 this.model.set('caption', caption);
                 this.model.set('slug', this.setSlugValue(slug));
-                this.model.set('owner', owner);
+                this.model.set('owner', this.app.username);
                 this.model.save(null, {
-                    success:function(model, response){
-                        that.createNewProjectUsers();
-                        that.slugError = null;
-                        that.render();
-                        that.app.vent.trigger('success-message', "Project Saved.");
-                        that.app.vent.trigger('hide-modal');
-                    },
-                    error: function (model, response){
-                        that.app.vent.trigger('error-message', "Project Not Saved. Errors detected.");
-                        var messages = JSON.parse(response.responseText);
-                        if (messages.slug && messages.slug.length > 0) {
-                            that.slugError = messages.slug[0];
-                        }
-                        that.render();
-                    }
+                    success: this.handleServerSuccess.bind(this),
+                    error: this.handleServerError.bind(this)
                 });
+            },
+
+            // redirect to the map, assuming the location is the homepage
+            redirectToMapPage: function(projID){
+                window.location.assign(window.location.href + 'data/?project_id=' + projID + '#/map');
+            },
+
+            handleServerSuccess: function(model, response) {
+                this.createNewProjectUsers();
+                this.slugError = null;
+                var projID = this.model.id;
+                this.render();
+                this.redirectToMapPage(projID);
+            },
+
+            handleServerError: function (model, response) {
+                console.log("Project Not Saved / Created");
+                this.app.vent.trigger('error-message', "Project Not Saved. Errors detected.");
+                var messages = JSON.parse(response.responseText);
+                if (messages.slug && messages.slug.length > 0) {
+                    this.slugError = messages.slug[0];
+                }
+                this.render();
             },
 
             setSlugValue: function(slug_txt){
@@ -7037,12 +7119,10 @@ define('apps/home/views/shareForm',["jquery",
                 var blankFields = false,
                     projectName_ = this.$el.find('#projectName').val(),
                     shareType_ = this.$el.find('#access_authority').val(),
-                    slug_ = this.$el.find('#slug').val(),
-                    owner_ = this.$el.find('#owner').val();
+                    slug_ = this.$el.find('#slug').val();
 
                 this.$el.find('#projectName').prev().css("color", '#000000');
                 this.$el.find('#access_authority').prev().css("color", '#000000');
-                this.$el.find('#owner').prev().css("color", '#000000');
                 if (!($.trim(projectName_))) {
                     blankFields = true;
                     this.$el.find('#projectName').prev().css("color", '#FF0000');
@@ -7051,12 +7131,6 @@ define('apps/home/views/shareForm',["jquery",
                 if (!(shareType_)) {
                     blankFields = true;
                     this.$el.find('#access_authority').prev().css("color", '#FF0000');
-                }
-
-                // only validate owner on create project (not update project)
-                if (!this.model.get("id") && !($.trim(owner_))) {
-                    blankFields = true;
-                    this.$el.find('#owner').prev().css("color", '#FF0000');
                 }
                 return blankFields;
             },
@@ -7100,27 +7174,7 @@ define('apps/home/views/shareForm',["jquery",
     });
 
 
-/* NOTES:
-To access the child elements with access to all the parameters,
-do the following:
-
-var parentTag = $("tag attribute or attribute or (.class or #id" name))
-var jChildren = parentTag.children(); // You have access to an array of children
-
-open up the console inspector by having the following:
-console.log(jChildren);
-and now you can see all the parameters that represent the attributes
-read carefully as they have different names compared to the HTML attributes
-
-now you can call the attributes themselves form the children indexes
-
-examples:
-jChildren[i].className
-jChildren[i].id
-*/
-;
-
-define('text!lib/modals/modal.html',[],function () { return '<div class="modal">\n    <div class="modal-content" {{#if width }} style="width: {{ width }}px;" {{/if}}>\n        <header>\n          <span class="close">&times;</span>\n          <h1>{{ title }}</h1>\n        </header>\n        <div class="modal-body" style="min-height: {{ height }}px;">\n            <!-- view content injectsed here -->\n        </div>\n        <footer>\n            <div class="buttons">\n\n                {{#if showDeleteButton}}\n                    <button class="delete-modal button-secondary">{{ deleteButtonText }}</button>\n                {{else}}\n                    <button class="close-modal button-secondary">{{ closeButtonText }}</button>\n                {{/if}}\n                {{#if showSaveButton}}\n                    <button class="save-modal-form button-primary">{{ saveButtonText }}</button>\n                {{/if}}\n            </div>\n        </footer>\n    </div>\n</div>\n';});
+define('text!lib/modals/modal.html',[],function () { return '<div class="modal">\n    <div class="modal-content" style="width: {{ width }};">\n        <header>\n          <span class="close">&times;</span>\n          <h1>{{ title }}</h1>\n        </header>\n        <div class="modal-body" style="height: {{ height }};">\n            <!-- view content injectsed here -->\n        </div>\n        <footer>\n            <div class="buttons">\n\n                {{#if showDeleteButton}}\n                    <button class="delete-modal button-secondary">{{ deleteButtonText }}</button>\n                {{else}}\n                    <button class="close-modal button-secondary">{{ closeButtonText }}</button>\n                {{/if}}\n                {{#if showSaveButton}}\n                    <button class="save-modal-form button-primary">{{ saveButtonText }}</button>\n                {{/if}}\n            </div>\n        </footer>\n    </div>\n</div>\n';});
 
 /**
  * Created by zmmachar on 12/17/14.
@@ -7135,8 +7189,9 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
         var Modal = Marionette.LayoutView.extend({
             view: null,
             title: null,
-            width: 800,
-            height: 200,
+            width: "90vw",
+            height: "70vh",
+            margin: "auto",
             showCloseButton: true,
             closeButtonText: "Cancel",
             saveButtonText: "Save",
@@ -7153,14 +7208,14 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
                 'click .save-modal-form': 'saveFunction',
                 'click .delete-modal': 'deleteFunction'
             },
-            deleteFunction: function () {
-                alert("blah");
-            },
             template: Handlebars.compile(ModalTemplate),
             initialize: function (opts) {
                 opts = opts || {};
                 _.extend(this, opts);
-                this.saveFunction = opts.saveFunction;
+                this.saveFunction = function () {
+                    opts.saveFunction();
+                    this.render();
+                }
                 if (!$(".modal").get(0)) {
                     this.render();
                     $('body').append(this.$el);
@@ -7176,6 +7231,7 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
                     title: this.title,
                     width: this.width,
                     height: this.height,
+                    //margin: this.margin,
                     showSaveButton: this.showSaveButton,
                     showDeleteButton: this.showDeleteButton,
                     closeButtonText: this.closeButtonText,
@@ -7201,6 +7257,9 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
                 opts.deleteButtonText = opts.deleteButtonText || "Delete";
                 opts.printButtonText = opts.printButtonText || "Print";
                 _.extend(this, opts);
+                this.saveFunction = function () {
+                    opts.saveFunction();
+                };
                 this.attachEvents();
                 this.render();
                 this.delegateEvents();
@@ -7208,7 +7267,6 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
             },
 
             updateSaveButton: function (opts) {
-                console.log('updateSaveButton');
                 this.$el.find('.save-modal-form').css(opts);
                 if (opts.printButtonText) {
                     this.$el.find('.save-modal-form').html(opts.printButtonText);
@@ -7217,7 +7275,8 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
 
             setSize: function () {
                 this.$el.find('.modal-content').css('width', this.width);
-                this.$el.find('.modal-body').css('min-height', this.height);
+                this.$el.find('.modal-body').css('height', this.height);
+                //this.$el.find('.modal-body').css('margin', this.margin);
             },
             createModal: function () {
                 this.$el = $(this.template({ title: this.title }));
@@ -7229,6 +7288,7 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
             },
             hide: function () {
                 this.$el.find('.modal').hide();
+                this.render();
             }
         });
         return Modal;
@@ -7669,6 +7729,8 @@ define('apps/home/home-app',[
         },
         initialize: function (options) {
             _.extend(this, options);
+            this.username = username;
+
             Marionette.Application.prototype.initialize.apply(this, [options]);
 
             //add views to regions:

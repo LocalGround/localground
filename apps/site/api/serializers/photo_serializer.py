@@ -21,7 +21,7 @@ class PhotoSerializer(MediaGeometrySerializerNew):
     class Meta:
         model = models.Photo
         fields = MediaGeometrySerializerNew.Meta.fields + (
-            'path', 'path_large', 'path_medium', 'path_medium_sm',
+            'media_file', 'path', 'path_large', 'path_medium', 'path_medium_sm',
             'path_small', 'path_marker_lg', 'path_marker_sm'
         )
         depth = 0
@@ -29,9 +29,6 @@ class PhotoSerializer(MediaGeometrySerializerNew):
     def create(self, validated_data):
         # Overriding the create method to handle file processing
         owner = self.context.get('request').user
-
-        # looks like media_file is the only one being saved
-        # onto the amazon cloud storage, but not the others
         f = self.initial_data.get('media_file')
 
         # ensure filetype is valid:
@@ -40,10 +37,11 @@ class PhotoSerializer(MediaGeometrySerializerNew):
         # Save it to Amazon S3 cloud
         self.validated_data.update(self.get_presave_create_dictionary())
         self.validated_data.update({
-            'attribution': validated_data.get('attribution') or owner.username
+            'attribution': owner.username
         })
+        self.validated_data.update(validated_data)
         self.instance = self.Meta.model.objects.create(**self.validated_data)
-        self.instance.process_file(f)
+        self.instance.process_file(f, name=self.validated_data.get('name'))
         return self.instance
 
     def get_path(self, obj):

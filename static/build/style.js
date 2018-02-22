@@ -3588,36 +3588,49 @@
   return Marionette;
 }));
 
-define('apps/map/controller',[
+define('apps/style/controller',[
     "marionette"
 ], function (Marionette) {
     "use strict";
     return Marionette.Controller.extend({
         initialize: function (options) {
+            this.deferredMapID = null;
+            this.deferredLayerID = null;
             this.app = options.app;
         },
-        dataDetail: function (dataType, id) {
-            this.app.vent.trigger("show-detail", {
-                id: id,
-                dataType: dataType
-            }, false);
+        displayMap: function (mapId) {
+            console.log('map route');
+            this.app.vent.trigger('route-map', mapId);
         },
-        dataList: function (dataType) {
-            this.app.vent.trigger("show-list", dataType);
+
+        displayLayer: function(mapId, layerId) {
+            this.app.vent.trigger('route-layer', mapId, layerId);
+        },
+
+        newMap: function() {
+            console.log('new map triggered');
+            this.app.vent.trigger('route-new-map');
+        },
+
+        newLayer: function (mapID) {
+            this.app.vent.trigger('route-new-layer', mapID);
         }
     });
 });
+
 define('apps/style/router',[
     "jquery",
     "marionette",
     "backbone",
-    "apps/map/controller"
+    "apps/style/controller"
 ], function ($, Marionette, Backbone, Controller) {
     "use strict";
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
-            ':dataType/:id': 'dataDetail',
-            ':dataType': 'dataList'
+            'new': 'newMap',
+            ':mapId': 'displayMap',
+            ':mapId/layers/new':'newLayer',
+            ':mapId/layers/:layerId': 'displayLayer'
         },
         initialize: function (options) {
             this.controller = new Controller({
@@ -4028,7 +4041,7 @@ define('text',['module'], function (module) {
 });
 
 
-define('text!lib/modals/modal.html',[],function () { return '<div class="modal">\n    <div class="modal-content" {{#if width }} style="width: {{ width }}px;" {{/if}}>\n        <header>\n          <span class="close">&times;</span>\n          <h1>{{ title }}</h1>\n        </header>\n        <div class="modal-body" style="min-height: {{ height }}px;">\n            <!-- view content injectsed here -->\n        </div>\n        <footer>\n            <div class="buttons">\n\n                {{#if showDeleteButton}}\n                    <button class="delete-modal button-secondary">{{ deleteButtonText }}</button>\n                {{else}}\n                    <button class="close-modal button-secondary">{{ closeButtonText }}</button>\n                {{/if}}\n                {{#if showSaveButton}}\n                    <button class="save-modal-form button-primary">{{ saveButtonText }}</button>\n                {{/if}}\n            </div>\n        </footer>\n    </div>\n</div>\n';});
+define('text!lib/modals/modal.html',[],function () { return '<div class="modal">\n    <div class="modal-content" style="width: {{ width }};">\n        <header>\n          <span class="close">&times;</span>\n          <h1>{{ title }}</h1>\n        </header>\n        <div class="modal-body" style="height: {{ height }};">\n            <!-- view content injectsed here -->\n        </div>\n        <footer>\n            <div class="buttons">\n\n                {{#if showDeleteButton}}\n                    <button class="delete-modal button-secondary">{{ deleteButtonText }}</button>\n                {{else}}\n                    <button class="close-modal button-secondary">{{ closeButtonText }}</button>\n                {{/if}}\n                {{#if showSaveButton}}\n                    <button class="save-modal-form button-primary">{{ saveButtonText }}</button>\n                {{/if}}\n            </div>\n        </footer>\n    </div>\n</div>\n';});
 
 /**
  * Created by zmmachar on 12/17/14.
@@ -4043,8 +4056,9 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
         var Modal = Marionette.LayoutView.extend({
             view: null,
             title: null,
-            width: 800,
-            height: 200,
+            width: "90vw",
+            height: "70vh",
+            margin: "auto",
             showCloseButton: true,
             closeButtonText: "Cancel",
             saveButtonText: "Save",
@@ -4061,14 +4075,14 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
                 'click .save-modal-form': 'saveFunction',
                 'click .delete-modal': 'deleteFunction'
             },
-            deleteFunction: function () {
-                alert("blah");
-            },
             template: Handlebars.compile(ModalTemplate),
             initialize: function (opts) {
                 opts = opts || {};
                 _.extend(this, opts);
-                this.saveFunction = opts.saveFunction;
+                this.saveFunction = function () {
+                    opts.saveFunction();
+                    this.render();
+                }
                 if (!$(".modal").get(0)) {
                     this.render();
                     $('body').append(this.$el);
@@ -4084,6 +4098,7 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
                     title: this.title,
                     width: this.width,
                     height: this.height,
+                    //margin: this.margin,
                     showSaveButton: this.showSaveButton,
                     showDeleteButton: this.showDeleteButton,
                     closeButtonText: this.closeButtonText,
@@ -4109,6 +4124,9 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
                 opts.deleteButtonText = opts.deleteButtonText || "Delete";
                 opts.printButtonText = opts.printButtonText || "Print";
                 _.extend(this, opts);
+                this.saveFunction = function () {
+                    opts.saveFunction();
+                };
                 this.attachEvents();
                 this.render();
                 this.delegateEvents();
@@ -4116,7 +4134,6 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
             },
 
             updateSaveButton: function (opts) {
-                console.log('updateSaveButton');
                 this.$el.find('.save-modal-form').css(opts);
                 if (opts.printButtonText) {
                     this.$el.find('.save-modal-form').html(opts.printButtonText);
@@ -4125,7 +4142,8 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
 
             setSize: function () {
                 this.$el.find('.modal-content').css('width', this.width);
-                this.$el.find('.modal-body').css('min-height', this.height);
+                this.$el.find('.modal-body').css('height', this.height);
+                //this.$el.find('.modal-body').css('margin', this.margin);
             },
             createModal: function () {
                 this.$el = $(this.template({ title: this.title }));
@@ -4137,6 +4155,7 @@ define('lib/modals/modal',["jquery", "underscore", "marionette", "handlebars", "
             },
             hide: function () {
                 this.$el.find('.modal').hide();
+                this.render();
             }
         });
         return Modal;
@@ -4413,7 +4432,19 @@ define('models/base',["underscore", "jquery", "backbone", "form", "lib/maps/geom
                 tags: 'Text'
             },
             getDataTypePlural: function () {
-                if (this.collection && this.collection.getDataType) {
+
+                // 1/24/2018
+                // the following condition handles newly-uploaded photos which 
+                // appear not to have a properly attributes 'collection' attribute
+                // Problem should probably be handled upstream.
+                // if (typeof this.collection.getDataType == 'undefined') {
+                //     console.log(this.get('overlay_type'));
+                //     console.log(this.attributes.overlay_type);
+                //     return this.attributes.overlay_type;
+                // }
+
+
+                if (this.collection && this.collection.getDataType()) {
                     return this.collection.getDataType();
                 }
                 var type = this.get("overlay_type");
@@ -4534,7 +4565,7 @@ define('models/base',["underscore", "jquery", "backbone", "form", "lib/maps/geom
                     return this.collection.key;
                 }
                 switch(this.get("overlay_type")) {
-                    case "photo": 
+                    case "photo":
                         return "photos";
                     case "audio":
                         return "audio";
@@ -5072,7 +5103,6 @@ define('lib/maps/overlays/icon',["marionette", "underscore", "lib/maps/icon-look
         },
         getScale: function () {
             var scale = this.width / this.baseWidth;
-            //console.log(scale);
             return scale;
         },
         generateGoogleIcon: function () {
@@ -5101,6 +5131,7 @@ define('lib/maps/overlays/icon',["marionette", "underscore", "lib/maps/icon-look
     });
     return Icon;
 });
+
 define('models/symbol',['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
     function (Backbone, _, SqlParser, Icon) {
         'use strict';
@@ -5246,7 +5277,6 @@ define('collections/baseMixin',["jquery", "lib/sqlParser", "underscore", "backbo
                 type: 'OPTIONS',
                 data: { _method: 'OPTIONS' },
                 success: function (data) {
-                    console.log("success");
                     that.generateFilterSchema(data.filters);
                 }
             });
@@ -5267,6 +5297,50 @@ define('collections/baseMixin',["jquery", "lib/sqlParser", "underscore", "backbo
                 }
             }
             this.trigger("filter-form-updated", this.filterSchema);
+        },
+        /*getCollection: function () {
+            return this;
+        },*/
+        getTitle: function () {
+            return this.title;
+        },
+        getDataType: function () {
+            return this.dataType;
+        },
+        getModelType: function () {
+            return this.overlayType;
+        },
+        getFields: function () {
+            return this.fields;
+        },
+        getIsCustomType: function () {
+            return this.isCustomType;
+        },
+        getIsSite: function () {
+            return this.isSite;
+        },
+        getIsMedia: function () {
+            return this.isMedia;
+        },
+        getModel: function (id) {
+            var model = this.get(id);
+            if (!model) {
+                model = this.createNewModel();
+            }
+            return model;
+        },
+        createNewModel: function () {
+            var ModelClass = this.model,
+                model = new ModelClass();
+            model.collection = this;
+            model.set("overlay_type", this.getModelType());
+            model.set("project_id", this.projectID);
+
+            // If we get the form, pass in the custom field
+            if (this.isCustomType) {
+                model.set("fields", this.fields.toJSON());
+            }
+            return model;
         }
     };
 });
@@ -5379,7 +5453,6 @@ define('models/layer',["models/base", "models/symbol", "collections/symbols"], f
             this.buildSymbolMap();
         },
         buildSymbolMap: function () {
-            console.log('building symbol map...', this.get("symbols"));
             //set the basic flag:
             if (this.get("symbols").length == 1) {
                 this.basic = true;
@@ -5446,13 +5519,14 @@ define('models/layer',["models/base", "models/symbol", "collections/symbols"], f
             return json;
         },
         save: function (attrs, opts) {
-            console.log(this.attributes);
+            //console.log(this.attributes);
             Base.prototype.save.apply(this, arguments);
-            console.log("done");
+            //console.log("done");
         }
     });
     return Layer;
 });
+
 define('collections/layers',["models/layer", "collections/base"], function (Layer, Base) {
     "use strict";
     /**
@@ -5512,7 +5586,7 @@ define('models/map',["models/base", "collections/layers"], function (Base, Layer
                     display_legend: true,
                     title: {type: "title", font: "Lato", fw: "bold", color: "ffffff", backgroundColor: "4e70d4", size: "15"},
                     subtitle: {type: "subtitle", font: "Lato", fw: "regular", color: "666", backgroundColor: "f7f7f7", size: "12"},
-                    paragraph: {type: "paragraph", font: "Lato", fw: "regular", color: "3d3d3d", backgroundColor: "f7f7f7", size: "12"},
+                    paragraph: {type: "paragraph", font: "Lato", fw: "regular", color: "666", backgroundColor: "f0f1f5", size: "12"},
                     tags: {type: "tags", font: "Lato", fw: "regular", color: "3d3d3d", backgroundColor: "f7f7f7", size: "10"}
                 }
             });
@@ -6858,12 +6932,11 @@ define('collections/basePageable',[
     "collections/baseMixin"
 ], function (_, BackbonePageable, BaseMixin) {
     "use strict";
-    var PageableCollection = BackbonePageable.extend({
-        getDataType: function () {
-            return this.key;
-        },
-        getTitle: function () {
-            return this.name || "Sites";
+    var BasePageable = BackbonePageable.extend({
+        initialize: function (recs, opts) {
+            opts = opts || {};
+            _.extend(this, opts);
+            BackbonePageable.prototype.initialize.apply(this, arguments);
         },
         fillColor: "#ed867d",
         size: 23,
@@ -6906,42 +6979,66 @@ define('collections/basePageable',[
              *     for samples of valid queries.
              */
 
-            this.query ="WHERE name like %" + term +
+            this.query +="WHERE name like %" + term +
                         "% OR caption like %" + term +
                         "% OR attribution like %" + term +
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
-            this.query += " AND project = " + projectID;
+            //this.query = " AND project_id = " + projectID;
             this.fetch({ reset: true });
         },
 
         clearSearch: function(projectID){
-            this.query = "WHERE project = " + projectID;
+            this.query = "";//WHERE project_id = " + projectID;
             this.fetch({ reset: true });
         }
 
     });
-    _.extend(PageableCollection.prototype, BaseMixin);
+    _.extend(BasePageable.prototype, BaseMixin);
 
     // and finally, need to override fetch from BaseMixin in a way that calls the parent class
-    _.extend(PageableCollection.prototype, {
+    _.extend(BasePageable.prototype, {
         fetch: function (options) {
             //override fetch and append query parameters:
+            options = options || {};
+            options.data = options.data || {};
+            if (this.projectID) {
+                options.data = {
+                    project_id: this.projectID
+                };
+            }
             if (this.query) {
-                // apply some additional options to the fetch:
-                options = options || {};
-                options.data = options.data || {};
-                options.data = { query: this.query };
+                options.data.query = this.query;
             }
             return BackbonePageable.prototype.fetch.call(this, options);
         }
     });
-    return PageableCollection;
+    return BasePageable;
 });
 
-define('collections/maps',["models/map", "collections/basePageable"], function (Map, BasePageable) {
+define('collections/basePageableWithProject',[
+    "underscore",
+    "collections/basePageable"
+], function (_, BasePageable) {
     "use strict";
-    var Maps = BasePageable.extend({
+    var BasePageableWithProject = BasePageable.extend({
+        initialize: function (recs, opts) {
+            opts = opts || {};
+            _.extend(this, opts);
+            if (!this.projectID) {
+                console.error("projectID is required: " + this.key);
+                return;
+            }
+            BasePageable.prototype.initialize.apply(this, arguments);
+        }
+    });
+    return BasePageableWithProject;
+});
+
+define('collections/maps',["models/map", "collections/basePageableWithProject"],
+function (Map, BasePageableWithProject) {
+    "use strict";
+    var Maps = BasePageableWithProject.extend({
         model: Map,
         name: 'Maps',
         key: 'maps',
@@ -7126,11 +7223,14 @@ define('lib/maps/basemap',["marionette",
                 this.listenTo(this.tilesets, 'reset', this.onShow);
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
-                this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
-                this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
-                this.listenTo(this.app.vent, 'add-rectangle', this.initDrawingManager);
                 this.listenTo(this.app.vent, 'show-streetview', this.showStreetView);
                 this.listenTo(this.app.vent, 'hide-streetview', this.hideStreetView);
+
+                // for adding points, lines, polygons, and rectangles to the map:
+                this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
+                this.listenTo(this.app.vent, 'add-rectangle', this.initRectangleMode);
+                this.listenTo(this.app.vent, 'add-polyline', this.initPolylineMode);
+                this.listenTo(this.app.vent, 'add-polygon', this.initPolygonMode);
 
                 // call parent:
                 Marionette.View.prototype.initialize.call(this);
@@ -7147,10 +7247,41 @@ define('lib/maps/basemap',["marionette",
                 worldPoint = new google.maps.Point(point.x / scale + bottomLeft.x, point.y / scale + topRight.y);
                 return this.map.getProjection().fromPointToLatLng(worldPoint);
             },
-            initDrawingManager: function () {
-                var that = this;
+
+            initRectangleMode: function() {
+                this.initDrawingManager(google.maps.drawing.OverlayType.RECTANGLE);
+            },
+            initPolylineMode: function(model) {
+                this.activateMarker(model);
+                this.initDrawingManager(google.maps.drawing.OverlayType.POLYLINE);
+            },
+            initPolygonMode: function(model) {
+                this.activateMarker(model);
+                this.initDrawingManager(google.maps.drawing.OverlayType.POLYGON);
+            },
+            initDrawingManager: function (drawingMode) {
+                var polyOpts = {
+                    strokeWeight: 2,
+                    strokeColor: this.targetedModel.collection.fillColor,
+                    fillColor: this.targetedModel.collection.fillColor,
+                    editable: true,
+                    draggable: true
+                };
+
+                if (this.drawingManager) {
+
+                    // make sure we're using the correct fill and stroke colors
+                    this.drawingManager.polygonOptions = polyOpts;
+                    this.drawingManager.polylineOptions = polyOpts;
+
+
+                    this.drawingManager.setMap(this.map);
+                    this.drawingManager.setDrawingMode(drawingMode);
+                    return;
+                }
+                
                 this.drawingManager = new google.maps.drawing.DrawingManager({
-                    drawingMode: google.maps.drawing.OverlayType.RECTANGLE,
+                    drawingMode: drawingMode,
                     drawingControl: false,
                     markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
                     rectangleOptions: {
@@ -7160,35 +7291,97 @@ define('lib/maps/basemap',["marionette",
                         strokeWeight: 4,
                         clickable: false,
                         editable: true,
+                        draggable: true,
                         zIndex: 1
-                    }
+                    },
+                    polygonOptions: polyOpts,
+                    polylineOptions: polyOpts
                 });
-                google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', function (rect) {
-                    rect.setOptions({ editable: false });
-                    that.drawingManager.setDrawingMode(null);
-                    var getGeoJSONFromBounds = function (r) {
-                            var bounds = r.getBounds().toJSON(),
-                                north = bounds.north,
-                                south = bounds.south,
-                                east = bounds.east,
-                                west = bounds.west;
-                            return {
-                                "type": "Polygon",
-                                "coordinates": [[
-                                    [east, north], [east, south], [west, south], [west, north], [east, north]
-                                ]]
-                            };
-                        },
-                        r = getGeoJSONFromBounds(rect);
-                    rect.setMap(null);
-                    that.targetedModel.set("geometry", r);
-                    that.targetedModel.trigger('show-marker');
-                    that.addMarkerClicked = false;
-                    that.targetedModel = null;
-                    that.drawingManager.setMap(null);
-                    $('body').css({ cursor: 'auto' });
-                });
+                google.maps.event.addListener(this.drawingManager, 'polygoncomplete', this.polygonComplete.bind(this));
+                google.maps.event.addListener(this.drawingManager, 'polylinecomplete', this.polylineComplete.bind(this));
+                google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', this.rectangleComplete.bind(this));
                 this.drawingManager.setMap(this.map);
+            },
+
+            polygonComplete: function (temporaryPolygon) {
+                //internal function to convert google to geoJSON:
+                const googlePolygonToGeoJSON = (polygon) => {
+                    var pathCoords = polygon.getPath().getArray(),
+                        coords = [],
+                        i = 0;
+                    for (i; i < pathCoords.length; i++) {
+                        coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+                    }
+                    //add last coordinate again:
+                    coords.push([pathCoords[0].lng(), pathCoords[0].lat()]);
+                    return { type: 'Polygon', coordinates: [coords] };
+                };
+                const polygonGeoJSON = googlePolygonToGeoJSON(temporaryPolygon);
+
+                // may want to clear temp poly after server post (not before)
+                var that = this;
+                temporaryPolygon.setMap(null);
+                this.targetedModel.save({ 'geometry': polygonGeoJSON }, { success: function () {
+                    that.finishingTouches();
+                }});
+            },
+
+            polylineComplete: function (temporaryPolyline) {
+                const googlePolylineToGeoJSON = (polyline) => {
+                    var pathCoords = polyline.getPath().getArray(),
+                        coords = [],
+                        i = 0;
+                    for (i; i < pathCoords.length; i++) {
+                        coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+                    }
+                    return { type: 'LineString', coordinates: coords };
+                }
+                const polylineGeoJSON = googlePolylineToGeoJSON(temporaryPolyline);
+
+                var that = this;
+                temporaryPolyline.setMap(null);
+                this.targetedModel.save({ 'geometry': polylineGeoJSON }, { success: function () {
+                    that.finishingTouches();
+                }});
+            },
+
+            rectangleComplete: function (rect) {
+                rect.setOptions({ editable: false });
+                this.drawingManager.setDrawingMode(null);
+                var getGeoJSONFromBounds = function (r) {
+                        var bounds = r.getBounds().toJSON(),
+                            north = bounds.north,
+                            south = bounds.south,
+                            east = bounds.east,
+                            west = bounds.west;
+                        return {
+                            "type": "Polygon",
+                            "coordinates": [[
+                                [east, north], [east, south], [west, south], [west, north], [east, north]
+                            ]]
+                        };
+                    },
+                    r = getGeoJSONFromBounds(rect);
+
+                // hide the rectangle because we are manually displaying
+                // the map ourselves via 'that.targetedModel.trigger('show-marker');'
+                rect.setMap(null);
+                this.targetedModel.set("geometry", r);
+                //this.targetedModel.trigger('show-marker');
+                this.addMarkerClicked = false;
+                this.targetedModel = null;
+                this.drawingManager.setMap(null);
+                $('body').css({ cursor: 'auto' });
+            },
+            finishingTouches: function () {
+                this.app.vent.trigger('rerender-data-detail');
+                // exit drawingMode
+                this.drawingManager.setOptions({
+                    drawingMode: null,
+                    drawingControl: false
+                });
+                this.addMarkerClicked = false;
+                this.targetedModel = null;  // this may be suspect.
             },
 
             doHighlight: function (model) {
@@ -7216,6 +7409,7 @@ define('lib/maps/basemap',["marionette",
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
                 this.targetedModel.trigger('show-marker');
                 this.targetedModel.save();
+                this.app.vent.trigger('rerender-data-detail');
                 this.addMarkerClicked = false;
                 this.targetedModel = null;
             },
@@ -7261,17 +7455,12 @@ define('lib/maps/basemap',["marionette",
                 this.targetedModel = model;
             },
 
-            deleteMarker: function (model) {
-                //model.trigger('hide-marker');
-                model.set("geometry", null);
-                model.save();
-            },
-
             renderMap: function () {
                 var mapOptions = {
                     scrollwheel: false,
                     minZoom: this.minZoom,
                     streetViewControl: true,
+                    fullscreenControl: false,
                     //scaleControl: true,
                     panControl: false,
                     zoomControlOptions: this.zoomControlOptions || {
@@ -7291,6 +7480,9 @@ define('lib/maps/basemap',["marionette",
 
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.mapID),
                     mapOptions);
+                //setTimeout(function () {
+                //    $("#map").css({"position": "fixed"});
+                //s}, 500);
                 this.initTileManager();
             },
             showStreetView: function (model) {
@@ -10968,6 +11160,13 @@ define('lib/maps/overlays/polyline',["jquery"], function ($) {
         this._googleOverlay = null;
         this.model = null;
         this.map = null;
+        this.mouseupEvent = null;
+        this.mousedownEvent = null;
+        this.rightClickEvent = null;
+
+        // See this.deleteVertex(). 
+        // A Polyline cannot have fewer than 2 vertices
+        this.minimumVertices = 2
 
         this.getShapeType = function () {
             return "Polyline";
@@ -10985,14 +11184,93 @@ define('lib/maps/overlays/polyline',["jquery"], function ($) {
                 strokeColor: '#' + this.model.get("strokeColor"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
-                map: isShowingOnMap ? this.map : null
+                map: isShowingOnMap ? this.map : null,
+                //editable: true,
+                draggable: true
+
             });
         };
 
         this.redraw = function () {
             this._googleOverlay.setOptions({
-                strokeColor: '#' + this.model.get("strokeColor")
+                //strokeColor: '#' + this.model.get("strokeColor")
+                strokeColor: this.model.collection.fillColor,
+                strokeOpacity: 1.0,
+                strokeWeight: 5,
+                draggable: this.model.get("active")? true : false,
+                editable: this.model.get("active")? true : false,
             });
+            if (this.model.get("active")) {
+                this.addEvents();
+            }
+        };
+
+        /**
+        * We want to save polyline/polygon coordinates after the following 4 events:
+        * 1. dragging the entire polyline/polygon
+        * 2. dragging (editing) individual vertices
+        * 3. adding a new vertex
+        * 4. Deleting a vertex (right click)
+        */
+       this.addEvents = function() {
+            // clear previous right click listeners
+            if (this.rightClickEvent) {
+                google.maps.event.clearListeners(this._googleOverlay, 'rightclick');
+            }
+            this.rightClickEvent = google.maps.event.addListener(
+                this._googleOverlay, 'rightclick', this.deleteVertex.bind(this)
+            );
+
+            // clear previous listeners of the mousedown event
+            if (this.mousedownEvent) {
+                google.maps.event.clearListeners(this._googleOverlay, 'mousedown');
+            }
+            // We will only register a mouseup event after a mousedown event has ocurred.
+            // Since mouseup events can be rather buggy, this helps keep things clean
+            // and prevents errant mouseup events from creating duplicate events and other proplems
+            this.mousedownEvent = google.maps.event.addListener(
+                this._googleOverlay, 'mousedown', this.registerMouseUpEvent.bind(this)
+            );
+        };
+
+        this.registerMouseUpEvent = function() {
+            // clear any previous mouse up events
+            if (this.mouseupEvent) {
+                google.maps.event.clearListeners(this._googleOverlay, 'mouseup');
+            }
+            // register mouseup event and callback
+            this.mouseupEvent = google.maps.event.addListener(
+                this._googleOverlay, 'mouseup', this.geometrySave.bind(this)
+            );
+        };
+        this.geometrySave = function() {
+
+            // A slight delay is needed here to make sure any new coordinate values
+            // finish updating the _googleOverlay object before we attempt to save
+            setTimeout(() => {
+                this.model.trigger('commit-data-no-save');
+
+                // get the coordinated from the _googleOverlay
+                const geoJSON = this.getGeoJSON();
+
+                // We only update and save the model if its current geometry coordinates
+                // are different from those of the _googleOverlay
+                if (!_.isEqual(this.model.get('geometry'), geoJSON)) {
+                    this.model.set('geometry', geoJSON);
+                    this.model.save();
+                    // console.log('sent to server');
+                }
+            }, 100);
+        };
+
+        this.deleteVertex = function(ev) {
+            // slight delay needed to prevent multiple events from being triggered
+            setTimeout(() => {
+                                                // line must have at least 2 vertices 
+                if (ev.vertex != null && this._googleOverlay.getPath().getLength() > this.minimumVertices) {
+                    this._googleOverlay.getPath().removeAt(ev.vertex);
+                }
+            }, 100);
         };
 
         /**
@@ -11158,7 +11436,13 @@ define('lib/maps/overlays/polygon',["lib/maps/overlays/polyline"], function (Pol
      * @class Polygon
      */
     var Polygon = function (app, opts) {
+        // Polygon inherits most of its functionality, 
+        // including event handling, from Polyline
         Polyline.call(this, app, opts);
+
+        // See this.deleteVertex() inherited from Polyline. 
+        // A Polygon cannot have fewer than 3 vertices
+        this.minimumVertices = 3
 
         this.getShapeType = function () {
             return "Polygon";
@@ -11166,22 +11450,40 @@ define('lib/maps/overlays/polygon',["lib/maps/overlays/polyline"], function (Pol
 
         this.createOverlay = function (isShowingOnMap) {
             this._googleOverlay = new google.maps.Polygon({
-                path: this.getGoogleGeometryFromModel(),
-                strokeColor: '#' + this.model.get("fillColor"),
+                path: this.getGoogleLatLngFromModel(),
+                //strokeColor: '#' + this.model.get("fillColor"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
-                fillColor: '#' + this.model.get("fillColor"),
+                //fillColor: '#' + this.model.get("fillColor"),
                 fillOpacity: 0.35,
-                map: isShowingOnMap ? this.map : null
+                map: isShowingOnMap ? this.map : null,
+                draggable: true,
+                editable: true,
+                strokeColor: '#0000FF',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#0000FF',
+                fillOpacity: 0.35,
             });
         };
 
         this.redraw = function () {
             this._googleOverlay.setOptions({
-                strokeColor: '#' + this.model.get("strokeColor"),
-                fillColor: '#' + this.model.get("fillColor")
+                // strokeColor: '#' + this.model.get("strokeColor"),
+                // fillColor: '#' + this.model.get("fillColor")
+                strokeColor: this.model.collection.fillColor,
+                fillColor: this.model.collection.fillColor,
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                draggable: this.model.get("active")? true : false,
+                editable: this.model.get("active")? true : false
             });
+
+            if (this.model.get("active")) {
+                this.addEvents();
+            }
         };
+
         /**
          * Method that converts a GeoJSON Linestring into
          * an array of google.maps.LatLng objects.
@@ -11351,6 +11653,7 @@ define('lib/maps/overlays/ground-overlay',["lib/maps/overlays/polyline"], functi
             });
         };
 
+        // converts coordinates from GeoJSON to Google's format
         this.getBoundsFromGeoJSON = function () {
             var coordinates = this.model.get("geometry").coordinates[0],
                 north = coordinates[0][1],
@@ -11507,7 +11810,7 @@ define('lib/maps/overlays/base',["marionette",
         attachEventHandlers: function () {
             var that = this;
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.app.router.navigate("//" + that.model.getDataTypePlural() + "/" + that.model.get("id"));
+                that.app.router.navigate("//" + that.app.screenType + "/" + that.model.getDataTypePlural() + "/" + that.model.get("id"));
             });
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
                 that.infoBubble.showTip();
@@ -11632,6 +11935,7 @@ define('lib/maps/overlays/base',["marionette",
     });
     return Base;
 });
+
 define('lib/maps/overlays/marker',[
     "underscore",
     "lib/maps/overlays/infobubbles/marker",
@@ -11647,6 +11951,7 @@ define('lib/maps/overlays/marker',[
 
         initialize: function (opts) {
             Base.prototype.initialize.apply(this, arguments);
+            // this is what redraws a marker when you select it
             this.redraw();
         },
 
@@ -11681,6 +11986,7 @@ define('lib/maps/overlays/marker',[
     });
     return Marker;
 });
+
 define('lib/maps/marker-overlays',['marionette',
         'underscore',
         'lib/maps/overlays/marker'
@@ -11710,6 +12016,8 @@ define('lib/maps/marker-overlays',['marionette',
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.childViewOptions = opts;
+
+                // this is required, otherwise markers will disappear after being placed
                 this.childViewOptions.displayOverlay = opts.displayOverlays;
 
                 this.render();
@@ -11740,7 +12048,6 @@ define('lib/maps/marker-overlays',['marionette',
             },
 
             showAll: function () {
-                console.log('showAll');
                 this.children.each(function (overlay) {
                     overlay.show();
                 });
@@ -11842,38 +12149,61 @@ define('views/generate-print',["marionette",
                     overlays,
                     key,
                     entry,
-                    dm = this.app.dataManager,
-                    dataSources = dm.getDataSources();
-                for (i = 0; i < dataSources.length; i++) {
-                    fillColor = null;
-                    key = dataSources[i].value;
-                    entry = dm.getData(key);
-                    if (key.indexOf("form_") != -1) {
-                        fillColor = formColors[colorCounter];
-                        ++colorCounter;
-                    }
-                    if (entry.collection.length === 0) { continue; }
+                    dm = this.app.dataManager;//,
+                    //dataSources = dm.getDataSources();
+                //console.log(dm);
+                
+                // the old, non-functioning
+                // for (i = 0; i < dataSources.length; i++) {
+                //     fillColor = null;
+                //     key = dataSources[i].value;
+                //     entry = dm.getData(key);
+                //     if (key.indexOf("form_") != -1) {
+                //         fillColor = formColors[colorCounter];
+                //         ++colorCounter;
+                //     }
+                //     if (entry.collection.length === 0) { continue; }
+                //     overlays = new MarkerOverlays({
+                //         collection: entry.collection,
+                //         app: this.app,
+                //         map: this.basemapView.map,
+                //         dataType: entry.collection.key,
+                //         isShowing: true,
+                //         _icon: new Icon({
+                //             shape: entry.collection.key,
+                //             //fillColor: fillColor,
+                //             fillColor: entry.collection.fillColor,
+                //             width: entry.collection.size,
+                //             height: entry.collection.size
+                //         })
+                //     });
+                // }
+
+                // attempt at fixing
+                dm.each((collection) => {
                     overlays = new MarkerOverlays({
-                        collection: entry.collection,
+                        collection: collection,
                         app: this.app,
                         map: this.basemapView.map,
-                        dataType: entry.collection.key,
+                        dataType: collection.overlay_type,
                         isShowing: true,
                         _icon: new Icon({
-                            shape: entry.collection.key,
-                            //fillColor: fillColor,
-                            fillColor: entry.collection.fillColor,
-                            width: entry.collection.size,
-                            height: entry.collection.size
-                        })
+                            shape: collection.getDataType(),
+                            fillColor: collection.fillColor,
+                            width: collection.size,
+                            height: collection.size
+                        }),
+                        displayOverlays: true
                     });
-                }
-                console.log("show overlays");
+                });
+
+                
+                //console.log("show overlays");
             },
 
             showBasemap: function () {
                 var that = this;
-                // Used timeout to delay map rendering until modal completely 
+                // Used timeout to delay map rendering until modal completely
                 // opens. Otherwise, the map doesn't center correctly.
                 setTimeout(function () {
                     that.basemapView = new Basemap({
@@ -11928,7 +12258,7 @@ define('views/generate-print',["marionette",
     });
 
 
-define('text!templates/toolbar-global.html',[],function () { return '<div class="project-detail">\n    <div class="title">\n        {{#if name}}\n            <a href="/"><i class="fa fa-arrow-left back-to-profile"></i></a>\n            <h2 class="map-title">{{ name }}</h2>\n        {{/if}}\n    </div>\n    <nav>\n        <div {{#ifequal activeTab "data"}}class="selected"{{/ifequal}}>\n            <a href="/map" class="data">Data</a>\n        </div>\n        <div {{#ifequal activeTab "style"}}class="selected"{{/ifequal}}>\n            <a href="/style" class="style">Style</a>\n        </div>\n    </nav>\n</div>\n<div class="buttons">\n    {{#ifequal screenType "map"}}\n    <button class="button-secondary print-button pull-right">\n        Print\n    </button>\n    {{/ifequal}}\n\n    {{#if previewURL}}\n    <button class="button-primary button-main-action">\n        <a href="/presentation#/{{previewURL}}" target="_blank" style="color: white;">Preview</a>\n    </button>\n    {{/if}}\n\n    <!-- button class="button-primary button-main-action">\n        Share\n    </button -->\n</div>\n';});
+define('text!templates/toolbar-global.html',[],function () { return '<div class="project-detail">\n    <div class="title">\n        {{#if name}}\n            <a href="/"><i class="fa fa-arrow-left back-to-profile"></i></a>\n            <h2 class="map-title">{{ name }}</h2>\n        {{/if}}\n    </div>\n    <nav>\n        <div {{#ifequal activeTab "data"}}class="selected"{{/ifequal}}>\n            <a href="/data/#/map" class="data">Data</a>\n        </div>\n        <div {{#ifequal activeTab "style"}}class="selected"{{/ifequal}}>\n            <a href="/style" class="style">Style</a>\n        </div>\n    </nav>\n</div>\n<div class="buttons">\n    <button class="button-secondary print-button pull-right">\n        Print\n    </button>\n\n    {{#if previewURL}}\n    <button class="button-primary button-main-action">\n        <a href="/presentation#/{{previewURL}}" target="_blank" style="color: white;">Preview</a>\n    </button>\n    {{/if}}\n\n</div>\n';});
 
 define('views/toolbar-global',[
     "underscore",
@@ -11982,8 +12312,8 @@ define('views/toolbar-global',[
 
         getPreviewMap: function () {
             var that = this;
-            this.maps = new Maps();
-            this.maps.setServerQuery("WHERE project = " + this.app.getProjectID());
+            this.maps = new Maps(null, { projectID: this.app.getProjectID() });
+            //this.maps.setServerQuery("WHERE project_id = " + this.app.getProjectID());
             this.maps.fetch({
                 reset: true,
                 success: function (collection) {
@@ -12036,7 +12366,6 @@ define('models/projectUser',["underscore", "models/base"], function (_, Base) {
             checked: false
         }),
         initialize: function (data, opts) {
-            console.log(data, opts);
             // This had to be made dynamic because there are different users
             // for each project
             if (this.collection && this.collection.url) {
@@ -12053,12 +12382,8 @@ define('models/projectUser',["underscore", "models/base"], function (_, Base) {
 			      Base.prototype.initialize.apply(this, arguments);
 		    },
         destroy: function (options) {
-            //this.set("id", 1); //BUG: the ID needs to be set in order for the destroy to work.
-            // needed to override the destroy method because the ProjectUser
-            // endpoint doesn't have an ID, which Backbone requires:
+
             var opts = _.extend({url: this.urlRoot + this.get("user") + "/"}, options || {});
-            console.log(this.get("user"));
-            console.log(opts);
             return Backbone.Model.prototype.destroy.call(this, opts);
         }
     });
@@ -12126,23 +12451,15 @@ define(
                 });
             },
 
-            // Apparently, there is not a way to get the array of users
-            // from the project object directly
-            // using inheritance-based ways
             getProjectUserCount: function () {
                 return this.projectUsers.length;
             },
 
-            // we get a collection of users by setting up
-            // a temporary dummy user that has nothing inside
-            // However, it returns undefined
+
             getProjectUsers: function () {
                 this.projectUsers.fetch({ reset: true });
             },
 
-            // we get a collection of users by setting up
-            // a temporary dummy user that has nothing inside
-            // However, it returns undefined
             getProjectUserByUsername: function (username) {
                 var i, pu, u;
                 for (i = 0; i < this.projectUsers.length; i++) {
@@ -12174,12 +12491,17 @@ define('models/photo',["models/base", "jquery"], function (Base, $) {
             attribution: { type: 'TextArea', title: "Attribution" },
             tags: { type: 'List', itemType: 'Text' }
         },
-        rotate: function (direction) {
+        getDataTypePlural: function() {
+            return 'photos';
+        },
+        rotate: function (direction, callback) {
             $.ajax({
                 url: '/api/0/photos/' + this.id + '/rotate-' + direction + '/.json',
                 type: 'PUT',
-                success: function(data) {
+                success: function (data) {
+                    console.log('callback!!!!');
                     this.set(data);
+                    callback();
                 }.bind(this),
                 notmodified: function(data) { console.error('Photo Not modified'); },
                 error: function(data) { console.error('Error: Rotation failed'); }
@@ -12228,6 +12550,9 @@ define('models/audio',["models/base", "underscore"], function (Base, _) {
         getExtension: function () {
             return _.last(this.get('file_name').split('.'));
         },
+        getDataTypePlural: function() {
+            return 'audio';
+        },
         defaults: _.extend({}, Base.prototype.defaults, {
             checked: false
         })
@@ -12235,12 +12560,14 @@ define('models/audio',["models/base", "underscore"], function (Base, _) {
     return Audio;
 });
 
-define('collections/audio',["backbone", "models/audio", "collections/base", "collections/basePageable"], function (Backbone, Audio, Base, BasePageable) {
+define('collections/audio',["backbone", "models/audio",
+        "collections/base", "collections/basePageableWithProject"],
+    function (Backbone, Audio, Base, BasePageableWithProject) {
     "use strict";
     /**
      * @class localground.collections.AudioFiles
      */
-    var AudioFiles = BasePageable.extend({
+    var AudioFiles = BasePageableWithProject.extend({
         model: Audio,
         overlay_type: 'audio',
         fillColor: "#62929E",
@@ -12276,6 +12603,9 @@ define('models/video',["models/base"], function (Base) {
             },
             tags: { type: 'List', itemType: 'Text' }
         },
+        getDataTypePlural: function() {
+            return 'videos';
+        },
         getFormSchema: function () {
             return this.schema;
         }
@@ -12283,12 +12613,13 @@ define('models/video',["models/base"], function (Base) {
     return Video;
 });
 
-define('collections/videos',["models/video", "collections/basePageable"], function (Video, BasePageable) {
+define('collections/videos',["models/video", "collections/basePageableWithProject"],
+function (Video, BasePageableWithProject) {
     "use strict";
     /**
      * @class localground.collections.VideoFiles
      */
-    var Videos = BasePageable.extend({
+    var Videos = BasePageableWithProject.extend({
         model: Video,
         overlay_type: 'video',
         fillColor: "#92374D",
@@ -12363,6 +12694,7 @@ define('models/association',["models/base"], function (Base) {
             attachmentType: type of attached media ("photos" or "audio")
             attachmentID: attached media id (OPTIONAL)
             */
+			console.log(data);
             var model = data.model,
                 attachmentType = data.attachmentType,
                 attachmentID = data.attachmentID,
@@ -12408,7 +12740,8 @@ define('models/marker',["models/base",
     var Marker = Base.extend({
         urlRoot: '/api/0/markers/',
 		defaults: _.extend({}, Base.prototype.defaults, {
-			color: "CCCCCC" // rough draft color
+			color: "CCCCCC",
+			overlay_type: "marker" // rough draft color
 		}),
         schema: {
             name: { type: 'TextArea', title: "Name" },
@@ -12526,13 +12859,13 @@ define('models/marker',["models/base",
     return Marker;
 });
 
-define('collections/markers',["models/marker", "collections/basePageable"],
-function (Marker, BasePageable) {
+define('collections/markers',["models/marker", "collections/basePageableWithProject"],
+function (Marker, BasePageableWithProject) {
     "use strict";
     /**
      * @class localground.collections.Markers
      */
-    var Markers = BasePageable.extend({
+    var Markers = BasePageableWithProject.extend({
         model: Marker,
         overlay_type: 'marker',
         name: 'Sites',
@@ -12554,12 +12887,12 @@ function (Marker, BasePageable) {
                         "% OR caption like %" + term +
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
-            this.query += " AND project = " + projectID;
+            //this.query += " AND project_id = " + projectID;
             this.fetch({ reset: true });
         },
 
         clearSearch: function(projectID){
-            this.query = "WHERE project = " + projectID;
+            this.query = ""; //WHERE project_id = " + projectID;
             this.fetch({ reset: true });
         }
     });
@@ -12591,14 +12924,7 @@ define('models/record',["models/base",
                 }
             },
             url: function () {
-                /*
-                 Terrible hack to accommodate the Django REST Framework. Before the
-                 browser issues a POST, PUT, or PATCH request, it first issues an
-                 OPTIONS request to ensure that the request is legal. For some reason,
-                 the Local Ground produces an error for this OPTIONS request if a
-                 '/.json' footer isn't attached to the end. Hence this function overrides
-                 the based url() function in backbone
-                 */
+
                 var base =
                     _.result(this, 'urlRoot') ||
                     _.result(this.collection, 'url') || urlError(),
@@ -12708,13 +13034,13 @@ define('models/record',["models/base",
 
 define('collections/records',[
     "underscore",
-    "collections/basePageable",
+    "collections/basePageableWithProject",
     "models/record",
     "jquery",
     "collections/baseMixin"
-], function (_, BasePageable, Record, $, CollectionMixin) {
+], function (_, BasePageableWithProject, Record, $, CollectionMixin) {
     "use strict";
-    var Records = BasePageable.extend({
+    var Records = BasePageableWithProject.extend({
         model: Record,
         columns: null,
         key: 'form_?',
@@ -12733,7 +13059,7 @@ define('collections/records',[
                 alert("The Records collection requires a key parameter upon initialization");
                 return;
             }
-            BasePageable.prototype.initialize.apply(this, arguments);
+            BasePageableWithProject.prototype.initialize.apply(this, arguments);
         },
         state: {
             currentPage: 1,
@@ -12772,7 +13098,7 @@ define('collections/records',[
             if (!fields) return;
 
             this.query = "WHERE " + this.addFieldQuery(fields, term);
-            this.query += " AND project = " + projectID
+            //this.query += " AND project_id = " + projectID
             this.fetch({ reset: true });
         },
 
@@ -12809,7 +13135,7 @@ define('collections/records',[
         },
 
         clearSearch: function(projectID){
-            this.query = "WHERE project = " + projectID;
+            this.query = ""; //WHERE project_id = " + projectID;
             this.fetch({ reset: true });
         }
     });
@@ -12830,7 +13156,7 @@ define('collections/records',[
 					query: this.query
 				});
             }
-            BasePageable.__super__.fetch.apply(this, arguments);
+            BasePageableWithProject.__super__.fetch.apply(this, arguments);
         }
     });
     return Records;
@@ -12882,12 +13208,14 @@ define('models/field',["underscore", "collections/dataTypes", "models/base"],
                 has_snippet_field: 'Hidden',
                 ordering: 'Hidden'
             },
+            errorMessage: null,
             urlRoot: function () {
                 if (this.baseURL) {
                     return this.baseURL;
                 }
                 return '/api/0/datasets/' + this.form.get("id") + '/fields/';
             },
+
             initialize: function (data, opts) {
                 // This had to be made dynamic because there are different Fields
                 // for each form
@@ -12906,14 +13234,109 @@ define('models/field',["underscore", "collections/dataTypes", "models/base"],
                     this.url = this.urlRoot() + this.get("field") + "/";
                 }
                 Base.prototype.initialize.apply(this, arguments);
-            }/*,
-            toJSON: function () {
-                var json = Base.prototype.toJSON.call(this);
-                if (json.extras !== null) {
-                    json.extras = JSON.stringify(json.extras);
+            },
+            validate: function (attrs, options) {
+                // These attributes will be transferred
+                // to the error message function so it will be displayed on eachField
+                this.set("errorFieldName", false);
+                this.set("errorFieldType", false);
+                this.set("errorRatingName", false);
+                this.set("errorRatingValue", false);
+                this.set("errorMissingRatings", false);
+                this.set("errorMissingChoices", false);
+                // reset error message each time in case
+                // for no error or new one
+                this.errorMessage = "";
+
+                // variables to keep track of the errorMessage
+
+                var errorName, errorType,
+                    errorRatingName, errorRatingValue, errorChoice,
+                    errorMissingRatings, errorMissingChoices;
+
+                var emptyName = attrs.col_alias.trim() === "";
+                var unselectedType = attrs.data_type === "-1" || !attrs.data_type;
+
+                this.set("errorFieldName", emptyName);
+                this.set("errorFieldType", unselectedType);
+                this.validateRating(attrs);
+                this.validateChoice(attrs);
+                errorName = this.get("errorFieldName");
+                errorType = this.get("errorFieldType");
+                errorRatingName = this.get("errorRatingName");
+                errorRatingValue = this.get("errorRatingValue");
+                errorChoice = this.get("errorChoice");
+                errorMissingRatings = this.get("errorMissingRatings");
+                errorMissingChoices = this.get("errorMissingChoices");
+
+                if (errorName && errorType) return this.getErrorMessage("errorField");
+                if (errorName) return this.getErrorMessage("errorFieldName");
+                if (errorType) return this.getErrorMessage("errorFieldType");
+                if (errorRatingName && errorRatingValue) return this.getErrorMessage("errorRating");
+                if (errorRatingName) return this.getErrorMessage("errorRatingName");
+                if (errorRatingValue) return this.getErrorMessage("errorRatingValue");
+                if (errorChoice) return this.getErrorMessage("errorChoice");
+                if (errorMissingRatings) return this.getErrorMessage("errorMissingRatings");
+                if (errorMissingChoices) return this.getErrorMessage("errorMissingChoices");
+
+
+            },
+            getErrorMessage: function (key) {
+                // Use this as the basis for its own template
+                // will eventually cut down uneccessary logic
+                // so that errors will simply be outputted
+                var messages = {
+                    "errorField": "Both field name and type are required",
+                    "errorFieldName": "A field name is required",
+                    "errorFieldType": "A field type is required",
+                    "errorRating": "Both rating name and value are required",
+                    "errorRatingName": "A rating name is required",
+                    "errorRatingValue": "A rating value (integer) is required",
+                    "errorChoice": "A choice name is required",
+                    "errorMissingRatings": "One or more ratings are needed for this field",
+                    "errorMissingChoices": "One or more choices are needed for this field"
                 }
-                return json;
-            }*/
+                this.errorMessage = messages[key];
+                return this.errorMessage;
+            },
+
+            validateRating: function (attrs) {
+                // No need to check if incorrect type
+                if (attrs.data_type !== "rating") return true;
+                if (!attrs.extras || attrs.extras.length === 0) {
+                    this.set("errorMissingRatings", true);
+                    return false;
+                }
+                var rating_item_blank = false;
+                for (var i = 0; i < attrs.extras.length; ++i) {
+                    if (attrs.extras[i].name.trim() === "") {
+                        this.set("errorRatingName", true);
+                        rating_item_blank = true;
+                    }
+                    if (isNaN(parseInt(attrs.extras[i].value))){
+                        this.set("errorRatingValue", true);
+                        rating_item_blank = true;
+                    }
+                    if (rating_item_blank) return false;
+                }
+                return true;
+            },
+
+            validateChoice: function (attrs) {
+                // No need to check if incorrect type
+                if (attrs.data_type !== "choice") return true;
+                if (!attrs.extras || attrs.extras.length === 0) {
+                    this.set("errorMissingChoices", true);
+                    return false;
+                }
+                for (var i = 0; i < attrs.extras.length; ++i) {
+                    if (attrs.extras[i].name.trim() === "") {
+                        this.set("errorChoice", true);
+                        return false;
+                    }
+                }
+                return true;
+            }
         });
         return Field;
     });
@@ -12944,8 +13367,8 @@ define('collections/fields',["models/field", "collections/basePageable"], functi
             return this.find(function (model) { return model.get(key) === val; });
         },
         initialize: function (recs, opts) {
-            if (opts.url) {
-                this.baseURL = opts.url;
+            if (opts.baseURL) {
+                this.baseURL = opts.baseURL;
             } else if (opts.id) {
                 this.baseURL = '/api/0/datasets/' + opts.id + '/fields/';
             } else if (opts.form) {
@@ -13316,146 +13739,217 @@ define('collections/tilesets',["underscore", "models/tileset", "collections/base
     return TileSets;
 });
 
-define('lib/data/dataManager',["underscore", "marionette", "models/project", "collections/photos",
-        "collections/audio", "collections/videos", "collections/mapimages", "collections/markers",
-        "collections/records", "collections/fields", "collections/tilesets"],
-    function (_, Marionette, Project, Photos, Audio, Videos, MapImages, Markers, Records, Fields, TileSets) {
+define('lib/data/dataManager',["underscore", "marionette", "models/project",
+            "collections/photos", "collections/audio", "collections/videos",
+            "collections/mapimages", "collections/markers",
+            "collections/records", "collections/fields",
+            "collections/tilesets"],
+    function (_, Marionette, Project, Photos, Audio, Videos, MapImages, Markers,
+                Records, Fields, TileSets) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
             formColors: ['#60C7CC', '#CF2045', '#A3A737', '#F27CA5'],
             colorCounter: 0,
+            dataLoaded: false,
             template: false,
-            isEmpty: function () {
-                return Object.keys(this.dataDictionary).length === 0;
-            },
             initialize: function (opts) {
-                //todo: remove app dependency and pass in projectID and vent
                 _.extend(this, opts);
                 if (typeof this.projectID === 'undefined') {
                     window.location = '/';
                     return false;
                 }
+                this.initProject();
+                this.initTilesets();
+                this.listenTo(this.vent, "delete-collection", this.deleteCollection);
+                this.listenTo(this.vent, "create-collection", this.addNewRecordsCollection);
+            },
+            isEmpty: function () {
+                return Object.keys(this.dataDictionary).length === 0;
+            },
+            initProject: function () {
                 if (!this.model) {
                     this.model = new Project({ id: this.projectID });
-                    this.model.fetch({ success: this.setCollections.bind(this) });
+                    this.model.fetch({ success: this.initCollections.bind(this) });
                 } else {
-                    this.setCollections();
+                    this.initCollections();
                 }
+            },
+
+            initTilesets: function () {
                 this.tilesets = new TileSets();
                 this.tilesets.fetch({reset: 'true'});
             },
-            setCollections: function () {
-                var that = this,
-                    extras;
-                _.each(this.model.get("children"), function (entry, key) {
-                    that.dataDictionary[key] = entry;
-                    extras = that.initCollection(key, entry.data, entry.fields, entry.overlay_type);
-                    _.extend(that.dataDictionary[key], extras);
-                    delete entry.data;
-                });
+
+            initCollections: function () {
+                var dataLists = {};
+                _.extend(dataLists, this.model.get('datasets'));
+                _.extend(dataLists, this.model.get('media'));
+                var opts, dataType, jsonData, collection;
+                for (dataType in dataLists) {
+                    opts = dataLists[dataType];
+                    jsonData = opts.data;
+                    _.extend(opts, {
+                        title: opts.name,
+                        overlayType: opts.overlay_type,
+                        isSite: false,
+                        isCustomType: false,
+                        isMedia: false,
+                        dataType: dataType,
+                        projectID: this.model.id
+                    });
+                    collection = this.initCollection(opts, jsonData);
+                    this.dataDictionary[dataType] = collection;
+                    //delete opts.data;
+                }
+                this.dataLoaded = true;
                 this.vent.trigger('data-loaded');
             },
-            getDataSources: function () {
-                var dataSources = [
-                    { value: "markers", name: "Sites" }
-                ];
-                _.each(this.dataDictionary, function (entry, key) {
-                    if (key.includes("form_")) {
-                        dataSources.push({
-                            value: key,
-                            name: entry.name
-                        });
-                    }
-                });
-                dataSources = dataSources.concat([
-                    { value: "photos", name: "Photos" },
-                    { value: "audio", name: "Audio" },
-                    { value: "videos", name: "Videos" },
-                    { value: "map_images", name: "Map Images" }
-                ]);
-                return dataSources;
-            },
-            getData: function (key) {
-                console.log(key);
-                var entry = this.dataDictionary[key];
-                if (entry) {
-                    return entry;
-                }
-                throw new Error("No entry found for " + key);
-            },
-            getCollection: function (key) {
-                var entry = this.dataDictionary[key];
-                console.log(this.dataDictionary);
-                if (entry) {
-                    return entry.collection;
-                }
-                throw new Error("No entry found for " + key);
-            },
-            initCollection: function (key, data, fieldCollection, overlay_type) {
-                switch (key) {
-                case "photos":
-                    return { collection: new Photos(data) };
-                case "audio":
-                    return { collection: new Audio(data) };
-                case "videos":
-                    return { collection: new Videos(data) };
-                case "markers":
-                    return {
-                        collection: new Markers(data),
-                        isSite: true
-                    };
-                case "map_images":
-                    return { collection: new MapImages(data) };
-                default:
-                    // in addition to defining the collection, also define the fields:
-                    if (key.indexOf("form_") != -1) {
-                        var formID = key.split("_")[1],
-                            recordsURL = '/api/0/datasets/' + formID + '/data/',
-                            fieldsURL = '/api/0/datasets/' + formID + '/fields/',
-                            records = new Records(data, {
-                                url: recordsURL,
-                                key: 'form_' + formID,
-                                overlay_type: overlay_type
-                            }),
-                            fields = fieldCollection || new Fields(null, {url: fieldsURL }),
-                            that = this;
-                        records.fillColor = this.formColors[this.colorCounter++];
-                        if (fields.length == 0) {
-                            fields.fetch({ reset: true, success: function () {
-                                that.attachFieldsToRecords(records, fields);
-                            }});
+            initCollection: function (opts, jsonData) {
+                var collection;
+                switch (opts.dataType) {
+                    case "photos":
+                        opts.isMedia = true;
+                        collection = new Photos(jsonData, opts);
+                        break;
+                    case "audio":
+                        opts.isMedia = true;
+                        collection = new Audio(jsonData, opts);
+                        break;
+                    case "videos":
+                        opts.isMedia = true;
+                        collection = new Videos(jsonData, opts);
+                        break;
+                    case "markers":
+                        opts.isSite = true;
+                        collection = new Markers(jsonData, opts);
+                        break;
+                    case "map_images":
+                        opts.isMedia = true;
+                        collection = new MapImages(jsonData, opts);
+                        break;
+                    default:
+                        if (opts.dataType.includes("form_")) {
+                            collection = this.createRecordsCollection(jsonData, opts);
                         } else {
-                            this.attachFieldsToRecords(records, fields);
+                            throw new Error("case not handled");
                         }
-                        return {
-                            collection: records,
-                            fields: fields,
-                            isCustomType: true,
-                            isSite: true
-                        };
-                    }
-                    throw new Error("case not handled");
-                    return null;
+                        break;
                 }
+                return collection;
             },
-            attachFieldsToRecords: function (records, fields) {
+
+            attachFieldsToRecord: function (fields, record) {
+                fields.each(function (field) {
+                    field.set("val", record.get(field.get("col_name")));
+                });
+                record.set('fields', fields.toJSON());
+            },
+
+            attachFieldsToRecords:  function (fields, records) {
                 // some extra post-processing for custom datatypes so that
                 // it's easier to loop through fields and output corresponding
                 // values
-                records.each(function (record) {
-                    fields.each(function (field) {
-                        field.set("val", record.get(field.get("col_name")));
-                    });
-                    record.set('fields', fields.toJSON());
+                records.each((record) => {
+                    this.attachFieldsToRecord(fields, record);
                 });
+            },
+
+            createRecordsCollection:  function (jsonData, opts) {
+                var fieldsURL,
+                    collection;
+                opts.formID = parseInt(opts.dataType.split("_")[1]);
+                opts.url = '/api/0/datasets/' + opts.formID + '/data/';
+                fieldsURL = '/api/0/datasets/' + opts.formID + '/fields/';
+                _.extend(opts, {
+                    fillColor: this.getMarkerColor(),
+                    fields: new Fields(opts.fields, { baseURL: fieldsURL }),
+                    isCustomType: true,
+                    isSite: true,
+                    key: opts.dataType
+                });
+                collection = new Records(jsonData, opts);
+                if (opts.fields.length == 0) {
+                    opts.fields.fetch({ reset: true, success: () => {
+                        this.attachFieldsToRecords(opts.fields, collection);
+                    }});
+                } else {
+                    this.attachFieldsToRecords(opts.fields, collection);
+                }
+                return collection
+            },
+
+            getMarkerColor: function () {
+                var index = this.colorCounter++ % this.formColors.length;
+                return this.formColors[index];
+            },
+
+            deleteCollection: function (dataType) {
+                delete this.dataDictionary[dataType];
+                this.vent.trigger('datamanager-modified');
+            },
+
+            /*addNewRecordsCollection: function (dataType) {
+                this.dataDictionary[dataType] = this.createRecordsCollection(dataType);
+                this.vent.trigger('datamanager-modified');
+            },*/
+
+            each: function (f) {
+                this.getLookup().forEach((obj) => {
+                    f(this.getCollection(obj.id));
+                });
+            },
+
+            getLookup: function () {
+                /*
+                Because order matters, returns a list of
+                id / name pairs in the correct order. First
+                sites, then custom data types, then media.
+                */
+                var collection,
+                    dataType,
+                    lookup = [
+                        { id: "markers", name: "Sites", hasData: this.getCollection("markers").length > 0 }
+                    ];
+                for (dataType in this.dataDictionary) {
+                    collection = this.dataDictionary[dataType];
+                    if (collection.getIsCustomType()) {
+                        lookup.push({
+                            id: collection.getDataType(),
+                            name: collection.getTitle(),
+                            hasData: collection.length > 0
+                        });
+                    }
+                };
+                lookup.push.apply(lookup, [
+                    // { id: "photos", name: "Photos", hasData: this.getCollection("photos").length > 0 },
+                    // { id: "audio", name: "Audio", hasData: this.getCollection("audio").length > 0 },
+                    // { id: "videos", name: "Videos", hasData: this.getCollection("videos").length > 0 },
+                    { id: "map_images", name: "Map Images", hasData: this.getCollection("map_images").length > 0 }
+                ])
+                return lookup;
+            },
+
+            getCollection: function (dataType) {
+                if (!this.dataDictionary[dataType]) {
+                    throw new Error("No collection found for " + dataType);
+                }
+                return this.dataDictionary[dataType];
+            },
+
+            getModel: function (dataType, id) {
+                return this.dataDictionary[dataType].getModel(id);
+            },
+
+            getCollections: function () {
+                return Object.entries(this.dataDictionary);
             }
         });
         return DataManager;
     });
 
 
-define('text!apps/style/templates/left/new-map-modal.html',[],function () { return '\n<div class="inline-form {{#if generalError}}error{{/if}}">\n    <label>Title: </label>\n    <input type="text" placeholder="name of map" id="new-map-name" value="{{name}}">\n</div>\n<div class = "inline-form slug {{#if slugError}}error{{/if}}">\n    <label>Friendly URL:</label>\n    <input type="text" placeholder="enter name or leave blank for autofill" id="new-map-slug" value="{{slug}}">\n</div>\n{{#if slugError}}\n<p class="errorMessage">{{slugError}}</p>\n{{/if}}\n{{#if generalError}}\n<p class="errorMessage">{{generalError}}</p>\n{{/if}}';});
+define('text!apps/style/templates/left/new-map-modal.html',[],function () { return '\n<div class="inline-form {{#if generalError}}error{{/if}}">\n    <label>Title: </label>\n    <input type="text" placeholder="name of map" id="new-map-name" value="{{name}}">\n</div>\n<div class = "inline-form slug {{#if slugError}}error{{/if}}">\n    <label>Friendly URL:</label>\n    <input type="text" placeholder="enter name or leave blank for autofill" id="new-map-slug" value="{{slug}}">\n</div>\n<div class = "inline-form">\n    <label>Description:</label>\n    <input type="text" placeholder="map description" id="new-map-description" value="{{description}}">\n</div>\n{{#if slugError}}\n<p class="errorMessage">{{slugError}}</p>\n{{/if}}\n{{#if generalError}}\n<p class="errorMessage">{{generalError}}</p>\n{{/if}}';});
 
 define ('apps/style/views/left/new-map-modal-view',[
     "jquery",
@@ -13478,18 +13972,44 @@ define ('apps/style/views/left/new-map-modal-view',[
             },
             slugError: null,
             templateHelpers: function () {
+                console.log(this);
+                var name, slug, description;
+                if (this.mode == 'editExistingMap') {
+                    name = this.map.get('name');
+                    slug = this.map.get('slug');
+                    description = this.map.get('caption');
+                }
                 var helpers = {
                     slugError: this.slugError,
-                    generalError: this.generalError
+                    generalError: this.generalError, 
+                    name: name,
+                    slug: slug,
+                    description: description
                 };
                 return helpers; 
             },
 
             saveMap: function () {
+                console.log('new map modal, save!');
+                console.log('mode: ', this.mode);
                 var mapAttrs = {};
                 mapAttrs.name = this.$el.find("#new-map-name").val();
                 mapAttrs.slug = this.$el.find('#new-map-slug').val();
-                this.app.vent.trigger("create-new-map", mapAttrs);
+                mapAttrs.description = this.$el.find('#new-map-description').val();
+
+                if (this.mode == 'editExistingMap') {
+                    console.log('editExistingMap: ', this.mode);
+                    this.map.set({
+                        name: this.$el.find("#new-map-name").val(),
+                        slug: this.$el.find("#new-map-slug").val(),
+                        caption: this.$el.find("#new-map-description").val(),
+
+                    });
+                    this.app.vent.trigger("edit-map", this.map);
+                } else if (this.mode == 'createNewMap') {
+                    console.log('createNewMap: ', this.mode);
+                    this.app.vent.trigger("create-new-map", mapAttrs);
+                }
             },
            
             generateSlug: function () {
@@ -13509,7 +14029,6 @@ define ('apps/style/views/left/new-map-modal-view',[
                 }
                 this.render();
             }
-
         });
         return NewMap;
 
@@ -13517,7 +14036,7 @@ define ('apps/style/views/left/new-map-modal-view',[
 );
 
 
-define('text!apps/style/templates/left/select-map.html',[],function () { return '<div class="style-section-header-wrapper">\n    <div class="plus-container" style="position:relative;float:right;">\n        <a class="add-map"><i class="fa fa-plus add" aria-hidden="true"></i></a>\n    </div>\n    <h4>Map</h4>\n</div>\n\n{{#if noItems}}\n    <p class="map-none-message">Click the plus sign to create a new map</p>\n{{else}}\n<select class="style-wide-select" id="map-select">\n    {{#each items}}\n    <option class="map-select-option" value="{{ this.id }}">{{ this.name }}</option>\n    {{/each}}\n</select>\n\n{{/if}}';});
+define('text!apps/style/templates/left/select-map.html',[],function () { return '<div class="style-section-header-wrapper">\n    <div class="plus-container" style="position:relative;float:right;">\n        <a class="add-map" href="/style/#/new"><i class="fa fa-plus add" aria-hidden="true"></i></a>\n    </div>\n    <h4>Map</h4>\n</div>\n\n{{#if noItems}}\n    <p class="map-none-message">Click the plus sign to create a new map</p>\n{{else}}\n<div class="selected-map">\n    <div class="selected-map-item" data-value="{{ map.id }}">\n        <p class="selected-map-name" data-value="{{ map.id }}">{{ name }}</p>\n        <i class="fa fa-angle-down map-dropdown"></i>\n\n        <p class="map-edit" data-value="{{ map.id }}"><i class="fa fa-pencil map-edit" data-value="{{ map.id }}" aria-hidden="true"></i>\n        </p>\n        <a href="/presentation#/{{previewURL}}" target="_blank" style="color: white;">\n            <p class="map-preview"><i class="fa fa-eye" aria-hidden="true"></i>\n            </p>\n        </a>\n    </div>\n</div>\n\n<div class="map-list" id="map-select">\n    {{#each items}}\n    <a href="/style/#/{{this.id}}">\n        <div class="map-item" data-value="{{ this.id }}">\n            <p class="map-name" data-value="{{ this.id }}">{{ this.name }}</p>\n        </div>\n    </a>\n    {{/each}}\n</div>\n\n\n{{/if}}\n';});
 
 define('apps/style/views/left/select-map-view',["jquery",
         "marionette",
@@ -13538,8 +14057,15 @@ define('apps/style/views/left/select-map-view',["jquery",
             isShowing: true,
             template: Handlebars.compile(MapTemplate),
             templateHelpers: function() {
+                if (this.activeMap) {
+                    var name = this.activeMap.get('name'),
+                    slug = this.activeMap.get('slug')
+                }
                 return {
-                    noItems: (this.collection.length === 0)
+                    noItems: (this.collection.length === 0),
+                    map: this.activeMap,
+                    name: name,
+                    previewURL: slug
                 }
             },
 
@@ -13547,7 +14073,11 @@ define('apps/style/views/left/select-map-view',["jquery",
                 return _.extend(
                     {
                         'change #map-select': 'setActiveMap',
-                        'click .add-map': 'showAddMapModal'
+                        'click .add-map': 'showAddMapModal',
+                        'click .selected-map': 'showMapList',
+                        'click .map-item': 'handleItemClicks',
+                        'click': 'hideMapList'//,
+                        //'click .map-edit': 'editMap'
                     }
                 );
             },
@@ -13558,19 +14088,35 @@ define('apps/style/views/left/select-map-view',["jquery",
                 _.extend(this, opts);
                 if (!this.collection) {
                     // /api/0/maps/ API Endpoint gets built:
-                    this.collection = new Maps();
-                    this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
+                    this.collection = new Maps(null, { projectID: this.app.getProjectID() });
+                    this.collection.setServerQuery("");
                     this.collection.fetch({ reset: true });
                 } else {
                     this.drawOnce();
                 }
-                this.modal = new Modal();
 
-                this.listenTo(this.collection, 'reset', this.drawOnce);
+                $('body').click(this.hideMapList.bind(this));
+
+                this.modal = new Modal();
+                this.listenTo(this.collection, 'reset', this.setInitialModel);
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
-                this.listenTo(this.app.vent, 'update-map-list', this.setActiveMap);
+                this.listenTo(this.app.vent, "edit-map", this.updateMap);
+                this.listenTo(this.app.vent, 'update-map-list', this.setInitialModel);
+                this.listenTo(this.app.vent, 'route-map', this.getSelectedMap);
+                this.listenTo(this.app.vent, 'route-new-map', this.showAddMapModal);
             },
 
+            getSelectedMap: function(mapId) {
+                var map = this.collection.get(mapId);
+                this.setActiveMap(map);
+            },
+
+            setInitialModel: function () {
+                // on initialize, pass the first model in the collection
+                // to be set as the active map
+                this.setActiveMap(this.collection.at(0));
+                this.render();
+            },
 
             newMap: function (mapAttrs) {
                 var that = this,
@@ -13594,86 +14140,80 @@ define('apps/style/views/left/select-map-view',["jquery",
                     success: this.setMapAndRender.bind(this),
                     error: function (model, response){
                         var messages = JSON.parse(response.responseText);
-                        console.log(messages);
                         if (messages.slug && messages.slug.length > 0) {
                             that.slugError = messages.slug[0];
-                            console.log("should have error message", that.slugError);
                         }
                         that.app.vent.trigger("send-modal-error", that.slugError);
                     }
                 });
             },
 
-            setMapAndRender: function () {
+            updateMap: function (map) {
                 var that = this;
+                this.map = map;
+                this.map.save(null, {
+                    success: function () {
+                        that.modal.hide();
+                        that.render();
+                    }
+                });
+            },
+
+            setMapAndRender: function () {
+                var that = this,
+                    dm = this.app.dataManager;
+                   // dm = this.app.dataManager.model.attributes.children;
                 this.collection.add(this.map);
-                var dataSources = this.app.dataManager.getDataSources();
-                this.modal.hide();               
+                this.modal.hide();
                 this.render();
+
+                // sets newly created map as the selected map
                 this.$el.find('#map-select').val(this.map.id);
-                
+
                 var layers = new Layers(null, {mapID: this.map.get("id")});
                 this.map.set("layers", layers);
 
-                dataSources.forEach(function(dataSource) {
-                    var collection = that.app.dataManager.getCollection(dataSource.value);
-                    if (collection.length < 1) {return;}
-                        if (dataSource.value === "markers") {
-                            var layer = new Layer({
-                                map_id: that.map.id,
-                                data_source: dataSource.value, 
-                                layer_type: "basic",
-                                filters: {},
-                                symbols: [{
-                                    "fillColor": collection.fillColor,
-                                    "width": 20,
-                                    "rule": "*",
-                                    "title": dataSource.name
-                                }],
-                                metadata: {
-                                    buckets: 4,
-                                    paletteId: 0,
-                                    fillOpacity: 1,
-                                    width: 20,
-                                    fillColor: collection.fillColor,
-                                    strokeColor: "#ffffff",
-                                    strokeWeight: 1,
-                                    strokeOpacity: 1,
-                                    shape: "circle"
-                                },
-                                title: "Sites"
-                            });
-                            layers.add(layer);
-                            layer.save();
-                        } else if (dataSource.value.includes("form_")){
-                            var layer = new Layer({
-                                map_id: that.map.id,
-                                data_source: dataSource.value, 
-                                layer_type: "basic",
-                                filters: {},
-                                symbols: [{
-                                    "fillColor": collection.fillColor,
-                                    "width": 20,
-                                    "rule": "*",
-                                    "title": dataSource.name
-                                }],
-                                metadata: {
-                                    buckets: 4,
-                                    paletteId: 0,
-                                    fillOpacity: 1,
-                                    width: 20,
-                                    fillColor: collection.fillColor,
-                                    strokeColor: "#ffffff",
-                                    strokeWeight: 1,
-                                    strokeOpacity: 1,
-                                    shape: "circle"
-                                },
-                                title: dataSource.name
-                            });
-                            layers.add(layer);
-                            layer.save();
-                        }});
-                this.app.vent.trigger("change-map", this.map);
+                dm.each(function (collection) {
+                   if (collection.length < 1) {
+                        return;
+                    }
+                    if (collection.getIsSite()) {
+                        var layer = new Layer({
+                            map_id: that.map.id,
+                            data_source: collection.getDataType(),
+                            layer_type: "basic",
+                            filters: {},
+                            symbols: [{
+                                "fillColor": collection.fillColor,
+                                "width": 20,
+                                "rule": "*",
+                                "title": collection.getTitle()
+                            }],
+                            metadata: {
+                                buckets: 4,
+                                paletteId: 0,
+                                fillOpacity: 1,
+                                width: 20,
+                                fillColor: collection.fillColor,
+                                strokeColor: "#ffffff",
+                                strokeWeight: 1,
+                                strokeOpacity: 1,
+                                shape: "circle"
+                            },
+                            title: collection.getTitle()
+                        });
+                        layers.add(layer);
+                        layer.save(null, {
+                            success: console.log('layers saved successfully'),
+                            error: function (model, response){
+                                var messages = JSON.parse(response.responseText);
+                                console.log(messages);
+                            }
+                        });;
+                    }});
+                this.setActiveMap(this.map);
+             //   this.render();
+                this.app.router.navigate('//' + this.map.id);
             },
 
             drawOnce: function () {
@@ -13681,32 +14221,60 @@ define('apps/style/views/left/select-map-view',["jquery",
                 this.setActiveMap();
             },
 
-            setActiveMap: function () {
+            setActiveMap: function (map) {
                 if (this.collection.length == 0) {
                     return;
                 }
-                var id = this.$el.find('#map-select').val(),
-                    that = this,
-                    selectedMapModel = this.collection.get(id);
-                //re-fetch map from server so that it also returns the layers:
+                var selectedMapModel = map,
+                    that = this;
+                this.activeMap = map;
                 selectedMapModel.fetch({ success: function () {
                     that.setCenterZoom(selectedMapModel);
                     that.setMapTypeId(selectedMapModel);
                     that.app.vent.trigger("change-map", selectedMapModel);
                     that.app.vent.trigger("hide-right-panel");
+                    that.render();
                 }});
+            },
+
+            selectMap: function () {
+                var id = $(event.target).data('value'),
+                map = this.collection.get(id);
+                this.setActiveMap(map);
             },
 
             showAddMapModal: function () {
                 var createMapModel = new NewMap({
-                    app: this.app
+                    app: this.app,
+                    mode: 'createNewMap'
                 });
                 this.modal.update({
                     class: "add-map",
                     view: createMapModel,
                     title: 'Add Map',
                     width: 400,
-                    height: 0,
+                    height: 130,
+                    closeButtonText: "Done",
+                    showSaveButton: true,
+                    saveFunction: createMapModel.saveMap.bind(createMapModel),
+                    showDeleteButton: false
+                });
+                this.modal.show();
+            },
+
+            showEditMapModal: function (map) {
+                var createMapModel = new NewMap({
+                    app: this.app,
+                    mode: 'editExistingMap',
+                    map: map
+                });
+
+                this.modal.update({
+                    class: "add-map",
+                    view: createMapModel,
+                    title: 'Edit Map',
+                    width: 400,
+                    height: 150,
                     closeButtonText: "Done",
                     showSaveButton: true,
                     saveFunction: createMapModel.saveMap.bind(createMapModel),
@@ -13724,13 +14292,31 @@ define('apps/style/views/left/select-map-view',["jquery",
             setMapTypeId: function (selectedMapModel) {
                 var skin = selectedMapModel.getDefaultSkin();
                 this.app.basemapView.setMapTypeId(skin.basemap);
+            },
+
+            showMapList: function() {
+                this.$el.find('.map-list').show();
+            },
+
+            hideMapList: function(e) {
+                var $el = $(e.target);
+                if (!$el.hasClass('selected-map-item') && !$el.hasClass('map-name') && !$el.hasClass('map-edit') && !$el.hasClass('map-select-option') && !$el.hasClass('map-dropdown')) {
+                    this.$el.find('.map-list').hide();
+                }
+            },
+
+            editMap: function () {
+                var id = $(event.target).data('value'),
+                map = this.collection.get(id);
+                this.showEditMapModal(map);
             }
 
         }));
         return SelectMapView;
     });
 
-define('text!apps/style/templates/left/layer-item.html',[],function () { return '<input type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} /> \n<p class="layer-name">{{ title }}</p> \n<a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>\n<a class="edit">edit</a>\n';});
+
+define('text!apps/style/templates/left/layer-item.html',[],function () { return '<div class=\'layer-column\' id=\'layer{{id}}\'>\n    <input type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} /> \n    <p class="layer-name">{{ title }}</p> \n    <a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>\n    <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a>\n</div>\n\n\n';});
 
 define('apps/style/views/left/layer-list-child-view',["jquery",
         "marionette",
@@ -13745,14 +14331,16 @@ define('apps/style/views/left/layer-list-child-view',["jquery",
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
+               // this.listenTo(this.app.vent, "route-layer", this.routerSendCollection);
                 this.initMapOverlays();
                 if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
                 }
+                console.log('layer list childview initlize');
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
-            className: "layer-column",
+         //   className: "layer-column",
             templateHelpers: function () {
                 return {
                     isChecked: this.model.get("metadata").isShowing
@@ -13764,30 +14352,45 @@ define('apps/style/views/left/layer-list-child-view',["jquery",
             },
             events: {
                 //edit event here, pass the this.model to the right panel
-                'click .edit' : 'sendCollection',
                 'click .layer-delete' : 'deleteLayer',
                 'change input': 'showHideOverlays'
             },
 
-            sendCollection: function () {
-               // this.$el.addClass('selected-layer');
-                this.$el.attr('id', this.model.id);
-                console.log(this.model, this.model.id);
-                this.app.vent.trigger('handle-selected-layer', this.model.id);
-                this.app.vent.trigger("edit-layer", this.model, this.collection);
+            // triggered from the router
+            checkSelectedItem: function(layerId) {
+                    this.$el.attr('id', this.model.id);
+
+                    if (this.$el.find('input').prop('checked', false)) {
+                        this.$el.find('input').click();
+                    }
+
+            },
+
+            childRouterSendCollection: function (mapId, layerId) {
+
+                if (this.model.id == layerId) {
+                    this.checkSelectedItem(layerId);
+
+                    // This event actually triggers the 'createLayer()' function in right-panel.js layoutview
+                    this.app.vent.trigger("edit-layer", this.model, this.collection);
+
+                    // This just adds css to indicate the selected layer, via the parent view
+                    // only triggers after the layer has been sent to right-panel
+                    this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
+                }
             },
 
             deleteLayer: function () {
                 if (!confirm("Are you sure you want to delete this layer?")) {
                     return;
                 }
-                console.log("deleteLayer()", this.model);
-                console.log("collection before delete: ", this.collection);
+                var url = "//" + this.model.get('map_id');
                 this.model.destroy();
                 this.collection.remove(this.model);
                 this.deleteOverlays();
-                //this.hideOverlays();
-                console.log("collection after delete: ", this.collection);
+                console.log(url);
+                
+                this.app.router.navigate(url);
                 this.app.vent.trigger('update-layer-list');
                 this.app.vent.trigger("hide-right-panel");
             },
@@ -13798,8 +14401,6 @@ define('apps/style/views/left/layer-list-child-view',["jquery",
             },
 
             updateMapOverlays: function () {
-                console.log('rebuilding map overlays');
-                console.log(this.model.getSymbols());
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
                 this.initMapOverlays();
@@ -13818,11 +14419,14 @@ define('apps/style/views/left/layer-list-child-view',["jquery",
                     dataSource = this.model.get("data_source"),
                     data = this.app.dataManager.getCollection(dataSource),
                     symbols = this.model.getSymbols();
-                    console.log(this.model.getSymbols());
+                    //console.log(this.model.getSymbols());
                 symbols.each(function (symbol) {
-                    matchedCollection = new data.constructor(null, { url: "dummy" });
+                    matchedCollection = new data.constructor(null, {
+                        url: "dummy",
+                        projectID: that.app.getProjectID()
+                    });
                     data.each(function (model) {
-                        console.log("symbol looped once", symbol.checkModel(model));
+                        //console.log("symbol looped once", symbol.checkModel(model));
                         if (symbol.checkModel(model)) {
                             matchedCollection.add(model);
                         }
@@ -13835,7 +14439,6 @@ define('apps/style/views/left/layer-list-child-view',["jquery",
                     });
                     that.markerOverlayList.push(overlays);
                 });
-                console.log(this.markerOverlayList);
             },
 
             showOverlays: function () {
@@ -13851,9 +14454,6 @@ define('apps/style/views/left/layer-list-child-view',["jquery",
             },
 
             deleteOverlays: function () {
-                console.log("deleteOverlays() called")
-              //  this.$el.find('.gmnoprint').remove();
-                
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.remove();
                 });
@@ -13871,7 +14471,8 @@ define('apps/style/views/left/layer-list-child-view',["jquery",
         return LayerListChild;
     });
 
-define('text!apps/style/templates/left/layer-list.html',[],function () { return '<div class="style-section-header-wrapper">\n    <div class="plus-container" style="position:relative;float:right;">\n        <a class="add-layer"><i class="fa fa-plus add" aria-hidden="true"></i></a>\n    </div>\n\n    <h4>Layers</h4>\n</div>\n    {{#if noLayers}}\n    <p class="layer-none-message">Click the plus sign to create a new layer</p>\n    {{/if}}\n<div id="layers" class="layers">\n</div>';});
+
+define('text!apps/style/templates/left/layer-list.html',[],function () { return '<div class="style-section-header-wrapper">\n    <div class="plus-container" style="position:relative;float:right;">\n        <a class="add-layer" href="/style/#/{{this.id}}/layers/new"><i class="fa fa-plus add" aria-hidden="true"></i></a>\n    </div>\n\n    <h4>Layers</h4>\n</div>\n    {{#if noLayers}}\n    <p class="layer-none-message">Click the plus sign to create a new layer</p>\n    {{/if}}\n<div id="layers" class="layers">\n</div>';});
 
 define('apps/style/views/left/layer-list-view',["marionette",
         "handlebars",
@@ -13904,60 +14505,66 @@ define('apps/style/views/left/layer-list-view',["marionette",
             },
 
             initialize: function (opts) {
+                console.log('layer list view initlize');
                 this.app = opts.app;
                 this.model = opts.model;
 
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
-                this.listenTo(this.app.vent, 'handle-selected-layer', this.handleSelectedLayer);
-                this.listenTo(this.app.vent, 'create-new-layer', this.createNewLayer);
+                this.listenTo(this.app.vent, 'route-layer', this.routerSendCollection);
+                this.listenTo(this.app.vent, 'add-css-to-selected-layer', this.addCssToSelectedLayer);
+                this.listenTo(this.app.vent, 'route-new-layer', this.createNewLayer);
             },
 
             events: function () {
-                return _.extend(
-                    { 'click .add-layer' : 'createNewLayer' }                );
+                return _.extend({ 
+                    //'click .add-layer' : 'createNewLayer' 
+                });
             },
+
             showDropDown: function () {
                 this.$el.find("#new-layer-options").toggle();
             },
 
-            handleSelectedLayer: function (id) {
-                this.$el.find('.layer-column').removeClass('selected-layer');
-                this.$el.find('#' + id).addClass('selected-layer');
+            routerSendCollection: function (mapId, layerId) {
+                var active;
+
+                // loops through children and send the matching child to the right panel
+                this.children.forEach(function(item) {
+                    if (item.model.get('id') == layerId) {
+                        item.childRouterSendCollection(mapId, layerId);
+                    }
+                });
             },
-            
-            createNewLayer: function (e) {
-                console.log("Altered?: ", this.app.layerHasBeenAltered)
-                console.log("Saved?: ", this.app.layerHasBeenSaved)
+
+            // this just adds some css to indicate the selected layer
+            addCssToSelectedLayer: function (id) {
+                this.$el.find('.layer-column').removeClass('selected-layer');
+                this.$el.find('#' +'layer' + id).addClass('selected-layer');
+            },
+
+            createNewLayer: function (mapID) {
                 var continueAction = true;
                 if (this.app.layerHasBeenAltered && !this.layerHasBeenSaved) {
-                    console.log("should send save confirmation");
                     continueAction = confirm("You have unsaved changes on your currently selected layer. If you continue, your changes will not be saved. Do you wish to continue?");
                 }
                 if(!continueAction) {
-                    console.log("should exit createLayer()");
                     return;
                 }
-                console.log("createNewLayer triggered", this.app.selectedMapModel);
                 var layer = new Layer({
                     map_id: this.app.selectedMapModel.id,
-                    data_source: "photos", //default
+                    data_source: "markers", //default
                     layer_type: "basic",
                     filters: {},
                     symbols: [{
                         "fillColor": "#7075FF",
-                        "width": 30,
-                        "rule": "sculptures > 0",
+                        "width": 20,
+                        "rule": "*",
                         "title": "At least 1 sculpture"
                     }],
-                    title: "Layer 1"
+                    title: "Layer 1", 
+                    newLayer: true
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);
-                this.showSection();
-                /*
-                if (e) {
-                    e.preventDefault();
-                }
-                */
             }
 
         }));
@@ -13986,13 +14593,14 @@ define('apps/style/views/left/skin-view',["marionette",
                 // here is some fake data until the
                 // /api/0/maps/ API Endpoint gets built:
                 this.collection = new Maps([
-                    { id: 1, name: "Greyscale", project_id: 4 },
-                    { id: 2, name: "Default", project_id: 4 },
-                    { id: 3, name: "Dark", project_id: 4 }                ]);
+                    { id: 1, name: "Greyscale" },
+                    { id: 2, name: "Default" },
+                    { id: 3, name: "Dark" } ], {projectID: this.app.getProjectID()});
             }
         }));
         return SelectSkinView;
     });
+
 (function(root) {
 define("color-picker-eyecon", ["jquery"], function() {
   return (function() {
@@ -14538,7 +15146,7 @@ define('apps/style/visibility-mixin',[], function () {
     };
 });
 
-define('text!apps/style/templates/left/panel-styles.html',[],function () { return '\n<div class="bordered-section end-section">\n    <div class="style-section-header-wrapper">\n        <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>\n        <h4>Panel Styles</h4>\n    </div>\n    \n    \n    \n    <div id="type" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">\n    <div class="legend-prompt-wrapper">\n        <p class="legend-prompt">Show Legend on Presentation Map:</p>\n        <input class="legend-checkbox" type="checkbox" {{#if displayLegend}}checked{{/if}}></input>\n    </div>\n    <!--Choose the type category to style -->\n        <select id="text-type" class="style-wide-select" name="title-list" style="width:100%; margin: 20px 0px 10px;">\n            <option value="title" {{#ifequal activeKey "title"}} SELECTED {{/ifequal}}>Title</option>\n         <!--   <option value="subtitle" {{#ifequal activeKey "subtitle"}} SELECTED {{/ifequal}}>Subtitle</option> -->\n            <option value="paragraph" {{#ifequal activeKey "paragraph"}} SELECTED {{/ifequal}}>Body</option>\n         <!--   <option value="tags" {{#ifequal activeKey "tags"}} SELECTED {{/ifequal}}>Tag</option> -->\n        </select>\n        <table class="type-table">\n            <tbody>\n                <tr>\n                    <td>Font:</td>\n                    <td>\n                        <div id="font" class="font-dropdown-display" style="background-color: #{{currentType.backgroundColor}}">\n                            <div class="font-display" style="font-family: {{currentType.font}}; color: #{{currentType.color}}; background-color: #{{currentType.backgroundColor}}; font-weight: {{currentType.fw}}" >{{currentType.font}}</div>\n                        </div>\n                        <div id="font-div" class="font-options">\n                            <div class="font-wrapper">\n                                <div value="lato" style = "font-family: lato" >Lato</div>\n                                <div value="open sans" style = "font-family: open sans" >Open Sans</div>\n                                <div value="slabo" style = "font-family: slabo" >Slabo</div>\n                                <div value="Pt Serif" style = "font-family: Pt Serif" >Pt Serif</div>\n                                <div value="Lemonada" style = "font-family: Lemonada" >Lemonada</div>\n                                <div value="Comfortaa" style = "font-family: Comfortaa" >Comfortaa</div>\n                                <div value="Amatic SC" style = "font-family: Amatic SC" >Amatic SC</div>\n                                <div value="Pacifico" style = "font-family: Pacifico" >Pacifico</div>\n                                <div value="Permanent Marker" style = "font-family: Permanent Marker" >Permanent Marker</div>\n                            </div>\n                            <div class="arrow-wrapper">\n                                <i class="fa fa-angle-down font-arrow" aria-hidden="true"></i>\n                            </div>\n                        </div>\n                    </td>\n\n                    <!--\n                    <td>\n                        <select id="font" class="style-wide-select">\n                            <option value="lato" font-family="lato" {{#ifequal currentType.font "lato"}} SELECTED {{/ifequal}}>Lato</option>\n                            <option value="bebas" font-family="bebas" {{#ifequal currentType.font "bebas"}} SELECTED {{/ifequal}}>Bebas</option>\n                        </select>\n                    </td>\n                    -->\n                </tr>\n                <tr>\n                    <td>Font color:</td>\n                    <td>\n                        <i id="font-color-picker" class="fa fa-circle marker-icon jscolor" style="color: #{{currentType.color}} " aria-hidden="true">\n                    </i></td>\n                </tr>\n                <tr>\n                    <td>Background color:</td>\n                    <td>\n                        <i id="background-color-picker" class="fa fa-circle marker-icon jscolor" style="color: #{{currentType.backgroundColor}} " aria-hidden="true">\n                    </i></td>\n                </tr>\n                {{#ifequal activeKey "title"}}\n                <tr>\n                    <td>Font weight:</td>\n                    <td>\n                        <select id="fw" class="style-wide-select">\n                            <option value="regular" {{#ifequal currentType.fw "regular"}} SELECTED {{/ifequal}}>Regular</option>\n                            <option value="bold" {{#ifequal currentType.fw "bold"}} SELECTED {{/ifequal}}>Bold</option>\n                        </select>\n                    </td>\n                </tr>\n                {{/ifequal}}\n            </tbody>\n        </table>\n    </div>\n</div>';});
+define('text!apps/style/templates/left/panel-styles.html',[],function () { return '\n<div class="bordered-section end-section">\n    <div class="style-section-header-wrapper">\n        <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>\n        <h4>Panel Styles</h4> <p class="style-reset">reset styles</p>\n    </div>\n    \n    \n    \n    <div id="type" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">\n    <div class="legend-prompt-wrapper">\n        <p class="legend-prompt">Show Legend on Presentation Map:</p>\n        <input class="legend-checkbox" type="checkbox" {{#if displayLegend}}checked{{/if}}></input>\n    </div>\n    <!--Choose the type category to style -->\n        <select id="text-type" class="style-wide-select" name="title-list" style="width:100%; margin: 20px 0px 10px;">\n            <option value="title" {{#ifequal activeKey "title"}} SELECTED {{/ifequal}}>Title</option>\n         <!--   <option value="subtitle" {{#ifequal activeKey "subtitle"}} SELECTED {{/ifequal}}>Subtitle</option> -->\n            <option value="paragraph" {{#ifequal activeKey "paragraph"}} SELECTED {{/ifequal}}>Body</option>\n         <!--   <option value="tags" {{#ifequal activeKey "tags"}} SELECTED {{/ifequal}}>Tag</option> -->\n        </select>\n        <table class="type-table">\n            <tbody>\n                <tr>\n                    <td>Font:</td>\n                    <td>\n                        <div id="font" class="font-dropdown-display" style="background-color: #{{currentType.backgroundColor}}">\n                            <div class="font-display" style="font-family: {{currentType.font}}; color: #{{currentType.color}}; background-color: #{{currentType.backgroundColor}}; font-weight: {{currentType.fw}}" >{{currentType.font}}</div>\n                        </div>\n                        <div id="font-div" class="font-options">\n                            <div class="font-wrapper">\n                                <div value="lato" style = "font-family: lato" >Lato</div>\n                                <div value="open sans" style = "font-family: open sans" >Open Sans</div>\n                                <div value="slabo" style = "font-family: slabo" >Slabo</div>\n                                <div value="Pt Serif" style = "font-family: Pt Serif" >Pt Serif</div>\n                                <div value="Lemonada" style = "font-family: Lemonada" >Lemonada</div>\n                                <div value="Comfortaa" style = "font-family: Comfortaa" >Comfortaa</div>\n                                <div value="Amatic SC" style = "font-family: Amatic SC" >Amatic SC</div>\n                                <div value="Pacifico" style = "font-family: Pacifico" >Pacifico</div>\n                                <div value="Permanent Marker" style = "font-family: Permanent Marker" >Permanent Marker</div>\n                            </div>\n                            <div class="arrow-wrapper">\n                                <i class="fa fa-angle-down font-arrow" aria-hidden="true"></i>\n                            </div>\n                        </div>\n                    </td>\n\n                    <!--\n                    <td>\n                        <select id="font" class="style-wide-select">\n                            <option value="lato" font-family="lato" {{#ifequal currentType.font "lato"}} SELECTED {{/ifequal}}>Lato</option>\n                            <option value="bebas" font-family="bebas" {{#ifequal currentType.font "bebas"}} SELECTED {{/ifequal}}>Bebas</option>\n                        </select>\n                    </td>\n                    -->\n                </tr>\n                <tr>\n                    <td>Font color:</td>\n                    <td>\n                        <i id="font-color-picker" class="fa fa-circle marker-icon jscolor" style="color: #{{currentType.color}} " aria-hidden="true">\n                    </i></td>\n                </tr>\n                <tr>\n                    <td>Background color:</td>\n                    <td>\n                        <i id="background-color-picker" class="fa fa-circle marker-icon jscolor" style="color: #{{currentType.backgroundColor}} " aria-hidden="true">\n                    </i></td>\n                </tr>\n                {{#ifequal activeKey "title"}}\n                <tr>\n                    <td>Font weight:</td>\n                    <td>\n                        <select id="fw" class="style-wide-select">\n                            <option value="regular" {{#ifequal currentType.fw "regular"}} SELECTED {{/ifequal}}>Regular</option>\n                            <option value="bold" {{#ifequal currentType.fw "bold"}} SELECTED {{/ifequal}}>Bold</option>\n                        </select>\n                    </td>\n                </tr>\n                {{/ifequal}}\n            </tbody>\n        </table>\n    </div>\n</div>';});
 
 define('apps/style/views/left/panel-styles-view',["marionette",
         "handlebars",
@@ -14565,7 +15173,8 @@ define('apps/style/views/left/panel-styles-view',["marionette",
                         'change #font-size': 'updateFontSize',
                         'click #font': 'showFonts',
                         'click .font-wrapper div': 'updateFont',
-                        'click .legend-checkbox': 'updateLegend'
+                        'click .legend-checkbox': 'updateLegend',
+                        'click .style-reset': 'resetStyles'
                     },
                     PanelVisibilityExtensions.events
                 );
@@ -14575,6 +15184,20 @@ define('apps/style/views/left/panel-styles-view',["marionette",
                 _.extend(this, opts);
                 this.restoreState();
                 $('body').click(this.hideFonts);
+            },
+
+            resetStyles: function () {
+
+                if (!confirm("Are you sure you want to reset map styles to their default?")) {
+                    return;
+                }
+
+                var panelStyleDefaults = this.model.defaults().panel_styles;
+                this.model.get("panel_styles").title.color = panelStyleDefaults.title.color;
+                this.model.get("panel_styles").title.backgroundColor = panelStyleDefaults.title.backgroundColor;
+                this.model.get("panel_styles").paragraph.color = panelStyleDefaults.paragraph.color;
+                this.model.get("panel_styles").paragraph.backgroundColor = panelStyleDefaults.paragraph.backgroundColor;
+                this.render();
             },
             
             onRender: function () {
@@ -14623,7 +15246,6 @@ define('apps/style/views/left/panel-styles-view',["marionette",
             },
 
             showFonts: function () {
-                console.log(this.model);
                 this.$el.find('#font-div').show();
             },
 
@@ -14651,7 +15273,6 @@ define('apps/style/views/left/panel-styles-view',["marionette",
             },
 
             updateLegend: function (event) {
-                console.log(this.model);
                 this.model.get("panel_styles").display_legend = $(event.target).is(':checked');
             },
            
@@ -14660,7 +15281,6 @@ define('apps/style/views/left/panel-styles-view',["marionette",
                 this.render();
             },
             updateFont: function (event) {
-                console.log($(event.target).text());
                 this.model.get("panel_styles")[this.activeKey].font = $(event.target).text();
                 this.render();
             },
@@ -14670,7 +15290,6 @@ define('apps/style/views/left/panel-styles-view',["marionette",
             },
             // triggered from colorPicker
             updateFontColor: function (hex) {
-                console.log("update font color");
                 this.model.get("panel_styles")[this.activeKey].color = hex;
                 $('#font-color-picker').css('color', '#' + hex);
                 this.render();
@@ -14678,7 +15297,6 @@ define('apps/style/views/left/panel-styles-view',["marionette",
 
             // triggered from colorPicker
             updateBackgroundColor: function (hex) {
-                console.log("update background color");
                 this.model.get("panel_styles")[this.activeKey].backgroundColor = hex;
                 $('#background-color-picker').css('color', '#' + hex);
                 this.render();
@@ -14712,7 +15330,8 @@ define('apps/style/views/left/left-panel',["jquery",
             template: Handlebars.compile(LeftPanelLayoutTemplate),
 
             initialize: function (opts) {
-                /*This Layout View relies on a Map model which gets set from the change-map event, 
+                console.log('left panel intialize');
+                /*This Layout View relies on a Map model which gets set from the change-map event,
                 which is triggered from the select-map-view.js */
                 this.app = opts.app;
                 this.render();
@@ -14740,8 +15359,8 @@ define('apps/style/views/left/left-panel',["jquery",
                 this.menu.show(this.sv);
                 this.skins.show(skv);
             },
+
             handleNewMap: function (model) {
-                // is 'this.app.model' necessary?
                 var ps = new PanelStylesView({
                         app: this.app,
                         model: model
@@ -14761,6 +15380,7 @@ define('apps/style/views/left/left-panel',["jquery",
 
                 //replace the LayerListView:
                 this.layers.show(this.lv);
+                this.app.vent.trigger('ready-for-routing');
             },
             hidePanel: function (e) {
                 $(e.target).removeClass("hide").addClass("show");
@@ -14777,7 +15397,6 @@ define('apps/style/views/left/left-panel',["jquery",
                 this.model.set("zoom", this.app.getZoom());
                 this.model.set("center", this.app.getCenter());
                 this.model.set("basemap", this.app.getMapTypeId());
-                console.log(JSON.stringify(this.model.toJSON(), null, 2));
                 this.model.save({
                     error: function () {
                         console.log('error');
@@ -14792,10 +15411,10 @@ define('apps/style/views/left/left-panel',["jquery",
                 if (!confirm("Are you sure you want to delete this map?")) {
                     return;
                 }
-                
+
                 // delete marker overlays from selected map's layers
                 this.lv.children.call("deleteOverlays");
-                
+
                 // delete selected map's layers
                 var listModel;
                 while (listModel = this.lv.collection.first()) {
@@ -14807,14 +15426,16 @@ define('apps/style/views/left/left-panel',["jquery",
 
                 // re-render menu region
                 this.menu.show(this.sv, {forceShow: true});
-            
+
                 //rerender layers
                 //this.app.vent.trigger('update-layer-list');
-                
+
+                this.app.router.navigate();
+
                 // resets the map list so the correct layers are displayed
                 this.app.vent.trigger('update-map-list');
 
-                // hide the right panel if it is open; 
+                // hide the right panel if it is open;
                 //necessary so the user cannot edit a non-existent layer
                 this.app.vent.trigger("hide-right-panel");
             }
@@ -14823,7 +15444,7 @@ define('apps/style/views/left/left-panel',["jquery",
     });
 
 
-define('text!apps/style/templates/right/data-source.html',[],function () { return '<h5>Title</h5><input class="layer-title" type="text" value="{{title}}"></input>\n<h5>Data Source</h5>\n<select class="selected-data-source">\n    {{#each dataSource}}\n    <option value="{{this.value}}" {{#ifequal this.value ../currentDataSource }}SELECTED{{/ifequal}}>{{this.name}}</option>\n    {{/each}}\n    \n</div>\n';});
+define('text!apps/style/templates/right/data-source.html',[],function () { return '<h5>Title</h5><input class="layer-title" type="text" value="{{title}}"></input>\n<h5>Data Source</h5>\n<select class="selected-data-source">\n    {{#each dataSource}}\n    <option value="{{this.id}}" {{#ifequal this.id ../currentDataSource }}SELECTED{{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}}>\n        {{this.name}} {{#unless this.hasData}} (no data){{/unless}}\n    </option>\n    {{/each}}\n\n</div>\n';});
 
 define('apps/style/views/right/data-source-view',["marionette",
         "handlebars",
@@ -14839,18 +15460,16 @@ define('apps/style/views/right/data-source-view',["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.dataSource = this.app.dataManager.getDataSources();
             },
-            
-            
+
             events: {
                 "change .layer-title": "updateTitle",
                 "change .selected-data-source" : "changeDataSource"
             },
-            
+
             templateHelpers: function () {
                 return {
-                    dataSource: this.dataSource,
+                    dataSource: this.app.dataManager.getLookup(),
                     currentDataSource: this.model.attributes.data_source
                 };
             },
@@ -14858,31 +15477,142 @@ define('apps/style/views/right/data-source-view',["marionette",
             changeDataSource: function() {
                 var dataSource = this.$el.find(".selected-data-source").val();
                 this.model.set("data_source", dataSource);
-                this.app.vent.trigger('update-data-source');
             },
 
-            
+
             updateTitle: function () {
                 var title = this.$el.find('.layer-title').val();
                 this.model.set("title", title);
-                console.log(title);
                 this.app.vent.trigger("update-title", title);
             }
-            
+
         });
         return DataSourceView;
     });
 
-define('text!apps/style/templates/right/marker-style-child.html',[],function () { return '{{#ifequal this.dataType "categorical"}}\n\n<td><i class="fa fa-circle marker-icon jscolor" id="{{id}}" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>\n<td>{{ title }}</td>\n<td>\n    <select class="marker-shape">\n    {{#each icons}}\n        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n    {{/each}}\n    </select>    \n</td>\n{{/ifequal}}\n\n\n{{#ifequal this.dataType "continuous"}}\n\n<td><i class="fa fa-circle marker-icon jscolor" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>\n<td>{{ title }}</td>\n<td>\n    <select class="marker-shape">\n    {{#each icons}}\n        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n    {{/each}}\n    </select>\n</td>\n\n{{/ifequal}}\n\n{{#ifequal this.dataType "basic"}}\n\n<td><i class="fa fa-circle marker-icon fa-lg jscolor" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>\n<td>{{ title }}</td>\n<td>\n    <select class="marker-shape">\n    {{#each icons}}\n        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n    {{/each}}\n    </select>\n</td>\n\n{{/ifequal}}\n\n\n{{#ifequal dataType "no-variable"}}\n\n<td>{{ title }}</td>\n<td>edit img</td>\n\n{{/ifequal}}\n';});
+
+
+
+
+define('text!apps/style/templates/symbols/native-symbols.html',[],function () { return '<div>\n        <i class="fa fa-usd" aria-hidden="true"></i>\n \n        <i class="fa fa-usd" aria-hidden="true"></i>\n\n        <i class="fa fa-usd" aria-hidden="true"></i>\n  \n        <i class="fa fa-usd" aria-hidden="true"></i>\n\n        <i class="fa fa-usd" aria-hidden="true"></i>\n \n        <i class="fa fa-usd" aria-hidden="true"></i>\n\n        <i class="fa fa-usd" aria-hidden="true"></i>\n\n        <i class="fa fa-usd" aria-hidden="true"></i>\n\n        <i class="fa fa-usd" aria-hidden="true"></i>\n\n</div>';});
+
+define('apps/style/views/symbols/native-symbols-view',["marionette",
+"handlebars",
+"text!../../templates/symbols/native-symbols.html"
+],
+function (Marionette, Handlebars, NativeSymbolsTemplate) {
+'use strict';
+
+    var NativeSymbolsView = Marionette.ItemView.extend(_.extend({}, {
+        isShowing: false,
+        template: Handlebars.compile(NativeSymbolsTemplate),
+
+        initialize: function (opts) {
+            this.app = opts.app;
+            console.log("native symbols initialized");
+        }
+    }));
+    return NativeSymbolsView;
+});
+
+define('text!apps/style/templates/symbols/custom-symbols.html',[],function () { return '<div>\n    <p>Drop Custom Symbols Here</p>\n</div>';});
+
+define('apps/style/views/symbols/custom-symbols-view',["marionette",
+"handlebars",
+"text!../../templates/symbols/custom-symbols.html"
+],
+function (Marionette, Handlebars, CustomSymbolsTemplate) {
+'use strict';
+
+var CustomSymbolsView = Marionette.ItemView.extend(_.extend({}, {
+    isShowing: false,
+    template: Handlebars.compile(CustomSymbolsTemplate),
+
+    initialize: function (opts) {
+        this.app = opts.app;
+    }
+}));
+return CustomSymbolsView;
+});
+
+define('text!apps/style/templates/symbols/symbol-selection-layout.html',[],function () { return '<div class="symbols-layout-container">\n    <button class="symbol-menu-tabs active-tab" id="native-tab">Symbols</button>\n    <button class="symbol-menu-tabs inactive-tab" id="custom-tab">Custom</button>\n\n    <section id="native-symbols-region">\n\n    </section>\n    <section id="custom-symbols-region">\n            \n    </section>\n</div>';});
+
+define('apps/style/views/symbols/symbol-selection-layout-view',["jquery",
+"marionette",
+"handlebars",
+"apps/style/views/symbols/native-symbols-view",
+"apps/style/views/symbols/custom-symbols-view",
+"text!../../templates/symbols/symbol-selection-layout.html"
+],
+function ($, Marionette, Handlebars, NativeSymbolsView, CustomSymbolsView, SymbolSelectionLayoutTemplate) {
+    'use strict';
+    var SymbolSelectionLayout = Marionette.LayoutView.extend({
+        template: Handlebars.compile(SymbolSelectionLayoutTemplate),
+        initialize: function (opts) {
+            _.extend(this, opts);
+            
+            this.render();
+           // this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
+        },
+
+        onRender: function () {
+            this.nsv = new NativeSymbolsView({
+                app: this.app,
+                model: this.model
+            });
+            this.csv = new CustomSymbolsView({
+                app: this.app,
+                model: this.model
+            });
+            this.nativeSymbols.show(this.nsv);
+            this.customSymbols.show(this.csv);
+            this.customSymbols.$el.hide();
+            this.showNative();
+        },
+
+        events: {
+            "click #native-tab" : "showNative",
+            "click #custom-tab" : "showCustom"
+            
+        },
+
+        showNative: function () {
+            console.log("show native icons");
+            this.$el.find('#native-tab').removeClass('inactive-tab');
+            this.$el.find('#custom-tab').addClass('inactive-tab');
+            this.customSymbols.$el.hide();
+            this.nativeSymbols.$el.show();
+        },
+
+        showCustom: function () {
+            this.$el.find('#custom-tab').removeClass('inactive-tab');
+            this.$el.find('#native-tab').addClass('inactive-tab');
+            this.customSymbols.$el.show();
+            this.nativeSymbols.$el.hide();
+            
+        },
+
+        regions: {
+            nativeSymbols: "#native-symbols-region",
+            customSymbols: "#custom-symbols-region"
+        }
+
+    });
+    return SymbolSelectionLayout;
+});
+
+
+define('text!apps/style/templates/right/marker-style-child.html',[],function () { return '{{#ifequal this.dataType "categorical"}}\n\n<td><i class="fa fa-circle marker-icon jscolor" id="{{id}}" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>\n<td class="title-td">{{ title }}\n    <div id="ind-symbol-dropdown" class="ind-symbol-dropdown"></div>\n</td>\n<td>\n    <div class="selected-symbol-div">\n        <i class="fa fa-circle fa-fw" aria-hidden="true"></i>\n        <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>\n    </div>\n    <!--\n    <select class="marker-shape">\n    {{#each icons}}\n        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n    {{/each}}\n    </select> \n-->   \n</td>\n{{/ifequal}}\n\n\n{{#ifequal this.dataType "continuous"}}\n\n<td><i class="fa fa-circle marker-icon jscolor" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>\n<td class="title-td">{{ title }}\n    <div id="ind-symbol-dropdown" class="ind-symbol-dropdown"></div>\n</td>\n<td>\n    <div class="selected-symbol-div">\n        <i class="fa fa-circle fa-fw" aria-hidden="true"></i>\n        <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>\n    </div>\n    <!--\n    <select class="marker-shape">\n    {{#each icons}}\n        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n    {{/each}}\n    </select>\n-->\n</td>\n\n{{/ifequal}}\n\n{{#ifequal this.dataType "basic"}}\n\n<td><i class="fa fa-circle marker-icon fa-lg jscolor" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>\n<td class="title-td">{{ title }}\n    <div id="ind-symbol-dropdown" class="ind-symbol-dropdown"></div>\n</td>\n<td>\n    \n    <div class="selected-symbol-div">\n        <i class="fa fa-circle fa-fw" aria-hidden="true"></i>\n        <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>\n    </div>\n    <!--\n    <select class="marker-shape">\n    {{#each icons}}\n        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n    {{/each}}\n    </select>\n    -->\n</td>\n\n{{/ifequal}}\n\n\n{{#ifequal dataType "no-variable"}}\n\n<td>{{ title }}</td>\n<td>edit img</td>\n\n{{/ifequal}}\n';});
 
 define('apps/style/views/right/marker-style-view-child',["jquery",
         "marionette",
         "handlebars",
         "lib/maps/icon-lookup",
+        "apps/style/views/symbols/symbol-selection-layout-view",
         "text!../../templates/right/marker-style-child.html",
         'color-picker-eyecon'
     ],
-    function ($, Marionette, Handlebars, IconLookup, MarkerStyleChildTemplate) {
+    function ($, Marionette, Handlebars, IconLookup, IndSymbolLayoutView, MarkerStyleChildTemplate) {
         'use strict';
 
         var MarkerStyleChildView = Marionette.ItemView.extend({
@@ -14892,16 +15622,16 @@ define('apps/style/views/right/marker-style-view-child',["jquery",
             },
             template: Handlebars.compile(MarkerStyleChildTemplate),
             events: {
-                'change .marker-shape': 'updateShape'
+                'change .marker-shape': 'updateShape',
+                'click .selected-symbol-div': 'showSymbols' 
             },
             modelEvents: {
                 'change': 'updateLayerSymbols'
             },
-                
+
             tagName: "tr",
             className: "table-row",
             templateHelpers: function () {
-                console.log("child helpers", this);
                 return {
                     dataType: this.dataType,
                     icons: IconLookup.getIcons(),
@@ -14913,8 +15643,8 @@ define('apps/style/views/right/marker-style-view-child',["jquery",
                 var that = this,
                     color = this.model.get('fillColor'),
                     id = this.model.get('id');
-                
-                //new color picker is added to the dom each time the icon is clicked, 
+
+                //new color picker is added to the dom each time the icon is clicked,
                 //so we remove the previous color picker with each additional click.
                 //for this reason, each marker's picker needs to be uniquely identified
                 $(".marker-child-color-picker" + id).remove();
@@ -14945,17 +15675,26 @@ define('apps/style/views/right/marker-style-view-child',["jquery",
             },
             updateLayerSymbols: function () {
                 this.layer.setSymbol(this.model);
-                this.render(); 
+                this.render();
             },
             updateSymbolOpacity: function (opacity) {
                 this.model.set("fillOpacity", opacity);
+            },
+            showSymbols: function() {
+                this.indSymbolsView = new IndSymbolLayoutView({
+                    app: this,
+                    el: this.$el.find('#ind-symbol-dropdown')
+                });
+                console.log(this.symbolsView);
             }
+        
 
         });
         return MarkerStyleChildView;
     });
 
-define('text!apps/style/templates/right/marker-style.html',[],function () { return '\n<h5>Marker Style</h5>\n<div class="toggle-buttons">\n    <ul>\n        <li class=" active">\n            <a class="marker-style-tabs style-basic-tab">Basic</a>\n        </li>\n        <li>\n            <a class="marker-style-tabs style-source-tab">Source Code</a>\n        </li>\n    </ul> \n</div>\n<div class="toggle-container marker-style visual-edit" id="visual-marker-style">\n    <table class="color-properties">\n        <tbody>\n            <tr>\n                <td>Data Type</td> \n                <td>\n                    <!-- Need a better term that "data type". this is how the legend is set up so items are organized based on certain properties..-->\n                    <select name="place-properties" id="data-type-select" class="marker-style-select">\n                        <option value="categorical" {{#ifequal dataType "categorical"}} SELECTED {{/ifequal}} {{#unless hasCategoricalFields}}disabled="disabled"{{/unless}}>Category</option>\n\n                        <option value="continuous" {{#ifequal dataType "continuous"}} SELECTED {{/ifequal}} {{#unless hasContinuousFields}}disabled="disabled"{{/unless}} >\n                            Continuous\n                        </option>\n                        <option value="basic" {{#ifequal dataType "basic"}} SELECTED {{/ifequal}}>Simple</option>\n                        <option value="individual" {{#ifequal dataType "individual"}} SELECTED {{/ifequal}}>Individual Sites</option>\n                    </select>\n                </td>\n            </tr>\n        </tbody>\n    </table>    \n{{#ifequal dataType "categorical"}}\n    <table class="color-properties">\n        <tbody>\n            <!-- Rows in this table update based on what "data type" is selected.-->\n            <tr class="categorical-variable">\n                <td>Property</td> \n                <td>\n                    <select id="cat-prop" class="marker-style-select">\n                        {{#each categoricalList}}\n                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}} value="{{ this.value }}">\n                            {{ this.text }} {{#unless this.hasData}} (no data){{/unless}} \n                            </option>\n                        {{/each}}\n                    </select>\n                </td>\n            </tr>\n            <tr class="categorical-variable">\n                <td>Color Ramp</td>\n                <td>\n                    <div>\n                        <a>\n                            \n                            <div class="selected-palette-wrapper">\n                                <a>\n                                    <ul class="selected-ul">\n                                        {{#with selectedColorPalette}}\n                                        \n                                            <li class="selected-palette-list">\n                                                <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">\n                                                    {{#each this}}\n                                                    <li class="palette-item" style= "background-color: #{{this}}">\n                                                          \n                                                    </li>\n                                                    {{/each}}\n                                                </ul>\n                                            </li>\n                                       \n                                        {{/with}}\n                                    </ul>\n                                <i class="fa fa-angle-down palette-icon"></i>\n                                </a>\n                            </div>\n                        </a>\n                        <div class="palette-wrapper">\n                            <ul>\n                                {{#each allColors}}\n                                <a>\n                                    <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">\n                                        <ul class="palette-container" value="{{@index}}">\n                                            {{#each this}}\n                                            <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">\n                                                \n                                            </li>\n                                            {{/each}}\n                                        </ul>\n                                    </li>\n                                </a>\n                                {{/each}}\n                            </ul>\n                        </div>\n                    </div>\n                </td>\n            </tr>\n            <tr>\n                <td>Symbol Shape</td>\n                <td>\n                    <select class="global-marker-shape marker-style-select">\n                    {{#each icons}}\n                        <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n                    {{/each}}\n                    </select>\n                </td>\n            </tr>\n            <tr>\n                <td>Width</td>\n                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>\n            </tr>\n            <tr>\n                <td>Stroke Weight</td>\n                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>\n            </tr>\n            <tr>   \n                <td>Stroke Color</td>\n                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: {{metadata.strokeColor}} " aria-hidden="true">\n                    </i>\n                    </td>\n            </tr>\n            <tr>\n                <td>Stroke Opacity</td>\n                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>\n            </tr>\n\n        </tbody>\n    </table>\n</div>\n\n<div>\n    <table class="symbols-table">\n        <thead>\n            <tr>\n                <th>Value</th>\n                <th>Legend Label</th> \n                <th>Shape</th> \n            </tr>\n        </thead>\n        <tbody id="symbols">\n            \n        </tbody>\n    </table>\n</div>\n{{/ifequal}}\n{{#ifequal dataType "continuous"}}\n    <table class="color-properties">\n        <tbody>    \n            <tr class="continuous-variable">\n                <td>Property</td> \n                <td>\n                    <select id="cont-prop" class="marker-style-select">\n                        {{#each continuousList}}\n                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}} value="{{ this.value }}">\n                                {{ this.text }}{{#unless this.hasData}} (no data){{/unless}}\n                            </option>\n                        {{/each}}\n                    </select>\n                </td>\n            </tr>\n\n            <tr class="continuous-variable">\n                <td>Buckets:</td>\n                <td><input id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="9"></td>\n            </tr>\n            <tr class="continuous-variable">\n                <td>Color Ramp</td>\n                <td>\n                    <div>\n                        <a>\n                            \n                            <div class="selected-palette-wrapper">\n                                <a>\n                                    <ul class="selected-ul">\n                                        {{#with selectedColorPalette}}\n                                        \n                                            <li class="selected-palette-list">\n                                                <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">\n                                                    {{#each this}}\n                                                    <li class="palette-item" style= "background-color: #{{this}}">\n                                                          \n                                                    </li>\n                                                    {{/each}}\n                                                </ul>\n                                            </li>\n                                       \n                                        {{/with}}\n                                    </ul>\n                                <i class="fa fa-angle-down palette-icon"></i>\n                                </a>\n                            </div>\n                        </a>\n                        <div class="palette-wrapper">\n                            <ul>\n                                {{#each allColors}}\n                                <a>\n                                    <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">\n                                        <ul class="palette-container" value="{{@index}}">\n                                            {{#each this}}\n                                            <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">\n                                                \n                                            </li>\n                                            {{/each}}\n                                        </ul>\n                                    </li>\n                                </a>\n                                {{/each}}\n                            </ul>\n                        </div>\n                    </div>\n                </td>\n            </tr>\n            <tr>\n                <td>Symbol Shape</td>\n                <td>\n                    <select class="global-marker-shape marker-style-select">\n                    {{#each icons}}\n                        <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n                    {{/each}}\n                    </select>\n                </td>\n            </tr>\n        </tbody>\n    </table>\n    <table class="color-properties">\n        <tbody>\n            <tr>\n                <td>Opacity</td>\n                <td>\n                     <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">\n                </td>\n                <td>Width</td>\n                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>\n            </tr>\n            <tr>\n                <td>Stroke Weight</td>\n                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>\n            </tr>\n            <tr>   \n                <td>Stroke Color</td>\n                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: {{metadata.strokeColor}} " aria-hidden="true">\n                    </i>\n                    </td>\n            </tr>\n            <tr>\n                <td>Stroke Opacity</td>\n                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>\n            </tr>\n        </tbody>\n    </table>\n</div>\n\n<div>\n    <table class="symbols-table">\n        <thead>\n            <tr>\n                <th class="symbols-th">Value</th>\n                <th class="symbols-th">Legend Label</th> \n                <th class="symbols-th">Shape</th> \n            </tr>\n        </thead>\n        <tbody id="symbols">\n            \n        </tbody>\n    </table>\n</div>\n{{/ifequal}}\n\n{{#ifequal dataType "basic"}}\n<table class="color-properties">\n        <tbody>            \n            <tr>\n                <td>Symbol Shape</td>\n                <td>\n                    <select class="global-marker-shape marker-style-select">\n                    {{#each icons}}\n                        <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n                    {{/each}}\n                    </select>\n                </td>\n            </tr>\n            <tr>\n                <td>Width</td>\n                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>\n            </tr>\n            <tr>\n                <td>Stroke Weight</td>\n                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>\n            </tr>\n            <tr>   \n                <td>Stroke Color</td>\n                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: {{metadata.strokeColor}} " aria-hidden="true">\n                    </i>\n                    </td>\n            </tr>\n            <tr>\n                <td>Stroke Opacity</td>\n                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>\n            </tr>\n        </tbody>\n    </table>\n</div>\n\n<div>\n    <table class="symbols-table">\n        <thead>\n            <tr>\n                <th></th>\n                <th>Legend Label</th> \n                <th>Shape</th> \n            </tr>\n        </thead>\n        <tbody id="symbols">\n            \n        </tbody>\n    </table>\n</div>\n{{/ifequal}}\n\n';});
+
+define('text!apps/style/templates/right/marker-style.html',[],function () { return '\n<h5>Marker Style</h5>\n<div class="toggle-buttons">\n    <ul>\n        <li class=" active">\n            <a class="marker-style-tabs style-basic-tab">Basic</a>\n        </li>\n        <li>\n            <a class="marker-style-tabs style-source-tab">Source Code</a>\n        </li>\n    </ul> \n</div>\n<div class="toggle-container marker-style visual-edit" id="visual-marker-style">\n    <table class="color-properties">\n        <tbody>\n            <tr>\n                <td>Data Type</td> \n                <td>\n                    <!-- Need a better term that "data type". this is how the legend is set up so items are organized based on certain properties..-->\n                    <select name="place-properties" id="data-type-select" class="marker-style-select">\n                        <option value="categorical" {{#ifequal dataType "categorical"}} SELECTED {{/ifequal}} {{#unless hasCategoricalFields}}disabled="disabled"{{/unless}}>Category</option>\n\n                        <option value="continuous" {{#ifequal dataType "continuous"}} SELECTED {{/ifequal}} {{#unless hasContinuousFields}}disabled="disabled"{{/unless}} >\n                            Continuous\n                        </option>\n                        <option value="basic" {{#ifequal dataType "basic"}} SELECTED {{/ifequal}}>Simple</option>\n                        <option value="individual" {{#ifequal dataType "individual"}} SELECTED {{/ifequal}}>Individual Sites</option>\n                    </select>\n                </td>\n            </tr>\n        </tbody>\n    </table>    \n{{#ifequal dataType "categorical"}}\n    <table class="color-properties">\n        <tbody>\n            <!-- Rows in this table update based on what "data type" is selected.-->\n            <tr class="categorical-variable">\n                <td>Property</td> \n                <td>\n                    <select id="cat-prop" class="marker-style-select">\n                        {{#each categoricalList}}\n                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}} value="{{ this.value }}">\n                            {{ this.text }} {{#unless this.hasData}} (no data){{/unless}} \n                            </option>\n                        {{/each}}\n                    </select>\n                </td>\n            </tr>\n            <tr class="categorical-variable">\n                <td>Color Ramp</td>\n                <td>\n                    <div>\n                        <a>\n                            \n                            <div class="selected-palette-wrapper">\n                                <a>\n                                    <ul class="selected-ul">\n                                        {{#with selectedColorPalette}}\n                                        \n                                            <li class="selected-palette-list">\n                                                <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">\n                                                    {{#each this}}\n                                                    <li class="palette-item" style= "background-color: #{{this}}">\n                                                          \n                                                    </li>\n                                                    {{/each}}\n                                                </ul>\n                                            </li>\n                                       \n                                        {{/with}}\n                                    </ul>\n                                <i class="fa fa-angle-down palette-icon"></i>\n                                </a>\n                            </div>\n                        </a>\n                        <div class="palette-wrapper">\n                            <ul>\n                                {{#each allColors}}\n                                <a>\n                                    <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">\n                                        <ul class="palette-container" value="{{@index}}">\n                                            {{#each this}}\n                                            <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">\n                                                \n                                            </li>\n                                            {{/each}}\n                                        </ul>\n                                    </li>\n                                </a>\n                                {{/each}}\n                            </ul>\n                        </div>\n                    </div>\n                </td>\n            </tr>\n            <tr>\n                <td>Symbol Shape</td>\n                <td>\n                    <div id="global-symbol-dropdown" class="global-symbol-dropdown"></div>\n                    <div class="selected-symbol-div" id="global-symbol">\n                        <i class="fa fa-circle fa-fw" aria-hidden="true"></i>\n                        <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>\n                    </div>\n                    <!--\n                    <select class="global-marker-shape marker-style-select">\n                    {{#each icons}}\n                        <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n                    {{/each}}\n                    </select>\n                -->\n                </td>\n            </tr>\n            <tr>\n                <td>Opacity</td>\n                <td>\n                     <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">\n                </td>\n            </tr>\n            <tr>\n                <td>Width</td>\n                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>\n            </tr>\n            <tr>\n                <td>Stroke Weight</td>\n                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>\n            </tr>\n            <tr>   \n                <td>Stroke Color</td>\n                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: {{metadata.strokeColor}} " aria-hidden="true">\n                    </i>\n                    </td>\n            </tr>\n            <tr>\n                <td>Stroke Opacity</td>\n                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>\n            </tr>\n\n        </tbody>\n    </table>\n</div>\n\n<div>\n    <table class="symbols-table">\n        <thead>\n            <tr>\n                <th>Value</th>\n                <th>Legend Label</th> \n                <th>Shape</th> \n            </tr>\n        </thead>\n        <tbody id="symbols">\n            \n        </tbody>\n    </table>\n</div>\n{{/ifequal}}\n{{#ifequal dataType "continuous"}}\n    <table class="color-properties">\n        <tbody>    \n            <tr class="continuous-variable">\n                <td>Property</td> \n                <td>\n                    <select id="cont-prop" class="marker-style-select">\n                        {{#each continuousList}}\n                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}} value="{{ this.value }}">\n                                {{ this.text }}{{#unless this.hasData}} (no data){{/unless}}\n                            </option>\n                        {{/each}}\n                    </select>\n                </td>\n            </tr>\n\n            <tr class="continuous-variable">\n                <td>Buckets:</td>\n                <td><input id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="9"></td>\n            </tr>\n            <tr class="continuous-variable">\n                <td>Color Ramp</td>\n                <td>\n                    <div>\n                        <a>\n                            \n                            <div class="selected-palette-wrapper">\n                                <a>\n                                    <ul class="selected-ul">\n                                        {{#with selectedColorPalette}}\n                                        \n                                            <li class="selected-palette-list">\n                                                <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">\n                                                    {{#each this}}\n                                                    <li class="palette-item" style= "background-color: #{{this}}">\n                                                          \n                                                    </li>\n                                                    {{/each}}\n                                                </ul>\n                                            </li>\n                                       \n                                        {{/with}}\n                                    </ul>\n                                <i class="fa fa-angle-down palette-icon"></i>\n                                </a>\n                            </div>\n                        </a>\n                        <div class="palette-wrapper">\n                            <ul>\n                                {{#each allColors}}\n                                <a>\n                                    <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">\n                                        <ul class="palette-container" value="{{@index}}">\n                                            {{#each this}}\n                                            <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">\n                                                \n                                            </li>\n                                            {{/each}}\n                                        </ul>\n                                    </li>\n                                </a>\n                                {{/each}}\n                            </ul>\n                        </div>\n                    </div>\n                </td>\n            </tr>\n            <tr>\n                <td>Symbol Shape</td>\n                <td>\n                    <div id="global-symbol-dropdown" class="global-symbol-dropdown"></div>\n                    <div class="selected-symbol-div" id="global-symbol">\n                        <i class="fa fa-circle fa-fw" aria-hidden="true"></i>\n                        <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>\n                    </div>\n                </td>\n            </tr>\n        </tbody>\n    </table>\n    <table class="color-properties">\n        <tbody>\n            <tr>\n                <td>Opacity</td>\n                <td>\n                     <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">\n                </td>\n            </tr>\n            <tr>\n                <td>Width</td>\n                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>\n            </tr>\n            <tr>\n                <td>Stroke Weight</td>\n                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>\n            </tr>\n            <tr>   \n                <td>Stroke Color</td>\n                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: {{metadata.strokeColor}} " aria-hidden="true">\n                    </i>\n                    </td>\n            </tr>\n            <tr>\n                <td>Stroke Opacity</td>\n                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>\n            </tr>\n        </tbody>\n    </table>\n</div>\n\n<div>\n    <table class="symbols-table">\n        <thead>\n            <tr>\n                <th class="symbols-th">Value</th>\n                <th class="symbols-th">Legend Label</th> \n                <th class="symbols-th">Shape</th> \n            </tr>\n        </thead>\n        <tbody id="symbols">\n            \n        </tbody>\n    </table>\n</div>\n{{/ifequal}}\n\n{{#ifequal dataType "basic"}}\n<table class="color-properties">\n        <tbody>            \n            <tr>\n                <td>Symbol Shape</td>\n                <td>\n                    <div id="global-symbol-dropdown" class="global-symbol-dropdown"></div>\n                    <div class="selected-symbol-div" id="global-symbol">\n                        <i class="fa fa-circle fa-fw" aria-hidden="true"></i>\n                        <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>\n                    </div>\n                    <!--\n                    <select class="global-marker-shape marker-style-select">\n                    {{#each icons}}\n                        <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>\n                    {{/each}}\n                    </select>\n                -->\n                </td>\n            </tr>\n            <tr>\n                <td>Opacity</td>\n                <td>\n                     <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">\n                </td>\n            </tr>\n            <tr>\n                <td>Width</td>\n                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>\n            </tr>\n            <tr>\n                <td>Stroke Weight</td>\n                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>\n            </tr>\n            <tr>   \n                <td>Stroke Color</td>\n                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: {{metadata.strokeColor}} " aria-hidden="true">\n                    </i>\n                    </td>\n            </tr>\n            <tr>\n                <td>Stroke Opacity</td>\n                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>\n            </tr>\n        </tbody>\n    </table>\n</div>\n\n<div>\n    <table class="symbols-table">\n        <thead>\n            <tr>\n                <th></th>\n                <th>Legend Label</th> \n                <th>Shape</th> \n            </tr>\n        </thead>\n        <tbody id="symbols">\n            \n        </tbody>\n    </table>\n</div>\n{{/ifequal}}\n\n';});
 
 /** @license
  *
@@ -16440,12 +17179,13 @@ define('apps/style/views/right/marker-style-view',["jquery",
         "handlebars",
         "lib/maps/icon-lookup",
         "apps/style/views/right/marker-style-view-child",
+        "apps/style/views/symbols/symbol-selection-layout-view",
         "text!../../templates/right/marker-style.html",
         "collections/symbols",
         'color-picker-eyecon',
         "palette"
     ],
-    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, MarkerStyleTemplate, Symbols) {
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, SymbolSelectionLayoutView, MarkerStyleTemplate, Symbols) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
@@ -16461,10 +17201,6 @@ define('apps/style/views/right/marker-style-view',["jquery",
             },
             catDataHasBeenBuilt: false,
             template: Handlebars.compile(MarkerStyleTemplate),
-            modelEvents: {
-                //'change:symbols': 'render'//,
-                //'change:metadata': 'contData'
-            },
 
             //each of these childViews is a symbol. this view renders the value-rules box
             childView: MarkerStyleChildView,
@@ -16480,19 +17216,48 @@ define('apps/style/views/right/marker-style-view',["jquery",
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log('initialize', this.model.get('symbols'), this.collection);
+
+
+                /* reset layer type to 'basic' on initialize
+                 this is the easiest way to prevent the view from being initialized
+                 as continuous or categorical when no such cont. or cat. data is available
+                 e.g. in case the user switches from a data source that has continuous data to one that doesn't
+                */
+                var propertiesList = this.buildPropertiesList();
+                if (
+                    (propertiesList[1].length === 0 && this.model.get('layer_type') === 'continuous') ||
+                    (propertiesList[0].length === 0 && this.model.get('layer_type') === 'categorical')
+                ) {
+                    this.model.set('layer_type', 'basic');
+                }
+
+                // and set the variable
                 this.dataType = this.model.get('layer_type');
+
+
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
                 this.collection = new Symbols(this.model.get("symbols"));
 
-                // builds correct palette on-load
-               // this.buildPalettes(this.getCatInfo().list.length);
-               this.createCorrectSymbols();
-             
-                $('body').click(this.hideColorRamp);
+                this.selectedProp = this.model.get('metadata').currentProp;
+
+                // important to render before createCorrectSymbol because createCorrectSymbol
+                // depends on info in the DOM (e.g. what property is selected)
+                this.render();
+
+                // don't recreate symbols if they already exist
+                // this is so existing unique individual attributes aren't overwritten by global ones
+                if (this.model.get('newLayer') === true) {
+                    this.createCorrectSymbols();
+                } else if (this.dataType === 'basic') {
+                    this.createCorrectSymbols();
+                } else {
+                    this.buildPalettes(this.model.get('symbols').length);
+                    this.updateMapAndRender();
+                }
+
+                $('body').click($.proxy(this.hideColorRamp, this));
 
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
-                this.listenTo(this.app.vent, 'update-data-source', this.render);
                 this.listenTo(this.app.vent, 'update-map', this.updateMap);
             },
 
@@ -16503,18 +17268,15 @@ define('apps/style/views/right/marker-style-view',["jquery",
                 this.$el.find('#stroke-color-picker').ColorPicker({
 
                     onShow: function (colpkr) {
-                        console.log("colorPicker show");
                         $(colpkr).fadeIn(500);
                         return false;
                     },
                     onHide: function (colpkr) {
-                        console.log("colorPicker hide");
                         that.updateStrokeColor(color);
                         $(colpkr).fadeOut(500);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
-                        console.log("colorPicker changed");
                         color = "#" + hex;
                     }
                 });
@@ -16524,37 +17286,40 @@ define('apps/style/views/right/marker-style-view',["jquery",
             hideColorRamp: function (e) {
                 var $el = $(e.target);
                 if (!$el.hasClass('palette-wrapper') &&
-                        !$el.hasClass('selected-palette-list') &&
-                        !$el.hasClass('selected-palette-wrapper') &&
-                        !$el.hasClass('selected-ul') &&
-                        !$el.hasClass('palette-item')
-                        ) {
+                !$el.hasClass('selected-palette-list') &&
+                !$el.hasClass('selected-palette-wrapper') &&
+                !$el.hasClass('selected-ul') &&
+                !$el.hasClass('palette-item') ) {
                     $(".palette-wrapper").hide();
                 }
+
+                if (!$el.hasClass('symbol-menu-tabs') &&
+                !$el.hasClass('symbols-layout-container')  &&
+                !$el.hasClass('native-symbols-region') &&
+                !$el.hasClass('custom-symbols-region') &&
+                !$el.hasClass('global-symbol-dropdown') &&
+                !$el.hasClass('selected-symbol-div') &&
+                !$el.hasClass('fa-circle') &&
+                !$el.hasClass('fa-angle-down') ) {
+                    $(".symbols-layout-container").hide();
+                }
             },
-/*
-            reRender: function () {
-                console.log("symbol change registered");
-                //rebuild symbols collection based on updated info:
-                this.collection = new Backbone.Collection(this.model.get("symbols"));
-                this.render();
-            },
-*/
+
             templateHelpers: function () {
                 var metadata = this.model.get("metadata"),
-                columnList = this.buildColumnList(),
+                propertiesList = this.buildPropertiesList(),
                     helpers;
                 helpers = {
                     metadata: metadata,
                     dataType: this.dataType,
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
-                    categoricalList: columnList[0],
-                    continuousList: columnList[1],
+                    categoricalList: propertiesList[0],
+                    continuousList: propertiesList[1],
                     icons: IconLookup.getIcons(),
                     selectedProp: this.selectedProp,
-                    hasContinuousFields: (columnList[1].length > 0),
-                    hasCategoricalFields: (columnList[0].length > 0)
+                    hasContinuousFields: (propertiesList[1].length > 0),
+                    hasCategoricalFields: (propertiesList[0].length > 0)
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
@@ -16575,13 +17340,48 @@ define('apps/style/views/right/marker-style-view',["jquery",
                 'change #stroke-opacity': 'updateStrokeOpacity',
                 'click .selected-palette-wrapper': 'showPalettes',
                 'click .palette-list': 'selectPalette',
-                'click .palette-list *': 'selectPalette'
+                'click .palette-list *': 'selectPalette',
+                'click #global-symbol': 'showSymbols'
+               // 'click .palette-list *': 'selectPalette'
+            },
+
+            showSymbols: function (e) {
+                this.symbolsView = new SymbolSelectionLayoutView({
+                    app: this,
+                    el: $('#global-symbol-dropdown')
+                });
+                console.log(this.symbolsView);
+              //  this.$el.append(this.symbolsView.$el);
+              //  this.symbolsView.$el.show();
             },
 
             selectDataType: function (e) {
                 this.dataType = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
                 this.model.set("layer_type", this.dataType);
-                this.render();
+
+                if (this.dataType == 'continuous') {
+                    // loops over the properties list and selects the first property that actually contains data
+                    // i.e. it skips over any property that contains no data (one that would be grayed out in the dropdown)
+                    for (var i=0; i < this.categoricalList.length; i++) {
+                        if (this.categoricalList[i].hasData) {
+                            this.selectedProp = this.continuousList[i].value;
+                            this.model.get('metadata').currentProp = this.continuousList[i].value;
+                            break;
+                        }
+                    }
+                }
+
+                if (this.dataType == 'categorical') {
+                    // loops over the properties list and selects the first property that actually contains data
+                    // i.e. it skips over any property that contains no data (one that would be grayed out in the dropdown)
+                    for (var i=0; i < this.categoricalList.length; i++) {
+                        if (this.categoricalList[i].hasData) {
+                            this.selectedProp = this.categoricalList[i].value;
+                            this.model.get('metadata').currentProp = this.categoricalList[i].value;
+                            break;
+                        }
+                    }
+                }
                 this.createCorrectSymbols();
             },
 
@@ -16589,59 +17389,72 @@ define('apps/style/views/right/marker-style-view',["jquery",
                 this.collection = new Symbols(this.model.get("symbols"));
                 this.render();
             },
-            buildColumnList: function () {
+
+            // builds list of properties/fields to populate property dropdown list
+            buildPropertiesList: function () {
                 //clearing out the lists
                 this.categoricalList = [];
                 this.continuousList = [];
+
+                // generic property lists for photos, audio, and markers
+                // property lists for custom forms are generated by 'buildCustomPropertiesList()'
                 var photoAudioList = ["id", "name", "caption", "tags", "owner", "attribution"],
                 markerList = ["name", "caption", "tags", "owner"];
+
                 var key = this.model.get('data_source'),
-                    dataEntry = this.app.dataManager.getData(key);
+                    collection = this.app.dataManager.getCollection(key);
+
                 //still need to account for map-images below...
                 if (key == "photos" || key == "audio") {
-                    this.buildGenericColumnList(photoAudioList);
+                    this.buildGenericPropertiesList(photoAudioList, collection);
                 } else if (key == "markers") {
-                    this.buildGenericColumnList(markerList);
+                    this.buildGenericPropertiesList(markerList, collection);
                 } else if (key.includes("form_")) {
-                    this.buildCustomColumnList(dataEntry);
+                    this.buildCustomPropertiesList(collection);
                 }
                 return [this.categoricalList, this.continuousList];
             },
 
-            buildGenericColumnList: function(list) {
+            // builds 'this.categoricalList' for generic data types
+            // note: all generic properties/fields are categorical, not continuous
+            buildGenericPropertiesList: function(list, collection) {
                 for (var i=0;i<list.length;i++) {
                     this.categoricalList.push({
-                        text: list[i], 
+                        text: list[i],
                         value:list[i],
-                        hasData: true
+                        hasData: this.fieldHasData(collection, list[i])
                     });
                 }
             },
 
-            buildCustomColumnList: function (dataEntry) {
+            // builds 'this.categoricalList' or 'this.continuousList' for custom data types
+            buildCustomPropertiesList: function (collection) {
                 var that = this;
-                dataEntry.fields.models.forEach(function(log) {
+                collection.getFields().models.forEach(function(log) {
                     var field = log.get("col_name");
-    
-                    if (log.get("data_type") === "text" || log.get("data_type") === "choice") {
+                    if (log.get("data_type") === "text" || log.get("data_type") === "choice" || log.get("data_type") === "boolean") {
                         that.categoricalList.push({
                             text: log.get("col_alias"),
                             value: log.get("col_name"),
-                            hasData: that.columnHasData(dataEntry, field)
+                            hasData: that.fieldHasData(collection, field)
                         });
                     } else if (log.get("data_type") === "integer" || log.get("data_type") === "rating"){
                         that.continuousList.push({
                             text: log.get("col_alias"),
                             value: log.get("col_name"),
-                            hasData: that.columnHasData(dataEntry, field)
-                        });  
+                            hasData: that.fieldHasData(collection, field)
+                        });
                     }
                 });
             },
 
-            columnHasData: function (dataEntry, field) {
+            // this function determines if a particular property/field
+            // actually contains any data. If it does not, then the function returns 'false'
+            // and that property will be grayed-out in the properties dropdown list (disabled)
+            fieldHasData: function (collection, field) {
                 var hasData = [];
-                dataEntry.collection.models.forEach(function(d) {
+
+                collection.models.forEach(function(d) {
                     if (d.get(field)){
                         hasData.push(true);
                     } else {
@@ -16649,6 +17462,7 @@ define('apps/style/views/right/marker-style-view',["jquery",
                     }
                 });
 
+                //
                 if (hasData.includes(true)) {
                     return true;
                 } else {
@@ -16661,41 +17475,24 @@ define('apps/style/views/right/marker-style-view',["jquery",
                     this.contData();
                 } else if (this.dataType == "categorical") {
                     this.catData();
-
-                    /*
-                    // below was an attempt to not regenerate categorical symbols every time
-                    // but it didn't work if the existing symbols it retrieved were categorical
-                    if (!this.model.get("metadata").catBuilt) {
-                        console.log("building catData", this.collection);
-                        this.catData();
-                    } else {
-                        console.log("catData already exists", this.model.get("symbols"));
-                        this.setSymbols(new Symbols(this.model.get("symbols")));
-                        console.log(this.getCatInfo().list, this.getCatInfo().list.length);
-                        this.buildPalettes(this.getCatInfo().list.length);
-                       // return;
-                    }
-                    */
                 } else if (this.dataType == "basic") {
                     this.simpleData();
                 }
             },
 
             contData: function() {
-                console.log("cont change registered");
                 this.buildPalettes();
                 var cssId = "#cont-prop";
                 this.setSelectedProp(cssId);
                 this.setSymbols(this.buildContinuousSymbols(this.getContInfo()));
             },
 
-            catData: function() { 
-                console.log("catData triggered"); 
+            catData: function() {
                 var cssId = "#cat-prop";
                 this.setSelectedProp(cssId);
                 var catInfo = this.getCatInfo();
                 this.buildPalettes(catInfo.list.length);
-             
+
                 this.setSymbols(this.buildCategoricalSymbols(catInfo));
                 this.model.get("metadata").catBuilt = true;
             },
@@ -16703,15 +17500,18 @@ define('apps/style/views/right/marker-style-view',["jquery",
             buildContinuousSymbols: function (cont) {
                 var counter = 0,
                 selected = this.selectedProp;
+                if (!this.layerDraft.continuous === null) {
+                    this.model.set('symbols', this.layerDraft.continuous);
+                }
                 this.layerDraft.continuous = new Symbols();
                 while (cont.currentFloor < cont.max) {
                     this.layerDraft.continuous.add({
                         "rule": selected + " >= " + cont.currentFloor.toFixed(0) + " and " + selected + " <= " + (cont.currentFloor + cont.segmentSize).toFixed(0),
                         "title": "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
-                        "fillOpacity": parseFloat(this.$el.find("#palette-opacity").val()) || 1,
-                        "strokeWeight": parseFloat(this.$el.find("#stroke-weight").val()) || 1,
-                        "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()) || 1,
-                        "width": parseFloat(this.$el.find("#marker-width").val()) || 20,
+                        "fillOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#palette-opacity").val()), 1),
+                        "strokeWeight": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-weight").val()), 1),
+                        "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
+                        "width": this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
                         "shape": this.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + this.selectedColorPalette[counter],
                         "strokeColor": this.model.get("metadata").strokeColor,
@@ -16719,25 +17519,12 @@ define('apps/style/views/right/marker-style-view',["jquery",
                     });
                     counter++;
                     cont.currentFloor = Math.round((cont.currentFloor + cont.segmentSize)*100)/100;
-                    console.log(cont.currentFloor);
                 }
+                this.layerNoLongerNew();
                 return this.layerDraft.continuous;
             },
-/*
-            manageDefault: function (input) {
-                console.log(input);
-                var output;
-                if (input == undefined || NaN) { 
-                    output = 1;
-                } else {
-                    output = parseFloat(input);
-                }
-                console.log(output);
-                return output;
-            },
-*/
+
             buildCategoricalSymbols: function (cat) {
-                console.log(cat);
                 var that = this,
                 idCounter = 1,
                 paletteCounter = 0;
@@ -16746,37 +17533,34 @@ define('apps/style/views/right/marker-style-view',["jquery",
                     that.layerDraft.categorical.add({
                         "rule": that.selectedProp + " = " + item,
                         "title": item,
-                        "fillOpacity": parseFloat(that.$el.find("#palette-opacity").val()) || 1,
-                        "strokeWeight": parseFloat(that.$el.find("#stroke-weight").val()) || 1,
-                        "strokeOpacity": parseFloat(that.$el.find("#stroke-opacity").val()) || 1,
-                        "width": parseFloat(that.$el.find("#marker-width").val()) || 20,
+                        "fillOpacity": that.defaultIfUndefined(parseFloat(that.$el.find("#palette-opacity").val()), 1),
+                        "strokeWeight": that.defaultIfUndefined(parseFloat(that.$el.find("#stroke-weight").val()), 1),
+                        "strokeOpacity": that.defaultIfUndefined(parseFloat(that.$el.find("#stroke-opacity").val()), 1),
+                        "width": that.defaultIfUndefined(parseFloat(that.$el.find("#marker-width").val()), 20),
                         "shape": that.$el.find(".global-marker-shape").val(),
-                        "fillColor": "#" + that.selectedColorPalette[paletteCounter > 7 ? paletteCounter = 0 : paletteCounter],
+                        "fillColor": "#" + that.selectedColorPalette[paletteCounter % 8],
                         "strokeColor": that.model.get("metadata").strokeColor,
-                        "id": idCounter, 
+                        "id": idCounter,
                         "instanceCount": cat.instanceCount[item]
                     });
 
                     idCounter++;
                     paletteCounter++;
                 });
+                this.layerNoLongerNew();
                 return that.layerDraft.categorical;
             },
 
-            /* returns an object containing information
-             * for defining a layer's continuous 'buckets'
-            */
+            // returns an object containing information
+            // for defining a layer's continuous 'buckets'
             getContInfo: function () {
-                var that = this,
-                selected = this.selectedProp;
-                console.log(selected);
-                var buckets = this.model.get("metadata").buckets;
+                var selected = this.selectedProp,
+                    buckets = this.model.get("metadata").buckets,
+                    key = this.model.get('data_source'),
+                    collection = this.app.dataManager.getCollection(key);
                 this.continuousData = [];
-                var key = this.model.get('data_source'); 
-                var dataEntry = this.app.dataManager.getData(key);
-
-                dataEntry.collection.models.forEach(function(d) {
-                    that.continuousData.push(d.get(selected));
+                collection.models.forEach((d) => {
+                    this.continuousData.push(d.get(selected));
                 });
                 var cont = {};
                 cont.min = Math.min(...this.continuousData);
@@ -16795,44 +17579,44 @@ define('apps/style/views/right/marker-style-view',["jquery",
             getCatInfo: function () {
                 var key = this.model.get('data_source'),
                 cat = {
-                   list: [], 
+                   list: [],
                    instanceCount: {},
                 },
                 selected = this.selectedProp,
-                categoricalData = this.app.dataManager.getData(key);
-                console.log("get catInfo: $selected", selected, this.model.get('metadata'), this.selectedProp);
-                categoricalData.collection.models.forEach(function(d) {
+                collection = this.app.dataManager.getCollection(key);
+                collection.models.forEach(function(d) {
                     if (!cat.list.includes(d.get(selected)) && d.get(selected)) {
                         cat.list.push(d.get(selected));
                         cat.instanceCount[d.get(selected)] = 1;
                     } else {
                         cat.instanceCount[d.get(selected)]++;
-                    }                  
+                    }
                 });
-                return cat; 
+                return cat;
             },
 
 
 
             simpleData: function () {
-                console.log("simpleData triggered", this.model); 
                 this.setSymbols(this.buildSimpleSymbols(this.model.get('data_source')));
             },
 
             buildSimpleSymbols: function (key) {
-                name = this.app.dataManager.getData(key).name;
+                name = this.app.dataManager.getCollection(key).getTitle();
 
-               // if (this.model.getSymbols().length > 0) {
-               //     this.layerDraft.simple = this.model.getSymbols();
-               // } else {
-                    this.layerDraft.simple = new Symbols([{
-                        "rule": "*",
-                        "title": name,
-                        "shape": "circle",
-                        "fillColor": "#60c7cc",
-                        "id": 1
-                    }]);
-              //  }
+                this.layerDraft.simple = new Symbols([{
+                    "rule": "*",
+                    "title": name,
+                    "shape": this.$el.find(".global-marker-shape").val(),
+                    "fillOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#palette-opacity").val()), 1),
+                  //  "fillColor": "#60c7cc",
+                    "strokeWeight": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-weight").val()), 1),
+                    "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
+                    "strokeColor": this.model.get("metadata").strokeColor,
+                    'width': this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
+                    "id": 1
+                }]);
+                this.layerNoLongerNew();
                 return this.layerDraft.simple;
             },
 
@@ -16841,14 +17625,17 @@ define('apps/style/views/right/marker-style-view',["jquery",
             setSelectedProp: function (cssId) {
                 if (this.$el.find(cssId).val()) {
                     this.model.get('metadata').currentProp = this.$el.find(cssId).val();
-                } 
+                }
                 this.selectedProp = this.model.get('metadata').currentProp;
-                console.log('changing selected proprty', this.$el.find(cssId).val(), this.selectedProp);
             },
 
             setSymbols: function (symbs) {
                 this.collection = symbs;
-                this.model.set("symbols", symbs.toJSON());
+
+
+                // since we're reassigning this.collection above, it's no longer pointing
+                // to model.get('symbols'), so we eed to sync the model symbols to the new collection
+                this.syncModelSymbsToCollection();
                 this.updateMapAndRender();
             },
 
@@ -16856,7 +17643,7 @@ define('apps/style/views/right/marker-style-view',["jquery",
                 this.updateMap();
                 this.render();
             },
-            
+
 
             delayExecution: function (timeoutVar, func, millisecs) {
                 /*
@@ -16892,7 +17679,6 @@ define('apps/style/views/right/marker-style-view',["jquery",
             },
 
             buildPalettes: function (itemCount) {
-                console.log("building palette, count = ", count);
                 var count = itemCount;
                 if (count > 8) { count = 8; }
                 var seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8;
@@ -16924,7 +17710,6 @@ define('apps/style/views/right/marker-style-view',["jquery",
             },
 
             updateMap: function () {
-                console.log('updateMap');
                 var that = this;
                 this.delayExecution("mapTimer", function () {
                     that.model.trigger('rebuild-markers')
@@ -16937,10 +17722,9 @@ define('apps/style/views/right/marker-style-view',["jquery",
                     opacity = 1;
                 } else if (opacity < 0 ) {
                     opacity = 0;
-                } 
+                }
                 this.updateMetadata("fillOpacity", opacity);
                 this.updateMap();
-                //this.render();
             },
 
             updateGlobalShape: function(e) {
@@ -16967,7 +17751,7 @@ define('apps/style/views/right/marker-style-view',["jquery",
                         opacity = 1;
                     } else if (opacity < 0 ) {
                         opacity = 0;
-                    } 
+                    }
                 this.updateMetadata("strokeOpacity", opacity);
                 this.updateMap();
             },
@@ -16984,38 +17768,59 @@ define('apps/style/views/right/marker-style-view',["jquery",
                 var paletteId = $(e.target).val();
                 this.updateMetadata("paletteId", paletteId);
                 this.selectedColorPalette = this.allColors[paletteId];
-                if (this.dataType == "categorical") {
-                    this.catData();
-                } else if (this.dataType == "continuous") {
-                    this.contData();
-                }
-            }, 
+                this.updatePalette();
+            },
+
+            updatePalette: function() {
+                var i = 0,
+                that = this;
+                this.collection.each(function(symbol) {
+                    symbol.set('fillColor', "#" + that.selectedColorPalette[i]);
+                    i++;
+                });
+
+                this.updateMapAndRender();
+            },
+
+            /* if the collection pointer changes (e.g. after a new symbol set is built),
+               make sure the model symbols and the collection point to the same thing
+            */
+            syncModelSymbsToCollection: function () {
+                this.model.set("symbols", this.collection.toJSON());
+            },
 
             showPalettes: function () {
                 this.$el.find(".palette-wrapper").css({display: 'block'});
-                this.$el.find(".palette-wrapper").addClass("okok");
+            },
+
+            layerNoLongerNew: function() {
+                this.model.set('newLayer', false);
             },
 
             //convenience function
             updateMetadata: function(newKey, newValue) {
                 var that = this;
-                console.log("a.", this.collection.length, this.model.getSymbols().length);
                 var localMeta = this.model.get("metadata") || {},
                     that = this;
                 localMeta[newKey] = newValue;
-                this.model.set("metadata", localMeta); 
-                
-                console.log("b.", this.collection.length, this.model.getSymbols().length);
+                this.model.set("metadata", localMeta);
+
                 this.collection.each(function(symbol) {
-                    console.log(symbol.id, that.model.getSymbols().length);
                     symbol.set(newKey, newValue);
-                    console.log(symbol.id, that.model.getSymbols().length);
                 });
                 this.app.layerHasBeenAltered = true;
                 this.app.layerHasBeenSaved = false;
-                
-                console.log("c.", this.collection.length, this.model.getSymbols().length);
-            }
+            },
+
+            // returns a default value if the input value from the dom is undefined
+            // needed because simply using '||' for defaults is buggy
+            defaultIfUndefined: function (domValue, defaultValue) {
+                if (domValue === undefined) {
+                    return defaultValue;
+                } else {
+                    return domValue;
+                }
+            },
 
         });
         return MarkerStyleView;
@@ -17056,7 +17861,7 @@ define('apps/style/views/right/source-code-style-view',["marionette",
             },
 
             trackChanges: function () {
-                console.log("source code has changed");
+                ("source code has changed");
                 // for efficiency: will only apply "updatedModel" code if
                 // something has actually changed in the textbox:
                 this.hasChanged = true;
@@ -17071,7 +17876,7 @@ define('apps/style/views/right/source-code-style-view',["marionette",
             },
 
             updateModel: function () {
-                console.log('updateModel: sourceCode', this.$el.find(".source-code").val());
+                //console.log('updateModel: sourceCode', this.$el.find(".source-code").val());
                 // if nothing has changed, exit this function
                 if (!this.hasChanged) {
                     return;
@@ -17098,6 +17903,7 @@ define('apps/style/views/right/source-code-style-view',["marionette",
         return MarkerStyleView;
     });
 
+
 define('text!apps/style/templates/right/filter-rules.html',[],function () { return '<h5>Filter Rules</h5>\n\n';});
 
 define('apps/style/views/right/filter-rules-view',["marionette",
@@ -17120,7 +17926,7 @@ define('apps/style/views/right/filter-rules-view',["marionette",
         return FilterRulesView;
     });
 
-define('text!apps/style/templates/right/right-panel-layout.html',[],function () { return '<h3 class="right-panel-header">Edit Layer</h3>\n\n<section class="style-section" id="data_source_region"></section>\n\n<section class="style-section" id="marker_style_region"></section>\n\n<section class="style-section" id="source_code_style_region"></section>\n\n<section class="style-section" id="filter_rules_region"></section>\n\n<div class="save-options">\n    <button class="button-primary pull-right layer-save">Save Layer</button>\n</div>\n<div class="show-hide hide right-panel-btn" style="display:none;"></div>\n';});
+define('text!apps/style/templates/right/right-panel-layout.html',[],function () { return '<h3 class="right-panel-header">Edit Layer</h3>\n\n<section class="style-section" id="data_source_region"></section>\n\n<section class="style-section" id="marker_style_region"></section>\n\n<section class="style-section" id="source_code_style_region" style="display:none;"></section>\n\n<section class="style-section" id="filter_rules_region"></section>\n\n<div class="save-options">\n    <button class="button-primary pull-right layer-save">Save Layer</button>\n</div>\n<div class="show-hide hide right-panel-btn" style="display:none;"></div>\n';});
 
 define('apps/style/views/right/right-panel',["jquery",
         "marionette",
@@ -17138,9 +17944,12 @@ define('apps/style/views/right/right-panel',["jquery",
             template: Handlebars.compile(RightPanelLayoutTemplate),
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.render();
-                this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
+                if (!this.model) {
+                    alert('a model is required');
+                }
+                this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
                 this.listenTo(this.app.vent, 'hide-right-panel', this.hidePanel);
+                this.listenTo(this.app.vent, 'update-data-source', this.initialize);
             },
 
             events: {
@@ -17149,6 +17958,10 @@ define('apps/style/views/right/right-panel',["jquery",
                 "click .style-basic-tab" : "showMarkerStyleRegion",
                 'click .hide': 'hidePanel',
                 'click .show': 'showPanel'
+            },
+
+            modelEvents: {
+                'change:data_source': 'createMSV'
             },
 
             regions: {
@@ -17160,58 +17973,63 @@ define('apps/style/views/right/right-panel',["jquery",
             onRender: function () {
                 // only load views after the LayoutView has
                 // been rendered to the screen:
-
+                this.createLayer();
                 var frv = new FilterRulesView({ app: this.app });
                 this.filterRules.show(frv);
 
             },
 
+            createMSV: function () {
+                var msv = new MarkerStyleView({
+                    app: this.app,
+                    model: this.model
+                });
+                this.getRegion('markerStyle').show(msv);
+            },
+
+            createDSV: function () {
+                var msv = new MarkerStyleView({
+                    app: this.app,
+                    model: this.model
+                });
+                
+            },
+
+            createSCSV: function () {
+                var scsv = new SourceCodeStyleView({
+                    app: this.app,
+                    model: this.model
+                });
+                this.getRegion('sourceCodeStyle').show(scsv);
+            },
+
             createLayer: function (layer, collection) {
-                console.log("right panel createLayer() triggered. 1. layer, 2. collection", layer, collection);
                 this.triggerShowPanel();
-                this.model = layer;
-                this.collection = collection;
+              //  this.model = layer;
+              //  this.collection = collection;
                 var dsv = new DataSourceView({
                     app: this.app,
                     model: this.model
                 });
-                this.msv = new MarkerStyleView({
+                var frv = new FilterRulesView({
                     app: this.app,
                     model: this.model
                 });
-                this.frv = new FilterRulesView({
-                    app: this.app,
-                    model: this.model
-                });
+                
                 this.dataSource.show(dsv);
-                this.markerStyle.show(this.msv);
-                this.filterRules.show(this.frv);
-                this.app.vent.trigger("re-render");
-                this.updateSourceCode();
-                this.saveLayer();
-            },
-
-            updateSourceCode: function () {
-                if (this.sourceCode) {
-                    this.sourceCode.model = this.model;
-                    this.sourceCode.render();
-                } else {
-                    this.sourceCode = new SourceCodeStyleView({
-                        app: this.app,
-                        model: this.model
-                    });
+                this.createMSV();
+                this.createSCSV();
+//                this.updateSourceCode();
+                if(!this.model.id) {
+                    this.saveLayer();
                 }
             },
 
             showSourceRegion: function () {
-                if (this.sourceCodeStyle.$el) {
-                    this.sourceCodeStyle.$el.show();
-                } else {
-                    this.sourceCodeStyle.show(this.sourceCode);
-                }
                 if (this.markerStyle.$el) {
                     this.markerStyle.$el.hide();
                 }
+                this.sourceCodeStyle.$el.show();
             },
 
             showMarkerStyleRegion: function () {
@@ -17225,21 +18043,16 @@ define('apps/style/views/right/right-panel',["jquery",
                 var that = this;
                 var title = this.$el.find(".layer-title").val(),
                     dataSource = this.$el.find(".selected-data-source").val(),
-                    layerType = this.$el.find("#data-type-select").val(), 
+                    layerType = this.$el.find("#data-type-select").val(),
                     buckets = this.$el.find("#bucket").val();
                 if (this.model.get("filters") === null) {
-                    console.log("accounting for no filters");
                     this.model.set("filters", { 'tag' : 'nothing' });
                 }
                 if (!this.model.get('symbols').length) {
-                    console.log("Layer will not save because symbols do not exist");
                     this.app.vent.trigger('update-data-source');
                 }
-               // this.model.set("title", title);
-               // this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
-                console.log("saveLayer() triggered", this.model.toJSON());
-                console.log(this.model.urlRoot);
+                this.model.set('newLayer', false);
 
                 this.model.save(null, {
                     error: function (model, response) {
@@ -17251,8 +18064,10 @@ define('apps/style/views/right/right-panel',["jquery",
                         }
                     },
                     success: function () {
-                        console.log('success', that.model.get("metadata"));
+                        console.log('success', that.model);
                         that.collection.add(that.model);
+                        that.app.vent.trigger('add-css-to-selected-layer', that.model.id);
+                        that.app.router.navigate('//' + that.model.get('map_id') + '/layers/' + that.model.id);
                         that.app.layerHasBeenSaved = true;
                         that.app.layerHasBeenAltered = false;
                     }
@@ -17737,7 +18552,7 @@ define('apps/style/style-app',[
             // kicks off any objects and processes that need to run
             Marionette.Application.prototype.start.apply(this, [options]);
             this.initAJAX(options);
-            this.router = new Router({ app: this});
+            this.router = new Router({ app: this });
             Backbone.history.start();
         },
         initialize: function (options) {
@@ -17750,13 +18565,27 @@ define('apps/style/style-app',[
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
+            this.listenTo(this.vent, 'edit-layer', this.showRightLayout);
+            this.listenToOnce(this.vent, 'ready-for-routing', this.rerouteIfNeeded);
             this.addMessageListeners();
         },
         loadRegions: function () {
-            this.showRightLayout();
+            let that = this;
             this.showLeftLayout();
+        //    this.showRightLayout();
         },
-
+        rerouteIfNeeded: function (milliseconds) {
+            // this function give the app some time to load before it proceeds
+            // with routing. Definitely a better way to do this, but works for
+            // now, and is the simplest way I can think to do it:
+            const that = this;
+            const route = window.location.hash.replace('#', '/');
+            setTimeout(function () {
+                if (route.length > 0) {
+                    that.router.navigate(route, {trigger: true});
+                }
+            }, 500);
+        },
         showLeftLayout: function () {
             //load view into left region:
             this.leftPanelView = new LeftPanel({
@@ -17765,11 +18594,13 @@ define('apps/style/style-app',[
             this.leftRegion.show(this.leftPanelView);
         },
 
-        showRightLayout: function () {
-            this.rightPanelView = new RightPanel({
-                app: this
+        showRightLayout: function (layer, collection) {
+            var rightPanelView = new RightPanel({
+                app: this,
+                model: layer,
+                collection: collection
             });
-            this.rightRegion.show(this.rightPanelView);
+            this.rightRegion.show(rightPanelView);
         },
 
         showGlobalToolbar: function () {
@@ -17845,15 +18676,12 @@ require([configPath], function () {
     'use strict';
     require(["jquery", "apps/style/style-app"], function ($, App) {
         $(function () {
-            window.location.hash = ''; //make sure the page initializes on the first page...
+            //window.location.hash = ''; //make sure the page initializes on the first page...
             var app = new App();
             app.start();
         });
     });
 });
-
-
-
 
 define("apps/style/kickoff", function(){});
 

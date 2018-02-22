@@ -42,4 +42,3 @@ class Record(ExtrasMixin, PointMixin, ProjectMixin, NamedMixin,
 
     def __unicode__(self):
         return str(self.id)
-    

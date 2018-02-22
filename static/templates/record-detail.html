@@ -77,13 +77,6 @@
         </div>
     {{else}}
         <div class="section">
-            <div class="min-thumbnail" style="background-image: url({{thumbnail.path_medium}})">
-                {{#if hasAudio}}
-                <div class="thumbnail-play-circle">
-                    <i class="fa fa-play fa-3x thumbnail-play" aria-hidden="true"></i>
-                </div>
-                {{/if}}
-            </div>
             <div class="header-info">
                 <h3 style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}">{{ name }}</h3>
             </div>
@@ -132,7 +125,10 @@
                 </div>
             </div>
         {{/if}}
-        <button class="button button-tertiary streetview">Show Street View</button>
+        {{#ifequal screenType "map"}}
+            <button class="button button-tertiary streetview">Show Street View</button>
+        {{/ifequal}}
+
 
         {{#compare screenType "presentation" operator="!="}}
             <div class="save-options">
@@ -165,7 +161,7 @@
                                     <circle id="Oval-Copy-6" cx="12" cy="12" r="8"></circle>
                                 </g>
                             </g>
-                        </svg>                       
+                        </svg>
                         <span>POINT</span>
                     </div>
                     <div id="add-polyline">
@@ -215,7 +211,9 @@
 
     <div id="model-form"></div>
 
-    <button class="button button-tertiary streetview">Show Street View</button>
+    {{#ifequal screenType "map"}}
+        <button class="button button-tertiary streetview">Show Street View</button>
+    {{/ifequal}}
 
     <div class = "save-options">
         <button class="save-model button-primary pull-right">Save</button>

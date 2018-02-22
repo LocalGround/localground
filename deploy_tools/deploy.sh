@@ -1,4 +1,7 @@
-SETTINGS_FILE="../apps/settings_local.py"
+# Before running this file, ensure that you
+# have switched to the correct user account
+# and that you are in the root localground directory
+SETTINGS_FILE="apps/settings_local.py"
 DEV="DEBUG = True"
 PROD="DEBUG = False"
 if [ "$1" = "prod" ]; then
@@ -13,7 +16,9 @@ else
     echo ''
     sed -i "s/$PROD/$DEV/g" $SETTINGS_FILE
 fi
-sudo service apache2 restart
+python apps/manage.py migrate
+exit
+sudo service uwsgi restart
 echo ''
 echo 'Done.'
 echo ''

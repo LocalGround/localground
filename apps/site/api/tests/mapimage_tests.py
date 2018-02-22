@@ -7,6 +7,10 @@ from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import json
 import os.path
 
+'''
+Somehow, there has to be test files that involve serializers
+although I did prepare model tests that check for successful upload and removal
+'''
 
 def get_metadata():
     return {
@@ -85,7 +89,7 @@ class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
             )
             file_name = tmp_file.name.split("/")[-1]
             file_name = unicode(file_name, "utf-8")
-            path = new_object.encrypt_url(new_object.file_name_new)
+            path = new_object.media_file_thumb.url
             self.assertEqual(file_name, new_object.name)
             self.assertEqual(
                 new_object.status.id, models.StatusCode.READY_FOR_PROCESSING
@@ -93,19 +97,15 @@ class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(len(new_object.uuid), 8)
             self.assertEqual(file_name, new_object.file_name_orig)
             # ensure not empty
-            self.assertTrue(len(new_object.file_name_new) > 5)
+            # self.assertTrue(len(new_object.file_name_new) > 5)
             self.assertEqual(settings.SERVER_HOST, new_object.host)
+            # Make sure the user string name is found in the filepath
+            # because if the substring is -1, it means it does not exist
+
             self.assertNotEqual(
-                path.find('/userdata/media/{0}/map-images/'.format(
+                path.find('{0}/map-images/'.format(
                     self.user.username)), -1)
             #self.assertNotEqual(path.find('/profile/map-images/'), -1)
-            self.assertNotEqual(path.find(new_object.host), -1)
-            self.assertTrue(len(path) > 50)
-
-            # and also check the file exists in the file system:
-            fname = new_object.original_image_filesystem()
-            self.assertTrue(fname.find(new_object.uuid) > -1)
-            self.assertTrue(os.path.isfile(fname))
 
 
 class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):

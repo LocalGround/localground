@@ -37,6 +37,7 @@ class ViewMixinAPISuperuser(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
+            url = url.split('?')[0]
             func = resolve(url).func
             func_name = '{}.{}'.format(func.__module__, func.__name__)
             view_name = '{}.{}'.format(
@@ -61,7 +62,7 @@ class ViewMixinAPI(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
-            # print url
+            url = url.split('?')[0]
             func = resolve(url).func
             func_name = '{}.{}'.format(func.__module__, func.__name__)
             view_name = '{}.{}'.format(
@@ -86,15 +87,11 @@ class ViewMixinAPI(ModelMixin):
             # ensure that dictionary is not empty:
             self.assertFalse(not fields)
 
-            # print(fields)
             # ensure that the two dictionaries are the same length:
             #self.assertEqual(len(fields.keys()), len(self.metadata.keys()))
 
             # ensure that field specs match:
             for key in self.metadata.keys():
-                # print('fields: ', key,  fields[key])
-                # print('metadata: ', key, self.metadata[key])
-                # print(" ")
                 try:
                     self.assertEqual(
                         fields[key]['type'],

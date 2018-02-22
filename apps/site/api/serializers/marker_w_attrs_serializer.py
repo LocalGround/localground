@@ -181,7 +181,6 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
     def create(self, validated_data):
         # Override to handle HStore
-        # print 'CREATE:', validated_data
         if 'attributes' in validated_data:
             for key in validated_data['attributes'].keys():
                 val = validated_data['attributes'][key]
