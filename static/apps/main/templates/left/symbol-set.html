@@ -1,0 +1,14 @@
+<span class="sort-by">{{property}}</span>
+<ul id="symbols-list">
+        {{#each markerList}}
+        <li class="list-item">
+            <a model-id="{{this.id}}">
+                <p>{{this.attributes.type}}
+                    {{#ifequal this.property ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
+    
+                </p>
+            </a>
+            
+        </li>
+        {{/each}}
+    </ul>
