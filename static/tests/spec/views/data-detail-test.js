@@ -64,6 +64,8 @@ define([
             spyOn(DataDetail.prototype, "rotatePhoto").and.callThrough();
             spyOn(DataDetail.prototype, "getFeaturedImage").and.callThrough();
             spyOn(DataDetail.prototype, "templateHelpers").and.callThrough();
+
+            spyOn(DataDetail.prototype, "setVideoAttribute").and.callThrough();
             //
             spyOn(DataDetail.prototype, "switchToEditMode").and.callThrough();
             spyOn(DataDetail.prototype, "switchToViewMode").and.callThrough();
@@ -103,41 +105,6 @@ define([
                 expect(DataDetail.prototype.bindFields).toHaveBeenCalledTimes(1);
             });
         });
-
-        /*describe("Data Detail: Open Expanded", function(){
-            beforeEach(function(){
-                jasmine.clock().install();
-                initSpies(this);
-            });
-
-            afterEach(function () {
-                jasmine.clock().uninstall();
-            });
-
-            it("Makes sure the openExpanded functions calls correctly", function(){
-                setupDataDetail(this, {
-                    model: this.marker,
-                    mode: "view",
-                    dataType: "markers"
-                });
-
-                newDataDetail.render();
-                fixture.append(newDataDetail.$el);
-
-                jasmine.clock().tick(600);
-
-                console.log($('html, body').scrollTop());
-                fixture.find('.circle').trigger('click');
-
-                jasmine.clock().tick(100);
-
-                console.log(fixture.find('.circle-icon'));
-
-                expect(fixture.find('.circle-icon')).toHaveClass('icon-rotate');
-                // there does not seem to be an icon-rotate class anywhere
-
-            });
-        });*/
 
         describe("Data Detail: Featured Image", function(){
             beforeEach(function(){
@@ -648,6 +615,82 @@ define([
                 expect(this.app.vent.trigger).toHaveBeenCalledWith("unhide-detail");
                 expect(DataDetail.prototype.showMapPanel).toHaveBeenCalledTimes(1);
 
+            });
+        });
+
+        describe("Data Detail: Video Functions", function(){
+            beforeEach(function(){
+                initSpies(this);
+            });
+            it("Successfully assigns provider and ID from link for Youtube", function(){
+                setupDataDetail(this, {
+                    model: this.videos.at(0),
+                    mode: "edit",
+                    dataType: "videos",
+                    screenType: "map"
+                });
+                newDataDetail.render();
+                fixture.append(newDataDetail.$el);
+                // Make sure the forms are empty
+                console.log(fixture);
+                // Dummy test designed to fail
+                // must make use of the mouseleave and input[name="video_link"]
+                // to properly call the set video attributes
+                var vidLink = fixture.find('input[name="video_link"]');
+                var vidID = fixture.find('input[name="video_id"]');
+                var vidProvider = fixture.find('select[name="video_provider"]');
+                console.log(vidLink);
+                console.log(vidProvider);
+                console.log(vidID);
+                var $vidLink = $(vidLink);
+                var $vidProvider = $(vidProvider);
+                var $vidID = $(vidID);
+                expect($vidLink.val()).toEqual("");
+                expect(newDataDetail.setVideoAttribute).toHaveBeenCalledTimes(0);
+
+                vidLink.trigger('mouseenter');
+                vidLink.trigger('click');
+                // Making a test link for youtube
+                $vidLink.val('https://www.youtube.com/watch?v=jNQXAC9IVRw');
+                vidLink.trigger('mouseleave');
+                expect(newDataDetail.setVideoAttribute).toHaveBeenCalledTimes(1);
+                expect($vidProvider.val()).toEqual('youtube')
+                expect($vidID.val()).toEqual('jNQXAC9IVRw')
+            });
+            it("Successfully assigns provider and ID from link for Vimeo", function(){
+                setupDataDetail(this, {
+                    model: this.videos.at(0),
+                    mode: "edit",
+                    dataType: "videos",
+                    screenType: "map"
+                });
+                newDataDetail.render();
+                fixture.append(newDataDetail.$el);
+                // Make sure the forms are empty
+                console.log(fixture);
+                // Dummy test designed to fail
+                // must make use of the mouseleave and input[name="video_link"]
+                // to properly call the set video attributes
+                var vidLink = fixture.find('input[name="video_link"]');
+                var vidID = fixture.find('input[name="video_id"]');
+                var vidProvider = fixture.find('select[name="video_provider"]');
+                console.log(vidLink);
+                console.log(vidProvider);
+                console.log(vidID);
+                var $vidLink = $(vidLink);
+                var $vidProvider = $(vidProvider);
+                var $vidID = $(vidID);
+                expect($vidLink.val()).toEqual("");
+                expect(newDataDetail.setVideoAttribute).toHaveBeenCalledTimes(0);
+
+                vidLink.trigger('mouseenter');
+                vidLink.trigger('click');
+                // Making a test link for youtube
+                $vidLink.val('https://vimeo.com/108679294');
+                vidLink.trigger('mouseleave');
+                expect(newDataDetail.setVideoAttribute).toHaveBeenCalledTimes(1);
+                expect($vidProvider.val()).toEqual('vimeo')
+                expect($vidID.val()).toEqual('108679294')
             });
         });
 
