@@ -19,7 +19,6 @@ define(["models/base"], function (Base) {
             this.projectID = this.projectID || this.get('project_id');
             if (!this.projectID ) {
                 console.error("projectID is required");
-                alert("projectID is required");
                 return;
             }
         },

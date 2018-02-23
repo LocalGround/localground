@@ -7,13 +7,12 @@ define([
     "models/audio",
     "models/video",
     "text!templates/create-media.html",
-    "text!templates/create-video.html",
     "text!templates/new-media.html",
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
 ], function ($, Marionette, Backbone, Handlebars, Photo, Audio, Video,
-    CreateMediaTemplate, CreateVideoTemplate, NewMediaItemTemplate, loadImage) {
+    CreateMediaTemplate, NewMediaItemTemplate, loadImage) {
     'use strict';
 
     /*
@@ -52,7 +51,10 @@ define([
                         file_name: this.formatFilename(this.file.name),
                         file_size: this.formatFileSize(this.file.size),
                         errorMessage: this.errorMessage,
-                        imageSerial: this.imageSerial
+                        imageSerial: this.imageSerial,
+                        // having dataType does not help because
+                        // it is uninitialized
+                        dataType: this.options.dataType
                     };
                 },
                 getUrl: function (baseURL, ext) {
@@ -249,12 +251,6 @@ define([
                 this.options.dataType = opts.dataType;
             }
             $('#warning-message-text').empty();
-            // Cannot change template through initalize
-            console.log(opts.dataType);
-            console.log(this.options.dataType);
-            if (opts.dataType == "video"){
-                this.template = Handlebars.compile(CreateVideoTemplate);
-            }
             this.render();
             /*
             Going to need some changes to consider either create media mode

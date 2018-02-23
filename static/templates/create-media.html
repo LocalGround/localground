@@ -1,5 +1,21 @@
 <div class="alert failure-message ">There were errors when uploading your files. See below.</div>
 <div class="alert warning-message"></div>
+<!--
+{{#ifequal dataType "videos"}}
+<div id="video-url-get">
+    The following websites supported: Vimeo and Youtube
+    <input type="text" name="get-video-url">
+    <button>Get Video</button>
+</div>
+{{#else}}
+-->
+<!--
+Attempting to assign datatype through template helpers
+is a good start, but the problem is that
+datatype is undefined
+when being initialized through template helpers
+-->
+<!-- {{dataType}} -->
 <div id="dropzone">
     <div id="nothing-here">
         <h4>Drag files here or</h4>
@@ -9,6 +25,7 @@
     </div>
 </div>
 <input id="fileupload" type="file" name="media_file" multiple="">
+<!-- {{/ifequal}} -->
 <!--
 Might also be possible to
 place the video part inside the media based on the datatype condition
