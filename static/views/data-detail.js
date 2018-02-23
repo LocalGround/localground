@@ -489,7 +489,6 @@ define([
             this.commitForm();
             this.model.save(null, {
                 success: function (model, response) {
-                    //perhaps some sort of indication of success here?
                     that.app.vent.trigger('success-message', "The form was saved successfully");
                     if (!isNew) {
                         model.trigger('saved');
