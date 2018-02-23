@@ -33,6 +33,7 @@ define(["jquery",
                     this.collection.add(this.undefinedSymbols);
                 }
                 console.log(this.dataset);
+                $('body').click($.proxy(this.hideStyleMenu, this));
             },
             updateCollection: function() {
                 console.log('update Zcollection')
@@ -147,6 +148,7 @@ define(["jquery",
             },
 
             showStyleByMenu: function () {
+                //this.menu = null;
                 console.log('show styebyMenu');
                 if (!this.menu) {
                     this.menu = new MarkerStyleView({
@@ -154,6 +156,8 @@ define(["jquery",
                         model: this.model
                     });
                     $(".style-by-menu").append(this.menu.$el);
+                    $('.style-by-menu').show();
+                    console.log(this.menu);
                 }
             },
 
@@ -180,7 +184,6 @@ define(["jquery",
                     });
                     //console.log(JSON.stringify(matchedCollection));
                     data.each(function (model) {
-                        //console.log("symbol looped once", symbol.checkModel(model));
                         if (symbol.checkModel(model)) {
                             matchedCollection.add(model);
                             representedIds.push(model.id);
@@ -273,6 +276,21 @@ define(["jquery",
                     this.menu.destroy();
                 }
             },
+            hideStyleMenu: function(e) {
+                console.log('hide lcick');
+                var $el = $(e.target);
+                var parent = document.getElementById("style-by-menu");
+                
+                if (!parent.contains(e.target) && !$el.hasClass('layer-style-by')) {
+                    console.log(this.menu);
+                    if (this.menu) {
+                        console.log('DESTROY MENU');
+                        $('.style-by-menu').hide();
+                        this.menu.destroy();
+                        //this.menu = null;
+                    }
+                }
+            }
         });
         return LayerListChild;
     });
