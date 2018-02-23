@@ -7,7 +7,10 @@
     <link rel=stylesheet type="text/css" href="/static/css/style.css" />
     <link rel=stylesheet type="text/css" href="/static/css/map-presentation.css" />
     <link rel=stylesheet type="text/css" href="/static/css/main.css" />
-
+    <script>
+        var projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
+        console.log(projectJSON);
+    </script>
 </head>
 <body>
     <div class="main-panel presentation-main-panel none">

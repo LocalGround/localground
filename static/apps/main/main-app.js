@@ -31,42 +31,34 @@ define([
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
+            console.log('starting');
             Marionette.Application.prototype.start.apply(this, [options]);
             this.initAJAX(options);
             this.router = new Router({ app: this });
             Backbone.history.start();
         },
         initialize: function (options) {
+            console.log('initializing');
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+            this.dataManager = new DataManager({
+                vent: this.vent,
+                projectJSON: projectJSON
+            });
             this.showBreadcrumbs();
             this.showBasemap();
-            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
+            //this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'hide-detail', this.hideDetail);
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
             this.listenTo(this.vent, 'edit-layer', this.showRightLayout);
-            this.listenToOnce(this.vent, 'ready-for-routing', this.rerouteIfNeeded);
             this.addMessageListeners();
+            this.loadRegions();
         },
         loadRegions: function () {
             let that = this;
             this.showLeftLayout();
         //    this.showRightLayout();
-        },
-
-        rerouteIfNeeded: function (milliseconds) {
-            // this function give the app some time to load before it proceeds
-            // with routing. Definitely a better way to do this, but works for
-            // now, and is the simplest way I can think to do it:
-            const that = this;
-            const route = window.location.hash.replace('#', '/');
-            setTimeout(function () {
-                if (route.length > 0) {
-                    that.router.navigate(route, {trigger: true});
-                }
-            }, 500);
         },
         showLeftLayout: function () {
             //load view into left region:

@@ -65,7 +65,10 @@ define([
         getData: function () {
             this.saveState("presentation", {slug: this.slug });
             this.setProjectID(this.model.get("project_id"));
-            this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+            this.dataManager = new DataManager({
+                vent: this.vent,
+                projectJSON: projectJSON
+            });
             console.log(this.model.get("panel_styles").display_legend);
         },
 

@@ -14,6 +14,8 @@ from localground.apps.site.api.serializers.audio_serializer import \
 from localground.apps.site.api.metadata import CustomMetadata
 from localground.apps.site.api.serializers.marker_serializer import \
     MarkerSerializer, MarkerSerializerDetail
+from localground.apps.site.api.serializers.map_serializer import \
+    MapSerializer
 from localground.apps.site.api.serializers.marker_w_attrs_serializer import \
     create_dynamic_serializer
 
@@ -53,17 +55,26 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
         max_length=100, label='friendly url', required=False)
     datasets = serializers.SerializerMethodField()
     media = serializers.SerializerMethodField()
+    maps = serializers.SerializerMethodField()
     view = None
 
     class Meta:
         model = models.Project
         read_only_fields = ('time_stamp', 'date_created', 'last_updated_by')
-        fields = ProjectSerializer.Meta.fields + ('sharing_url', 'datasets', 'media')
+        fields = ProjectSerializer.Meta.fields + \
+            ('sharing_url', 'datasets', 'media', 'maps')
         depth = 0
 
     def get_metadata(self, serializer_class):
         m = CustomMetadata()
         return m.get_serializer_info(serializer_class)
+
+    def get_maps(self, obj):
+        return self.serialize_list(
+            models.StyledMap,
+            MapSerializer,
+            models.StyledMap.objects.filter(project=obj)
+        )
 
     def get_datasets(self, obj):
         forms = models.Form.objects.prefetch_related(
@@ -166,7 +177,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
 
         serializer = serializer_class(
             records, many=True, context={'request': {}})
-        
+
         d = {
             'id': model_name_plural,
             'name': name,

@@ -5,19 +5,23 @@ from django.contrib.auth.decorators import login_required
 import sys
 from django.contrib import admin
 from localground.apps.site.views import document_view
+from localground.apps.site.views.pages import MainView
 from django.conf.urls.static import static
 
 urlpatterns = patterns('',
 
     # mostly static html:
     (r'^$', direct_to_template, {'template_name': 'pages/splash.html'}),
-    (r'^main/$', login_required(direct_to_template), {'template_name': 'pages/main.html'}),
-    (r'^map/$', login_required(direct_to_template), {'template_name': 'pages/map.html'}),
-    (r'^data/$', login_required(direct_to_template), {'template_name': 'pages/data.html'}),
-    (r'^gallery/$', login_required(direct_to_template), {'template_name': 'pages/gallery.html'}),
-    (r'^table/$', login_required(direct_to_template), {'template_name': 'pages/spreadsheet.html'}),
-    (r'^style/$', login_required(direct_to_template), {'template_name': 'pages/style.html'}),
-    (r'^presentation/$', direct_to_template, {'template_name': 'pages/presentation.html'}),
+    (r'^main/$', MainView.as_view(template_name='pages/main.html')),
+    (r'^data/$', MainView.as_view(template_name='pages/data.html')),
+    (r'^style/$', MainView.as_view(template_name='pages/style.html')),
+    (r'^presentation/$', MainView.as_view(template_name='pages/presentation.html')),
+    #(r'^data/$', login_required(direct_to_template), {'template_name': 'pages/data.html'}),
+    #(r'^style/$', login_required(direct_to_template), {'template_name': 'pages/style.html'}),
+    #(r'^map/$', login_required(direct_to_template), {'template_name': 'pages/map.html'}),
+    #(r'^gallery/$', login_required(direct_to_template), {'template_name': 'pages/gallery.html'}),
+    #(r'^table/$', login_required(direct_to_template), {'template_name': 'pages/spreadsheet.html'}),
+    #(r'^presentation/$', direct_to_template, {'template_name': 'pages/presentation.html'}),
     (r'^pages/(?P<page_name>\w+)/', 'localground.apps.site.views.pages.about_pages'),
     (r'^documentation/$', direct_to_template, {'template_name': 'pages/documentation.html'}),
     (r'^about/$', direct_to_template, {'template_name': 'pages/about.html'}),
