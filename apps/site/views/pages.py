@@ -23,12 +23,17 @@ class MainView(TemplateView):
         import json
         from localground.apps.site.models import Project
         from rest_framework.renderers import JSONRenderer
+        #try: 
+        projectID = int(self.request.GET.get('project_id'))
+        #except Exception:
+        #    raise Exception('?project_id={{id}} required')
+
 
         context = super(MainView, self).get_context_data(
             *args, **kwargs)
 
         serializer = ProjectDetailSerializer(
-            Project.objects.get(id=2),
+            Project.objects.get(id=projectID),
             context={'request': {}}
         )
         renderer = JSONRenderer()
