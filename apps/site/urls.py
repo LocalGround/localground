@@ -5,13 +5,14 @@ from django.contrib.auth.decorators import login_required
 import sys
 from django.contrib import admin
 from localground.apps.site.views import document_view
+from localground.apps.site.views.pages import MainView
 from django.conf.urls.static import static
 
 urlpatterns = patterns('',
 
     # mostly static html:
     (r'^$', direct_to_template, {'template_name': 'pages/splash.html'}),
-    (r'^main/$', login_required(direct_to_template), {'template_name': 'pages/main.html'}),
+    (r'^main/$', MainView.as_view(template_name='pages/main.html')),
     (r'^map/$', login_required(direct_to_template), {'template_name': 'pages/map.html'}),
     (r'^data/$', login_required(direct_to_template), {'template_name': 'pages/data.html'}),
     (r'^gallery/$', login_required(direct_to_template), {'template_name': 'pages/gallery.html'}),

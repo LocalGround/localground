@@ -28,8 +28,9 @@ define(["underscore", "marionette", "models/project",
             },
             initProject: function () {
                 if (!this.model) {
-                    this.model = new Project({ id: this.projectID });
-                    this.model.fetch({ success: this.initCollections.bind(this) });
+                    this.model = new Project(this.projectJSON);
+                    this.initCollections();
+                    //this.model.fetch({ success: this.initCollections.bind(this) });
                 } else {
                     this.initCollections();
                 }

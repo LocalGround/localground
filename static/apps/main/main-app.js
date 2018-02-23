@@ -38,7 +38,11 @@ define([
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+            this.dataManager = new DataManager({
+                vent: this.vent,
+                projectJSON: projectJSON,
+                projectID: projectJSON.id
+            });
             this.showBreadcrumbs();
             this.showBasemap();
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
