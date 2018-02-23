@@ -1,7 +1,7 @@
 define([
     "marionette",
     "views/data-detail",
-    "views/create-media",
+    "views/create-media-new",
     "lib/modals/modal",
 ], function (Marionette, DataDetail, CreateMedia, Modal) {
     "use strict";

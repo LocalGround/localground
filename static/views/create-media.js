@@ -1,19 +1,20 @@
 define([
     "jquery",
-    "marionette",
+    "underscore",
     "backbone",
     "handlebars",
+    "marionette",
+    "lib/forms/backbone-form",
     "models/photo",
     "models/audio",
     "models/video",
-    "lib/forms/backbone-form",
     "text!templates/create-media.html",
     "text!templates/create-video.html",
     "text!templates/new-media.html",
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
-], function ($, Marionette, Backbone, Handlebars, Photo, Audio, Video, DataForm,
+], function ($, _, Backbone, Handlebars, Marionette, DataForm, Photo, Audio, Video,
     CreateMediaTemplate, CreateVideoTemplate, NewMediaItemTemplate, loadImage) {
     'use strict';
 
@@ -247,6 +248,8 @@ define([
             });
         },
         initialize: function (opts) {
+            console.log("Data Form:");
+            console.log(DataForm);
             _.extend(this, opts);
             this.collection = new Backbone.Collection();
             var that = this;

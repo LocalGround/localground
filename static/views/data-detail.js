@@ -4,6 +4,7 @@ define([
     "backbone",
     "handlebars",
     "marionette",
+    "lib/forms/backbone-form",
     "collections/photos", "collections/audio", "collections/videos",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
@@ -14,11 +15,10 @@ define([
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "lib/parallax",
-    "lib/forms/backbone-form",
     "touchPunch"
-], function ($, _, Backbone, Handlebars, Marionette, Photos, Audio, Videos,
+], function ($, _, Backbone, Handlebars, Marionette, DataForm, Photos, Audio, Videos,
         PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
-        MapImageTemplate, AudioPlayer, Carousel, Icon, MoveItItem, DataForm, TouchPunch) {
+        MapImageTemplate, AudioPlayer, Carousel, Icon, MoveItItem, TouchPunch) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
