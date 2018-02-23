@@ -7,12 +7,13 @@ define([
     "models/audio",
     "models/video",
     "text!templates/create-media.html",
+    "text!templates/create-video.html",
     "text!templates/new-media.html",
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
 ], function ($, Marionette, Backbone, Handlebars, Photo, Audio, Video,
-    CreateMediaTemplate, NewMediaItemTemplate, loadImage) {
+    CreateMediaTemplate, CreateVideoTemplate, NewMediaItemTemplate, loadImage) {
     'use strict';
 
     /*
