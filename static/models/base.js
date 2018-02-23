@@ -179,17 +179,6 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                     this.set({ extras: null }, { silent: true });
                 }
             },
-            url: function () {
-                var url = Backbone.Model.prototype.url.call(this);
-                if (url.indexOf('project_id') === -1) {
-                    if (url.indexOf('?') === -1) {
-                        url += '?project_id=' + this.projectID;
-                    } else {
-                        url += '&project_id=' + this.projectID;
-                    }
-                }
-                return url;
-            },
             fetchCreateMetadata: function () {
                 var that = this;
                 console.log('fetchCreateMetadata');

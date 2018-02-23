@@ -1,6 +1,6 @@
-define(["models/base", "collections/layers"], function (Base, Layers) {
+define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
     "use strict";
-    var Map = Base.extend({
+    var Map = BaseItem.extend({
         getMapBySlug: function (opts) {
             this.urlRoot = "/api/0/maps/" + opts.slug + "/";
             this.fetch({
@@ -17,7 +17,7 @@ define(["models/base", "collections/layers"], function (Base, Layers) {
         },
         urlRoot: "/api/0/maps/",
         initialize: function (data, opts) {
-            Base.prototype.initialize.apply(this, arguments);
+            BaseItem.prototype.initialize.apply(this, arguments);
             var panelStyles = this.get("panel_styles");
             if (!_.isUndefined(panelStyles) && _.isString(panelStyles)) {
                 console.log("serialize");
@@ -28,7 +28,7 @@ define(["models/base", "collections/layers"], function (Base, Layers) {
             }
 		},
         defaults: function () {
-            return _.extend({}, Base.prototype.defaults, {
+            return _.extend({}, BaseItem.prototype.defaults, {
                 checked: false,
                 panel_styles: {
                     display_legend: true,
@@ -69,7 +69,7 @@ define(["models/base", "collections/layers"], function (Base, Layers) {
         toJSON: function () {
             // ensure that the geometry object is serialized before it
             // gets sent to the server:
-            var json = Base.prototype.toJSON.call(this);
+            var json = BaseItem.prototype.toJSON.call(this);
 
             if (json.panel_styles != null) {
                 json.panel_styles = JSON.stringify(json.panel_styles);
