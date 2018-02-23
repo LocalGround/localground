@@ -59,7 +59,7 @@ define([
             }
             this.loadFastRegions();
             this.initMainView();
-            this.listenTo(this.vent, 'data-loaded', this.initMainView);
+            //this.listenTo(this.vent, 'data-loaded', this.initMainView);
             this.listenTo(this.vent, 'show-list', this.initMainView); // This is the cause of error
         },
         loadFastRegions: function () {
