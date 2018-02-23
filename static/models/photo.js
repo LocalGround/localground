@@ -1,11 +1,11 @@
-define(["models/base", "jquery"], function (Base, $) {
+define(["models/baseItem", "jquery"], function (BaseItem, $) {
     "use strict";
     /**
      * A Backbone Model class for the Photo datatype.
      * @class Photo
      * @see <a href="//localground.org/api/0/photos/">//localground.org/api/0/photos/</a>
      */
-    var Photo = Base.extend({
+    var Photo = BaseItem.extend({
         schema: {
             name: { type: 'TextArea', title: "Name" },
             caption:  { type: 'TextArea', title: "Caption" },
@@ -29,7 +29,7 @@ define(["models/base", "jquery"], function (Base, $) {
             });
         },
         //be careful not to overwrite inherited defaults (but OK to extend them):
-        defaults: _.extend({}, Base.prototype.defaults, {
+        defaults: _.extend({}, BaseItem.prototype.defaults, {
             checked: false
         })
 
