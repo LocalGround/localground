@@ -341,6 +341,10 @@ define(["jquery",
                         app: that.app,
                         collection: new Videos(model, { projectID: this.app.getProjectID() })
                     });
+                console.log(instance)
+                console.log(rowIndex)
+                console.log(model)
+                if (!model) return;
                 if (model.get('video_provider') === "vimeo") {
                     i.className = "fa fa-3x fa-vimeo";
                 } else {
@@ -361,6 +365,7 @@ define(["jquery",
 
             mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
                 var model = this.getModelFromCell(instance, row);
+                console.log(model)
 
                 // There are two possible places to extract
                 // count of media types
