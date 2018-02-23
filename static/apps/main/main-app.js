@@ -1,7 +1,7 @@
 define([
     "marionette",
     "backbone",
-    "apps/style/router",
+    "apps/main/router",
     "views/breadcrumbs",
     "lib/maps/basemap",
     "lib/data/dataManager",

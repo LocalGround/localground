@@ -44,7 +44,6 @@ define(["jquery",
             modal: null,
 
             initialize: function (opts) {
-                console.log('this map view');
                 var that = this;
                 _.extend(this, opts);
                 if (!this.collection) {
@@ -68,6 +67,7 @@ define(["jquery",
             },
 
             getSelectedMap: function(mapId) {
+                console.log('get selected map');
                 var map = this.collection.get(mapId);
                 this.setActiveMap(map);
             },
