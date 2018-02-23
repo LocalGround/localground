@@ -6,9 +6,9 @@ define([
     "marionette",
     "lib/forms/backbone-form",
     "models/video",
-    "text!templates/create-media.html"
+    "text!templates/create-video.html"
 ], function ($, _, Backbone, Handlebars, Marionette, DataForm,
-    Video, CreateMediaTemplate) {
+    Video, CreateVideoTemplate) {
     'use strict';
 
     /*
@@ -18,13 +18,14 @@ define([
     create media template and create video template
     */
 
-    var CreateMediaViewNew = Marionette.CompositeView.extend({
+    var CreateVideoView = Marionette.CompositeView.extend({
         models: [],
         // There must be some way to dynamically determine the template
         // dependong on data type
-        template: Handlebars.compile(CreateMediaTemplate),
+        template: Handlebars.compile(CreateVideoTemplate),
         initialize: function (opts) {
             this.model = new Video(null, {
+                // replace with opts.projectID (?)
                 projectID: 2
             });
             console.log(opts);
@@ -49,9 +50,38 @@ define([
                 schema: this.model.getFormSchema(),
                 app: this.app
             }).render();
-            this.$el.find('#video-url-get').append(this.form.$el);
+            this.$el.find('#model-form').append(this.form.$el);
+        },
+        commitForm: function () {
+            var errors = this.form.commit({ validate: true });
+            if (errors) {
+                console.log("errors: ", errors);
+                return;
+            }
+        },
+
+        saveModel: function () {
+            var that = this,
+                isNew = this.model.get("id") ? false : true;
+            console.log(isNew);
+            this.commitForm();
+            this.model.save(null, {
+                success: function (model, response) {
+                    that.app.vent.trigger('success-message', "The form was saved successfully");
+                    if (!isNew) {
+                        model.trigger('saved');
+                    } else {
+                        model.collection.add(model);
+                    }
+                },
+                error: function (model, response) {
+
+                    that.app.vent.trigger('error-message', "The form has not saved");
+                    that.$el.find("#model-form").append("error saving");
+                }
+            });
         },
     });
-    return CreateMediaViewNew;
+    return CreateVideoView;
 
 });

@@ -1,9 +1,10 @@
 define([
     "marionette",
     "views/data-detail",
-    "views/create-video-new",
+    "views/create-media",
+    "views/create-video",
     "lib/modals/modal",
-], function (Marionette, DataDetail, CreateMedia, Modal) {
+], function (Marionette, DataDetail, CreateMedia, CreateVideo, Modal) {
     "use strict";
     return Marionette.Controller.extend({
         initialize: function (options) {
@@ -87,17 +88,19 @@ define([
         createVideoLinkModal: function (title, dataType) {
             var modalTitle = title != null ? title : "Get Video Link";
             var setDatType = dataType != null ? dataType : "default";
-            var uploadMediaForm = new CreateMedia({
+            var uploadVideoForm = new CreateVideo({
                 app: this.app,
-                dataType: "videos"
             });
             this.modal.update({
-                dataType: 'videos',
-                view: uploadMediaForm,
+                view: uploadVideoForm,
                 title: 'Get Video',
                 closeButtonText: "Done",
-                showSaveButton: false,
-                showDeleteButton: false
+                showDeleteButton: false,
+                showSaveButton: true,
+                // I do not remember how this works, but I believe that
+                // I simply call the function from the object that does
+                // save the new model
+                saveFunction: uploadVideoForm.saveModel
             });
             this.modal.show();
         },
