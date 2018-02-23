@@ -94,12 +94,9 @@ define([
             this.modal.update({
                 view: uploadVideoForm,
                 title: 'Get Video',
-                closeButtonText: "Done",
+                closeButtonText: "Cancel",
                 showDeleteButton: false,
                 showSaveButton: true,
-                // I do not remember how this works, but I believe that
-                // I simply call the function from the object that does
-                // save the new model
                 saveFunction: uploadVideoForm.saveModel.bind(uploadVideoForm)
             });
             this.modal.show();

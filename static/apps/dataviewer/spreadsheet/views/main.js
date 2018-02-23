@@ -294,6 +294,12 @@ define(["jquery",
             getModelFromCell: function (table, index) {
                 table = table || this.table;
                 var modelID = table.getDataAtRowProp(index, "id");
+                console.log("GET MODEL FROM CELL BEGIN")
+                console.log(this.collection);
+                console.log(modelID);
+                console.log(this.collection.get(modelID))
+                console.log("GET MODEL FROM CELL END")
+                // Unfortunately defaults to record without
                 return this.collection.get(modelID);
             },
             thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
@@ -331,6 +337,8 @@ define(["jquery",
 
 
             videoRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
+                // I found the problem is that id is set to "videos" string rather than a number
+                // and that id being set to "videos" can only happen at this javascript file
                 var that = this,
                     img = document.createElement('IMG'),
                     model = this.getModelFromCell(instance, rowIndex),
@@ -341,10 +349,7 @@ define(["jquery",
                         app: that.app,
                         collection: new Videos(model, { projectID: this.app.getProjectID() })
                     });
-                console.log(instance)
-                console.log(rowIndex)
-                console.log(model)
-                if (!model) return;
+                //if (!model) return;
                 if (model.get('video_provider') === "vimeo") {
                     i.className = "fa fa-3x fa-vimeo";
                 } else {
@@ -681,6 +686,10 @@ define(["jquery",
             },
 
             getColumns: function () {
+                console.log("GET COLLECTION FOR COLUMNS BEGIN")
+                console.log(this.collection)
+                console.log(this.collection.getDataType())
+                console.log("GET COLLECTION FOR COLUMNS END")
                 switch (this.collection.getDataType()) {
                     case "audio":
                         return [
@@ -869,6 +878,10 @@ define(["jquery",
                     projectID = this.app.getProjectID(),
                     rec;
                 dataType = dataType != undefined ? dataType : this.app.dataType;
+                console.log("DATA TYPE INSPECTION BEGIN")
+                console.log(dataType);
+                console.log(this.collection);
+                console.log("DATA TYPE INSPECTION END")
                 if (dataType == "audio" || dataType == "photos") {
                     this.showMediaUploader();
                     return;

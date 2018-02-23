@@ -512,6 +512,8 @@ define([
                 success: function () {
                     //trigger an event that clears out the deleted model's detail:
                     that.app.vent.trigger('hide-detail');
+                }, error: function(){
+                    alert("Entry has not been deleted");
                 }
             });
             e.preventDefault();
