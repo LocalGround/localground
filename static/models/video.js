@@ -1,4 +1,4 @@
-define(["models/baseItem"], function (Base) {
+define(["models/baseItem"], function (BaseItem) {
     "use strict";
     /**
      * A Backbone Model class for the Video datatype.
