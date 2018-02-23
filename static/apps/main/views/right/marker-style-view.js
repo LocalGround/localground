@@ -468,12 +468,14 @@ define(["jquery",
 
             setSymbols: function (symbs) {
                 this.collection = symbs;
-
+                console.log(this.collection);
+                console.log(this.model);
 
                 // since we're reassigning this.collection above, it's no longer pointing
                 // to model.get('symbols'), so we need to sync the model symbols to the new collection
                 this.syncModelSymbsToCollection();
                 this.updateMapAndRender();
+                this.model.trigger('update-symbol-collection');
             },
 
             updateMapAndRender: function () {

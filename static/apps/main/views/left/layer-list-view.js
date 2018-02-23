@@ -2,10 +2,11 @@ define(["marionette",
         "handlebars",
         "collections/layers",
         "models/layer",
+        "collections/symbols",
         "apps/main/views/left/layer-list-child-view",
         "text!../../templates/left/layer-list.html"
     ],
-    function (Marionette, Handlebars, Layers, Layer, LayerListChild,
+    function (Marionette, Handlebars, Layers, Layer, Symbols, LayerListChild,
         LayerListTemplate) {
         'use strict';
 
@@ -21,10 +22,11 @@ define(["marionette",
             childView: LayerListChild,
             childViewContainer: "#layers",
 
-            childViewOptions: function () {
+            childViewOptions: function (model, index) {
+                console.log(model);
                 return {
-                    app: this.app//,
-                    //collection: this.collection
+                    app: this.app,
+                    collection: new Symbols(model.get('symbols'))
                 };
             },
 

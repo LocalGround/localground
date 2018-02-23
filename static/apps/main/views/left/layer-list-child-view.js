@@ -14,10 +14,12 @@ define(["jquery",
             initialize: function (opts) {
                 // In this view, this.model = layer, this.collection = symbols
                 this.undefinedSymbols = null;
+                this.menu = null;
                 console.log('opts: ', opts);
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
+                //this.listenTo(this.model, 'update-symbol-collection', this.updateCollection);
                // this.listenTo(this.app.vent, "route-layer", this.routerSendCollection);
                 this.initMapOverlays();
                 if (this.model.get("metadata").isShowing) {
@@ -26,11 +28,25 @@ define(["jquery",
                 console.log('layer list childview initlize');
                 console.log(this);
                 this.dataset = this.app.dataManager.getCollection(this.model.get('data_source'));
-                this.collection = new Symbols(this.model.get('symbols'));
+                //this.collection = new Symbols(this.model.get('symbols'));
                 if (this.undefinedSymbols) {
                     this.collection.add(this.undefinedSymbols);
                 }
                 console.log(this.dataset);
+            },
+            updateCollection: function() {
+                console.log('update Zcollection')
+                //this.collection = new Symbols(this.model.get('symbols'));
+                //this.initMapOverlays();
+                if (this.undefinedSymbols) {
+                    console.log('adding symbols');
+                    this.collection.add(this.undefinedSymbols);
+                }
+                this.render();
+            },
+            onRender: function () {
+                console.log('RENDER', this.collection);
+                console.log(this.model);
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
@@ -119,21 +135,26 @@ define(["jquery",
             },
 
             updateMapOverlays: function () {
+                this.collection = new Symbols(this.model.get('symbols'));
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
                 this.initMapOverlays();
                 if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
                 }
+                this.updateCollection();
+                //this.render();
             },
 
             showStyleByMenu: function () {
                 console.log('show styebyMenu');
-                let menu = new MarkerStyleView({
-                    app: this.app,
-                    model: this.model
-                });
-                $(".style-by-menu").append(menu.$el);
+                if (!this.menu) {
+                    this.menu = new MarkerStyleView({
+                        app: this.app,
+                        model: this.model
+                    });
+                    $(".style-by-menu").append(this.menu.$el);
+                }
             },
 
             initMapOverlays: function () {
@@ -244,7 +265,14 @@ define(["jquery",
                 } else {
                     this.hideOverlays();
                 }
-            }
+            },
+
+            onDestroy: function() {
+                console.log('DESTROYING>>>');
+                if (this.menu) {
+                    this.menu.destroy();
+                }
+            },
         });
         return LayerListChild;
     });
