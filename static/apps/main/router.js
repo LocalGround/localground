@@ -7,6 +7,7 @@ define([
     "use strict";
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
+            '': 'defaultMap',
             'new': 'newMap',
             ':mapId': 'displayMap',
             ':mapId/layers/new':'newLayer',

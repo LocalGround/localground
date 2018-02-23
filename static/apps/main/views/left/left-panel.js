@@ -39,7 +39,10 @@ define(["jquery",
                 // only load views after the LayoutView has
                 // been rendered to the screen:
                 var skv = new SkinView({ app: this.app });
-                this.sv = new SelectMapView({ app: this.app }),
+                this.sv = new SelectMapView({
+                    app: this.app,
+                    collection: this.app.dataManager.maps
+                }),
                 this.menu.show(this.sv);
                 this.skins.show(skv);
             },

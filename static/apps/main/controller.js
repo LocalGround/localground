@@ -4,12 +4,18 @@ define([
     "use strict";
     return Marionette.Controller.extend({
         initialize: function (options) {
-            this.deferredMapID = null;
-            this.deferredLayerID = null;
             this.app = options.app;
         },
+        defaultMap: function () {
+            console.log('**************************');
+            console.log('Load Default Map');
+            console.log('**************************');
+            this.app.vent.trigger('init-default-map');
+        },
         displayMap: function (mapId) {
-            console.log('map route');
+            console.log('**************************');
+            console.log('Load Specific Map: ', mapId);
+            console.log('**************************');
             this.app.vent.trigger('route-map', mapId);
         },
 

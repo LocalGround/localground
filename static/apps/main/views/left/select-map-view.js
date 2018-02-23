@@ -46,30 +46,25 @@ define(["jquery",
             initialize: function (opts) {
                 var that = this;
                 _.extend(this, opts);
-                if (!this.collection) {
-                    // /api/0/maps/ API Endpoint gets built:
-                    this.collection = new Maps(null, { projectID: this.app.getProjectID() });
-                    this.collection.setServerQuery("");
-                    this.collection.fetch({ reset: true });
-                } else {
-                    this.drawOnce();
-                }
+                console.log(this.collection);
 
                 $('body').click(this.hideMapList.bind(this));
 
                 this.modal = new Modal();
-                this.listenTo(this.collection, 'reset', this.setInitialModel);
+                //this.listenTo(this.collection, 'reset', this.setInitialModel);
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
                 this.listenTo(this.app.vent, "edit-map", this.updateMap);
+                this.listenTo(this.app.vent, 'init-default-map', this.setInitialModel);
                 this.listenTo(this.app.vent, 'update-map-list', this.setInitialModel);
                 this.listenTo(this.app.vent, 'route-map', this.getSelectedMap);
                 this.listenTo(this.app.vent, 'route-new-map', this.showAddMapModal);
             },
 
             getSelectedMap: function(mapId) {
-                console.log('get selected map');
-                var map = this.collection.get(mapId);
-                this.setActiveMap(map);
+                console.log('------------------');
+                console.log('get selected map:', mapId, this.collection.length);
+                console.log('------------------');
+                this.setActiveMap(this.collection.get(mapId));
             },
 
             setInitialModel: function () {

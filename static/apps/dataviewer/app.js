@@ -34,20 +34,14 @@ define([
             // kicks off any objects and processes that need to run
             Marionette.Application.prototype.start.apply(this, [options]);
             this.initAJAX(options);
-            console.log('starting!!');
+            //console.log('starting!!');
             this.router = new Router({ app: this});
             Backbone.history.start();
-            console.log('started!!');
-            var that = this;
-            /*setTimeout(function() {
-                that.router.navigate('#/map/markers/14', {trigger: true});
-            }, 500);*/
-            //that.router.navigate('#/map/markers/14', {trigger: true});
             this.addMessageListeners();
         },
 
         initialize: function (options) {
-            console.log('initializing');
+            //console.log('initializing');
             _.extend(this, options);
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = this.getProjectID();
@@ -59,7 +53,6 @@ define([
             }
             this.loadFastRegions();
             this.initMainView();
-            //this.listenTo(this.vent, 'data-loaded', this.initMainView);
             this.listenTo(this.vent, 'show-list', this.initMainView); // This is the cause of error
         },
         loadFastRegions: function () {
@@ -76,9 +69,6 @@ define([
             this.toolbarDataViewRegion.show(this.toolbarDataView);
             this.tabViewRegion.show(this.tabView);
         },
-        /*loadMainRegion: function () {
-            this.initMainView();
-        },*/
 
         initMainView: function (mode, dataType) {
             this.dataType = dataType || this.dataType;
@@ -105,11 +95,6 @@ define([
             this.mainRegion.show(this.mainView);
             this.adjustLayout();
             this.tabView.render();
-            /*if (this.deferredModelID) {
-                this.router.navigate("//" + this.screenType + "/" + this.dataType
-                + "/" + this.deferredModelID, {trigger: true});
-                delete this.deferredModelID;
-            }*/
         },
 
         adjustLayout: function () {

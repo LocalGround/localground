@@ -2,9 +2,9 @@ define(["underscore", "marionette", "models/project",
             "collections/photos", "collections/audio", "collections/videos",
             "collections/mapimages", "collections/markers",
             "collections/records", "collections/fields",
-            "collections/tilesets"],
+            "collections/tilesets", "collections/maps"],
     function (_, Marionette, Project, Photos, Audio, Videos, MapImages, Markers,
-                Records, Fields, TileSets) {
+                Records, Fields, TileSets, Maps) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
@@ -29,16 +29,18 @@ define(["underscore", "marionette", "models/project",
             initProject: function () {
                 if (!this.model) {
                     this.model = new Project(this.projectJSON);
-                    this.initCollections();
-                    //this.model.fetch({ success: this.initCollections.bind(this) });
-                } else {
-                    this.initCollections();
                 }
+                this.initCollections();
+                this.initMaps();
             },
 
             initTilesets: function () {
                 this.tilesets = new TileSets();
                 this.tilesets.fetch({reset: 'true'});
+            },
+            initMaps: function () {
+                this.maps = new Maps(this.model.get('maps').data, {
+                    projectID: this.model.id});
             },
 
             initCollections: function () {
