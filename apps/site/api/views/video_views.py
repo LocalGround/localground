@@ -10,7 +10,6 @@ from localground.apps.site.api.views.abstract_views import \
 class VideoList(MediaList):
     serializer_class = VideoSerializer
     model = models.Video
-    permission_classes = (CheckUserCanPostToProject,)
 
 
 class VideoInstance(MediaInstance):

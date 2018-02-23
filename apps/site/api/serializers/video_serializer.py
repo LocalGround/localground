@@ -2,6 +2,7 @@ from rest_framework import serializers
 from localground.apps.site.api.serializers.base_serializer import BaseSerializer
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
+from rest_framework import serializers
 
 
 class VideoSerializer(BaseSerializer):
@@ -57,24 +58,32 @@ class VideoSerializer(BaseSerializer):
                 if 'v=' in s:
                     video_id = s.split('v=')[1]
                     break
-            print params
             return {
                 'provider': 'youtube',
                 'video_id': video_id
             }
         elif 'vimeo' in video_link:
-            return {
-                'provider': 'vimeo',
-                'video_id': video_link.split('.com/')[1]
-            }
+            video_id = video_link.split('/')[-1]
+            try:
+                if len(video_id) >= 7 and int(video_id):
+                    return {
+                        'provider': 'vimeo',
+                        'video_id': video_id
+                    }
+                else:
+                    raise serializers.ValidationError('Error parsing Vimeo URL')
+            except Exception:
+                raise serializers.ValidationError('Error parsing Vimeo URL')
         else:
-            raise Exception('this is neither youtube nor vimeo')
+            raise serializers.ValidationError('This is neither YouTube nor Vimeo')
 
     def create(self, validated_data):
         # Overriding the create method to handle file processing
         self.validated_data.update(self.get_presave_create_dictionary())
+        attribution = validated_data.get('attribution') \
+            or validated_data.get('owner')
         self.validated_data.update({
-            'attribution': validated_data.get('owner')
+            'attribution': attribution
         })
         self.validated_data.update(self.get_video_provider_and_id(
             validated_data.get('video_link')

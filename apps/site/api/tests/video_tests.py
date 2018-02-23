@@ -40,12 +40,12 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
         self.create_video(
             self.user,
             self.project,
-            name='YT',
-            provider='youtube',
-            video_id='4232534'
+            name="YT"
         )
-        self.create_video(self.user, self.project, name='Vim',
-                          provider='vimeo', video_id='dasdsadas')
+        self.create_video(
+            self.user, self.project,
+            name="Vim",
+            video_link='https://vimeo.com/256931635')
         self.view = views.VideoList.as_view()
         self.metadata = get_metadata()
 
@@ -107,8 +107,7 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
                 'name': name,
                 'caption': caption,
                 'tags': 'cats dogs',
-                'video_id': '111111',
-                'video_provider': 'vimeo',
+                'video_link': 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
                 'project_id': self.project.id,
                 'owner': 'tester',
                 'attribution': 'van gogh'
@@ -120,8 +119,9 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.data.get("name"), name)
         self.assertEqual(response.data.get("caption"), caption)
         self.assertEqual(response.data.get("tags"), ['cats dogs'])
-        self.assertEqual(response.data.get("video_id"), '111111')
-        self.assertEqual(response.data.get("video_provider"), 'vimeo')
+        self.assertEqual(response.data.get("video_id"), 'jNQXAC9IVRw')
+        self.assertEqual(response.data.get("video_provider"), 'youtube')
+        self.assertEqual(response.data.get("video_link"), 'https://www.youtube.com/watch?v=jNQXAC9IVRw')
         self.assertEqual(response.data.get("project_id"), self.project.id)
         self.assertEqual(response.data.get("owner"), 'tester')
         self.assertEqual(response.data.get("attribution"), 'van gogh')
@@ -139,7 +139,10 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=True)
-        self.video = self.create_video(self.user, self.project)
+        self.video = self.create_video(
+            self.user, self.project,
+            name="Vim",
+            video_link='https://vimeo.com/256931635')
         self.url = '/api/0/videos/%s/.json' % self.video.id
         self.urls = [self.url]
         self.view = views.VideoInstance.as_view()
@@ -149,20 +152,18 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         response = self.client_user.put(
             self.url,
             data=urllib.urlencode({
-                'video_id': '344533',
-                'video_provider': 'youtube',
-                'project_id': self.project.id
+                'caption': 'My video',
+                'attribution': 'Phil',
+                #'project_id': self.project.id
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )
+        print response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_video = models.Video.objects.get(id=self.video.id)
-        self.assertEqual(updated_video.video_id, '344533')
-        self.assertEqual(updated_video.provider, 'youtube')
-        self.assertEqual(updated_video.project, self.project)
-        self.assertEqual(updated_video.owner, self.user)
-        self.assertEqual(updated_video.last_updated_by, self.user)
+        self.assertEqual(updated_video.description, 'My video')
+        self.assertEqual(updated_video.attribution, 'Phil')
 
     def test_throws_friendly_error_if_no_video_id_put(self, **kwargs):
         response = self.client_user.put(

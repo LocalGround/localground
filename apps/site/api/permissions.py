@@ -5,27 +5,16 @@ from localground.apps.site import models
 class CheckUserCanPostToProject(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        print 'CheckUserCanPostToProject'
         # print request.GET
         # print request.POST
-        '''
-        Unforntately, There seems to be a problem from the post
-        command in the rest framework when it comes to
-        placing videos from the internet
-        also the query set is empty (r)
-        '''
         if request.method == 'POST':
             r = request.GET.copy()
             r.update(request.POST)
             # Make sure user has permission to create new record
             # associated with the project
             project_id = r.get('project_id')
-            print r
-            print ("accesing query filters")
             try:
                 project = models.Project.objects.get(id=project_id)
-                print project
-                print project.can_edit(request.user)
                 return project.can_edit(request.user)
             except Exception:
                 return False
