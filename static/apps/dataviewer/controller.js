@@ -100,7 +100,7 @@ define([
                 // I do not remember how this works, but I believe that
                 // I simply call the function from the object that does
                 // save the new model
-                saveFunction: uploadVideoForm.saveModel
+                saveFunction: uploadVideoForm.saveModel.bind(uploadVideoForm)
             });
             this.modal.show();
         },

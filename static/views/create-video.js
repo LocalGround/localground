@@ -24,23 +24,15 @@ define([
         // dependong on data type
         template: Handlebars.compile(CreateVideoTemplate),
         initialize: function (opts) {
-            this.model = new Video(null, {
-                // replace with opts.projectID (?)
-                projectID: 2
+            _.extend(this, opts);
+            console.log(this.app.selectedProjectID);
+            this.model = new Video({
+                'project_id': this.app.selectedProjectID
             });
-            console.log(opts);
-            console.log(DataForm);
-
         },
         templateHelpers: function () {
             return {
                 mode: this.mode,
-                //file_name: this.formatFilename(this.file.name),
-                //file_size: this.formatFileSize(this.file.size),
-                //errorMessage: this.errorMessage,
-                //imageSerial: this.imageSerial,
-                // having dataType does not help because
-                // it is uninitialized
                 dataType: this.options.dataType
             };
         },
@@ -62,20 +54,14 @@ define([
 
         saveModel: function () {
             var that = this,
-                isNew = this.model.get("id") ? false : true;
-            console.log(isNew);
+                dm = this.app.dataManager;
             this.commitForm();
             this.model.save(null, {
                 success: function (model, response) {
                     that.app.vent.trigger('success-message', "The form was saved successfully");
-                    if (!isNew) {
-                        model.trigger('saved');
-                    } else {
-                        model.collection.add(model);
-                    }
+                    dm.getCollection("videos").add(model);
                 },
                 error: function (model, response) {
-
                     that.app.vent.trigger('error-message', "The form has not saved");
                     that.$el.find("#model-form").append("error saving");
                 }

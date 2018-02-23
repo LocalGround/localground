@@ -6,6 +6,7 @@ define(["models/baseItem"], function (BaseItem) {
      * @see <a href="//localground.org/api/0/video/">//localground.org/api/0/video/</a>
      */
     var Video = BaseItem.extend({
+        urlRoot: '/api/0/videos/',
         schema: {
             name: { type: 'Text', title: "Name" },
             caption:  { type: 'TextArea', title: "Caption" },
