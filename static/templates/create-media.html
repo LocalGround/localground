@@ -3,6 +3,10 @@
 
 {{#ifequal dataType "videos"}}
 <div id="video-url-get">
+    The following websites supported: Vimeo and Youtube
+    <input type="text" name="get-video-url">
+    <button>Get Video</button>
+    <!--
     <div>
             {{#ifequal video_provider "vimeo"}}
                 <iframe src="https://player.vimeo.com/video/{{video_id}}"
@@ -20,15 +24,12 @@
                 </iframe>
             {{/ifequal}}
     </div>
+-->
 
+<!--
     <div id="model-form">
-        <!-- Form goes here. To modify the fields that are editable,
-            go to the redesign/models/photo.js and/or audio.js and modify
-            the form. Instructions re: how to use the Backbone Forms
-            library here:
-            https://github.com/powmedia/backbone-forms#custom-editors
-        -->
     </div>
+-->
 </div>
 {{/ifequal}}
 

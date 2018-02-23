@@ -256,6 +256,8 @@ define([
             }
             $('#warning-message-text').empty();
             if (opts.dataType == "videos"){
+                /*
+                // Commented out for rough draft workable version
                 this.model = new Video(null, {
                     projectID: 2
                 });
@@ -267,6 +269,7 @@ define([
                     app: this.app
                 }).render();
                 this.$el.find('#model-form').append(this.form.$el);
+                */
             }
             this.render();
             /*
