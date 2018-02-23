@@ -14,7 +14,7 @@ define(["underscore", "marionette", "models/project",
             template: false,
             initialize: function (opts) {
                 _.extend(this, opts);
-                if (typeof this.projectID === 'undefined') {
+                if (typeof this.projectJSON === 'undefined') {
                     window.location = '/';
                     return false;
                 }
@@ -63,7 +63,13 @@ define(["underscore", "marionette", "models/project",
                     //delete opts.data;
                 }
                 this.dataLoaded = true;
-                this.vent.trigger('data-loaded');
+                var that = this;
+                setTimeout(function () {
+                    that.vent.trigger('data-loaded');
+                    that.vent.trigger('datamanager-modified');
+                }, 500)
+                // CAUTION: this won't work if
+                // google maps not loaded yet
             },
             initCollection: function (opts, jsonData) {
                 var collection;

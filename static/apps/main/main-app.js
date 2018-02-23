@@ -40,8 +40,7 @@ define([
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.dataManager = new DataManager({
                 vent: this.vent,
-                projectJSON: projectJSON,
-                projectID: projectJSON.id
+                projectJSON: projectJSON
             });
             this.showBreadcrumbs();
             this.showBasemap();
@@ -51,7 +50,7 @@ define([
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
             this.listenTo(this.vent, 'edit-layer', this.showRightLayout);
-            this.listenToOnce(this.vent, 'ready-for-routing', this.rerouteIfNeeded);
+            //this.listenToOnce(this.vent, 'ready-for-routing', this.rerouteIfNeeded);
             this.addMessageListeners();
         },
         loadRegions: function () {

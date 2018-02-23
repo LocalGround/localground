@@ -31,7 +31,6 @@ define(["marionette",
                     overlayView,
                     dm = this.app.dataManager;
                 dm.each((collection) => {
-                    console.log('collection (data manager item)', collection);
                     overlayView = new MarkerListing({
                         collection: collection,
                         fields: collection.getFields(),
@@ -52,7 +51,6 @@ define(["marionette",
                 for (i = 0; i < this.overlayViews.length; i++) {
                     bounds.union(this.overlayViews[i].overlays.getBounds());
                 }
-                //console.log(bounds.isEmpty());
                 if (!bounds.isEmpty()) {
                     this.app.map.fitBounds(bounds);
                 }

@@ -27,28 +27,39 @@ define([
 
         currentCollection: null,
         dataType: "markers",
-        screenType: "table",
+        screenType: "map",
         mode: "edit",
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
             Marionette.Application.prototype.start.apply(this, [options]);
             this.initAJAX(options);
+            console.log('starting!!');
             this.router = new Router({ app: this});
             Backbone.history.start();
+            console.log('started!!');
+            var that = this;
+            /*setTimeout(function() {
+                that.router.navigate('#/map/markers/14', {trigger: true});
+            }, 500);*/
+            //that.router.navigate('#/map/markers/14', {trigger: true});
             this.addMessageListeners();
-            console.log('starting!!');
         },
 
         initialize: function (options) {
+            console.log('initializing');
             _.extend(this, options);
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = this.getProjectID();
             if (!this.dataManager){
-                this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
+                this.dataManager = new DataManager({
+                    vent: this.vent,
+                    projectJSON: projectJSON
+                });
             }
             this.loadFastRegions();
-            this.listenTo(this.vent, 'data-loaded', this.loadMainRegion);
+            this.initMainView();
+            this.listenTo(this.vent, 'data-loaded', this.initMainView);
             this.listenTo(this.vent, 'show-list', this.initMainView); // This is the cause of error
         },
         loadFastRegions: function () {
@@ -65,18 +76,15 @@ define([
             this.toolbarDataViewRegion.show(this.toolbarDataView);
             this.tabViewRegion.show(this.tabView);
         },
-        loadMainRegion: function () {
+        /*loadMainRegion: function () {
             this.initMainView();
-        },
+        },*/
 
         initMainView: function (mode, dataType) {
             this.dataType = dataType || this.dataType;
             this.screenType = mode || this.screenType;
             this.toolbarDataView.render();
             this.saveAppState();
-            if (!this.isDataLoaded()) {
-                return;
-            }
             var collection = this.getCollection(),
                 opts = {
                     app: this,
@@ -97,11 +105,11 @@ define([
             this.mainRegion.show(this.mainView);
             this.adjustLayout();
             this.tabView.render();
-            if (this.deferredModelID) {
+            /*if (this.deferredModelID) {
                 this.router.navigate("//" + this.screenType + "/" + this.dataType
                 + "/" + this.deferredModelID, {trigger: true});
                 delete this.deferredModelID;
-            }
+            }*/
         },
 
         adjustLayout: function () {
