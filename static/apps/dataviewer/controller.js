@@ -25,11 +25,9 @@ define([
             if (dataType == "photos" || dataType == "audio") {
                 this.createMediaUploadModal();
             }
-            /*
             else if (dataType == "videos") {
                 this.createVideoLinkModal();
             }
-            */
             else if (dataType == "map_images") {
                 this.createMapImageUploadModal();
             } else {
@@ -90,7 +88,8 @@ define([
             var modalTitle = title != null ? title : "Get Video Link";
             var setDatType = dataType != null ? dataType : "default";
             var uploadMediaForm = new CreateMedia({
-                app: this.app
+                app: this.app,
+                dataType: "videos"
             });
             this.modal.update({
                 dataType: 'videos',

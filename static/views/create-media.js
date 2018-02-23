@@ -6,13 +6,14 @@ define([
     "models/photo",
     "models/audio",
     "models/video",
+    "lib/forms/backbone-form",
     "text!templates/create-media.html",
     "text!templates/create-video.html",
     "text!templates/new-media.html",
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
-], function ($, Marionette, Backbone, Handlebars, Photo, Audio, Video,
+], function ($, Marionette, Backbone, Handlebars, Photo, Audio, Video, DataForm,
     CreateMediaTemplate, CreateVideoTemplate, NewMediaItemTemplate, loadImage) {
     'use strict';
 
@@ -152,6 +153,7 @@ define([
                 }
             });
         },
+        form: null,
         childViewContainer: "#dropzone",
         events: {
             'click #upload-button': 'triggerFileInputButton'
@@ -165,7 +167,8 @@ define([
         },
         templateHelpers: function () {
             return {
-                count: this.collection.length
+                count: this.collection.length,
+                dataType: this.dataType
             };
         },
         defaults: {
@@ -252,6 +255,19 @@ define([
                 this.options.dataType = opts.dataType;
             }
             $('#warning-message-text').empty();
+            if (opts.dataType == "videos"){
+                this.model = new Video(null, {
+                    projectID: 2
+                });
+                console.log("Data Form:");
+                console.log(DataForm);
+                this.form = new DataForm({
+                    model: this.model,
+                    schema: this.model.getFormSchema(),
+                    app: this.app
+                }).render();
+                this.$el.find('#model-form').append(this.form.$el);
+            }
             this.render();
             /*
             Going to need some changes to consider either create media mode

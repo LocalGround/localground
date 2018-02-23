@@ -1,21 +1,38 @@
 <div class="alert failure-message ">There were errors when uploading your files. See below.</div>
 <div class="alert warning-message"></div>
-<!--
+
 {{#ifequal dataType "videos"}}
 <div id="video-url-get">
-    The following websites supported: Vimeo and Youtube
-    <input type="text" name="get-video-url">
-    <button>Get Video</button>
+    <div>
+            {{#ifequal video_provider "vimeo"}}
+                <iframe src="https://player.vimeo.com/video/{{video_id}}"
+                style="width: 100%" height="250"
+                frameborder="0"
+                webkitallowfullscreen mozallowfullscreen allowfullscreen>
+                </iframe>
+            {{/ifequal}}
+
+
+            {{#ifequal video_provider "youtube"}}
+                <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
+                style="width: 100%" height="250"
+                frameborder="0" allowfullscreen>
+                </iframe>
+            {{/ifequal}}
+    </div>
+
+    <div id="model-form">
+        <!-- Form goes here. To modify the fields that are editable,
+            go to the redesign/models/photo.js and/or audio.js and modify
+            the form. Instructions re: how to use the Backbone Forms
+            library here:
+            https://github.com/powmedia/backbone-forms#custom-editors
+        -->
+    </div>
 </div>
-{{#else}}
--->
-<!--
-Attempting to assign datatype through template helpers
-is a good start, but the problem is that
-datatype is undefined
-when being initialized through template helpers
--->
-<!-- {{dataType}} -->
+{{/ifequal}}
+
+{{#ifnotequal dataType "videos"}}
 <div id="dropzone">
     <div id="nothing-here">
         <h4>Drag files here or</h4>
@@ -25,7 +42,7 @@ when being initialized through template helpers
     </div>
 </div>
 <input id="fileupload" type="file" name="media_file" multiple="">
-<!-- {{/ifequal}} -->
+{{/ifnotequal}}
 <!--
 Might also be possible to
 place the video part inside the media based on the datatype condition
