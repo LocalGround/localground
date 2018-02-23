@@ -2,9 +2,9 @@ define(["underscore", "marionette", "models/project",
             "collections/photos", "collections/audio", "collections/videos",
             "collections/mapimages", "collections/markers",
             "collections/records", "collections/fields",
-            "collections/tilesets"],
+            "collections/tilesets", "collections/maps"],
     function (_, Marionette, Project, Photos, Audio, Videos, MapImages, Markers,
-                Records, Fields, TileSets) {
+                Records, Fields, TileSets, Maps) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
@@ -14,7 +14,7 @@ define(["underscore", "marionette", "models/project",
             template: false,
             initialize: function (opts) {
                 _.extend(this, opts);
-                if (typeof this.projectID === 'undefined') {
+                if (typeof this.projectJSON === 'undefined') {
                     window.location = '/';
                     return false;
                 }
@@ -28,16 +28,19 @@ define(["underscore", "marionette", "models/project",
             },
             initProject: function () {
                 if (!this.model) {
-                    this.model = new Project({ id: this.projectID });
-                    this.model.fetch({ success: this.initCollections.bind(this) });
-                } else {
-                    this.initCollections();
+                    this.model = new Project(this.projectJSON);
                 }
+                this.initCollections();
+                this.initMaps();
             },
 
             initTilesets: function () {
                 this.tilesets = new TileSets();
                 this.tilesets.fetch({reset: 'true'});
+            },
+            initMaps: function () {
+                this.maps = new Maps(this.model.get('maps').data, {
+                    projectID: this.model.id});
             },
 
             initCollections: function () {
@@ -62,7 +65,13 @@ define(["underscore", "marionette", "models/project",
                     //delete opts.data;
                 }
                 this.dataLoaded = true;
-                this.vent.trigger('data-loaded');
+                var that = this;
+                setTimeout(function () {
+                    that.vent.trigger('data-loaded');
+                    that.vent.trigger('datamanager-modified');
+                }, 500)
+                // CAUTION: this won't work if
+                // google maps not loaded yet
             },
             initCollection: function (opts, jsonData) {
                 var collection;

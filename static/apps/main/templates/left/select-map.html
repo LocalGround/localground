@@ -1,0 +1,22 @@
+<!-- <div class="style-section-header-wrapper">
+    <div class="plus-container" style="position:relative;float:right;">
+        <a class="add-map" href="/style/#/new"><i class="fa fa-plus add" aria-hidden="true"></i></a>
+    </div>
+    <h4>Map</h4>
+</div> -->
+
+{{#if noItems}}
+    <p class="map-none-message">Click the plus sign to create a new map</p>
+{{else}}
+<div class="selected-map">
+    <div class="selected-map-item" data-value="{{ map.id }}">
+        <p class="selected-map-name" data-value="{{ map.id }}">{{ name }}</p>
+        <p class="map-edit" data-value="{{ map.id }}"><i class="fa fa-pencil map-edit" data-value="{{ map.id }}" aria-hidden="true"></i>
+        </p>
+        <a href="/presentation#/{{previewURL}}" target="_blank" style="color: white;">
+            <p class="map-preview"><i class="fa fa-eye" aria-hidden="true"></i>
+            </p>
+        </a>
+    </div>
+</div>
+{{/if}}

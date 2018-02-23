@@ -1,29 +1,35 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-8">
-    <title>Local Ground Map Editor</title>
+    <title>{{a}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel=stylesheet type="text/css" href="/static/css/style.css" />
-    <link rel=stylesheet type="text/css" href="/static/css/map-presentation.css" />
     <link rel=stylesheet type="text/css" href="/static/css/main.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/modal_new_project.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/style-map.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/main-new.css" />
+    <link rel=stylesheet type="text/css" href="/static/external/colorpicker/css/colorpicker.css" />
+   <!-- <link rel=stylesheet type="text/css" href="/static/css/main.css" /> -->
     <script>
         var projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
         console.log(projectJSON);
     </script>
 </head>
 <body>
-    <div class="main-panel presentation-main-panel none">
-        <div id="map-panel">
-            <div id="map"></div>
-        </div>
-        <div id="marker-detail-panel" class="side-panel">
-            <!-- Marker list goes here -->
-        </div>
-
+    <div id="breadcrumb" class="breadcrumb">
+        <!-- breadcrumb header -->
     </div>
-    <div id="presentation-title" ></div>
-    <div id="legend" style="display:none;" ></div>
+    <div class="main-panel style-main-panel left">
+        <div id="left-panel">
+            <!-- Marker list goes here -->
+        </div><div id="map-panel">
+            <div id="map"></div>
+        </div><div id="right-panel" class="side-panel right-panel">
+            <!-- Marker detail goes here -->
+        </div>
+    </div>
+    <div class="style-by-menu"></div>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places"></script>
     {% if DEBUG %}
@@ -31,15 +37,14 @@
             var configPath = '../',
                 MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
         </script>
-        <script data-main="/static/apps/presentation/kickoff.js" src="/static/external/require.js"></script>
+        <script data-main="/static/apps/main/kickoff.js" src="/static/external/require.js"></script>
     {% else %}
        <!-- Use minified, concatenated code -->
         <script>
             var configPath = '../apps/',
                 MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
         </script>
-        <script data-main="/static/build/presentation.js" src="/static/external/require.js"></script>
+        <script data-main="/static/build/main.js" src="/static/external/require.js"></script>
     {% endif %}
-
 </body>
 </html>

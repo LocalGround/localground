@@ -1,0 +1,37 @@
+<div class="breadcrumb-container">
+    <div class="breadcrumb-level-container">
+        <div class="breadcrumb-hover">
+            <a href="/"><span class="breadcrumb-text">Home</span></a>
+        </div>
+    </div>
+
+    {{#if name}}
+    <div class="breadcrumb-level-container">
+        <div><i class="fa fa-angle-right fa"></i></div>
+        <div class="breadcrumb-hover">
+            <span class="breadcrumb-text">{{ name }} </span>
+        </div>
+    </div>
+
+        {{#if map}}
+        <div class="breadcrumb-level-container">
+            <div><i class="fa fa-angle-right fa" id="map-menu"></i></div>
+            <div class="breadcrumb-hover" id="map-menu" style="margin-top: -2px">
+                <span class="breadcrumb-text_current">  {{ map }} </span>
+                <i class="fa fa-angle-down"></i>
+            </div>
+            <div id="map-list" class="bread-crumb_maplist" style="display: none;">
+                {{#each mapList}}
+                <a href="#/{{this.id}}">
+                    <div class="map-item" data-value="{{ this.id }}">
+                        <p class="map-name" data-value="{{ this.id }}">{{ this.name }}</p>
+                    </div>
+                </a>
+                {{/each}}
+            </div>
+        </div>
+        
+        {{/if}}
+        
+    {{/if}}
+</div>

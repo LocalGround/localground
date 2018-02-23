@@ -1,0 +1,27 @@
+.selected-map {
+    padding: 10px;
+    border-bottom: solid 1px #ebebeb;
+    font-size: 12px;
+    background: #FFF;
+    font-weight: 600;
+    color: #666;
+}
+
+.selected-map-name {
+    display: inline-block;
+    cursor: pointer;
+    font-weight: 600;
+    width: 75%;
+}
+
+.map-preview {
+    padding: 2px 11px;
+}
+
+.selected-map-item {
+    padding: 0;
+    p {
+        display: inline-block;
+        cursor: pointer;
+    }
+}

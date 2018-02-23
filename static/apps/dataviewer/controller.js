@@ -37,16 +37,17 @@ define([
             }
         },
         dataDetail: function (screenType, dataType, id) {
+            console.log('ROUTING: dataDetail');
             this.app.screenType = screenType;
             this.app.dataType = dataType;
             var dm = this.app.dataManager,
                 detailView;
-            if (!dm.dataLoaded) {
+            /*if (!dm.dataLoaded) {
                 // stash the model id, and then display once the
                 // data has been loaded:
                 this.app.deferredModelID = id;
                 return;
-            }
+            }*/
 
             //1. for gallery and map:
             var model = dm.getModel(dataType, parseInt(id));
@@ -55,10 +56,12 @@ define([
                     model.fetch({"reset": true});
                 }
             }
+            console.log('\'bout to ROUTE');
             detailView = new DataDetail({
                 model: this.app.dataManager.getModel(dataType, parseInt(id)),
                 app: this.app
             });
+
             this.app.vent.trigger("show-detail", detailView, false);
 
             //2. for spreadsheet:

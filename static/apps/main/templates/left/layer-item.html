@@ -1,0 +1,24 @@
+<div class='layer-column' id='layer{{id}}'>
+    <input type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} /> 
+    <p class="layer-name">{{ title }}</p> 
+    <a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+    <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a>
+</div>
+<div>
+    <p class="layer-datasource" >data source: {{name}}</p>
+    <a><p class="layer-style-by" id="layer-style-by" >sorted by: {{layer_type}}</p></a>
+</div>
+<ul id="symbols-list">
+    {{#each dataList}}
+    <li class="list-item">
+        <a>
+            <p>{{this.property}}
+                {{#ifequal this.property ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
+
+            </p>
+        </a>
+        
+    </li>
+    {{/each}}
+</ul>
+

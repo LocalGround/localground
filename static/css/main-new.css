@@ -1,0 +1,156 @@
+.style-main-panel {
+  height: calc(100% - 61px);
+  top: 41px;
+  display: flex;
+  position: absolute;
+  width: 100%;
+}
+
+.breadcrumb {
+  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 transparent, 0 2px 4px -1px transparent;
+  z-index: 2;
+  position: absolute;
+  width: 100%;
+}
+
+.breadcrumb-container {
+  display: inline-flex;
+  padding: 10px 30px;
+  height: 20px;
+}
+
+.breadcrumb-level-container {
+  display: inline-flex;
+  position: relative;
+}
+
+.breadcrumb-level-container .fa-angle-right {
+  padding: 0px 15px;
+  line-height: 22px;
+}
+
+.breadcrumb-level-container .fa-angle-down {
+  line-height: 22px;
+  padding: 0px 8px;
+  font-weight: 600;
+}
+
+.breadcrumb-hover {
+  height: 28px;
+  border-radius: 3px;
+  padding: 0px 5px;
+}
+
+.breadcrumb-hover:hover {
+  background: #f3f3f3;
+}
+
+.breadcrumb-text, .breadcrumb-text_current {
+  font-size: 14px;
+  font-weight: 300;
+  display: inline-block;
+}
+
+.breadcrumb-text_current {
+  font-weight: 600;
+}
+
+.bread-crumb_maplist {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  left: 36px;
+  top: 27px;
+  z-index: 500;
+  background: white;
+  padding: 10px;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.selected-map {
+  padding: 10px;
+  border-bottom: solid 1px #ebebeb;
+  font-size: 12px;
+  background: #FFF;
+  font-weight: 600;
+  color: #666;
+}
+
+.selected-map-name {
+  display: inline-block;
+  cursor: pointer;
+  font-weight: 600;
+  width: 75%;
+}
+
+.map-preview {
+  padding: 2px 11px;
+}
+
+.selected-map-item {
+  padding: 0;
+}
+
+.selected-map-item p {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.list-item {
+  border-bottom: 1px solid #ebebeb;
+  font-size: 12px;
+  list-style: none;
+  background-color: #f7f7f7;
+}
+
+.list-item:hover {
+  background: #EEE;
+  color: #444;
+}
+
+.list-item a {
+  text-decoration: none;
+  padding: 6px 32px;
+  display: inline-block;
+  width: 100%;
+}
+
+.list-item p {
+  display: inline-block;
+  margin-top: 3px;
+  vertical-align: middle;
+}
+
+.layer-datasource {
+  font-size: 11px;
+  margin-left: 20px;
+}
+
+.layer-style-by {
+  font-size: 11px;
+  margin-left: 20px;
+}
+
+.sort-by {
+  width: 100%;
+  font-size: 12px;
+  padding: 8px 20px;
+  /* margin: 10px 0px; */
+  display: inline-block;
+  background-color: #f7f7f7;
+  font-weight: 600;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.style-by-menu {
+  position: absolute;
+  background: white;
+  left: 50px;
+}
+
+.top-wrapper {
+  width: 100vw;
+  height: 80px;
+}
+/*# sourceMappingURL=main-new.css.map */
