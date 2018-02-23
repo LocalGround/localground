@@ -7,6 +7,7 @@ define(["jquery",
         "models/record",
         "models/marker",
         "models/audio",
+        "models/video",
         "collections/photos",
         "collections/audio",
         "collections/videos",
@@ -19,7 +20,7 @@ define(["jquery",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
-        Record, Marker, AudioModel, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
+        Record, Marker, AudioModel, Video, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
         SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
@@ -337,6 +338,7 @@ define(["jquery",
 
 
             videoRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
+                //return td;
                 // I found the problem is that id is set to "videos" string rather than a number
                 // and that id being set to "videos" can only happen at this javascript file
                 var that = this,
@@ -888,7 +890,7 @@ define(["jquery",
                 } else if (dataType == "markers"){
                     rec = new Marker({project_id: projectID});
                 } else if (dataType == "videos") {
-                    rec = new Videos({project_id: projectID});
+                    rec = new Video({project_id: projectID});
                 } else {
                     rec = new Record ({project_id: projectID});
                 }
