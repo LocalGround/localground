@@ -149,8 +149,6 @@ define(["jquery",
             renderSpreadsheet: function () {
                 // When the spreadsheet is made without a defined collection
                 // Alert that there is no collection
-                // for the sole purpose of unit testing
-                //console.log(this.collection.length);
                 var that = this;
                 if (!this.collection) {
                     this.$el.find('#grid').html("Collection is not defined");
@@ -295,14 +293,17 @@ define(["jquery",
             getModelFromCell: function (table, index) {
                 table = table || this.table;
                 var modelID = table.getDataAtRowProp(index, "id");
-                console.log("GET MODEL FROM CELL BEGIN")
-                console.log(this.collection);
-                console.log(modelID);
-                console.log(this.collection.get(modelID))
-                console.log("GET MODEL FROM CELL END")
-                // Unfortunately defaults to record without
                 return this.collection.get(modelID);
             },
+
+            htmlLinkRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
+                var htmlLink = "<a href='" + value + "' >" + value + "</a>"
+                td.innerHTML = htmlLink;
+
+
+                return td;
+            },
+
             thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
                 var that = this,
                     img = document.createElement('IMG'),
@@ -372,7 +373,6 @@ define(["jquery",
 
             mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
                 var model = this.getModelFromCell(instance, row);
-                console.log(model)
 
                 // There are two possible places to extract
                 // count of media types
@@ -451,7 +451,6 @@ define(["jquery",
                     rowIndex = $(e.target).attr("row-index"),
                     collection;
                 this.currentModel = this.collection.at(parseInt(rowIndex));
-                console.log(this.currentModel, rowIndex);
                 this.currentModel.fetch({
                     success: function () {
                         collection = new Backbone.Collection();
@@ -482,16 +481,13 @@ define(["jquery",
                         // Let's test this little experimentation out
                         var a;
                         if (audioCollection && audioCollection.data.length > 0) {
-                            console.log("Finding carousel audio")
                             audioCollection.data.forEach(function (audioTrack, i) {
-                                console.log(audioTrack, audioTrack, that.app);
                                 a = new AudioPlayer({
                                     model: new AudioModel(audioTrack),
                                     app: that.app,
                                     audioMode: "detail",
                                     className: "audio-detail"
                                 });
-                                console.log(i, a.$el.html());
                                 carousel.$el.append(a.$el);
                             });
                         }
@@ -561,7 +557,6 @@ define(["jquery",
                 var row_idx = $(e.target).attr("row-index");
                 if (row_idx != undefined){
                     this.currentModel = this.collection.at(parseInt(row_idx));
-                    console.log(this.currentModel);
                 }
                 var mediaBrowser = new MediaBrowser({
                     app: this.app,
@@ -628,7 +623,7 @@ define(["jquery",
                     case "photos":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "videos":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Video", "Video ID", "Provider", "Tags", "Attribution", "Owner", "Delete"];
+                        return ["ID", "Lat", "Lng", "Title", "Caption", "Video", "Video Link", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
                         cols = ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Media", "Delete"];
                         return cols;
@@ -656,7 +651,7 @@ define(["jquery",
                     case "photos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "videos":
-                        return [30, 80, 80, 200, 400, 65, 100, 100, 200, 100, 80, 100];
+                        return [30, 80, 80, 200, 400, 65, 100, 200, 100, 80, 100];
                     case "markers":
                         return [30, 80, 80, 200, 400, 200, 120, 100, 100];
                     default:
@@ -688,10 +683,6 @@ define(["jquery",
             },
 
             getColumns: function () {
-                console.log("GET COLLECTION FOR COLUMNS BEGIN")
-                console.log(this.collection)
-                console.log(this.collection.getDataType())
-                console.log("GET COLLECTION FOR COLUMNS END")
                 switch (this.collection.getDataType()) {
                     case "audio":
                         return [
@@ -727,8 +718,7 @@ define(["jquery",
                            { data: "name", renderer: "html"},
                            { data: "caption", renderer: "html"},
                            { data: "video_provider", renderer: this.videoRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                           { data: "video_id", type: "text"},
-                           { data: "video_provider", type: "text", editor: "select", selectOptions: ["vimeo", "youtube"]},
+                           { data: "video_link", renderer: this.htmlLinkRenderer.bind(this), readOnly: true},
                            { data: "tags", renderer: "html" },
                            { data: "attribution", renderer: "html"},
                            { data: "owner", readOnly: true},
@@ -880,10 +870,6 @@ define(["jquery",
                     projectID = this.app.getProjectID(),
                     rec;
                 dataType = dataType != undefined ? dataType : this.app.dataType;
-                console.log("DATA TYPE INSPECTION BEGIN")
-                console.log(dataType);
-                console.log(this.collection);
-                console.log("DATA TYPE INSPECTION END")
                 if (dataType == "audio" || dataType == "photos") {
                     this.showMediaUploader();
                     return;
