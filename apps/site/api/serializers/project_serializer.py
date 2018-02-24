@@ -179,7 +179,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             records, many=True, context={'request': {}})
 
         d = {
-            'id': model_name_plural,
+            'dataType': model_name_plural,
             'name': name,
             'overlay_type': overlay_type,
             'data': serializer.data

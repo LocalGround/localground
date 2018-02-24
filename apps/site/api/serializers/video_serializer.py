@@ -91,7 +91,6 @@ class VideoSerializer(BaseSerializer):
         self.instance = self.Meta.model.objects.create(**self.validated_data)
         return self.instance
 
-
     class Meta:
         model = models.Video
         read_only_fields = ('video_id', 'video_provider')
@@ -100,8 +99,12 @@ class VideoSerializer(BaseSerializer):
             'video_id', 'video_provider', 'geometry', 'project_id',
             'owner', 'overlay_type', 'attribution')
 
+
 class VideoUpdateSerializer(VideoSerializer):
-    # Make the video link read only
+    project_id = serializers.SerializerMethodField()
+
+    def get_project_id(self, obj):
+        return obj.project.id
 
     class Meta:
         model = models.Video

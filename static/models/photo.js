@@ -20,7 +20,6 @@ define(["models/baseItem", "jquery"], function (BaseItem, $) {
                 url: '/api/0/photos/' + this.id + '/rotate-' + direction + '/.json',
                 type: 'PUT',
                 success: function (data) {
-                    console.log('callback!!!!');
                     this.set(data);
                     callback();
                 }.bind(this),

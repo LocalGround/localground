@@ -75,7 +75,6 @@ define(["underscore", "marionette", "models/project",
             },
             initCollection: function (opts, jsonData) {
                 var collection;
-                delete opts.id;
                 switch (opts.dataType) {
                     case "photos":
                         opts.isMedia = true;
