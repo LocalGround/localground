@@ -71,17 +71,18 @@ define([
  
         getPreviewMap: function () {
             var that = this;
-            this.maps = new Maps(null, { projectID: this.app.getProjectID() });
-            //this.maps.setServerQuery("WHERE project_id = " + this.app.getProjectID());
-            this.maps.fetch({
-                reset: true,
-                success: function (collection) {
-                    if (collection.length > 0) {
-                        that.previewURL = collection.at(0).get("slug");
-                        that.render();
-                    }
-                }
-            });
+            this.maps = this.app.dataManager.maps;
+            // this.maps = new Maps(null, { projectID: this.app.getProjectID() });
+            // //this.maps.setServerQuery("WHERE project_id = " + this.app.getProjectID());
+            // this.maps.fetch({
+            //     reset: true,
+            //     success: function (collection) {
+            //         if (collection.length > 0) {
+            //             that.previewURL = collection.at(0).get("slug");
+            //             that.render();
+            //         }
+            //     }
+            // });
         },
 
         showModal: function (opts) {

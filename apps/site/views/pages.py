@@ -17,10 +17,9 @@ def about_pages(request, page_name):
 
 class MainView(TemplateView):
 
-    def get_context_data(self, *args, **kwargs):
+    def get_context_data(self, project_id, *args, **kwargs):
         from localground.apps.site.api.serializers import \
             ProjectDetailSerializer
-        import json
         from localground.apps.site.models import Project
         from rest_framework.renderers import JSONRenderer
 
@@ -28,7 +27,7 @@ class MainView(TemplateView):
             *args, **kwargs)
 
         serializer = ProjectDetailSerializer(
-            Project.objects.get(id=2),
+            Project.objects.get(id=project_id),
             context={'request': {}}
         )
         renderer = JSONRenderer()
