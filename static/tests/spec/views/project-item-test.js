@@ -174,7 +174,7 @@ define([
                 expect(fixture).toContainElement('.tag');
 
                 //check that values have been set correctly from variables:
-                expect(fixture.find('a')).toHaveAttr('href', '/data/?project_id=' + newProjectItemView.model.id + '#/map');
+                expect(fixture.find('a')).toHaveAttr('href', '/data/' + newProjectItemView.model.id + '/#/map');
                 expect(fixture.find('.project-overview')).toContainText(newProjectItemView.model.get("name"));
                 expect(fixture.find('.tag')).toContainText("Private");
                 expect(fixture.find('.owner')).toContainText("Owner: " + newProjectItemView.model.get("owner"));
