@@ -6,9 +6,10 @@ define([
     "marionette",
     "lib/forms/backbone-form",
     "models/video",
+    "lib/modals/modal",
     "text!templates/create-video.html"
 ], function ($, _, Backbone, Handlebars, Marionette, DataForm,
-    Video, CreateVideoTemplate) {
+    Video, Modal, CreateVideoTemplate) {
     'use strict';
 
     /*
@@ -23,6 +24,7 @@ define([
         // There must be some way to dynamically determine the template
         // dependong on data type
         template: Handlebars.compile(CreateVideoTemplate),
+        modal: null,
         initialize: function (opts) {
             _.extend(this, opts);
             console.log(this.app.selectedProjectID);
@@ -52,6 +54,7 @@ define([
             }
         },
 
+        // Unfortunately, the controller is controlling the
         saveModel: function () {
             var that = this,
                 dm = this.app.dataManager;
@@ -60,6 +63,7 @@ define([
                 success: function (model, response) {
                     that.app.vent.trigger('success-message', "The form was saved successfully");
                     dm.getCollection("videos").add(model);
+                    that.modal.hide();
                 },
                 error: function (model, response) {
                     that.app.vent.trigger('error-message', "The form has not saved");

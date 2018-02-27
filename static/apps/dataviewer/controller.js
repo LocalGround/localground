@@ -90,8 +90,9 @@ define([
             var setDatType = dataType != null ? dataType : "default";
             var uploadVideoForm = new CreateVideo({
                 app: this.app,
+                modal: this.modal
             });
-            this.modal.update({
+            uploadVideoForm.modal.update({
                 view: uploadVideoForm,
                 title: 'Get Video',
                 closeButtonText: "Cancel",
@@ -99,7 +100,7 @@ define([
                 showSaveButton: true,
                 saveFunction: uploadVideoForm.saveModel.bind(uploadVideoForm)
             });
-            this.modal.show();
+            uploadVideoForm.modal.show();
         },
 
         createMapImageUploadModal: function () {
