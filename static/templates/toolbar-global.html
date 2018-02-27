@@ -7,10 +7,10 @@
     </div>
     <nav>
         <div {{#ifequal activeTab "data"}}class="selected"{{/ifequal}}>
-            <a href="/data/#/map" class="data">Data</a>
+            <a href="/data/{{id}}/#/map" class="data">Data</a>
         </div>
         <div {{#ifequal activeTab "style"}}class="selected"{{/ifequal}}>
-            <a href="/style" class="style">Style</a>
+            <a href="/style/{{id}}/" class="style">Style</a>
         </div>
     </nav>
 </div>
