@@ -20,8 +20,7 @@ define(["jquery",
                 // if (this.model.get("metadata").isShowing) {
                 //     this.showOverlays();
                 // }
-                console.log('layer list childview initlize');
-                console.log(this);
+                console.log('symbol view initlize');
                 //this.dataset = this.app.dataManager.getCollection(this.model.get('data_source'));
                 this.markerList = this.buildMarkerList(this.model, this.dataSource);                
             },

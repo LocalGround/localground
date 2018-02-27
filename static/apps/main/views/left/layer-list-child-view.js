@@ -14,8 +14,6 @@ define(["jquery",
             initialize: function (opts) {
                 // In this view, this.model = layer, this.collection = symbols
                 this.undefinedSymbols = null;
-                this.menu = null;
-                console.log('opts: ', opts);
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
@@ -26,14 +24,13 @@ define(["jquery",
                     this.showOverlays();
                 }
                 console.log('layer list childview initlize');
-                console.log(this);
                 this.dataset = this.app.dataManager.getCollection(this.model.get('data_source'));
+                
                 //this.collection = new Symbols(this.model.get('symbols'));
                 if (this.undefinedSymbols) {
                     this.collection.add(this.undefinedSymbols);
                 }
                 console.log(this.dataset);
-                $('body').click($.proxy(this.hideStyleMenu, this));
             },
             updateCollection: function() {
                 console.log('update Zcollection')
@@ -136,6 +133,7 @@ define(["jquery",
             },
 
             updateMapOverlays: function () {
+                console.log('update map overlays');
                 this.collection = new Symbols(this.model.get('symbols'));
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
@@ -147,23 +145,20 @@ define(["jquery",
                 //this.render();
             },
 
-            showStyleByMenu: function () {
-                //this.menu = null;
-                console.log('show styebyMenu');
-                if (!this.menu) {
-                    this.menu = new MarkerStyleView({
-                        app: this.app,
-                        model: this.model
-                    });
-                    $(".style-by-menu").append(this.menu.$el);
-                    $('.style-by-menu').show();
-                    console.log(this.menu);
+            showStyleByMenu: function (event) {
+                console.log('child show styebyMenu', this.model.id);
+     
+                const coords = {
+                    x: event.clientX,
+                    y: event.clientY
                 }
+                this.app.vent.trigger('show-style-menu', this.model, coords);
             },
 
             initMapOverlays: function () {
                 // create an MarkerOverlays for each symbol in the
                 // layer.
+                console.log('initMapOverlays');
                 this.markerOverlayList = [];
                 var matchedCollection,
                     overlays,
@@ -171,6 +166,7 @@ define(["jquery",
                     dataSource = this.model.get("data_source"),
                     data = this.app.dataManager.getCollection(dataSource),
                     symbols = this.model.getSymbols();
+                    const currentProp = this.model.get('metadata').currentProp
                     console.log(data);
                     const dataIds = data.map(function(model) {
                         return model.id
@@ -195,9 +191,11 @@ define(["jquery",
                         iconOpts: symbol.toJSON(),
                         isShowing: false
                     });
-                    console.log(overlays);
+                    
                     that.markerOverlayList.push(overlays);
                 });
+
+
                 const unrepresentedIds = dataIds.filter(function(id) {
                     return !representedIds.includes(id)
                 });
@@ -206,13 +204,15 @@ define(["jquery",
 
                 if (unrepresentedIds.length > 0) {
 
-                    let sqlString = '';
+                    // let sqlString = '';
                     
-                    unrepresentedIds.forEach(function (id) {
-                        sqlString = sqlString.concat('id = ', id, ' or ');
-                        console.log(sqlString);
-                    });
-                    sqlString = sqlString.slice(0, -4);
+                    // unrepresentedIds.forEach(function (id) {
+                    //     sqlString = sqlString.concat('id = ', id, ' or ');
+                    //     console.log(sqlString);
+                    // });
+                    // sqlString = sqlString.slice(0, -4);
+
+                    let sqlString = currentProp + ' = undefined or ' + currentProp + ' = null';
 
                     console.log(sqlString);
                     let unrepresentedCollection = new data.constructor(null, {
@@ -269,28 +269,6 @@ define(["jquery",
                     this.hideOverlays();
                 }
             },
-
-            onDestroy: function() {
-                console.log('DESTROYING>>>');
-                if (this.menu) {
-                    this.menu.destroy();
-                }
-            },
-            hideStyleMenu: function(e) {
-                console.log('hide lcick');
-                var $el = $(e.target);
-                var parent = document.getElementById("style-by-menu");
-                
-                if (!parent.contains(e.target) && !$el.hasClass('layer-style-by')) {
-                    console.log(this.menu);
-                    if (this.menu) {
-                        console.log('DESTROY MENU');
-                        $('.style-by-menu').hide();
-                        this.menu.destroy();
-                        //this.menu = null;
-                    }
-                }
-            }
         });
         return LayerListChild;
     });

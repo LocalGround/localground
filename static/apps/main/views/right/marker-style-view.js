@@ -166,7 +166,8 @@ define(["jquery",
                 'click .selected-palette-wrapper': 'showPalettes',
                 'click .palette-list': 'selectPalette',
                 'click .palette-list *': 'selectPalette',
-                'click #global-symbol': 'showSymbols'
+                'click #global-symbol': 'showSymbols',
+                'click .style-by-menu_close': 'hideStyleMenu'
                // 'click .palette-list *': 'selectPalette'
             },
 
@@ -660,6 +661,10 @@ define(["jquery",
                     return domValue;
                 }
             },
+
+            hideStyleMenu: function(e) {
+                this.app.vent.trigger('hide-style-menu', e);
+            }
 
         });
         return MarkerStyleView;

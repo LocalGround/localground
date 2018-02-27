@@ -66,10 +66,10 @@ define(["underscore", "marionette", "models/project",
                 }
                 this.dataLoaded = true;
                 var that = this;
-                setTimeout(function () {
-                    that.vent.trigger('data-loaded');
-                    that.vent.trigger('datamanager-modified');
-                }, 500)
+                // setTimeout(function () {
+                //     that.vent.trigger('data-loaded');
+                //     that.vent.trigger('datamanager-modified');
+                // }, 500)
                 // CAUTION: this won't work if
                 // google maps not loaded yet
             },

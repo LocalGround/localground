@@ -43,7 +43,8 @@ define([
         },
 
         events: {
-            'click #map-menu': "showMapList"
+            'click #map-menu': 'showMapList',
+            'click #map-list': 'hideMapList'
         },
 
         modal: null,
@@ -67,6 +68,10 @@ define([
 
         showMapList: function() {
             this.$el.find('#map-list').toggle();
+        },
+
+        hideMapList: function() {
+            this.$el.find('#map-list').hide();
         },
  
         getPreviewMap: function () {

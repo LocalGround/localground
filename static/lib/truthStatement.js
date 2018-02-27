@@ -109,9 +109,13 @@ define(["jquery"], function ($) {
             if (this.operator == '*') {
                 return true;
             }
+            if (this.val === 'null') {
+                this.val = '';
+            };
             var returnVal = false,
                 modelVal = model.get(this.key),
                 idx = -1;
+          
             if (typeof modelVal === 'undefined' || modelVal == null) {
                 return false;
             }

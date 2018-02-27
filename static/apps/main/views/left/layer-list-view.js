@@ -4,10 +4,11 @@ define(["marionette",
         "models/layer",
         "collections/symbols",
         "apps/main/views/left/layer-list-child-view",
-        "text!../../templates/left/layer-list.html"
+        "text!../../templates/left/layer-list.html",
+        "apps/main/views/right/marker-style-view"
     ],
     function (Marionette, Handlebars, Layers, Layer, Symbols, LayerListChild,
-        LayerListTemplate) {
+        LayerListTemplate, MarkerStyleView) {
         'use strict';
 
         var LayerListView = Marionette.CompositeView.extend(_.extend({}, {
@@ -42,6 +43,8 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'route-layer', this.routerSendCollection);
                 this.listenTo(this.app.vent, 'add-css-to-selected-layer', this.addCssToSelectedLayer);
                 this.listenTo(this.app.vent, 'route-new-layer', this.createNewLayer);
+                this.listenTo(this.app.vent, 'show-style-menu', this.showStyleMenu);
+                this.listenTo(this.app.vent, 'hide-style-menu', this.hideStyleMenu);
             },
 
             events: function () {
@@ -94,7 +97,51 @@ define(["marionette",
                     newLayer: true
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);
-            }
+            },
+            showStyleMenu: function(model, coords) {
+                //this.menu = null;
+                if (this.menu) {
+                    this.menu.destroy();
+                }
+                
+                console.log('show styebyMenu');
+                this.menu = new MarkerStyleView({
+                    app: this.app,
+                    model: model
+                });
+                $('.style-by-menu').append(this.menu.$el);
+                $('.style-by-menu').css({
+                    left: coords.x,
+                    top: coords.y
+                })
+                $('.style-by-menu').show();
+                console.log('showing menu');
+                
+            },
+            hideStyleMenu: function(e){
+                console.log('hide menu');
+                //this.menu.destroy();
+
+                var $el = $(e.target);
+                var parent = document.getElementById("style-by-menu");
+                
+                $('.style-by-menu').hide();
+                if (!parent.contains(e.target) && !$el.hasClass('layer-style-by') && !parent.hasClass('style-by-menu')) {
+                    console.log(this.menu);
+                    if (this.menu) {
+                        console.log('DESTROY MENU');
+                        $('.style-by-menu').hide();
+                        this.menu.destroy();
+                        //this.menu = null;
+                    }
+                }
+            },
+            onDestroy: function() {
+                console.log('DESTROYING>>>');
+                if (this.menu) {
+                    this.menu.destroy();
+                }
+            },
 
         }));
         return LayerListView;

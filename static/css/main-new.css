@@ -147,6 +147,15 @@
   position: absolute;
   background: white;
   left: 50px;
+  z-index: 501;
+  border: 1px solid #ebebeb;
+}
+
+.style-by-menu_close {
+  top: 3;
+  right: 3;
+  position: absolute;
+  cursor: pointer;
 }
 
 .top-wrapper {
