@@ -45,9 +45,6 @@ define(["marionette",
                 });
             },
             showDetail: function (view) {
-                console.log('****************************')
-                console.log('SHOW DETAIL')
-                console.log('****************************')
                 this.rightRegion.show(view);
                 this.unhideDetail();
                 view.model.set("active", true);
