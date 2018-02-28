@@ -2,10 +2,12 @@ define(["marionette",
         "handlebars",
         "views/media_browser",
         "views/create-media",
+        "views/create-video",
         "text!templates/media-browser-layout.html",
         "models/layer"
     ],
-    function (Marionette, Handlebars, MediaBrowserView, UploaderView, AddMediaModalTemplate)  {
+    function (Marionette, Handlebars,
+        MediaBrowserView, UploaderView, VideoLinkView, AddMediaModalTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var AddMediaModal = Marionette.LayoutView.extend({
@@ -18,11 +20,13 @@ define(["marionette",
 
             events: {
                 'click #upload-tab' : 'showUploader',
+                'click #video-tab' : 'showVideoLinker',
                 'click #database-tab' : 'showDatabase'
             },
 
             regions: {
                 uploaderRegion: "#uploader",
+                videoLinkerRegion: "#video_linker",
                 mediaBrowserRegion: "#media_browser"
             },
             onRender: function () {
@@ -39,6 +43,27 @@ define(["marionette",
                 this.uploaderRegion.show(this.upld);
                 this.uploaderRegion.$el.hide();
 
+                /*
+                // This instantiation must have caused either of the following:
+
+                // Either the overall order caused this to be called first
+                // before DataForm ever gets called
+                // OR
+                // DataForm has been overwritten with an empty undefined value
+                //
+
+                // by instantiating the create-video,
+                // that is the single code that led to to massive breaking
+                // of data form
+                this.vdlk = new VideoLinkView({
+                    app: this.app,
+                    parentModel: this.parentModel
+                });
+                */
+                //this.videoLinkerRegion.show(this.vdlk);
+                this.videoLinkerRegion.show(); // leave this empty for testing
+                this.videoLinkerRegion.$el.hide();
+
                 this.mb = new MediaBrowserView({
                     app: this.app,
                     parentModel: this.parentModel
@@ -54,8 +79,10 @@ define(["marionette",
 
             showUploader: function (e) {
                 this.mediaBrowserRegion.$el.hide();
+                this.videoLinkerRegion.$el.hide();
                 this.uploaderRegion.$el.show();
                 this.$el.find("#database-tab-li").removeClass("active");
+                this.$el.find("#video-tab-li").removeClass("active");
                 this.$el.find("#upload-tab-li").addClass("active");
                 this.activeRegion = "uploader";
                 if (e) {
@@ -63,10 +90,27 @@ define(["marionette",
                 }
             },
 
+
+
+            showVideoLinker: function (e) {
+                this.mediaBrowserRegion.$el.hide();
+                this.uploaderRegion.$el.hide();
+                this.videoLinkerRegion.$el.show();
+                this.$el.find("#database-tab-li").removeClass("active");
+                this.$el.find("#upload-tab-li").removeClass("active");
+                this.$el.find("#video-tab-li").addClass("active");
+                this.activeRegion = "videoLinker";
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+
             showDatabase: function (e) {
                 this.uploaderRegion.$el.hide();
+                this.videoLinkerRegion.$el.hide();
                 this.mediaBrowserRegion.$el.show();
                 this.$el.find("#upload-tab-li").removeClass("active");
+                this.$el.find("#video-tab-li").removeClass("active");
                 this.$el.find("#database-tab-li").addClass("active");
                 this.activeRegion = "mediaBrowser";
                 if (e) {
@@ -79,6 +123,8 @@ define(["marionette",
                     this.mb.addModels();
                 } else if (this.activeRegion == "uploader") {
                     this.upld.addModels();
+                } else if (this.activeRegion == "videoLinker") {
+                    alert("Active Region is Video Linker")
                 }
             }
         });
