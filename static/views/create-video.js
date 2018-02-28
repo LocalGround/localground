@@ -48,9 +48,19 @@ define([
             });
         },
         addToForm: function (model, response) {
-            this.app.vent.trigger('success-message', "The form was saved successfully");
-            this.parentModel.trigger('add-models-to-marker', [ model ])
-            this.app.vent.trigger('add-models-to-marker', [ model ]);
+            //attaching media to markers (from data detail):
+            if (this.parentModel) {
+                this.app.vent.trigger('success-message', "The form was saved successfully");
+                this.parentModel.trigger('add-models-to-marker', [ model ])
+                this.app.vent.trigger('add-models-to-marker', [ model ]);
+            }
+
+            //for gallery and spreadsheet:
+            else if (this.modal) {
+                var dm = this.app.dataManager;
+                dm.getCollection("videos").add(model);
+                this.modal.hide();
+            }
         }
     });
     return CreateVideoView;
