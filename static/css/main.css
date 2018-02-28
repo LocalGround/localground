@@ -2416,8 +2416,8 @@ span.plus {
 /****************************/
 /*        Video CSS         */
 /****************************/
-.video-form {
-    margin: 30px 0px 0px 30px;
+.modal-search-form.video-form {
+    margin: 20px 0px 20px 20px;
     width: 90%;
 }
 input#video_link {
