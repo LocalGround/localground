@@ -60,10 +60,17 @@ class VideoSerializer(BaseSerializer):
                 if 'v=' in s:
                     video_id = s.split('v=')[1]
                     break
-            return {
-                'provider': 'youtube',
-                'video_id': video_id
-            }
+            try:
+                if len(video_id) == 11:
+                    return {
+                        'provider': 'youtube',
+                        'video_id': video_id
+                    }
+                else:
+                    raise serializers.ValidationError(
+                        'Error parsing Youtube URL')
+            except Exception:
+                raise serializers.ValidationError('Error parsing Youtube URL')
         elif 'vimeo' in video_link:
             video_id = video_link.split('?')[0]
             video_id = video_id.split('/')[-1]
