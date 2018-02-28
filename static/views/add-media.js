@@ -43,7 +43,7 @@ define(["marionette",
                 this.uploaderRegion.show(this.upld);
                 this.uploaderRegion.$el.hide();
 
-                /*
+
                 // This instantiation must have caused either of the following:
 
                 // Either the overall order caused this to be called first
@@ -59,9 +59,9 @@ define(["marionette",
                     app: this.app,
                     parentModel: this.parentModel
                 });
-                */
-                //this.videoLinkerRegion.show(this.vdlk);
-                this.videoLinkerRegion.show(); // leave this empty for testing
+
+                this.videoLinkerRegion.show(this.vdlk);
+                //this.videoLinkerRegion.show(); // leave this empty for testing
                 this.videoLinkerRegion.$el.hide();
 
                 this.mb = new MediaBrowserView({

@@ -4,7 +4,6 @@ define([
     "backbone",
     "handlebars",
     "marionette",
-    "lib/forms/backbone-form",
     "models/photo",
     "models/audio",
     "models/video",
@@ -13,7 +12,7 @@ define([
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
-], function ($, _, Backbone, Handlebars, Marionette, DataForm, Photo, Audio, Video,
+], function ($, _, Backbone, Handlebars, Marionette, Photo, Audio, Video,
     CreateMediaTemplate, NewMediaItemTemplate, loadImage) {
     'use strict';
 
@@ -240,8 +239,8 @@ define([
             });
         },
         initialize: function (opts) {
-            console.log("Data Form:");
-            console.log(DataForm);
+            //console.log("Data Form:");
+            //console.log(DataForm);
             _.extend(this, opts);
             this.collection = new Backbone.Collection();
             var that = this;
@@ -250,29 +249,12 @@ define([
                 this.options.dataType = opts.dataType;
             }
             $('#warning-message-text').empty();
-            if (opts.dataType == "videos"){
-                /*
-                // Commented out for rough draft workable version
-                this.model = new Video(null, {
-                    projectID: 2
-                });
-                console.log("Data Form:");
-                console.log(DataForm);
-                this.form = new DataForm({
-                    model: this.model,
-                    schema: this.model.getFormSchema(),
-                    app: this.app
-                }).render();
-                this.$el.find('#model-form').append(this.form.$el);
-                */
-            }
             this.render();
             /*
             Going to need some changes to consider either create media mode
             between media (photo and audio) or video links
             for setting up the template
             */
-            console.log(this.$el.find("#fileupload"));
             this.$el.find('#fileupload').fileupload({
                 dataType: 'json',
                 autoUpload: true,

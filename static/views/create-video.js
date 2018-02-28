@@ -4,11 +4,11 @@ define([
     "backbone",
     "handlebars",
     "marionette",
-    "lib/forms/backbone-form",
+    //"lib/forms/backbone-form",
     "models/video",
     "lib/modals/modal",
     "text!templates/create-video.html"
-], function ($, _, Backbone, Handlebars, Marionette, DataForm,
+], function ($, _, Backbone, Handlebars, Marionette,
     Video, Modal, CreateVideoTemplate) {
     'use strict';
 
@@ -25,6 +25,17 @@ define([
         // dependong on data type
         template: Handlebars.compile(CreateVideoTemplate),
         modal: null,
+        events: {
+            'blur #video_link': 'renderIframe',
+            'paste #video_link': 'renderIframe'
+        },
+        renderIframe: function (e) {
+            var that = this;
+            this.commitForm();
+            this.model.save(null, {
+                success: that.render
+            });
+        },
         initialize: function (opts) {
             _.extend(this, opts);
             console.log(this.app.selectedProjectID);
@@ -39,20 +50,8 @@ define([
                 dataType: this.options.dataType
             };
         },
-        onRender: function () {
-            this.form = new DataForm({
-                model: this.model,
-                schema: this.model.getFormSchema(),
-                app: this.app
-            }).render();
-            this.$el.find('#model-form').append(this.form.$el);
-        },
         commitForm: function () {
-            var errors = this.form.commit({ validate: true });
-            if (errors) {
-                console.log("errors: ", errors);
-                return;
-            }
+            this.model.set('video_link', this.$el.find('#video_link').val());
         },
 
         saveModel: function () {
@@ -60,17 +59,18 @@ define([
                 dm = this.app.dataManager;
             this.commitForm();
             this.model.save(null, {
-                success: function (model, response) {
-                    that.app.vent.trigger('success-message', "The form was saved successfully");
-                    dm.getCollection("videos").add(model);
-                    that.modal.hide();
-                },
+                success: that.addToForm,
                 error: function (model, response) {
                     that.app.vent.trigger('error-message', "The form has not saved");
                     that.$el.find("#model-form").append("error saving");
                 }
             });
         },
+        addToForm: function (model, response) {
+            that.app.vent.trigger('success-message', "The form was saved successfully");
+            dm.getCollection("videos").add(model);
+            that.modal.hide();
+        }
     });
     return CreateVideoView;
 

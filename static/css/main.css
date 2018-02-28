@@ -2411,3 +2411,16 @@ span.plus {
     font-size: 12px;
     color: #888;
 }
+
+
+/****************************/
+/*        Video CSS         */
+/****************************/
+.video-form {
+    margin: 30px 0px 0px 30px;
+    width: 90%;
+}
+input#video_link {
+    width: 100%;
+    font-size: 1.1em;
+}

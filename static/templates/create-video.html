@@ -1,4 +1,8 @@
-<div id="video-url-get">
-    <div id="model-form">
-    </div>
+<div class="modal-search-form video-form">
+    <input type="text" id="video_link"
+        placeholder="Paste a link from either YouTube or Vimeo">
+
+    {{#if video_provider}}
+        {{ video_provider }}: {{ video_id }}
+    {{/if}}
 </div>
