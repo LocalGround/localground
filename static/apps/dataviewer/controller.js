@@ -10,6 +10,8 @@ define([
         initialize: function (options) {
             this.app = options.app;
             this.modal = new Modal();
+            this.listenTo(this.app.vent,
+                "show-create-new", this.addNew);
         },
         dataList: function (arg1, arg2) {
             var dataType, screenType;
@@ -41,12 +43,6 @@ define([
             this.app.dataType = dataType;
             var dm = this.app.dataManager,
                 detailView;
-            /*if (!dm.dataLoaded) {
-                // stash the model id, and then display once the
-                // data has been loaded:
-                this.app.deferredModelID = id;
-                return;
-            }*/
 
             //1. for gallery and map:
             var model = dm.getModel(dataType, parseInt(id));

@@ -573,24 +573,6 @@ define(["jquery",
                 });
             },
 
-
-
-            showMediaUploader: function (e) {
-
-                var mediaUploader = new MediaUploader({
-                    app: this.app,
-                });
-                this.app.vent.trigger("show-modal", {
-                    title: 'Media Uploader',
-                    width: 1100,
-                    //height: 400,
-                    view: mediaUploader,
-                    saveButtonText: "Add",
-                    showSaveButton: true,
-                    saveFunction: mediaUploader.addModels.bind(mediaUploader)
-                });
-            },
-
             attachModels: function (models) {
                 var that = this,
                     i = 0,
@@ -871,7 +853,6 @@ define(["jquery",
                     rec;
                 dataType = dataType != undefined ? dataType : this.app.dataType;
                 if (dataType == "audio" || dataType == "photos") {
-                    this.showMediaUploader();
                     return;
                 } else if (dataType == "markers"){
                     rec = new Marker({project_id: projectID});

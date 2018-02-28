@@ -25,7 +25,8 @@ define([
             'click #show-media-type' : 'showMediaTypeForm',
             'click #add-row' : 'triggerAddRow',
             'click .dropdown-menu a': 'route',
-            'click .add': 'toggleMenu'
+            'click .add': 'toggleMenu',
+            'click .add-new': 'triggerAddNew'
         },
         modal: null,
         forms: null,
@@ -96,6 +97,13 @@ define([
 
         triggerAddRow: function (e) {
             this.app.vent.trigger('add-row');
+            e.preventDefault();
+        },
+
+        triggerAddNew: function (e) {
+            var dataType = $(e.target).attr("data-type")
+            var screenType = $(e.target).attr("screen-type")
+            this.app.vent.trigger("show-create-new", screenType, dataType);
             e.preventDefault();
         },
 
