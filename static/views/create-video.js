@@ -30,7 +30,8 @@ define([
                         } else {
                             that.model.set("errorMessage", "Needs a valid video link");
                         }
-                        that.app.vent.trigger('error-message', response.responseText);
+                        console.log("About to trigger error message", JSON.parse(response.responseText)[0]);
+                        that.app.vent.trigger('error-message', JSON.parse(response.responseText)[0]);
                         that.$el.find("#model-form").append("error saving");
                         that.render();
                     }
@@ -69,7 +70,7 @@ define([
                     } else {
                         that.model.set("errorMessage", "Needs a valid video link");
                     }
-                    that.app.vent.trigger('error-message', response.responseText);
+                    that.app.vent.trigger('error-message', response.responseText[0]);
                     that.$el.find("#model-form").append("error saving");
                     that.render()
                 }
