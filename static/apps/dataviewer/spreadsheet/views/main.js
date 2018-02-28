@@ -410,7 +410,7 @@ define(["jquery",
                 }
 
                 if (videoIds){
-                    videoCount = audioIds.length;
+                    videoCount = videoIds.length;
                 } else if (videoCollection){
                     videoCount = videoCollection.data.length;
                 }
