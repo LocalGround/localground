@@ -143,16 +143,18 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.video = self.create_video(
             self.user, self.project,
             name="Vim",
-            video_link='https://vimeo.com/256931635')
+            video_link='https://vimeo.com/256931635',
+            provider='vimeo',
+            video_id='256931635')
         self.url = '/api/0/videos/%s/.json' % self.video.id
         self.urls = [self.url]
         self.view = views.VideoInstance.as_view()
         self.metadata = get_metadata()
         self.metadata.update({
-            'video_link': {
-                'read_only': True, 'required': False, 'type': 'string'},
             'project_id': {
-                'read_only': True, 'required': False, 'type': 'field'}
+                'read_only': True, 'required': False, 'type': 'field'},
+            'video_link': {
+                'read_only': False, 'required': False, 'type': 'string'}
         })
 
     def test_required_params_using_put(self, **kwargs):
@@ -160,8 +162,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
             self.url,
             data=urllib.urlencode({
                 'caption': 'My video',
-                'attribution': 'Phil',
-                #'project_id': self.project.id
+                'attribution': 'Phil'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
@@ -170,6 +171,25 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         updated_video = models.Video.objects.get(id=self.video.id)
         self.assertEqual(updated_video.description, 'My video')
         self.assertEqual(updated_video.attribution, 'Phil')
+        self.assertEqual(updated_video.video_link, 'https://vimeo.com/256931635')
+        self.assertEqual(updated_video.provider, 'vimeo')
+        self.assertEqual(updated_video.video_id, '256931635')
+
+    def test_optional_params_using_put(self, **kwargs):
+        vl = 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+        response = self.client_user.put(
+            self.url,
+            data=urllib.urlencode({
+                'video_link': vl
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_video = models.Video.objects.get(id=self.video.id)
+        self.assertEqual(updated_video.video_link, vl)
+        self.assertEqual(updated_video.provider, 'youtube')
+        self.assertEqual(updated_video.video_id, 'jNQXAC9IVRw')
 
     def test_update_video_using_put(self, **kwargs):
         name, caption = 'New Video Name', 'Test description'

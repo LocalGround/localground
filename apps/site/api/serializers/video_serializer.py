@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from localground.apps.site.api.serializers.base_serializer import BaseSerializer
+from localground.apps.site.api.serializers.base_serializer import \
+    BaseSerializer
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
-from rest_framework import serializers
+import re
 
 
 class VideoSerializer(BaseSerializer):
@@ -50,7 +51,8 @@ class VideoSerializer(BaseSerializer):
         source='provider', choices=VIDEO_PROVIDERS, read_only=True)
 
     def get_video_provider_and_id(self, video_link):
-        import re
+        if video_link is None:
+            return {}
         video_id = ''
         if 'youtube' in video_link:
             params = re.split(r'[&|\?]', video_link)
@@ -72,20 +74,20 @@ class VideoSerializer(BaseSerializer):
                         'video_id': video_id
                     }
                 else:
-                    raise serializers.ValidationError('Error parsing Vimeo URL')
+                    raise serializers.ValidationError(
+                        'Error parsing Vimeo URL')
             except Exception:
                 raise serializers.ValidationError('Error parsing Vimeo URL')
         else:
-            raise serializers.ValidationError('This is neither YouTube nor Vimeo')
+            raise serializers.ValidationError(
+                'This is neither YouTube nor Vimeo')
 
     def create(self, validated_data):
         # Overriding the create method to handle file processing
         self.validated_data.update(self.get_presave_create_dictionary())
         attribution = validated_data.get('attribution') \
             or validated_data.get('owner')
-        self.validated_data.update({
-            'attribution': attribution
-        })
+        self.validated_data.update({'attribution': attribution})
         self.validated_data.update(self.get_video_provider_and_id(
             validated_data.get('video_link')
         ))
@@ -103,13 +105,29 @@ class VideoSerializer(BaseSerializer):
 
 class VideoUpdateSerializer(VideoSerializer):
     project_id = serializers.SerializerMethodField()
+    video_link = serializers.CharField(required=False)
 
     def get_project_id(self, obj):
         return obj.project.id
 
+    def update(self, instance, validated_data):
+        # Extend to add auditing information:
+        validated_data.update(self.get_presave_update_dictionary())
+        return super(AuditSerializerMixin, self).update(
+            instance, validated_data)
+
+    def update(self, instance, validated_data):
+        # Recalculate the video provider and id if provided
+        validated_data.update(self.get_presave_update_dictionary())
+        validated_data.update(self.get_video_provider_and_id(
+            validated_data.get('video_link')
+        ))
+        return super(VideoUpdateSerializer, self).update(
+            instance, validated_data)
+
     class Meta:
         model = models.Video
-        read_only_fields = ('video_id', 'video_provider', 'video_link')
+        read_only_fields = ('video_id', 'video_provider')
         fields = (
             'id', 'url', 'name', 'caption', 'tags', 'video_link',
             'video_id', 'video_provider', 'geometry', 'project_id',
