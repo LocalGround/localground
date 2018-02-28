@@ -4,7 +4,6 @@ define(["models/base", "underscore"], function (Base, _) {
         initialize: function (data, opts) {
             _.extend(this, opts);
             Base.prototype.initialize.call(this);
-            console.log(opts)
             this.projectID = this.projectID || this.get('project_id');
             if (!this.projectID ) {
                 console.error("projectID is required");
