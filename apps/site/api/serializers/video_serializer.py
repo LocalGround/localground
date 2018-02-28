@@ -50,9 +50,9 @@ class VideoSerializer(BaseSerializer):
         source='provider', choices=VIDEO_PROVIDERS, read_only=True)
 
     def get_video_provider_and_id(self, video_link):
+        import re
         video_id = ''
         if 'youtube' in video_link:
-            import re
             params = re.split(r'[&|\?]', video_link)
             for s in params:
                 if 'v=' in s:
@@ -63,7 +63,8 @@ class VideoSerializer(BaseSerializer):
                 'video_id': video_id
             }
         elif 'vimeo' in video_link:
-            video_id = video_link.split('/')[-1]
+            video_id = video_link.split('?')[0]
+            video_id = video_id.split('/')[-1]
             try:
                 if len(video_id) >= 7 and int(video_id):
                     return {

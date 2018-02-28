@@ -414,12 +414,14 @@ define([
                 if (that.options.previewSourceFileTypes.test(file.type)) {
                     model = new Photo({
                         file: file,
-                        data: data
+                        data: data,
+                        project_id: that.app.selectedProjectID
                     });
                 } else {
                     model = new Audio({
                         file: file,
-                        data: data
+                        data: data,
+                        project_id: that.app.selectedProjectID
                     });
                 }
                 that.collection.add(model);

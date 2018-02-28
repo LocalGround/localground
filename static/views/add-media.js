@@ -124,7 +124,7 @@ define(["marionette",
                 } else if (this.activeRegion == "uploader") {
                     this.upld.addModels();
                 } else if (this.activeRegion == "videoLinker") {
-                    alert("Active Region is Video Linker")
+                    this.vdlk.saveModel();
                 }
             }
         });

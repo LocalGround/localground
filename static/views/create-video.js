@@ -1,30 +1,14 @@
 define([
-    "jquery",
     "underscore",
-    "backbone",
     "handlebars",
     "marionette",
-    //"lib/forms/backbone-form",
     "models/video",
-    "lib/modals/modal",
     "text!templates/create-video.html"
-], function ($, _, Backbone, Handlebars, Marionette,
-    Video, Modal, CreateVideoTemplate) {
+], function (_, Handlebars, Marionette, Video, CreateVideoTemplate) {
     'use strict';
 
-    /*
-    Decided to go forth with another view incolving video link
-    Making a very rough draft version of create video layout
-    with an html, but requires some configuration to choose between
-    create media template and create video template
-    */
-
     var CreateVideoView = Marionette.CompositeView.extend({
-        models: [],
-        // There must be some way to dynamically determine the template
-        // dependong on data type
         template: Handlebars.compile(CreateVideoTemplate),
-        modal: null,
         events: {
             'blur #video_link': 'renderIframe',
             'paste #video_link': 'renderIframe'
@@ -38,11 +22,9 @@ define([
         },
         initialize: function (opts) {
             _.extend(this, opts);
-            console.log(this.app.selectedProjectID);
             this.model = new Video({
                 'project_id': this.app.selectedProjectID
             });
-            // maybe initialize the modal
         },
         templateHelpers: function () {
             return {
@@ -55,11 +37,10 @@ define([
         },
 
         saveModel: function () {
-            var that = this,
-                dm = this.app.dataManager;
+            var that = this;
             this.commitForm();
             this.model.save(null, {
-                success: that.addToForm,
+                success: that.addToForm.bind(this),
                 error: function (model, response) {
                     that.app.vent.trigger('error-message', "The form has not saved");
                     that.$el.find("#model-form").append("error saving");
@@ -67,9 +48,9 @@ define([
             });
         },
         addToForm: function (model, response) {
-            that.app.vent.trigger('success-message', "The form was saved successfully");
-            dm.getCollection("videos").add(model);
-            that.modal.hide();
+            this.app.vent.trigger('success-message', "The form was saved successfully");
+            this.parentModel.trigger('add-models-to-marker', [ model ])
+            this.app.vent.trigger('add-models-to-marker', [ model ]);
         }
     });
     return CreateVideoView;
