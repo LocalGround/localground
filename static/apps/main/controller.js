@@ -7,15 +7,9 @@ define([
             this.app = options.app;
         },
         defaultMap: function () {
-            console.log('**************************');
-            console.log('Load Default Map');
-            console.log('**************************');
             this.app.vent.trigger('init-default-map');
         },
         displayMap: function (mapId) {
-            console.log('**************************');
-            console.log('Load Specific Map: ', mapId);
-            console.log('**************************');
             this.app.vent.trigger('route-map', mapId);
         },
 
@@ -24,7 +18,6 @@ define([
         },
 
         newMap: function() {
-            console.log('new map triggered');
             this.app.vent.trigger('route-new-map');
         },
 

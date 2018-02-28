@@ -66,7 +66,6 @@ define([
             this.modal.show();
         },
         hideShareForm: function () {
-            console.log("hideShareForm");
             this.modal.hide();
         },
 

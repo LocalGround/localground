@@ -15,7 +15,6 @@ define(["jquery",
                 // In this view, this.model = layer, this.collection = symbols
                 this.undefinedSymbols = null;
                 this.menu = null;
-                console.log('opts: ', opts);
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
@@ -25,22 +24,15 @@ define(["jquery",
                 if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
                 }
-                console.log('layer list childview initlize');
-                console.log(this);
                 this.dataset = this.app.dataManager.getCollection(this.model.get('data_source'));
                 //this.collection = new Symbols(this.model.get('symbols'));
                 if (this.undefinedSymbols) {
                     this.collection.add(this.undefinedSymbols);
                 }
-                console.log(this.dataset);
                 $('body').click($.proxy(this.hideStyleMenu, this));
             },
             updateCollection: function() {
-                console.log('update Zcollection')
-                //this.collection = new Symbols(this.model.get('symbols'));
-                //this.initMapOverlays();
                 if (this.undefinedSymbols) {
-                    console.log('adding symbols');
                     this.collection.add(this.undefinedSymbols);
                 }
                 this.render();
@@ -51,17 +43,7 @@ define(["jquery",
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
-         //   className: "layer-column",
             templateHelpers: function () {
-                // let defaultField = this.dataset.fields ? this.dataset.fields.models[1].get('col_name') : 'id'; 
-                // let simpleDataset = this.dataset.models.map(item => {
-                //     return {
-                //         property: item.get(defaultField),
-                //         id: item.get('id')
-                //     }
-                // });
-                //console.log(defaultField);
-                //console.log(simpleDataset);
                 return {
                     //name: this.model.get('title'),
                     name: this.dataset.name,
@@ -124,7 +106,7 @@ define(["jquery",
                 this.collection.remove(this.model);
                 this.deleteOverlays();
                 console.log(url);
-                
+
                 this.app.router.navigate(url);
                 this.app.vent.trigger('update-layer-list');
                 this.app.vent.trigger("hide-right-panel");
@@ -148,8 +130,6 @@ define(["jquery",
             },
 
             showStyleByMenu: function () {
-                //this.menu = null;
-                console.log('show styebyMenu');
                 if (!this.menu) {
                     this.menu = new MarkerStyleView({
                         app: this.app,
@@ -157,7 +137,6 @@ define(["jquery",
                     });
                     $(".style-by-menu").append(this.menu.$el);
                     $('.style-by-menu').show();
-                    console.log(this.menu);
                 }
             },
 
@@ -171,18 +150,16 @@ define(["jquery",
                     dataSource = this.model.get("data_source"),
                     data = this.app.dataManager.getCollection(dataSource),
                     symbols = this.model.getSymbols();
-                    console.log(data);
                     const dataIds = data.map(function(model) {
                         return model.id
                     });
                     let representedIds = [];
-            
+
                 symbols.each(function (symbol) {
                     matchedCollection = new data.constructor(null, {
                         url: "dummy",
                         projectID: that.app.getProjectID()
                     });
-                    //console.log(JSON.stringify(matchedCollection));
                     data.each(function (model) {
                         if (symbol.checkModel(model)) {
                             matchedCollection.add(model);
@@ -195,19 +172,18 @@ define(["jquery",
                         iconOpts: symbol.toJSON(),
                         isShowing: false
                     });
-                    console.log(overlays);
                     that.markerOverlayList.push(overlays);
                 });
                 const unrepresentedIds = dataIds.filter(function(id) {
                     return !representedIds.includes(id)
                 });
 
-                
+
 
                 if (unrepresentedIds.length > 0) {
 
                     let sqlString = '';
-                    
+
                     unrepresentedIds.forEach(function (id) {
                         sqlString = sqlString.concat('id = ', id, ' or ');
                         console.log(sqlString);
@@ -219,7 +195,7 @@ define(["jquery",
                         url: "dummy",
                         projectID: that.app.getProjectID()
                     });
-    
+
                     this.undefinedSymbols = new Symbol({
                         rule: sqlString,
                         title: 'undefined markers'
@@ -271,20 +247,16 @@ define(["jquery",
             },
 
             onDestroy: function() {
-                console.log('DESTROYING>>>');
                 if (this.menu) {
                     this.menu.destroy();
                 }
             },
             hideStyleMenu: function(e) {
-                console.log('hide lcick');
                 var $el = $(e.target);
                 var parent = document.getElementById("style-by-menu");
-                
+
                 if (!parent.contains(e.target) && !$el.hasClass('layer-style-by')) {
-                    console.log(this.menu);
                     if (this.menu) {
-                        console.log('DESTROY MENU');
                         $('.style-by-menu').hide();
                         this.menu.destroy();
                         //this.menu = null;

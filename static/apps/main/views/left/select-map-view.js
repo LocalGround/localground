@@ -46,7 +46,6 @@ define(["jquery",
             initialize: function (opts) {
                 var that = this;
                 _.extend(this, opts);
-                console.log(this.collection);
 
                 $('body').click(this.hideMapList.bind(this));
 
@@ -61,9 +60,6 @@ define(["jquery",
             },
 
             getSelectedMap: function(mapId) {
-                console.log('------------------');
-                console.log('get selected map:', mapId, this.collection.length);
-                console.log('------------------');
                 this.setActiveMap(this.collection.get(mapId));
             },
 

@@ -54,9 +54,6 @@ define([
                 'project_id': this.app.selectedProjectID
             });
         },
-        onRender: function () {
-            console.log(this.model.toJSON());
-        },
         commitForm: function () {
             this.model.set('video_link', this.$el.find('#video_link').val());
 

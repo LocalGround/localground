@@ -34,14 +34,12 @@ define([
             // kicks off any objects and processes that need to run
             Marionette.Application.prototype.start.apply(this, [options]);
             this.initAJAX(options);
-            //console.log('starting!!');
             this.router = new Router({ app: this});
             Backbone.history.start();
             this.addMessageListeners();
         },
 
         initialize: function (options) {
-            //console.log('initializing');
             _.extend(this, options);
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = projectJSON.id;

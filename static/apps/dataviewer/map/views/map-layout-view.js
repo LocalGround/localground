@@ -16,7 +16,6 @@ define(["marionette",
                 rightRegion: '#right-panel'
             },
             initialize: function (opts) {
-                console.log('initializing map layout view');
                 _.extend(this, opts);
                 this.template = Handlebars.compile(MapLayoutTemplate);
                 this.render();

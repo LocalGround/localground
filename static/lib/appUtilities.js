@@ -28,7 +28,6 @@ define(["jquery"],
                 } catch (e) {
                     return null;
                 }
-                //console.log(cache);
                 return cache[key];
             },
             saveToLocalStorage: function (key, object, replace) {
@@ -199,7 +198,6 @@ define(["jquery"],
             initAJAX: function (options) {
                 // adding some global AJAX event handlers for showing messages and
                 // appending the Django authorization token:
-                console.log('init ajax');
                 var that = this;
                 $.ajaxSetup({
                     beforeSend: function (xhr, settings) {
