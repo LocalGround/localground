@@ -41,14 +41,16 @@ define([
         templateHelpers: function () {
             return {
                 mode: this.mode,
-                dataType: this.options.dataType,
-                errorMessage: this.model.errorMessage
+                dataType: this.options.dataType
             };
         },
         createNewVideo(){
             this.model = new Video({
                 'project_id': this.app.selectedProjectID
             });
+        },
+        onRender: function () {
+            console.log(this.model.toJSON());
         },
         commitForm: function () {
             console.log(this.$el.find('#video_link').val());
@@ -61,16 +63,21 @@ define([
             this.model.save(null, {
                 success: that.addToForm.bind(this),
                 error: function (model, response) {
+                    console.log('error detected');
                     if (that.model.get("video_provider") == "" && that.model.get("video_id") == ""){
-                        this.model.errorMessage = "Pasted invalid video link";
+                        that.model.set("errorMessage", "Pasted invalid video link");
                     } else if (that.model.get("video_id") == ""){
-                        this.model.errorMessage = "Need a valid video ID";
+                        that.model.set("errorMessage", "Need a valid video ID");
                     }
+                    console.log(that.model.get("errorMessage"))
                     that.$el.find("#model-form").append("error saving");
+                    that.render()
                 }
             });
         },
         addToForm: function (model, response) {
+            console.log('SUCCESS!', model, response);
+            this.model.set("errorMessage", null);
             //attaching media to markers (from data detail):
             if (this.parentModel) {
                 this.app.vent.trigger('success-message', "The form was saved successfully");
