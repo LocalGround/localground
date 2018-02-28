@@ -2424,3 +2424,7 @@ input#video_link {
     width: 100%;
     font-size: 1.1em;
 }
+.modal-search-form.video-form .errorMessage{
+    font-size: 1em;
+    font-weight: bold;
+}

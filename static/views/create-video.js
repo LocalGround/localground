@@ -17,20 +17,25 @@ define([
         renderIframe: function (e) {
             var that = this;
             setTimeout(function(){
-                console.log("PASTING LINK")
-                console.log(e);
-                console.log(e.target);
-                console.log(e.target.value);
                 if(that.model){
                     that.createNewVideo();
+                    that.model.set("errorMessage", "");
                 }
                 that.commitForm();
                 that.model.save(null, {
-                    success: that.render
+                    success: that.render,
+                    error: function(model, response){
+                        if (that.model.get("video_link") == ""){
+                            that.model.set("errorMessage", "Link is empty");
+                        } else {
+                            that.model.set("errorMessage", "Needs a valid video link");
+                        }
+                        that.app.vent.trigger('error-message', response.responseText);
+                        that.$el.find("#model-form").append("error saving");
+                        that.render();
+                    }
                 });
             },0);
-
-
         },
         initialize: function (opts) {
             _.extend(this, opts);
@@ -53,30 +58,27 @@ define([
             console.log(this.model.toJSON());
         },
         commitForm: function () {
-            console.log(this.$el.find('#video_link').val());
             this.model.set('video_link', this.$el.find('#video_link').val());
-        },
 
+        },
         saveModel: function () {
             var that = this;
             this.commitForm();
             this.model.save(null, {
                 success: that.addToForm.bind(this),
                 error: function (model, response) {
-                    console.log('error detected');
-                    if (that.model.get("video_provider") == "" && that.model.get("video_id") == ""){
-                        that.model.set("errorMessage", "Pasted invalid video link");
-                    } else if (that.model.get("video_id") == ""){
-                        that.model.set("errorMessage", "Need a valid video ID");
+                    if (that.model.get("video_link") == ""){
+                        that.model.set("errorMessage", "Link is empty");
+                    } else {
+                        that.model.set("errorMessage", "Needs a valid video link");
                     }
-                    console.log(that.model.get("errorMessage"))
+                    that.app.vent.trigger('error-message', response.responseText);
                     that.$el.find("#model-form").append("error saving");
                     that.render()
                 }
             });
         },
         addToForm: function (model, response) {
-            console.log('SUCCESS!', model, response);
             this.model.set("errorMessage", null);
             //attaching media to markers (from data detail):
             if (this.parentModel) {
