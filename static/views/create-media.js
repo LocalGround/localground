@@ -9,21 +9,13 @@ define([
     "models/audio",
     "models/video",
     "text!templates/create-media.html",
-    "text!templates/create-video.html",
     "text!templates/new-media.html",
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
 ], function ($, _, Backbone, Handlebars, Marionette, DataForm, Photo, Audio, Video,
-    CreateMediaTemplate, CreateVideoTemplate, NewMediaItemTemplate, loadImage) {
+    CreateMediaTemplate, NewMediaItemTemplate, loadImage) {
     'use strict';
-
-    /*
-    Decided to go forth with another view incolving video link
-    Making a very rough draft version of create video layout
-    with an html, but requires some configuration to choose between
-    create media template and create video template
-    */
 
     var CreateMediaView = Marionette.CompositeView.extend({
         models: [],

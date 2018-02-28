@@ -31,6 +31,7 @@ define([
             this.model = new Video({
                 'project_id': this.app.selectedProjectID
             });
+            // maybe initialize the modal
         },
         templateHelpers: function () {
             return {
@@ -54,7 +55,6 @@ define([
             }
         },
 
-        // Unfortunately, the controller is controlling the
         saveModel: function () {
             var that = this,
                 dm = this.app.dataManager;
