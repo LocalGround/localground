@@ -1,10 +1,12 @@
+//expandedFilenamePattern: ../main-new.css
 //==================================================
 // Global Imports
 // =================================================
 
 @import 'layout/index';
 @import 'base/index';
-@import 'components/index';
+@import 'components/index'; //TODO: rename to views
+@import 'widgets/index';    //TODO: rename to components
 
 .top-wrapper {
   width: 100vw;

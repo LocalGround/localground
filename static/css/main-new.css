@@ -1,9 +1,68 @@
+@import url(https://fonts.googleapis.com/css?family=Amatic+SC|Open+Sans:300,400,600,800,300italic,400italic|Source+Code+Pro|Montserrat:400,700|Slabo+27px);
+@import url(https://fonts.googleapis.com/css?family=Lato:300,400,700|Slabo:300,400,700|PT+Serif:300,400,700|Lemonada:300,400,700);
+@import url(https://fonts.googleapis.com/css?family=consolas|Comfortaa:300,400,700|Amatic+SC:300,400,700|Pacifico:300,400,700|Permanent+Marker:300,400,700);
 .style-main-panel {
   height: calc(100% - 61px);
   top: 41px;
   display: flex;
   position: absolute;
   width: 100%;
+}
+
+.style-guide {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: 50px 350px 50px;
+}
+
+.style-guide header, .style-guide aside, .style-guide main, .style-guide footer {
+  padding: 10px;
+}
+
+.style-guide header {
+  grid-column: span 12;
+}
+
+.style-guide aside {
+  grid-column: span 2;
+}
+
+.style-guide main {
+  width: 80%;
+  grid-column: span 10;
+}
+
+.style-guide footer {
+  grid-column: span 12;
+}
+
+.style-guide .container {
+  border: solid 1px #CCC;
+  margin-top: 20px;
+  padding: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.style-guide .container textarea.code {
+  font-family: consolas;
+  margin-top: 20px;
+  font-size: 1em;
+  padding: 10px;
+  width: calc(100% - 22px);
+}
+
+html, body {
+  height: 100%;
+  color: #000;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, select, ul, form, textarea {
+  font-family: "Open Sans",Arial,sans-serif;
+  font-weight: 400;
+  color: #3d3d3d;
 }
 
 .breadcrumb {
@@ -149,8 +208,25 @@
   left: 50px;
 }
 
+.banner-username {
+  background-image: url(/static/assets/background-13.png);
+  background-size: 100%;
+  padding-top: 50px;
+}
+
+.banner-username h1 {
+  font-weight: 300;
+  padding: 0px 0px 44px;
+  font-size: 40px;
+  letter-spacing: 2px;
+  display: block;
+  max-width: 80%;
+  margin: auto;
+}
+
 .top-wrapper {
   width: 100vw;
   height: 80px;
 }
+
 /*# sourceMappingURL=main-new.css.map */
