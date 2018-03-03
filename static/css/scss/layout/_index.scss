@@ -1,3 +1,10 @@
 // main: ../main-new.scss
 @import 'main_panel';
 @import 'styleguide';
+
+.clear {
+    clear: both;
+}
+
+.show { display: block; }
+.hide { display: none; }

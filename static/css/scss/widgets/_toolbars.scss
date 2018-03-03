@@ -1,0 +1,69 @@
+// main: ../main-new.scss
+nav.toolbar-main {
+    height: 60px;
+    border-bottom: 1px solid #e4e5eb;
+    background-color: white;
+    width: 100%;
+    box-shadow: $menuShadow;
+    font-size: 14px;
+    position: relative;
+    z-index: 40;
+    padding-left: 10px;
+
+    > div {
+        max-width: 960px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .right-nav {
+        line-height: 57px;
+    }
+}
+.right-nav {
+    float: right;
+    text-transform: uppercase;
+    font-size: 14px;
+    margin: 0;
+    list-style: none;
+
+    > li {
+        display: inline-block;
+        height: 57px;
+        margin: 0 10px;
+        vertical-align: top;
+        padding: 0 2px;
+    }
+}
+
+.toggle-button {
+    text-transform: uppercase;
+}
+.dropdown-menu {
+    width: 140px;
+    position: absolute;
+    background-color: white;
+    border-radius: 3px;
+    border: 1px solid #e4e5eb;
+    margin-top: 4px;
+    z-index: 100;
+    box-shadow: $dropdownShadow;
+
+    ul {
+        list-style: none;
+        padding: 0px;
+        li {
+            display: block;
+            margin: 6px 0px;
+            line-height: 100%;
+            text-transform: none;
+            padding: 6px 0px 6px 20px;
+            line-height: 100%;
+        }
+        li:hover {
+            background-color: $dropdownHover;
+            a {
+                color: white;
+            }
+        }
+    }
+}

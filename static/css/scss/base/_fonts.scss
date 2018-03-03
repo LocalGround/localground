@@ -3,6 +3,9 @@
 @import url(https://fonts.googleapis.com/css?family=Lato:300,400,700|Slabo:300,400,700|PT+Serif:300,400,700|Lemonada:300,400,700);
 @import url(https://fonts.googleapis.com/css?family=consolas|Comfortaa:300,400,700|Amatic+SC:300,400,700|Pacifico:300,400,700|Permanent+Marker:300,400,700);
 
+/***********************************/
+/* General font styles (tag-level) */
+/***********************************/
 html, body {
     height: 100%;
     color: #000;
@@ -13,4 +16,23 @@ html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, selec
     font-family: "Open Sans",Arial,sans-serif;
     font-weight: 400;
     color: #3d3d3d;
+}
+button, a {
+    font-size: 12px;
+}
+a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/***********************/
+/* Custom font classes */
+/***********************/
+a.logotype {
+    padding: 14px 20px 10px 0;
+    font-family: "Amatic SC";
+    letter-spacing: .1em;
+    font-size: 24px;
+    display: inline-block;
+    text-transform: uppercase;
 }

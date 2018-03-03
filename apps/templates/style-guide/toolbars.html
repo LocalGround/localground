@@ -1,0 +1,64 @@
+{% extends "style-guide/base.html" %}
+{% block main %}
+    <h1>Toolbars</h1>
+
+    <!-- Main Toolbar -->
+    <div class="container">
+        <h2>Main Toolbar</h2>
+        <nav class="toolbar-main">
+            <a class="logotype" href="/">Local Ground</a>
+            <ul class="right-nav">
+                <li><a href="#">Link 1</a></li>
+                <li><a href="#">Link 2</a></li>
+                <li><a href="#">Link 3</a></li>
+            </ul>
+        </nav>
+<textarea rows="15" class="code">
+<nav class="toolbar-main">
+    <a class="logotype" href="/">Local Ground</a>
+    <ul class="right-nav">
+        <li><a href="#">Link 1</a></li>
+        <li><a href="#">Link 2</a></li>
+        <li><a href="#">Link 3</a></li>
+    </ul>
+</nav>
+</textarea>
+    </div>
+
+    <!-- Dropdown Menu -->
+    <div class="container">
+        <h2>Dropdown Menu</h2>
+        <a class="toggle-button">
+            <i class="fa fa-caret-down" aria-hidden="true"></i>
+            Menu Label
+        </a>
+        <div class="dropdown-menu hide">
+            <ul>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Settings</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+<textarea rows="15" class="code">
+<a class="toggle-button">
+    <i class="fa fa-caret-down" aria-hidden="true"></i>
+    Menu Label
+</a>
+<div class="dropdown-menu hide">
+    <ul>
+        <li><a href="#">Profile</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">Logout</a></li>
+    </ul>
+</div>
+        </textarea>
+    </div>
+
+
+    <!-- scripts -->
+    <script>
+        document.querySelector('.toggle-button').onclick = () => {
+            document.querySelector('.dropdown-menu').classList.toggle('hide')
+        }
+    </script>
+{% endblock %}
