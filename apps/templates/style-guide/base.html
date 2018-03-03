@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="/static/css/main-new.css">
+    </head>
+    <body>
+        <div class="style-guide">
+            <header>HEADER</header>
+            <aside>
+                {% include "style-guide/menu.html" %}
+            </aside>
+            <main>
+                {% block main %}{% endblock %}
+            </main>
+        </div>
+        <script type="text/javascript" src="main.js">
+
+        </script>
+    </body>
+</html>

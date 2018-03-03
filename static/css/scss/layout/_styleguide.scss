@@ -11,14 +11,10 @@
         grid-column: span 12;
     }
     aside {
-        grid-column: span 2;
+        grid-column: span 3;
     }
     main {
-        width: 80%;
-        grid-column: span 10;
-    }
-    footer {
-        grid-column: span 12;
+        grid-column: span 8;
     }
 
     .container {

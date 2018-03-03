@@ -15,6 +15,16 @@ def about_pages(request, page_name):
         raise Http404()
 
 
+def style_guide_pages(request, page_name):
+    try:
+        return direct_to_template(
+            request,
+            template_name="style-guide/%s.html" %
+            page_name)
+    except TemplateDoesNotExist:
+        raise Http404()
+
+
 class MainView(TemplateView):
 
     def get_context_data(self, project_id, *args, **kwargs):
