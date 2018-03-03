@@ -1,5 +1,3 @@
-<ul>
-    <li><a href="/style-guide/">Home</a></li>
-    <li><a href="/style-guide/banners/">Banners</a></li>
-    <li><a href="/style-guide/modals/">Modals</a></li>
-</ul>
+<a href="/style-guide/" {% ifequal page_name 'index' %}class="active"{% endifequal %}>Home</a>
+<a href="/style-guide/banners/" {% ifequal page_name 'banners' %}class="active"{% endifequal %}>Banners</a>
+<a href="/style-guide/modals/" {% ifequal page_name 'modals' %}class="active"{% endifequal %}>Modals</a>

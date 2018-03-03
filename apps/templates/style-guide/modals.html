@@ -2,9 +2,49 @@
 {% block main %}
     <h1>Modal Code Goes Here</h1>
     <div class="container">
-        <div>???</div>
-        <textarea rows="5" class="code">
-        ???
+        <a href="#" class="show">show</a>
+        <div class="modal">
+            <div class="content">
+                <header>
+                    <span class="close">×</span>
+                    <h1>Modal Title</h1>
+                </header>
+                <div class="body">
+                    <div>
+                        content
+                    </div>
+                </div>
+
+                <footer>
+                    <button class="btn cancel">Cancel</button>
+                    <button class="btn action">Action</button>
+                </footer>
+            </div>
+        </div>
+        <textarea rows="15" class="code">
+<div class="modal">
+    <div class="content">
+        <header>
+            <span class="close">×</span>
+            <h1>Modal Title</h1>
+        </header>
+        <div class="body">
+            <div>
+                content
+            </div>
+        </div>
+
+        <footer>Footer</footer>
+    </div>
+</div>
         </textarea>
     </div>
+    <script>
+        document.querySelector('.show').onclick = () => {
+            document.querySelector('.modal').style.display = 'block'
+        }
+        document.querySelector('.close').onclick = () => {
+            document.querySelector('.modal').style.display = 'none'
+        }
+    </script>
 {% endblock %}
