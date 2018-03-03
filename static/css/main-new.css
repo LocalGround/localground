@@ -9,6 +9,7 @@ html, body {
   color: #000;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+  margin: 0px;
 }
 
 html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, select, ul, form, textarea {
@@ -38,6 +39,14 @@ a.logotype {
   text-transform: uppercase;
 }
 
+.off-white {
+  background-color: #fbfcfe;
+}
+
+.light-gray {
+  background-color: #f5f5f5;
+}
+
 .style-main-panel {
   height: calc(100% - 61px);
   top: 41px;
@@ -52,7 +61,7 @@ a.logotype {
   grid-template-rows: 50px 350px 50px;
 }
 
-.style-guide header, .style-guide aside, .style-guide main, .style-guide footer {
+.style-guide aside, .style-guide main, .style-guide footer {
   padding: 10px;
 }
 
@@ -89,7 +98,7 @@ a.logotype {
 
 .style-guide aside a:hover {
   text-decoration: none;
-  background-color: #fbfcfe;
+  background-color: white;
   outline: none;
 }
 
@@ -104,13 +113,18 @@ a.logotype {
   grid-column: span 8;
 }
 
+.style-guide .side-menu, .style-guide .container:first-of-type {
+  margin-top: 50px;
+}
+
 .style-guide .container {
-  border: solid 1px #CCC;
+  border: solid 1px #EEE;
+  border-radius: 5px;
   margin-top: 20px;
   padding: 20px;
   margin-left: auto;
   margin-right: auto;
-  background: #fbfcfe;
+  background: white;
 }
 
 .style-guide .container textarea.code {
@@ -119,6 +133,23 @@ a.logotype {
   font-size: 1em;
   padding: 10px;
   width: calc(100% - 22px);
+}
+
+.style-guide .container h2 {
+  border-bottom: solid 1px #EEE;
+  display: block;
+  padding-bottom: 10px;
+  line-height: 30px;
+  font-weight: 300;
+}
+
+.style-guide .side-menu {
+  width: 200px;
+  margin-left: auto;
+  margin-right: 20px;
+  border: solid 1px #EEE;
+  border-radius: 5px;
+  background: white;
 }
 
 .clear {
@@ -323,6 +354,7 @@ a.logotype {
 
 .modal header {
   width: calc(100% - 40px);
+  padding: 10px;
 }
 
 .modal header h1 {

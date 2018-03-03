@@ -4,3 +4,12 @@ $selectionBorderHighlight: #297CBB;
 
 $dropdownShadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
 $dropdownHover: rgb(123, 155, 225);
+$light-gray: #f5f5f5;
+$offwhite: #fbfcfe;
+
+.off-white {
+    background-color: $offwhite;
+}
+.light-gray {
+    background-color: $light-gray;
+}

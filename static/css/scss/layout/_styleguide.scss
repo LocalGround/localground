@@ -4,7 +4,7 @@
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: 50px 350px 50px;
 
-    header, aside, main, footer, {
+    aside, main, footer, {
         padding: 10px;
     }
     header {
@@ -36,13 +36,13 @@
         }
         a:hover {
             text-decoration: none;
-            background-color: #fbfcfe;
+            background-color: white;
             outline: none;
         }
         a.active {
             padding-left: 13px;
             border-left: 2px solid $selectionBorderHighlight;
-            background-color: #fbfcfe;
+            background-color: $offwhite;
             color: #3b444f;
         }
     }
@@ -50,13 +50,18 @@
         grid-column: span 8;
     }
 
+    .side-menu, .container:first-of-type {
+        margin-top: 50px;
+    }
+
     .container {
-        border: solid 1px #CCC;
+        border: solid 1px #EEE;
+        border-radius: 5px;
         margin-top: 20px;
         padding: 20px;
         margin-left: auto;
         margin-right: auto;
-        background: #fbfcfe;
+        background: white;
 
         textarea.code {
             font-family: consolas;
@@ -65,5 +70,22 @@
             padding: 10px;
             width: calc(100% - 22px);
         }
+
+        h2 {
+            border-bottom: solid 1px #EEE;
+            display: block;
+            padding-bottom: 10px;
+            line-height: 30px;
+            font-weight: 300;
+        }
+    }
+
+    .side-menu {
+        width: 200px;
+        margin-left: auto;
+        margin-right: 20px;
+        border: solid 1px #EEE;
+        border-radius: 5px;
+        background: white;
     }
 }
