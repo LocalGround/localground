@@ -87,6 +87,10 @@
             margin-top: 30px;
             margin-bottom: 5px;
         }
+
+        .show {
+            text-decoration: underline;
+        }
     }
 
     .side-menu {
@@ -104,10 +108,17 @@
     }
 
     .prettyprint {
-        margin: 0px;
+        margin-top: 30px;
         border: solid 1px #EEE;
         padding: 10px;
-        font-weight: bold;
-        font-size: 0.8em;
+        background: $offwhite;
+        border: solid 1px #EEE !important;
+        li {
+            font-size: 0.9em;
+        }
+        span {
+            font-family: monospace;
+            font-size: 1.2em;
+        }
     }
 }

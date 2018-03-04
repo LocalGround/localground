@@ -150,6 +150,10 @@ a.logotype {
   margin-bottom: 5px;
 }
 
+.style-guide .container .show {
+  text-decoration: underline;
+}
+
 .style-guide .side-menu {
   width: 75%;
   margin-left: auto;
@@ -164,11 +168,20 @@ a.logotype {
 }
 
 .style-guide .prettyprint {
-  margin: 0px;
+  margin-top: 30px;
   border: solid 1px #EEE;
   padding: 10px;
-  font-weight: bold;
-  font-size: 0.8em;
+  background: #fbfcfe;
+  border: solid 1px #EEE !important;
+}
+
+.style-guide .prettyprint li {
+  font-size: 0.9em;
+}
+
+.style-guide .prettyprint span {
+  font-family: monospace;
+  font-size: 1.2em;
 }
 
 .clear {

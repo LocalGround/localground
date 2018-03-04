@@ -16,7 +16,6 @@
             </nav>
         </div>
 
-        <h3>Code Sample</h3>
         <pre class="prettyprint linenums" source-element="#main-toolbar-demo">dasdas</pre>
     </div>
 
@@ -35,9 +34,16 @@
                     <li><a href="#">Logout</a></li>
                 </ul>
             </div>
+            <script>
+                const enableDropdown = () => {
+                    document.querySelector('.toggle-button').onclick = () => {
+                        document.querySelector('.dropdown-menu').classList.toggle('hide')
+                    }
+                }
+                enableDropdown()
+            </script>
         </div>
 
-        <h3>Code Sample</h3>
         <pre class="prettyprint linenums" source-element="#dropdown-menu-demo"></pre>
     </div>
 
@@ -45,12 +51,6 @@
 
     <!-- scripts -->
     <script>
-        const enableDropdown = () => {
-            document.querySelector('.toggle-button').onclick = () => {
-                document.querySelector('.dropdown-menu').classList.toggle('hide')
-            }
-        }
         prettify()
-        enableDropdown()
     </script>
 {% endblock %}

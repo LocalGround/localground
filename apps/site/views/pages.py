@@ -17,7 +17,7 @@ def about_pages(request, page_name):
         raise Http404()
 
 
-def style_guide_pages(request, page_name='index'):
+def style_guide_pages(request, page_name='banners'):
     try:
         return render_to_response(
             "style-guide/%s.html" % page_name,
