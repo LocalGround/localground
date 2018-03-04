@@ -58,11 +58,8 @@ a.logotype {
 .style-guide {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: 50px 350px 50px;
-}
-
-.style-guide aside, .style-guide main, .style-guide footer {
-  padding: 10px;
+  grid-template-rows: 100px 300px aside, main;
+  grid-template-rows-padding: 10px;
 }
 
 .style-guide header {
@@ -135,21 +132,45 @@ a.logotype {
   width: calc(100% - 22px);
 }
 
-.style-guide .container h2 {
-  border-bottom: solid 1px #EEE;
+.style-guide .container h2, .style-guide .container h3 {
   display: block;
-  padding-bottom: 10px;
   line-height: 30px;
   font-weight: 300;
 }
 
+.style-guide .container h2 {
+  border-bottom: solid 1px #EEE;
+  padding-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.style-guide .container h3 {
+  font-size: 1.1em;
+  margin-top: 30px;
+  margin-bottom: 5px;
+}
+
 .style-guide .side-menu {
-  width: 200px;
+  width: 75%;
   margin-left: auto;
   margin-right: 20px;
   border: solid 1px #EEE;
   border-radius: 5px;
   background: white;
+}
+
+.style-guide .toolbar-secondary h1 {
+  color: #5fa2a2;
+}
+
+.style-guide .prettyprint {
+  margin: 0px;
+  background: #fbfcfe;
+  border: solid 1px #EEE;
+  padding: 10px;
+  font-weight: bold;
+  color: #777;
+  font-size: 0.8em;
 }
 
 .clear {
@@ -464,6 +485,27 @@ nav.toolbar-main .right-nav {
 
 .dropdown-menu ul li:hover a {
   color: white;
+}
+
+.toolbar-secondary {
+  box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
+  height: 30px;
+  padding: 10px 18px;
+  width: calc(100% - 36px);
+  background-color: #fafafc;
+  margin: 0;
+  border-bottom: 1px solid #e4e5eb;
+  position: relative;
+  z-index: 100;
+}
+
+.toolbar-secondary h1 {
+  padding-bottom: 0px;
+  line-height: 30px;
+  font-weight: 400;
+  font-size: 1.4em;
+  margin: 0px;
+  text-align: center;
 }
 
 .top-wrapper {

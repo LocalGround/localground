@@ -1,46 +1,36 @@
 {% extends "style-guide/base.html" %}
+{% block title %}Modals{% endblock %}
 {% block main %}
 
     <div class="container">
         <h2>Simple Modal: widgets/_modals.scss</h2>
         <a href="#" class="show">show</a>
-        <div class="modal">
-            <div class="content">
-                <header>
-                    <span class="close">×</span>
-                    <h1>Modal Title</h1>
-                </header>
-                <div class="body">
-                    <div>
-                        content
+        <div id="modal-demo">
+            <div class="modal">
+                <div class="content">
+                    <header>
+                        <span class="close">×</span>
+                        <h1>Modal Title</h1>
+                    </header>
+                    <div class="body">
+                        <div>
+                            content
+                        </div>
                     </div>
+
+                    <footer>
+                        <button class="btn cancel">Cancel</button>
+                        <button class="btn action">Action</button>
+                    </footer>
                 </div>
-
-                <footer>
-                    <button class="btn cancel">Cancel</button>
-                    <button class="btn action">Action</button>
-                </footer>
-            </div>
-        </div>
-<textarea rows="15" class="code">
-<div class="modal">
-    <div class="content">
-        <header>
-            <span class="close">×</span>
-            <h1>Modal Title</h1>
-        </header>
-        <div class="body">
-            <div>
-                content
             </div>
         </div>
 
-        <footer>Footer</footer>
-    </div>
-</div>
-</textarea>
+        <h3>Code Sample</h3>
+        <pre class="prettyprint" source-element="#modal-demo"></pre>
     </div>
     <script>
+        prettify()
         document.querySelector('.show').onclick = () => {
             document.querySelector('.modal').style.display = 'block'
         }

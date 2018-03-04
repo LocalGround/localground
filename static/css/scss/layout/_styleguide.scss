@@ -2,9 +2,9 @@
 .style-guide {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: 50px 350px 50px;
+    grid-template-rows: 100px 300px
 
-    aside, main, footer, {
+    aside, main {
         padding: 10px;
     }
     header {
@@ -71,21 +71,45 @@
             width: calc(100% - 22px);
         }
 
-        h2 {
-            border-bottom: solid 1px #EEE;
+        h2, h3 {
             display: block;
-            padding-bottom: 10px;
             line-height: 30px;
             font-weight: 300;
+        }
+
+        h2 {
+            border-bottom: solid 1px #EEE;
+            padding-bottom: 10px;
+            font-size: 1.2em;
+        }
+        h3 {
+            font-size: 1.1em;
+            margin-top: 30px;
+            margin-bottom: 5px;
         }
     }
 
     .side-menu {
-        width: 200px;
+        width: 75%;
         margin-left: auto;
         margin-right: 20px;
         border: solid 1px #EEE;
         border-radius: 5px;
         background: white;
+    }
+    .toolbar-secondary {
+        h1 {
+            color: #5fa2a2;
+        }
+    }
+
+    .prettyprint {
+        margin: 0px;
+        background: $offwhite;
+        border: solid 1px #EEE;
+        padding: 10px;
+        font-weight: bold;
+        color: #777;
+        font-size: 0.8em;
     }
 }

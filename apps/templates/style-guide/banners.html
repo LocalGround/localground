@@ -1,15 +1,20 @@
 {% extends "style-guide/base.html" %}
+{% block title %}Banners{%endblock %}
 {% block main %}
 
 <div class="container">
     <h2>Username Banner</h2>
-    <div class="banner-username">
-        <h1>username</h1>
+    <div id="banner-demo">
+        <div class="banner-username">
+            <h1>username</h1>
+        </div>
     </div>
-    <textarea rows="5" class="code">
-<div class="banner-username">
-    <h1>username</h1>
+
+    <h3>Code Sample</h3>
+    <pre class="prettyprint" source-element="#banner-demo"></pre>
 </div>
-    </textarea>
-</div>
+
+<script>
+    prettify()
+</script>
 {% endblock %}
