@@ -67,9 +67,9 @@ input[type="number"]{
     border-width:1px;
     border-color:#ebecf2;
 }
-input[type="checkbox"]{
+/*input[type="checkbox"]{
     margin-top: 10px !important;
-}
+}*/
 
 input.fieldname {
     margin-left: 4px;

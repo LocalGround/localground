@@ -82,6 +82,79 @@ span.action.rounded:hover, a.action.rounded:hover {
         word-wrap: break-word;
         flex: 1;
     }
+    input[type="radio"]{
+        -webkit-appearance: button;
+        -moz-appearance: button;
+        appearance: button;
+        border: 4px solid #ccc;
+        border-top-color: #bbb;
+        border-left-color: #bbb;
+        background: #fff;
+        width: 20px;
+        height: 20px;
+        border-radius:50%;
+        vertical-align: middle;
+    }
+    input[type="radio"]:checked{
+        border: 7px solid #4099ff
+    }
+    input[type="checkbox"] {
+        margin: 0px;
+        -webkit-appearance: button;
+        -moz-appearance: button;
+        appearance: button;
+        background-color: white;
+    }
+    input[type="checkbox"]::before {
+        content: '\f096';
+        font-family: 'FontAwesome';
+        line-height: 1;
+        color: #555;
+        font-size: 20px;
+        width: 1em;
+        display: inline-block;
+        margin-right: 0px;
+        vertical-align: middle;
+        color: #999;
+    }
+    input[type="checkbox"]:checked::before {
+        content: '\f14a';
+        color: #4099ff;
+    }
+
+    @keyframes tick {
+      0% {
+        -webkit-transform: scale(0);
+        transform: scale(0);
+      }
+      70% {
+        -webkit-transform: scale(1.4);
+        transform: scale(1.4);
+        color: #333;
+      }
+      100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+      }
+    }
+
+    @keyframes ticks {
+      0% {
+        -webkit-transform: scale(0);
+        transform: scale(0);
+      }
+      100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+      }
+    }
+
+    .checkbox-list {
+        margin-left: 30px;
+        td {
+            font-size: 0.7em;
+        }
+    }
 }
 .form-inline {
     .row {

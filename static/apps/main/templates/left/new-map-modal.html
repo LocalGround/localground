@@ -1,18 +1,33 @@
 <form class="form">
     <div class="row {{#if generalError}}error{{/if}}">
-        <label>Map Name: </label>
+        <label>Map Name</label>
         <input type="text" placeholder="name of map" id="new-map-name" value="{{name}}">
     </div>
     <div class="row">
-        <label>Description:</label>
+        <label>Description</label>
         <textarea placeholder="map description" id="new-map-description" value="{{description}}"></textarea>
     </div>
     <div class="row {{#if slugError}}error{{/if}}">
-        <label>Friendly URL:</label>
+        <label>Friendly URL</label>
         <input type="text" placeholder="enter name or leave blank for autofill" id="new-map-slug" value="{{slug}}">
     </div>
     <div class="row">
-
+        <input type="radio" name="choose-dataset" id="new-dataset" checked>
+        <label>Create a new dataset</label>
+    </div>
+    <div class="row">
+        <input type="radio" name="choose-dataset" id="existing-datasets">
+        <label>Use existing project dataset(s):</label>
+        <table class="checkbox-list">
+            <tr>
+                <td><input type="checkbox" name="dataset"> <label>Flowers</label></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" name="dataset"> <label>Birds</label></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" name="dataset" checked> <label>Trees</label></td>
+            </tr>
     </div>
     {{#if slugError}}
         <p class="errorMessage">{{slugError}}</p>
