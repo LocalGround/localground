@@ -1,4 +1,8 @@
 // main: ../main-new.scss
+
+.right {
+    float: right;
+}
 nav.toolbar-main {
     height: 60px;
     border-bottom: 1px solid #e4e5eb;
@@ -15,16 +19,16 @@ nav.toolbar-main {
         margin-left: auto;
         margin-right: auto;
     }
-    .right-nav {
+    .nav {
         margin-top: 17px;
     }
 }
-.right-nav {
+.nav {
     text-transform: uppercase;
     font-size: 14px;
     margin: 0;
     list-style: none;
-    float: right;
+    padding: 0px;
 
     > li {
         line-height: 30px;

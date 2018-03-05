@@ -2,6 +2,74 @@
 {% block title %}Forms{% endblock %}
 {% block main %}
 <div class="container">
-    TODO
+    <h2>Buttons</h2>
+    <div id="button-demo">
+        <button class="button button-secondary">Cancel</button>
+        <button class="button button-primary">Primary</button>
+        <button class="button button-action">Action</button>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#button-demo"></pre>
+
+</div>
+
+<div class="container">
+    <h2>Form Inputs: Inline</h2>
+    <div id="form-inline-demo">
+        <form class="form-inline">
+            <div class="row">
+                <label>Text Input Label:</label>
+                <input type="text" placeholder="This is a text input">
+            </div>
+            <div class="row">
+                <label>Textarea Label:</label>
+                <textarea placeholder="This is a textarea input"></textarea>
+            </div>
+            <div class="row">
+                <label>Select Label:</label>
+                <select>
+                    <option value="val1">Option 1</option>
+                    <option value="val2">Option 2</option>
+                </select>
+            </div>
+            <div class="row">
+                <label>Date Input Label:</label>
+                    <input type="date" placeholder="This is a date input">
+            </div>
+            <div class="row">
+                <label>Number Input Label:</label>
+                <input type="number" placeholder="This is an number input">
+            </div>
+        </form>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#form-inline-demo"></pre>
+
+</div>
+
+<div class="container">
+    <h2>Form Inputs: Stacked</h2>
+    <div id="form-demo">
+        <form class="form">
+            <div class="row">
+                <label>Text Input Label</label>
+                <input type="text" placeholder="This is a text input">
+            </div>
+            <div class="row">
+                <label>Textarea Label</label>
+                <textarea placeholder="This is a textarea input"></textarea>
+            </div>
+            <div class="row">
+                <label>Select Label</label>
+                <select>
+                    <option value="val1">Option 1</option>
+                    <option value="val2">Option 2</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#form-demo"></pre>
+
 </div>
 {% endblock %}

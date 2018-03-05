@@ -335,6 +335,88 @@ a.logotype {
   left: 50px;
 }
 
+.button {
+  border: none;
+  border-radius: 3px;
+  line-height: 26px;
+  height: 29px;
+  vertical-align: middle;
+  letter-spacing: 0.7px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin: 0 2px;
+  padding: 0 12px;
+}
+
+.button-action {
+  background-color: #008580;
+  color: white;
+}
+
+.button-primary {
+  background-color: #4e70d4;
+  width: 80px;
+  color: white;
+  padding: 0 11px;
+  border: 1px solid transparent;
+}
+
+.button-secondary {
+  background-color: #fafafc;
+  width: 80px;
+  border: 1px solid #e4e5eb;
+}
+
+label {
+  padding: 8px;
+  font-weight: 400;
+  color: #666;
+  font-size: 12px;
+  text-align: right;
+  word-wrap: break-word;
+  flex: 1;
+}
+
+textarea, input[type="text"], input[type="number"], input[type="date"],
+input[type="password"], input[type="email"], select {
+  padding: 4px 6px;
+  border-radius: 2px;
+  font-size: 14px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 1px;
+  width: 100%;
+  border: solid 1px #ebecf2;
+}
+
+textarea {
+  height: 75px;
+}
+
+.form-inline .row {
+  display: flex;
+  margin: 8px 0px;
+}
+
+.form-inline .row label {
+  flex: 1;
+}
+
+.form-inline .row textarea, .form-inline .row input[type="text"], .form-inline .row input[type="number"], .form-inline .row input[type="date"],
+.form-inline .row input[type="password"], .form-inline .row input[type="email"], .form-inline .row select {
+  flex: 3;
+}
+
+.form .row {
+  margin: 16px 0px;
+}
+
+.form .row label {
+  font-weight: 600;
+}
+
 .banner-username {
   background-image: url(/static/assets/background-13.png);
   background-size: 100%;
@@ -405,6 +487,7 @@ a.logotype {
   border-color: #e4e5eb;
   border-width: 1px;
   padding: 16px 20px;
+  text-align: right;
 }
 
 .modal .body {
@@ -417,6 +500,10 @@ a.logotype {
 
 .modal .body > div {
   margin: 20px;
+}
+
+.right {
+  float: right;
 }
 
 nav.toolbar-main {
@@ -437,19 +524,19 @@ nav.toolbar-main > div {
   margin-right: auto;
 }
 
-nav.toolbar-main .right-nav {
+nav.toolbar-main .nav {
   margin-top: 17px;
 }
 
-.right-nav {
+.nav {
   text-transform: uppercase;
   font-size: 14px;
   margin: 0;
   list-style: none;
-  float: right;
+  padding: 0px;
 }
 
-.right-nav > li {
+.nav > li {
   line-height: 30px;
   display: inline-block;
   margin: 0 10px;
@@ -458,11 +545,11 @@ nav.toolbar-main .right-nav {
   border-top: solid 2px transparent;
 }
 
-.right-nav > li:hover {
+.nav > li:hover {
   border-top: solid 2px #297CBB;
 }
 
-.right-nav > li.active {
+.nav > li.active {
   border-top: solid 2px #297CBB;
 }
 

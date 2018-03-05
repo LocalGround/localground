@@ -16,8 +16,8 @@
                         <div>Your content here</div>
                     </div>
                     <footer>
-                        <button class="btn cancel">Cancel</button>
-                        <button class="btn action">Action</button>
+                        <button class="button button-secondary">Cancel</button>
+                        <button class="button button-primary">Action</button>
                     </footer>
                 </div>
             </div>
@@ -25,13 +25,15 @@
 
         <pre class="prettyprint linenums" source-element="#modal-demo"></pre>
     </div>
-    
+
     <script>
         document.querySelector('.show').onclick = () => {
             document.querySelector('.modal').style.display = 'block'
         }
-        document.querySelector('.close').onclick = () => {
-            document.querySelector('.modal').style.display = 'none'
-        }
+        document.querySelectorAll('.close, .button').forEach(elem => {
+            elem.onclick = () => {
+                document.querySelector('.modal').style.display = 'none'
+            }
+        })
     </script>
 {% endblock %}

@@ -1,0 +1,78 @@
+// main: ../main-new.scss
+.button {
+    border: none;
+    border-radius: 3px;
+    line-height: 26px;
+    height: 29px;
+    vertical-align: middle;
+    letter-spacing: 0.7px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin: 0 2px;
+    padding: 0 12px;
+}
+
+.button-action {
+    background-color: #008580;
+    color: white;
+}
+
+.button-primary {
+    background-color: $primary-color;
+    width: 80px;
+    color: white;
+    padding: 0 11px;
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+.button-secondary {
+    background-color: $action-color;
+    width: 80px;
+    border: 1px solid #e4e5eb;
+}
+label {
+    padding: 8px;
+    font-weight: 400;
+    color: #666;
+    font-size: 12px;
+    text-align: right;
+    word-wrap: break-word;
+    flex: 1;
+}
+
+textarea, input[type="text"], input[type="number"], input[type="date"],
+input[type="password"], input[type="email"], select {
+    padding: 4px 6px;
+    border-radius: 2px;
+    font-size: 14px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 1px;
+    width: 100%;
+    border: solid 1px #ebecf2;
+}
+textarea {
+    height: 75px;
+}
+.form-inline {
+    .row {
+        display: flex;
+        margin: 8px 0px;
+        label {
+            flex: 1;
+        }
+        textarea, input[type="text"], input[type="number"], input[type="date"],
+        input[type="password"], input[type="email"], select {
+            flex: 3;
+        }
+    }
+}
+.form {
+    .row {
+        margin: 16px 0px;
+        label {
+            font-weight: 600;
+        }
+    }
+}
