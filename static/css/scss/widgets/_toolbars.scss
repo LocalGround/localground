@@ -16,22 +16,29 @@ nav.toolbar-main {
         margin-right: auto;
     }
     .right-nav {
-        line-height: 57px;
+        margin-top: 17px;
     }
 }
 .right-nav {
-    float: right;
     text-transform: uppercase;
     font-size: 14px;
     margin: 0;
     list-style: none;
+    float: right;
 
     > li {
+        line-height: 30px;
         display: inline-block;
-        height: 57px;
         margin: 0 10px;
         vertical-align: top;
         padding: 0 2px;
+        border-top: solid 2px rgba(0, 0, 0, 0);
+    }
+    > li:hover {
+        border-top: solid 2px $selectionBorderHighlight;
+    }
+    > li.active {
+        border-top: solid 2px $selectionBorderHighlight;
     }
 }
 
@@ -82,7 +89,7 @@ nav.toolbar-main {
     h1 {
         padding-bottom: 0px;
         line-height: 30px;
-        font-weight: 400;
+        font-weight: 4right00;
         font-size: 1.4em;
         margin: 0px;
         text-align: center;

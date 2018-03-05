@@ -438,23 +438,32 @@ nav.toolbar-main > div {
 }
 
 nav.toolbar-main .right-nav {
-  line-height: 57px;
+  margin-top: 17px;
 }
 
 .right-nav {
-  float: right;
   text-transform: uppercase;
   font-size: 14px;
   margin: 0;
   list-style: none;
+  float: right;
 }
 
 .right-nav > li {
+  line-height: 30px;
   display: inline-block;
-  height: 57px;
   margin: 0 10px;
   vertical-align: top;
   padding: 0 2px;
+  border-top: solid 2px transparent;
+}
+
+.right-nav > li:hover {
+  border-top: solid 2px #297CBB;
+}
+
+.right-nav > li.active {
+  border-top: solid 2px #297CBB;
 }
 
 .toggle-button {
@@ -509,7 +518,7 @@ nav.toolbar-main .right-nav {
 .toolbar-secondary h1 {
   padding-bottom: 0px;
   line-height: 30px;
-  font-weight: 400;
+  font-weight: 4right00;
   font-size: 1.4em;
   margin: 0px;
   text-align: center;

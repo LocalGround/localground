@@ -10,16 +10,31 @@
                 <a class="logotype" href="/">Local Ground</a>
                 <ul class="right-nav">
                     <li><a href="#">Link 1</a></li>
-                    <li><a href="#">Link 2</a></li>
+                    <li class="active"><a href="#">Link 2</a></li>
                     <li><a href="#">Link 3</a></li>
                 </ul>
             </nav>
         </div>
 
-        <pre class="prettyprint linenums" source-element="#main-toolbar-demo">dasdas</pre>
+        <pre class="prettyprint linenums" source-element="#main-toolbar-demo"></pre>
     </div>
 
-    <!-- 2. Dropdown Menu -->
+    <!-- 2. Main Toolbar -->
+    <div class="container">
+        <h2>Right Navigation: widgets/_toolbars.scss</h2>
+        <div id="right-nav-demo">
+            <ul class="right-nav">
+                <li class="active"><a href="#">Link 1</a></li>
+                <li><a href="#">Link 2</a></li>
+                <li><a href="#">Link 3</a></li>
+            </ul>
+            <br style="clear:both"><!-- this is a hack. rethink this approach -->
+        </div>
+
+        <pre class="prettyprint linenums" source-element="#right-nav-demo"></pre>
+    </div>
+
+    <!-- 3. Dropdown Menu -->
     <div class="container">
         <h2>Dropdown Menu: widgets/_toolbars.scss</h2>
         <div id='dropdown-menu-demo'>
@@ -47,10 +62,4 @@
         <pre class="prettyprint linenums" source-element="#dropdown-menu-demo"></pre>
     </div>
 
-
-
-    <!-- scripts -->
-    <script>
-        prettify()
-    </script>
 {% endblock %}
