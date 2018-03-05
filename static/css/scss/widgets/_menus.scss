@@ -14,6 +14,12 @@
         cursor: pointer;
         text-decoration: none;
         font-size: 0.9em;
+
+        .show-on-hover {
+            float: right;
+            color: #999;
+            display: none;
+        }
     }
     a:after {
         height: 10px;
@@ -30,6 +36,10 @@
         text-decoration: none;
         background-color: $offwhite;
         outline: none;
+        
+        .show-on-hover {
+            display: block;
+        }
     }
     a.active {
         padding-left: 13px;

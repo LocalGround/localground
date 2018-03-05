@@ -446,6 +446,12 @@ textarea {
   font-size: 0.9em;
 }
 
+.menu a .show-on-hover {
+  float: right;
+  color: #999;
+  display: none;
+}
+
 .menu a:after {
   height: 10px;
   width: 10px;
@@ -462,6 +468,10 @@ textarea {
   text-decoration: none;
   background-color: #fbfcfe;
   outline: none;
+}
+
+.menu a:hover .show-on-hover {
+  display: block;
 }
 
 .menu a.active {
