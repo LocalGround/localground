@@ -30,6 +30,20 @@
     width: 80px;
     border: 1px solid #e4e5eb;
 }
+.button-secondary:hover {
+    background-color: #f1f3fb;
+    border-color: #4e70d4;
+}
+.button-tertiary {
+    text-transform: uppercase;
+    font-weight: 600;
+    color: $primary-color;
+    background: none;
+    border: none;
+}
+.button-warning {
+    color: $dark-red;
+}
 label {
     padding: 8px;
     font-weight: 400;

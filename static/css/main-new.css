@@ -368,6 +368,23 @@ a.logotype {
   border: 1px solid #e4e5eb;
 }
 
+.button-secondary:hover {
+  background-color: #f1f3fb;
+  border-color: #4e70d4;
+}
+
+.button-tertiary {
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #4e70d4;
+  background: none;
+  border: none;
+}
+
+.button-warning {
+  color: #d73729;
+}
+
 label {
   padding: 8px;
   font-weight: 400;
