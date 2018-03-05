@@ -22,7 +22,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             showSaveButton: true,
             showDeleteButton: true,
             regions: {
-                "modalBodyRegion": '.modal-body'
+                "modalBodyRegion": '.body'
             },
             events: {
                 'click .close': 'hide',
@@ -96,9 +96,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             },
 
             setSize: function () {
-                this.$el.find('.modal-content').css('width', this.width);
-                this.$el.find('.modal-body').css('height', this.height);
-                //this.$el.find('.modal-body').css('margin', this.margin);
+                this.$el.find('.content').css('width', this.width);
+                this.$el.find('.body').css('height', this.height);
             },
             createModal: function () {
                 this.$el = $(this.template({ title: this.title }));

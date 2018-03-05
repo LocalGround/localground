@@ -12,15 +12,17 @@
     }
     aside {
         grid-column: span 3;
-        >.menu {
+
+        > .menu {
             width: 75%;
+            margin-top: 50px;
         }
     }
     main {
         grid-column: span 8;
     }
 
-    .menu, .container:first-of-type {
+    .container:first-of-type {
         margin-top: 50px;
     }
 
@@ -57,7 +59,9 @@
             margin-top: 30px;
             margin-bottom: 5px;
         }
-
+        p {
+            font-size: 0.9em;
+        }
         .show {
             text-decoration: underline;
         }

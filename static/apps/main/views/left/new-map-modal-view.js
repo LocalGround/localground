@@ -7,7 +7,7 @@ define ([
     function ($, _, Marionette, Handlebars, NewMapModalTemplate) {
         'use strict';
 
-        var NewMap = Marionette.ItemView.extend({    
+        var NewMap = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "send-modal-error", this.updateModal);
@@ -28,12 +28,12 @@ define ([
                 }
                 var helpers = {
                     slugError: this.slugError,
-                    generalError: this.generalError, 
+                    generalError: this.generalError,
                     name: name,
                     slug: slug,
                     description: description
                 };
-                return helpers; 
+                return helpers;
             },
 
             saveMap: function () {
@@ -58,7 +58,7 @@ define ([
                     this.app.vent.trigger("create-new-map", mapAttrs);
                 }
             },
-           
+
             generateSlug: function () {
                 var name = this.$el.find('#new-map-name').val(),
                     slug = name.toLowerCase().replace(/\s+/g, "-");

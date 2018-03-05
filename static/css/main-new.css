@@ -72,13 +72,14 @@ a.logotype {
 
 .style-guide aside > .menu {
   width: 75%;
+  margin-top: 50px;
 }
 
 .style-guide main {
   grid-column: span 8;
 }
 
-.style-guide .menu, .style-guide .container:first-of-type {
+.style-guide .container:first-of-type {
   margin-top: 50px;
 }
 
@@ -116,6 +117,10 @@ a.logotype {
   font-size: 1.1em;
   margin-top: 30px;
   margin-bottom: 5px;
+}
+
+.style-guide .container p {
+  font-size: 0.9em;
 }
 
 .style-guide .container .show {
@@ -294,7 +299,7 @@ a.logotype {
   left: 50px;
 }
 
-.button {
+.button, .button-action, .button-primary, .button-secondary, .button-tertiary {
   border: none;
   border-radius: 3px;
   line-height: 26px;
@@ -362,18 +367,9 @@ span.action.rounded:hover, a.action.rounded:hover {
   color: #4e70d4;
 }
 
-label {
-  padding: 8px;
-  font-weight: 400;
-  color: #666;
-  font-size: 12px;
-  text-align: right;
-  word-wrap: break-word;
-  flex: 1;
-}
-
-textarea, input[type="text"], input[type="number"], input[type="date"],
-input[type="password"], input[type="email"], select {
+.form textarea, .form input[type="text"], .form input[type="number"], .form input[type="date"],
+.form input[type="password"], .form input[type="email"], .form select, .form-inline textarea, .form-inline input[type="text"], .form-inline input[type="number"], .form-inline input[type="date"],
+.form-inline input[type="password"], .form-inline input[type="email"], .form-inline select {
   padding: 4px 6px;
   border-radius: 2px;
   font-size: 14px;
@@ -385,8 +381,18 @@ input[type="password"], input[type="email"], select {
   border: solid 1px #ebecf2;
 }
 
-textarea {
+.form textarea, .form-inline textarea {
   height: 75px;
+}
+
+.form label, .form-inline label {
+  padding: 8px;
+  font-weight: 400;
+  color: #666;
+  font-size: 12px;
+  text-align: right;
+  word-wrap: break-word;
+  flex: 1;
 }
 
 .form-inline .row {
@@ -512,7 +518,7 @@ textarea {
 
 .modal header {
   width: calc(100% - 40px);
-  padding: 10px;
+  padding: 15px;
 }
 
 .modal header h1 {
@@ -526,7 +532,7 @@ textarea {
   color: #888;
   float: right;
   font-size: 24px;
-  line-height: 24px;
+  line-height: 12px;
   cursor: pointer;
 }
 
@@ -542,7 +548,7 @@ textarea {
   background-color: #fafafc;
   border-top: 1px solid #e4e5eb;
   max-height: 75vh;
-  overflow-y: scroll;
+  overflow-y: auto;
   min-height: 150px;
 }
 

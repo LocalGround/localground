@@ -57,6 +57,7 @@ define([
             this.modal.update({
                 view: shareFormView,
                 title: title,
+                height: 350,
                 width: 500,
                 // bind the scope of the save function to the source view:
                 saveFunction: shareFormView.saveProjectSettings.bind(shareFormView),

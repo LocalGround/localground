@@ -740,6 +740,7 @@ p.coords {
 .button-view-mode .card {}
 .button-view-mode .list {}
 
+/*
 .button, .button-primary, .button-secondary, .button-tertiary {
     border:none;
     border-radius:3px;
@@ -758,7 +759,7 @@ p.coords {
     background-color:#4e70d4;
     color:white;
     -webkit-animation: fadeEffect 0.5s;
-    animation: fadeEffect 0.5s; /* Fading effect takes 1 second */
+    animation: fadeEffect 0.5s;
     padding: 0 11px;
     width:80px;
     text-align: center;
@@ -795,7 +796,7 @@ p.coords {
     color: rgb(78,112,212);
     background: none;
     border: none;
-}
+} */
 
 .button-tertiary .fa{
     padding:4px;

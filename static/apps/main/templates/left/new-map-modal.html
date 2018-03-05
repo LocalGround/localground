@@ -1,19 +1,23 @@
+<form class="form">
+    <div class="row {{#if generalError}}error{{/if}}">
+        <label>Map Name: </label>
+        <input type="text" placeholder="name of map" id="new-map-name" value="{{name}}">
+    </div>
+    <div class="row">
+        <label>Description:</label>
+        <textarea placeholder="map description" id="new-map-description" value="{{description}}"></textarea>
+    </div>
+    <div class="row {{#if slugError}}error{{/if}}">
+        <label>Friendly URL:</label>
+        <input type="text" placeholder="enter name or leave blank for autofill" id="new-map-slug" value="{{slug}}">
+    </div>
+    <div class="row">
 
-<div class="inline-form {{#if generalError}}error{{/if}}">
-    <label>Title: </label>
-    <input type="text" placeholder="name of map" id="new-map-name" value="{{name}}">
-</div>
-<div class = "inline-form slug {{#if slugError}}error{{/if}}">
-    <label>Friendly URL:</label>
-    <input type="text" placeholder="enter name or leave blank for autofill" id="new-map-slug" value="{{slug}}">
-</div>
-<div class = "inline-form">
-    <label>Description:</label>
-    <input type="text" placeholder="map description" id="new-map-description" value="{{description}}">
-</div>
-{{#if slugError}}
-<p class="errorMessage">{{slugError}}</p>
-{{/if}}
-{{#if generalError}}
-<p class="errorMessage">{{generalError}}</p>
-{{/if}}
+    </div>
+    {{#if slugError}}
+        <p class="errorMessage">{{slugError}}</p>
+    {{/if}}
+    {{#if generalError}}
+        <p class="errorMessage">{{generalError}}</p>
+    {{/if}}
+</form>

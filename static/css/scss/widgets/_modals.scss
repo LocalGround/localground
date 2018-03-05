@@ -28,7 +28,7 @@
     }
     header {
         width: calc(100% - 40px);
-        padding: 10px;
+        padding: 15px;
     }
     header h1 {
         text-transform: uppercase;
@@ -40,7 +40,7 @@
         color: #888;
         float: right;
         font-size: 24px;
-        line-height: 24px;
+        line-height: 12px;
         cursor: pointer;
     }
     footer {
@@ -54,7 +54,7 @@
         background-color: #fafafc;
         border-top: 1px solid #e4e5eb;
         max-height: 75vh;
-        overflow-y: scroll;
+        overflow-y: auto;
         min-height: 150px;
     }
     .body > div {

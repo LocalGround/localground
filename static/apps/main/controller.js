@@ -17,10 +17,6 @@ define([
             this.app.vent.trigger('route-layer', mapId, layerId);
         },
 
-        newMap: function() {
-            this.app.vent.trigger('route-new-map');
-        },
-
         newLayer: function (mapID) {
             this.app.vent.trigger('route-new-layer', mapID);
         }

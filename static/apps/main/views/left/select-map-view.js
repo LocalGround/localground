@@ -56,7 +56,7 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'init-default-map', this.setInitialModel);
                 this.listenTo(this.app.vent, 'update-map-list', this.setInitialModel);
                 this.listenTo(this.app.vent, 'route-map', this.getSelectedMap);
-                this.listenTo(this.app.vent, 'route-new-map', this.showAddMapModal);
+                this.listenTo(this.app.vent, 'open-new-map-modal', this.showAddMapModal);
             },
 
             getSelectedMap: function(mapId) {
@@ -200,13 +200,15 @@ define(["jquery",
                     app: this.app,
                     mode: 'createNewMap'
                 });
+
                 this.modal.update({
                     class: "add-map",
                     view: createMapModel,
-                    title: 'Add Map',
-                    width: 400,
-                    height: 130,
-                    closeButtonText: "Done",
+                    title: 'New Map',
+                    width: 600,
+                    height: 230,
+                    saveButtonText: "Create Map",
+                    closeButtonText: "Cancel",
                     showSaveButton: true,
                     saveFunction: createMapModel.saveMap.bind(createMapModel),
                     showDeleteButton: false

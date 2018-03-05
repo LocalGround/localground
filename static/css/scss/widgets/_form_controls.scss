@@ -1,5 +1,5 @@
 // main: ../main-new.scss
-.button {
+.button, .button-action, .button-primary, .button-secondary, .button-tertiary {
     border: none;
     border-radius: 3px;
     line-height: 26px;
@@ -57,30 +57,31 @@ span.action.rounded:hover, a.action.rounded:hover {
     border-color: #7eace2;
     color: #4e70d4;
 }
-label {
-    padding: 8px;
-    font-weight: 400;
-    color: #666;
-    font-size: 12px;
-    text-align: right;
-    word-wrap: break-word;
-    flex: 1;
-}
-
-textarea, input[type="text"], input[type="number"], input[type="date"],
-input[type="password"], input[type="email"], select {
-    padding: 4px 6px;
-    border-radius: 2px;
-    font-size: 14px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    margin: 1px;
-    width: 100%;
-    border: solid 1px #ebecf2;
-}
-textarea {
-    height: 75px;
+.form, .form-inline {
+    textarea, input[type="text"], input[type="number"], input[type="date"],
+    input[type="password"], input[type="email"], select {
+        padding: 4px 6px;
+        border-radius: 2px;
+        font-size: 14px;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        margin: 1px;
+        width: 100%;
+        border: solid 1px #ebecf2;
+    }
+    textarea {
+        height: 75px;
+    }
+    label {
+        padding: 8px;
+        font-weight: 400;
+        color: #666;
+        font-size: 12px;
+        text-align: right;
+        word-wrap: break-word;
+        flex: 1;
+    }
 }
 .form-inline {
     .row {
