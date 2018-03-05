@@ -1,5 +1,5 @@
 {% extends "style-guide/base.html" %}
-{% block title %}Toolbars{% endblock %}
+{% block title %}Menus and Navigation{% endblock %}
 {% block main %}
 
     <!-- 1. Main Toolbar -->
@@ -33,7 +33,7 @@
         <pre class="prettyprint linenums" source-element="#nav-demo"></pre>
     </div>
 
-    <!-- 2. Right Nav -->
+    <!-- 3. Right Nav -->
     <div class="container">
         <h2>Right Navigation: widgets/_toolbars.scss</h2>
         <div id="right-nav-demo">
@@ -48,7 +48,20 @@
         <pre class="prettyprint linenums" source-element="#right-nav-demo"></pre>
     </div>
 
-    <!-- 4. Dropdown Menu -->
+    <!-- 4. Vertical Menu -->
+    <div class="container">
+        <h2>Right Navigation: widgets/_menus.scss</h2>
+        <div id="menu-demo">
+            <div class='menu'>
+                <a href="#" class="active">Item 1</a>
+                <a href="#">Item 2</a>
+                <a href="#">Item 3</a>
+            </div>
+        </div>
+        <pre class="prettyprint linenums" source-element="#menu-demo"></pre>
+    </div>
+
+    <!-- 5. Dropdown Menu -->
     <div class="container">
         <h2>Dropdown Menu: widgets/_toolbars.scss</h2>
         <div id='dropdown-menu-demo'>
