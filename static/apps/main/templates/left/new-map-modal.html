@@ -18,16 +18,11 @@
     <div class="row">
         <input type="radio" name="choose-dataset" id="existing-datasets">
         <label>Use existing project dataset(s):</label>
-        <table class="checkbox-list" style="margin-left: 30px;">
-            <tr>
-                <td><input type="checkbox" name="dataset"> <label>Flowers</label></td>
-            </tr>
-            <tr>
-                <td><input type="checkbox" name="dataset"> <label>Birds</label></td>
-            </tr>
-            <tr>
-                <td><input type="checkbox" name="dataset" checked> <label>Trees</label></td>
-            </tr>
+        <div style="margin-left: 30px;">
+            <input type="checkbox" name="dataset" checked><label>Flowers</label><br>
+            <input type="checkbox" name="dataset"><label>Birds</label><br>
+            <input type="checkbox" name="dataset"><label>Trees</label><br>
+        </div>
     </div>
     {{#if slugError}}
         <p class="errorMessage">{{slugError}}</p>
