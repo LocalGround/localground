@@ -1,14 +1,25 @@
-<span class="sort-by">{{property}}</span>
-<ul id="symbols-list">
-        {{#each markerList}}
-        <li class="list-item">
-            <a model-id="{{this.id}}">
-                <p>{{this.attributes.type}}
-                    {{#ifequal this.property ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
-    
-                </p>
-            </a>
-            
-        </li>
-        {{/each}}
-    </ul>
+<div class="symbol-header">
+    <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ width }}">
+        <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round"            paint-order="stroke" stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}">
+        </path>
+    </svg>
+    <span class="sort-by">{{property}}</span>
+    <p class="symbol-edit"><i class="fa fa-pencil" aria-hidden="true"></i></p>
+</div>
+<ul id="symbol">
+    {{#each markerList}}
+    <li class="symbol-item">
+        <a model-id="{{this.id}}">
+            <!-- <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ width }}">
+                <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
+                    stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>
+            </svg> -->
+            <p>{{this.attributes.type}}
+                {{#ifequal this.property ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
+
+            </p>
+        </a>
+        
+    </li>
+    {{/each}}
+</ul>

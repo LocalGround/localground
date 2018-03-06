@@ -115,10 +115,11 @@ define(["jquery"], function ($) {
             var returnVal = false,
                 modelVal = model.get(this.key),
                 idx = -1;
-          
-            if (typeof modelVal === 'undefined' || modelVal == null) {
-                return false;
-            }
+            //console.log(model.id, this.key, this.val, modelVal);
+            // if (typeof modelVal === 'undefined' || modelVal == null) {
+            //     return false;
+            // }
+            
             modelVal = this.convertType(modelVal);
             if (this.operator == '=') {
                 returnVal = modelVal == this.val;
@@ -168,7 +169,14 @@ define(["jquery"], function ($) {
         };
 
         this.parseString = function (val) {
-            return val.toString().toLowerCase();
+            // this first condition handles undefined numerical values,
+            //which get converted to NaN, and therefore are not evaluated by this.parseNum()
+            //console.log('parseString', val);
+            if (Number.isNaN(val)) {
+                return null;
+            } else {
+                return val.toString().toLowerCase();
+            }
         };
 
         this.debug = function () {
@@ -187,3 +195,5 @@ define(["jquery"], function ($) {
 
     return TruthStatement;
 });
+
+

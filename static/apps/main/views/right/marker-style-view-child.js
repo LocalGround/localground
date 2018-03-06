@@ -2,7 +2,7 @@ define(["jquery",
         "marionette",
         "handlebars",
         "lib/maps/icon-lookup",
-        "apps/style/views/symbols/symbol-selection-layout-view",
+        "apps/main/views/symbols/symbol-selection-layout-view",
         "text!../../templates/right/marker-style-child.html",
         'color-picker-eyecon'
     ],
@@ -13,6 +13,8 @@ define(["jquery",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "update-opacity", this.updateSymbolOpacity);
+                console.log('MSV child initialize');
+                this.render();
             },
             template: Handlebars.compile(MarkerStyleChildTemplate),
             events: {
@@ -23,7 +25,7 @@ define(["jquery",
                 'change': 'updateLayerSymbols'
             },
 
-            tagName: "tr",
+            tagName: "div",
             className: "table-row",
             templateHelpers: function () {
                 return {
@@ -34,6 +36,7 @@ define(["jquery",
                 };
             },
             onRender: function () {
+                console.log('msv child render');
                 var that = this,
                     color = this.model.get('fillColor'),
                     id = this.model.get('id');

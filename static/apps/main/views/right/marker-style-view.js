@@ -3,8 +3,8 @@ define(["jquery",
         "marionette",
         "handlebars",
         "lib/maps/icon-lookup",
-        "apps/style/views/right/marker-style-view-child",
-        "apps/style/views/symbols/symbol-selection-layout-view",
+        "apps/main/views/right/marker-style-view-child",
+        "apps/main/views/symbols/symbol-selection-layout-view",
         "text!../../templates/right/marker-style.html",
         "collections/symbols",
         'color-picker-eyecon',
@@ -42,7 +42,7 @@ define(["jquery",
             initialize: function (opts) {
                 _.extend(this, opts);
 
-
+                console.log(this.model);
                 /* reset layer type to 'basic' on initialize
                  this is the easiest way to prevent the view from being initialized
                  as continuous or categorical when no such cont. or cat. data is available
@@ -550,6 +550,7 @@ define(["jquery",
             },
 
             updateMap: function () {
+                console.log('msv updateMap');
                 var that = this;
                 this.delayExecution("mapTimer", function () {
                     that.model.trigger('rebuild-markers')

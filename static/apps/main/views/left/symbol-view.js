@@ -27,10 +27,12 @@ define(["jquery",
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
             templateHelpers: function () {
+                console.log(this.model.get('icon'));
                 const rule = this.model.get('rule')
                 name = this.app.dataManager.getCollection(this.dataSource).name;
                 return {
                     name: name,
+                    icon: this.model.get('icon'),
                     markerList: this.markerList,
                     property: rule === '*' ? 'all ' + name : rule
                 }
@@ -68,8 +70,18 @@ define(["jquery",
             events: {
                 //edit event here, pass the this.model to the right panel
                 'click .layer-delete' : 'deleteLayer',
-                'change input': 'showHideOverlays'
-            }
+                'change input': 'showHideOverlays',
+                'click .symbol-edit': 'showSymbolEditMenu'
+            },
+            showSymbolEditMenu: function (event) {
+                console.log('child show styebyMenu', this.model);
+     
+                const coords = {
+                    x: event.clientX,
+                    y: event.clientY
+                }
+                this.app.vent.trigger('show-symbol-menu', this.model, coords, this.layerId);
+            },
         });
         return SymbolSet;
     });

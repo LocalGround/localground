@@ -13,7 +13,7 @@ define(["jquery",
         var LayerListChild =  Marionette.CompositeView.extend({
             initialize: function (opts) {
                 // In this view, this.model = layer, this.collection = symbols
-                this.undefinedSymbols = null;
+                this.symbolForUndefinedMarkers = null;
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
@@ -27,8 +27,8 @@ define(["jquery",
                 this.dataset = this.app.dataManager.getCollection(this.model.get('data_source'));
                 
                 //this.collection = new Symbols(this.model.get('symbols'));
-                if (this.undefinedSymbols) {
-                    this.collection.add(this.undefinedSymbols);
+                if (this.symbolForUndefinedMarkers) {
+                    this.collection.add(this.symbolForUndefinedMarkers);
                 }
                 console.log(this.dataset);
             },
@@ -36,9 +36,9 @@ define(["jquery",
                 console.log('update Zcollection')
                 //this.collection = new Symbols(this.model.get('symbols'));
                 //this.initMapOverlays();
-                if (this.undefinedSymbols) {
+                if (this.symbolForUndefinedMarkers) {
                     console.log('adding symbols');
-                    this.collection.add(this.undefinedSymbols);
+                    this.collection.add(this.symbolForUndefinedMarkers);
                 }
                 this.render();
             },
@@ -84,7 +84,9 @@ define(["jquery",
                 return {
                     app: this.app,
                     collection: this.collection,
-                    dataSource: this.model.get("data_source")
+                    dataSource: this.model.get("data_source"),
+                    layerId: this.model.id
+
                 };
             },
 
@@ -164,25 +166,28 @@ define(["jquery",
                     overlays,
                     that = this,
                     dataSource = this.model.get("data_source"),
-                    data = this.app.dataManager.getCollection(dataSource),
+                    collection = this.app.dataManager.getCollection(dataSource),
                     symbols = this.model.getSymbols();
                     const currentProp = this.model.get('metadata').currentProp
-                    console.log(data);
-                    const dataIds = data.map(function(model) {
+                    const dataIds = collection.map(function(model) {
                         return model.id
                     });
                     let representedIds = [];
-            
+                
+                console.log(symbols);
+                console.log(this.collection);
                 symbols.each(function (symbol) {
-                    matchedCollection = new data.constructor(null, {
+                    //console.log(symbol.id, symbol.get('title'));
+                    matchedCollection = new collection.constructor(null, {
                         url: "dummy",
                         projectID: that.app.getProjectID()
                     });
                     //console.log(JSON.stringify(matchedCollection));
-                    data.each(function (model) {
+                    collection.each(function (model) {
                         if (symbol.checkModel(model)) {
                             matchedCollection.add(model);
                             representedIds.push(model.id);
+                            //console.log(model.id);
                         }
                     });
                     overlays = new MarkerOverlays({
@@ -199,8 +204,19 @@ define(["jquery",
                 const unrepresentedIds = dataIds.filter(function(id) {
                     return !representedIds.includes(id)
                 });
+                console.log(representedIds);
+                console.log(unrepresentedIds);
 
-                
+                if (this.symbolForUndefinedMarkers) {
+                    console.log('(this.symbolForUndefinedMarkers): TRUE')
+                    this.collection.remove(this.symbolForUndefinedMarkers);
+                    symbols.remove(this.symbolForUndefinedMarkers);
+                    this.symbolForUndefinedMarkers = null;
+                }
+                if (this.collection.contains(this.symbolForUndefinedMarkers)) {
+                    console.log('(this.collection.contains(this.symbolForUndefinedMarkers)): TRUE')
+                }
+                console.log(this.markerOverlayList);
 
                 if (unrepresentedIds.length > 0) {
 
@@ -215,19 +231,22 @@ define(["jquery",
                     let sqlString = currentProp + ' = undefined or ' + currentProp + ' = null';
 
                     console.log(sqlString);
-                    let unrepresentedCollection = new data.constructor(null, {
+                    let unrepresentedCollection = new collection.constructor(null, {
                         url: "dummy",
                         projectID: that.app.getProjectID()
                     });
+
     
-                    this.undefinedSymbols = new Symbol({
+                    this.symbolForUndefinedMarkers = new Symbol({
                         rule: sqlString,
                         title: 'undefined markers'
                     });
 
                     unrepresentedIds.forEach(function(id) {
-                        unrepresentedCollection.add(data.get(id));
-                        that.undefinedSymbols.addModel(data.get(id));
+                        // for overlays
+                        unrepresentedCollection.add(collection.get(id));
+                        // for symbol
+                        that.symbolForUndefinedMarkers.addModel(collection.get(id));
                     });
                     let otherOverlays = new MarkerOverlays({
                         collection: unrepresentedCollection,
@@ -239,7 +258,8 @@ define(["jquery",
                     console.log(representedIds);
                     console.log(unrepresentedIds);
                     console.log(that.markerOverlayList);
-                    console.log(this.undefinedSymbols);
+                    console.log(this.symbolForUndefinedMarkers);
+                    this.model.save();
                 }
             },
 

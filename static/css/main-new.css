@@ -97,26 +97,26 @@
   cursor: pointer;
 }
 
-.list-item {
+.symbol-item {
   border-bottom: 1px solid #ebebeb;
   font-size: 12px;
   list-style: none;
   background-color: #f7f7f7;
 }
 
-.list-item:hover {
+.symbol-item:hover {
   background: #EEE;
   color: #444;
 }
 
-.list-item a {
+.symbol-item a {
   text-decoration: none;
   padding: 6px 32px;
   display: inline-block;
   width: 100%;
 }
 
-.list-item p {
+.symbol-item p {
   display: inline-block;
   margin-top: 3px;
   vertical-align: middle;
@@ -140,7 +140,23 @@
   display: inline-block;
   background-color: #f7f7f7;
   font-weight: 600;
+}
+
+.symbol-header {
+  display: flex;
+  background: #f7f7f7;
   border-bottom: 1px solid #ebebeb;
+}
+
+.symbol-edit {
+  padding-top: 8px;
+  padding-right: 10px;
+  display: none;
+}
+
+.symbol-header:hover .symbol-edit {
+  display: block;
+  cursor: pointer;
 }
 
 .style-by-menu {
@@ -156,6 +172,50 @@
   right: 3;
   position: absolute;
   cursor: pointer;
+}
+
+.symbol-menu {
+  z-index: 501;
+  position: absolute;
+  background: white;
+}
+
+.symbol-style-menu {
+  background: white;
+  font-size: 12px;
+}
+
+.symbol-style-menu input {
+  width: 32px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #ebecf2;
+}
+
+.symbol-style-menu h3 {
+  padding: 5px 10px;
+}
+
+.symbol-style-menu > div {
+  padding: 8px;
+  display: flex;
+}
+
+.symbol-style-menu_close {
+  top: 3;
+  right: 3;
+  position: absolute;
+  cursor: pointer;
+}
+
+.symbol-style-menu_label {
+  width: 100px;
+}
+
+.style_attr {
+  text-align: left;
+  margin-left: auto;
+  padding-left: 6px;
 }
 
 .top-wrapper {
