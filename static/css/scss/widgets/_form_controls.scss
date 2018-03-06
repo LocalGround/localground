@@ -111,15 +111,22 @@ span.action.rounded:hover, a.action.rounded:hover {
         content: '\f14a';
         color: #4099ff;
     }
-
     .row {
-        label {
+        flex-wrap: wrap;
+        label, p {
             padding: 8px;
             font-weight: 400;
             color: #666;
             font-size: 12px;
             text-align: right;
             word-wrap: break-word;
+        }
+    }
+    .row.error {
+        background-color: #fae5e3;
+        padding: 5px 15px;
+        label, p {
+            color: #b94a48;
         }
     }
     .checkbox-list {
@@ -131,22 +138,41 @@ span.action.rounded:hover, a.action.rounded:hover {
 .form-inline {
     .row {
         display: flex;
+        flex-wrap: wrap;
         margin: 8px 0px;
         > label {
             flex: 1;
+            /*border: solid 1px #000;*/
         }
         textarea, input[type="text"], input[type="number"], input[type="date"],
         input[type="password"], input[type="email"], select, div {
             flex: 3;
+            /*border: solid 1px #000;*/
+        }
+    }
+    .row.error {
+        justify-content: flex-end;
+        p {
+            width: 90%;
+            /*border: solid 1px #000;*/
+            align-self: flex-end;
+            text-align: left;
         }
     }
 }
 .form {
     .row {
         margin: 16px 0px;
-        > label {
+        > label,
+        > p {
             font-weight: 600;
             flex: 1;
+            text-align: left;
+        }
+        > p {
+            line-height: 1em;
+            margin: 0px;
+            font-weight: 400;
         }
     }
 }

@@ -122,7 +122,8 @@ define(["jquery",
                 // sets newly created map as the selected map
                 this.$el.find('#map-select').val(this.map.id);
 
-                var layers = new Layers(null, {mapID: this.map.get("id")});
+                //Moved to create new map:
+                /*var layers = new Layers(null, {mapID: this.map.get("id")});
                 this.map.set("layers", layers);
 
                 dm.each(function (collection) {
@@ -163,6 +164,7 @@ define(["jquery",
                             }
                         });;
                     }});
+                */
                 this.setActiveMap(this.map);
              //   this.render();
                 this.app.router.navigate('//' + this.map.id);

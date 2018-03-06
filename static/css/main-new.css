@@ -431,7 +431,11 @@ span.action.rounded:hover, a.action.rounded:hover {
   color: #4099ff;
 }
 
-.form .row label, .form-inline .row label {
+.form .row, .form-inline .row {
+  flex-wrap: wrap;
+}
+
+.form .row label, .form .row p, .form-inline .row label, .form-inline .row p {
   padding: 8px;
   font-weight: 400;
   color: #666;
@@ -440,31 +444,62 @@ span.action.rounded:hover, a.action.rounded:hover {
   word-wrap: break-word;
 }
 
+.form .row.error, .form-inline .row.error {
+  background-color: #fae5e3;
+  padding: 5px 15px;
+}
+
+.form .row.error label, .form .row.error p, .form-inline .row.error label, .form-inline .row.error p {
+  color: #b94a48;
+}
+
 .form .checkbox-list td, .form-inline .checkbox-list td {
   font-size: 0.7em;
 }
 
 .form-inline .row {
   display: flex;
+  flex-wrap: wrap;
   margin: 8px 0px;
 }
 
 .form-inline .row > label {
   flex: 1;
+  /*border: solid 1px #000;*/
 }
 
 .form-inline .row textarea, .form-inline .row input[type="text"], .form-inline .row input[type="number"], .form-inline .row input[type="date"],
 .form-inline .row input[type="password"], .form-inline .row input[type="email"], .form-inline .row select, .form-inline .row div {
   flex: 3;
+  /*border: solid 1px #000;*/
+}
+
+.form-inline .row.error {
+  justify-content: flex-end;
+}
+
+.form-inline .row.error p {
+  width: 90%;
+  /*border: solid 1px #000;*/
+  align-self: flex-end;
+  text-align: left;
 }
 
 .form .row {
   margin: 16px 0px;
 }
 
-.form .row > label {
+.form .row > label,
+.form .row > p {
   font-weight: 600;
   flex: 1;
+  text-align: left;
+}
+
+.form .row > p {
+  line-height: 1em;
+  margin: 0px;
+  font-weight: 400;
 }
 
 .banner-username {

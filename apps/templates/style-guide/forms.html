@@ -4,11 +4,11 @@
 <div class="container">
     <h2>Main Buttons</h2>
     <div id="button-demo">
-        <button class="button button-action">Action</button>
-        <button class="button button-primary">Primary</button>
-        <button class="button button-secondary">Secondary</button>
-        <button class="button button-tertiary">Tertiary</button>
-        <button class="button button-tertiary button-warning">Warning</button>
+        <button class="button-action">Action</button>
+        <button class="button-primary">Primary</button>
+        <button class="button-secondary">Secondary</button>
+        <button class="button-tertiary">Tertiary</button>
+        <button class="button-tertiary button-warning">Warning</button>
     </div>
 
     <pre class="prettyprint linenums" source-element="#button-demo"></pre>
@@ -80,6 +80,26 @@
 </div>
 
 <div class="container">
+    <h2>Form Errors: Stacked</h2>
+    <div id="form-error">
+        <form class="form-inline">
+            <div class="row error">
+                <label>Text Input Label</label>
+                <input type="text" placeholder="This is a text input">
+                <p>Error message goes here</p>
+            </div>
+            <div class="row">
+                <label>Number Input Label</label>
+                <input type="number" placeholder="This is a number input">
+            </div>
+        </form>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#form-error"></pre>
+
+</div>
+
+<div class="container">
     <h2>Form Inputs: Stacked</h2>
     <div id="form-demo">
         <form class="form">
@@ -102,6 +122,27 @@
     </div>
 
     <pre class="prettyprint linenums" source-element="#form-demo"></pre>
+
+</div>
+
+
+<div class="container">
+    <h2>Form Errors: Stacked</h2>
+    <div id="form-error-stacked">
+        <form class="form">
+            <div class="row error">
+                <label>Text Input Label</label>
+                <input type="text" placeholder="This is a text input">
+                <p>Error message goes here</p>
+            </div>
+            <div class="row">
+                <label>Number Input Label</label>
+                <input type="number" placeholder="This is a number input">
+            </div>
+        </form>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#form-error-stacked"></pre>
 
 </div>
 {% endblock %}
