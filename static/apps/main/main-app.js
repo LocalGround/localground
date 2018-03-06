@@ -31,14 +31,12 @@ define([
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
-            console.log('starting');
             Marionette.Application.prototype.start.apply(this, [options]);
             this.initAJAX(options);
             this.router = new Router({ app: this });
             Backbone.history.start();
         },
         initialize: function (options) {
-            console.log('initializing');
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.dataManager = new DataManager({
                 vent: this.vent,
@@ -78,7 +76,6 @@ define([
         },
 
         showBreadcrumbs: function () {
-            console.log('show toolbar');
             this.toolbarView = new ToolbarGlobal({
                 app: this,
                 displayMap: true

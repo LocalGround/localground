@@ -46,7 +46,6 @@ define(["jquery",
             initialize: function (opts) {
                 var that = this;
                 _.extend(this, opts);
-                console.log(this.collection);
 
                 $('body').click(this.hideMapList.bind(this));
 
@@ -57,13 +56,10 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'init-default-map', this.setInitialModel);
                 this.listenTo(this.app.vent, 'update-map-list', this.setInitialModel);
                 this.listenTo(this.app.vent, 'route-map', this.getSelectedMap);
-                this.listenTo(this.app.vent, 'route-new-map', this.showAddMapModal);
+                this.listenTo(this.app.vent, 'open-new-map-modal', this.showAddMapModal);
             },
 
             getSelectedMap: function(mapId) {
-                console.log('------------------');
-                console.log('get selected map:', mapId, this.collection.length);
-                console.log('------------------');
                 this.setActiveMap(this.collection.get(mapId));
             },
 
@@ -126,7 +122,8 @@ define(["jquery",
                 // sets newly created map as the selected map
                 this.$el.find('#map-select').val(this.map.id);
 
-                var layers = new Layers(null, {mapID: this.map.get("id")});
+                //Moved to create new map:
+                /*var layers = new Layers(null, {mapID: this.map.get("id")});
                 this.map.set("layers", layers);
 
                 dm.each(function (collection) {
@@ -167,6 +164,7 @@ define(["jquery",
                             }
                         });;
                     }});
+                */
                 this.setActiveMap(this.map);
              //   this.render();
                 this.app.router.navigate('//' + this.map.id);
@@ -204,13 +202,15 @@ define(["jquery",
                     app: this.app,
                     mode: 'createNewMap'
                 });
+
                 this.modal.update({
                     class: "add-map",
                     view: createMapModel,
-                    title: 'Add Map',
-                    width: 400,
-                    height: 130,
-                    closeButtonText: "Done",
+                    title: 'New Map',
+                    width: 600,
+                    height: 400,
+                    saveButtonText: "Create Map",
+                    closeButtonText: "Cancel",
                     showSaveButton: true,
                     saveFunction: createMapModel.saveMap.bind(createMapModel),
                     showDeleteButton: false

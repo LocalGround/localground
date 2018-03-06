@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Local Ground Style Guide</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
+        <!-- link rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tranquil-heart.css" -->
+        <link rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/main-new.css">
+        <style>
+            .linenums li {
+                list-style-type: decimal;
+            }
+        </style>
+        <script>
+            const prettify = (selector) => {
+                if (!selector) {
+                    selector = '.prettyprint'
+                }
+                document.querySelectorAll(selector).forEach(elem => {
+                    const sourceElement = document.querySelector(elem.getAttribute('source-element'))
+                    const htmlString = _.escape(sourceElement.innerHTML)
+                    const lines = htmlString.split('\n')
+                    lines.shift()
+                    lines.pop()
+
+                    //calculate offset and then remove offset from each line:
+                    const leadingSpaces = lines[0].split('&')[0]
+                    const trimmedLines = []
+                    lines.forEach(line => {
+                        trimmedLines.push(line.replace(leadingSpaces, ''))
+                    })
+                    elem.innerHTML = trimmedLines.join('\n')
+                })
+                PR.prettyPrint()
+            }
+        </script>
+    </head>
+    <body class="light-gray">
+        <div class="style-guide">
+            <header>
+                <nav class="toolbar-main">
+                    <a class="logotype" href="/style-guide/">Local Ground Style Guide</a>
+                </nav>
+                <div class="toolbar-secondary">
+                    <h1>{% block title %}{% endblock %}</h1>
+                </div>
+            </header>
+            <aside>
+                {% include "style-guide/menu.html" %}
+            </aside>
+            <main>
+                {% block main %}{% endblock %}
+            </main>
+        </div>
+        <script>
+            prettify()
+        </script>
+    </body>
+</html>

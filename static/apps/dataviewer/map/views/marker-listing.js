@@ -16,7 +16,8 @@ define(["marionette",
             title: null,
             collectionEvents: {
                 'show-marker': 'removeHideIcon',
-                'hide-marker': 'showHideIcon'
+                'hide-marker': 'showHideIcon',
+                'click .add-new': 'triggerAddNew'
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -83,6 +84,13 @@ define(["marionette",
                 });
             },
 
+            triggerAddNew: function (e) {
+                var dataType = this.collection.key;
+                var screenType = this.app.screenType;
+                this.app.vent.trigger("show-create-new", screenType, dataType);
+                e.preventDefault();
+            },
+
             childViewOptions: function () {
                 var opts = {
                     app: this.app,
@@ -99,7 +107,8 @@ define(["marionette",
                     'click .zoom-to-extents': 'zoomToExtents',
                     'click .list-header > .fa-eye': 'hideMarkers',
                     'click .list-header > .fa-eye-slash': 'showMarkers',
-                    'click .add-new': 'route'
+                    'click .add-new': 'route',
+                    'click .add-new': 'triggerAddNew'
                 }, PanelVisibilityExtensions.events);
             },
 

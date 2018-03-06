@@ -1,0 +1,28 @@
+<div class="modal-search-form video-form">
+    <label for="video_link">Paste Video Link (Youtube or Vimeo)</label>
+    <input type="text" id="video_link" value="{{ video_link }}"
+        placeholder="Paste a link from either YouTube or Vimeo">
+    {{#if errorMessage}}
+    <span class="errorMessage">{{errorMessage}}</span>
+    {{/if}}
+</div>
+
+{{#if video_provider}}
+<div>
+        {{#ifequal video_provider "vimeo"}}
+            <iframe src="https://player.vimeo.com/video/{{video_id}}"
+            style="width: 50%; height: 50%;"
+            frameborder="0"
+            webkitallowfullscreen mozallowfullscreen allowfullscreen>
+            </iframe>
+        {{/ifequal}}
+
+
+        {{#ifequal video_provider "youtube"}}
+            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
+            style="width: 50%; height: 50%;"
+            frameborder="0" allowfullscreen>
+            </iframe>
+        {{/ifequal}}
+</div>
+{{/if}}

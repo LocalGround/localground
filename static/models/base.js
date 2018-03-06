@@ -181,6 +181,7 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
             },
             fetchCreateMetadata: function () {
                 var that = this;
+                console.log('fetchCreateMetadata');
                 if (!this.urlRoot) {
                     this.urlRoot = this.collection.url;
                 }

@@ -41,7 +41,7 @@ from localground.apps.site.api.serializers.map_serializer import \
 from localground.apps.site.api.serializers.tileset_serializer import \
     TileSetSerializer
 from localground.apps.site.api.serializers.video_serializer import \
-    VideoSerializer
+    VideoSerializer, VideoUpdateSerializer
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

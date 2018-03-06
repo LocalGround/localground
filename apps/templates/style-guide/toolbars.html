@@ -1,0 +1,92 @@
+{% extends "style-guide/base.html" %}
+{% block title %}Menus and Navigation{% endblock %}
+{% block main %}
+
+    <!-- 1. Main Toolbar -->
+    <div class="container">
+        <h2>Main Toolbar: widgets/_toolbars.scss</h2>
+        <div id="main-toolbar-demo">
+            <nav class="toolbar-main">
+                <a class="logotype" href="/">Local Ground</a>
+                <ul class="nav right">
+                    <li><a href="#">Link 1</a></li>
+                    <li class="active"><a href="#">Link 2</a></li>
+                    <li><a href="#">Link 3</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <pre class="prettyprint linenums" source-element="#main-toolbar-demo"></pre>
+    </div>
+
+    <!-- 2. Nav -->
+    <div class="container">
+        <h2>Horizontal Menu: widgets/_toolbars.scss</h2>
+        <div id="nav-demo">
+            <ul class="nav">
+                <li class="active"><a href="#">Link 1</a></li>
+                <li><a href="#">Link 2</a></li>
+                <li><a href="#">Link 3</a></li>
+            </ul>
+        </div>
+
+        <pre class="prettyprint linenums" source-element="#nav-demo"></pre>
+    </div>
+
+    <!-- 3. Right Nav -->
+    <div class="container">
+        <h2>Horizontal Menu (Right): widgets/_toolbars.scss</h2>
+        <div id="right-nav-demo">
+            <ul class="nav right">
+                <li class="active"><a href="#">Link 1</a></li>
+                <li><a href="#">Link 2</a></li>
+                <li><a href="#">Link 3</a></li>
+            </ul>
+            <br style="clear:both"><!-- this is a hack. rethink this approach -->
+        </div>
+
+        <pre class="prettyprint linenums" source-element="#right-nav-demo"></pre>
+    </div>
+
+    <!-- 4. Vertical Menu -->
+    <div class="container">
+        <h2>Vertical Menu: widgets/_menus.scss</h2>
+        <div id="menu-demo">
+            <div class='menu'>
+                <a href="#" class="active">Item 1</a>
+                <a href="#">Item 2</a>
+                <a href="#">Item 3</a>
+            </div>
+        </div>
+        <pre class="prettyprint linenums" source-element="#menu-demo"></pre>
+    </div>
+
+    <!-- 5. Dropdown Menu -->
+    <div class="container">
+        <h2>Dropdown Menu: widgets/_toolbars.scss</h2>
+        <div id='dropdown-menu-demo'>
+            <a class="toggle-button">
+                <i class="fa fa-caret-down" aria-hidden="true"></i>
+                Menu Label
+            </a>
+            <div class="dropdown-menu hide">
+                <ul>
+                    <li><a href="#">Profile</a></li>
+                    <li><a href="#">Settings</a></li>
+                    <li><a href="#">Logout</a></li>
+                </ul>
+            </div>
+            <script>
+                const enableDropdown = () => {
+                    document.querySelector('.toggle-button').onclick = () => {
+                        document.querySelector('.dropdown-menu').classList.toggle('hide')
+                    }
+                }
+                enableDropdown()
+            </script>
+        </div>
+
+        <pre class="prettyprint linenums" source-element="#dropdown-menu-demo"></pre>
+    </div>
+
+{% endblock %}

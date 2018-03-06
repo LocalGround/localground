@@ -8,7 +8,6 @@ define([
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
             '': 'defaultMap',
-            'new': 'newMap',
             ':mapId': 'displayMap',
             ':mapId/layers/new':'newLayer',
             ':mapId/layers/:layerId': 'displayLayer'

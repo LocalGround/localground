@@ -641,7 +641,8 @@ class ModelMixin(object):
         return icon
 
     def create_video(self, user=None, project=None, name='Video Name',
-                     provider='youtube', video_id='4232534',
+                     provider='youtube', video_id='jNQXAC9IVRw',
+                     video_link='https://www.youtube.com/watch?v=jNQXAC9IVRw',
                      point=None, tags=[]):
 
         from localground.apps.site import models
@@ -656,6 +657,7 @@ class ModelMixin(object):
             description='Video Description',
             provider=provider,
             video_id=video_id,
+            video_link=video_link,
             point=point,
             tags=tags
         )

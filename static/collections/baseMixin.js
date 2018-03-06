@@ -134,11 +134,11 @@ define(["jquery", "lib/sqlParser", "underscore", "backbone"], function ($, SqlPa
         },
         createNewModel: function () {
             var ModelClass = this.model,
-                model = new ModelClass();
+                model = new ModelClass({
+                    'overlay_type': this.getModelType(),
+                    'project_id': this.projectID
+                });
             model.collection = this;
-            model.set("overlay_type", this.getModelType());
-            model.set("project_id", this.projectID);
-
             // If we get the form, pass in the custom field
             if (this.isCustomType) {
                 model.set("fields", this.fields.toJSON());

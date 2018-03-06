@@ -5,6 +5,8 @@ from localground.apps.site import models
 class CheckUserCanPostToProject(permissions.BasePermission):
 
     def has_permission(self, request, view):
+        # print request.GET
+        # print request.POST
         if request.method == 'POST':
             r = request.GET.copy()
             r.update(request.POST)

@@ -1,0 +1,148 @@
+{% extends "style-guide/base.html" %}
+{% block title %}Forms{% endblock %}
+{% block main %}
+<div class="container">
+    <h2>Main Buttons</h2>
+    <div id="button-demo">
+        <button class="button-action">Action</button>
+        <button class="button-primary">Primary</button>
+        <button class="button-secondary">Secondary</button>
+        <button class="button-tertiary">Tertiary</button>
+        <button class="button-tertiary button-warning">Warning</button>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#button-demo"></pre>
+
+</div>
+
+<div class="container">
+    <h2>Custom Buttons</h2>
+    <div id="custom-button-demo">
+        <p>1. Tag Button:</p>
+        <a href="#"class="rounded action"><i class="fa fa-edit"></i> Tag Button</a>
+        <p>2. Hover Icon Button:</p>
+        <div class='menu'>
+            <a href="#">Item 1 <i class="fa fa-search show-on-hover"></i></a>
+        </div>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#custom-button-demo"></pre>
+
+</div>
+
+<div class="container">
+    <h2>Form Inputs: Inline</h2>
+    <div id="form-inline-demo">
+        <form class="form-inline">
+            <div class="row">
+                <label>Text Input Label:</label>
+                <input type="text" placeholder="This is a text input">
+            </div>
+            <div class="row">
+                <label>Textarea Label:</label>
+                <textarea placeholder="This is a textarea input"></textarea>
+            </div>
+            <div class="row">
+                <label>Select Label:</label>
+                <select>
+                    <option value="val1">Option 1</option>
+                    <option value="val2">Option 2</option>
+                </select>
+            </div>
+            <div class="row">
+                <label>Date Input Label:</label>
+                    <input type="date" placeholder="This is a date input">
+            </div>
+            <div class="row">
+                <label>Number Input Label:</label>
+                <input type="number" placeholder="This is an number input">
+            </div>
+            <div class="row">
+                <label>Radio Button Label</label>
+                <div>
+                    <input type="radio" name="rb" checked><label>Option 1</label><br>
+                    <input type="radio" name="rb"><label>Option 2</label><br>
+                </div>
+            </div>
+            <div class="row">
+                <label>Checkbox List Label</label>
+                <div>
+                    <input type="checkbox" name="cb" checked><label>Option 1</label><br>
+                    <input type="checkbox" name="cb"><label>Option 2</label><br>
+                    <input type="checkbox" name="cb"><label>Option 2</label><br>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#form-inline-demo"></pre>
+
+</div>
+
+<div class="container">
+    <h2>Form Errors: Stacked</h2>
+    <div id="form-error">
+        <form class="form-inline">
+            <div class="row error">
+                <label>Text Input Label</label>
+                <input type="text" placeholder="This is a text input">
+                <p>Error message goes here</p>
+            </div>
+            <div class="row">
+                <label>Number Input Label</label>
+                <input type="number" placeholder="This is a number input">
+            </div>
+        </form>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#form-error"></pre>
+
+</div>
+
+<div class="container">
+    <h2>Form Inputs: Stacked</h2>
+    <div id="form-demo">
+        <form class="form">
+            <div class="row">
+                <label>Text Input Label</label>
+                <input type="text" placeholder="This is a text input">
+            </div>
+            <div class="row">
+                <label>Textarea Label</label>
+                <textarea placeholder="This is a textarea input"></textarea>
+            </div>
+            <div class="row">
+                <label>Select Label</label>
+                <select>
+                    <option value="val1">Option 1</option>
+                    <option value="val2">Option 2</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#form-demo"></pre>
+
+</div>
+
+
+<div class="container">
+    <h2>Form Errors: Stacked</h2>
+    <div id="form-error-stacked">
+        <form class="form">
+            <div class="row error">
+                <label>Text Input Label</label>
+                <input type="text" placeholder="This is a text input">
+                <p>Error message goes here</p>
+            </div>
+            <div class="row">
+                <label>Number Input Label</label>
+                <input type="number" placeholder="This is a number input">
+            </div>
+        </form>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#form-error-stacked"></pre>
+
+</div>
+{% endblock %}

@@ -7,6 +7,7 @@ define(["jquery",
         "models/record",
         "models/marker",
         "models/audio",
+        "models/video",
         "collections/photos",
         "collections/audio",
         "collections/videos",
@@ -19,13 +20,14 @@ define(["jquery",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
-        Record, Marker, AudioModel, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
+        Record, Marker, AudioModel, Video, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
         SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
                 return Handlebars.compile(SpreadsheetTemplate);
             },
+            invalidCells: {},
             table: null,
             className: 'main-panel',
             currentModel: null,
@@ -147,8 +149,7 @@ define(["jquery",
             renderSpreadsheet: function () {
                 // When the spreadsheet is made without a defined collection
                 // Alert that there is no collection
-                // for the sole purpose of unit testing
-                //console.log(this.collection.length);
+                var that = this;
                 if (!this.collection) {
                     this.$el.find('#grid').html("Collection is not defined");
                     return;
@@ -195,9 +196,23 @@ define(["jquery",
                     autoRowSize: true,
                     columnSorting: true,
                     undo: true,
+                    afterValidate: function (isValid, value, rowIndex, prop, source) {
+                        // because of limitations in Hansontable, we need to
+                        // manually track which cells are valid / invalid:
+                        if (!isValid) {
+                            var model = that.getModelFromCell(null, rowIndex);
+                            if (!that.invalidCells[model.id]) {
+                                that.invalidCells[model.id] = [];
+                            }
+                            that.invalidCells[model.id].push(prop)
+                            if (prop === 'lat' || prop === 'lng') {
+                                that.invalidCells[model.id].push('geometry');
+                            }
+                        }
+                    },
                     afterChange: function (changes, source) {
                         that.saveChanges(changes, source);
-                        if (changes && changes[0] && changes[0].length > 1 && changes[0][1] == "video_provider") {
+                        if (changes && changes[0] && changes[0].length > 1 && changes[0][1] === "video_provider") {
                             that.table.render();
                         }
                     }
@@ -213,36 +228,66 @@ define(["jquery",
                 source = source.split(".");
                 source = source[source.length - 1];
                 var i, idx, key, oldVal, newVal, model, geoJSON;
-                if (_.contains(["edit", "autofill", "fill", "undo", "redo", "paste"], source)) {
+                if (_.contains([
+                            "edit",
+                            "autofill",
+                            "fill",
+                            "undo",
+                            "redo",
+                            "paste"
+                        ], source)) {
+                    if (source === "paste") {
+                        console.log(changes);
+                    }
+                    var changedModels = {};
                     for (i = 0; i < changes.length; i++) {
                         idx = changes[i][0];
                         key = changes[i][1];
                         oldVal = changes[i][2];
                         newVal = changes[i][3];
-                        if (oldVal !== newVal) {
-                            //Note: relies on the fact that the first column is the ID column
-                            //      see the getColumns() function below
-                            model = this.getModelFromCell(null, idx);
-                            if (key === 'lat' || key === 'lng') {
-                                //SV TODO: To handle polygons and polylines, only set latLng if current
-                                //          geometry is null of of type "Point." Still TODO.
-                                // Good article: https://handsontable.com/blog/articles/4-ways-to-handle-read-only-cells
-                                model.set(key, newVal);
-                                if (model.get("lat") && model.get("lng")) {
-                                    geoJSON = model.setPointFromLatLng(model.get("lat"), model.get("lng"));
-                                    model.save({ geometry: JSON.stringify(geoJSON) }, {patch: true, wait: true});
-                                } else {
-                                    model.set("geometry", null);
-                                    if (!model.get("lat") && !model.get("lng")) {
-                                        model.save({ geometry: null }, {patch: true, wait: true});
-                                    }
-                                }
+                        if (oldVal === newVal) {
+                            continue;
+                        }
+                        //Note: relies on the fact that the first column is the ID column
+                        //      see the getColumns() function below
+                        model = this.getModelFromCell(null, idx);
+                        if (!changedModels[model.id]) {
+                            changedModels[model.id] = {
+                                model: model,
+                                changedAttributes: {}
+                            };
+                        }
+                        if (key === 'lat' || key === 'lng') {
+                            //SV TODO: To handle polygons and polylines, only set latLng if current
+                            //          geometry is null of of type "Point." Still TODO.
+                            // Good article: https://handsontable.com/blog/articles/4-ways-to-handle-read-only-cells
+                            model.set(key, newVal);
+                            if (model.get("lat") && model.get("lng")) {
+                                geoJSON = model.setPointFromLatLng(model.get("lat"), model.get("lng"));
+                                changedModels[model.id].changedAttributes.geometry = JSON.stringify(geoJSON);
                             } else {
-                                model.set(key, newVal);
-                                model.save(model.changedAttributes(), { patch: true, wait: true});
+                                changedModels[model.id].changedAttributes.geometry = null;
                             }
+                        } else {
+                            changedModels[model.id].changedAttributes[key] = newVal;
                         }
                     }
+                    // Commit to database all at once:
+                    for (key in changedModels) {
+                        var m = changedModels[key].model,
+                            changedAttributes = changedModels[key].changedAttributes,
+                            invalidAttributes = this.invalidCells[m.id] || [];
+                        //remove any staged changes that are invalid:
+                        invalidAttributes.forEach(function (prop) {
+                            delete changedAttributes[prop];
+                        });
+                        if (Object.values(changedAttributes) === 0) {
+                            continue;
+                        }
+                        m.save(changedAttributes, { patch: true, wait: true });
+                    }
+                    //clear out invalidCells:
+                    this.invalidCells = {};
                 }
             },
             getModelFromCell: function (table, index) {
@@ -250,6 +295,15 @@ define(["jquery",
                 var modelID = table.getDataAtRowProp(index, "id");
                 return this.collection.get(modelID);
             },
+
+            htmlLinkRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
+                var htmlLink = "<a href='" + value + "' >" + value + "</a>"
+                td.innerHTML = htmlLink;
+
+
+                return td;
+            },
+
             thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
                 var that = this,
                     img = document.createElement('IMG'),
@@ -285,6 +339,9 @@ define(["jquery",
 
 
             videoRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
+                //return td;
+                // I found the problem is that id is set to "videos" string rather than a number
+                // and that id being set to "videos" can only happen at this javascript file
                 var that = this,
                     img = document.createElement('IMG'),
                     model = this.getModelFromCell(instance, rowIndex),
@@ -295,6 +352,7 @@ define(["jquery",
                         app: that.app,
                         collection: new Videos(model, { projectID: this.app.getProjectID() })
                     });
+                //if (!model) return;
                 if (model.get('video_provider') === "vimeo") {
                     i.className = "fa fa-3x fa-vimeo";
                 } else {
@@ -315,7 +373,6 @@ define(["jquery",
 
             mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
                 var model = this.getModelFromCell(instance, row);
-                console.log(model);
 
                 // There are two possible places to extract
                 // count of media types
@@ -353,7 +410,7 @@ define(["jquery",
                 }
 
                 if (videoIds){
-                    videoCount = audioIds.length;
+                    videoCount = videoIds.length;
                 } else if (videoCollection){
                     videoCount = videoCollection.data.length;
                 }
@@ -394,7 +451,6 @@ define(["jquery",
                     rowIndex = $(e.target).attr("row-index"),
                     collection;
                 this.currentModel = this.collection.at(parseInt(rowIndex));
-                console.log(this.currentModel, rowIndex);
                 this.currentModel.fetch({
                     success: function () {
                         collection = new Backbone.Collection();
@@ -425,16 +481,13 @@ define(["jquery",
                         // Let's test this little experimentation out
                         var a;
                         if (audioCollection && audioCollection.data.length > 0) {
-                            console.log("Finding carousel audio")
                             audioCollection.data.forEach(function (audioTrack, i) {
-                                console.log(audioTrack, audioTrack, that.app);
                                 a = new AudioPlayer({
                                     model: new AudioModel(audioTrack),
                                     app: that.app,
                                     audioMode: "detail",
                                     className: "audio-detail"
                                 });
-                                console.log(i, a.$el.html());
                                 carousel.$el.append(a.$el);
                             });
                         }
@@ -504,7 +557,6 @@ define(["jquery",
                 var row_idx = $(e.target).attr("row-index");
                 if (row_idx != undefined){
                     this.currentModel = this.collection.at(parseInt(row_idx));
-                    console.log(this.currentModel);
                 }
                 var mediaBrowser = new MediaBrowser({
                     app: this.app,
@@ -518,24 +570,6 @@ define(["jquery",
                     saveButtonText: "Add",
                     showSaveButton: true,
                     saveFunction: mediaBrowser.addModels.bind(mediaBrowser)
-                });
-            },
-
-
-
-            showMediaUploader: function (e) {
-
-                var mediaUploader = new MediaUploader({
-                    app: this.app,
-                });
-                this.app.vent.trigger("show-modal", {
-                    title: 'Media Uploader',
-                    width: 1100,
-                    //height: 400,
-                    view: mediaUploader,
-                    saveButtonText: "Add",
-                    showSaveButton: true,
-                    saveFunction: mediaUploader.addModels.bind(mediaUploader)
                 });
             },
 
@@ -571,7 +605,7 @@ define(["jquery",
                     case "photos":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "videos":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Video", "Video ID", "Provider", "Tags", "Attribution", "Owner", "Delete"];
+                        return ["ID", "Lat", "Lng", "Title", "Caption", "Video", "Video Link", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
                         cols = ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Media", "Delete"];
                         return cols;
@@ -599,7 +633,7 @@ define(["jquery",
                     case "photos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "videos":
-                        return [30, 80, 80, 200, 400, 65, 100, 100, 200, 100, 80, 100];
+                        return [30, 80, 80, 200, 400, 65, 100, 200, 100, 80, 100];
                     case "markers":
                         return [30, 80, 80, 200, 400, 200, 120, 100, 100];
                     default:
@@ -666,8 +700,7 @@ define(["jquery",
                            { data: "name", renderer: "html"},
                            { data: "caption", renderer: "html"},
                            { data: "video_provider", renderer: this.videoRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                           { data: "video_id", type: "text"},
-                           { data: "video_provider", type: "text", editor: "select", selectOptions: ["vimeo", "youtube"]},
+                           { data: "video_link", renderer: this.htmlLinkRenderer.bind(this), readOnly: true},
                            { data: "tags", renderer: "html" },
                            { data: "attribution", renderer: "html"},
                            { data: "owner", readOnly: true},
@@ -820,12 +853,11 @@ define(["jquery",
                     rec;
                 dataType = dataType != undefined ? dataType : this.app.dataType;
                 if (dataType == "audio" || dataType == "photos") {
-                    this.showMediaUploader();
                     return;
                 } else if (dataType == "markers"){
                     rec = new Marker({project_id: projectID});
                 } else if (dataType == "videos") {
-                    rec = new Videos({project_id: projectID});
+                    rec = new Video({project_id: projectID});
                 } else {
                     rec = new Record ({project_id: projectID});
                 }
