@@ -367,6 +367,10 @@ span.action.rounded:hover, a.action.rounded:hover {
   color: #4e70d4;
 }
 
+.form, .form-inline {
+  /*This CSS trick only works w/Chrome */
+}
+
 .form textarea, .form input[type="text"], .form input[type="number"], .form input[type="date"],
 .form input[type="password"], .form input[type="email"], .form select, .form-inline textarea, .form-inline input[type="text"], .form-inline input[type="number"], .form-inline input[type="date"],
 .form-inline input[type="password"], .form-inline input[type="email"], .form-inline select {
@@ -406,12 +410,12 @@ span.action.rounded:hover, a.action.rounded:hover {
 .form input[type="checkbox"], .form-inline input[type="checkbox"] {
   margin: 0px;
   -webkit-appearance: button;
-  -moz-appearance: button;
-  appearance: button;
   background-color: white;
+  margin-left: 4px;
+  margin-right: 2px;
 }
 
-.form input[type="checkbox"]::before, .form-inline input[type="checkbox"]::before {
+.form input[type="checkbox"]:before, .form-inline input[type="checkbox"]:before {
   content: '\f096';
   font-family: 'FontAwesome';
   color: #555;
@@ -422,7 +426,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   width: 18px;
 }
 
-.form input[type="checkbox"]:checked::before, .form-inline input[type="checkbox"]:checked::before {
+.form input[type="checkbox"]:checked:before, .form-inline input[type="checkbox"]:checked:before {
   content: '\f14a';
   color: #4099ff;
 }

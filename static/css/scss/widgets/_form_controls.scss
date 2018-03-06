@@ -92,11 +92,12 @@ span.action.rounded:hover, a.action.rounded:hover {
     input[type="checkbox"] {
         margin: 0px;
         -webkit-appearance: button;
-        -moz-appearance: button;
-        appearance: button;
         background-color: white;
+        margin-left: 4px;
+        margin-right: 2px;
     }
-    input[type="checkbox"]::before {
+    /*This CSS trick only works w/Chrome */
+    input[type="checkbox"]:before {
         content: '\f096';
         font-family: 'FontAwesome';
         color: #555;
@@ -106,7 +107,7 @@ span.action.rounded:hover, a.action.rounded:hover {
         display: inline-block;
         width: 18px;
     }
-    input[type="checkbox"]:checked::before {
+    input[type="checkbox"]:checked:before {
         content: '\f14a';
         color: #4099ff;
     }

@@ -15,7 +15,17 @@ define ([
             },
 
             events: {
-                "change #new-map-name" : "generateSlug"
+                "change #new-map-name" : "generateSlug",
+                "click #new-dataset": "toggleCheckboxes",
+                "click #existing-datasets": "toggleCheckboxes"
+            },
+            toggleCheckboxes: function (e) {
+                var $cb = this.$el.find('.checkbox-list');
+                if (e.target.id === 'new-dataset') {
+                    $cb.hide();
+                } else {
+                    $cb.show();
+                }
             },
             slugError: null,
             templateHelpers: function () {

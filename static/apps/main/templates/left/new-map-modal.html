@@ -7,21 +7,21 @@
         <label>Description</label>
         <textarea placeholder="map description" id="new-map-description" value="{{description}}"></textarea>
     </div>
-    <div class="row {{#if slugError}}error{{/if}}">
+    <!-- div class="row {{#if slugError}}error{{/if}}">
         <label>Friendly URL</label>
         <input type="text" placeholder="enter name or leave blank for autofill" id="new-map-slug" value="{{slug}}">
-    </div>
+    </div -->
     <div class="row">
-        <input type="radio" name="choose-dataset" id="new-dataset" checked>
+        <input type="radio" name="choose-dataset" id="new-dataset">
         <label>Create a new dataset</label>
     </div>
     <div class="row">
-        <input type="radio" name="choose-dataset" id="existing-datasets">
+        <input type="radio" name="choose-dataset" id="existing-datasets" checked>
         <label>Use existing project dataset(s):</label>
-        <div style="margin-left: 30px;">
+        <div class="checkbox-list" style="margin-left: 30px;">
             <input type="checkbox" name="dataset" checked><label>Flowers</label><br>
-            <input type="checkbox" name="dataset"><label>Birds</label><br>
-            <input type="checkbox" name="dataset"><label>Trees</label><br>
+            <input type="checkbox" name="dataset" checked><label>Birds</label><br>
+            <input type="checkbox" name="dataset" checked><label>Trees</label><br>
         </div>
     </div>
     {{#if slugError}}
