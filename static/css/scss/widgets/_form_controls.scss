@@ -99,14 +99,12 @@ span.action.rounded:hover, a.action.rounded:hover {
     input[type="checkbox"]::before {
         content: '\f096';
         font-family: 'FontAwesome';
-        line-height: 1;
         color: #555;
         font-size: 20px;
-        width: 1em;
-        display: inline-block;
-        margin-right: 0px;
         vertical-align: middle;
         color: #999;
+        display: inline-block;
+        width: 18px;
     }
     input[type="checkbox"]:checked::before {
         content: '\f14a';

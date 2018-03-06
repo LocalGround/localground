@@ -414,14 +414,12 @@ span.action.rounded:hover, a.action.rounded:hover {
 .form input[type="checkbox"]::before, .form-inline input[type="checkbox"]::before {
   content: '\f096';
   font-family: 'FontAwesome';
-  line-height: 1;
   color: #555;
   font-size: 20px;
-  width: 1em;
-  display: inline-block;
-  margin-right: 0px;
   vertical-align: middle;
   color: #999;
+  display: inline-block;
+  width: 18px;
 }
 
 .form input[type="checkbox"]:checked::before, .form-inline input[type="checkbox"]:checked::before {
