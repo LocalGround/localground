@@ -294,6 +294,9 @@ define(["jquery",
                     this.hideOverlays();
                 }
             },
+            onDestroy: function () {
+                this.hideOverlays();
+            }
         });
         return LayerListChild;
     });
