@@ -63,6 +63,8 @@ define(["jquery",
                 dataset.each(function (model) {
                     //console.log("symbol looped once", symbol.checkModel(model));
                     if (symbol.checkModel(model)) {
+                        var model = model.toJSON();
+                        model.display_name = model.display_name || model.name
                         matchedCollection.push(model);
                     }
                 });

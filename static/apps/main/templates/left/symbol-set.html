@@ -14,8 +14,8 @@
                 <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
                     stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>
             </svg> -->
-            <p>{{this.attributes.type}}
-                {{#ifequal this.property ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
+            <p>{{this.display_name}}
+                {{#ifequal this.display_name ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
 
             </p>
         </a>
