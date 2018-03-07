@@ -13,6 +13,12 @@ define(["jquery",
     function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, SymbolSelectionLayoutView, MarkerStyleTemplate, Symbols) {
         'use strict';
 
+        /**
+         * In this view, this.model = Layer, and this.collection = Symbols
+         * This view's main function is to build the Symbols base on the user's input
+         * (e.g. simple, categorical, or continuous. Plus any Layer-level 
+         * symbol styles (marker size, stroke, etc.))
+         */
         var MarkerStyleView = Marionette.CompositeView.extend({
             categoricalList: [],
             continuousList: [],

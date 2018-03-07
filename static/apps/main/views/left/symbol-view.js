@@ -7,10 +7,13 @@ define(["jquery",
     ],
     function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate, Symbols) {
         'use strict';
+        /**
+         * In this view, this.model = Symbol, this.collection = matching Records
+         * (One symbol-view is instantiated for each Symbol object).
+         * (A symbol-view will display all the markers that match its rules/criteria)
+         */
         var SymbolSet =  Marionette.ItemView.extend({
             initialize: function (opts) {
-                // One symbol-view is instantiated for each Symbol object.
-                // A symbol-view will display all the markers that match its rules/criteria
                 console.log('opts: ', opts);
                 _.extend(this, opts);
                 //this.listenTo(this.app.vent, "change-map", this.hideOverlays);

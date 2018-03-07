@@ -10,9 +10,14 @@ define(["jquery",
     ],
     function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate, Symbol, Symbols, SymbolView, MarkerStyleView) {
         'use strict';
+        /**
+         *  In this view, this.model = layer, this.collection = symbols
+         *  This view loops through all symbols and sorts any matching records in Overlays
+         *  This view's children symbols, along with an matching records.
+         *  It also handles show, hide, and delete markers
+         */
         var LayerListChild =  Marionette.CompositeView.extend({
             initialize: function (opts) {
-                // In this view, this.model = layer, this.collection = symbols
                 this.symbolForUndefinedMarkers = null;
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
@@ -92,11 +97,11 @@ define(["jquery",
 
             // triggered from the router
             checkSelectedItem: function(layerId) {
-                    this.$el.attr('id', this.model.id);
+                this.$el.attr('id', this.model.id);
 
-                    if (this.$el.find('input').prop('checked', false)) {
-                        this.$el.find('input').click();
-                    }
+                if (this.$el.find('input').prop('checked', false)) {
+                    this.$el.find('input').click();
+                }
 
             },
 
@@ -166,10 +171,10 @@ define(["jquery",
                     overlays,
                     that = this,
                     dataSource = this.model.get("data_source"),
-                    collection = this.app.dataManager.getCollection(dataSource),
+                    dataCollection = this.app.dataManager.getCollection(dataSource),
                     symbols = this.model.getSymbols();
                     const currentProp = this.model.get('metadata').currentProp
-                    const dataIds = collection.map(function(model) {
+                    const dataIds = dataCollection.map(function(model) {
                         return model.id
                     });
                     let representedIds = [];
@@ -178,12 +183,12 @@ define(["jquery",
                 console.log(this.collection);
                 symbols.each(function (symbol) {
                     //console.log(symbol.id, symbol.get('title'));
-                    matchedCollection = new collection.constructor(null, {
+                    matchedCollection = new dataCollection.constructor(null, {
                         url: "dummy",
                         projectID: that.app.getProjectID()
                     });
                     //console.log(JSON.stringify(matchedCollection));
-                    collection.each(function (model) {
+                    dataCollection.each(function (model) {
                         if (symbol.checkModel(model)) {
                             matchedCollection.add(model);
                             representedIds.push(model.id);
@@ -231,7 +236,7 @@ define(["jquery",
                     let sqlString = currentProp + ' = undefined or ' + currentProp + ' = null';
 
                     console.log(sqlString);
-                    let unrepresentedCollection = new collection.constructor(null, {
+                    let unrepresentedCollection = new dataCollection.constructor(null, {
                         url: "dummy",
                         projectID: that.app.getProjectID()
                     });
@@ -244,9 +249,9 @@ define(["jquery",
 
                     unrepresentedIds.forEach(function(id) {
                         // for overlays
-                        unrepresentedCollection.add(collection.get(id));
+                        unrepresentedCollection.add(dataCollection.get(id));
                         // for symbol
-                        that.symbolForUndefinedMarkers.addModel(collection.get(id));
+                        that.symbolForUndefinedMarkers.addModel(dataCollection.get(id));
                     });
                     let otherOverlays = new MarkerOverlays({
                         collection: unrepresentedCollection,

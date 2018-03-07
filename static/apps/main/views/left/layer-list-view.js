@@ -11,7 +11,11 @@ define(["marionette",
     function (Marionette, Handlebars, Layers, Layer, Symbols, LayerListChild,
         LayerListTemplate, MarkerStyleView, SymbolStyleMenuView) {
         'use strict';
-
+        /**
+         *  In this view, this.model = Map, this.collection = Layers
+         *  This view handles instantiation of LayerListChildView, MarkerStyleView, 
+         *  and SymbolStyleMenuView
+         */
         var LayerListView = Marionette.CompositeView.extend(_.extend({}, {
             stateKey: 'layer_list',
             template: Handlebars.compile(LayerListTemplate),
