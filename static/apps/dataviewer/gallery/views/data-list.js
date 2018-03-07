@@ -27,7 +27,6 @@ define(["jquery",
                         "click" : "selectedClass"
                     },
                     selectedClass : function () {
-                        console.log("Selecting class");
                         $(".column").removeClass("selected-card");
                         this.$el.toggleClass("selected-card");
                     },

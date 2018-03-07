@@ -2,13 +2,16 @@ define([
     "marionette",
     "views/data-detail",
     "views/create-media",
+    "views/create-video",
     "lib/modals/modal",
-], function (Marionette, DataDetail, CreateMedia, Modal) {
+], function (Marionette, DataDetail, CreateMedia, CreateVideo, Modal) {
     "use strict";
     return Marionette.Controller.extend({
         initialize: function (options) {
             this.app = options.app;
             this.modal = new Modal();
+            this.listenTo(this.app.vent,
+                "show-create-new", this.addNew);
         },
         dataList: function (arg1, arg2) {
             var dataType, screenType;
@@ -24,7 +27,11 @@ define([
             // if datatype is photo, audio, or videos, trigger a new uploader modal
             if (dataType == "photos" || dataType == "audio") {
                 this.createMediaUploadModal();
-            } else if (dataType == "map_images") {
+            }
+            else if (dataType == "videos") {
+                this.createVideoLinkModal();
+            }
+            else if (dataType == "map_images") {
                 this.createMapImageUploadModal();
             } else {
                 this.dataDetail(screenType, dataType);
@@ -36,12 +43,6 @@ define([
             this.app.dataType = dataType;
             var dm = this.app.dataManager,
                 detailView;
-            /*if (!dm.dataLoaded) {
-                // stash the model id, and then display once the
-                // data has been loaded:
-                this.app.deferredModelID = id;
-                return;
-            }*/
 
             //1. for gallery and map:
             var model = dm.getModel(dataType, parseInt(id));
@@ -78,6 +79,24 @@ define([
                 showDeleteButton: false
             });
             this.modal.show();
+        },
+
+        createVideoLinkModal: function (title, dataType) {
+            var modalTitle = title != null ? title : "Get Video Link";
+            var setDatType = dataType != null ? dataType : "default";
+            var uploadVideoForm = new CreateVideo({
+                app: this.app,
+                modal: this.modal
+            });
+            uploadVideoForm.modal.update({
+                view: uploadVideoForm,
+                title: 'Get Video',
+                closeButtonText: "Cancel",
+                showDeleteButton: false,
+                showSaveButton: true,
+                saveFunction: uploadVideoForm.saveModel.bind(uploadVideoForm)
+            });
+            uploadVideoForm.modal.show();
         },
 
         createMapImageUploadModal: function () {

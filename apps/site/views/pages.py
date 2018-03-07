@@ -2,7 +2,9 @@
 from django.http import Http404
 from django.template import TemplateDoesNotExist
 from django.shortcuts import render as direct_to_template
+from django.shortcuts import render_to_response
 from django.views.generic import TemplateView
+from django.template import RequestContext
 
 
 def about_pages(request, page_name):
@@ -11,6 +13,16 @@ def about_pages(request, page_name):
             request,
             template_name="pages/%s.html" %
             page_name)
+    except TemplateDoesNotExist:
+        raise Http404()
+
+
+def style_guide_pages(request, page_name='banners'):
+    try:
+        return render_to_response(
+            "style-guide/%s.html" % page_name,
+            {'page_name': page_name},
+            context_instance=RequestContext(request))
     except TemplateDoesNotExist:
         raise Http404()
 

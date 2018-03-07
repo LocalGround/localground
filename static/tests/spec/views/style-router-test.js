@@ -34,18 +34,18 @@ define([
             var router, controller;
             beforeEach(function () {
                 initApp(this);
-              
+
               //  Backbone.history.stop(); //stop the router
-                spyOn(Controller.prototype, 'displayMap').and.callThrough(); 
-                spyOn(Controller.prototype, 'newMap').and.callThrough(); 
+                spyOn(Controller.prototype, 'displayMap').and.callThrough();
+                spyOn(Controller.prototype, 'newMap').and.callThrough();
                 spyOn(Controller.prototype, 'newLayer').and.callThrough();
                 spyOn(Controller.prototype, 'displayLayer').and.callThrough();
                 spyOn(this.app.vent, 'trigger');
 
                 // Set up the spies _before_ creating the router
-                router = new Router({ 
+                router = new Router({
                     app: this.app
-                 }); 
+                 });
 
                  controller = new Controller({
                      app: this.app
@@ -55,7 +55,7 @@ define([
             afterEach(function () {
                 // clear the url after each route
                 Router.prototype.navigate('', trigger);
-                
+
                 Backbone.history.stop();
             });
             it('"/mapId" routes to requested map', function(){
@@ -72,7 +72,7 @@ define([
                 expect(controller.newMap).toHaveBeenCalledTimes(0);
                 router.navigate('/new', trigger);
                 expect(controller.newMap).toHaveBeenCalledTimes(1);
-                expect(controller.app.vent.trigger).toHaveBeenCalledWith('route-new-map');
+                expect(controller.app.vent.trigger).toHaveBeenCalledWith('open-new-map-modal');
             });
 
             it('"/mapId/layers/new" routes to new layer', function(){
@@ -82,7 +82,7 @@ define([
                 expect(controller.newLayer).toHaveBeenCalledTimes(1);
                 expect(controller.newLayer).toHaveBeenCalledWith('288', null);
                 expect(controller.app.vent.trigger).toHaveBeenCalledWith('route-new-layer', '288');
-                
+
             });
 
             it('"/mapId/layers/layerId" routes to requested layer', function(){
@@ -95,4 +95,3 @@ define([
             })
         });
     });
-

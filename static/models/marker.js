@@ -1,18 +1,18 @@
-define(["models/base",
+define(["models/baseItem",
 	"models/association",
     "lib/maps/geometry/point",
     "lib/maps/geometry/polyline",
     "lib/maps/geometry/polygon"
-    ], function (Base, Association, Point, Polyline, Polygon) {
+    ], function (BaseItem, Association, Point, Polyline, Polygon) {
     "use strict";
     /**
      * A Backbone Model class for the Marker datatype.
      * @class Marker
      * @see <a href="//localground.org/api/0/markers/">//localground.org/api/0/markers/</a>
      */
-    var Marker = Base.extend({
+    var Marker = BaseItem.extend({
         urlRoot: '/api/0/markers/',
-		defaults: _.extend({}, Base.prototype.defaults, {
+		defaults: _.extend({}, BaseItem.prototype.defaults, {
 			color: "CCCCCC",
 			overlay_type: "marker" // rough draft color
 		}),
@@ -36,7 +36,7 @@ define(["models/base",
 			"soil_sketch_2"
         ],
         toTemplateJSON: function () {
-            var json = Base.prototype.toTemplateJSON.apply(this, arguments),
+            var json = BaseItem.prototype.toTemplateJSON.apply(this, arguments),
 				key,
 				recs,
 				i = 0,
@@ -124,7 +124,7 @@ define(["models/base",
             association.destroy({success: callback});
 		},
         getFormSchema: function () {
-            var schema = Base.prototype.getFormSchema.call(this);
+            var schema = BaseItem.prototype.getFormSchema.call(this);
             schema.children = { type: 'MediaEditor', title: 'children' };
             return schema;
         }

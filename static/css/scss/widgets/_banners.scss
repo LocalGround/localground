@@ -1,0 +1,16 @@
+// main: ../main-new.scss
+.banner-username {
+    background-image: url(/static/assets/background-13.png);
+    background-size: 100%;
+    padding-top: 50px;
+
+    h1 {
+        font-weight: 300;
+        padding: 0px 0px 44px;
+        font-size: 40px;
+        letter-spacing: 2px;
+        display: block;
+        max-width: 80%;
+        margin: auto;
+    }
+}

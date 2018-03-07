@@ -1,20 +1,25 @@
 define([
     "jquery",
-    "marionette",
+    "underscore",
     "backbone",
     "handlebars",
+    "marionette",
     "models/photo",
     "models/audio",
+    "models/video",
     "text!templates/create-media.html",
     "text!templates/new-media.html",
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
-], function ($, Marionette, Backbone, Handlebars, Photo, Audio, CreateMediaTemplate, NewMediaItemTemplate, loadImage) {
+], function ($, _, Backbone, Handlebars, Marionette, Photo, Audio, Video,
+    CreateMediaTemplate, NewMediaItemTemplate, loadImage) {
     'use strict';
 
     var CreateMediaView = Marionette.CompositeView.extend({
         models: [],
+        // There must be some way to dynamically determine the template
+        // dependong on data type
         template: Handlebars.compile(CreateMediaTemplate),
         getChildView: function () {
             return Marionette.ItemView.extend({
@@ -40,7 +45,10 @@ define([
                         file_name: this.formatFilename(this.file.name),
                         file_size: this.formatFileSize(this.file.size),
                         errorMessage: this.errorMessage,
-                        imageSerial: this.imageSerial
+                        imageSerial: this.imageSerial,
+                        // having dataType does not help because
+                        // it is uninitialized
+                        dataType: this.options.dataType
                     };
                 },
                 getUrl: function (baseURL, ext) {
@@ -51,6 +59,8 @@ define([
                         url = 'map-images/';
                     } else if (isAudio) {
                         url =  'audio/';
+                    } else if (this.options.dataType == 'videos') {
+                        url = 'videos/';
                     }
                     return baseURL + url;
                 },
@@ -135,6 +145,7 @@ define([
                 }
             });
         },
+        form: null,
         childViewContainer: "#dropzone",
         events: {
             'click #upload-button': 'triggerFileInputButton'
@@ -148,7 +159,8 @@ define([
         },
         templateHelpers: function () {
             return {
-                count: this.collection.length
+                count: this.collection.length,
+                dataType: this.dataType
             };
         },
         defaults: {
@@ -227,6 +239,8 @@ define([
             });
         },
         initialize: function (opts) {
+            //console.log("Data Form:");
+            //console.log(DataForm);
             _.extend(this, opts);
             this.collection = new Backbone.Collection();
             var that = this;
@@ -236,7 +250,11 @@ define([
             }
             $('#warning-message-text').empty();
             this.render();
-            console.log(this.$el.find("#fileupload"));
+            /*
+            Going to need some changes to consider either create media mode
+            between media (photo and audio) or video links
+            for setting up the template
+            */
             this.$el.find('#fileupload').fileupload({
                 dataType: 'json',
                 autoUpload: true,
@@ -396,12 +414,14 @@ define([
                 if (that.options.previewSourceFileTypes.test(file.type)) {
                     model = new Photo({
                         file: file,
-                        data: data
+                        data: data,
+                        project_id: that.app.selectedProjectID
                     });
                 } else {
                     model = new Audio({
                         file: file,
-                        data: data
+                        data: data,
+                        project_id: that.app.selectedProjectID
                     });
                 }
                 that.collection.add(model);

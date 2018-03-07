@@ -1,0 +1,178 @@
+// main: ../main-new.scss
+.button, .button-action, .button-primary, .button-secondary, .button-tertiary {
+    border: none;
+    border-radius: 3px;
+    line-height: 26px;
+    height: 29px;
+    vertical-align: middle;
+    letter-spacing: 0.7px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin: 0 2px;
+    padding: 0 12px;
+}
+.button-action {
+    background-color: #008580;
+    color: white;
+}
+.button-primary {
+    background-color: $primary-color;
+    color: white;
+    padding: 0 11px;
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+.button-secondary {
+    background-color: $action-color;
+    border: 1px solid #e4e5eb;
+}
+.button-secondary:hover {
+    background-color: #f1f3fb;
+    border-color: #4e70d4;
+}
+.button-tertiary {
+    text-transform: uppercase;
+    font-weight: 600;
+    color: $primary-color;
+    background: none;
+    border: none;
+}
+.button-warning {
+    color: $dark-red;
+}
+span.rounded, a.rounded {
+    background-color: #e7e7e7;
+    color: #767676;
+    font-size: 12px;
+    padding: 1px 8px;
+    border-radius: 20px;
+    margin: 0 2px;
+    font-weight: 400;
+}
+span.action.rounded, a.action.rounded {
+    border: 1px solid #e7e7e7;
+    background-color: white;
+}
+span.action.rounded:hover, a.action.rounded:hover {
+    border-color: #7eace2;
+    color: #4e70d4;
+}
+.form, .form-inline {
+    textarea, input[type="text"], input[type="number"], input[type="date"],
+    input[type="password"], input[type="email"], select {
+        padding: 4px 6px;
+        border-radius: 2px;
+        font-size: 14px;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        margin: 1px;
+        width: 100%;
+        border: solid 1px #ebecf2;
+    }
+    textarea {
+        height: 75px;
+    }
+    input[type="radio"]{
+        -webkit-appearance: button;
+        -moz-appearance: button;
+        appearance: button;
+        border: 2px solid #999;
+        border-top-color: #AAA;
+        border-left-color: #AAA;
+        background: #fff;
+        width: 18px;
+        height: 18px;
+        border-radius:50%;
+        vertical-align: middle;
+    }
+    input[type="radio"]:checked{
+        border: 6px solid #4099ff
+    }
+    input[type="checkbox"] {
+        margin: 0px;
+        -webkit-appearance: button;
+        background-color: white;
+        margin-left: 4px;
+        margin-right: 2px;
+    }
+    /*This CSS trick only works w/Chrome */
+    input[type="checkbox"]:before {
+        content: '\f096';
+        font-family: 'FontAwesome';
+        color: #555;
+        font-size: 20px;
+        vertical-align: middle;
+        color: #999;
+        display: inline-block;
+        width: 18px;
+    }
+    input[type="checkbox"]:checked:before {
+        content: '\f14a';
+        color: #4099ff;
+    }
+    .row {
+        flex-wrap: wrap;
+        label, p {
+            padding: 8px;
+            font-weight: 400;
+            color: #666;
+            font-size: 12px;
+            text-align: right;
+            word-wrap: break-word;
+        }
+    }
+    .row.error {
+        background-color: #fae5e3;
+        padding: 5px 15px;
+        label, p {
+            color: #b94a48;
+        }
+    }
+    .checkbox-list {
+        td {
+            font-size: 0.7em;
+        }
+    }
+}
+.form-inline {
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 8px 0px;
+        > label {
+            flex: 1;
+            /*border: solid 1px #000;*/
+        }
+        textarea, input[type="text"], input[type="number"], input[type="date"],
+        input[type="password"], input[type="email"], select, div {
+            flex: 3;
+            /*border: solid 1px #000;*/
+        }
+    }
+    .row.error {
+        justify-content: flex-end;
+        p {
+            width: 90%;
+            /*border: solid 1px #000;*/
+            align-self: flex-end;
+            text-align: left;
+        }
+    }
+}
+.form {
+    .row {
+        margin: 16px 0px;
+        > label,
+        > p {
+            font-weight: 600;
+            flex: 1;
+            text-align: left;
+        }
+        > p {
+            line-height: 1em;
+            margin: 0px;
+            font-weight: 400;
+        }
+    }
+}

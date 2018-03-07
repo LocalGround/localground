@@ -28,7 +28,6 @@ define(["jquery"],
                 } catch (e) {
                     return null;
                 }
-                //console.log(cache);
                 return cache[key];
             },
             saveToLocalStorage: function (key, object, replace) {
@@ -174,32 +173,27 @@ define(["jquery"],
                 });
             },
 
+            showMessage: function (message, className) {
+                var $message = $('<div class="' + className + '"></div>');
+                $('body').append($message);
+                $message.html(message).fadeIn(200).delay(3000).fadeOut(1500);
+            },
+
             showSuccessMessage: function (message) {
-                console.log("Success Message Called");
-                if ($(".success-message").length == 0) {
-                    $('body').append($('<div class="success-message"></div>'));
-                }
-                $(".success-message").html(message).fadeIn(200).delay(3000).fadeOut(1500);
+                this.showMessage(message, 'success-message')
             },
 
             showFailureMessage: function (message) {
-                if ($(".failure-message").length == 0) {
-                    $('body').append($('<div class="failure-message"></div>'));
-                }
-                $(".failure-message").html(message).fadeIn(200).delay(3000).fadeOut(1500);
+                this.showMessage(message, 'failure-message');
             },
 
             showWarningMessage: function (message) {
-                if ($(".warning-message").length == 0) {
-                    $('body').append($('<div class="warning-message"></div>'));
-                }
-                $(".warning-message").html(message).fadeIn(200).delay(3000).fadeOut(1500);
+                this.showMessage(message, 'warning-message');
             },
 
             initAJAX: function (options) {
                 // adding some global AJAX event handlers for showing messages and
                 // appending the Django authorization token:
-                console.log('init ajax');
                 var that = this;
                 $.ajaxSetup({
                     beforeSend: function (xhr, settings) {

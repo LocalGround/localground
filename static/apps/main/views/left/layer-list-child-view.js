@@ -30,7 +30,7 @@ define(["jquery",
                 }
                 console.log('layer list childview initlize');
                 this.dataset = this.app.dataManager.getCollection(this.model.get('data_source'));
-                
+
                 //this.collection = new Symbols(this.model.get('symbols'));
                 if (this.symbolForUndefinedMarkers) {
                     this.collection.add(this.symbolForUndefinedMarkers);
@@ -55,7 +55,7 @@ define(["jquery",
             tagName: "div",
          //   className: "layer-column",
             templateHelpers: function () {
-                // let defaultField = this.dataset.fields ? this.dataset.fields.models[1].get('col_name') : 'id'; 
+                // let defaultField = this.dataset.fields ? this.dataset.fields.models[1].get('col_name') : 'id';
                 // let simpleDataset = this.dataset.models.map(item => {
                 //     return {
                 //         property: item.get(defaultField),
@@ -128,7 +128,7 @@ define(["jquery",
                 this.collection.remove(this.model);
                 this.deleteOverlays();
                 console.log(url);
-                
+
                 this.app.router.navigate(url);
                 this.app.vent.trigger('update-layer-list');
                 this.app.vent.trigger("hide-right-panel");
@@ -154,7 +154,7 @@ define(["jquery",
 
             showStyleByMenu: function (event) {
                 console.log('child show styebyMenu', this.model.id);
-     
+
                 const coords = {
                     x: event.clientX,
                     y: event.clientY
@@ -178,7 +178,7 @@ define(["jquery",
                         return model.id
                     });
                     let representedIds = [];
-                
+
                 console.log(symbols);
                 console.log(this.collection);
                 symbols.each(function (symbol) {
@@ -201,7 +201,7 @@ define(["jquery",
                         iconOpts: symbol.toJSON(),
                         isShowing: false
                     });
-                    
+
                     that.markerOverlayList.push(overlays);
                 });
 
@@ -226,7 +226,7 @@ define(["jquery",
                 if (unrepresentedIds.length > 0) {
 
                     // let sqlString = '';
-                    
+
                     // unrepresentedIds.forEach(function (id) {
                     //     sqlString = sqlString.concat('id = ', id, ' or ');
                     //     console.log(sqlString);
@@ -241,7 +241,7 @@ define(["jquery",
                         projectID: that.app.getProjectID()
                     });
 
-    
+
                     this.symbolForUndefinedMarkers = new Symbol({
                         rule: sqlString,
                         title: 'undefined markers'

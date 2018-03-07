@@ -18,8 +18,9 @@ def get_metadata():
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         "caption": {"type": "memo", "required": False, "read_only": False},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
-        'video_id': {'read_only': False, 'required': True, 'type': 'string'},
-        'video_provider': {'read_only': False, 'required': True,
+        'video_link': {'read_only': False, 'required': True, 'type': 'string'},
+        'video_id': {'read_only': True, 'required': False, 'type': 'string'},
+        'video_provider': {'read_only': True, 'required': False,
                            'type': 'choice'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
         'project_id': {'read_only': False, 'required': True, 'type': 'field'},
@@ -40,12 +41,12 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
         self.create_video(
             self.user,
             self.project,
-            name='YT',
-            provider='youtube',
-            video_id='4232534'
+            name="YT"
         )
-        self.create_video(self.user, self.project, name='Vim',
-                          provider='vimeo', video_id='dasdsadas')
+        self.create_video(
+            self.user, self.project,
+            name="Vim",
+            video_link='https://vimeo.com/256931635')
         self.view = views.VideoList.as_view()
         self.metadata = get_metadata()
 
@@ -107,8 +108,7 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
                 'name': name,
                 'caption': caption,
                 'tags': 'cats dogs',
-                'video_id': '111111',
-                'video_provider': 'vimeo',
+                'video_link': 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
                 'project_id': self.project.id,
                 'owner': 'tester',
                 'attribution': 'van gogh'
@@ -120,8 +120,9 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.data.get("name"), name)
         self.assertEqual(response.data.get("caption"), caption)
         self.assertEqual(response.data.get("tags"), ['cats dogs'])
-        self.assertEqual(response.data.get("video_id"), '111111')
-        self.assertEqual(response.data.get("video_provider"), 'vimeo')
+        self.assertEqual(response.data.get("video_id"), 'jNQXAC9IVRw')
+        self.assertEqual(response.data.get("video_provider"), 'youtube')
+        self.assertEqual(response.data.get("video_link"), 'https://www.youtube.com/watch?v=jNQXAC9IVRw')
         self.assertEqual(response.data.get("project_id"), self.project.id)
         self.assertEqual(response.data.get("owner"), 'tester')
         self.assertEqual(response.data.get("attribution"), 'van gogh')
@@ -139,125 +140,56 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=True)
-        self.video = self.create_video(self.user, self.project)
+        self.video = self.create_video(
+            self.user, self.project,
+            name="Vim",
+            video_link='https://vimeo.com/256931635',
+            provider='vimeo',
+            video_id='256931635')
         self.url = '/api/0/videos/%s/.json' % self.video.id
         self.urls = [self.url]
         self.view = views.VideoInstance.as_view()
         self.metadata = get_metadata()
+        self.metadata.update({
+            'project_id': {
+                'read_only': True, 'required': False, 'type': 'field'},
+            'video_link': {
+                'read_only': False, 'required': False, 'type': 'string'}
+        })
 
     def test_required_params_using_put(self, **kwargs):
         response = self.client_user.put(
             self.url,
             data=urllib.urlencode({
-                'video_id': '344533',
-                'video_provider': 'youtube',
-                'project_id': self.project.id
+                'caption': 'My video',
+                'attribution': 'Phil'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_video = models.Video.objects.get(id=self.video.id)
-        self.assertEqual(updated_video.video_id, '344533')
+        self.assertEqual(updated_video.description, 'My video')
+        self.assertEqual(updated_video.attribution, 'Phil')
+        self.assertEqual(updated_video.video_link, 'https://vimeo.com/256931635')
+        self.assertEqual(updated_video.provider, 'vimeo')
+        self.assertEqual(updated_video.video_id, '256931635')
+
+    def test_optional_params_using_put(self, **kwargs):
+        vl = 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+        response = self.client_user.put(
+            self.url,
+            data=urllib.urlencode({
+                'video_link': vl
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_video = models.Video.objects.get(id=self.video.id)
+        self.assertEqual(updated_video.video_link, vl)
         self.assertEqual(updated_video.provider, 'youtube')
-        self.assertEqual(updated_video.project, self.project)
-        self.assertEqual(updated_video.owner, self.user)
-        self.assertEqual(updated_video.last_updated_by, self.user)
-
-    def test_throws_friendly_error_if_no_video_id_put(self, **kwargs):
-        response = self.client_user.put(
-            self.url,
-            data=urllib.urlencode({
-                'video_provider': 'youtube',
-                'project_id': self.project.id
-            }),
-            HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
-        )
-        # print response.data
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(
-            response.data.get('video_id')[0], u'This field is required.'
-        )
-
-    def test_throws_friendly_error_if_no_video_provider_put(self, **kwargs):
-        response = self.client_user.put(
-            self.url,
-            data=urllib.urlencode({
-                'video_id': '344533',
-                'project_id': self.project.id
-            }),
-            HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
-        )
-        # print response.data
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data.get('video_provider')
-                         [0], u'This field is required.')
-
-    def test_throws_error_if_video_provider_invalid_put(self, **kwargs):
-        response = self.client_user.put(
-            self.url,
-            data=urllib.urlencode({
-                'video_provider': 'samsclub',
-                'project_id': self.project.id,
-                'video_id': '35234'
-            }),
-            HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data.get('video_provider')[
-                         0], u'"samsclub" is not a valid choice.')
-
-    def test_throws_friendly_error_if_no_project_put(self, **kwargs):
-        response = self.client_user.put(
-            self.url,
-            data=urllib.urlencode({
-                'video_id': '344533',
-                'video_provider': 'youtube'
-            }),
-            HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
-        )
-        # print response.data
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data.get('project_id')
-                         [0], u'This field is required.')
-
-    def test_throws_error_if_project_id_invalid_type_put(self, **kwargs):
-        response = self.client_user.put(
-            self.url,
-            data=urllib.urlencode({
-                'video_id': '344533',
-                'video_provider': 'youtube',
-                'project_id': 'happydays'
-            }),
-            HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
-        )
-        # print response.data
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(
-            response.data.get('project_id')[0],
-            u'Incorrect type. Expected pk value, received unicode.'
-        )
-
-    def test_throws_error_if_project_id_invalid_put(self, **kwargs):
-        response = self.client_user.put(
-            self.url,
-            data=urllib.urlencode({
-                'video_id': '344533',
-                'video_provider': 'youtube',
-                'project_id': 10000
-            }),
-            HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
-        )
-        # print response.data
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data.get('project_id')
-                         [0], u'Invalid pk "10000" - object does not exist.')
+        self.assertEqual(updated_video.video_id, 'jNQXAC9IVRw')
 
     def test_update_video_using_put(self, **kwargs):
         name, caption = 'New Video Name', 'Test description'
@@ -271,10 +203,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
                 'geometry': point,
                 'name': name,
                 'caption': caption,
-                'tags': '',
-                'video_id': '344533',
-                'video_provider': 'vimeo',
-                'project_id': self.project.id
+                'tags': ''
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
@@ -286,8 +215,6 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.data.get("caption"), caption)
         self.assertEqual(updated_video.geometry.y, point['coordinates'][1])
         self.assertEqual(updated_video.geometry.x, point['coordinates'][0])
-        self.assertEqual(updated_video.video_id, '344533')
-        self.assertEqual(updated_video.provider, 'vimeo')
         self.assertEqual(updated_video.owner, self.user)
         self.assertEqual(updated_video.last_updated_by, self.user)
 
@@ -331,8 +258,6 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_video.geometry.x, point['coordinates'][0])
         self.assertEqual(updated_video.name, 'New Name')
         self.assertEqual(updated_video.description, 'New Caption')
-        self.assertEqual(updated_video.video_id, '4232534')
-        self.assertEqual(updated_video.provider, 'youtube')
         self.assertEqual(updated_video.owner, self.user)
         self.assertEqual(updated_video.last_updated_by, self.user)
 

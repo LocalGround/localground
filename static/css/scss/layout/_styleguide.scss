@@ -1,0 +1,84 @@
+// main: ../main-new.scss
+.style-guide {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: 100px 300px
+
+    aside, main {
+        padding: 10px;
+    }
+    header {
+        grid-column: span 12;
+    }
+    aside {
+        grid-column: span 3;
+
+        > .menu {
+            width: 75%;
+            margin-top: 50px;
+        }
+    }
+    main {
+        grid-column: span 8;
+    }
+
+    .container:first-of-type {
+        margin-top: 50px;
+    }
+
+    .container {
+        border: solid 1px #EEE;
+        border-radius: 5px;
+        margin-top: 20px;
+        padding: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        background: white;
+
+        textarea.code {
+            font-family: consolas;
+            margin-top: 20px;
+            font-size: 1em;
+            padding: 10px;
+            width: calc(100% - 22px);
+        }
+
+        h2, h3 {
+            display: block;
+            line-height: 30px;
+            font-weight: 300;
+        }
+
+        h2 {
+            border-bottom: solid 1px #EEE;
+            padding-bottom: 10px;
+            font-size: 1.2em;
+        }
+        h3 {
+            font-size: 1.1em;
+            margin-top: 30px;
+            margin-bottom: 5px;
+        }
+        p {
+            font-size: 0.9em;
+        }
+        .show {
+            text-decoration: underline;
+        }
+    }
+
+    .prettyprint {
+        margin-top: 30px;
+        border: solid 1px #EEE;
+        padding: 10px;
+        background: $offwhite;
+        border: solid 1px #EEE !important;
+        li {
+            font-size: 0.9em;
+        }
+        span {
+            font-family: monospace;
+            font-size: 1.2em;
+        }
+    }
+}

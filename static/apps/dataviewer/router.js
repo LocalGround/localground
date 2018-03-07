@@ -26,18 +26,6 @@ define([
                 this.controller.dataList.bind(this.controller)
             ]);
             this.route.apply(this, [
-                //e.g. #/table/photos/new
-                /^([a-z]+_*[0-9]*)\/new$/,
-                'addNew',
-                this.controller.addNew.bind(this.controller)
-            ]);
-            this.route.apply(this, [
-                //e.g. #/table/photos/new
-                /^(\w+)\/([a-z]+_*[0-9]*[a-z]*)\/new$/,
-                'addNew',
-                this.controller.addNew.bind(this.controller)
-            ]);
-            this.route.apply(this, [
                 //e.g. #/table/photos/23
                 ///^(\w+)\/([0-9]+)$/,
                 /^(\w+)\/([a-z]+_*[0-9]*[a-z]*)\/([0-9]+)$/,

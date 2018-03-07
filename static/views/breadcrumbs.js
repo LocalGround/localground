@@ -33,7 +33,7 @@ define([
                 });
                 console.log(mapList);
             }
-      
+
             return {
                 mapList: mapList || null,
                 name: name,
@@ -73,7 +73,7 @@ define([
         hideMapList: function() {
             this.$el.find('#map-list').hide();
         },
- 
+
         getPreviewMap: function () {
             var that = this;
             this.maps = this.app.dataManager.maps;

@@ -29,7 +29,6 @@ define(["marionette",
             childViewContainer: "#layers",
 
             childViewOptions: function (model, index) {
-                console.log(model);
                 return {
                     app: this.app,
                     collection: new Symbols(model.get('symbols'))
@@ -37,10 +36,8 @@ define(["marionette",
             },
 
             initialize: function (opts) {
-                // In this view, this.model = the selected map, 
+                // In this view, this.model = the selected map,
                 // this.collection = all the map's layers
-                console.log('layer list view initlize');
-                console.log(this);
                 this.app = opts.app;
                 this.model = opts.model;
 
@@ -55,8 +52,8 @@ define(["marionette",
             },
 
             events: function () {
-                return _.extend({ 
-                    //'click .add-layer' : 'createNewLayer' 
+                return _.extend({
+                    //'click .add-layer' : 'createNewLayer'
                 });
             },
 
@@ -100,7 +97,7 @@ define(["marionette",
                         "rule": "*",
                         "title": "At least 1 sculpture"
                     }],
-                    title: "Layer 1", 
+                    title: "Layer 1",
                     newLayer: true
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);

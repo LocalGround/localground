@@ -1,15 +1,19 @@
-<div class = "project-detail">
+<div class = "project-detail" screen-type="{{screenType}}">
 
     {{#ifequal screenType "map"}}
     <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</button>
     <div class="dropdown-menu" id="add-data-type" style="display: none;">
 
-        <a href="#/{{screenType}}/photos/new">Media</a>
-        <a href="#/{{screenType}}/map_images/new">Map Image</a>
+        <a class="add-new" href="#"
+        data-type="photos" screen-type="{{screenType}}">Media</a>
+        <a class="add-new" href="#"
+        data-type="map-images" screen-type="{{screenType}}">Map Image</a>
         <hr>
-        <a href="#/{{screenType}}/markers/new">Site</a>
+        <a class="add-new" href="#"
+        data-type="markers" screen-type="{{screenType}}">Site</a>
         {{#each forms}}
-        <a href="#/{{../screenType}}/form_{{this.id}}/new">{{ this.name }}</a>
+        <a href="#" class="add-new"
+        data-type="form_{{this.id}}" screen-type="{{screenType}}">{{ this.name }}</a>
         {{/each}}
         <hr>
         <a href="#" class="add-data">Edit Site Types</a>
@@ -20,10 +24,14 @@
     {{#ifequal activeTab "data"}}
 
         {{#ifequal screenType "table"}}
-            <a id="add-row" class="button-tertiary" href="#/{{screenType}}/{{dataType}}"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Row</a>
+            <a href="#" id="add-row" class="button-tertiary add-new"
+            data-type="{{dataType}}" screen-type="{{screenType}}">
+            <i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Row</a>
         {{/ifequal}}
         {{#ifequal screenType "gallery"}}
-            <a href="#/{{screenType}}/{{dataType}}/new" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</a>
+            <a href="#" class="button-tertiary add-new"
+            data-type="{{dataType}}" screen-type="{{screenType}}">
+            <i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</a>
         {{/ifequal}}
 	{{/ifequal}}
 </div>

@@ -11,6 +11,7 @@ class Video(ProjectMixin, NamedMixin, PointMixin, BaseAudit):
         ('vimeo', 'Vimeo'),
         ('youtube', 'YouTube')
     )
+    video_link = models.CharField(null=False, blank=False, max_length=255)
     video_id = models.CharField(null=False, blank=False, max_length=255)
     provider = models.CharField(
         max_length=63, null=False, blank=False, choices=VIDEO_PROVIDERS,
@@ -28,6 +29,21 @@ class Video(ProjectMixin, NamedMixin, PointMixin, BaseAudit):
         'id', 'project', 'date_created', 'name', 'description', 'tags', 'point'
     )
     objects = VideoManager()
+
+    def can_view(self, user, access_key=None):
+        return self.project.can_view(user=user, access_key=access_key) or \
+            self.owner == user
+
+    def can_edit(self, user):
+        return self.project.can_edit(user) or \
+            self.owner == user
+
+    def can_delete(self, user):
+        return self.can_edit(user)
+
+    def can_manage(self, user):
+        return self.project.can_manage(user) or \
+            self.owner == user
 
     def __str__(self):
         return '{0}: {1} ({2}: {3})'.format(

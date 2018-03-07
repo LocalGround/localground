@@ -1,0 +1,50 @@
+// main: ../main-new.scss
+.menu {
+    margin-left: auto;
+    margin-right: 20px;
+    border: solid 1px #EEE;
+    border-radius: 5px;
+    background: white;
+    a {
+        display: block;
+        line-height: 1.2em;
+        padding: 12px 25px 12px 15px;
+        position: relative;
+        border-bottom: 1px solid rgba(219,230,236,0.5);
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 0.9em;
+
+        .show-on-hover {
+            float: right;
+            color: #999;
+            display: none;
+        }
+    }
+    a:after {
+        height: 10px;
+        width: 10px;
+        position: absolute;
+        pointer-events: none;
+        right: 12px;
+        top: 16px;
+        content: "";
+        background-size: cover;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2232%22%20height%3D%22232%22%20viewBox%3D%220%200%2032%20232%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M11.336%20123.5l12.5%2012.5-3.334%203.332-9.166%209.168-3.334-3.334L17.17%20136l-9.168-9.168%203.334-3.332%22%20fill%3D%22%23206FAC%22%2F%3E%3Cpath%20d%3D%22M11.336%2083.5l12.5%2012.5-3.334%203.332-9.166%209.168-3.334-3.334L17.17%2096l-9.168-9.168%203.334-3.332%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M11.336%2043.5l12.5%2012.5-3.334%203.332-9.166%209.168-3.334-3.334L17.17%2056l-9.168-9.168%203.334-3.332%22%20fill%3D%22%2367737B%22%2F%3E%3Cpath%20d%3D%22M11.336%203.5l12.5%2012.5-3.334%203.332-9.166%209.168-3.334-3.334L17.17%2016%208.002%206.832%2011.336%203.5%22%20fill%3D%22%233A434E%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+    }
+    a:hover {
+        text-decoration: none;
+        background-color: $offwhite;
+        outline: none;
+
+        .show-on-hover {
+            display: block;
+        }
+    }
+    a.active {
+        padding-left: 13px;
+        border-left: 2px solid $selectionBorderHighlight;
+        background-color: $offwhite;
+        color: #3b444f;
+    }
+}

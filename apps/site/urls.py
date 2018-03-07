@@ -12,6 +12,8 @@ urlpatterns = patterns('',
 
     # mostly static html:
     (r'^$', direct_to_template, {'template_name': 'pages/splash.html'}),
+    (r'^style-guide/$', 'localground.apps.site.views.pages.style_guide_pages'),
+    (r'^style-guide/(?P<page_name>\w+)/$', 'localground.apps.site.views.pages.style_guide_pages'),
     (r'^main/(?P<project_id>[0-9]+)/$', MainView.as_view(template_name='pages/main.html')),
     (r'^data/(?P<project_id>[0-9]+)/$', MainView.as_view(template_name='pages/data.html')),
     (r'^style/(?P<project_id>[0-9]+)/$', MainView.as_view(template_name='pages/style.html')),

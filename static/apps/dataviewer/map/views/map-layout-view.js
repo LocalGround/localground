@@ -16,7 +16,6 @@ define(["marionette",
                 rightRegion: '#right-panel'
             },
             initialize: function (opts) {
-                console.log('initializing map layout view');
                 _.extend(this, opts);
                 this.template = Handlebars.compile(MapLayoutTemplate);
                 this.render();
@@ -45,9 +44,6 @@ define(["marionette",
                 });
             },
             showDetail: function (view) {
-                console.log('****************************')
-                console.log('SHOW DETAIL')
-                console.log('****************************')
                 this.rightRegion.show(view);
                 this.unhideDetail();
                 view.model.set("active", true);
