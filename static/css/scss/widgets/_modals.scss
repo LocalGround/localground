@@ -35,6 +35,7 @@
         letter-spacing: .04em;
         font-size: 12px;
         font-weight: 600;
+        margin: 0px;
     }
     header .close {
         color: #888;
@@ -60,4 +61,8 @@
     .body > div {
         margin: 20px;
     }
+}
+
+.modal.show {
+    display: block;
 }

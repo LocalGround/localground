@@ -676,6 +676,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   letter-spacing: .04em;
   font-size: 12px;
   font-weight: 600;
+  margin: 0px;
 }
 
 .modal header .close {
@@ -704,6 +705,10 @@ span.action.rounded:hover, a.action.rounded:hover {
 
 .modal .body > div {
   margin: 20px;
+}
+
+.modal.show {
+  display: block;
 }
 
 .right {
