@@ -3,9 +3,10 @@ define(["jquery",
         "handlebars",
         'lib/maps/marker-overlays',
         "text!../../templates/left/symbol-set.html",
+        "collections/records",
         "collections/symbols"
     ],
-    function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate, Symbols) {
+    function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate, Records,Symbols) {
         'use strict';
         /**
          * In this view, this.model = Symbol, this.collection = matching Records
@@ -15,7 +16,11 @@ define(["jquery",
         var SymbolSet =  Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this);
+                this.createMarkerOverlays();
+                this.showOverlays();
                 this.listenTo(this.model, "change:title", this.render);
+                
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
@@ -37,6 +42,22 @@ define(["jquery",
                 'change input': 'showHideOverlays',
                 'click .symbol-edit': 'showSymbolEditMenu'
             },
+
+            createMarkerOverlays: function() {
+                let list = this.model.getModels();
+                
+                var markerList = new Records(list, {
+                    url: "dummy",
+                    projectID: this.app.getProjectID()
+                });
+                this.markerOverlays = new MarkerOverlays({
+                    collection: markerList,
+                    app: this.app,
+                    iconOpts: this.model.toJSON(),
+                    isShowing: false
+                });
+            },
+
             showSymbolEditMenu: function (event) {
                 console.log('child show styebyMenu', this.model);
 
@@ -46,6 +67,28 @@ define(["jquery",
                 }
                 this.app.vent.trigger('show-symbol-menu', this.model, coords, this.layerId);
             },
+            showOverlays: function () {
+                this.markerOverlays.showAll();
+            },
+
+            hideOverlays: function () {
+                this.markerOverlays.hideAll();
+            },
+
+            deleteOverlays: function () {
+                _.each(this.markerOverlayList, function (overlays) {
+                    overlays.remove();
+                });
+            },
+
+            showHideOverlays: function () {
+                this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
+                if (this.model.get("metadata").isShowing) {
+                    this.showOverlays();
+                } else {
+                    this.hideOverlays();
+                }
+            }
         });
         return SymbolSet;
     });
