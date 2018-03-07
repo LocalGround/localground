@@ -315,11 +315,17 @@ define(["jquery",
             },
 
             showHideOverlays: function () {
+                console.log(this.children);
+                console.log('showHideOverlays');
                 this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
                 if (this.model.get("metadata").isShowing) {
-                    this.showOverlays();
+                    this.children.each(function(childView) {
+                        childView.showOverlays();
+                    })
                 } else {
-                    this.hideOverlays();
+                    this.children.each(function(childView) {
+                        childView.hideOverlays();
+                    })
                 }
             },
             onDestroy: function () {

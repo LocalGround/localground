@@ -294,11 +294,7 @@ define(["jquery",
                     this.hideOverlays();
                 }
             },
-<<<<<<< HEAD
-            onDestroy: function() {
-=======
             onDestroy: function () {
->>>>>>> 1f7d292e2d3560ab8dc18a6504bf1fed9ba8ec06
                 this.hideOverlays();
             }
         });
