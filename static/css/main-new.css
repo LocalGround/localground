@@ -123,10 +123,6 @@ a.logotype {
   font-size: 0.9em;
 }
 
-.style-guide .container .show {
-  text-decoration: underline;
-}
-
 .style-guide .prettyprint {
   margin-top: 30px;
   border: solid 1px #EEE;
@@ -823,4 +819,5 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
+
 /*# sourceMappingURL=main-new.css.map */

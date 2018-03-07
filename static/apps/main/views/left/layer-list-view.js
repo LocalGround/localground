@@ -3,7 +3,7 @@ define(["marionette",
         "collections/layers",
         "models/layer",
         "collections/symbols",
-        "apps/main/views/left/layer-list-child-view",
+        "apps/main/views/left/layer-list-child-view1",
         "text!../../templates/left/layer-list.html",
         "apps/main/views/right/marker-style-view",
         "apps/main/views/right/symbol-style-menu-view"
@@ -13,7 +13,7 @@ define(["marionette",
         'use strict';
         /**
          *  In this view, this.model = Map, this.collection = Layers
-         *  This view handles instantiation of LayerListChildView, MarkerStyleView, 
+         *  This view handles instantiation of LayerListChildView, MarkerStyleView,
          *  and SymbolStyleMenuView
          */
         var LayerListView = Marionette.CompositeView.extend(_.extend({}, {
@@ -29,9 +29,13 @@ define(["marionette",
             childViewContainer: "#layers",
 
             childViewOptions: function (model, index) {
+                var dm = this.app.dataManager,
+                    c = dm.getCollection(model.get('data_source'));
+                    console.log(c);
                 return {
                     app: this.app,
-                    collection: new Symbols(model.get('symbols'))
+                    collection: new Symbols(model.get('symbols')),
+                    dataCollection: c
                 };
             },
 
@@ -109,7 +113,7 @@ define(["marionette",
                 if (this.menu) {
                     this.menu.destroy();
                 }
-                
+
                 console.log('show styebyMenu');
                 this.menu = new MarkerStyleView({
                     app: this.app,
@@ -122,7 +126,7 @@ define(["marionette",
                 });
                 $('.style-by-menu').show();
                 console.log('showing menu');
-                
+
             },
 
             hideStyleMenu: function(e){
@@ -131,7 +135,7 @@ define(["marionette",
 
                 var $el = $(e.target);
                 var parent = document.getElementById("style-by-menu");
-                
+
                 $('.style-by-menu').hide();
                 // if (!parent.contains(e.target) && !$el.hasClass('layer-style-by') && !parent.hasClass('style-by-menu')) {
                 //     console.log(this.menu);
@@ -170,7 +174,7 @@ define(["marionette",
 
                 var $el = $(e.target);
                 var parent = document.getElementById("style-by-menu");
-                
+
                 $('.symbol-menu').hide();
                 // if (!parent.contains(e.target) && !$el.hasClass('layer-style-by') && !parent.hasClass('style-by-menu')) {
                 //     console.log(this.menu);

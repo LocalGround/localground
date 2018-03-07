@@ -4,11 +4,12 @@ define(["jquery",
         'lib/maps/marker-overlays',
         "text!../../templates/left/layer-item.html",
         "models/symbol",
+        "models/record",
         "collections/symbols",
         "apps/main/views/left/symbol-view",
         "apps/main/views/right/marker-style-view"
     ],
-    function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate, Symbol, Symbols, SymbolView, MarkerStyleView) {
+    function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate, Symbol, Record, Symbols, SymbolView, MarkerStyleView) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -18,24 +19,51 @@ define(["jquery",
          */
         var LayerListChild =  Marionette.CompositeView.extend({
             initialize: function (opts) {
-                this.symbolForUndefinedMarkers = null;
                 _.extend(this, opts);
-                this.listenTo(this.app.vent, "change-map", this.hideOverlays);
-                this.listenTo(this.model, "change:title", this.render);
-                //this.listenTo(this.model, 'update-symbol-collection', this.updateCollection);
-               // this.listenTo(this.app.vent, "route-layer", this.routerSendCollection);
-                this.initMapOverlays();
-                if (this.model.get("metadata").isShowing) {
-                    this.showOverlays();
+                this.listenTo(this.dataCollection, 'add', this.handleAddNewRecord)
+                /*
+                TODOs:
+                1. Move MarkerOverlayList to SymbolView, and make sure that
+                   MarkerOverlayList gets destroyed when the SymbolView gets
+                   destroyed.
+                2. When a new marker gets added to the "dataCollection" collection,
+                   write a event handler in this class that checks to see if
+                   the model matches any of the Symbols
+                */
+                if (!this.model || !this.collection || !this.dataCollection) {
+                    console.error("model, collection, and dataCollection are required");
+                    return;
                 }
-                console.log('layer list childview initlize');
-                this.dataset = this.app.dataManager.getCollection(this.model.get('data_source'));
-
-                //this.collection = new Symbols(this.model.get('symbols'));
-                if (this.symbolForUndefinedMarkers) {
-                    this.collection.add(this.symbolForUndefinedMarkers);
+                var uncategorizedSymbol = new Symbol({
+                    rule: 'misc',
+                    title: 'Uncategorized'
+                });
+                var that = this;
+                this.dataCollection.each(function (recordModel) {
+                    var matched = false;
+                    that.collection.each(function (symbolModel) {
+                        if (symbolModel.checkModel(recordModel)) {
+                            symbolModel.addModel(recordModel);
+                            matched = true;
+                        }
+                    })
+                    if (!matched) {
+                        uncategorizedSymbol.addModel(recordModel);
+                    }
+                });
+                if (uncategorizedSymbol.hasModels()) {
+                    this.collection.add(uncategorizedSymbol);
                 }
-                console.log(this.dataset);
+            },
+            handleAddNewRecord: function (model) {
+                console.log(model);
+                alert(model.get('col1'));
+            },
+            addFakeModel: function () {
+                var rec = new Record({
+                    'col1': 'Dogwood'
+                });
+                this.dataCollection.add(rec);
             },
             updateCollection: function() {
                 console.log('update Zcollection')
@@ -66,7 +94,7 @@ define(["jquery",
                 //console.log(simpleDataset);
                 return {
                     //name: this.model.get('title'),
-                    name: this.dataset.name,
+                    name: this.dataCollection.name,
                     //dataList: simpleDataset,
                     isChecked: this.model.get("metadata").isShowing
                 };
@@ -77,6 +105,7 @@ define(["jquery",
             },
             events: {
                 //edit event here, pass the this.model to the right panel
+                'click #fakeadd': 'addFakeModel',
                 'click .layer-delete' : 'deleteLayer',
                 'change input': 'showHideOverlays',
                 'click #layer-style-by': 'showStyleByMenu'
@@ -85,13 +114,12 @@ define(["jquery",
             childView: SymbolView,
             childViewContainer: "#symbols-list",
 
-            childViewOptions: function () {
+            childViewOptions: function (model, index) {
                 return {
                     app: this.app,
                     collection: this.collection,
                     dataSource: this.model.get("data_source"),
-                    layerId: this.model.id
-
+                    layerId: this.model.id,
                 };
             },
 
@@ -294,11 +322,7 @@ define(["jquery",
                     this.hideOverlays();
                 }
             },
-<<<<<<< HEAD
-            onDestroy: function() {
-=======
             onDestroy: function () {
->>>>>>> 1f7d292e2d3560ab8dc18a6504bf1fed9ba8ec06
                 this.hideOverlays();
             }
         });

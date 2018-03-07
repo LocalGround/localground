@@ -37,6 +37,7 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
                 this.sqlParser = new SqlParser(this.get("rule"));
                 this.on("change:width", this.setHeight);
             },
+
             setHeight: function () {
                 this.set("height", this.get("width"));
             },
@@ -54,8 +55,21 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
                     this.modelMap[hash] = model;
                 }
             },
+            hasModels: function () {
+                return this.getModels().length > 0;
+            },
             getModels: function () {
                 return _.values(this.modelMap);
+            },
+            getModelsJSON: function () {
+                var json = [],
+                    models = this.getModels();
+                models.forEach(function (model) {
+                    model = model.toJSON()
+                    model.display_name = model.display_name || model.name
+                    json.push(model)
+                })
+                return json;
             }
         });
         return Symbol;
