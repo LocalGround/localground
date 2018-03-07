@@ -16,24 +16,22 @@
                         <div>Your content here</div>
                     </div>
                     <footer>
-                        <button class="button button-secondary">Cancel</button>
-                        <button class="button button-primary">Action</button>
+                        <button class="button-secondary">Cancel</button>
+                        <button class="button-primary">Action</button>
                     </footer>
                 </div>
             </div>
+
+            <!-- Vanilla JavaScript to show / hide modal -->
+            <script>
+                document.querySelectorAll('.close, button').forEach(elem => {
+                    elem.onclick = () => {
+                        document.querySelector('.modal').classList.toggle('show')
+                    }
+                })
+            </script>
         </div>
 
         <pre class="prettyprint linenums" source-element="#modal-demo"></pre>
     </div>
-
-    <script>
-        document.querySelector('.show').onclick = () => {
-            document.querySelector('.modal').style.display = 'block'
-        }
-        document.querySelectorAll('.close, .button').forEach(elem => {
-            elem.onclick = () => {
-                document.querySelector('.modal').style.display = 'none'
-            }
-        })
-    </script>
 {% endblock %}
