@@ -45,8 +45,6 @@ define([
         events: {
             'click #map-menu': 'showMapList',
             'click #map-list': 'hideMapList'
-            'click #map-menu': "showMapList",
-            'click .add-map': "triggerAddMap"
         },
 
         modal: null,
@@ -67,13 +65,11 @@ define([
             this.listenTo(this.app.vent, 'data-loaded', this.setModel);
             this.getPreviewMap();
         },
-        triggerAddMap: function (e) {
-            this.app.vent.trigger('open-new-map-modal');
-            if (e) { e.preventDefault(); }
-        },
+
         showMapList: function() {
             this.$el.find('#map-list').toggle();
         },
+
         hideMapList: function() {
             this.$el.find('#map-list').hide();
         },
