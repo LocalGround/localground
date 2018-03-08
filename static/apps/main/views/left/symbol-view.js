@@ -23,15 +23,13 @@ define(["jquery",
                     this.showOverlays();
                 }
                 this.listenTo(this.model, "change:title", this.render);
-                
+
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
             templateHelpers: function () {
-                console.log(this.model.getModelsJSON())
-                console.log(this.model.get('icon'));
                 const rule = this.model.get('rule')
-                name = this.app.dataManager.getCollection(this.dataSource).name;
+                name = this.collection.name;
                 return {
                     name: name,
                     icon: this.model.get('icon'),
@@ -52,17 +50,12 @@ define(["jquery",
             },
 
             createMarkerOverlays: function() {
-                let list = this.model.getModels();
-                
-                var markerList = new Records(list, {
-                    url: "dummy",
-                    projectID: this.app.getProjectID()
-                });
                 this.markerOverlays = new MarkerOverlays({
-                    collection: markerList,
+                    collection: this.model.getModels(),
                     app: this.app,
                     iconOpts: this.model.toJSON(),
-                    isShowing: false
+                    isShowing: false,
+                    displayOverlays: true
                 });
             },
 

@@ -38,6 +38,7 @@ define([
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
+            this.selectedProjectID = projectJSON.id;
             this.dataManager = new DataManager({
                 vent: this.vent,
                 projectJSON: projectJSON
