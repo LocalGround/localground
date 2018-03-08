@@ -17,8 +17,11 @@ define(["jquery",
             initialize: function (opts) {
                 _.extend(this, opts);
                 console.log(this);
+                console.log(this.model.get('isShowing'));
                 this.createMarkerOverlays();
-                this.showOverlays();
+                if (this.model.get('isShowing')) {
+                    this.showOverlays();
+                }
                 this.listenTo(this.model, "change:title", this.render);
                 
             },
@@ -33,14 +36,19 @@ define(["jquery",
                     name: name,
                     icon: this.model.get('icon'),
                     markerList: this.model.getModelsJSON(),
-                    property: rule === '*' ? 'all ' + name : rule
+                    property: rule === '*' ? 'all ' + name : rule,
+                    isChecked: this.model.get("isShowing")
                 }
             },
             events: {
                 //edit event here, pass the this.model to the right panel
                 'click .layer-delete' : 'deleteLayer',
-                'change input': 'showHideOverlays',
+                'change .symbol-isShowing': 'showHideOverlays',
                 'click .symbol-edit': 'showSymbolEditMenu'
+            },
+            
+            modelEvents: {
+                'change:isShowing': 'render'
             },
 
             createMarkerOverlays: function() {
@@ -82,8 +90,8 @@ define(["jquery",
             },
 
             showHideOverlays: function () {
-                this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
-                if (this.model.get("metadata").isShowing) {
+                this.model.set("isShowing", this.$el.find('input').prop('checked'));
+                if (this.model.get("isShowing")) {
                     this.showOverlays();
                 } else {
                     this.hideOverlays();

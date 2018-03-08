@@ -30,6 +30,7 @@ define(["jquery",
                    write a event handler in this class that checks to see if
                    the model matches any of the Symbols
                 */
+                console.log(this.model.get('metadata').isShowing);
                 if (!this.model || !this.collection || !this.dataCollection) {
                     console.error("model, collection, and dataCollection are required");
                     return;
@@ -78,6 +79,7 @@ define(["jquery",
             onRender: function () {
                 console.log('RENDER', this.collection);
                 console.log(this.model);
+                this.showHideOverlays();
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
@@ -107,7 +109,7 @@ define(["jquery",
                 //edit event here, pass the this.model to the right panel
                 'click #fakeadd': 'addFakeModel',
                 'click .layer-delete' : 'deleteLayer',
-                'change input': 'showHideOverlays',
+                'change .layer-isShowing': 'showHideOverlays',
                 'click #layer-style-by': 'showStyleByMenu'
             },
 
@@ -315,9 +317,13 @@ define(["jquery",
             },
 
             showHideOverlays: function () {
-                console.log(this.children);
-                console.log('showHideOverlays');
+               
                 this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
+                this.collection.each((symbol) => {
+                    symbol.set('isShowing', this.$el.find('input').prop('checked'));
+                    console.log(symbol.get('isShowing'));
+                });
+                console.log(this.model.get('metadata'));
                 if (this.model.get("metadata").isShowing) {
                     this.children.each(function(childView) {
                         childView.showOverlays();
@@ -328,6 +334,22 @@ define(["jquery",
                     })
                 }
             },
+
+            isShowing: function () {
+                let isShowingList = [];
+                this.collection.each(function(symbol) {
+                    if(symbol.get('isShowing')) {
+                        isShowingList.push(symbol.id);
+                    }
+                });
+                if (isShowingList < this.collection.length) {
+                    this.model.get("metadata").isShowing = false;
+                } else {
+                    this.model.get("metadata").isShowing = true;
+                }
+                //this.render();
+            },
+
             onDestroy: function () {
                 this.hideOverlays();
             }

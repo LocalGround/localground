@@ -1,6 +1,6 @@
 <button id="fakeadd">Fake Add</button>
 <div class='layer-column' id='layer{{id}}'>
-    <input type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} />
+    <input class='layer-isShowing' type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} />
     <p class="layer-name">{{ title }}</p>
     <a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
     <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a>
