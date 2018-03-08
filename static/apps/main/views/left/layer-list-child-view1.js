@@ -22,15 +22,6 @@ define(["jquery",
                 _.extend(this, opts);
                 this.symbolModels = this.collection;
                 this.listenTo(this.dataCollection, 'add', this.handleAddNewRecord)
-                /*
-                TODOs:
-                1. Move MarkerOverlayList to SymbolView, and make sure that
-                   MarkerOverlayList gets destroyed when the SymbolView gets
-                   destroyed.
-                2. When a new marker gets added to the "dataCollection" collection,
-                   write a event handler in this class that checks to see if
-                   the model matches any of the Symbols
-                */
                 if (!this.model || !this.collection || !this.dataCollection) {
                     console.error("model, collection, and dataCollection are required");
                     return;
@@ -58,18 +49,18 @@ define(["jquery",
                 });
             },
             handleAddNewRecord: function (model) {
-                var view;
-                this.children.each(function (symbolView) {
+                var symbolView;
+                this.children.each(function (view) {
                     if (symbolView.model.checkModel(model)) {
-                        view = symbolView;
+                        symbolView = view;
                         return;
                     }
                 })
-                if (!view) {
-                    view = this.children.findByModel(this.uncategorizedSymbol);
+                if (!symbolView) {
+                    symbolView = this.children.findByModel(this.uncategorizedSymbol);
                 }
-                view.model.addModel(model);
-                view.render();
+                symbolView.model.addModel(model);
+                symbolView.render();
             },
             addFakeModel: function () {
                 var categories = ['mural', 'sculpture', 'blah', undefined, null, '']
