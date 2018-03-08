@@ -1,11 +1,11 @@
-define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
-    function (Backbone, _, SqlParser, Icon) {
+define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/maps/overlays/icon'],
+    function (Backbone, _, Records, SqlParser, Icon) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
          * functionality. Also coordinates event triggers across all of
          * the constituent views.
-         * @class OverlayGroup
+         * @class Symbol
          */
         var Symbol = Backbone.Model.extend({
             isShowingOnMap: false,
@@ -24,10 +24,14 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
             initialize: function (data, opts) {
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);
+                this.matchedModels = new Records(null, {
+                    url: '-1',
+                    projectID: -1
+                });
                 this.set("shape", this.get("shape") || "circle");
                 this.set("icon", new Icon(this.toJSON()));
                 this.set("shape", this.get("icon").key);
-                this.modelMap = {};
+
                 if (_.isUndefined(this.get("rule"))) {
                     throw new Error("rule must be defined");
                 }
@@ -37,7 +41,6 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
                 this.sqlParser = new SqlParser(this.get("rule"));
                 this.on("change:width", this.setHeight);
             },
-
             setHeight: function () {
                 this.set("height", this.get("width"));
             },
@@ -50,26 +53,17 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
                 return this.sqlParser.checkModel(model);
             },
             addModel: function (model) {
-                var hash = model.get("overlay_type") + "_" + model.get("id");
-                if (_.isUndefined(this.modelMap[hash])) {
-                    this.modelMap[hash] = model;
-                }
+                model.set('display_name', model.get('display_name') || model.get('name'))
+                this.matchedModels.add(model)
             },
             hasModels: function () {
-                return this.getModels().length > 0;
+                return this.matchedModels.length > 0;
             },
             getModels: function () {
-                return _.values(this.modelMap);
+                return this.matchedModels;
             },
             getModelsJSON: function () {
-                var json = [],
-                    models = this.getModels();
-                models.forEach(function (model) {
-                    model = model.toJSON()
-                    model.display_name = model.display_name || model.name
-                    json.push(model)
-                })
-                return json;
+                return this.matchedModels.toJSON();
             }
         });
         return Symbol;

@@ -1,4 +1,4 @@
-define(["models/symbol", "collections/base"], function (Symbol, Base) {
+define(["underscore", "models/symbol", "collections/base"], function (_, Symbol, Base) {
     "use strict";
     /**
      * Note: There is no "Symbols" API Endpoint. This is just a convenience function
@@ -9,6 +9,7 @@ define(["models/symbol", "collections/base"], function (Symbol, Base) {
         name: 'Symbols',
         key: 'symbols',
         initialize: function (recs, opts) {
+            _.extend(this, opts);
             Base.prototype.initialize.apply(this, arguments);
         }
     });
