@@ -29,13 +29,11 @@ define(["marionette",
             childViewContainer: "#layers",
 
             childViewOptions: function (model, index) {
-                var dm = this.app.dataManager,
-                    c = dm.getCollection(model.get('data_source'));
-                    console.log(c);
+                var dm = this.app.dataManager;
                 return {
                     app: this.app,
                     collection: new Symbols(model.get('symbols')),
-                    dataCollection: c
+                    dataCollection: dm.getCollection(model.get('data_source'))
                 };
             },
 
