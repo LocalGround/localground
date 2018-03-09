@@ -84,7 +84,6 @@ define(["jquery",
                 if (this.model.get("metadata").isShowing) {
                     this.showOverlays();
                 }
-<<<<<<< HEAD
 
                 /**
                  * if any the this layer's symbols are not displaying, 
@@ -93,10 +92,6 @@ define(["jquery",
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
 
                 this.listenTo(this.collection, 'show-hide-symbol', this.isShowing);
-=======
-                this.updateCollection();
-                //this.render();
->>>>>>> ab34bb53df8ac9734cc239afed45380ee7166b1a
             },
 
             handleAddNewRecord: function (model) {
@@ -386,7 +381,7 @@ define(["jquery",
 
             saveChanges: function() {
                 console.log(this.model);
-                //this.model.get('symbols') = this.collection.toJSON();
+                //this.model.set('symbols', this.collection.toJSON());
                 var that = this;
                 setTimeout(function() { 
                     that.model.save(); 
