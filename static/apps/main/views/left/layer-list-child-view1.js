@@ -91,7 +91,7 @@ define(["jquery",
                  */
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
 
-                this.listenTo(this.collection, 'show-hide-symbol', this.isShowing);
+                this.listenTo(this.collection, 'show-hide-symbol', this.handleChildShowHide);
             },
 
             handleAddNewRecord: function (model) {
@@ -351,7 +351,7 @@ define(["jquery",
                 this.saveChanges();
             },
 
-            isShowing: function () {
+            handleChildShowHide: function () {
                 console.log(this.model);
                 var symb = this.collection.where({title: 'Spruce'});
                 console.log(symb[0].get('isShowing'));
@@ -381,7 +381,7 @@ define(["jquery",
 
             saveChanges: function() {
                 console.log(this.model);
-                //this.model.set('symbols', this.collection.toJSON());
+                this.model.set('symbols', this.collection.toJSON());
                 var that = this;
                 setTimeout(function() { 
                     that.model.save(); 
