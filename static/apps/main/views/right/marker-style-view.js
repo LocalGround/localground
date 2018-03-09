@@ -177,17 +177,17 @@ define(["jquery",
                // 'click .palette-list *': 'selectPalette'
             },
 
-            // modelEvents: {
-            //     'change:symbols': 'saveChanges'
-            // },
+            modelEvents: {
+                'change:symbols': 'saveChanges'
+            },
 
-            // saveChanges: function() {
-            //     var that = this;
-            //     setTimeout(function() { 
-            //         that.model.save(); 
-            //         console.log('MSV SAVE');
-            //     }, 2000);
-            // },
+            saveChanges: function() {
+                var that = this;
+                setTimeout(function() { 
+                    that.model.save(); 
+                    console.log('MSV SAVE');
+                }, 2000);
+            },
 
             showSymbols: function (e) {
                 this.symbolsView = new SymbolSelectionLayoutView({

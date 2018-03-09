@@ -55,6 +55,14 @@ define(["jquery",
                 if (uncategorizedSymbol.hasModels()) {
                     this.collection.add(uncategorizedSymbol);
                 }
+
+                /**
+                 * if any the this layer's symbols are not displaying, 
+                 * then the layer's isShowing' attribute should be false
+                 */
+                this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
+
+                this.listenTo(this.collection, 'show-hide-symbol', this.isShowing);
             },
             handleAddNewRecord: function (model) {
                 console.log(model);
@@ -79,7 +87,8 @@ define(["jquery",
             onRender: function () {
                 console.log('RENDER', this.collection);
                 console.log(this.model);
-                this.showHideOverlays();
+                //this.showHideOverlays();
+                //this.determineInitialDisplayState();
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
@@ -317,13 +326,14 @@ define(["jquery",
             },
 
             showHideOverlays: function () {
-               
-                this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
+                const isShowing = this.$el.find('input').prop('checked');
+
+                this.model.get("metadata").isShowing = isShowing;
+
                 this.collection.each((symbol) => {
-                    symbol.set('isShowing', this.$el.find('input').prop('checked'));
-                    console.log(symbol.get('isShowing'));
+                    symbol.set('isShowing', isShowing);
                 });
-                console.log(this.model.get('metadata'));
+                
                 if (this.model.get("metadata").isShowing) {
                     this.children.each(function(childView) {
                         childView.showOverlays();
@@ -331,23 +341,46 @@ define(["jquery",
                 } else {
                     this.children.each(function(childView) {
                         childView.hideOverlays();
-                    })
+                    });
                 }
+                this.saveChanges();
             },
 
             isShowing: function () {
-                let isShowingList = [];
-                this.collection.each(function(symbol) {
-                    if(symbol.get('isShowing')) {
-                        isShowingList.push(symbol.id);
+                console.log(this.model);
+                var symb = this.collection.where({title: 'Spruce'});
+                console.log(symb[0].get('isShowing'));
+                console.log(this.model.get('symbols')[1].isShowing);
+
+                this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
+                
+                this.saveChanges();
+                this.render();
+            },
+
+            allSymbolsAreDisplaying: function(collection) {
+                let symbolsNotShowingList = [];
+                collection.each(function(symbol) {
+                    if(!symbol.get('isShowing')) {
+                        symbolsNotShowingList.push(symbol.id);
                     }
+                    console.log(symbol.get('title'), symbol.get('isShowing'));
                 });
-                if (isShowingList < this.collection.length) {
-                    this.model.get("metadata").isShowing = false;
+                console.log(symbolsNotShowingList);
+                if (symbolsNotShowingList.length > 0) {
+                    return false;
                 } else {
-                    this.model.get("metadata").isShowing = true;
+                    return true;
                 }
-                //this.render();
+            },
+
+            saveChanges: function() {
+                console.log(this.model);
+                var that = this;
+                setTimeout(function() { 
+                    that.model.save(); 
+                    console.log('MSV SAVE');
+                }, 2000);
             },
 
             onDestroy: function () {

@@ -16,7 +16,7 @@ define(["jquery",
         var SymbolSet =  Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this);
+                console.log("SYMBOL INITIALIZE", this.model.get('title'));
                 console.log(this.model.get('isShowing'));
                 this.createMarkerOverlays();
                 if (this.model.get('isShowing')) {
@@ -24,6 +24,14 @@ define(["jquery",
                 }
                 this.listenTo(this.model, "change:title", this.render);
                 
+            },
+            onRender: function () {
+                console.log('RENDER', this.model);
+                if (this.model.get("isShowing")) {
+                    this.showOverlays();
+                } else {
+                    this.hideOverlays();
+                }
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
@@ -52,6 +60,7 @@ define(["jquery",
             },
 
             createMarkerOverlays: function() {
+                console.log('createMarkerOverlays');
                 let list = this.model.getModels();
                 
                 var markerList = new Records(list, {
@@ -62,7 +71,7 @@ define(["jquery",
                     collection: markerList,
                     app: this.app,
                     iconOpts: this.model.toJSON(),
-                    isShowing: false
+                    isShowing: this.model.get('isShowing')
                 });
             },
 
@@ -76,10 +85,12 @@ define(["jquery",
                 this.app.vent.trigger('show-symbol-menu', this.model, coords, this.layerId);
             },
             showOverlays: function () {
+                console.log("Show Overlaays");
                 this.markerOverlays.showAll();
             },
 
             hideOverlays: function () {
+                console.log("Hide Overlaays");
                 this.markerOverlays.hideAll();
             },
 
@@ -90,12 +101,19 @@ define(["jquery",
             },
 
             showHideOverlays: function () {
+                console.log('showHideOverlays');
                 this.model.set("isShowing", this.$el.find('input').prop('checked'));
+                console.log(this.model);
                 if (this.model.get("isShowing")) {
-                    this.showOverlays();
+                    //this.showOverlays();
                 } else {
-                    this.hideOverlays();
+                    //this.hideOverlays();
                 }
+                this.model.trigger('show-hide-symbol');
+                //this.model.save();
+            },
+            onDestroy: function () {
+                this.hideOverlays();
             }
         });
         return SymbolSet;

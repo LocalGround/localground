@@ -122,7 +122,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             return json;
         },
         save: function (attrs, opts) {
-            //console.log(this.attributes);
+            console.log(this.attributes);
             Base.prototype.save.apply(this, arguments);
             //console.log("done");
         }
