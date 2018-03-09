@@ -12,7 +12,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             view: null,
             title: null,
             width: "90vw",
-            height: "70vh",
+            //height: "70vh",
             margin: "auto",
             showCloseButton: true,
             closeButtonText: "Cancel",
@@ -97,7 +97,9 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
 
             setSize: function () {
                 this.$el.find('.content').css('width', this.width);
-                this.$el.find('.body').css('height', this.height);
+                if (this.height) {
+                    this.$el.find('.body').css('height', this.height);
+                }
             },
             createModal: function () {
                 this.$el = $(this.template({ title: this.title }));
