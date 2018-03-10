@@ -21,8 +21,10 @@ define(["jquery",
          //TODO: Everytime 'rebuild-markers' event triggered, create a new
          // layerListView
         var LayerListChild =  Marionette.CompositeView.extend({
-            modelEvents: {
-                'rebuild-markers': 'updateMapOverlays'
+
+            collectionEvents: {
+                'reset': 'reRender',
+                'show-hide-symbol': 'handleChildShowHide'
             },
             events: {
                 //edit event here, pass the this.model to the right panel
@@ -34,18 +36,31 @@ define(["jquery",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.symbolModels = this.collection;
-                this.listenTo(this.dataCollection, 'add', this.handleAddNewRecord)
+                this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
                 if (!this.model || !this.collection || !this.dataCollection) {
                     console.error("model, collection, and dataCollection are required");
                     return;
                 }
-                this.generateSymbols();
+                this.assignRecordsToSymbols();
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
-                this.listenTo(this.collection, 'show-hide-symbol', this.handleChildShowHide);
+            },
+            markerOverlayList: null,
+            template: Handlebars.compile(LayerItemTemplate),
+            tagName: "div",
+            templateHelpers: function () {
+                return {
+                    name: this.dataCollection.name,
+                    isChecked: this.model.get("metadata").isShowing
+                };
             },
 
             childView: SymbolView,
             childViewContainer: "#symbols-list",
+
+            reRender: function () {
+                console.log('Symbols have been regenerated...');
+                this.assignRecordsToSymbols();
+            },
 
             childViewOptions: function (model, index) {
                 return {
@@ -55,7 +70,7 @@ define(["jquery",
                     layer: this.model
                 };
             },
-            generateSymbols: function () {
+            assignRecordsToSymbols: function () {
                 const that = this;
                 this.uncategorizedSymbol = this.model.uncategorizedSymbol;
                 this.dataCollection.each(function (recordModel) {
@@ -71,34 +86,10 @@ define(["jquery",
                     }
                 });
             },
-
-            updateMapOverlays: function () {
-                console.log('DEPRECATE ME: updateMapOverlays');
-                return;
-                /*this.collection = new Symbols(this.model.get('symbols'), {
-                    projectID: this.app.selectedProjectID
-                });*/
-                this.collection = this.model.get('symbols')
-                this.hideOverlays();
-                this.model.rebuildSymbolMap();
-                this.initMapOverlays();
-                if (this.model.get("metadata").isShowing) {
-                    this.showOverlays();
-                }
-
-                /**
-                 * if any the this layer's symbols are not displaying,
-                 * then the layer's isShowing' attribute should be false
-                 */
-                this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
-
-                this.listenTo(this.collection, 'show-hide-symbol', this.isShowing);
-            },
-
-            handleAddNewRecord: function (model) {
+            assignRecordToSymbol: function (recordModel) {
                 var symbolView;
                 this.children.each(function (view) {
-                    if (view.model.checkModel(model)) {
+                    if (view.model.checkModel(recordModel)) {
                         symbolView = view;
                         return;
                     }
@@ -106,7 +97,7 @@ define(["jquery",
                 if (!symbolView) {
                     symbolView = this.children.findByModel(this.uncategorizedSymbol);
                 }
-                symbolView.model.addModel(model);
+                symbolView.model.addModel(recordModel);
                 symbolView.render();
             },
             addFakeModel: function () {
@@ -128,24 +119,6 @@ define(["jquery",
                 });
                 this.dataCollection.add(recordModel);
             },
-            updateCollection: function() {
-                console.log('update collection')
-                //this.collection = new Symbols(this.model.get('symbols'));
-                //this.initMapOverlays();
-                if (this.symbolForUndefinedMarkers) {
-                    this.collection.add(this.symbolForUndefinedMarkers);
-                }
-                this.render();
-            },
-            template: Handlebars.compile(LayerItemTemplate),
-            tagName: "div",
-            templateHelpers: function () {
-                return {
-                    name: this.dataCollection.name,
-                    isChecked: this.model.get("metadata").isShowing
-                };
-            },
-            markerOverlayList: null,
 
             // triggered from the router
             checkSelectedItem: function(layerId) {
@@ -156,21 +129,6 @@ define(["jquery",
                 }
 
             },
-
-            childRouterSendCollection: function (mapId, layerId) {
-
-                if (this.model.id == layerId) {
-                    this.checkSelectedItem(layerId);
-
-                    // This event actually triggers the 'createLayer()' function in right-panel.js layoutview
-                    this.app.vent.trigger("edit-layer", this.model, this.collection);
-
-                    // This just adds css to indicate the selected layer, via the parent view
-                    // only triggers after the layer has been sent to right-panel
-                    this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
-                }
-            },
-
             deleteLayer: function () {
                 if (!confirm("Are you sure you want to delete this layer?")) {
                     return;
@@ -195,98 +153,6 @@ define(["jquery",
                     y: event.clientY
                 }
                 this.app.vent.trigger('show-style-menu', this.model, coords);
-            },
-
-            initMapOverlays: function () {
-                console.log("DEPRECATE ME: initMapOverlays")
-                return;
-                // create an MarkerOverlays for each symbol in the
-                // layer.
-                this.markerOverlayList = [];
-                var matchedCollection,
-                    overlays,
-                    that = this,
-                    dataSource = this.model.get("data_source"),
-                    dataCollection = this.app.dataManager.getCollection(dataSource),
-                    //symbols = this.model.get("symbols"), //getSymbols();
-                    currentProp = this.model.get('metadata').currentProp
-                    dataIds = dataCollection.map(function(model) {
-                        return model.id
-                    });
-                    let representedIds = [];
-
-                this.collection.each(function (symbol) {
-                    //console.log(symbol.id, symbol.get('title'));
-                    matchedCollection = new dataCollection.constructor(null, {
-                        url: "dummy",
-                        projectID: that.app.getProjectID()
-                    });
-                    //console.log(JSON.stringify(matchedCollection));
-                    dataCollection.each(function (model) {
-                        if (symbol.checkModel(model)) {
-                            matchedCollection.add(model);
-                            representedIds.push(model.id);
-                            //console.log(model.id);
-                        }
-                    });
-                    overlays = new MarkerOverlays({
-                        collection: matchedCollection,
-                        app: that.app,
-                        iconOpts: symbol.toJSON(),
-                        isShowing: false
-                    });
-
-                    that.markerOverlayList.push(overlays);
-                });
-
-
-                const unrepresentedIds = dataIds.filter(function(id) {
-                    return !representedIds.includes(id)
-                });
-
-                if (this.symbolForUndefinedMarkers) {
-                    this.collection.remove(this.symbolForUndefinedMarkers);
-                    symbols.remove(this.symbolForUndefinedMarkers);
-                    this.symbolForUndefinedMarkers = null;
-                }
-
-                if (unrepresentedIds.length > 0) {
-
-                    // let sqlString = '';
-
-                    // unrepresentedIds.forEach(function (id) {
-                    //     sqlString = sqlString.concat('id = ', id, ' or ');
-                    //     console.log(sqlString);
-                    // });
-                    // sqlString = sqlString.slice(0, -4);
-
-                    let sqlString = currentProp + ' = undefined or ' + currentProp + ' = null';
-
-                    let unrepresentedCollection = new dataCollection.constructor(null, {
-                        url: "dummy",
-                        projectID: that.app.getProjectID()
-                    });
-
-
-                    this.symbolForUndefinedMarkers = new Symbol({
-                        rule: sqlString,
-                        title: 'undefined markers'
-                    });
-
-                    unrepresentedIds.forEach(function(id) {
-                        // for overlays
-                        unrepresentedCollection.add(dataCollection.get(id));
-                        // for symbol
-                        that.symbolForUndefinedMarkers.addModel(dataCollection.get(id));
-                    });
-                    let otherOverlays = new MarkerOverlays({
-                        collection: unrepresentedCollection,
-                        app: that.app,
-                        isShowing: false
-                    });
-                    this.markerOverlayList.push(otherOverlays);
-                    this.model.save();
-                }
             },
 
             showOverlays: function () {

@@ -35,7 +35,7 @@ define(["jquery",
                 };
             },
             onRender: function () {
-                console.log('msv child render');
+                //console.log('msv child render');
                 var that = this,
                     color = this.model.get('fillColor'),
                     id = this.model.get('id');
@@ -81,7 +81,6 @@ define(["jquery",
                     app: this,
                     el: this.$el.find('#ind-symbol-dropdown')
                 });
-                console.log(this.symbolsView);
             }
 
 

@@ -499,16 +499,7 @@ define(["jquery",
             },
 
             setSymbols: function (symbs) {
-                this.model.set("symbols", symbs);
-                this.collection = symbs;
-                console.log(this.collection);
-                console.log(this.model);
-
-                // since we're reassigning this.collection above, it's no longer pointing
-                // to model.get('symbols'), so we need to sync the model symbols to the new collection
-                //this.syncModelSymbsToCollection();
-                this.updateMapAndRender();
-                this.model.trigger('update-symbol-collection');
+                this.collection.reset(symbs.toJSON())
             },
 
             updateMapAndRender: function () {
@@ -585,7 +576,7 @@ define(["jquery",
                 console.log('msv updateMap');
                 var that = this;
                 this.delayExecution("mapTimer", function () {
-                    that.model.trigger('rebuild-markers')
+                    that.model.trigger('rebuild-markers', that.model)
                 }, 250);
             },
 
