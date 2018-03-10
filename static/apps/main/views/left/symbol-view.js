@@ -52,6 +52,7 @@ define(["jquery",
                 const rule = this.model.get('rule')
                 name = this.collection.name;
                 return {
+                    empty: this.model.getModelsJSON().length === 0,
                     name: name,
                     icon: this.model.get('icon'),
                     markerList: this.model.getModelsJSON(),

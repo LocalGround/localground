@@ -57,7 +57,7 @@ define(["jquery",
             },
             generateSymbols: function () {
                 const that = this;
-                const uncategorizedSymbol = this.model.uncategorizedSymbol;
+                this.uncategorizedSymbol = this.model.uncategorizedSymbol;
                 this.dataCollection.each(function (recordModel) {
                     var matched = false;
                     that.symbolModels.each(function (symbolModel) {
@@ -67,7 +67,7 @@ define(["jquery",
                         }
                     })
                     if (!matched) {
-                        uncategorizedSymbol.addModel(recordModel);
+                        that.uncategorizedSymbol.addModel(recordModel);
                     }
                 });
             },
