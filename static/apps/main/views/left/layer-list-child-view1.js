@@ -40,6 +40,13 @@ define(["jquery",
                     return;
                 }
                 this.generateSymbols();
+                /**
+                 * if any the this layer's symbols are not displaying, 
+                 * then the layer's isShowing' attribute should be false
+                 */
+                this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
+
+                this.listenTo(this.collection, 'show-hide-symbol', this.handleChildShowHide);
             },
 
             childView: SymbolView,
@@ -91,7 +98,7 @@ define(["jquery",
                  */
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
 
-                this.listenTo(this.collection, 'show-hide-symbol', this.handleChildShowHide);
+                this.listenTo(this.collection, 'show-hide-symbol', this.isShowing);
             },
 
             handleAddNewRecord: function (model) {
@@ -353,9 +360,6 @@ define(["jquery",
 
             handleChildShowHide: function () {
                 console.log(this.model);
-                var symb = this.collection.where({title: 'Spruce'});
-                console.log(symb[0].get('isShowing'));
-                console.log(this.model.get('symbols')[1].isShowing);
 
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
                 
@@ -381,7 +385,13 @@ define(["jquery",
 
             saveChanges: function() {
                 console.log(this.model);
+                console.log(this.collection.toJSON());
                 this.model.set('symbols', this.collection.toJSON());
+                console.log(this.model);
+                console.log(this.model.get('symbols')[1]);
+                var symb = this.collection.where({title: 'Spruce'});
+                console.log(symb[0].get('isShowing'));
+                console.log(this.model.get('symbols')[1].isShowing);
                 var that = this;
                 setTimeout(function() { 
                     that.model.save(); 
