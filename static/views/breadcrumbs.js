@@ -16,22 +16,16 @@ define([
             var name;
             let mapList;
             if (this.model) {
-                console.log(this.model);
                 name = this.model.get("name") === "Untitled" ? "" : this.model.get("name");
             }
             if (this.displayMap && this.maps.models[0]) {
-                console.log('HAS MAP');
-                console.log(this);
                 this.currentMap = this.maps.models[0].get('name');
-                console.log(this.currentMap);
-
                 mapList = this.maps.models.map(mapModel => {
                     return {
                         name: mapModel.get('name'),
                         id: mapModel.get('id')
                     }
                 });
-                console.log(mapList);
             }
 
             return {
@@ -116,7 +110,6 @@ define([
 
         setModel: function () {
             this.model = this.app.dataManager.model;
-            console.log('set model', this.displayMap);
             this.render();
         }
     });

@@ -7,7 +7,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
      * Attributes: id, name, caption, overlay_type, tags, owner, slug, access, symbols
      */
     var Layer = Base.extend({
-        UNCATEGORIZED_SYMBOL_RULE: '¯\_(ツ)_/¯',
+        UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
         defaults: _.extend({}, Base.prototype.defaults, {
             isVisible: false,
             metadata: {

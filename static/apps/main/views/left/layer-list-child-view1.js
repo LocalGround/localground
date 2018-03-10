@@ -73,7 +73,7 @@ define(["jquery",
             },
 
             updateMapOverlays: function () {
-                console.log('update map overlays');
+                console.log('DEPRECATE ME: updateMapOverlays');
                 /*this.collection = new Symbols(this.model.get('symbols'), {
                     projectID: this.app.selectedProjectID
                 });*/
@@ -128,20 +128,13 @@ define(["jquery",
                 this.dataCollection.add(recordModel);
             },
             updateCollection: function() {
-                console.log('update Zcollection')
+                console.log('update collection')
                 //this.collection = new Symbols(this.model.get('symbols'));
                 //this.initMapOverlays();
                 if (this.symbolForUndefinedMarkers) {
-                    console.log('adding symbols');
                     this.collection.add(this.symbolForUndefinedMarkers);
                 }
                 this.render();
-            },
-            onRender: function () {
-                console.log('RENDER', this.collection);
-                console.log(this.model);
-                //this.showHideOverlays();
-                //this.determineInitialDisplayState();
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
@@ -185,7 +178,6 @@ define(["jquery",
                 this.model.destroy();
                 this.collection.remove(this.model);
                 this.deleteOverlays();
-                console.log(url);
 
                 this.app.router.navigate(url);
                 this.app.vent.trigger('update-layer-list');
@@ -197,8 +189,6 @@ define(["jquery",
                 this.render();
             },
             showStyleByMenu: function (event) {
-                console.log('child show styebyMenu', this.model.id);
-
                 const coords = {
                     x: event.clientX,
                     y: event.clientY
@@ -207,10 +197,10 @@ define(["jquery",
             },
 
             initMapOverlays: function () {
+                console.log("DEPRECATE ME: initMapOverlays")
                 return;
                 // create an MarkerOverlays for each symbol in the
                 // layer.
-                console.log('initMapOverlays');
                 this.markerOverlayList = [];
                 var matchedCollection,
                     overlays,
@@ -224,8 +214,6 @@ define(["jquery",
                     });
                     let representedIds = [];
 
-                console.log(symbols);
-                console.log(this.collection);
                 this.collection.each(function (symbol) {
                     //console.log(symbol.id, symbol.get('title'));
                     matchedCollection = new dataCollection.constructor(null, {
@@ -254,19 +242,12 @@ define(["jquery",
                 const unrepresentedIds = dataIds.filter(function(id) {
                     return !representedIds.includes(id)
                 });
-                console.log(representedIds);
-                console.log(unrepresentedIds);
 
                 if (this.symbolForUndefinedMarkers) {
-                    console.log('(this.symbolForUndefinedMarkers): TRUE')
                     this.collection.remove(this.symbolForUndefinedMarkers);
                     symbols.remove(this.symbolForUndefinedMarkers);
                     this.symbolForUndefinedMarkers = null;
                 }
-                if (this.collection.contains(this.symbolForUndefinedMarkers)) {
-                    console.log('(this.collection.contains(this.symbolForUndefinedMarkers)): TRUE')
-                }
-                console.log(this.markerOverlayList);
 
                 if (unrepresentedIds.length > 0) {
 
@@ -280,7 +261,6 @@ define(["jquery",
 
                     let sqlString = currentProp + ' = undefined or ' + currentProp + ' = null';
 
-                    console.log(sqlString);
                     let unrepresentedCollection = new dataCollection.constructor(null, {
                         url: "dummy",
                         projectID: that.app.getProjectID()
@@ -304,11 +284,6 @@ define(["jquery",
                         isShowing: false
                     });
                     this.markerOverlayList.push(otherOverlays);
-
-                    console.log(representedIds);
-                    console.log(unrepresentedIds);
-                    console.log(that.markerOverlayList);
-                    console.log(this.symbolForUndefinedMarkers);
                     this.model.save();
                 }
             },
@@ -353,7 +328,6 @@ define(["jquery",
             },
 
             handleChildShowHide: function () {
-                console.log(this.model);
 
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
 
@@ -367,9 +341,7 @@ define(["jquery",
                     if(!symbol.get('isShowing')) {
                         symbolsNotShowingList.push(symbol.id);
                     }
-                    console.log(symbol.get('title'), symbol.get('isShowing'));
                 });
-                console.log(symbolsNotShowingList);
                 if (symbolsNotShowingList.length > 0) {
                     return false;
                 } else {

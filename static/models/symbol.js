@@ -22,14 +22,12 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 isShowing: false
             },
             initialize: function (data, opts) {
-                console.log(data);
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);
                 this.matchedModels = new Records(null, {
                     url: '-1',
                     projectID: -1
                 });
-                console.log(this);
                 this.set("shape", this.get("shape") || "circle");
                 this.set("icon", new Icon(this.toJSON()));
                 this.set("shape", this.get("icon").key);
