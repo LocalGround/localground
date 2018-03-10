@@ -44,6 +44,14 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
             setHeight: function () {
                 this.set("height", this.get("width"));
             },
+            set: function(key, val, options) {
+                if (this.get('icon')) {
+                    if (['fillColor', 'shape', 'markerSize', 'fillOpacity', 'strokeWeight'].indexOf(key) !== -1) {
+                        this.get('icon')[key] = val;
+                    }
+                }
+                Backbone.Model.prototype.set.apply(this, arguments);
+            },
 
             toJSON: function () {
                 var json = Backbone.Model.prototype.toJSON.call(this);

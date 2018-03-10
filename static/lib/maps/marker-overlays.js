@@ -1,8 +1,9 @@
 define(['marionette',
         'underscore',
+        'handlebars',
         'lib/maps/overlays/marker'
     ],
-    function (Marionette, _, MarkerOverlay) {
+    function (Marionette, _, Handlebars, MarkerOverlay) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -10,7 +11,7 @@ define(['marionette',
          * the constituent views.
          * @class OverlayGroup
          */
-        var MarkerOverlays = Marionette.CollectionView.extend({
+        var MarkerOverlays = Marionette.CompositeView.extend({
             /** A google.maps.Map object */
             map: null,
             childView: MarkerOverlay,
@@ -23,13 +24,15 @@ define(['marionette',
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.collection = opts.collection;
+                this.template = Handlebars.compile("<div>{{id}}</div>");
                 this.opts = opts;
                 this.map = this.app.getMap();
-                this.childViewOptions = opts;
-
-                // this is required, otherwise markers will disappear after being placed
-                this.childViewOptions.displayOverlay = opts.displayOverlays;
+                this.childViewOptions = {
+                    symbol: this.model,
+                    app: this.app,
+                    isShowing: this.isShowing,
+                    displayOverlay: this.displayOverlays
+                };
 
                 this.render();
 

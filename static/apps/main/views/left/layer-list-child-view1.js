@@ -74,6 +74,7 @@ define(["jquery",
 
             updateMapOverlays: function () {
                 console.log('DEPRECATE ME: updateMapOverlays');
+                return;
                 /*this.collection = new Symbols(this.model.get('symbols'), {
                     projectID: this.app.selectedProjectID
                 });*/

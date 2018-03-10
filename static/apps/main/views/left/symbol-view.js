@@ -20,10 +20,26 @@ define(["jquery",
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
-                this.listenTo(this.model, "change:title", this.render);
+                //this.listenTo(this.model, "change:title", this.render);
 
             },
+            events: {
+                //edit event here, pass the this.model to the right panel
+                'click .layer-delete' : 'deleteLayer',
+                'change .symbol-isShowing': 'showHideOverlays',
+                'click .symbol-edit': 'showSymbolEditMenu'
+            },
+            modelEvents: {
+                'change:isShowing': 'render',
+                'change:fillColor': 'saveAndRender',
+                'change:shape': 'saveAndRender',
+                'change:width': 'saveAndRender',
+                'change:fillOpacity': 'saveAndRender',
+                'change:strokeWeight': 'saveAndRender',
+                'change:title': 'render'
+            },
             onRender: function () {
+                console.log('rendering...');
                 if (this.model.get("isShowing")) {
                     this.showOverlays();
                 } else {
@@ -43,25 +59,20 @@ define(["jquery",
                     isChecked: this.model.get("isShowing")
                 }
             },
-            events: {
-                //edit event here, pass the this.model to the right panel
-                'click .layer-delete' : 'deleteLayer',
-                'change .symbol-isShowing': 'showHideOverlays',
-                'click .symbol-edit': 'showSymbolEditMenu'
-            },
-
-            modelEvents: {
-                'change:isShowing': 'render'
-            },
 
             createMarkerOverlays: function() {
                 this.markerOverlays = new MarkerOverlays({
                     collection: this.model.getModels(),
                     app: this.app,
-                    iconOpts: this.model.toJSON(),
                     isShowing: this.model.get('isShowing'),
-                    displayOverlays: true
+                    displayOverlays: true,
+                    model: this.model
                 });
+            },
+
+            saveAndRender: function () {
+                console.log('save and render');
+                this.layer.save();
             },
 
             showSymbolEditMenu: function (event) {

@@ -12,9 +12,6 @@ define(["jquery",
         var MarkerStyleChildView = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.listenTo(this.app.vent, "update-opacity", this.updateOpacity);
-                console.log('MSV child initialize');
-                console.log(this.model);
                 this.render();
             },
             template: Handlebars.compile(SymbolStyleMenu),
@@ -27,14 +24,13 @@ define(["jquery",
                 'change #stroke-weight': 'updateStrokeWidth',
                 'change #stroke-opacity': 'updateStrokeOpacity'
             },
-            modelEvents: {
+            /*modelEvents: {
                 'change': 'updateLayerSymbols'
-            },
+            },*/
 
             tagName: "div",
             className: "table-row",
             templateHelpers: function () {
-                console.log(this.layer);
                 return {
                     dataType: this.dataType,
                     icons: IconLookup.getIcons(),
@@ -44,8 +40,6 @@ define(["jquery",
                 };
             },
             onRender: function () {
-                console.log('msv child render', this.model.get('stokeColor'));
-                console.log(this.model);
                 var that = this,
                     fillColor = this.model.get('fillColor'),
                     strokeColor = this.model.get('strokeColor'),
@@ -96,19 +90,13 @@ define(["jquery",
                 $(".colorpicker:last-child").addClass('marker-stroke-color-picker');
             },
             updateFillColor: function (newHex) {
-                console.log('updateFillColor');
                 this.model.set("fillColor", newHex);
-                this.rebuildMarkersAndSave();
-                // update-map goes to the msv view first
-                //this.app.vent.trigger('update-map');
             },
             updateShape: function () {
                 this.model.set("shape", this.$el.find('.marker-shape').val());
-                this.rebuildMarkersAndSave();
-                //this.app.vent.trigger('update-map'); //added
             },
             updateLayerSymbols: function () {
-                this.layer.setSymbol(this.model);
+                //this.layer.setSymbol(this.model);
                 this.render();
             },
             updateOpacity: function (e) {
@@ -119,73 +107,42 @@ define(["jquery",
                     opacity = 0;
                 }
                 this.model.set("fillOpacity", opacity);
-                this.rebuildMarkersAndSave();
             },
 
             updateStrokeWidth: function(e) {
                 this.model.set("strokeWeight", parseFloat($(e.target).val()));
-                this.rebuildMarkersAndSave();
             },
 
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
                 this.model.set("strokeColor", hex);
                 $('#stroke-color-picker').css('color', hex);
-                this.rebuildMarkersAndSave();
             },
 
             updateStrokeOpacity: function(e) {
                 var opacity = parseFloat($(e.target).val());
-                    if (opacity > 1) {
-                        opacity = 1;
-                    } else if (opacity < 0 ) {
-                        opacity = 0;
-                    }
+                if (opacity > 1) {
+                    opacity = 1;
+                } else if (opacity < 0 ) {
+                    opacity = 0;
+                }
                 this.model.set("strokeOpacity", opacity);
-                this.rebuildMarkersAndSave();
             },
 
             updateSize: function(e) {
                 var width = parseFloat($(e.target).val());
-                var that = this;
                 this.model.set('width', width);
-                // console.log('symbol: ', this.model);
-                // console.log('layer: ', this.layer);
-                //this.layer.save();
-                this.rebuildMarkersAndSave();
-                //this.updateSymbolAttribute("width", width);
-                //this.updateLayerSymbols();
-                //this.updateMap();
             },
             updateSymbolAttribute: function(key, value) {
                 this.model.set(key, value);
-                // var localMeta = this.model.get("metadata") || {},
-                //     that = this;
-                // localMeta[newKey] = newValue;
-                // this.model.set("metadata", localMeta);
-
-                // this.collection.each(function(symbol) {
-                //     symbol.set(newKey, newValue);
-                // });
-                // this.app.layerHasBeenAltered = true;
-                // this.app.layerHasBeenSaved = false;
-            },
-            updateMap: function () {
-                console.log('msv updateMap');
-                var that = this;
-                this.delayExecution("mapTimer", function () {
-                    that.layer.trigger('rebuild-markers')
-                }, 250);
             },
             showSymbols: function() {
                 this.indSymbolsView = new IndSymbolLayoutView({
                     app: this,
                     el: this.$el.find('#ind-symbol-dropdown')
                 });
-                console.log(this.symbolsView);
             },
             hideSymbolStyleMenu: function(e) {
-                console.log('hide symbol style');
                 this.app.vent.trigger('hide-symbol-style-menu', e);
             },
 

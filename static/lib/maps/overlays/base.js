@@ -47,24 +47,8 @@ define(["marionette",
             this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
         },
         getGoogleIcon: function () {
-            if (!this._icon) {
-                var icon,
-                    iconOpts = {
-                        //fillColor: '#ed867d', //this.model.get("color")
-                        fillOpacity: 1,
-                        strokeColor: '#fff',
-                        strokeWeight: 1,
-                        strokeOpacity: 1,
-                        shape: 'circle',
-                        fillColor: this.model.collection.fillColor,
-                        width: this.model.collection.size,
-                        height: this.model.collection.size
-                    };
-                _.extend(iconOpts, this.iconOpts);
-                icon = new Icon(iconOpts);
-                this._icon = icon;
-            }
-            return this._icon.generateGoogleIcon();
+            var icon = new Icon(this.symbol.toJSON());
+            return icon.generateGoogleIcon();
         },
 
         updateOverlay: function () {

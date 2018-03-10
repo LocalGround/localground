@@ -13,17 +13,16 @@ define(["jquery",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "update-opacity", this.updateSymbolOpacity);
-                console.log('MSV child initialize');
                 this.render();
             },
             template: Handlebars.compile(MarkerStyleChildTemplate),
             events: {
                 'change .marker-shape': 'updateShape',
-                'click .selected-symbol-div': 'showSymbols' 
+                'click .selected-symbol-div': 'showSymbols'
             },
-            modelEvents: {
+            /*modelEvents: {
                 'change': 'updateLayerSymbols'
-            },
+            },*/
 
             tagName: "div",
             className: "table-row",
@@ -64,16 +63,16 @@ define(["jquery",
             },
             updateFillColor: function (newHex) {
                 this.model.set("fillColor", newHex);
-                this.app.vent.trigger('update-map');
+                //this.app.vent.trigger('update-map');
             },
             updateShape: function () {
                 this.model.set("shape", this.$el.find('.marker-shape').val());
-                this.app.vent.trigger('update-map'); //added
+                //this.app.vent.trigger('update-map'); //added
             },
-            updateLayerSymbols: function () {
+            /*updateLayerSymbols: function () {
                 this.layer.setSymbol(this.model);
                 this.render();
-            },
+            },*/
             updateSymbolOpacity: function (opacity) {
                 this.model.set("fillOpacity", opacity);
             },
@@ -84,7 +83,7 @@ define(["jquery",
                 });
                 console.log(this.symbolsView);
             }
-        
+
 
         });
         return MarkerStyleChildView;
