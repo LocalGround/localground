@@ -1,7 +1,7 @@
 // Place your settings in this file to overwrite default and user settings.
 {
     "workbench.statusBar.visible": true,
-    "editor.wordWrap": true,
+    "editor.wordWrap": "on",
     "window.zoomLevel": 0,
     "workbench.colorTheme": "Hybrid Next",
     "workbench.colorCustomizations": {

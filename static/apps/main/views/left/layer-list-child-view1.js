@@ -91,7 +91,7 @@ define(["jquery",
                  */
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
 
-                this.listenTo(this.collection, 'show-hide-symbol', this.handleChildShowHide);
+                this.listenTo(this.collection, 'show-hide-symbol', this.isShowing);
             },
 
             handleAddNewRecord: function (model) {
@@ -353,10 +353,7 @@ define(["jquery",
             },
 
             handleChildShowHide: function () {
-                /*console.log(this.model);
-                var symb = this.collection.where({title: 'Spruce'});
-                console.log(symb[0].get('isShowing'));
-                console.log(this.model.get('symbols')[1].isShowing);*/
+                console.log(this.model);
 
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
 
@@ -381,16 +378,7 @@ define(["jquery",
             },
 
             saveChanges: function() {
-                console.log(this.model);
-                console.log('saving...', this.model);
-                var that = this;
                 this.model.save();
-                //this.model.set('symbols', new Symbols(this.collection.toJSON());
-                /*var that = this;
-                setTimeout(function() {
-                    that.model.save();
-                    console.log('MSV SAVE');
-                }, 2000);*/
             },
 
             onDestroy: function () {

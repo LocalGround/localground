@@ -5,7 +5,7 @@ define(["jquery",
         "lib/maps/icon-lookup",
         "apps/main/views/right/marker-style-view-child",
         "apps/main/views/symbols/symbol-selection-layout-view",
-        "text!../../templates/right/marker-style.html",
+        "text!../../templates/right/marker-style1.html",
         "collections/symbols",
         'color-picker-eyecon',
         "palette"
@@ -54,7 +54,12 @@ define(["jquery",
                  as continuous or categorical when no such cont. or cat. data is available
                  e.g. in case the user switches from a data source that has continuous data to one that doesn't
                 */
+
+                // this is the old properties list, with continuous and categorical properties separated into two different lists
                 var propertiesList = this.buildPropertiesList();
+
+                // this is the new properties list; all properties in a single list
+                this.dataColumnsList = this.buildDataColumnsList();
                 if (
                     (propertiesList[1].length === 0 && this.model.get('layer_type') === 'continuous') ||
                     (propertiesList[0].length === 0 && this.model.get('layer_type') === 'categorical')
@@ -150,7 +155,8 @@ define(["jquery",
                     icons: IconLookup.getIcons(),
                     selectedProp: this.selectedProp,
                     hasContinuousFields: (propertiesList[1].length > 0),
-                    hasCategoricalFields: (propertiesList[0].length > 0)
+                    hasCategoricalFields: (propertiesList[0].length > 0),
+                    dataColumnsList: this.dataColumnsList
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
@@ -233,6 +239,24 @@ define(["jquery",
                 //this.collection = new Symbols(this.model.get("symbols"));
                 this.collection = this.model.get('symbols');
                 this.render();
+            },
+
+            buildDataColumnsList: function() {
+                const key = this.model.get('data_source'),
+                    collection = this.app.dataManager.getCollection(key);
+                let dataColumns = [];
+
+                collection.getFields().models.forEach((record) => {
+                    var field = record.get("col_name");
+
+                    dataColumns.push({
+                        text: record.get("col_alias"),
+                        value: record.get("col_name"),
+                        hasData: this.fieldHasData(collection, field)
+                    });
+                });
+                console.log(dataColumns);
+                return dataColumns;
             },
 
             // builds list of properties/fields to populate property dropdown list
@@ -672,6 +696,7 @@ define(["jquery",
             },
 
             hideStyleMenu: function(e) {
+                console.log('hide menu');
                 this.app.vent.trigger('hide-style-menu', e);
             }
 

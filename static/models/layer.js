@@ -32,7 +32,6 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             } else {
                 console.warn("Layer Model Warning: without the map_id, the layer can't be saved to database");
             }
-            //this.set("symbols", this.initSymbolsCollection());
 		},
         set: function(key, val, options) {
               //save symbols to a temporary variable:
