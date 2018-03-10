@@ -67,8 +67,8 @@ define(["jquery",
 
 
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
-                this.collection = new Symbols(this.model.get("symbols"));
-
+                //this.collection = new Symbols(this.model.get("symbols"));
+                this.collection = this.model.get('symbols');
                 this.selectedProp = this.model.get('metadata').currentProp;
 
                 // important to render before createCorrectSymbol because createCorrectSymbol
@@ -183,8 +183,8 @@ define(["jquery",
 
             saveChanges: function() {
                 var that = this;
-                setTimeout(function() { 
-                    that.model.save(); 
+                setTimeout(function() {
+                    that.model.save();
                     console.log('MSV SAVE');
                 }, 2000);
             },
@@ -230,7 +230,8 @@ define(["jquery",
             },
 
             displaySymbols: function () {
-                this.collection = new Symbols(this.model.get("symbols"));
+                //this.collection = new Symbols(this.model.get("symbols"));
+                this.collection = this.model.get('symbols');
                 this.render();
             },
 
@@ -474,13 +475,14 @@ define(["jquery",
             },
 
             setSymbols: function (symbs) {
+                this.model.set("symbols", symbs);
                 this.collection = symbs;
                 console.log(this.collection);
                 console.log(this.model);
 
                 // since we're reassigning this.collection above, it's no longer pointing
                 // to model.get('symbols'), so we need to sync the model symbols to the new collection
-                this.syncModelSymbsToCollection();
+                //this.syncModelSymbsToCollection();
                 this.updateMapAndRender();
                 this.model.trigger('update-symbol-collection');
             },
@@ -632,9 +634,9 @@ define(["jquery",
             /* if the collection pointer changes (e.g. after a new symbol set is built),
                make sure the model symbols and the collection point to the same thing
             */
-            syncModelSymbsToCollection: function () {
+            /*syncModelSymbsToCollection: function () {
                 this.model.set("symbols", this.collection.toJSON());
-            },
+            },*/
 
             showPalettes: function () {
                 this.$el.find(".palette-wrapper").css({display: 'block'});

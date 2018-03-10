@@ -141,7 +141,8 @@ define(["jquery",
 
             updateMapOverlays: function () {
                 console.log('update map overlays');
-                this.collection = new Symbols(this.model.get('symbols'));
+                //this.collection = new Symbols(this.model.get('symbols'));
+                this.collection = this.model.get('symbols');
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
                 this.initMapOverlays();

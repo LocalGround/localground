@@ -7,7 +7,8 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
      * Attributes: id, name, caption, overlay_type, tags, owner, slug, access, symbols
      */
     var Layer = Base.extend({
-		defaults: _.extend({}, Base.prototype.defaults, {
+        UNCATEGORIZED_SYMBOL_RULE: '¯\_(ツ)_/¯',
+        defaults: _.extend({}, Base.prototype.defaults, {
             isVisible: false,
             metadata: {
                 buckets: 4,
@@ -21,9 +22,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
                 shape: "circle",
                 isShowing: false
             },
-            symbols: []
         }),
-        symbolMap: null,
         basic: false,
         initialize: function (data, opts) {
 			Base.prototype.initialize.apply(this, arguments);
@@ -33,98 +32,65 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             } else {
                 console.warn("Layer Model Warning: without the map_id, the layer can't be saved to database");
             }
-            this.buildSymbolMap();
-            //this.on("change:symbols", this.rebuildSymbolMap);
+            //this.set("symbols", this.initSymbolsCollection());
 		},
+        set: function(key, val, options) {
+              //save symbols to a temporary variable:
+              var symbols;
+              if (typeof key === 'object' && key.symbols) {
+                  symbols = key.symbols;
+                  delete key.symbols;
+              } else if (key === 'symbols') {
+                  symbols = val;
+                  key = null;
+              }
+
+              //call default save functionality:
+              Base.prototype.set.apply(this, arguments);
+
+              //build symbols collection if it doesn't already exist:
+              if (!this.get("symbols") && symbols) {
+                  const collection = new Symbols(symbols.map((symbolJSON, i) => {
+                      symbolJSON.id = symbolJSON.id || (i + 1);
+                      return symbolJSON;
+                  }))
+                  this.uncategorizedSymbol = collection.findWhere({ rule: this.UNCATEGORIZED_SYMBOL_RULE });
+                  if (!this.uncategorizedSymbol) {
+                      this.uncategorizedSymbol = new Symbol({
+                          rule: this.UNCATEGORIZED_SYMBOL_RULE,
+                          title: 'Uncategorized'
+                      });
+                      collection.add(this.uncategorizedSymbol);
+                  }
+                  this.set("symbols", collection);
+              }
+        },
         applyDefaults: function () {
             var currentMetadata = _.clone(this.get("metadata")),
                 defaults = _.clone(this.defaults.metadata);
             _.extend(defaults, currentMetadata);
             this.set("metadata", defaults);
         },
-		validate: function (attrs) {
-            //if symbols is an array or it's null or it's empty, raise an exception:
-            if (!_.isArray(attrs.symbols) || _.isNull(attrs.symbols) || attrs.symbols.length == 0) {
-                return 'Layer.symbols must be a JSON array with at least one entry';
-            }
-            //if valid, returns null;
-            return null;
-		},
-
-        rebuildSymbolMap: function () {
-            this.symbolMap = null;
-            this.buildSymbolMap();
-        },
-        buildSymbolMap: function () {
-            //set the basic flag:
-            if (this.get("symbols").length == 1) {
-                this.basic = true;
-            }
-            if (!this.symbolMap) {
-                this.symbolMap = {};
-                var i = 0,
-                    symbols = this.get("symbols"),
-                    symbol;
-                for (i = 0; i < symbols.length; i++) {
-                    symbol = symbols[i];
-                    symbol.id = symbol.id || (i + 1);
-                    this.symbolMap['symbol_' + symbol.id] = new Symbol(symbols[i]);
-                }
-            }
-        },
-
-        getSymbols: function () {
-            return new Symbols(_.values(this.symbolMap));
-        },
-        getSymbolsJSON: function () {
-            var symbolsJSON = [];
-            this.getSymbols().each(function (symbol) {
-                symbolsJSON.push(symbol.getSymbolJSON());
-            });
-            return symbolsJSON;
-        },
-
-        getSymbol: function (id) {
-            return this.symbolMap['symbol_' + id];
-        },
-        setSymbol: function (model) {
-            this.symbolMap['symbol_' + model.id] = model;
-            this.set("symbols", this.getSymbols().toJSON());
-        },
-
-        getSymbolMap: function () {
-            return this.symbolMap;
-        },
-
+        //kill this hideSymbols method?
         hideSymbols: function () {
-            this.getSymbols().each(function (symbol) {
+            this.get("symbols").each(function (symbol) {
                 symbol.isShowingOnMap = false;
             });
         },
-
+        //kill this showSymbols method?
         showSymbols: function () {
-            this.getSymbols().each(function (symbol) {
+            this.get("symbols").each(function (symbol) {
                 symbol.isShowingOnMap = true;
             });
         },
         toJSON: function () {
             var json = Base.prototype.toJSON.call(this);
-
-            // extra code to remove icon references
-            // to avoid JSON serialization errors:
-            json.symbols = JSON.stringify(this.getSymbolsJSON());
+            json.symbols = JSON.stringify(this.get("symbols").toJSON());
             json.metadata = JSON.stringify(json.metadata);
-
-            // serialize filters also:
             if (json.filters !== null) {
                 json.filters = JSON.stringify(json.filters);
             }
             return json;
-        },
-        save: function (attrs, opts) {
-            console.log(this.attributes);
-            Base.prototype.save.apply(this, arguments);
-            //console.log("done");
         }
     });
     return Layer;

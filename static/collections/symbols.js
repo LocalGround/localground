@@ -9,8 +9,9 @@ define(["underscore", "models/symbol", "collections/base"], function (_, Symbol,
         name: 'Symbols',
         key: 'symbols',
         initialize: function (recs, opts) {
+            console.log(recs);
             _.extend(this, opts);
-            Base.prototype.initialize.apply(this, arguments);
+            Base.prototype.initialize.apply(this, recs, opts);
         }
     });
     return Symbols;

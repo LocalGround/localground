@@ -40,6 +40,8 @@ define(["jquery",
                     return;
                 }
                 this.generateSymbols();
+                this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
+                this.listenTo(this.collection, 'show-hide-symbol', this.handleChildShowHide);
             },
 
             childView: SymbolView,
@@ -50,15 +52,12 @@ define(["jquery",
                     app: this.app,
                     collection: this.collection,
                     layerId: this.model.id,
+                    layer: this.model
                 };
             },
             generateSymbols: function () {
-                var that = this;
-                this.uncategorizedSymbol = new Symbol({
-                    rule: 'misc',
-                    title: 'Uncategorized'
-                });
-                this.collection.add(this.uncategorizedSymbol);
+                const that = this;
+                const uncategorizedSymbol = this.model.uncategorizedSymbol;
                 this.dataCollection.each(function (recordModel) {
                     var matched = false;
                     that.symbolModels.each(function (symbolModel) {
@@ -68,16 +67,17 @@ define(["jquery",
                         }
                     })
                     if (!matched) {
-                        that.uncategorizedSymbol.addModel(recordModel);
+                        uncategorizedSymbol.addModel(recordModel);
                     }
                 });
             },
 
             updateMapOverlays: function () {
                 console.log('update map overlays');
-                this.collection = new Symbols(this.model.get('symbols'), {
+                /*this.collection = new Symbols(this.model.get('symbols'), {
                     projectID: this.app.selectedProjectID
-                });
+                });*/
+                this.collection = this.model.get('symbols')
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
                 this.initMapOverlays();
@@ -86,7 +86,7 @@ define(["jquery",
                 }
 
                 /**
-                 * if any the this layer's symbols are not displaying, 
+                 * if any the this layer's symbols are not displaying,
                  * then the layer's isShowing' attribute should be false
                  */
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
@@ -207,6 +207,7 @@ define(["jquery",
             },
 
             initMapOverlays: function () {
+                return;
                 // create an MarkerOverlays for each symbol in the
                 // layer.
                 console.log('initMapOverlays');
@@ -216,16 +217,16 @@ define(["jquery",
                     that = this,
                     dataSource = this.model.get("data_source"),
                     dataCollection = this.app.dataManager.getCollection(dataSource),
-                    symbols = this.model.getSymbols();
-                    const currentProp = this.model.get('metadata').currentProp
-                    const dataIds = dataCollection.map(function(model) {
+                    //symbols = this.model.get("symbols"), //getSymbols();
+                    currentProp = this.model.get('metadata').currentProp
+                    dataIds = dataCollection.map(function(model) {
                         return model.id
                     });
                     let representedIds = [];
 
                 console.log(symbols);
                 console.log(this.collection);
-                symbols.each(function (symbol) {
+                this.collection.each(function (symbol) {
                     //console.log(symbol.id, symbol.get('title'));
                     matchedCollection = new dataCollection.constructor(null, {
                         url: "dummy",
@@ -338,7 +339,7 @@ define(["jquery",
                 this.collection.each((symbol) => {
                     symbol.set('isShowing', isShowing);
                 });
-                
+
                 if (this.model.get("metadata").isShowing) {
                     this.children.each(function(childView) {
                         childView.showOverlays();
@@ -352,13 +353,13 @@ define(["jquery",
             },
 
             handleChildShowHide: function () {
-                console.log(this.model);
+                /*console.log(this.model);
                 var symb = this.collection.where({title: 'Spruce'});
                 console.log(symb[0].get('isShowing'));
-                console.log(this.model.get('symbols')[1].isShowing);
+                console.log(this.model.get('symbols')[1].isShowing);*/
 
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
-                
+
                 this.saveChanges();
                 this.render();
             },
@@ -381,12 +382,15 @@ define(["jquery",
 
             saveChanges: function() {
                 console.log(this.model);
-                this.model.set('symbols', this.collection.toJSON());
+                console.log('saving...', this.model);
                 var that = this;
-                setTimeout(function() { 
-                    that.model.save(); 
+                this.model.save();
+                //this.model.set('symbols', new Symbols(this.collection.toJSON());
+                /*var that = this;
+                setTimeout(function() {
+                    that.model.save();
                     console.log('MSV SAVE');
-                }, 2000);
+                }, 2000);*/
             },
 
             onDestroy: function () {
