@@ -101,6 +101,7 @@ define(["jquery",
 
             showHideOverlays: function () {
                 this.model.set("isShowing", this.$el.find('input').prop('checked'));
+                this.trigger('visibilityChanged');
                 this.layer.save();
             },
             onDestroy: function () {

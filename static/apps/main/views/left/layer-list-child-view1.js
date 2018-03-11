@@ -24,7 +24,10 @@ define(["jquery",
 
             collectionEvents: {
                 'reset': 'reRender',
-                'show-hide-symbol': 'handleChildShowHide'
+                //'show-hide-symbol': 'handleChildShowHide'
+            },
+            test: function () {
+                alert('test')
             },
             events: {
                 //edit event here, pass the this.model to the right panel
@@ -32,6 +35,12 @@ define(["jquery",
                 'click .layer-delete' : 'deleteLayer',
                 'change .layer-isShowing': 'showHideOverlays',
                 'click #layer-style-by': 'showStyleByMenu'
+            },
+            childEvents: {
+                visibilityChanged: function () {
+                    console.log('visibilityChanged!');
+                    this.handleChildShowHide();
+                }
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -178,42 +187,40 @@ define(["jquery",
 
                 this.model.get("metadata").isShowing = isShowing;
 
-                this.collection.each((symbol) => {
-                    symbol.set('isShowing', isShowing);
-                });
+                this.children.each(function(childView) {
+                    var symbol = childView.model;
 
-                if (this.model.get("metadata").isShowing) {
-                    this.children.each(function(childView) {
-                        childView.showOverlays();
-                    })
-                } else {
-                    this.children.each(function(childView) {
-                        childView.hideOverlays();
-                    });
-                }
+                    //if childView already matches parent, do nothing; iterate:
+                    if (symbol.get("isShowing") === isShowing) {
+                        return;
+                    }
+
+                    // otherwise, set flag, toggle, render, and save:
+                    symbol.set('isShowing', isShowing);
+                    childView.redrawOverlays();
+                    childView.render();
+                })
                 this.saveChanges();
             },
 
             handleChildShowHide: function () {
-
-                this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
-
+                this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying();
                 this.saveChanges();
-                this.render();
+                //this.render(); //too expensive
+                this.toggleCheckbox();
             },
-
+            toggleCheckbox: function () {
+                this.$el.find('.layer-isShowing').prop('checked', this.model.get('metadata').isShowing);
+            },
             allSymbolsAreDisplaying: function(collection) {
-                let symbolsNotShowingList = [];
-                collection.each(function(symbol) {
-                    if(!symbol.get('isShowing')) {
-                        symbolsNotShowingList.push(symbol.id);
-                    }
+                var isShowing = true;
+                this.collection.each( model => {
+                    console.log(model.get("rule"), model.get("isShowing"));
+                    isShowing = isShowing && (
+                        model.get("isShowing") || model.getModelsJSON().length === 0
+                    );
                 });
-                if (symbolsNotShowingList.length > 0) {
-                    return false;
-                } else {
-                    return true;
-                }
+                return isShowing;
             },
 
             saveChanges: function() {

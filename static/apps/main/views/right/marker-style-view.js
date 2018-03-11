@@ -384,6 +384,7 @@ define(["jquery",
                         "shape": this.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + this.selectedColorPalette[counter],
                         "strokeColor": this.model.get("metadata").strokeColor,
+                        "isShowing": this.model.get("metadata").isShowing,
                         "id": (counter + 1)
                     });
                     counter++;
@@ -409,6 +410,7 @@ define(["jquery",
                         "shape": that.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + that.selectedColorPalette[paletteCounter % 8],
                         "strokeColor": that.model.get("metadata").strokeColor,
+                        "isShowing": this.model.get("metadata").isShowing,
                         "id": idCounter,
                         "instanceCount": cat.instanceCount[item]
                     });
@@ -483,6 +485,7 @@ define(["jquery",
                     "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
                     "strokeColor": this.model.get("metadata").strokeColor,
                     'width': this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
+                    "isShowing": this.model.get("metadata").isShowing,
                     "id": 1
                 }]);
                 this.layerNoLongerNew();
