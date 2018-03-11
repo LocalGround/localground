@@ -35,6 +35,7 @@ define(["marionette",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log('Initializing LayerListChildView:', this.model.get("title"));
                 this.symbolModels = this.collection;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
                 if (!this.model || !this.collection || !this.dataCollection) {
@@ -89,7 +90,6 @@ define(["marionette",
                         uncategorizedSymbol.addModel(recordModel);
                     }
                 });
-                this.render();
             },
             assignRecordToSymbol: function (recordModel) {
                 var symbolView;

@@ -23,6 +23,7 @@ define(['marionette',
             },
 
             initialize: function (opts) {
+                console.log('Initializing MarkerOverlays:', this.model.get('title'))
                 _.extend(this, opts);
                 this.template = Handlebars.compile("<div>{{id}}</div>");
                 this.opts = opts;
@@ -92,6 +93,9 @@ define(['marionette',
                 if (!bounds.isEmpty()) {
                     this.map.fitBounds(bounds);
                 }
+            },
+            onDestroy: function () {
+                this.hideAll();
             }
 
         });

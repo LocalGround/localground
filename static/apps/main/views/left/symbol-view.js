@@ -13,9 +13,10 @@ define(["jquery",
          * (One symbol-view is instantiated for each Symbol object).
          * (A symbol-view will display all the markers that match its rules/criteria)
          */
-        var SymbolSet =  Marionette.ItemView.extend({
+        var SymbolView =  Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log('Initializing SymbolView:', this.model.get('title'))
                 this.createMarkerOverlays();
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
@@ -102,8 +103,9 @@ define(["jquery",
                 this.trigger('isShowing:changed'); //notify parent layer
             },
             onDestroy: function () {
-                this.hideOverlays();
+                console.log('Destroying MarkerOverlays:', this.model.get('title'))
+                this.markerOverlays.destroy();
             }
         });
-        return SymbolSet;
+        return SymbolView;
     });
