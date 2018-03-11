@@ -89,8 +89,13 @@ define(["jquery",
                 });
                 $(".colorpicker:last-child").addClass('marker-stroke-color-picker');
             },
-            updateFillColor: function (newHex) {
-                this.model.set("fillColor", newHex);
+            updateFillColor: function (hex) {
+                this.model.set("fillColor", hex);
+                $('#fill-color-picker').css('color', hex);
+            },
+            updateStrokeColor: function (hex) {
+                this.model.set("strokeColor", hex);
+                $('#stroke-color-picker').css('color', hex);
             },
             updateShape: function () {
                 this.model.set("shape", this.$el.find('.marker-shape').val());
@@ -111,12 +116,6 @@ define(["jquery",
 
             updateStrokeWidth: function(e) {
                 this.model.set("strokeWeight", parseFloat($(e.target).val()));
-            },
-
-            // triggered from colorPicker
-            updateStrokeColor: function (hex) {
-                this.model.set("strokeColor", hex);
-                $('#stroke-color-picker').css('color', hex);
             },
 
             updateStrokeOpacity: function(e) {

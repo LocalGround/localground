@@ -46,7 +46,9 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
             },
             set: function(key, val, options) {
                 if (this.get('icon')) {
-                    if (['fillColor', 'shape', 'markerSize', 'fillOpacity', 'strokeWeight'].indexOf(key) !== -1) {
+                    if ([
+                        'fillColor', 'strokeColor', 'shape', 'markerSize',
+                        'fillOpacity', 'strokeWeight'].indexOf(key) !== -1) {
                         this.get('icon')[key] = val;
                     }
                 }

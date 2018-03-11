@@ -16,11 +16,10 @@ define([
             Base.prototype.initialize.apply(this, arguments);
             // this is what redraws a marker when you select it
             this.redraw();
-            this.listenTo(this.symbol, 'change:fillColor', this.redraw);
-            this.listenTo(this.symbol, 'change:shape', this.redraw);
-            this.listenTo(this.symbol, 'change:width', this.redraw);
-            this.listenTo(this.symbol, 'change:fillOpacity', this.redraw);
-            this.listenTo(this.symbol, 'change:strokeWeight', this.redraw);
+            ['fillColor', 'strokeColor', 'shape', 'markerSize',
+            'fillOpacity', 'strokeWeight'].forEach(attr => {
+                this.listenTo(this.symbol, `change:${attr}`, this.redraw);
+            });
         },
 
         initInfoBubble: function (opts) {

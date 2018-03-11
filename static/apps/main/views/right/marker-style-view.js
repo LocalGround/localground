@@ -609,6 +609,13 @@ define(["jquery",
                 this.updateMap();
             },
 
+            // triggered from colorPicker
+            updateStrokeColor: function (hex) {
+                this.updateMetadata("strokeColor", hex);
+                $('#stroke-color-picker').css('color', hex);
+                this.updateMap();
+            },
+
             updateStrokeOpacity: function(e) {
                 var opacity = parseFloat($(e.target).val());
                     if (opacity > 1) {
@@ -617,13 +624,6 @@ define(["jquery",
                         opacity = 0;
                     }
                 this.updateMetadata("strokeOpacity", opacity);
-                this.updateMap();
-            },
-
-            // triggered from colorPicker
-            updateStrokeColor: function (hex) {
-                this.updateMetadata("strokeColor", hex);
-                $('#stroke-color-picker').css('color', hex);
                 this.updateMap();
             },
 

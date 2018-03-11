@@ -20,26 +20,27 @@ define(["jquery",
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
-                //this.listenTo(this.model, "change:title", this.render);
-
             },
             events: {
                 //edit event here, pass the this.model to the right panel
                 'click .layer-delete' : 'deleteLayer',
-                'change .symbol-isShowing': 'showHideOverlays',
-                'click .symbol-edit': 'showSymbolEditMenu'
+                'click .symbol-edit': 'showSymbolEditMenu',
+                'change .symbol-isShowing': 'showHideOverlays'
             },
-            modelEvents: {
-                'change:isShowing': 'render',
-                'change:fillColor': 'saveAndRender',
-                'change:shape': 'saveAndRender',
-                'change:width': 'saveAndRender',
-                'change:fillOpacity': 'saveAndRender',
-                'change:strokeWeight': 'saveAndRender',
-                'change:title': 'render'
+            modelEvents: function () {
+                const events = {
+                    'change:isShowing': 'redrawOverlays',
+                    'change:title': 'render'
+                };
+                [
+                    'fillColor', 'strokeColor', 'shape', 'width',
+                    'fillOpacity', 'strokeWeight'
+                ].forEach(attr => {
+                    events[`change:${attr}`] = 'saveAndRender';
+                })
+                return events;
             },
-            onRender: function () {
-                console.log('rendering...');
+            redrawOverlays: function () {
                 if (this.model.get("isShowing")) {
                     this.showOverlays();
                 } else {
