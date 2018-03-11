@@ -203,10 +203,6 @@ define(["marionette",
 
             saveChanges: function() {
                 this.model.save();
-            },
-
-            onDestroy: function () {
-                this.hideOverlays();
             }
         });
         return LayerListChild;
