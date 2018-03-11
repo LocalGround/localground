@@ -410,7 +410,7 @@ define(["jquery",
                         "shape": that.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + that.selectedColorPalette[paletteCounter % 8],
                         "strokeColor": that.model.get("metadata").strokeColor,
-                        "isShowing": this.model.get("metadata").isShowing,
+                        "isShowing": that.model.get("metadata").isShowing,
                         "id": idCounter,
                         "instanceCount": cat.instanceCount[item]
                     });

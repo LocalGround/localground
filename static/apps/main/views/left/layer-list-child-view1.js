@@ -1,15 +1,11 @@
-define(["jquery",
-        "marionette",
+define(["marionette",
         "handlebars",
-        'lib/maps/marker-overlays',
         "text!../../templates/left/layer-item.html",
         "models/symbol",
         "models/record",
-        "collections/symbols",
         "apps/main/views/left/symbol-view",
-        "apps/main/views/right/marker-style-view"
     ],
-    function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate, Symbol, Record, Symbols, SymbolView, MarkerStyleView) {
+    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -21,7 +17,6 @@ define(["jquery",
          //TODO: Everytime 'rebuild-markers' event triggered, create a new
          // layerListView
         var LayerListChild =  Marionette.CompositeView.extend({
-
             collectionEvents: {
                 'reset': 'reRender'
             },
@@ -73,9 +68,15 @@ define(["jquery",
                     layer: this.model
                 };
             },
+            getUncategorizedSymbolModel: function () {
+                return this.symbolModels.findWhere({
+                    rule: Symbol.UNCATEGORIZED_SYMBOL_RULE
+                });
+            },
             assignRecordsToSymbols: function () {
                 const that = this;
-                this.uncategorizedSymbol = this.model.uncategorizedSymbol;
+                const uncategorizedSymbol = this.getUncategorizedSymbolModel();
+
                 this.dataCollection.each(function (recordModel) {
                     var matched = false;
                     that.symbolModels.each(function (symbolModel) {
@@ -85,9 +86,10 @@ define(["jquery",
                         }
                     })
                     if (!matched) {
-                        that.uncategorizedSymbol.addModel(recordModel);
+                        uncategorizedSymbol.addModel(recordModel);
                     }
                 });
+                this.render();
             },
             assignRecordToSymbol: function (recordModel) {
                 var symbolView;
@@ -98,7 +100,9 @@ define(["jquery",
                     }
                 })
                 if (!symbolView) {
-                    symbolView = this.children.findByModel(this.uncategorizedSymbol);
+                    symbolView = this.children.findByModel(
+                        this.getUncategorizedSymbolModel()
+                    );
                 }
                 symbolView.model.addModel(recordModel);
                 symbolView.render();

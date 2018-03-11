@@ -53,13 +53,13 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
                       symbolJSON.id = symbolJSON.id || (i + 1);
                       return symbolJSON;
                   }))
-                  this.uncategorizedSymbol = collection.findWhere({ rule: this.UNCATEGORIZED_SYMBOL_RULE });
-                  if (!this.uncategorizedSymbol) {
-                      this.uncategorizedSymbol = new Symbol({
+                  const uncategorizedSymbol = collection.findWhere({ rule: this.UNCATEGORIZED_SYMBOL_RULE });
+                  if (!uncategorizedSymbol) {
+                      uncategorizedSymbol = new Symbol({
                           rule: this.UNCATEGORIZED_SYMBOL_RULE,
                           title: 'Uncategorized'
                       });
-                      collection.add(this.uncategorizedSymbol);
+                      collection.add(uncategorizedSymbol);
                   }
                   this.set("symbols", collection);
               }

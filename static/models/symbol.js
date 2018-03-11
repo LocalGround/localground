@@ -81,6 +81,8 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
             getModelsJSON: function () {
                 return this.matchedModels.toJSON();
             }
+        }, {
+            UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯'
         });
         return Symbol;
     });
