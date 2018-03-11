@@ -23,11 +23,7 @@ define(["jquery",
         var LayerListChild =  Marionette.CompositeView.extend({
 
             collectionEvents: {
-                'reset': 'reRender',
-                //'show-hide-symbol': 'handleChildShowHide'
-            },
-            test: function () {
-                alert('test')
+                'reset': 'reRender'
             },
             events: {
                 //edit event here, pass the this.model to the right panel
@@ -37,7 +33,7 @@ define(["jquery",
                 'click #layer-style-by': 'showStyleByMenu'
             },
             childEvents: {
-                visibilityChanged: function () {
+                'isShowing:changed': function () {
                     console.log('visibilityChanged!');
                     this.handleChildShowHide();
                 }
@@ -53,9 +49,7 @@ define(["jquery",
                 this.assignRecordsToSymbols();
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
             },
-            markerOverlayList: null,
             template: Handlebars.compile(LayerItemTemplate),
-            tagName: "div",
             templateHelpers: function () {
                 return {
                     name: this.dataCollection.name,
@@ -163,25 +157,6 @@ define(["jquery",
                 }
                 this.app.vent.trigger('show-style-menu', this.model, coords);
             },
-
-            showOverlays: function () {
-                _.each(this.markerOverlayList, function (overlays) {
-                    overlays.showAll();
-                });
-            },
-
-            hideOverlays: function () {
-                _.each(this.markerOverlayList, function (overlays) {
-                    overlays.hideAll();
-                });
-            },
-
-            deleteOverlays: function () {
-                _.each(this.markerOverlayList, function (overlays) {
-                    overlays.remove();
-                });
-            },
-
             showHideOverlays: function () {
                 const isShowing = this.$el.find('input').prop('checked');
 
@@ -206,8 +181,8 @@ define(["jquery",
             handleChildShowHide: function () {
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying();
                 this.saveChanges();
-                //this.render(); //too expensive
                 this.toggleCheckbox();
+                //this.render(); //too expensive
             },
             toggleCheckbox: function () {
                 this.$el.find('.layer-isShowing').prop('checked', this.model.get('metadata').isShowing);
@@ -215,7 +190,6 @@ define(["jquery",
             allSymbolsAreDisplaying: function(collection) {
                 var isShowing = true;
                 this.collection.each( model => {
-                    console.log(model.get("rule"), model.get("isShowing"));
                     isShowing = isShowing && (
                         model.get("isShowing") || model.getModelsJSON().length === 0
                     );

@@ -67,13 +67,12 @@ define(["jquery",
                     collection: this.model.getModels(),
                     app: this.app,
                     isShowing: this.model.get('isShowing'),
-                    displayOverlays: true,
+                    displayOverlays: this.model.get('isShowing'),
                     model: this.model
                 });
             },
 
             saveAndRender: function () {
-                console.log('save and render');
                 this.layer.save();
                 this.render();
             },
@@ -98,11 +97,9 @@ define(["jquery",
                     overlays.remove();
                 });
             },
-
             showHideOverlays: function () {
                 this.model.set("isShowing", this.$el.find('input').prop('checked'));
-                this.trigger('visibilityChanged');
-                this.layer.save();
+                this.trigger('isShowing:changed'); //notify parent layer
             },
             onDestroy: function () {
                 this.hideOverlays();
