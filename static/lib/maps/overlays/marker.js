@@ -12,9 +12,14 @@ define([
     var Marker = Base.extend({
 
         initialize: function (opts) {
+            _.extend(this, opts);
             Base.prototype.initialize.apply(this, arguments);
             // this is what redraws a marker when you select it
             this.redraw();
+            ['fillColor', 'strokeColor', 'shape', 'width',
+            'fillOpacity', 'strokeWeight'].forEach(attr => {
+                this.listenTo(this.symbol, `change:${attr}`, this.redraw);
+            });
         },
 
         initInfoBubble: function (opts) {

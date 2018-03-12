@@ -13,17 +13,40 @@ define(["jquery",
          * (One symbol-view is instantiated for each Symbol object).
          * (A symbol-view will display all the markers that match its rules/criteria)
          */
-        var SymbolSet =  Marionette.ItemView.extend({
+        var SymbolView =  Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this);
-                console.log(this.model.get('isShowing'));
+                console.log('Initializing SymbolView:', this.model.get('title'))
                 this.createMarkerOverlays();
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
-                this.listenTo(this.model, "change:title", this.render);
-
+            },
+            events: {
+                //edit event here, pass the this.model to the right panel
+                'click .layer-delete' : 'deleteLayer',
+                'click .symbol-edit': 'showSymbolEditMenu',
+                'change .symbol-isShowing': 'showHideOverlays'
+            },
+            modelEvents: function () {
+                const events = {
+                    'change:isShowing': 'redrawOverlays',
+                    'change:title': 'render'
+                };
+                [
+                    'fillColor', 'strokeColor', 'shape', 'width', 'markerSize',
+                    'fillOpacity', 'strokeWeight'
+                ].forEach(attr => {
+                    events[`change:${attr}`] = 'saveAndRender';
+                })
+                return events;
+            },
+            redrawOverlays: function () {
+                if (this.model.get("isShowing")) {
+                    this.showOverlays();
+                } else {
+                    this.hideOverlays();
+                }
             },
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
@@ -31,6 +54,7 @@ define(["jquery",
                 const rule = this.model.get('rule')
                 name = this.collection.name;
                 return {
+                    empty: this.model.getModelsJSON().length === 0,
                     name: name,
                     icon: this.model.get('icon'),
                     markerList: this.model.getModelsJSON(),
@@ -38,30 +62,24 @@ define(["jquery",
                     isChecked: this.model.get("isShowing")
                 }
             },
-            events: {
-                //edit event here, pass the this.model to the right panel
-                'click .layer-delete' : 'deleteLayer',
-                'change .symbol-isShowing': 'showHideOverlays',
-                'click .symbol-edit': 'showSymbolEditMenu'
-            },
-            
-            modelEvents: {
-                'change:isShowing': 'render'
-            },
 
             createMarkerOverlays: function() {
                 this.markerOverlays = new MarkerOverlays({
                     collection: this.model.getModels(),
                     app: this.app,
-                    iconOpts: this.model.toJSON(),
-                    isShowing: false,
-                    displayOverlays: true
+                    isShowing: this.model.get('isShowing'),
+                    displayOverlays: this.model.get('isShowing'),
+                    model: this.model
                 });
             },
 
-            showSymbolEditMenu: function (event) {
-                console.log('child show styebyMenu', this.model);
+            saveAndRender: function () {
+                console.log('save and render...');
+                this.layer.save();
+                this.render();
+            },
 
+            showSymbolEditMenu: function (event) {
                 const coords = {
                     x: event.clientX,
                     y: event.clientY
@@ -81,15 +99,14 @@ define(["jquery",
                     overlays.remove();
                 });
             },
-
             showHideOverlays: function () {
                 this.model.set("isShowing", this.$el.find('input').prop('checked'));
-                if (this.model.get("isShowing")) {
-                    this.showOverlays();
-                } else {
-                    this.hideOverlays();
-                }
+                this.trigger('isShowing:changed'); //notify parent layer
+            },
+            onDestroy: function () {
+                console.log('Destroying MarkerOverlays:', this.model.get('title'))
+                this.markerOverlays.destroy();
             }
         });
-        return SymbolSet;
+        return SymbolView;
     });

@@ -60,7 +60,7 @@ define(["marionette",
                 }
                 try {
                     this.model.set("symbols", sourceCode);
-                    this.model.trigger('rebuild-markers');
+                    this.model.trigger('rebuild-markers', this.model);
                 } catch (e2) {
                     alert('Invalid icon shape specified. Please revert and try again.');
                 }

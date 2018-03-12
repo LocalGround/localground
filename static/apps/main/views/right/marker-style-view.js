@@ -5,7 +5,7 @@ define(["jquery",
         "lib/maps/icon-lookup",
         "apps/main/views/right/marker-style-view-child",
         "apps/main/views/symbols/symbol-selection-layout-view",
-        "text!../../templates/right/marker-style.html",
+        "text!../../templates/right/marker-style1.html",
         "collections/symbols",
         'color-picker-eyecon',
         "palette"
@@ -54,7 +54,12 @@ define(["jquery",
                  as continuous or categorical when no such cont. or cat. data is available
                  e.g. in case the user switches from a data source that has continuous data to one that doesn't
                 */
+
+                // this is the old properties list, with continuous and categorical properties separated into two different lists
                 var propertiesList = this.buildPropertiesList();
+
+                // this is the new properties list; all properties in a single list
+                this.dataColumnsList = this.buildDataColumnsList();
                 if (
                     (propertiesList[1].length === 0 && this.model.get('layer_type') === 'continuous') ||
                     (propertiesList[0].length === 0 && this.model.get('layer_type') === 'categorical')
@@ -67,8 +72,8 @@ define(["jquery",
 
 
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
-                this.collection = new Symbols(this.model.get("symbols"));
-
+                //this.collection = new Symbols(this.model.get("symbols"));
+                this.collection = this.model.get('symbols');
                 this.selectedProp = this.model.get('metadata').currentProp;
 
                 // important to render before createCorrectSymbol because createCorrectSymbol
@@ -150,7 +155,8 @@ define(["jquery",
                     icons: IconLookup.getIcons(),
                     selectedProp: this.selectedProp,
                     hasContinuousFields: (propertiesList[1].length > 0),
-                    hasCategoricalFields: (propertiesList[0].length > 0)
+                    hasCategoricalFields: (propertiesList[0].length > 0),
+                    dataColumnsList: this.dataColumnsList
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
@@ -177,17 +183,17 @@ define(["jquery",
                // 'click .palette-list *': 'selectPalette'
             },
 
-            // modelEvents: {
-            //     'change:symbols': 'saveChanges'
-            // },
+            modelEvents: {
+                'change:symbols': 'saveChanges'
+            },
 
-            // saveChanges: function() {
-            //     var that = this;
-            //     setTimeout(function() {
-            //         that.model.save();
-            //         console.log('MSV SAVE');
-            //     }, 2000);
-            // },
+            saveChanges: function() {
+                var that = this;
+                setTimeout(function() {
+                    that.model.save();
+                    console.log('MSV SAVE');
+                }, 2000);
+            },
 
             showSymbols: function (e) {
                 this.symbolsView = new SymbolSelectionLayoutView({
@@ -230,8 +236,27 @@ define(["jquery",
             },
 
             displaySymbols: function () {
-                this.collection = new Symbols(this.model.get("symbols"));
+                //this.collection = new Symbols(this.model.get("symbols"));
+                this.collection = this.model.get('symbols');
                 this.render();
+            },
+
+            buildDataColumnsList: function() {
+                const key = this.model.get('data_source'),
+                    collection = this.app.dataManager.getCollection(key);
+                let dataColumns = [];
+
+                collection.getFields().models.forEach((record) => {
+                    var field = record.get("col_name");
+
+                    dataColumns.push({
+                        text: record.get("col_alias"),
+                        value: record.get("col_name"),
+                        hasData: this.fieldHasData(collection, field)
+                    });
+                });
+                console.log(dataColumns);
+                return dataColumns;
             },
 
             // builds list of properties/fields to populate property dropdown list
@@ -359,6 +384,7 @@ define(["jquery",
                         "shape": this.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + this.selectedColorPalette[counter],
                         "strokeColor": this.model.get("metadata").strokeColor,
+                        "isShowing": this.model.get("metadata").isShowing,
                         "id": (counter + 1)
                     });
                     counter++;
@@ -384,6 +410,7 @@ define(["jquery",
                         "shape": that.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + that.selectedColorPalette[paletteCounter % 8],
                         "strokeColor": that.model.get("metadata").strokeColor,
+                        "isShowing": that.model.get("metadata").isShowing,
                         "id": idCounter,
                         "instanceCount": cat.instanceCount[item]
                     });
@@ -458,6 +485,7 @@ define(["jquery",
                     "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
                     "strokeColor": this.model.get("metadata").strokeColor,
                     'width': this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
+                    "isShowing": this.model.get("metadata").isShowing,
                     "id": 1
                 }]);
                 this.layerNoLongerNew();
@@ -474,15 +502,7 @@ define(["jquery",
             },
 
             setSymbols: function (symbs) {
-                this.collection = symbs;
-                console.log(this.collection);
-                console.log(this.model);
-
-                // since we're reassigning this.collection above, it's no longer pointing
-                // to model.get('symbols'), so we need to sync the model symbols to the new collection
-                this.syncModelSymbsToCollection();
-                this.updateMapAndRender();
-                this.model.trigger('update-symbol-collection');
+                this.collection.reset(symbs.toJSON())
             },
 
             updateMapAndRender: function () {
@@ -559,7 +579,7 @@ define(["jquery",
                 console.log('msv updateMap');
                 var that = this;
                 this.delayExecution("mapTimer", function () {
-                    that.model.trigger('rebuild-markers')
+                    that.model.trigger('rebuild-markers', that.model)
                 }, 250);
             },
 
@@ -592,6 +612,13 @@ define(["jquery",
                 this.updateMap();
             },
 
+            // triggered from colorPicker
+            updateStrokeColor: function (hex) {
+                this.updateMetadata("strokeColor", hex);
+                $('#stroke-color-picker').css('color', hex);
+                this.updateMap();
+            },
+
             updateStrokeOpacity: function(e) {
                 var opacity = parseFloat($(e.target).val());
                     if (opacity > 1) {
@@ -600,13 +627,6 @@ define(["jquery",
                         opacity = 0;
                     }
                 this.updateMetadata("strokeOpacity", opacity);
-                this.updateMap();
-            },
-
-            // triggered from colorPicker
-            updateStrokeColor: function (hex) {
-                this.updateMetadata("strokeColor", hex);
-                $('#stroke-color-picker').css('color', hex);
                 this.updateMap();
             },
 
@@ -632,9 +652,9 @@ define(["jquery",
             /* if the collection pointer changes (e.g. after a new symbol set is built),
                make sure the model symbols and the collection point to the same thing
             */
-            syncModelSymbsToCollection: function () {
+            /*syncModelSymbsToCollection: function () {
                 this.model.set("symbols", this.collection.toJSON());
-            },
+            },*/
 
             showPalettes: function () {
                 this.$el.find(".palette-wrapper").css({display: 'block'});
@@ -670,6 +690,7 @@ define(["jquery",
             },
 
             hideStyleMenu: function(e) {
+                console.log('hide menu');
                 this.app.vent.trigger('hide-style-menu', e);
             }
 

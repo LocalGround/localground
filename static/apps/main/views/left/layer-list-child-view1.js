@@ -1,15 +1,11 @@
-define(["jquery",
-        "marionette",
+define(["marionette",
         "handlebars",
-        'lib/maps/marker-overlays',
         "text!../../templates/left/layer-item.html",
         "models/symbol",
         "models/record",
-        "collections/symbols",
         "apps/main/views/left/symbol-view",
-        "apps/main/views/right/marker-style-view"
     ],
-    function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate, Symbol, Record, Symbols, SymbolView, MarkerStyleView) {
+    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -21,8 +17,8 @@ define(["jquery",
          //TODO: Everytime 'rebuild-markers' event triggered, create a new
          // layerListView
         var LayerListChild =  Marionette.CompositeView.extend({
-            modelEvents: {
-                'rebuild-markers': 'updateMapOverlays'
+            collectionEvents: {
+                'reset': 'reRender'
             },
             events: {
                 //edit event here, pass the this.model to the right panel
@@ -31,34 +27,57 @@ define(["jquery",
                 'change .layer-isShowing': 'showHideOverlays',
                 'click #layer-style-by': 'showStyleByMenu'
             },
+            childEvents: {
+                'isShowing:changed': function () {
+                    console.log('visibilityChanged!');
+                    this.handleChildShowHide();
+                }
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log('Initializing LayerListChildView:', this.model.get("title"));
                 this.symbolModels = this.collection;
-                this.listenTo(this.dataCollection, 'add', this.handleAddNewRecord)
+                this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
                 if (!this.model || !this.collection || !this.dataCollection) {
                     console.error("model, collection, and dataCollection are required");
                     return;
                 }
-                this.generateSymbols();
+                this.assignRecordsToSymbols();
+                this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
+            },
+            template: Handlebars.compile(LayerItemTemplate),
+            templateHelpers: function () {
+                return {
+                    name: this.dataCollection.name,
+                    isChecked: this.model.get("metadata").isShowing
+                };
             },
 
             childView: SymbolView,
             childViewContainer: "#symbols-list",
+
+            reRender: function () {
+                console.log('Symbols have been regenerated...');
+                this.assignRecordsToSymbols();
+            },
 
             childViewOptions: function (model, index) {
                 return {
                     app: this.app,
                     collection: this.collection,
                     layerId: this.model.id,
+                    layer: this.model
                 };
             },
-            generateSymbols: function () {
-                var that = this;
-                this.uncategorizedSymbol = new Symbol({
-                    rule: 'misc',
-                    title: 'Uncategorized'
+            getUncategorizedSymbolModel: function () {
+                return this.symbolModels.findWhere({
+                    rule: Symbol.UNCATEGORIZED_SYMBOL_RULE
                 });
-                this.collection.add(this.uncategorizedSymbol);
+            },
+            assignRecordsToSymbols: function () {
+                const that = this;
+                const uncategorizedSymbol = this.getUncategorizedSymbolModel();
+
                 this.dataCollection.each(function (recordModel) {
                     var matched = false;
                     that.symbolModels.each(function (symbolModel) {
@@ -68,38 +87,24 @@ define(["jquery",
                         }
                     })
                     if (!matched) {
-                        that.uncategorizedSymbol.addModel(recordModel);
+                        uncategorizedSymbol.addModel(recordModel);
                     }
                 });
             },
-
-            updateMapOverlays: function () {
-                console.log('update map overlays');
-                this.collection = new Symbols(this.model.get('symbols'), {
-                    projectID: this.app.selectedProjectID
-                });
-                this.hideOverlays();
-                this.model.rebuildSymbolMap();
-                this.initMapOverlays();
-                if (this.model.get("metadata").isShowing) {
-                    this.showOverlays();
-                }
-                this.updateCollection();
-                //this.render();
-            },
-
-            handleAddNewRecord: function (model) {
+            assignRecordToSymbol: function (recordModel) {
                 var symbolView;
                 this.children.each(function (view) {
-                    if (view.model.checkModel(model)) {
+                    if (view.model.checkModel(recordModel)) {
                         symbolView = view;
                         return;
                     }
                 })
                 if (!symbolView) {
-                    symbolView = this.children.findByModel(this.uncategorizedSymbol);
+                    symbolView = this.children.findByModel(
+                        this.getUncategorizedSymbolModel()
+                    );
                 }
-                symbolView.model.addModel(model);
+                symbolView.model.addModel(recordModel);
                 symbolView.render();
             },
             addFakeModel: function () {
@@ -121,30 +126,6 @@ define(["jquery",
                 });
                 this.dataCollection.add(recordModel);
             },
-            updateCollection: function() {
-                console.log('update Zcollection')
-                //this.collection = new Symbols(this.model.get('symbols'));
-                //this.initMapOverlays();
-                if (this.symbolForUndefinedMarkers) {
-                    console.log('adding symbols');
-                    this.collection.add(this.symbolForUndefinedMarkers);
-                }
-                this.render();
-            },
-            onRender: function () {
-                console.log('RENDER', this.collection);
-                console.log(this.model);
-                this.showHideOverlays();
-            },
-            template: Handlebars.compile(LayerItemTemplate),
-            tagName: "div",
-            templateHelpers: function () {
-                return {
-                    name: this.dataCollection.name,
-                    isChecked: this.model.get("metadata").isShowing
-                };
-            },
-            markerOverlayList: null,
 
             // triggered from the router
             checkSelectedItem: function(layerId) {
@@ -155,34 +136,11 @@ define(["jquery",
                 }
 
             },
-
-            childRouterSendCollection: function (mapId, layerId) {
-
-                if (this.model.id == layerId) {
-                    this.checkSelectedItem(layerId);
-
-                    // This event actually triggers the 'createLayer()' function in right-panel.js layoutview
-                    this.app.vent.trigger("edit-layer", this.model, this.collection);
-
-                    // This just adds css to indicate the selected layer, via the parent view
-                    // only triggers after the layer has been sent to right-panel
-                    this.app.vent.trigger('add-css-to-selected-layer', this.model.id);
-                }
-            },
-
             deleteLayer: function () {
                 if (!confirm("Are you sure you want to delete this layer?")) {
                     return;
                 }
-                var url = "//" + this.model.get('map_id');
                 this.model.destroy();
-                this.collection.remove(this.model);
-                this.deleteOverlays();
-                console.log(url);
-
-                this.app.router.navigate(url);
-                this.app.vent.trigger('update-layer-list');
-                this.app.vent.trigger("hide-right-panel");
             },
 
             updateTitle: function (title) {
@@ -190,175 +148,54 @@ define(["jquery",
                 this.render();
             },
             showStyleByMenu: function (event) {
-                console.log('child show styebyMenu', this.model.id);
-
                 const coords = {
                     x: event.clientX,
                     y: event.clientY
                 }
                 this.app.vent.trigger('show-style-menu', this.model, coords);
             },
-
-            initMapOverlays: function () {
-                // create an MarkerOverlays for each symbol in the
-                // layer.
-                console.log('initMapOverlays');
-                this.markerOverlayList = [];
-                var matchedCollection,
-                    overlays,
-                    that = this,
-                    dataSource = this.model.get("data_source"),
-                    dataCollection = this.app.dataManager.getCollection(dataSource),
-                    symbols = this.model.getSymbols();
-                    const currentProp = this.model.get('metadata').currentProp
-                    const dataIds = dataCollection.map(function(model) {
-                        return model.id
-                    });
-                    let representedIds = [];
-
-                console.log(symbols);
-                console.log(this.collection);
-                symbols.each(function (symbol) {
-                    //console.log(symbol.id, symbol.get('title'));
-                    matchedCollection = new dataCollection.constructor(null, {
-                        url: "dummy",
-                        projectID: that.app.getProjectID()
-                    });
-                    //console.log(JSON.stringify(matchedCollection));
-                    dataCollection.each(function (model) {
-                        if (symbol.checkModel(model)) {
-                            matchedCollection.add(model);
-                            representedIds.push(model.id);
-                            //console.log(model.id);
-                        }
-                    });
-                    overlays = new MarkerOverlays({
-                        collection: matchedCollection,
-                        app: that.app,
-                        iconOpts: symbol.toJSON(),
-                        isShowing: false
-                    });
-
-                    that.markerOverlayList.push(overlays);
-                });
-
-
-                const unrepresentedIds = dataIds.filter(function(id) {
-                    return !representedIds.includes(id)
-                });
-                console.log(representedIds);
-                console.log(unrepresentedIds);
-
-                if (this.symbolForUndefinedMarkers) {
-                    console.log('(this.symbolForUndefinedMarkers): TRUE')
-                    this.collection.remove(this.symbolForUndefinedMarkers);
-                    symbols.remove(this.symbolForUndefinedMarkers);
-                    this.symbolForUndefinedMarkers = null;
-                }
-                if (this.collection.contains(this.symbolForUndefinedMarkers)) {
-                    console.log('(this.collection.contains(this.symbolForUndefinedMarkers)): TRUE')
-                }
-                console.log(this.markerOverlayList);
-
-                if (unrepresentedIds.length > 0) {
-
-                    // let sqlString = '';
-
-                    // unrepresentedIds.forEach(function (id) {
-                    //     sqlString = sqlString.concat('id = ', id, ' or ');
-                    //     console.log(sqlString);
-                    // });
-                    // sqlString = sqlString.slice(0, -4);
-
-                    let sqlString = currentProp + ' = undefined or ' + currentProp + ' = null';
-
-                    console.log(sqlString);
-                    let unrepresentedCollection = new dataCollection.constructor(null, {
-                        url: "dummy",
-                        projectID: that.app.getProjectID()
-                    });
-
-
-                    this.symbolForUndefinedMarkers = new Symbol({
-                        rule: sqlString,
-                        title: 'undefined markers'
-                    });
-
-                    unrepresentedIds.forEach(function(id) {
-                        // for overlays
-                        unrepresentedCollection.add(dataCollection.get(id));
-                        // for symbol
-                        that.symbolForUndefinedMarkers.addModel(dataCollection.get(id));
-                    });
-                    let otherOverlays = new MarkerOverlays({
-                        collection: unrepresentedCollection,
-                        app: that.app,
-                        isShowing: false
-                    });
-                    this.markerOverlayList.push(otherOverlays);
-
-                    console.log(representedIds);
-                    console.log(unrepresentedIds);
-                    console.log(that.markerOverlayList);
-                    console.log(this.symbolForUndefinedMarkers);
-                    this.model.save();
-                }
-            },
-
-            showOverlays: function () {
-                _.each(this.markerOverlayList, function (overlays) {
-                    overlays.showAll();
-                });
-            },
-
-            hideOverlays: function () {
-                _.each(this.markerOverlayList, function (overlays) {
-                    overlays.hideAll();
-                });
-            },
-
-            deleteOverlays: function () {
-                _.each(this.markerOverlayList, function (overlays) {
-                    overlays.remove();
-                });
-            },
-
             showHideOverlays: function () {
+                const isShowing = this.$el.find('input').prop('checked');
 
-                this.model.get("metadata").isShowing = this.$el.find('input').prop('checked');
-                this.collection.each((symbol) => {
-                    symbol.set('isShowing', this.$el.find('input').prop('checked'));
-                    console.log(symbol.get('isShowing'));
-                });
-                console.log(this.model.get('metadata'));
-                if (this.model.get("metadata").isShowing) {
-                    this.children.each(function(childView) {
-                        childView.showOverlays();
-                    })
-                } else {
-                    this.children.each(function(childView) {
-                        childView.hideOverlays();
-                    })
-                }
-            },
+                this.model.get("metadata").isShowing = isShowing;
 
-            isShowing: function () {
-                let isShowingList = [];
-                this.collection.each(function(symbol) {
-                    if(symbol.get('isShowing')) {
-                        isShowingList.push(symbol.id);
+                this.children.each(function(childView) {
+                    var symbol = childView.model;
+
+                    //if childView already matches parent, do nothing; iterate:
+                    if (symbol.get("isShowing") === isShowing) {
+                        return;
                     }
-                });
-                if (isShowingList < this.collection.length) {
-                    this.model.get("metadata").isShowing = false;
-                } else {
-                    this.model.get("metadata").isShowing = true;
-                }
-                //this.render();
+
+                    // otherwise, set flag, toggle, render, and save:
+                    symbol.set('isShowing', isShowing);
+                    childView.redrawOverlays();
+                    childView.render();
+                })
+                this.saveChanges();
             },
 
-            onDestroy: function () {
-                this.hideOverlays();
+            handleChildShowHide: function () {
+                this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying();
+                this.saveChanges();
+                this.toggleCheckbox();
+                //this.render(); //too expensive
+            },
+            toggleCheckbox: function () {
+                this.$el.find('.layer-isShowing').prop('checked', this.model.get('metadata').isShowing);
+            },
+            allSymbolsAreDisplaying: function(collection) {
+                var isShowing = true;
+                this.collection.each( model => {
+                    isShowing = isShowing && (
+                        model.get("isShowing") || model.getModelsJSON().length === 0
+                    );
+                });
+                return isShowing;
+            },
+
+            saveChanges: function() {
+                this.model.save();
             }
         });
         return LayerListChild;

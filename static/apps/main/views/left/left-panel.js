@@ -14,7 +14,6 @@ define(["jquery",
             template: Handlebars.compile(LeftPanelLayoutTemplate),
 
             initialize: function (opts) {
-                console.log('left panel intialize');
                 /*This Layout View relies on a Map model which gets set from the change-map event,
                 which is triggered from the select-map-view.js */
                 this.app = opts.app;
@@ -52,8 +51,6 @@ define(["jquery",
                         app: this.app,
                         model: model
                     });
-                console.log('create layer list');
-                console.log(this);
                 this.lv = new LayerListView({
                     app: this.app,
                     model: model,

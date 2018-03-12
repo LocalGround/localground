@@ -47,6 +47,26 @@ a.logotype {
   background-color: #f5f5f5;
 }
 
+html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, select, form {
+  padding: 0;
+  margin: 0;
+  font-family: "Open Sans",Arial,sans-serif;
+  color: #3d3d3d;
+}
+
+a {
+  text-decoration: none;
+}
+
+table {
+  font-size: 12px;
+}
+
+ul {
+  font-size: 12px;
+  padding-left: 0;
+}
+
 .style-main-panel {
   height: calc(100% - 61px);
   top: 41px;
@@ -111,6 +131,7 @@ a.logotype {
   border-bottom: solid 1px #EEE;
   padding-bottom: 10px;
   font-size: 1.2em;
+  margin-bottom: 10px;
 }
 
 .style-guide .container h3 {
