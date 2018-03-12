@@ -49,7 +49,7 @@ define(["jquery",
                 _.extend(this, opts);
 
                 console.log(this.model);
-                
+
 
                 // this is the old properties list, with continuous and categorical properties separated into two different lists
                 var propertiesList = this.buildPropertiesList();
@@ -159,7 +159,7 @@ define(["jquery",
                     selectedProp: this.selectedProp,
                     hasContinuousFields: (propertiesList[1].length > 0),
                     hasCategoricalFields: (propertiesList[0].length > 0),
-                    dataColumnsList: this.dataColumnsList // new 
+                    dataColumnsList: this.dataColumnsList // new
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
@@ -354,6 +354,7 @@ define(["jquery",
             },
 
             contData: function() {
+                console.log('contData')
                 this.buildPalettes();
                 var cssId = "#cont-prop";
                 this.setSelectedProp(cssId);
@@ -371,6 +372,7 @@ define(["jquery",
             },
 
             buildContinuousSymbols: function (cont) {
+                console.log('buildContinuousSymbols', cont);
                 var counter = 0,
                 selected = this.selectedProp;
                 if (!this.layerDraft.continuous === null) {
@@ -435,14 +437,20 @@ define(["jquery",
                     collection = this.app.dataManager.getCollection(key);
                 this.continuousData = [];
                 collection.models.forEach((d) => {
-                    this.continuousData.push(d.get(selected));
+                    if (d.get(selected)) {
+                        this.continuousData.push(d.get(selected));
+                    }
                 });
+
+                console.log(selected, collection)
+                console.log(this.continuousData)
                 var cont = {};
                 cont.min = Math.min(...this.continuousData);
                 cont.max = Math.max(...this.continuousData);
                 cont.range = cont.max - cont.min;
                 cont.segmentSize = cont.range / buckets;
                 cont.currentFloor = cont.min;
+                console.log(cont)
                 return cont;
             },
 
@@ -506,12 +514,12 @@ define(["jquery",
             },
 
             setSymbols: function (symbs) {
-                this.collection.reset(symbs.toJSON());
+                this.collection.reset(symbs.toJSON())
                 this.render();
             },
 
             updateMapAndRender: function () {
-                this.updateMap();
+                //this.updateMap();
                 this.render();
             },
 
@@ -580,13 +588,13 @@ define(["jquery",
                 return this.selectedColorPalette;
             },
 
-            updateMap: function () {
+            /*updateMap: function () {
                 console.log('msv updateMap');
                 var that = this;
                 this.delayExecution("mapTimer", function () {
                     that.model.trigger('rebuild-markers', that.model)
                 }, 250);
-            },
+            },*/
 
             updatePaletteOpacity: function() {
                 var opacity = parseFloat(this.$el.find("#palette-opacity").val());
@@ -596,32 +604,32 @@ define(["jquery",
                     opacity = 0;
                 }
                 this.updateMetadata("fillOpacity", opacity);
-                this.updateMap();
+                //this.updateMap();
             },
 
             updateGlobalShape: function(e) {
                 var shape = $(e.target).val();
                 this.updateMetadata("shape", shape);
-                this.updateMap();
+                //this.updateMap();
             },
 
             updateWidth: function(e) {
                 var width = parseFloat($(e.target).val());
                 this.updateMetadata("width", width);
-                this.updateMap();
+                //this.updateMap();
             },
 
             updateStrokeWeight: function(e) {
                 var strokeWeight = parseFloat($(e.target).val());
                 this.updateMetadata("strokeWeight", strokeWeight);
-                this.updateMap();
+                //this.updateMap();
             },
 
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
                 this.updateMetadata("strokeColor", hex);
                 $('#stroke-color-picker').css('color', hex);
-                this.updateMap();
+                //this.updateMap();
             },
 
             updateStrokeOpacity: function(e) {
@@ -632,7 +640,7 @@ define(["jquery",
                         opacity = 0;
                     }
                 this.updateMetadata("strokeOpacity", opacity);
-                this.updateMap();
+                //this.updateMap();
             },
 
             selectPalette: function (e) {
