@@ -24,6 +24,13 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
             initialize: function (data, opts) {
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);
+
+                if (_.isUndefined(this.get("rule"))) {
+                    throw new Error("rule must be defined");
+                }
+                if (_.isUndefined(this.get("title"))) {
+                    throw new Error("title must be defined");
+                }
                 this.matchedModels = new Records(null, {
                     url: '-1',
                     projectID: -1
@@ -32,35 +39,12 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 this.set("icon", new Icon(this.toJSON()));
                 this.set("shape", this.get("icon").key);
 
-                if (_.isUndefined(this.get("rule"))) {
-                    throw new Error("rule must be defined");
-                }
-                if (_.isUndefined(this.get("title"))) {
-                    throw new Error("title must be defined");
-                }
                 this.sqlParser = new SqlParser(this.get("rule"));
                 this.on("change:width", this.setHeight);
             },
             setHeight: function () {
                 this.set("height", this.get("width"));
             },
-            /*set: function(key, val, options) {
-                if (this.get('icon')) {
-                    if ([
-                        'fillColor', 'strokeColor', 'shape',
-                        'fillOpacity', 'strokeWeight'].indexOf(key) !== -1) {
-                        this.get('icon')[key] = val;
-                    }
-                    if (key === 'width') {
-                        console.log('WIDTH');
-                        this.set('height', val);
-                        this.get('icon').width = val;
-                        this.get('icon').height = val;
-                    }
-                }
-                Backbone.Model.prototype.set.apply(this, arguments);
-            },*/
-
             toJSON: function () {
                 var json = Backbone.Model.prototype.toJSON.call(this);
                 delete json.icon;

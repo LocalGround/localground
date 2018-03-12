@@ -165,7 +165,11 @@ define(["marionette",
 
             renderOverlays: function () {
                 this.overlays = new MarkerOverlays({
-                    model: new Symbol({rule: '*', 'title': 'deprecate me'}),
+                    model: new Symbol({
+                        rule: '*', 'title': 'deprecate me',
+                        fillColor: this.collection.fillColor,
+                        width: 25
+                    }),
                     collection: this.collection,
                     app: this.app,
                     dataType: this.typePlural,
