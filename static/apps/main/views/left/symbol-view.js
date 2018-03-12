@@ -74,6 +74,7 @@ define(["jquery",
             },
 
             saveAndRender: function () {
+                console.log('save and render...');
                 this.layer.save();
                 this.render();
             },

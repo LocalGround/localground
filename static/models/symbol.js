@@ -44,16 +44,22 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
             setHeight: function () {
                 this.set("height", this.get("width"));
             },
-            set: function(key, val, options) {
+            /*set: function(key, val, options) {
                 if (this.get('icon')) {
                     if ([
-                        'fillColor', 'strokeColor', 'shape', 'markerSize',
-                        'width', 'fillOpacity', 'strokeWeight'].indexOf(key) !== -1) {
+                        'fillColor', 'strokeColor', 'shape',
+                        'fillOpacity', 'strokeWeight'].indexOf(key) !== -1) {
                         this.get('icon')[key] = val;
+                    }
+                    if (key === 'width') {
+                        console.log('WIDTH');
+                        this.set('height', val);
+                        this.get('icon').width = val;
+                        this.get('icon').height = val;
                     }
                 }
                 Backbone.Model.prototype.set.apply(this, arguments);
-            },
+            },*/
 
             toJSON: function () {
                 var json = Backbone.Model.prototype.toJSON.call(this);

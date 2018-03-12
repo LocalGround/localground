@@ -129,7 +129,9 @@ define(["jquery",
             },
 
             updateSize: function(e) {
-                var width = parseFloat($(e.target).val());
+                console.log('updateSize')
+                var width = parseInt($(e.target).val());
+                console.log(this.model.get('width'), width);
                 this.model.set('width', width);
             },
             updateSymbolAttribute: function(key, value) {
