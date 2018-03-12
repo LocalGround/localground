@@ -34,7 +34,7 @@ define(["jquery",
                     'change:title': 'render'
                 };
                 [
-                    'fillColor', 'strokeColor', 'shape', 'width',
+                    'fillColor', 'strokeColor', 'shape', 'width', 'markerSize',
                     'fillOpacity', 'strokeWeight'
                 ].forEach(attr => {
                     events[`change:${attr}`] = 'saveAndRender';

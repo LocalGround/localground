@@ -11,7 +11,7 @@ define(['marionette',
          * the constituent views.
          * @class OverlayGroup
          */
-        var MarkerOverlays = Marionette.CompositeView.extend({
+        var MarkerOverlays = Marionette.CollectionView.extend({
             /** A google.maps.Map object */
             map: null,
             childView: MarkerOverlay,
@@ -23,9 +23,8 @@ define(['marionette',
             },
 
             initialize: function (opts) {
-                console.log('Initializing MarkerOverlays:', this.model.get('title'))
                 _.extend(this, opts);
-                this.template = Handlebars.compile("<div>{{id}}</div>");
+                console.log('Initializing MarkerOverlays:', this.model.get('title'))
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.childViewOptions = {

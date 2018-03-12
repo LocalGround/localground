@@ -1,12 +1,13 @@
 define(["marionette",
         "underscore",
         "handlebars",
+        "models/symbol",
         "lib/maps/overlays/icon",
         "lib/maps/marker-overlays",
         "apps/style/visibility-mixin",
         "./marker-listing-detail",
         "text!../templates/list.html"],
-    function (Marionette, _, Handlebars, Icon, MarkerOverlays, PanelVisibilityExtensions, MarkerListingDetail, ListTemplate) {
+    function (Marionette, _, Handlebars, Symbol, Icon, MarkerOverlays, PanelVisibilityExtensions, MarkerListingDetail, ListTemplate) {
         'use strict';
         var MarkerListing = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
             isShowing: true,
@@ -164,6 +165,7 @@ define(["marionette",
 
             renderOverlays: function () {
                 this.overlays = new MarkerOverlays({
+                    model: new Symbol({rule: '*', 'title': 'deprecate me'}),
                     collection: this.collection,
                     app: this.app,
                     dataType: this.typePlural,

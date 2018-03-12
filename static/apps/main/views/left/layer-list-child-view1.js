@@ -140,14 +140,7 @@ define(["marionette",
                 if (!confirm("Are you sure you want to delete this layer?")) {
                     return;
                 }
-                var url = "//" + this.model.get('map_id');
                 this.model.destroy();
-                this.collection.remove(this.model);
-                this.deleteOverlays();
-
-                this.app.router.navigate(url);
-                this.app.vent.trigger('update-layer-list');
-                this.app.vent.trigger("hide-right-panel");
             },
 
             updateTitle: function (title) {
