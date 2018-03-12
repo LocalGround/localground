@@ -42,6 +42,16 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 this.sqlParser = new SqlParser(this.get("rule"));
                 this.on("change:width", this.setHeight);
             },
+            set: function(key, val, options) {
+                if (this.get('icon')) {
+                    if ([
+                        'fillColor', 'strokeColor', 'shape',
+                        'fillOpacity', 'width', 'strokeWeight'].indexOf(key) !== -1) {
+                        this.get('icon')[key] = val;
+                    }
+                }
+                Backbone.Model.prototype.set.apply(this, arguments);
+            },
             setHeight: function () {
                 this.set("height", this.get("width"));
             },

@@ -350,6 +350,7 @@ define(["jquery",
             },
 
             contData: function() {
+                console.log('contData')
                 this.buildPalettes();
                 var cssId = "#cont-prop";
                 this.setSelectedProp(cssId);
@@ -367,6 +368,7 @@ define(["jquery",
             },
 
             buildContinuousSymbols: function (cont) {
+                console.log('buildContinuousSymbols', cont);
                 var counter = 0,
                 selected = this.selectedProp;
                 if (!this.layerDraft.continuous === null) {
@@ -431,14 +433,20 @@ define(["jquery",
                     collection = this.app.dataManager.getCollection(key);
                 this.continuousData = [];
                 collection.models.forEach((d) => {
-                    this.continuousData.push(d.get(selected));
+                    if (d.get(selected)) {
+                        this.continuousData.push(d.get(selected));
+                    }
                 });
+
+                console.log(selected, collection)
+                console.log(this.continuousData)
                 var cont = {};
                 cont.min = Math.min(...this.continuousData);
                 cont.max = Math.max(...this.continuousData);
                 cont.range = cont.max - cont.min;
                 cont.segmentSize = cont.range / buckets;
                 cont.currentFloor = cont.min;
+                console.log(cont)
                 return cont;
             },
 
