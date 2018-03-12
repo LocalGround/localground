@@ -49,17 +49,20 @@ define(["jquery",
                 _.extend(this, opts);
 
                 console.log(this.model);
-                /* reset layer type to 'basic' on initialize
-                 this is the easiest way to prevent the view from being initialized
-                 as continuous or categorical when no such cont. or cat. data is available
-                 e.g. in case the user switches from a data source that has continuous data to one that doesn't
-                */
+                
 
                 // this is the old properties list, with continuous and categorical properties separated into two different lists
                 var propertiesList = this.buildPropertiesList();
 
                 // this is the new properties list; all properties in a single list
                 this.dataColumnsList = this.buildDataColumnsList();
+
+                /* reset layer type to 'basic' on initialize
+                 this is the easiest way to prevent the view from being initialized
+                 as continuous or categorical when no such cont. or cat. data is available
+                 e.g. in case the user switches from a data source that has continuous data to one that doesn't
+                */
+                //(03/2018: a better solution would be to resett the layer type to 'basic' anytime the datasource is changed)
                 if (
                     (propertiesList[1].length === 0 && this.model.get('layer_type') === 'continuous') ||
                     (propertiesList[0].length === 0 && this.model.get('layer_type') === 'categorical')
@@ -156,7 +159,7 @@ define(["jquery",
                     selectedProp: this.selectedProp,
                     hasContinuousFields: (propertiesList[1].length > 0),
                     hasCategoricalFields: (propertiesList[0].length > 0),
-                    dataColumnsList: this.dataColumnsList
+                    dataColumnsList: this.dataColumnsList // new 
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
@@ -241,6 +244,7 @@ define(["jquery",
                 this.render();
             },
 
+            // New method (03/2018) - builds list of ALL data columns, not split into categorical or continuous
             buildDataColumnsList: function() {
                 const key = this.model.get('data_source'),
                     collection = this.app.dataManager.getCollection(key);
@@ -502,7 +506,8 @@ define(["jquery",
             },
 
             setSymbols: function (symbs) {
-                this.collection.reset(symbs.toJSON())
+                this.collection.reset(symbs.toJSON());
+                this.render();
             },
 
             updateMapAndRender: function () {

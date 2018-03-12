@@ -18,7 +18,7 @@
                         <option value="individual" {{#ifequal dataType "individual"}} SELECTED {{/ifequal}}>Individual Sites</option>
                         <option disabled="disabled">Style by Data Column</option>
                             {{#each dataColumnsList}}
-                                <option>{{this.text}}</option>
+                                <option>—{{this.text}}</option>
                             {{/each}}
                     </select>
                 </td>
