@@ -10,7 +10,6 @@ notifications:
     recipients:
       - vanwars@gmail.com
       - rileyflynn@gmail.com
-      - mrjbrpg@gmail.com
     on_success: change # default setting: change
     on_failure: always # default setting: always
 
