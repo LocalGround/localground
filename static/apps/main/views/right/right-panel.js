@@ -62,7 +62,7 @@ define(["jquery",
                     app: this.app,
                     model: this.model
                 });
-                
+
             },
 
             createSCSV: function () {
@@ -85,7 +85,7 @@ define(["jquery",
                     app: this.app,
                     model: this.model
                 });
-                
+
                 this.dataSource.show(dsv);
                 this.createMSV();
                 this.createSCSV();
@@ -113,7 +113,7 @@ define(["jquery",
                 var that = this;
                 var title = this.$el.find(".layer-title").val(),
                     dataSource = this.$el.find(".selected-data-source").val(),
-                    layerType = this.$el.find("#data-type-select").val(),
+                    groupBy = this.$el.find("#data-type-select").val(),
                     buckets = this.$el.find("#bucket").val();
                 if (this.model.get("filters") === null) {
                     this.model.set("filters", { 'tag' : 'nothing' });
@@ -121,7 +121,7 @@ define(["jquery",
                 if (!this.model.get('symbols').length) {
                     this.app.vent.trigger('update-data-source');
                 }
-                this.model.set("layer_type", layerType);
+                this.model.set("group_by", groupBy);
                 this.model.set('newLayer', false);
 
                 this.model.save(null, {

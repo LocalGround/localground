@@ -14,7 +14,7 @@ class ApiLayerTest(object):
     #slug = 'my_layer'
     metadata = {
         'symbols': {'read_only': False, 'required': False, 'type': 'json'},
-        'layer_type': {'read_only': False, 'required': False, 'type': 'choice'},
+        'group_by': {'read_only': False, 'required': True, 'type': 'string'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'title': {'read_only': False, 'required': True, 'type': 'string'},
         'data_source': {'read_only': False, 'required': False, 'type': 'string'},
@@ -29,12 +29,11 @@ class ApiLayerTest(object):
             "rule": "worms = 0", "title": "No worms"}
     ]
 
-    def _test_save_layer(self, method, status_id, symbols):
+    def _test_save_layer(self, method, status_id, symbols, group_by='uniform'):
         d = {
             'title': self.name,
             'map_id': self.map_id,
-            #'caption': self.description,
-            #'tags': self.tags,
+            'group_by': group_by,
             'symbols': json.dumps(symbols)
         }
         response = method(
@@ -169,4 +168,3 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         except self.model.DoesNotExist:
             # trigger assertion success if photo is removed
             self.assertEqual(1, 1)
-

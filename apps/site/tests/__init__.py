@@ -209,6 +209,7 @@ class ModelMixin(object):
         layer = models.Layer(
             last_updated_by=self.user,
             owner=self.user,
+            group_by='uniform',
             styled_map=self.create_styled_map()
         )
         layer.save()

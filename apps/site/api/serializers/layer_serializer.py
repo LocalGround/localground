@@ -17,7 +17,7 @@ class LayerSerializer(BaseSerializer):
     class Meta:
         model = models.Layer
         fields = BaseSerializer.Meta.fields + \
-            ('title', 'data_source', 'layer_type', 'metadata', 'map_id', 'symbols')
+            ('title', 'data_source', 'group_by', 'metadata', 'map_id', 'symbols')
         depth = 0
 
 

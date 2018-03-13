@@ -20,12 +20,15 @@ define(["marionette",
             collectionEvents: {
                 'reset': 'reRender'
             },
+            modelEvents: {
+                'change:group_by': 'updateGroupBy'
+            },
             events: {
                 //edit event here, pass the this.model to the right panel
                 'click #fakeadd': 'addFakeModel',
                 'click .layer-delete' : 'deleteLayer',
                 'change .layer-isShowing': 'showHideOverlays',
-                'click #layer-style-by': 'showStyleByMenu'
+                'click #layer-style-by span': 'showStyleByMenu'
             },
             childEvents: {
                 'isShowing:changed': function () {
@@ -60,7 +63,11 @@ define(["marionette",
                 console.log('Symbols have been regenerated...');
                 this.assignRecordsToSymbols();
             },
-
+            updateGroupBy: function () {
+                this.$el.find('.layer-style-by span').html(
+                    this.model.get('group_by')
+                );
+            },
             childViewOptions: function (model, index) {
                 return {
                     app: this.app,

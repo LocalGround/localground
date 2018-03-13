@@ -89,7 +89,7 @@ define ([
                 //     var layer = new Layer({
                 //         map_id: that.map.id,
                 //         data_source: dataSource,
-                //         layer_type: "basic",
+                //         group_by: "basic",
                 //         filters: {},
                 //         symbols: [{
                 //             "fillColor": collection.fillColor,

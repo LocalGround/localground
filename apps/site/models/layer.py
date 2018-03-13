@@ -4,22 +4,11 @@ from localground.apps.site.models.abstract.base import BaseAudit
 from jsonfield import JSONField
 
 class Layer(BaseAudit):
-    LAYER_TYPES = (
-        ('categorical', 'Category'),
-        ('continuous', 'Continuous'),
-        ('basic', 'Basic'),
-        ('individual', 'Individual Sites'),
-    )
-
     styled_map = models.ForeignKey('StyledMap', related_name='%(class)s+')
     title = models.CharField(max_length=255, null=False, blank=False)
     description = models.TextField(null=True, blank=True)
     data_source = models.TextField(null=True, blank=True)
-    layer_type = models.CharField(
-        max_length=64,
-        choices=LAYER_TYPES,
-        default='basic',
-    )
+    group_by = models.CharField(max_length=64)
     metadata = JSONField(blank=True, null=True)
     symbols = JSONField(blank=True, null=True)
 

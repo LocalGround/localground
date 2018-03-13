@@ -41,7 +41,7 @@ define(["jquery",
                 return {
                     app: this.app,
                     layer: this.model,
-                    dataType: this.dataType
+                    groupBy: this.groupBy
                 };
             },
 
@@ -64,14 +64,14 @@ define(["jquery",
                 */
                 //(03/2018: a better solution would be to resett the layer type to 'basic' anytime the datasource is changed)
                 if (
-                    (propertiesList[1].length === 0 && this.model.get('layer_type') === 'continuous') ||
-                    (propertiesList[0].length === 0 && this.model.get('layer_type') === 'categorical')
+                    (propertiesList[1].length === 0 && this.model.get('group_by') === 'continuous') ||
+                    (propertiesList[0].length === 0 && this.model.get('group_by') === 'categorical')
                 ) {
-                    this.model.set('layer_type', 'basic');
+                    this.model.set('group_by', 'basic');
                 }
 
                 // and set the variable
-                this.dataType = this.model.get('layer_type');
+                this.groupBy = this.model.get('group_by');
 
 
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
@@ -87,7 +87,7 @@ define(["jquery",
                 // this is so existing unique individual attributes aren't overwritten by global ones
                 if (this.model.get('newLayer') === true) {
                     this.createCorrectSymbols();
-                } else if (this.dataType === 'basic') {
+                } else if (this.groupBy === 'basic') {
                     this.createCorrectSymbols();
                 } else {
                     this.buildPalettes(this.model.get('symbols').length);
@@ -96,7 +96,7 @@ define(["jquery",
 
                 $('body').click($.proxy(this.hideColorRamp, this));
 
-                this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
+                this.listenTo(this.app.vent, 'find-datatype', this.selectGroupBy);
                 this.listenTo(this.app.vent, 'update-map', this.updateMap);
             },
 
@@ -150,7 +150,7 @@ define(["jquery",
                     helpers;
                 helpers = {
                     metadata: metadata,
-                    dataType: this.dataType,
+                    groupBy: this.groupBy,
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
                     categoricalList: propertiesList[0],
@@ -168,7 +168,7 @@ define(["jquery",
             },
 
             events: {
-                'change #data-type-select': 'selectDataType',
+                'change #data-type-select': 'selectGroupBy',
                 'change #cat-prop': 'catData',
                 'change #cont-prop': 'contData',
                 'change #bucket': 'updateBuckets',
@@ -208,11 +208,11 @@ define(["jquery",
               //  this.symbolsView.$el.show();
             },
 
-            selectDataType: function (e) {
-                this.dataType = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
-                this.model.set("layer_type", this.dataType);
+            selectGroupBy: function (e) {
+                this.groupBy = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
+                this.model.set("group_by", this.groupBy);
 
-                if (this.dataType == 'continuous') {
+                if (this.groupBy == 'continuous') {
                     // loops over the properties list and selects the first property that actually contains data
                     // i.e. it skips over any property that contains no data (one that would be grayed out in the dropdown)
                     for (var i=0; i < this.categoricalList.length; i++) {
@@ -224,7 +224,7 @@ define(["jquery",
                     }
                 }
 
-                if (this.dataType == 'categorical') {
+                if (this.groupBy == 'categorical') {
                     // loops over the properties list and selects the first property that actually contains data
                     // i.e. it skips over any property that contains no data (one that would be grayed out in the dropdown)
                     for (var i=0; i < this.categoricalList.length; i++) {
@@ -344,11 +344,11 @@ define(["jquery",
             },
 
             createCorrectSymbols: function () {
-                if (this.dataType == "continuous") {
+                if (this.groupBy == "continuous") {
                     this.contData();
-                } else if (this.dataType == "categorical") {
+                } else if (this.groupBy == "categorical") {
                     this.catData();
-                } else if (this.dataType == "basic") {
+                } else if (this.groupBy == "basic") {
                     this.simpleData();
                 }
             },
@@ -565,13 +565,13 @@ define(["jquery",
                 var contPalettes = ['cb-Blues', 'cb-Oranges', 'cb-Greys', 'cb-YlGn', 'cb-RdYlBu', 'tol-dv', 'cb-Purples'];
                 var paletteId = this.model.get("metadata").paletteId || 0;
 
-                if (this.dataType == "categorical") {
+                if (this.groupBy == "categorical") {
                     var buckets = count;
                     var paletteList = catPalettes;
-                } else if (this.dataType == "continuous") {
+                } else if (this.groupBy == "continuous") {
                     var buckets = this.model.get("metadata").buckets;
                     var paletteList = contPalettes;
-                } else if (this.dataType == "basic") {
+                } else if (this.groupBy == "basic") {
                     var buckets = count;
                     var paletteList = catPalettes;
                 }

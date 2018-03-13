@@ -28,7 +28,7 @@ define(["jquery",
             className: "table-row",
             templateHelpers: function () {
                 return {
-                    dataType: this.dataType,
+                    groupBy: this.groupBy,
                     icons: IconLookup.getIcons(),
                     fillOpacity: this.model.get("fillOpacity"),
                     id: "cp" + this.model.get('id')
