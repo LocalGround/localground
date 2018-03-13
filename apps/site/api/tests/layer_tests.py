@@ -19,7 +19,7 @@ class ApiLayerTest(object):
         'title': {'read_only': False, 'required': True, 'type': 'string'},
         'data_source': {'read_only': False, 'required': False, 'type': 'string'},
         'metadata': {'read_only': False, 'required': False, 'type': 'json'},
-        'map_id': {'read_only': False, 'required': True, 'type': 'field'}
+        'map_id': {'read_only': True, 'required': False, 'type': 'field'}
     }
 
     symbols = [

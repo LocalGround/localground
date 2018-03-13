@@ -18,13 +18,17 @@ class LayerList(QueryableListCreateAPIView):
     model = models.Layer
     paginate_by = 100
 
-    def get_queryset(self):
+    def get_map(self):
         map_id = int(self.kwargs.get('map_id'))
+        styled_map = None
         try:
             styled_map = models.StyledMap.objects.get(id=map_id)
         except models.StyledMap.DoesNotExist:
             raise Http404
-        return self.model.objects.filter(styled_map=styled_map)
+        return styled_map
+
+    def get_queryset(self):
+        return self.model.objects.filter(styled_map=self.get_map())
 
     def create(self, request, *args, **kwargs):
         response = super(LayerList, self).create(request, *args, **kwargs)
@@ -34,7 +38,7 @@ class LayerList(QueryableListCreateAPIView):
             response.data = self.error_messages
             response.status = status.HTTP_400_BAD_REQUEST
         return response
-    
+
 
 class LayerInstance(
         generics.RetrieveUpdateDestroyAPIView):
