@@ -30,6 +30,19 @@ class MapSerializer(BaseNamedSerializer):
         style={'base_template': 'json.html', 'rows': 5},
         required=True, write_only=True)
 
+    def create_form(self):
+        owner = self.context.get('request').user
+        'last_updated_by': self.context.get('request').user,
+        'time_stamp': get_timestamp_no_milliseconds()
+        form = models.Form(
+            owner=user or self.user,
+            name=name,
+            description=description,
+            last_updated_by=user or self.user,
+            project=project or self.project
+        )
+        f.save()
+
     def get_datasets(self, data_sources):
         datasets = []
         if len(data_sources) == 0:
