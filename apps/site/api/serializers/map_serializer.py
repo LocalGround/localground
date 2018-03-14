@@ -26,12 +26,31 @@ class MapSerializer(BaseNamedSerializer):
         source='project',
         required=False
     )
-    '''
     data_sources = fields.JSONField(
-        style={'base_template': 'json.html', 'rows': 5}, required=False)
-    '''
+        style={'base_template': 'json.html', 'rows': 5},
+        required=True, write_only=True)
+
+    def get_datasets(self, data_sources):
+        datasets = []
+        if len(data_sources) == 0:
+            raise serializers.ValidationError('At least one data source should be specified in the data_sources array')
+        for data_source in data_sources:
+            if data_source == 'create_new':
+                raise serializers.ValidationError('Create new dataset!')
+            try:
+                form_id = int(data_source.split('_')[1])
+                form = models.Form.objects.get(id=form_id)
+                datasets.append(form)
+                print(form)
+            except Exception:
+                raise serializers.ValidationError(
+                    '{0} is not a valid dataset'.format(data_source))
+        return datasets
 
     def create(self, validated_data):
+        data_sources = validated_data.pop('data_sources', None)
+        datasets = self.get_datasets(data_sources)
+        raise Exception(datasets)
         validated_data.update(self.get_presave_create_dictionary())
         self.instance = self.Meta.model.objects.create(**validated_data)
         return self.instance
@@ -46,7 +65,7 @@ class MapSerializer(BaseNamedSerializer):
         model = models.StyledMap
         fields = BaseNamedSerializer.Meta.fields + (
             'slug', 'sharing_url', 'center', 'basemap', 'zoom',
-            'panel_styles', 'project_id')
+            'panel_styles', 'project_id', 'data_sources')
         depth = 0
 
     def get_sharing_url(self, obj):
