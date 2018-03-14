@@ -71,6 +71,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 if (this.app) {
                     console.log('adding listener...');
                     this.listenTo(this.app.vent, 'update-modal-save-button', this.updateSaveButton);
+                    this.listenTo(this.app.vent, 'close-modal', this.hide);
                 }
             },
             update: function (opts) {

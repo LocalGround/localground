@@ -69,6 +69,9 @@ span.action.rounded:hover, a.action.rounded:hover {
         margin: 1px;
         width: 100%;
         border: solid 1px #ebecf2;
+        &:disabled {
+            opacity: 0.4;
+        }
     }
     textarea {
         height: 75px;

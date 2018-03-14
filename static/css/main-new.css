@@ -471,6 +471,12 @@ span.action.rounded:hover, a.action.rounded:hover {
   border: solid 1px #ebecf2;
 }
 
+.form textarea:disabled, .form input[type="text"]:disabled, .form input[type="number"]:disabled, .form input[type="date"]:disabled,
+.form input[type="password"]:disabled, .form input[type="email"]:disabled, .form select:disabled, .form-inline textarea:disabled, .form-inline input[type="text"]:disabled, .form-inline input[type="number"]:disabled, .form-inline input[type="date"]:disabled,
+.form-inline input[type="password"]:disabled, .form-inline input[type="email"]:disabled, .form-inline select:disabled {
+  opacity: 0.4;
+}
+
 .form textarea, .form-inline textarea {
   height: 75px;
 }
@@ -845,5 +851,4 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
-
 /*# sourceMappingURL=main-new.css.map */
