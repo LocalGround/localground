@@ -21,18 +21,7 @@ class LayerModelTests(BaseAuditAbstractModelClassTest,test.TestCase):
             email='',
             password=self.user_password
         )
-        
 
-    
-    def test_static_properties(self, **kwargs):
-        test_layer_types = (
-            ('categorical', 'Category'),
-            ('continuous', 'Continuous'),
-            ('basic', 'Basic'),
-            ('individual', 'Individual Sites')
-        )
-        self.assertEqual(self.model.LAYER_TYPES, test_layer_types)
-    
     def test_model_properties(self):
         from django.contrib.gis.db import models
         from localground.apps.site.models import BaseUploadedMedia
@@ -41,7 +30,7 @@ class LayerModelTests(BaseAuditAbstractModelClassTest,test.TestCase):
             ('title', models.CharField),
             ('description', models.TextField),
             ('data_source', models.TextField),
-            ('layer_type', models.CharField),
+            ('group_by', models.CharField),
             ('metadata', JSONField),
             ('symbols', JSONField),
         ]:
@@ -50,13 +39,12 @@ class LayerModelTests(BaseAuditAbstractModelClassTest,test.TestCase):
             field = Layer._meta.get_field(prop_name)
             self.assertEqual(field.name, prop_name)
             self.assertEqual(type(field), prop_type)
-    
+
     def test_can_edit(self):
         self.assertTrue(self.model.can_edit(self.user))
         self.assertFalse(self.model.can_edit(self.other_user))
-    
+
     def test_can_view(self):
         # always true, all layers are viewable
         self.assertTrue(self.model.can_view(self.user))
         self.assertTrue(self.model.can_view(self.other_user))
-    
