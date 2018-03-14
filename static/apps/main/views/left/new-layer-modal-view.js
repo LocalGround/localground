@@ -11,17 +11,14 @@ define ([
         var NewLayer = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.listenTo(this.app.vent, "send-modal-error", this.updateModal);
                 this.template = Handlebars.compile(NewLayerModalTemplate);
             },
 
             events: {
-                "change #new-map-name" : "generateSlug",
                 "click #layer-new-dataset": "toggleCheckboxes",
                 "click #layer-existing-datasets": "toggleCheckboxes"
             },
             toggleCheckboxes: function (e) {
-                console.log('TOGLLE');
                 var $cb = this.$el.find('#dataset-list');
                 if (e.target.id === 'layer-new-dataset') {
                     $cb.attr("disabled", "disabled");
@@ -32,11 +29,11 @@ define ([
             slugError: null,
             templateHelpers: function () {
                 var name, slug, description;
-                if (this.mode == 'editExistingMap') {
-                    name = this.map.get('name');
-                    slug = this.map.get('slug');
-                    description = this.map.get('caption');
-                }
+                // if (this.mode == 'editExistingMap') {
+                //     name = this.map.get('name');
+                //     slug = this.map.get('slug');
+                //     description = this.map.get('caption');
+                // }
                 var datasets = [];
                 this.app.dataManager.each(function (item) {
                     if (item.isSite) {
@@ -61,8 +58,6 @@ define ([
                 const random_color = "#000000".replace(/0/g, function(){
                     return (~~(Math.random()*16)).toString(16);
                 });
-                let that = this;
-                console.log(layer_title, data_source);
                 let layer = new Layer({
                     map_id: this.app.selectedMapModel.id,
                     data_source: data_source,
@@ -96,46 +91,19 @@ define ([
                 
                 layer.save(null, {
                     dataType:"text",
-                    success: function() {
-                        console.log('layer success');
+                    success: () => {
                         layers.add(layer);
-                        that.app.vent.trigger('close-modal');
+                        this.app.vent.trigger('close-modal');
                     },          
-                    error: function (model, response) {
-                        console.log('layer error');
-                        var messages = JSON.parse(response.responseText);
+                    error: (model, response) => {
+                        var messages = response.responseText;
                         if (messages.slug && messages.slug.length > 0) {
-                            that.slugError = messages.slug[0];
+                            this.slugError = messages.slug[0];
                         }
-                        that.updateModal(that.slugError);
+                        this.updateModal(response);
                     }
                 });
                 
-            },
-
-            saveMap: function () {
-                console.log('new map modal, save!');
-                console.log('mode: ', this.mode);
-                var mapAttrs = {};
-                mapAttrs.name = this.$el.find("#new-map-name").val();
-                mapAttrs.slug = this.$el.find('#new-map-slug').val();
-                mapAttrs.description = this.$el.find('#new-map-description').val();
-
-                if (this.mode == 'editExistingMap') {
-                    console.log('editExistingMap: ', this.mode);
-                    this.map.set({
-                        name: this.$el.find("#new-map-name").val(),
-                        slug: this.$el.find("#new-map-slug").val(),
-                        caption: this.$el.find("#new-map-description").val(),
-                    });
-                    this.app.vent.trigger("edit-map", this.map);
-                } else if (this.mode == 'createNewMap') {
-                    console.log('createNewMap: ', this.mode);
-                    this.map.save(null, {
-                        success: this.createLayers.bind(this)
-                    })
-                    //this.app.vent.trigger("create-new-map", mapAttrs);
-                }
             },
 
             updateModal: function (errorMessage) {
@@ -144,7 +112,7 @@ define ([
                     this.slugError = messages.slug[0];
                     this.generalError = null;
                 } else {
-                    this.generalError = "Save Unsuccessful. Unspecified Server Error. Consider changing Map Title or Friendly Url";
+                    this.generalError = "Save Unsuccessful. Unspecified Server Error. Consider changing layer title";
                     this.slugError = null;
                 }
                 this.render();
