@@ -101,6 +101,7 @@ define(["jquery",
             },
 
             onRender: function () {
+                console.log('render');
                 var that = this,
                     color = this.model.get('fillColor');
                 $(".marker-style-color-picker").remove();
@@ -378,15 +379,17 @@ define(["jquery",
                 if (!this.layerDraft.continuous === null) {
                     this.model.set('symbols', this.layerDraft.continuous);
                 }
+                console.log('before new Symbols');
                 this.layerDraft.continuous = new Symbols();
+                console.log('after new Symbols');
                 while (cont.currentFloor < cont.max) {
                     this.layerDraft.continuous.add({
                         "rule": selected + " >= " + cont.currentFloor.toFixed(0) + " and " + selected + " <= " + (cont.currentFloor + cont.segmentSize).toFixed(0),
                         "title": "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
-                        "fillOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#palette-opacity").val()), 1),
-                        "strokeWeight": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-weight").val()), 1),
-                        "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
-                        "width": this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
+                        "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
+                        "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
+                        "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
+                        "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
                         "shape": this.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + this.selectedColorPalette[counter],
                         "strokeColor": this.model.get("metadata").strokeColor,
@@ -395,28 +398,30 @@ define(["jquery",
                     });
                     counter++;
                     cont.currentFloor = Math.round((cont.currentFloor + cont.segmentSize)*100)/100;
+                    console.log('looping new Symbols');
                 }
                 this.layerNoLongerNew();
                 return this.layerDraft.continuous;
             },
 
             buildCategoricalSymbols: function (cat) {
+                console.log('building cat', cat);
                 var that = this,
                 idCounter = 1,
                 paletteCounter = 0;
                 this.layerDraft.categorical = new Symbols();
-                cat.list.forEach(function(item){
+                cat.list.forEach((item) => {
                     that.layerDraft.categorical.add({
-                        "rule": that.selectedProp + " = " + item,
+                        "rule": this.selectedProp + " = " + item,
                         "title": item,
-                        "fillOpacity": that.defaultIfUndefined(parseFloat(that.$el.find("#palette-opacity").val()), 1),
-                        "strokeWeight": that.defaultIfUndefined(parseFloat(that.$el.find("#stroke-weight").val()), 1),
-                        "strokeOpacity": that.defaultIfUndefined(parseFloat(that.$el.find("#stroke-opacity").val()), 1),
-                        "width": that.defaultIfUndefined(parseFloat(that.$el.find("#marker-width").val()), 20),
-                        "shape": that.$el.find(".global-marker-shape").val(),
-                        "fillColor": "#" + that.selectedColorPalette[paletteCounter % 8],
-                        "strokeColor": that.model.get("metadata").strokeColor,
-                        "isShowing": that.model.get("metadata").isShowing,
+                        "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
+                        "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
+                        "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
+                        "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
+                        "shape": this.$el.find(".global-marker-shape").val(),
+                        "fillColor": "#" + this.selectedColorPalette[paletteCounter % 8],
+                        "strokeColor": this.model.get("metadata").strokeColor,
+                        "isShowing": this.model.get("metadata").isShowing,
                         "id": idCounter,
                         "instanceCount": cat.instanceCount[item]
                     });
@@ -481,6 +486,7 @@ define(["jquery",
 
 
             simpleData: function () {
+                console.log('simpleData');
                 this.setSymbols(this.buildSimpleSymbols(this.model.get('data_source')));
             },
 
@@ -491,12 +497,12 @@ define(["jquery",
                     "rule": "*",
                     "title": name,
                     "shape": this.$el.find(".global-marker-shape").val(),
-                    "fillOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#palette-opacity").val()), 1),
+                    "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
                   //  "fillColor": "#60c7cc",
-                    "strokeWeight": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-weight").val()), 1),
-                    "strokeOpacity": this.defaultIfUndefined(parseFloat(this.$el.find("#stroke-opacity").val()), 1),
+                    "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
+                    "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
                     "strokeColor": this.model.get("metadata").strokeColor,
-                    'width': this.defaultIfUndefined(parseFloat(this.$el.find("#marker-width").val()), 20),
+                    'width': this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
                     "isShowing": this.model.get("metadata").isShowing,
                     "id": 1
                 }]);
@@ -514,6 +520,7 @@ define(["jquery",
             },
 
             setSymbols: function (symbs) {
+                console.log(symbs);
                 this.collection.reset(symbs.toJSON())
                 this.render();
             },
