@@ -67,6 +67,10 @@ ul {
   padding-left: 0;
 }
 
+.disabled {
+  opacity: 0.4;
+}
+
 .style-main-panel {
   height: calc(100% - 61px);
   top: 41px;

@@ -79,6 +79,10 @@ define(["jquery",
                 this.collection = this.model.get('symbols');
                 this.selectedProp = this.model.get('metadata').currentProp;
 
+                if (!this.model.get('metadata').isContinuous) {
+                    this.model.get('metadata').isContinuous = false;
+                }
+
                 // important to render before createCorrectSymbol because createCorrectSymbol
                 // depends on info in the DOM (e.g. what property is selected)
                 this.render();
@@ -160,11 +164,14 @@ define(["jquery",
                     selectedProp: this.selectedProp,
                     hasContinuousFields: (propertiesList[1].length > 0),
                     hasCategoricalFields: (propertiesList[0].length > 0),
-                    dataColumnsList: this.dataColumnsList // new
+                    dataColumnsList: this.dataColumnsList, // new
+                    isBasic: this.groupBy === 'basic',
+                    propCanBeCont: this.propCanBeCont()
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
                 }
+                console.log(helpers.groupBy);
                 return helpers;
             },
 
@@ -183,12 +190,40 @@ define(["jquery",
                 'click .palette-list': 'selectPalette',
                 'click .palette-list *': 'selectPalette',
                 'click #global-symbol': 'showSymbols',
-                'click .style-by-menu_close': 'hideStyleMenu'
+                'click .style-by-menu_close': 'hideStyleMenu',
+                "click #cat-radio": "toggleContCat",
+                "click #cont-radio": "toggleContCat"
                // 'click .palette-list *': 'selectPalette'
             },
 
             modelEvents: {
                 'change:symbols': 'saveChanges'
+            },
+
+            toggleContCat: function (e) {
+                console.log('toggle');
+                let $buckets = this.$el.find('#bucket');
+                if (e.target.id === 'cat-radio') {
+                    $buckets.attr("disabled", "disabled");
+                    this.model.get('metadata').isContinuous = false;
+                } else {
+                    console.log('remove attr');
+                    $buckets.removeAttr("disabled");
+                    this.model.get('metadata').isContinuous = true;
+                }
+                this.createCorrectSymbols();
+            },
+
+            propCanBeCont: function() {
+                let currentProp = this.dataColumnsList.find((item) => {
+                    return (item.value === this.model.get('metadata').currentProp)
+                });
+                if (currentProp.type === 'integer' || currentProp.type === 'rating') {
+                    return true;
+                } else {
+                    return false;
+                }
+
             },
 
             saveChanges: function() {
@@ -210,6 +245,7 @@ define(["jquery",
             },
 
             selectGroupBy: function (e) {
+                console.log($(e.target).val());
                 this.groupBy = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
                 this.model.set("group_by", this.groupBy);
 
@@ -257,7 +293,8 @@ define(["jquery",
                     dataColumns.push({
                         text: record.get("col_alias"),
                         value: record.get("col_name"),
-                        hasData: this.fieldHasData(collection, field)
+                        hasData: this.fieldHasData(collection, field),
+                        type: record.get("data_type") 
                     });
                 });
                 console.log(dataColumns);
@@ -345,27 +382,43 @@ define(["jquery",
             },
 
             createCorrectSymbols: function () {
-                if (this.groupBy == "continuous") {
-                    this.contData();
-                } else if (this.groupBy == "categorical") {
-                    this.catData();
-                } else if (this.groupBy == "basic") {
+                // if (this.groupBy == "continuous") {
+                //     this.contData();
+                // } else if (this.groupBy == "categorical") {
+                //     this.catData();
+                // } else if (this.groupBy == "basic") {
+                //     this.simpleData();
+                // }
+                if (this.groupBy === 'basic') {
                     this.simpleData();
+                } else if (this.groupBy === 'individual') {
+                    console.log('individual');
+                } else {
+                    console.log('PROP!: ', this.model.get('group_by'));
+                    this.model.get('metadata').currentProp = this.model.get('group_by');      
+                    this.selectedProp = this.model.get('metadata').currentProp;
+                    if (this.model.get('metadata').isContinuous) {
+                        console.log('call cont data');
+                        this.contData();
+                    } else {
+                        this.catData();
+                    }
                 }
+                
             },
 
             contData: function() {
-                console.log('contData')
                 this.buildPalettes();
-                var cssId = "#cont-prop";
-                this.setSelectedProp(cssId);
+                // var cssId = "#cont-prop";
+                // this.setSelectedProp(cssId);
                 this.setSymbols(this.buildContinuousSymbols(this.getContInfo()));
             },
 
             catData: function() {
-                var cssId = "#cat-prop";
-                this.setSelectedProp(cssId);
+                // var cssId = "#cat-prop";
+                // this.setSelectedProp(cssId);
                 var catInfo = this.getCatInfo();
+                console.log(catInfo);
                 this.buildPalettes(catInfo.list.length);
 
                 this.setSymbols(this.buildCategoricalSymbols(catInfo));
@@ -373,15 +426,13 @@ define(["jquery",
             },
 
             buildContinuousSymbols: function (cont) {
-                console.log('buildContinuousSymbols', cont);
+                console.log('color palette', this.selectedColorPalette);
                 var counter = 0,
                 selected = this.selectedProp;
                 if (!this.layerDraft.continuous === null) {
                     this.model.set('symbols', this.layerDraft.continuous);
                 }
-                console.log('before new Symbols');
                 this.layerDraft.continuous = new Symbols();
-                console.log('after new Symbols');
                 while (cont.currentFloor < cont.max) {
                     this.layerDraft.continuous.add({
                         "rule": selected + " >= " + cont.currentFloor.toFixed(0) + " and " + selected + " <= " + (cont.currentFloor + cont.segmentSize).toFixed(0),
@@ -398,14 +449,13 @@ define(["jquery",
                     });
                     counter++;
                     cont.currentFloor = Math.round((cont.currentFloor + cont.segmentSize)*100)/100;
-                    console.log('looping new Symbols');
                 }
+                console.log(this.layerDraft.continuous);
                 this.layerNoLongerNew();
                 return this.layerDraft.continuous;
             },
 
             buildCategoricalSymbols: function (cat) {
-                console.log('building cat', cat);
                 var that = this,
                 idCounter = 1,
                 paletteCounter = 0;
@@ -472,8 +522,10 @@ define(["jquery",
                 },
                 selected = this.selectedProp,
                 collection = this.app.dataManager.getCollection(key);
+                console.log('getCatInfo', selected, collection);
                 collection.models.forEach(function(d) {
                     if (!cat.list.includes(d.get(selected)) && d.get(selected)) {
+                        console.log(d.get(selected));
                         cat.list.push(d.get(selected));
                         cat.instanceCount[d.get(selected)] = 1;
                     } else {
@@ -572,15 +624,33 @@ define(["jquery",
                 var contPalettes = ['cb-Blues', 'cb-Oranges', 'cb-Greys', 'cb-YlGn', 'cb-RdYlBu', 'tol-dv', 'cb-Purples'];
                 var paletteId = this.model.get("metadata").paletteId || 0;
 
-                if (this.groupBy == "categorical") {
+                // if (this.groupBy == "categorical") {
+                //     var buckets = count;
+                //     var paletteList = catPalettes;
+                // } else if (this.groupBy == "continuous") {
+                //     var buckets = this.model.get("metadata").buckets;
+                //     var paletteList = contPalettes;
+                // } else if (this.groupBy == "basic") {
+                //     var buckets = count;
+                //     var paletteList = catPalettes;
+                // }
+                var paletteList, buckets;
+                if (this.groupBy === 'basic') {
                     var buckets = count;
-                    var paletteList = catPalettes;
-                } else if (this.groupBy == "continuous") {
-                    var buckets = this.model.get("metadata").buckets;
-                    var paletteList = contPalettes;
-                } else if (this.groupBy == "basic") {
-                    var buckets = count;
-                    var paletteList = catPalettes;
+                    paletteList = catPalettes;
+                } else if (this.groupBy === 'individual') {
+                    console.log('individual');
+                } else {
+                    console.log('PROP!: ', this.model.get('group_by'));
+                    if (this.model.get('metadata').isContinuous) {
+                        console.log('cont palette count: ', count);
+                        paletteList = contPalettes;
+                        buckets = this.model.get("metadata").buckets;
+                    } else {
+                        console.log('cat palette count: ', buckets);
+                        paletteList = catPalettes;
+                        buckets = count;
+                    }
                 }
 
                 seq1 = palette(paletteList[0], buckets);
