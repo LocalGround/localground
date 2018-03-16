@@ -20,8 +20,6 @@ define(["jquery",
          * symbol styles (marker size, stroke, etc.))
          */
         var MarkerStyleView = Marionette.CompositeView.extend({
-            categoricalList: [],
-            continuousList: [],
             allColors: [],
             selectedColorPalette: null,
             layerDraft: {
@@ -30,7 +28,6 @@ define(["jquery",
                 simple: null,
                 individual: null
             },
-            catDataHasBeenBuilt: false,
             template: Handlebars.compile(MarkerStyleTemplate),
 
             //each of these childViews is a symbol. this view renders the value-rules box
@@ -41,7 +38,7 @@ define(["jquery",
                 return {
                     app: this.app,
                     layer: this.model,
-                    groupBy: this.groupBy
+                    groupBy: this.model.get('group_by')
                 };
             },
 
@@ -50,34 +47,18 @@ define(["jquery",
 
                 console.log(this.model);
 
-
-                // this is the old properties list, with continuous and categorical properties separated into two different lists
-                var propertiesList = this.buildPropertiesList();
-
                 // this is the new properties list; all properties in a single list
                 this.dataColumnsList = this.buildDataColumnsList();
 
-                /* reset layer type to 'basic' on initialize
-                 this is the easiest way to prevent the view from being initialized
-                 as continuous or categorical when no such cont. or cat. data is available
-                 e.g. in case the user switches from a data source that has continuous data to one that doesn't
-                */
-                //(03/2018: a better solution would be to resett the layer type to 'basic' anytime the datasource is changed)
-                if (
-                    (propertiesList[1].length === 0 && this.model.get('group_by') === 'continuous') ||
-                    (propertiesList[0].length === 0 && this.model.get('group_by') === 'categorical')
-                ) {
-                    this.model.set('group_by', 'basic');
-                }
 
-                // and set the variable
-                this.groupBy = this.model.get('group_by');
+                // (03/2018: If we add the ability to change a layer's dataset,
+                // we need to reset the layer type to 'basic' in the case where because 
+                // we won't know what the fields/dataColumns are 
 
 
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
                 //this.collection = new Symbols(this.model.get("symbols"));
                 this.collection = this.model.get('symbols');
-                this.selectedProp = this.model.get('metadata').currentProp;
 
                 if (!this.model.get('metadata').isContinuous) {
                     this.model.get('metadata').isContinuous = false;
@@ -91,7 +72,7 @@ define(["jquery",
                 // this is so existing unique individual attributes aren't overwritten by global ones
                 if (this.model.get('newLayer') === true) {
                     this.createCorrectSymbols();
-                } else if (this.groupBy === 'basic') {
+                } else if (this.model.get('group_by') === 'basic') {
                     this.createCorrectSymbols();
                 } else {
                     this.buildPalettes(this.model.get('symbols').length);
@@ -151,21 +132,16 @@ define(["jquery",
 
             templateHelpers: function () {
                 var metadata = this.model.get("metadata"),
-                propertiesList = this.buildPropertiesList(),
                     helpers;
                 helpers = {
                     metadata: metadata,
-                    groupBy: this.groupBy,
+                    groupBy: this.model.get('group_by'),
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
-                    categoricalList: propertiesList[0],
-                    continuousList: propertiesList[1],
                     icons: IconLookup.getIcons(),
-                    selectedProp: this.selectedProp,
-                    hasContinuousFields: (propertiesList[1].length > 0),
-                    hasCategoricalFields: (propertiesList[0].length > 0),
+                    selectedProp: this.model.get('metadata').currentProp,
                     dataColumnsList: this.dataColumnsList, // new
-                    isBasic: this.groupBy === 'basic',
+                    isBasic: this.model.get('group_by') === 'basic',
                     propCanBeCont: this.propCanBeCont()
                 };
                 if (this.fields) {
@@ -193,7 +169,6 @@ define(["jquery",
                 'click .style-by-menu_close': 'hideStyleMenu',
                 "click #cat-radio": "toggleContCat",
                 "click #cont-radio": "toggleContCat"
-               // 'click .palette-list *': 'selectPalette'
             },
 
             modelEvents: {
@@ -252,33 +227,10 @@ define(["jquery",
 
             selectGroupBy: function (e) {
                 console.log($(e.target).val());
-                this.groupBy = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
-                this.model.set("group_by", this.groupBy);
+  
+                this.model.set('group_by', $(e.target).val() || this.$el.find("#data-type-select").val());
                 this.model.get('metadata').isContinuous = false;
 
-                if (this.groupBy == 'continuous') {
-                    // loops over the properties list and selects the first property that actually contains data
-                    // i.e. it skips over any property that contains no data (one that would be grayed out in the dropdown)
-                    for (var i=0; i < this.categoricalList.length; i++) {
-                        if (this.categoricalList[i].hasData) {
-                            this.selectedProp = this.continuousList[i].value;
-                            this.model.get('metadata').currentProp = this.continuousList[i].value;
-                            break;
-                        }
-                    }
-                }
-
-                if (this.groupBy == 'categorical') {
-                    // loops over the properties list and selects the first property that actually contains data
-                    // i.e. it skips over any property that contains no data (one that would be grayed out in the dropdown)
-                    for (var i=0; i < this.categoricalList.length; i++) {
-                        if (this.categoricalList[i].hasData) {
-                            this.selectedProp = this.categoricalList[i].value;
-                            this.model.get('metadata').currentProp = this.categoricalList[i].value;
-                            break;
-                        }
-                    }
-                }
                 this.createCorrectSymbols();
             },
 
@@ -304,66 +256,7 @@ define(["jquery",
                         type: record.get("data_type") 
                     });
                 });
-                console.log(dataColumns);
                 return dataColumns;
-            },
-
-            // builds list of properties/fields to populate property dropdown list
-            buildPropertiesList: function () {
-                //clearing out the lists
-                this.categoricalList = [];
-                this.continuousList = [];
-
-                // generic property lists for photos, audio, and markers
-                // property lists for custom forms are generated by 'buildCustomPropertiesList()'
-                var photoAudioList = ["id", "name", "caption", "tags", "owner", "attribution"],
-                markerList = ["name", "caption", "tags", "owner"];
-
-                var key = this.model.get('data_source'),
-                    collection = this.app.dataManager.getCollection(key);
-
-                //still need to account for map-images below...
-                if (key == "photos" || key == "audio") {
-                    this.buildGenericPropertiesList(photoAudioList, collection);
-                } else if (key == "markers") {
-                    this.buildGenericPropertiesList(markerList, collection);
-                } else if (key.includes("form_")) {
-                    this.buildCustomPropertiesList(collection);
-                }
-                return [this.categoricalList, this.continuousList];
-            },
-
-            // builds 'this.categoricalList' for generic data types
-            // note: all generic properties/fields are categorical, not continuous
-            buildGenericPropertiesList: function(list, collection) {
-                for (var i=0;i<list.length;i++) {
-                    this.categoricalList.push({
-                        text: list[i],
-                        value:list[i],
-                        hasData: this.fieldHasData(collection, list[i])
-                    });
-                }
-            },
-
-            // builds 'this.categoricalList' or 'this.continuousList' for custom data types
-            buildCustomPropertiesList: function (collection) {
-                var that = this;
-                collection.getFields().models.forEach(function(log) {
-                    var field = log.get("col_name");
-                    if (log.get("data_type") === "text" || log.get("data_type") === "choice" || log.get("data_type") === "boolean") {
-                        that.categoricalList.push({
-                            text: log.get("col_alias"),
-                            value: log.get("col_name"),
-                            hasData: that.fieldHasData(collection, field)
-                        });
-                    } else if (log.get("data_type") === "integer" || log.get("data_type") === "rating"){
-                        that.continuousList.push({
-                            text: log.get("col_alias"),
-                            value: log.get("col_name"),
-                            hasData: that.fieldHasData(collection, field)
-                        });
-                    }
-                });
             },
 
             // this function determines if a particular property/field
@@ -380,32 +273,18 @@ define(["jquery",
                     }
                 });
 
-                //
-                if (hasData.includes(true)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return hasData.includes(true) ? true : false;
             },
 
             createCorrectSymbols: function () {
-                // if (this.groupBy == "continuous") {
-                //     this.contData();
-                // } else if (this.groupBy == "categorical") {
-                //     this.catData();
-                // } else if (this.groupBy == "basic") {
-                //     this.simpleData();
-                // }
-                if (this.groupBy === 'basic') {
+                const gb = this.model.get('group_by');
+                if (gb === 'basic') {
                     this.simpleData();
-                } else if (this.groupBy === 'individual') {
+                } else if (gb === 'individual') {
                     console.log('individual');
                 } else {
-                    console.log('PROP!: ', this.model.get('group_by'));
-                    this.model.get('metadata').currentProp = this.model.get('group_by');      
-                    this.selectedProp = this.model.get('metadata').currentProp;
+                    this.model.get('metadata').currentProp = this.model.get('group_by');
                     if (this.model.get('metadata').isContinuous) {
-                        console.log('call cont data');
                         this.contData();
                     } else {
                         this.catData();
@@ -416,16 +295,11 @@ define(["jquery",
 
             contData: function() {
                 this.buildPalettes();
-                // var cssId = "#cont-prop";
-                // this.setSelectedProp(cssId);
                 this.setSymbols(this.buildContinuousSymbols(this.getContInfo()));
             },
 
             catData: function() {
-                // var cssId = "#cat-prop";
-                // this.setSelectedProp(cssId);
                 var catInfo = this.getCatInfo();
-                console.log(catInfo);
                 this.buildPalettes(catInfo.list.length);
 
                 this.setSymbols(this.buildCategoricalSymbols(catInfo));
@@ -433,9 +307,8 @@ define(["jquery",
             },
 
             buildContinuousSymbols: function (cont) {
-                console.log('color palette', this.selectedColorPalette);
                 var counter = 0,
-                selected = this.selectedProp;
+                selected = this.model.get('metadata').currentProp;
                 if (!this.layerDraft.continuous === null) {
                     this.model.set('symbols', this.layerDraft.continuous);
                 }
@@ -468,8 +341,8 @@ define(["jquery",
                 paletteCounter = 0;
                 this.layerDraft.categorical = new Symbols();
                 cat.list.forEach((item) => {
-                    that.layerDraft.categorical.add({
-                        "rule": this.selectedProp + " = " + item,
+                    this.layerDraft.categorical.add({
+                        "rule": this.model.get('metadata').currentProp + " = " + item,
                         "title": item,
                         "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
                         "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
@@ -493,7 +366,7 @@ define(["jquery",
             // returns an object containing information
             // for defining a layer's continuous 'buckets'
             getContInfo: function () {
-                var selected = this.selectedProp,
+                var selected = this.model.get('metadata').currentProp,
                     buckets = this.model.get("metadata").buckets,
                     key = this.model.get('data_source'),
                     collection = this.app.dataManager.getCollection(key);
@@ -527,7 +400,7 @@ define(["jquery",
                    list: [],
                    instanceCount: {},
                 },
-                selected = this.selectedProp,
+                selected = this.model.get('metadata').currentProp,
                 collection = this.app.dataManager.getCollection(key);
                 console.log('getCatInfo', selected, collection);
                 collection.models.forEach(function(d) {
@@ -567,15 +440,6 @@ define(["jquery",
                 }]);
                 this.layerNoLongerNew();
                 return this.layerDraft.simple;
-            },
-
-            // gets and sets user-selected property from the dom
-            //this.selectedProp is global so it can be used in template helper
-            setSelectedProp: function (cssId) {
-                if (this.$el.find(cssId).val()) {
-                    this.model.get('metadata').currentProp = this.$el.find(cssId).val();
-                }
-                this.selectedProp = this.model.get('metadata').currentProp;
             },
 
             setSymbols: function (symbs) {
@@ -631,30 +495,17 @@ define(["jquery",
                 var contPalettes = ['cb-Blues', 'cb-Oranges', 'cb-Greys', 'cb-YlGn', 'cb-RdYlBu', 'tol-dv', 'cb-Purples'];
                 var paletteId = this.model.get("metadata").paletteId || 0;
 
-                // if (this.groupBy == "categorical") {
-                //     var buckets = count;
-                //     var paletteList = catPalettes;
-                // } else if (this.groupBy == "continuous") {
-                //     var buckets = this.model.get("metadata").buckets;
-                //     var paletteList = contPalettes;
-                // } else if (this.groupBy == "basic") {
-                //     var buckets = count;
-                //     var paletteList = catPalettes;
-                // }
-                var paletteList, buckets;
-                if (this.groupBy === 'basic') {
-                    var buckets = count;
+                let paletteList, buckets;
+                const gb = this.model.get('group_by');
+                if (gb === 'basic') {
+                    buckets = count;
                     paletteList = catPalettes;
-                } else if (this.groupBy === 'individual') {
-                    console.log('individual');
+                } else if (gb === 'individual') {
                 } else {
-                    console.log('PROP!: ', this.model.get('group_by'));
                     if (this.model.get('metadata').isContinuous) {
-                        console.log('cont palette count: ', count);
                         paletteList = contPalettes;
                         buckets = this.model.get("metadata").buckets;
                     } else {
-                        console.log('cat palette count: ', buckets);
                         paletteList = catPalettes;
                         buckets = count;
                     }
@@ -688,32 +539,27 @@ define(["jquery",
                     opacity = 0;
                 }
                 this.updateMetadata("fillOpacity", opacity);
-                //this.updateMap();
             },
 
             updateGlobalShape: function(e) {
                 var shape = $(e.target).val();
                 this.updateMetadata("shape", shape);
-                //this.updateMap();
             },
 
             updateWidth: function(e) {
                 var width = parseFloat($(e.target).val());
                 this.updateMetadata("width", width);
-                //this.updateMap();
             },
 
             updateStrokeWeight: function(e) {
                 var strokeWeight = parseFloat($(e.target).val());
                 this.updateMetadata("strokeWeight", strokeWeight);
-                //this.updateMap();
             },
 
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
                 this.updateMetadata("strokeColor", hex);
                 $('#stroke-color-picker').css('background-color', hex);
-                //this.updateMap();
             },
 
             updateStrokeOpacity: function(e) {
@@ -724,7 +570,6 @@ define(["jquery",
                         opacity = 0;
                     }
                 this.updateMetadata("strokeOpacity", opacity);
-                //this.updateMap();
             },
 
             selectPalette: function (e) {
@@ -746,12 +591,6 @@ define(["jquery",
                 this.updateMapAndRender();
             },
 
-            /* if the collection pointer changes (e.g. after a new symbol set is built),
-               make sure the model symbols and the collection point to the same thing
-            */
-            /*syncModelSymbsToCollection: function () {
-                this.model.set("symbols", this.collection.toJSON());
-            },*/
 
             showPalettes: function () {
                 this.$el.find(".palette-wrapper").css({display: 'block'});
@@ -787,7 +626,6 @@ define(["jquery",
             },
 
             hideStyleMenu: function(e) {
-                console.log('hide menu');
                 this.app.vent.trigger('hide-style-menu', e);
             }
 
