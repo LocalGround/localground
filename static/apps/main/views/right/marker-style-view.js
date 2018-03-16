@@ -215,6 +215,12 @@ define(["jquery",
             },
 
             propCanBeCont: function() {
+                if (this.model.get('group_by') === 'basic') {
+                    return false;
+                }
+                if (this.model.get('group_by') === 'individual') {
+                    return false;
+                }
                 let currentProp = this.dataColumnsList.find((item) => {
                     return (item.value === this.model.get('metadata').currentProp)
                 });
@@ -248,6 +254,7 @@ define(["jquery",
                 console.log($(e.target).val());
                 this.groupBy = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
                 this.model.set("group_by", this.groupBy);
+                this.model.get('metadata').isContinuous = false;
 
                 if (this.groupBy == 'continuous') {
                     // loops over the properties list and selects the first property that actually contains data
@@ -705,7 +712,7 @@ define(["jquery",
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
                 this.updateMetadata("strokeColor", hex);
-                $('#stroke-color-picker').css('color', hex);
+                $('#stroke-color-picker').css('background-color', hex);
                 //this.updateMap();
             },
 
