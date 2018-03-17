@@ -1,5 +1,3 @@
-
-
 <div class="toggle-container marker-style visual-edit" id="visual-marker-style">
     <form class="form-inline">
         <h5 class="msv-header">Layer Properties</h5> 
@@ -11,7 +9,7 @@
                 
                 <option value="basic" {{#ifequal groupBy "basic"}} SELECTED {{/ifequal}}>Simple</option>
                 <option value="individual" {{#ifequal groupBy "individual"}} SELECTED {{/ifequal}}>Individual Sites</option>
-                <option disabled="disabled">Style by Data Column</option>
+                <optgroup label="Style by Data Column:">
                     {{#each dataColumnsList}}
                         <option 
                             value={{this.value}} 
@@ -21,94 +19,83 @@
                             {{this.text}}
                         </option>
                     {{/each}}
+                </optgroup>
             </select>
         </div>
     
 {{#unless isBasic}}    
-            <!-- Rows in this table update based on what "data type" is selected.-->
-            <!-- <div class="categorical-variable">
-                <span>Property</span>
-                
-                <select id="cat-prop" class="marker-style-select">
-                    {{#each categoricalList}}
-                        <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}} value="{{ this.value }}">
-                        {{ this.text }} {{#unless this.hasData}} (no data){{/unless}}
-                        </option>
-                    {{/each}}
-                </select>
-            </div> -->
-            <div class="row">
-                <label class="msv-label">Group by:</label>
-                <div>
-                    <input type="radio" name="rb" id="cat-radio" {{#unless metadata.isContinuous}}checked{{/unless}}>
-                    <label>Categorical</label><br>
-                    <input type="radio" name="rb" id="cont-radio" {{#if metadata.isContinuous}}checked{{/if}} {{#unless propCanBeCont}}disabled="disabled" class="disabled"{{/unless}}>
-                    <label {{#unless propCanBeCont}}class="disabled"{{/unless}}>Continuous</label><br>
-                </div>
+        <div class="row">
+            <label class="msv-label">Group by:</label>
+            <div>
+                <input type="radio" name="rb" id="cat-radio" {{#unless metadata.isContinuous}}checked{{/unless}}>
+                <label>Categorical</label><br>
+                <input type="radio" name="rb" id="cont-radio" {{#if metadata.isContinuous}}checked{{/if}} {{#unless propCanBeCont}}disabled="disabled" class="disabled"{{/unless}}>
+                <label {{#unless propCanBeCont}}class="disabled"{{/unless}}>Continuous</label><br>
             </div>
-            <div class="row" id="bucket-row">
-                <label class="msv-label">Buckets:</label>
-                <input id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="9" {{#unless metadata.isContinuous}}disabled="disabled"{{/unless}}>
-            </div>
-            <div class="palette-container row">
-                <label class="msv-label">Color Ramp:</label>
-                <div>
-                    <a>
+        </div>
+        <div class="row" id="bucket-row">
+            <label class="msv-label">Buckets:</label>
+            <input id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="9" {{#unless metadata.isContinuous}}disabled="disabled"{{/unless}}>
+        </div>
+        <div class="palette-container row">
+            <label class="msv-label">Color Ramp:</label>
+            <div>
+                <a>
 
-                        <div class="selected-palette-wrapper">
-                            <a>
-                                <ul class="selected-ul">
-                                    {{#with selectedColorPalette}}
+                    <div class="selected-palette-wrapper">
+                        <a>
+                            <ul class="selected-ul">
+                                {{#with selectedColorPalette}}
 
-                                        <li class="selected-palette-list">
-                                            <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">
-                                                {{#each this}}
-                                                <li class="palette-item" style= "background-color: #{{this}}">
+                                    <li class="selected-palette-list">
+                                        <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">
+                                            {{#each this}}
+                                            <li class="palette-item" style= "background-color: #{{this}}">
 
-                                                </li>
-                                                {{/each}}
-                                            </ul>
-                                        </li>
+                                            </li>
+                                            {{/each}}
+                                        </ul>
+                                    </li>
 
-                                    {{/with}}
-                                </ul>
-                            <i class="fa fa-angle-down palette-icon"></i>
-                            </a>
-                        </div>
-                    </a>
-                    <div class="palette-wrapper">
-                        <ul>
-                            {{#each allColors}}
-                            <a>
-                                <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">
-                                    <ul class="palette-container" value="{{@index}}">
-                                        {{#each this}}
-                                        <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">
-
-                                        </li>
-                                        {{/each}}
-                                    </ul>
-                                </li>
-                            </a>
-                            {{/each}}
-                        </ul>
+                                {{/with}}
+                            </ul>
+                        <i class="fa fa-angle-down palette-icon"></i>
+                        </a>
                     </div>
+                </a>
+                <div class="palette-wrapper">
+                    <ul>
+                        {{#each allColors}}
+                        <a>
+                            <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">
+                                <ul class="palette-container" value="{{@index}}">
+                                    {{#each this}}
+                                    <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">
+
+                                    </li>
+                                    {{/each}}
+                                </ul>
+                            </li>
+                        </a>
+                        {{/each}}
+                    </ul>
                 </div>
             </div>
+        </div>
     
-            <div class="row">
-                <label class="msv-label">Marker Fill: </label>
-                <input id="marker-width" type="number" value="{{metadata.width}}">
-                <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">
+        <div class="row">
+            <label class="msv-label">Marker Fill: </label>
+            <input id="marker-width" type="number" value="{{metadata.width}}">
+            <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">
+        </div>
+        <div class="row">
+            <label class="msv-label">Marker Stroke: </label>
+            <input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}">
+            <div id="stroke-color-picker" class="marker-icon jscolor stroke-color" style="padding:0; background-color: {{metadata.strokeColor}} " aria-hidden="true">
             </div>
-            <div class="row">
-                <label class="msv-label">Marker Stroke: </label>
-                <input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}">
-                <div id="stroke-color-picker" class="marker-icon jscolor stroke-color" style="padding:0; background-color: {{metadata.strokeColor}} " aria-hidden="true">
-                </div>
-                </span>
-                <input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1">
-            </div>
+            </span>
+            <input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1">
+        </div>
 {{/unless}}
     </form>
 </div>
@@ -126,164 +113,3 @@
         </tbody>
     </table>
 </div>
-
-<!-- {{#ifequal groupBy "continuous"}}
-    <table class="color-properties">
-        <tbody>
-            <tr class="continuous-variable">
-                <td>Property</td>
-                <td>
-                    <select id="cont-prop" class="marker-style-select">
-                        {{#each continuousList}}
-                            <option {{#ifequal ../selectedProp this.value }} SELECTED {{/ifequal}} {{#unless this.hasData}}disabled="disabled"{{/unless}} value="{{ this.value }}">
-                                {{ this.text }}{{#unless this.hasData}} (no data){{/unless}}
-                            </option>
-                        {{/each}}
-                    </select>
-                </td>
-            </tr>
-
-            <tr class="continuous-variable">
-                <td>Buckets:</td>
-                <td><input id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="9"></td>
-            </tr>
-            <tr class="continuous-variable">
-                <td>Color Ramp</td>
-                <td>
-                    <div>
-                        <a>
-
-                            <div class="selected-palette-wrapper">
-                                <a>
-                                    <ul class="selected-ul">
-                                        {{#with selectedColorPalette}}
-
-                                            <li class="selected-palette-list">
-                                                <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">
-                                                    {{#each this}}
-                                                    <li class="palette-item" style= "background-color: #{{this}}">
-
-                                                    </li>
-                                                    {{/each}}
-                                                </ul>
-                                            </li>
-
-                                        {{/with}}
-                                    </ul>
-                                <i class="fa fa-angle-down palette-icon"></i>
-                                </a>
-                            </div>
-                        </a>
-                        <div class="palette-wrapper">
-                            <ul>
-                                {{#each allColors}}
-                                <a>
-                                    <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">
-                                        <ul class="palette-container" value="{{@index}}">
-                                            {{#each this}}
-                                            <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">
-
-                                            </li>
-                                            {{/each}}
-                                        </ul>
-                                    </li>
-                                </a>
-                                {{/each}}
-                            </ul>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>Symbol Shape</td>
-                <td>
-                    <div id="global-symbol-dropdown" class="global-symbol-dropdown"></div>
-                    <div class="selected-symbol-div" id="global-symbol">
-                        <i class="fa fa-circle fa-fw" aria-hidden="true"></i>
-                        <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="color-properties">
-        <tbody>
-            <tr>
-                <td>Opacity</td>
-                <td>
-                     <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">
-                </td>
-            </tr>
-            <tr>
-                <td>Width</td>
-                <td><input id="marker-width" type="number" value="{{metadata.width}}"></td>
-            </tr>
-            <tr>
-                <td>Stroke Weight</td>
-                <td><input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}"></td>
-            </tr>
-            <tr>
-                <td>Stroke Color</td>
-                <td><i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: {{metadata.strokeColor}} " aria-hidden="true">
-                    </i>
-                    </td>
-            </tr>
-            <tr>
-                <td>Stroke Opacity</td>
-                <td><input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div>
-    <table class="symbols-table">
-        <thead>
-            <tr>
-                <th class="symbols-th">Value</th>
-                <th class="symbols-th">Legend Label</th>
-                <th class="symbols-th">Shape</th>
-            </tr>
-        </thead>
-        <tbody id="symbols">
-
-        </tbody>
-    </table>
-</div>
-{{/ifequal}}
-
-{{#ifequal groupBy "basic"}}
-</div>
-
-<div>
-    <table class="symbols-table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Legend Label</th>
-                <th>Shape</th>
-            </tr>
-        </thead>
-        <tbody id="symbols">
-
-        </tbody>
-    </table>
-</div>
-{{/ifequal}} -->
-<!-- <div>
-        <span>Symbol Shape</span>
-        <span>
-            <div id="global-symbol-dropdown" class="global-symbol-dropdown"></div>
-            <div class="selected-symbol-div" id="global-symbol">
-                <i class="fa fa-circle fa-fw" aria-hidden="true"></i>
-                <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>
-            </div>
-            <!--
-            <select class="global-marker-shape marker-style-select">
-            {{#each icons}}
-                <option value="{{ this.key }}" {{#ifequal ../metadata.shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
-            {{/each}}
-            </select>
-        -->
-        <!-- </span>
-    </div> --> 

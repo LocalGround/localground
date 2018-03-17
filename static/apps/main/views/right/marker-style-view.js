@@ -64,10 +64,6 @@ define(["jquery",
                     this.model.get('metadata').isContinuous = false;
                 }
 
-                // important to render before createCorrectSymbol because createCorrectSymbol
-                // depends on info in the DOM (e.g. what property is selected)
-                this.render();
-
                 // don't recreate symbols if they already exist
                 // this is so existing unique individual attributes aren't overwritten by global ones
                 if (this.model.get('newLayer') === true) {
@@ -81,12 +77,10 @@ define(["jquery",
 
                 $('body').click($.proxy(this.hideColorRamp, this));
 
-                this.listenTo(this.app.vent, 'find-datatype', this.selectGroupBy);
                 this.listenTo(this.app.vent, 'update-map', this.updateMap);
             },
 
             onRender: function () {
-                console.log('render');
                 var that = this,
                     color = this.model.get('fillColor');
                 $(".marker-style-color-picker").remove();
@@ -138,8 +132,6 @@ define(["jquery",
                     groupBy: this.model.get('group_by'),
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
-                    icons: IconLookup.getIcons(),
-                    selectedProp: this.model.get('metadata').currentProp,
                     dataColumnsList: this.dataColumnsList, // new
                     isBasic: this.model.get('group_by') === 'basic',
                     propCanBeCont: this.propCanBeCont()
@@ -147,14 +139,11 @@ define(["jquery",
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
                 }
-                console.log(helpers.groupBy);
                 return helpers;
             },
 
             events: {
                 'change #data-type-select': 'selectGroupBy',
-                'change #cat-prop': 'catData',
-                'change #cont-prop': 'contData',
                 'change #bucket': 'updateBuckets',
                 'change #palette-opacity': 'updatePaletteOpacity',
                 'change .global-marker-shape': 'updateGlobalShape',
@@ -176,13 +165,11 @@ define(["jquery",
             },
 
             toggleContCat: function (e) {
-                console.log('toggle');
                 let $buckets = this.$el.find('#bucket');
                 if (e.target.id === 'cat-radio') {
                     $buckets.attr("disabled", "disabled");
                     this.model.get('metadata').isContinuous = false;
                 } else {
-                    console.log('remove attr');
                     $buckets.removeAttr("disabled");
                     this.model.get('metadata').isContinuous = true;
                 }
@@ -207,11 +194,11 @@ define(["jquery",
 
             },
 
+            // don't think this is being used anymore
             saveChanges: function() {
                 var that = this;
                 setTimeout(function() {
                     that.model.save();
-                    console.log('MSV SAVE');
                 }, 2000);
             },
 
@@ -220,24 +207,22 @@ define(["jquery",
                     app: this,
                     el: $('#global-symbol-dropdown')
                 });
-                console.log(this.symbolsView);
               //  this.$el.append(this.symbolsView.$el);
               //  this.symbolsView.$el.show();
-            },
-
-            selectGroupBy: function (e) {
-                console.log($(e.target).val());
-  
-                this.model.set('group_by', $(e.target).val() || this.$el.find("#data-type-select").val());
-                this.model.get('metadata').isContinuous = false;
-
-                this.createCorrectSymbols();
             },
 
             displaySymbols: function () {
                 //this.collection = new Symbols(this.model.get("symbols"));
                 this.collection = this.model.get('symbols');
                 this.render();
+            },
+
+            selectGroupBy: function (e) {
+  
+                this.model.set('group_by', $(e.target).val() || this.$el.find("#data-type-select").val());
+                this.model.get('metadata').isContinuous = false;
+
+                this.createCorrectSymbols();
             },
 
             // New method (03/2018) - builds list of ALL data columns, not split into categorical or continuous
@@ -303,7 +288,6 @@ define(["jquery",
                 this.buildPalettes(catInfo.list.length);
 
                 this.setSymbols(this.buildCategoricalSymbols(catInfo));
-                this.model.get("metadata").catBuilt = true;
             },
 
             buildContinuousSymbols: function (cont) {
@@ -336,8 +320,7 @@ define(["jquery",
             },
 
             buildCategoricalSymbols: function (cat) {
-                var that = this,
-                idCounter = 1,
+                var idCounter = 1,
                 paletteCounter = 0;
                 this.layerDraft.categorical = new Symbols();
                 cat.list.forEach((item) => {
@@ -360,7 +343,7 @@ define(["jquery",
                     paletteCounter++;
                 });
                 this.layerNoLongerNew();
-                return that.layerDraft.categorical;
+                return this.layerDraft.categorical;
             },
 
             // returns an object containing information
@@ -377,15 +360,13 @@ define(["jquery",
                     }
                 });
 
-                console.log(selected, collection)
-                console.log(this.continuousData)
+
                 var cont = {};
                 cont.min = Math.min(...this.continuousData);
                 cont.max = Math.max(...this.continuousData);
                 cont.range = cont.max - cont.min;
                 cont.segmentSize = cont.range / buckets;
                 cont.currentFloor = cont.min;
-                console.log(cont)
                 return cont;
             },
 
@@ -402,10 +383,8 @@ define(["jquery",
                 },
                 selected = this.model.get('metadata').currentProp,
                 collection = this.app.dataManager.getCollection(key);
-                console.log('getCatInfo', selected, collection);
                 collection.models.forEach(function(d) {
                     if (!cat.list.includes(d.get(selected)) && d.get(selected)) {
-                        console.log(d.get(selected));
                         cat.list.push(d.get(selected));
                         cat.instanceCount[d.get(selected)] = 1;
                     } else {
@@ -418,7 +397,6 @@ define(["jquery",
 
 
             simpleData: function () {
-                console.log('simpleData');
                 this.setSymbols(this.buildSimpleSymbols(this.model.get('data_source')));
             },
 
@@ -443,7 +421,6 @@ define(["jquery",
             },
 
             setSymbols: function (symbs) {
-                console.log(symbs);
                 this.collection.reset(symbs.toJSON())
                 this.render();
             },
@@ -472,28 +449,28 @@ define(["jquery",
             },
 
             updateBuckets: function (e) {
-                var that = this;
                 this.delayExecution(
                     "bucketTimer",
-                    function () {
-                        var buckets = parseFloat(that.$el.find("#bucket").val());
-                        that.updateMetadata("buckets", buckets);
-                        that.buildPalettes();
-                        that.contData();
+                    () => {
+                        var buckets = parseFloat(this.$el.find("#bucket").val());
+                        this.updateMetadata("buckets", buckets);
+                        this.buildPalettes();
+                        this.contData();
                        // that.render();
-                        that.$el.find("#bucket").focus();
+                       this.$el.find("#bucket").focus();
                     },
                     500 //experiment with how many milliseconds to delay
                 );
             },
 
             buildPalettes: function (itemCount) {
-                var count = itemCount;
+                let count = itemCount;
                 if (count > 8) { count = 8; }
-                var seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8;
-                var catPalettes = ['cb-Accent', 'cb-Dark2', 'cb-Paired', 'cb-Pastel1', 'cb-Set1', 'cb-Set2', 'cb-Set3'];
-                var contPalettes = ['cb-Blues', 'cb-Oranges', 'cb-Greys', 'cb-YlGn', 'cb-RdYlBu', 'tol-dv', 'cb-Purples'];
-                var paletteId = this.model.get("metadata").paletteId || 0;
+                
+                let seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8;
+                const catPalettes = ['cb-Accent', 'cb-Dark2', 'cb-Paired', 'cb-Pastel1', 'cb-Set1', 'cb-Set2', 'cb-Set3'];
+                const contPalettes = ['cb-Blues', 'cb-Oranges', 'cb-Greys', 'cb-YlGn', 'cb-RdYlBu', 'tol-dv', 'cb-Purples'];
+                const paletteId = this.model.get("metadata").paletteId || 0;
 
                 let paletteList, buckets;
                 const gb = this.model.get('group_by');
@@ -501,6 +478,7 @@ define(["jquery",
                     buckets = count;
                     paletteList = catPalettes;
                 } else if (gb === 'individual') {
+                    console.log('individual');
                 } else {
                     if (this.model.get('metadata').isContinuous) {
                         paletteList = contPalettes;
@@ -532,7 +510,7 @@ define(["jquery",
             },*/
 
             updatePaletteOpacity: function() {
-                var opacity = parseFloat(this.$el.find("#palette-opacity").val());
+                let opacity = parseFloat(this.$el.find("#palette-opacity").val());
                 if (opacity > 1) {
                     opacity = 1;
                 } else if (opacity < 0 ) {
@@ -542,17 +520,17 @@ define(["jquery",
             },
 
             updateGlobalShape: function(e) {
-                var shape = $(e.target).val();
+                const shape = $(e.target).val();
                 this.updateMetadata("shape", shape);
             },
 
             updateWidth: function(e) {
-                var width = parseFloat($(e.target).val());
+                const width = parseFloat($(e.target).val());
                 this.updateMetadata("width", width);
             },
 
             updateStrokeWeight: function(e) {
-                var strokeWeight = parseFloat($(e.target).val());
+                const strokeWeight = parseFloat($(e.target).val());
                 this.updateMetadata("strokeWeight", strokeWeight);
             },
 
@@ -563,7 +541,7 @@ define(["jquery",
             },
 
             updateStrokeOpacity: function(e) {
-                var opacity = parseFloat($(e.target).val());
+                let opacity = parseFloat($(e.target).val());
                     if (opacity > 1) {
                         opacity = 1;
                     } else if (opacity < 0 ) {
@@ -574,14 +552,14 @@ define(["jquery",
 
             selectPalette: function (e) {
                 this.$el.find(".palette-wrapper").toggle();
-                var paletteId = $(e.target).val();
+                const paletteId = $(e.target).val();
                 this.updateMetadata("paletteId", paletteId);
                 this.selectedColorPalette = this.allColors[paletteId];
                 this.updatePalette();
             },
 
             updatePalette: function() {
-                var i = 0,
+                let i = 0,
                 that = this;
                 this.collection.each(function(symbol) {
                     symbol.set('fillColor', "#" + that.selectedColorPalette[i]);
@@ -602,9 +580,7 @@ define(["jquery",
 
             //convenience function
             updateMetadata: function(newKey, newValue) {
-                var that = this;
-                var localMeta = this.model.get("metadata") || {},
-                    that = this;
+                let localMeta = this.model.get("metadata") || {};
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta);
 
