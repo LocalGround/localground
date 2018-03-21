@@ -4,6 +4,7 @@ from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 from django.conf import settings
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api.serializers.layer_serializer import \
     LayerSerializer
 
@@ -30,26 +31,27 @@ class MapSerializer(BaseNamedSerializer):
         style={'base_template': 'json.html', 'rows': 5},
         required=True, write_only=True)
 
-    def create_form(self):
-        owner = self.context.get('request').user
-        'last_updated_by': self.context.get('request').user,
-        'time_stamp': get_timestamp_no_milliseconds()
+    def create_form(self, project_id):
+        user = self.context.get('request').user
         form = models.Form(
-            owner=user or self.user,
+            owner=user,
             name=name,
             description=description,
-            last_updated_by=user or self.user,
-            project=project or self.project
+            last_updated_by=user,
+            project=project_id,
+            time_stamp=get_timestamp_no_milliseconds()
         )
-        f.save()
+        raise serializers.ValidationError(form)
+        form.save()
 
-    def get_datasets(self, data_sources):
+    def get_datasets(self, data_sources, project_id):
         datasets = []
         if len(data_sources) == 0:
             raise serializers.ValidationError('At least one data source should be specified in the data_sources array')
         for data_source in data_sources:
             if data_source == 'create_new':
                 raise serializers.ValidationError('Create new dataset!')
+                self.create_form(project_id)
             try:
                 form_id = int(data_source.split('_')[1])
                 form = models.Form.objects.get(id=form_id)
@@ -62,7 +64,8 @@ class MapSerializer(BaseNamedSerializer):
 
     def create(self, validated_data):
         data_sources = validated_data.pop('data_sources', None)
-        datasets = self.get_datasets(data_sources)
+        project_id = validated_data.get('project_id')
+        datasets = self.get_datasets(data_sources, project_id)
         raise Exception(datasets)
         validated_data.update(self.get_presave_create_dictionary())
         self.instance = self.Meta.model.objects.create(**validated_data)
