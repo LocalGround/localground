@@ -18,6 +18,8 @@ from localground.apps.site.api.serializers.map_serializer import \
     MapSerializer
 from localground.apps.site.api.serializers.marker_w_attrs_serializer import \
     create_dynamic_serializer
+from localground.apps.site.api.serializers.field_serializer import \
+    FieldSerializerUpdate
 
 
 class ProjectSerializerMixin(object):
@@ -111,7 +113,8 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             records,
             name=form.name,
             overlay_type='record',
-            model_name_plural='form_%s' % form.id
+            model_name_plural='form_%s' % form.id,
+            fields=form.fields
         )
 
     def get_photos(self, obj):
@@ -167,7 +170,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
 
     def serialize_list(
             self, model_class, serializer_class, records, name=None,
-            overlay_type=None, model_name_plural=None):
+            overlay_type=None, model_name_plural=None, fields=None):
         if name is None:
             name = model_class.model_name_plural.title()
         if overlay_type is None:
@@ -184,4 +187,9 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
             'overlay_type': overlay_type,
             'data': serializer.data
         }
+        if fields:
+            d.update({
+                'fields': FieldSerializerUpdate(
+                    fields, many=True, context={'request': {}}).data
+            })
         return d

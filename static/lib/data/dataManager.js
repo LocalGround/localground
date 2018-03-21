@@ -50,7 +50,6 @@ define(["underscore", "marionette", "models/project",
                 var opts, dataType, jsonData, collection;
                 for (dataType in dataLists) {
                     opts = dataLists[dataType];
-                    jsonData = opts.data;
                     _.extend(opts, {
                         title: opts.name,
                         overlayType: opts.overlay_type,
@@ -60,7 +59,7 @@ define(["underscore", "marionette", "models/project",
                         dataType: dataType,
                         projectID: this.model.id
                     });
-                    collection = this.initCollection(opts, jsonData);
+                    collection = this.initCollection(opts);
                     this.dataDictionary[dataType] = collection;
                     //delete opts.data;
                 }
@@ -73,8 +72,10 @@ define(["underscore", "marionette", "models/project",
                 // CAUTION: this won't work if
                 // google maps not loaded yet
             },
-            initCollection: function (opts, jsonData) {
+            initCollection: function (opts) {
                 var collection;
+                var jsonData = opts.data;
+                delete opts.data;
                 switch (opts.dataType) {
                     case "photos":
                         opts.isMedia = true;
@@ -98,7 +99,7 @@ define(["underscore", "marionette", "models/project",
                         break;
                     default:
                         if (opts.dataType.includes("form_")) {
-                            collection = this.createRecordsCollection(jsonData, opts);
+                            collection = this.createRecordsCollection(jsonData, opts, opts.fields);
                         } else {
                             throw new Error("case not handled");
                         }
@@ -108,7 +109,6 @@ define(["underscore", "marionette", "models/project",
             },
 
             attachFieldsToRecord: function (fields, record) {
-                console.log('attchFieldsToRecord');
                 fields.each(function (field) {
                     field.set("val", record.get(field.get("col_name")));
                 });
@@ -124,7 +124,7 @@ define(["underscore", "marionette", "models/project",
                 });
             },
 
-            createRecordsCollection:  function (jsonData, opts) {
+            createRecordsCollection:  function (jsonData, opts, fields) {
                 var fieldsURL,
                     collection;
                 opts.formID = parseInt(opts.dataType.split("_")[1]);
@@ -138,13 +138,7 @@ define(["underscore", "marionette", "models/project",
                     key: opts.dataType
                 });
                 collection = new Records(jsonData, opts);
-                if (opts.fields.length == 0) {
-                    opts.fields.fetch({ reset: true, success: () => {
-                        this.attachFieldsToRecords(opts.fields, collection);
-                    }});
-                } else {
-                    this.attachFieldsToRecords(opts.fields, collection);
-                }
+                this.attachFieldsToRecords(opts.fields, collection);
                 return collection
             },
 
