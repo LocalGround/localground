@@ -23,6 +23,7 @@ define([
             breadcrumbRegion: "#breadcrumb"
         },
         screenType: "style",
+        mode: "edit",
         showLeft: true,
         showRight: false,
         layerHasBeenAltered: false,
@@ -51,6 +52,7 @@ define([
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
             this.listenTo(this.vent, 'edit-layer', this.showRightLayout);
+            this.listenTo(this.vent, 'show-data-detail', this.showDataDetail);
             this.addMessageListeners();
             this.loadRegions();
         },
@@ -74,6 +76,15 @@ define([
                 collection: collection
             });
             this.rightRegion.show(rightPanelView);
+        },
+
+        showDataDetail: function(dataDetailView) {
+
+            console.log('show data detail');
+            this.rightRegion.show(dataDetailView);
+            this.unhideDetail();
+            dataDetailView.model.set("active", true);
+            this.vent.trigger('highlight-marker', dataDetailView.model);
         },
 
         showBreadcrumbs: function () {

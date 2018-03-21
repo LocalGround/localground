@@ -38,7 +38,7 @@ define(["marionette",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log('Initializing LayerListChildView:', this.model.get("title"));
+                console.log('Initializing LayerListChildView:', this.model);
                 this.symbolModels = this.collection;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
                 if (!this.model || !this.collection || !this.dataCollection) {
@@ -73,7 +73,8 @@ define(["marionette",
                     app: this.app,
                     collection: this.collection,
                     layerId: this.model.id,
-                    layer: this.model
+                    layer: this.model,
+                    mapId: this.model.get('map_id')
                 };
             },
             getUncategorizedSymbolModel: function () {

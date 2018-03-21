@@ -10,7 +10,9 @@ define([
             '': 'defaultMap',
             ':mapId': 'displayMap',
             ':mapId/layers/new':'newLayer',
-            ':mapId/layers/:layerId': 'displayLayer'
+            ':mapId/layers/:layerId': 'displayLayer',
+            ':mapId/layers/:layerId/:dataSource/:markerId': 'displayDataDetail'
+
         },
         initialize: function (options) {
             this.controller = new Controller({

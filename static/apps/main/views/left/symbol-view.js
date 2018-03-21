@@ -16,7 +16,7 @@ define(["jquery",
         var SymbolView =  Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log('Initializing SymbolView:', this.model.get('title'))
+                console.log('Initializing SymbolView:', this);
                 this.createMarkerOverlays();
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
@@ -59,7 +59,10 @@ define(["jquery",
                     icon: this.model.get('icon'),
                     markerList: this.model.getModelsJSON(),
                     property: rule === '*' ? 'all ' + name : rule,
-                    isChecked: this.model.get("isShowing")
+                    isChecked: this.model.get("isShowing"),
+                    layer_id: this.layerId,
+                    map_id: this.mapId,
+                    data_source: this.layer.get('data_source')
                 }
             },
 

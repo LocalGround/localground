@@ -6,10 +6,12 @@ define(["marionette",
         "apps/main/views/left/layer-list-child-view1",
         "text!../../templates/left/layer-list.html",
         "apps/main/views/right/marker-style-view",
-        "apps/main/views/right/symbol-style-menu-view"
+        "apps/main/views/right/symbol-style-menu-view",
+        "apps/main/views/left/new-layer-modal-view",
+        "lib/modals/modal"
     ],
     function (Marionette, Handlebars, Layers, Layer, Symbols, LayerListChild,
-        LayerListTemplate, MarkerStyleView, SymbolStyleMenuView) {
+        LayerListTemplate, MarkerStyleView, SymbolStyleMenuView, NewLayer, Modal) {
         'use strict';
         /**
          *  In this view, this.model = Map, this.collection = Layers
@@ -44,6 +46,8 @@ define(["marionette",
                 this.app = opts.app;
                 this.model = opts.model;
 
+                this.modal = new Modal();
+
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
                 this.listenTo(this.app.vent, 'route-layer', this.routerSendCollection);
                 this.listenTo(this.app.vent, 'add-css-to-selected-layer', this.addCssToSelectedLayer);
@@ -56,7 +60,8 @@ define(["marionette",
 
             events: function () {
                 return _.extend({
-                    //'click .add-layer' : 'createNewLayer'
+                    //'click .add-layer' : 'createNewLayer',
+                    'click #add-layer': 'createNewLayer'
                 });
             },
 
@@ -81,30 +86,52 @@ define(["marionette",
                 this.$el.find('#' +'layer' + id).addClass('selected-layer');
             },
 
-            createNewLayer: function (mapID) {
-                var continueAction = true;
-                if (this.app.layerHasBeenAltered && !this.layerHasBeenSaved) {
-                    continueAction = confirm("You have unsaved changes on your currently selected layer. If you continue, your changes will not be saved. Do you wish to continue?");
-                }
-                if(!continueAction) {
-                    return;
-                }
-                var layer = new Layer({
-                    map_id: this.app.selectedMapModel.id,
-                    data_source: "markers", //default
-                    group_by: "basic",
-                    filters: {},
-                    symbols: [{
-                        "fillColor": "#7075FF",
-                        "width": 20,
-                        "rule": "*",
-                        "title": "At least 1 sculpture"
-                    }],
-                    title: "Layer 1",
-                    newLayer: true
+            createNewLayer: function() {
+                var createLayerModel = new NewLayer({
+                    app: this.app,
+                    mode: 'createNewLayer'
                 });
-                this.app.vent.trigger("edit-layer", layer, this.collection);
+
+                this.modal.update({
+                    app: this.app,
+                    class: "add-layer",
+                    view: createLayerModel,
+                    title: 'Add Layer',
+                    width: 600,
+                    //height: 400,
+                    saveButtonText: "Add Layer",
+                    closeButtonText: "Cancel",
+                    showSaveButton: true,
+                    saveFunction: createLayerModel.saveLayer.bind(createLayerModel),
+                    showDeleteButton: false
+                });
+                this.modal.show();
             },
+ 
+            // createNewLayer: function (mapID) {
+            //     var continueAction = true;
+            //     if (this.app.layerHasBeenAltered && !this.layerHasBeenSaved) {
+            //         continueAction = confirm("You have unsaved changes on your currently selected layer. If you continue, your changes will not be saved. Do you wish to continue?");
+            //     }
+            //     if(!continueAction) {
+            //         return;
+            //     }
+            //     var layer = new Layer({
+            //         map_id: this.app.selectedMapModel.id,
+            //         data_source: "markers", //default
+            //         group_by: "basic",
+            //         filters: {},
+            //         symbols: [{
+            //             "fillColor": "#7075FF",
+            //             "width": 20,
+            //             "rule": "*",
+            //             "title": "At least 1 sculpture"
+            //         }],
+            //         title: "Layer 1",
+            //         newLayer: true
+            //     });
+            //     this.app.vent.trigger("edit-layer", layer, this.collection);
+            // },
 
             // create the view that allows the user to edit entire symbol sets
             showStyleMenu: function(model, coords) {

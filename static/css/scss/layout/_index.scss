@@ -7,4 +7,6 @@
 }
 
 .show { display: block; }
-.hide { display: none; }
+
+// the .hide class is creating conflicts because it is already being used elsewhere. Rename
+// .hide { display: none; }
