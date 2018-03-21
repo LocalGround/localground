@@ -108,6 +108,7 @@ define(["underscore", "marionette", "models/project",
             },
 
             attachFieldsToRecord: function (fields, record) {
+                console.log('attchFieldsToRecord');
                 fields.each(function (field) {
                     field.set("val", record.get(field.get("col_name")));
                 });

@@ -60,6 +60,7 @@ define(["jquery",
             },
 
             getSelectedMap: function(mapId) {
+                console.log('route to map');
                 this.setActiveMap(this.collection.get(mapId));
             },
 
