@@ -16,7 +16,6 @@ define(["jquery",
         var SymbolView =  Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log('Initializing SymbolView:', this);
                 this.createMarkerOverlays();
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
@@ -107,7 +106,6 @@ define(["jquery",
                 this.trigger('isShowing:changed'); //notify parent layer
             },
             onDestroy: function () {
-                console.log('Destroying MarkerOverlays:', this.model.get('title'))
                 this.markerOverlays.destroy();
             }
         });

@@ -28,7 +28,7 @@ define(["marionette",
                 'click #fakeadd': 'addFakeModel',
                 'click .layer-delete' : 'deleteLayer',
                 'change .layer-isShowing': 'showHideOverlays',
-                'click #layer-style-by span': 'showStyleByMenu'
+                'click #layer-style-by': 'showStyleByMenu'
             },
             childEvents: {
                 'isShowing:changed': function () {
@@ -180,7 +180,13 @@ define(["marionette",
                     childView.redrawOverlays();
                     childView.render();
                 })
+                if (isShowing) {
+                    this.$el.find('#symbols-list').show()
+                } else {
+                    this.$el.find('#symbols-list').hide()
+                }
                 this.saveChanges();
+                //this.$el.find('#symbol-list').toggle();
             },
 
             handleChildShowHide: function () {
@@ -200,6 +206,11 @@ define(["marionette",
                     );
                 });
                 return isShowing;
+            },
+
+            addCssToSelectedLayer: function(markerId) {
+                console.log('adding highlight class');
+                this.$el.find('#' + markerId).addClass('highlight');
             },
 
             saveChanges: function() {

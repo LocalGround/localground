@@ -1,0 +1,74 @@
+/********** for dragging/dropping pins on map ********************/
+#follower {
+    position: absolute;
+    display: none;
+  }
+  
+  
+  #add-geometry, #add-rectangle, #delete-geometry {
+      display: block;
+      text-align: center;
+      margin: 30px auto;
+      min-width: 180px;
+      width: auto;
+  }
+  
+  #add-geometry:focus, #add-rectangle:focus, #delete-geometry:focus {
+      outline: none;
+  }
+  
+  .geometry-options {
+      position: absolute;
+      margin-top: -30px;
+  }
+  
+  .geometry-list-wrapper {
+      display: block;
+      width: 180px;
+      background: #fafafc;
+      margin: 0 auto;
+      position: absolute;
+      left: 110px;
+      box-shadow: 1;
+      box-shadow: 1px 2px 4px 0px;
+      border-radius: 6px 6px 8px 8px;
+  }
+  
+  #add-polygon, #add-polyline, #add-point {
+      display: block;
+      margin: 0px 0px;
+      padding: 3px 2px;
+      line-height: 26px;
+      font-size: 12px;
+      border-top: 1px solid #e4e5eb;
+  }
+  
+  #add-polygon:hover, #add-polyline:hover, #add-point:hover {
+      background-color: #EEE;
+  }
+  
+  .dropdown-svg:hover {
+      fill: #ffffff;
+      stroke: #ffffff;
+  }
+  
+  #drop-marker-message {
+      margin-top: -20px;
+      margin-bottom: 20px;
+      text-align: center;
+  
+  }
+  
+  .latlong {
+      display: inline;
+  }
+  
+  .latlong-container {
+      text-align: center;
+      margin-top: -20px;
+      margin-bottom: 30px;
+  }
+  
+  
+
+  

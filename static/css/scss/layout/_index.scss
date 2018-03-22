@@ -10,3 +10,8 @@
 
 // the .hide class is creating conflicts because it is already being used elsewhere. Rename
 // .hide { display: none; }
+
+.highlight {
+    background: rgb(123, 155, 225);
+    color: #ffffff;
+}

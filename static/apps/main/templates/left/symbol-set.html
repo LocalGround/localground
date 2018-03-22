@@ -9,8 +9,8 @@
 </div>
 <ul id="symbol">
     {{#each markerList}}
-    <li class="symbol-item">
-        <a model-id="{{this.id}}" href="#/{{../map_id}}/layers/{{../layer_id}}/{{../data_source}}/{{this.id}}">
+    <li class="symbol-item marker-container">
+        <a model-id="{{this.id}}" id="{{this.id}}" href="#/{{../map_id}}/layers/{{../layer_id}}/{{../data_source}}/{{this.id}}" {{#if active }}class="highlight"{{/if}}>
             <!-- <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ width }}">
                 <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
                     stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>

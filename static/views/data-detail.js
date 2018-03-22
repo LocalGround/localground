@@ -282,9 +282,6 @@ define([
         },
 
         bindFields: function () {
-            console.log(this.model);
-            console.log(JSON.stringify(this.model));
-            console.log(this);
             if (!this.model || !this.model.get("overlay_type")) {
                 return;
             }

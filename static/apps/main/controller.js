@@ -26,6 +26,7 @@ define([
         displayDataDetail: function(mapId, layerId, dataSource, markerId) {
             console.log('displayDataDetail', mapId, layerId, dataSource, markerId);
             console.log(this);
+            
             if (!this.app.selectedMapModel || this.app.selectedMapModel.id !== mapId) {
                 console.log('route map from datadetail route');
                 this.app.vent.trigger('route-map', mapId); 
@@ -40,6 +41,10 @@ define([
             });
 
             this.app.vent.trigger('show-data-detail', detailView, routeInfo);
+            // setTimeout(() => {
+            //     this.app.vent.trigger('highlight-symbol-item', routeInfo)
+            // }, 1000);
+            this.app.vent.trigger('highlight-symbol-item', routeInfo);
         }
     });
 });

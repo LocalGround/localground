@@ -24,7 +24,6 @@ define(['marionette',
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log('Initializing MarkerOverlays:', this.model.get('title'))
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.childViewOptions = {
