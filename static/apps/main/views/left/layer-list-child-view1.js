@@ -3,7 +3,7 @@ define(["marionette",
         "text!../../templates/left/layer-item.html",
         "models/symbol",
         "models/record",
-        "apps/main/views/left/symbol-view",
+        "apps/main/views/left/symbol-collection-view",
     ],
     function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView) {
         'use strict';
@@ -71,7 +71,7 @@ define(["marionette",
             childViewOptions: function (model, index) {
                 return {
                     app: this.app,
-                    collection: this.collection,
+                    //collection: this.collection,
                     layerId: this.model.id,
                     layer: this.model,
                     mapId: this.model.get('map_id')

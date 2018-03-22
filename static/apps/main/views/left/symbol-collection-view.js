@@ -4,22 +4,32 @@ define(["jquery",
         'lib/maps/marker-overlays',
         "text!../../templates/left/symbol-set.html",
         "collections/records",
-        "collections/symbols"
+        "collections/symbols",
+        "apps/main/views/left/symbol-item-view"
     ],
-    function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate, Records,Symbols) {
+    function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate, Records, Symbols, SymbolItemView) {
         'use strict';
         /**
          * In this view, this.model = Symbol, this.collection = matching Records
          * (One symbol-view is instantiated for each Symbol object).
          * (A symbol-view will display all the markers that match its rules/criteria)
          */
-        var SymbolView =  Marionette.ItemView.extend({
+        var SymbolCollectionView =  Marionette.CompositeView.extend({
             initialize: function (opts) {
+                this.collection = this.model.getModels();
                 _.extend(this, opts);
                 this.createMarkerOverlays();
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
+                console.log('Collection:', this.collection);
+            },
+            childViewContainer: '.symbol',
+            childView: SymbolItemView,
+            childViewOptions: function (model, index) {
+                return {
+                    app: this.app
+                };
             },
             events: {
                 //edit event here, pass the this.model to the right panel
@@ -109,5 +119,5 @@ define(["jquery",
                 this.markerOverlays.destroy();
             }
         });
-        return SymbolView;
+        return SymbolCollectionView;
     });
