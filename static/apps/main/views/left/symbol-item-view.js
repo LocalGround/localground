@@ -10,7 +10,6 @@ define(["marionette",
         var SymbolItemView =  Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this.model);
             },
             active: false,
             events: {
@@ -22,10 +21,13 @@ define(["marionette",
             className: "symbol-item marker-container",
             templateHelpers: function () {
                 return {
-                    'active': this.active
+                    active: this.active,
+                    layer_id: this.parent.layerId,
+                    map_id: this.parent.mapId,
+                    data_source: this.parent.layer.get('data_source')
                 };
             },
-            makeActive: function () {
+            makeActive: function (e) {
                 if (this.app.selectedItemView) {
                     this.app.selectedItemView.active = false;
                     this.app.selectedItemView.render();

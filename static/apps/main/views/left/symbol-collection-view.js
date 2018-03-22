@@ -22,13 +22,13 @@ define(["jquery",
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
-                console.log('Collection:', this.collection);
             },
             childViewContainer: '.symbol',
             childView: SymbolItemView,
             childViewOptions: function (model, index) {
                 return {
-                    app: this.app
+                    app: this.app,
+                    parent: this
                 };
             },
             events: {

@@ -7,7 +7,7 @@ define([
     "use strict";
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
-            '': 'showMap',
+            //'': 'showMap',
             'map': 'showMap',
             'table': 'showTable',
             'gallery': 'showGallery'
