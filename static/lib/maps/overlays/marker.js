@@ -30,7 +30,7 @@ define([
 
         redraw: function () {
             if (this.getShapeType() === "Point") {
-                if (this.model.get("active")) {
+                if (this.active) {
                     var icon = {};
                     _.extend(icon, this.getGoogleIcon(), { strokeWeight: 10, strokeOpacity: 0.5 });
                     icon.strokeColor = icon.fillColor;

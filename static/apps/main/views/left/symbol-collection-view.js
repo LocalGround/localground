@@ -1,13 +1,12 @@
 define(["jquery",
         "marionette",
         "handlebars",
-        'lib/maps/marker-overlays',
         "text!../../templates/left/symbol-set.html",
         "collections/records",
         "collections/symbols",
         "apps/main/views/left/symbol-item-view"
     ],
-    function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate, Records, Symbols, SymbolItemView) {
+    function ($, Marionette, Handlebars, LayerItemTemplate, Records, Symbols, SymbolItemView) {
         'use strict';
         /**
          * In this view, this.model = Symbol, this.collection = matching Records
@@ -18,7 +17,6 @@ define(["jquery",
             initialize: function (opts) {
                 this.collection = this.model.getModels();
                 _.extend(this, opts);
-                this.createMarkerOverlays();
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
@@ -75,18 +73,7 @@ define(["jquery",
                 }
             },
 
-            createMarkerOverlays: function() {
-                this.markerOverlays = new MarkerOverlays({
-                    collection: this.model.getModels(),
-                    app: this.app,
-                    isShowing: this.model.get('isShowing'),
-                    displayOverlays: this.model.get('isShowing'),
-                    model: this.model
-                });
-            },
-
             saveAndRender: function () {
-                console.log('save and render...');
                 this.layer.save();
                 this.render();
             },
@@ -99,24 +86,25 @@ define(["jquery",
                 this.app.vent.trigger('show-symbol-menu', this.model, coords, this.layerId);
             },
             showOverlays: function () {
-                this.markerOverlays.showAll();
+                this.children.each(view => {
+                    view.overlay.show();
+                })
             },
 
             hideOverlays: function () {
-                this.markerOverlays.hideAll();
+                this.children.each(view => {
+                    view.overlay.hide();
+                })
             },
 
             deleteOverlays: function () {
-                _.each(this.markerOverlayList, function (overlays) {
-                    overlays.remove();
-                });
+                this.children.each(view => {
+                    view.overlay.remove();
+                })
             },
             showHideOverlays: function () {
                 this.model.set("isShowing", this.$el.find('input').prop('checked'));
                 this.trigger('isShowing:changed'); //notify parent layer
-            },
-            onDestroy: function () {
-                this.markerOverlays.destroy();
             }
         });
         return SymbolCollectionView;

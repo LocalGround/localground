@@ -1,8 +1,9 @@
 define(["marionette",
         "handlebars",
+        "lib/maps/overlays/marker",
         "text!../../templates/left/symbol-item-view.html"
     ],
-    function (Marionette, Handlebars, SymbolItemTemplate) {
+    function (Marionette, Handlebars, MarkerOverlay, SymbolItemTemplate) {
         'use strict';
         /**
          * model --> Record
@@ -10,6 +11,15 @@ define(["marionette",
         var SymbolItemView =  Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.symbolModel = this.parent.model;
+                this.overlay = new MarkerOverlay({
+                    model: this.model,
+                    symbol: this.symbolModel,
+                    app: this.app,
+                    isShowing: this.symbolModel.get('isShowing'),
+                    displayOverlay: this.symbolModel.get('isShowing')
+                });
+                this.overlay.render();
             },
             active: false,
             events: {
@@ -28,16 +38,19 @@ define(["marionette",
                 };
             },
             makeActive: function (e) {
-                if (this.app.selectedItemView) {
-                    this.app.selectedItemView.active = false;
-                    this.app.selectedItemView.render();
+                var activeItem = this.app.selectedItemView;
+                if (activeItem) {
+                    activeItem.active = false;
+                    activeItem.render();
+                    activeItem.overlay.deactivate();
                 }
                 this.app.selectedItemView = this;
                 this.active = true;
+                this.overlay.activate()
                 this.render();
             },
             onDestroy: function () {
-                //this.markerOverlays.destroy();
+                this.overlay.destroy();
             }
         });
         return SymbolItemView;

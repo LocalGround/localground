@@ -6,11 +6,11 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
      * @class Polygon
      */
     var Polygon = function (app, opts) {
-        // Polygon inherits most of its functionality, 
+        // Polygon inherits most of its functionality,
         // including event handling, from Polyline
         Polyline.call(this, app, opts);
 
-        // See this.deleteVertex() inherited from Polyline. 
+        // See this.deleteVertex() inherited from Polyline.
         // A Polygon cannot have fewer than 3 vertices
         this.minimumVertices = 3
 
@@ -45,11 +45,11 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
                 fillColor: this.model.collection.fillColor,
                 strokeOpacity: 0.8,
                 strokeWeight: 2,
-                draggable: this.model.get("active")? true : false,
-                editable: this.model.get("active")? true : false
+                draggable: this.active ? true : false,
+                editable: this.active ? true : false
             });
 
-            if (this.model.get("active")) {
+            if (this.active) {
                 this.addEvents();
             }
         };
