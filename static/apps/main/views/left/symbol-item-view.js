@@ -23,7 +23,7 @@ define(["marionette",
             },
             active: false,
             events: {
-                'click': 'makeActive'
+                'click': 'activate'
             },
 
             template: Handlebars.compile(SymbolItemTemplate),
@@ -37,17 +37,8 @@ define(["marionette",
                     data_source: this.parent.layer.get('data_source')
                 };
             },
-            makeActive: function (e) {
-                var activeItem = this.app.selectedItemView;
-                if (activeItem) {
-                    activeItem.active = false;
-                    activeItem.render();
-                    activeItem.overlay.deactivate();
-                }
-                this.app.selectedItemView = this;
-                this.active = true;
-                this.overlay.activate()
-                this.render();
+            activate: function (e) {
+                this.app.activateCurrent(this);
             },
             onDestroy: function () {
                 this.overlay.destroy();

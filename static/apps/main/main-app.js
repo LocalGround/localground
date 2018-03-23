@@ -78,18 +78,38 @@ define([
             this.rightRegion.show(rightPanelView);
         },
 
+
+        deactivateCurrent: function (e) {
+            var activeItem = this.selectedItemView;
+            if (activeItem && !activeItem.isDestroyed) {
+                activeItem.active = false;
+                activeItem.render();
+                if (!activeItem.overlay.isDestroyed) {
+                    activeItem.overlay.deactivate();
+                }
+            }
+        },
+
+        activateCurrent: function(currentItemView) {
+            this.deactivateCurrent();
+            currentItemView.active = true;
+            this.selectedItemView = currentItemView;
+            currentItemView.overlay.activate()
+            currentItemView.render();
+        },
+
         showDataDetail: function(dataDetailView, info) {
 
             console.log('show data detail');
             this.rightRegion.show(dataDetailView);
             this.unhideDetail();
 
-            // this won't do what we want here because the record model is not 
+            // this won't do what we want here because the record model is not
             // represented by its own view (hence no 'model' exists for a given record).
             // Rather, the records are simply pieces of content in the SymbolSet itemView
             //dataDetailView.model.set("active", true);
 
-            // instead we will trigger an event on the LayerList parent, 
+            // instead we will trigger an event on the LayerList parent,
             // loop through children, call a function on the matching layer
             //this.vent.trigger('highlight-symbol-item', info);
 
