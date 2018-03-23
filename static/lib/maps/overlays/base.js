@@ -83,7 +83,7 @@ define(["marionette",
         attachEventHandlers: function () {
             var that = this;
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.app.router.navigate("//" + that.app.screenType + "/" + that.model.getDataTypePlural() + "/" + that.model.get("id"));
+                that.app.router.navigate("//" + that.route);
             });
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
                 that.infoBubble.showTip();

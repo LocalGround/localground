@@ -24,12 +24,17 @@ define([
             this.app.vent.trigger('route-new-layer', mapID);
         },
         displayDataDetail: function(mapId, layerId, dataSource, markerId) {
-            mapId = parseInt(mapId);
-            if (!this.app.selectedMapModel || this.app.selectedMapModel.id !== mapId) {
+            const routeInfo = {
+                mapId: parseInt(mapId), 
+                layerId: parseInt(layerId),
+                dataSource: parseInt(dataSource), 
+                markerId: parseInt(markerId)
+            };
+            if (!this.app.selectedMapModel || this.app.selectedMapModel.id !== routeInfo.mapId) {
                 console.log('route map from datadetail route');
                 this.app.vent.trigger('route-map', mapId);
             }
-            const routeInfo = {mapId, layerId, dataSource, markerId};
+            
             this.app.screenType = 'map';
             this.app.dataType = dataSource;
             let detailView = new DataDetail({

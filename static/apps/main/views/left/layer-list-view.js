@@ -56,7 +56,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'show-symbol-menu', this.showSymbolMenu);
                 this.listenTo(this.app.vent, 'hide-style-menu', this.hideStyleMenu);
                 this.listenTo(this.app.vent, 'hide-symbol-style-menu', this.hideSymbolStyleMenu);
-                this.listenTo(this.app.vent, 'highlight-symbol-item', this.highlightItem);
+                //this.listenTo(this.app.vent, 'highlight-symbol-item', this.highlightItem);
             },
 
             events: function () {
@@ -214,15 +214,15 @@ define(["marionette",
                 // }
             },
 
-            highlightItem: function(info) {
-                this.children.each((view) => {
-                    console.log(view.model.id);
-                    if (view.model.id == info.layerId) {
-                        console.log('matching layer ', info.layerId);
-                        view.addCssToSelectedLayer(info.markerId);
-                    }
-                })
-            },
+            // highlightItem: function(info) {
+            //     this.children.each((view) => {
+            //         console.log(view.model.id);
+            //         if (view.model.id == info.layerId) {
+            //             console.log('matching layer ', info.layerId);
+            //             view.addCssToSelectedLayer(info.markerId);
+            //         }
+            //     })
+            // },
 
             onDestroy: function() {
                 console.log('DESTROYING>>>');

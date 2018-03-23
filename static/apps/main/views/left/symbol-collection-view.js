@@ -87,25 +87,35 @@ define(["jquery",
             },
             showOverlays: function () {
                 this.children.each(view => {
-                    view.overlay.show();
+                    if (view.overlay !== null) {
+                        view.overlay.show();
+                    }
                 })
             },
 
             hideOverlays: function () {
                 this.children.each(view => {
-                    view.overlay.hide();
+                    if (view.overlay !== null) {
+                        view.overlay.hide();
+                    }
                 })
             },
 
             deleteOverlays: function () {
                 this.children.each(view => {
-                    view.overlay.remove();
+                    if (view.overlay !== null) {
+                        view.overlay.remove();
+                    }
                 })
             },
             showHideOverlays: function () {
                 this.model.set("isShowing", this.$el.find('input').prop('checked'));
                 this.trigger('isShowing:changed'); //notify parent layer
+            },
+            onDestroy: function() {
+                console.log('destroy symbol collection view');
             }
+
         });
         return SymbolCollectionView;
     });

@@ -13,22 +13,25 @@ define(["marionette",
                 _.extend(this, opts);
                 this.symbolModel = this.parent.model;
                 this.overlay = null;
+                const route = this.parent.mapId + '/layers/' + this.parent.layerId + '/' + this.parent.layer.get('data_source') + '/' + this.model.id;
                 if (this.model.get('geometry') != null) {
                     this.overlay = new MarkerOverlay({
                         model: this.model,
                         symbol: this.symbolModel,
                         app: this.app,
                         isShowing: this.symbolModel.get('isShowing'),
-                        displayOverlay: this.symbolModel.get('isShowing')
+                        displayOverlay: this.symbolModel.get('isShowing'),
+                        route: route
                     });
                     this.overlay.render();
                 }
+                this.listenTo(this.app.vent, 'highlight-symbol-item', this.handleRoute);
                 
             },
             active: false,
-            events: {
-                'click': 'makeActive'
-            },
+            // events: {
+            //     'click': 'makeActive'
+            // },
 
             template: Handlebars.compile(SymbolItemTemplate),
             tagName: "li",
@@ -40,6 +43,19 @@ define(["marionette",
                     map_id: this.parent.mapId,
                     data_source: this.parent.layer.get('data_source')
                 };
+            },
+            handleRoute: function(info) {
+                if (this.parent.mapId === info.mapId) {
+                    console.log('matched mapID');
+                    if (this.parent.layerId === info.layerId) {
+                        console.log('matched mapID');
+                        if (this.model.id === info.markerId) {
+                            console.log('successfully matched!');
+                            this.makeActive();
+                            
+                        }
+                    }
+                }
             },
             makeActive: function (e) {
                 var activeItem = this.app.selectedItemView;
