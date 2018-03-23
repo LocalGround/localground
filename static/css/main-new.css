@@ -67,6 +67,10 @@ ul {
   padding-left: 0;
 }
 
+.disabled {
+  opacity: 0.4;
+}
+
 .style-main-panel {
   height: calc(100% - 61px);
   top: 41px;
@@ -169,8 +173,9 @@ ul {
   display: block;
 }
 
-.hide {
-  display: none;
+.highlight {
+  background: #7b9be1;
+  color: #ffffff;
 }
 
 .breadcrumb {
@@ -328,10 +333,8 @@ ul {
 
 .style-by-menu {
   position: absolute;
-  background: white;
   left: 50px;
   z-index: 501;
-  border: 1px solid #ebebeb;
 }
 
 .style-by-menu_close {
@@ -345,6 +348,57 @@ ul {
   z-index: 501;
   position: absolute;
   background: white;
+}
+
+.marker-style .form-inline .row {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.marker-style .form-inline .row .msv-label {
+  flex: 0 0 85px;
+}
+
+.marker-style .form-inline .row .stroke-color {
+  height: 25px;
+  flex: 0 0 25px;
+  border-radius: 5px;
+  border: 2px solid rgba(35, 35, 35, 0.15);
+}
+
+.palette-container {
+  flex: 3;
+}
+
+.visual-edit {
+  padding: 12px;
+  background-color: white;
+  border: 1px solid #d4d6db;
+  position: relative;
+  border-radius: 3px;
+}
+
+.msv-header {
+  margin-bottom: 10px;
+  font-weight: 300;
+  font-size: 16px;
+  text-align: center;
+}
+
+.palette-wrapper {
+  width: 200px;
+  flex: 1;
+  width: 200px;
+  position: absolute;
+  background-color: white;
+  border-radius: 3px;
+  border: 1px solid #e4e5eb;
+  z-index: 100;
+  box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
+  display: none;
+  top: 1px;
 }
 
 .symbol-style-menu {
@@ -383,6 +437,75 @@ ul {
   text-align: left;
   margin-left: auto;
   padding-left: 6px;
+}
+
+/********** for dragging/dropping pins on map ********************/
+#follower {
+  position: absolute;
+  display: none;
+}
+
+#add-geometry, #add-rectangle, #delete-geometry {
+  display: block;
+  text-align: center;
+  margin: 30px auto;
+  min-width: 180px;
+  width: auto;
+}
+
+#add-geometry:focus, #add-rectangle:focus, #delete-geometry:focus {
+  outline: none;
+}
+
+.geometry-options {
+  position: absolute;
+  margin-top: -30px;
+}
+
+.geometry-list-wrapper {
+  display: block;
+  width: 180px;
+  background: #fafafc;
+  margin: 0 auto;
+  position: absolute;
+  left: 110px;
+  box-shadow: 1;
+  box-shadow: 1px 2px 4px 0px;
+  border-radius: 6px 6px 8px 8px;
+}
+
+#add-polygon, #add-polyline, #add-point {
+  display: block;
+  margin: 0px 0px;
+  padding: 3px 2px;
+  line-height: 26px;
+  font-size: 12px;
+  border-top: 1px solid #e4e5eb;
+}
+
+#add-polygon:hover, #add-polyline:hover, #add-point:hover {
+  background-color: #EEE;
+}
+
+.dropdown-svg:hover {
+  fill: #ffffff;
+  stroke: #ffffff;
+}
+
+#drop-marker-message {
+  margin-top: -20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.latlong {
+  display: inline;
+}
+
+.latlong-container {
+  text-align: center;
+  margin-top: -20px;
+  margin-bottom: 30px;
 }
 
 .button, .button-action, .button-primary, .button-secondary, .button-tertiary {
@@ -469,6 +592,12 @@ span.action.rounded:hover, a.action.rounded:hover {
   margin: 1px;
   width: 100%;
   border: solid 1px #ebecf2;
+}
+
+.form textarea:disabled, .form input[type="text"]:disabled, .form input[type="number"]:disabled, .form input[type="date"]:disabled,
+.form input[type="password"]:disabled, .form input[type="email"]:disabled, .form select:disabled, .form-inline textarea:disabled, .form-inline input[type="text"]:disabled, .form-inline input[type="number"]:disabled, .form-inline input[type="date"]:disabled,
+.form-inline input[type="password"]:disabled, .form-inline input[type="email"]:disabled, .form-inline select:disabled {
+  opacity: 0.4;
 }
 
 .form textarea, .form-inline textarea {
@@ -845,5 +974,4 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
-
 /*# sourceMappingURL=main-new.css.map */

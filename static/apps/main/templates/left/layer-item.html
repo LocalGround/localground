@@ -7,9 +7,15 @@
 </div>
 <div>
     <p class="layer-datasource" >data source: {{name}}</p>
+</div>
+<div>
+    <div>
+        <i class="fa fa-angle-down"></i>
+    </div>
+    
     <a><p class="layer-style-by" id="layer-style-by">styled by: <span>{{group_by}}</span></p></a>
 </div>
-<div id="symbols-list">
+<div id="symbols-list" {{#unless isChecked}}style="display: none"{{/unless}}>
     {{#each dataList}}
     <li class="list-item">
         <a>

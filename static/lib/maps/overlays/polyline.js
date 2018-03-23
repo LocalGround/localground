@@ -13,7 +13,7 @@ define(["jquery"], function ($) {
         this.mousedownEvent = null;
         this.rightClickEvent = null;
 
-        // See this.deleteVertex(). 
+        // See this.deleteVertex().
         // A Polyline cannot have fewer than 2 vertices
         this.minimumVertices = 2
 
@@ -46,10 +46,10 @@ define(["jquery"], function ($) {
                 strokeColor: this.model.collection.fillColor,
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
-                draggable: this.model.get("active")? true : false,
-                editable: this.model.get("active")? true : false,
+                draggable: this.active ? true : false,
+                editable: this.active ? true : false,
             });
-            if (this.model.get("active")) {
+            if (this.active) {
                 this.addEvents();
             }
         };
@@ -115,7 +115,7 @@ define(["jquery"], function ($) {
         this.deleteVertex = function(ev) {
             // slight delay needed to prevent multiple events from being triggered
             setTimeout(() => {
-                                                // line must have at least 2 vertices 
+                                                // line must have at least 2 vertices
                 if (ev.vertex != null && this._googleOverlay.getPath().getLength() > this.minimumVertices) {
                     this._googleOverlay.getPath().removeAt(ev.vertex);
                 }

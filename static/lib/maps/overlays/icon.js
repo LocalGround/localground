@@ -18,6 +18,7 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
             this.viewBox = this.viewBox || this.getViewBox();
         },
         getViewBox: function () {
+            //console.log(this.strokeWeight, this.baseWidth, this.baseHeight, this.strokeWeight);
             return (-1 * this.strokeWeight) + ' ' +
                     (-1 * this.strokeWeight) + ' ' +
                     (this.baseWidth + this.strokeWeight + 2) + ' ' +

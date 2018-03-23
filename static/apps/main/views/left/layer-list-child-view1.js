@@ -3,7 +3,7 @@ define(["marionette",
         "text!../../templates/left/layer-item.html",
         "models/symbol",
         "models/record",
-        "apps/main/views/left/symbol-view",
+        "apps/main/views/left/symbol-collection-view",
     ],
     function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView) {
         'use strict';
@@ -28,7 +28,7 @@ define(["marionette",
                 'click #fakeadd': 'addFakeModel',
                 'click .layer-delete' : 'deleteLayer',
                 'change .layer-isShowing': 'showHideOverlays',
-                'click #layer-style-by span': 'showStyleByMenu'
+                'click #layer-style-by': 'showStyleByMenu'
             },
             childEvents: {
                 'isShowing:changed': function () {
@@ -38,7 +38,7 @@ define(["marionette",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log('Initializing LayerListChildView:', this.model.get("title"));
+                console.log('Initializing LayerListChildView:', this.model);
                 this.symbolModels = this.collection;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
                 if (!this.model || !this.collection || !this.dataCollection) {
@@ -71,9 +71,10 @@ define(["marionette",
             childViewOptions: function (model, index) {
                 return {
                     app: this.app,
-                    collection: this.collection,
+                    //collection: this.collection,
                     layerId: this.model.id,
-                    layer: this.model
+                    layer: this.model,
+                    mapId: this.model.get('map_id')
                 };
             },
             getUncategorizedSymbolModel: function () {
@@ -179,7 +180,13 @@ define(["marionette",
                     childView.redrawOverlays();
                     childView.render();
                 })
+                if (isShowing) {
+                    this.$el.find('#symbols-list').show()
+                } else {
+                    this.$el.find('#symbols-list').hide()
+                }
                 this.saveChanges();
+                //this.$el.find('#symbol-list').toggle();
             },
 
             handleChildShowHide: function () {
@@ -199,6 +206,11 @@ define(["marionette",
                     );
                 });
                 return isShowing;
+            },
+
+            addCssToSelectedLayer: function(markerId) {
+                console.log('adding highlight class');
+                this.$el.find('#' + markerId).addClass('highlight');
             },
 
             saveChanges: function() {

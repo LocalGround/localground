@@ -83,7 +83,7 @@ define(["marionette",
         attachEventHandlers: function () {
             var that = this;
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.app.router.navigate("//" + that.app.screenType + "/" + that.model.getDataTypePlural() + "/" + that.model.get("id"));
+                that.app.router.navigate("//" + that.route);
             });
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
                 that.infoBubble.showTip();
@@ -170,21 +170,22 @@ define(["marionette",
             return this._overlay.getBounds();
         },
 
-        /*changeMode: function () {
-            console.log('changeMode', this.model.get("active"));
-            if (this.app.getMode() === "view") {
-                this.makeViewable();
-            } else {
-                this.makeEditable();
-            }
-        },*/
-
         makeViewable: function () {
             this._overlay.makeViewable();
         },
 
+        activate: function () {
+            this.active = true;
+            this.redraw()
+        },
+
+        deactivate: function () {
+            this.active = false;
+            this.redraw()
+        },
+
         makeEditable: function () {
-            if (this.model.get("active")) {
+            if (this.active) {
                 this._overlay.makeEditable(this.model);
             }
         },

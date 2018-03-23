@@ -92,6 +92,7 @@ define([
             this.expanded = false;
             this.clickNum = 1;
             _.extend(this, opts);
+            console.log('data detail initialized', this);
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
@@ -99,6 +100,7 @@ define([
             $(window).on("resize", _.bind(this.screenSize, this));
 
             this.isMobile();
+            console.log('later log', this);
 
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
@@ -118,6 +120,8 @@ define([
                 $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
+            console.log(this);
+            console.log(this.app.mode);
 
             return {
                 mode: this.app.mode,

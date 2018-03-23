@@ -43,7 +43,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
 
         this.show = function () {
             this._googleOverlay.setMap(this.map);
-            if (this.editPolygon && this.model.get("active")) {
+            if (this.editPolygon && this.active) {
                 this.editPolygon.setMap(this.map);
             }
         };
@@ -73,7 +73,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         };
 
         this.redraw = function () {
-            if (this.app.mode == 'edit' && this.model.get("active") && this.model.get("geometry")) {
+            if (this.app.mode == 'edit' && this.active && this.model.get("geometry")) {
                 if (this.editPolygon) {
                     this.editPolygon.setMap(null);
                 }
