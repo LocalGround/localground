@@ -45,15 +45,12 @@ define(["marionette",
                 };
             },
             handleRoute: function(info) {
-                if (this.parent.mapId === info.mapId) {
+                if (this.parent.layerId === info.layerId) {
                     console.log('matched mapID');
-                    if (this.parent.layerId === info.layerId) {
-                        console.log('matched mapID');
-                        if (this.model.id === info.markerId) {
-                            console.log('successfully matched!');
-                            this.makeActive();
-                            
-                        }
+                    if (this.model.id === info.markerId) {
+                        console.log('successfully matched!');
+                        this.makeActive();
+                        
                     }
                 }
             },
