@@ -78,26 +78,6 @@ define([
             this.rightRegion.show(rightPanelView);
         },
 
-
-        deactivateCurrent: function (e) {
-            var activeItem = this.selectedItemView;
-            if (activeItem && !activeItem.isDestroyed) {
-                activeItem.active = false;
-                activeItem.render();
-                if (!activeItem.overlay.isDestroyed) {
-                    activeItem.overlay.deactivate();
-                }
-            }
-        },
-
-        activateCurrent: function(currentItemView) {
-            this.deactivateCurrent();
-            currentItemView.active = true;
-            this.selectedItemView = currentItemView;
-            currentItemView.overlay.activate()
-            currentItemView.render();
-        },
-
         showDataDetail: function(dataDetailView, info) {
 
             console.log('show data detail');

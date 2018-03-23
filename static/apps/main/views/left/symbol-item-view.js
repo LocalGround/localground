@@ -26,7 +26,7 @@ define(["marionette",
                     this.overlay.render();
                 }
                 this.listenTo(this.app.vent, 'highlight-symbol-item', this.handleRoute);
-                
+
             },
             active: false,
             // events: {
@@ -50,16 +50,16 @@ define(["marionette",
                     if (this.model.id === info.markerId) {
                         console.log('successfully matched!');
                         this.makeActive();
-                        
+
                     }
                 }
             },
             makeActive: function (e) {
                 var activeItem = this.app.selectedItemView;
-                if (activeItem) {
+                if (activeItem && !activeItem.isDestroyed) {
                     activeItem.active = false;
                     activeItem.render();
-                    if (activeItem.overlay != null) {
+                    if (activeItem.overlay && !activeItem.overlay.isDestroyed) {
                         activeItem.overlay.deactivate();
                     }
                 }
