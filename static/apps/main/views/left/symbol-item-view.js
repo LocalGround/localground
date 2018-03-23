@@ -12,14 +12,18 @@ define(["marionette",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.symbolModel = this.parent.model;
-                this.overlay = new MarkerOverlay({
-                    model: this.model,
-                    symbol: this.symbolModel,
-                    app: this.app,
-                    isShowing: this.symbolModel.get('isShowing'),
-                    displayOverlay: this.symbolModel.get('isShowing')
-                });
-                this.overlay.render();
+                this.overlay = null;
+                if (this.model.get('geometry') != null) {
+                    this.overlay = new MarkerOverlay({
+                        model: this.model,
+                        symbol: this.symbolModel,
+                        app: this.app,
+                        isShowing: this.symbolModel.get('isShowing'),
+                        displayOverlay: this.symbolModel.get('isShowing')
+                    });
+                    this.overlay.render();
+                }
+                
             },
             active: false,
             events: {
@@ -42,15 +46,21 @@ define(["marionette",
                 if (activeItem) {
                     activeItem.active = false;
                     activeItem.render();
-                    activeItem.overlay.deactivate();
+                    if (activeItem.overlay != null) {
+                        activeItem.overlay.deactivate();
+                    }
                 }
                 this.app.selectedItemView = this;
                 this.active = true;
-                this.overlay.activate()
+                if (this.overlay != null) {
+                    this.overlay.activate();
+                }
                 this.render();
             },
             onDestroy: function () {
-                this.overlay.destroy();
+                if (this.overlay != null) {
+                    this.overlay.destroy();
+                }
             }
         });
         return SymbolItemView;
