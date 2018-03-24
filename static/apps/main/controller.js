@@ -23,30 +23,25 @@ define([
         newLayer: function (mapID) {
             this.app.vent.trigger('route-new-layer', mapID);
         },
+
+        mapHasChanged: function (mapId) {
+            return !this.app.selectedMapModel || this.app.selectedMapModel.id !== mapId;
+        },
+
         displayDataDetail: function(mapId, layerId, dataSource, markerId) {
-            const routeInfo = {
-                mapId: parseInt(mapId), 
-                layerId: parseInt(layerId),
-                dataSource: parseInt(dataSource), 
-                markerId: parseInt(markerId)
-            };
-            if (!this.app.selectedMapModel || this.app.selectedMapModel.id !== routeInfo.mapId) {
+            markerId = parseInt(markerId)
+            layerId = parseInt(layerId);
+            mapId = parseInt(mapId);
+            const model = this.app.dataManager.getModel(dataSource, markerId);
+            if (this.mapHasChanged(mapId)) {
                 console.log('route map from datadetail route');
                 this.app.vent.trigger('route-map', mapId);
             }
-            
-            this.app.screenType = 'map';
-            this.app.dataType = dataSource;
-            let detailView = new DataDetail({
-                model: this.app.dataManager.getModel(dataSource, parseInt(markerId)),
+            model.trigger('highlight-symbol-item', layerId)
+            this.app.vent.trigger('show-data-detail', new DataDetail({
+                model: model,
                 app: this.app
-            });
-
-            this.app.vent.trigger('show-data-detail', detailView, routeInfo);
-            // setTimeout(() => {
-            //     this.app.vent.trigger('highlight-symbol-item', routeInfo)
-            // }, 1000);
-            this.app.vent.trigger('highlight-symbol-item', routeInfo);
+            }));
         }
     });
 });

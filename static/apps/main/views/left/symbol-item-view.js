@@ -25,8 +25,11 @@ define(["marionette",
                     });
                     this.overlay.render();
                 }
-                this.listenTo(this.app.vent, 'highlight-symbol-item', this.handleRoute);
+                //this.listenTo(this.app.vent, 'highlight-symbol-item', this.handleRoute);
 
+            },
+            modelEvents: {
+                'highlight-symbol-item': 'handleRoute'
             },
             active: false,
             // events: {
@@ -44,17 +47,12 @@ define(["marionette",
                     data_source: this.parent.layer.get('data_source')
                 };
             },
-            handleRoute: function(info) {
-                if (this.parent.layerId === info.layerId) {
-                    console.log('matched mapID');
-                    if (this.model.id === info.markerId) {
-                        console.log('successfully matched!');
-                        this.makeActive();
-
-                    }
+            handleRoute: function (layerID) {
+                if (this.parent.layerId === layerID) {
+                    this.makeActive();
                 }
             },
-            makeActive: function (e) {
+            makeActive: function () {
                 var activeItem = this.app.selectedItemView;
                 if (activeItem && !activeItem.isDestroyed) {
                     activeItem.active = false;

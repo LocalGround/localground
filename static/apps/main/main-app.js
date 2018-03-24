@@ -78,9 +78,7 @@ define([
             this.rightRegion.show(rightPanelView);
         },
 
-        showDataDetail: function(dataDetailView, info) {
-
-            console.log('show data detail');
+        showDataDetail: function(dataDetailView) {
             this.rightRegion.show(dataDetailView);
             this.unhideDetail();
 
@@ -91,7 +89,6 @@ define([
 
             // instead we will trigger an event on the LayerList parent,
             // loop through children, call a function on the matching layer
-            //this.vent.trigger('highlight-symbol-item', info);
 
 
             //this.vent.trigger('highlight-marker', dataDetailView.model);
