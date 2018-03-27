@@ -56,10 +56,10 @@ define(["marionette",
             },
             makeActive: function (e) {
                 var activeItem = this.app.selectedItemView;
-                if (activeItem && !activeItem.isDestroyed) {
+                if (activeItem) {
                     activeItem.active = false;
                     activeItem.render();
-                    if (activeItem.overlay && !activeItem.overlay.isDestroyed) {
+                    if (activeItem.overlay) {
                         activeItem.overlay.deactivate();
                     }
                 }
@@ -71,6 +71,7 @@ define(["marionette",
                 this.render();
             },
             onDestroy: function () {
+                console.log('destroying symbol-item-view');
                 if (this.overlay != null) {
                     this.overlay.destroy();
                 }

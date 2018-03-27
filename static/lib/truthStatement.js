@@ -116,9 +116,12 @@ define(["jquery"], function ($) {
                 modelVal = model.get(this.key),
                 idx = -1;
             //console.log(model.id, this.key, this.val, modelVal);
-            // if (typeof modelVal === 'undefined' || modelVal == null) {
-            //     return false;
-            // }
+
+            // this is necessary to dfistinguish between a value of '0',
+            // which is a legitimate numerical value, and null or undefined
+            if (typeof modelVal === 'undefined' || modelVal == null) {
+                return false;
+            }
             
             modelVal = this.convertType(modelVal);
             if (this.operator == '=') {

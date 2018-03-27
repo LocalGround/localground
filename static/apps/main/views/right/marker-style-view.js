@@ -314,6 +314,7 @@ define(["jquery",
                     counter++;
                     cont.currentFloor = Math.round((cont.currentFloor + cont.segmentSize)*100)/100;
                 }
+                console.log(cont.currentFloor);
                 console.log(this.layerDraft.continuous);
                 this.layerNoLongerNew();
                 return this.layerDraft.continuous;
@@ -353,9 +354,15 @@ define(["jquery",
                     buckets = this.model.get("metadata").buckets,
                     key = this.model.get('data_source'),
                     collection = this.app.dataManager.getCollection(key);
+                    console.log(collection);
                 this.continuousData = [];
                 collection.models.forEach((d) => {
-                    if (d.get(selected)) {
+                    
+                    // must use this check to distinguish between 0 and null/undefined
+                    // e.g. simply doing "if (d.get(selected)) {...}" will miss 0s
+                    if (typeof d.get(selected) === 'number') {
+
+                        console.log(d.get(selected));
                         this.continuousData.push(d.get(selected));
                     }
                 });
@@ -367,6 +374,7 @@ define(["jquery",
                 cont.range = cont.max - cont.min;
                 cont.segmentSize = cont.range / buckets;
                 cont.currentFloor = cont.min;
+                console.log(cont);
                 return cont;
             },
 
