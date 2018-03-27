@@ -117,8 +117,8 @@ define(["jquery"], function ($) {
                 idx = -1;
             //console.log(model.id, this.key, this.val, modelVal);
 
-            // this is necessary to dfistinguish between a value of '0',
-            // which is a legitimate numerical value, and null or undefined
+            // this is necessary to distinguish between a value of '0',
+            // which is a legitimate numerical value, and a value of null or undefined
             if (typeof modelVal === 'undefined' || modelVal == null) {
                 return false;
             }
