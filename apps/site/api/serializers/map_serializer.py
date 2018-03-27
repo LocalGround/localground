@@ -27,31 +27,20 @@ class MapSerializer(BaseNamedSerializer):
         source='project',
         required=False
     )
+    create_new_dataset = serializers.BooleanField(
+        required=False, write_only=True)
     data_sources = fields.JSONField(
-        style={'base_template': 'json.html', 'rows': 5},
-        required=True, write_only=True)
+        required=False, write_only=True,
+        style={'base_template': 'json.html', 'rows': 5})
 
-    def create_form(self, project_id):
-        user = self.context.get('request').user
-        form = models.Form(
-            owner=user,
-            name=name,
-            description=description,
-            last_updated_by=user,
-            project=project_id,
-            time_stamp=get_timestamp_no_milliseconds()
-        )
-        raise serializers.ValidationError(form)
-        form.save()
+    def get_sharing_url(self, obj):
+        return obj.slug
 
     def get_datasets(self, data_sources, project_id):
         datasets = []
         if len(data_sources) == 0:
             raise serializers.ValidationError('At least one data source should be specified in the data_sources array')
         for data_source in data_sources:
-            if data_source == 'create_new':
-                raise serializers.ValidationError('Create new dataset!')
-                self.create_form(project_id)
             try:
                 form_id = int(data_source.split('_')[1])
                 form = models.Form.objects.get(id=form_id)
@@ -63,29 +52,68 @@ class MapSerializer(BaseNamedSerializer):
         return datasets
 
     def create(self, validated_data):
+        '''
+        Either:
+            1. the user opts to create a new dataset, or
+            2. the user passes in a list of existing data sources
+
+        TODO: if a datasource is deleted but there are layers that link to the
+        datasource, throw an exception from the API that lists the maps that
+        are dependent on the datasource.
+        '''
+        create_new_dataset = validated_data.pop('create_new_dataset', False)
         data_sources = validated_data.pop('data_sources', None)
-        project_id = validated_data.get('project_id')
-        datasets = self.get_datasets(data_sources, project_id)
-        raise Exception(datasets)
+
+        if not create_new_dataset and data_sources is None:
+            msg = 'Either create_new_dataset should be set to True '
+            msg += 'or data_sources should contain a list of valid dataset IDs'
+            raise serializers.ValidationError(msg)
+
+        import uuid
+        validated_data['slug'] = uuid.uuid4().hex
         validated_data.update(self.get_presave_create_dictionary())
+        if validated_data.get('panel_styles') is None:
+            validated_data['panel_styles'] = \
+                models.StyledMap.default_panel_styles
         self.instance = self.Meta.model.objects.create(**validated_data)
+
+        layers = []
+        if data_sources:
+            project_id = validated_data.get('project_id')
+            datasets = self.get_datasets(data_sources, project_id)
+            for dataset in datasets:
+                layer = models.Layer.create(
+                    last_updated_by=validated_data.get('last_updated_by'),
+                    owner=validated_data.get('owner'),
+                    styled_map=self.instance,
+                    project=self.instance.project,
+                    dataset=dataset
+                )
+                layers.append(layer)
+        else:
+            layer = models.Layer.create(
+                last_updated_by=validated_data.get('last_updated_by'),
+                owner=validated_data.get('owner'),
+                styled_map=self.instance,
+                project=self.instance.project
+            )
+            layers.append(layer)
         return self.instance
 
+    '''
     def get_fields(self, *args, **kwargs):
         fields = super(MapSerializer, self).get_fields(*args, **kwargs)
         # restrict project list at runtime:
         fields['project_id'].queryset = self.get_projects()
         return fields
+    '''
 
     class Meta:
         model = models.StyledMap
         fields = BaseNamedSerializer.Meta.fields + (
-            'slug', 'sharing_url', 'center', 'basemap', 'zoom',
-            'panel_styles', 'project_id', 'data_sources')
+            'sharing_url', 'center', 'basemap', 'zoom',
+            'panel_styles', 'project_id', 'create_new_dataset', 'data_sources')
         depth = 0
-
-    def get_sharing_url(self, obj):
-        return obj.slug
 
 
 class MapDetailSerializer(MapSerializer):

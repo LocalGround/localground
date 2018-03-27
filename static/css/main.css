@@ -1607,6 +1607,9 @@ tbody .failure-message, tbody .success-message {
     text-align: center;
     z-index: 2;
 }
+.carousel-modal.hide {
+    display: none;
+}
 
 .carousel-modal .carousel-content {
     background: none;

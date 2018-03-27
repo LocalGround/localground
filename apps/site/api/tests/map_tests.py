@@ -24,7 +24,7 @@ def get_metadata():
         "project_id": {'read_only': False, 'required': False, 'type': 'field'}
     }
 
-class ApiProjectListTest(test.TestCase, ViewMixinAPI):
+class ApiMapListTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -37,7 +37,7 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
     def tearDown(self):
         models.StyledMap.objects.all().delete()
 
-    def test_create_project_using_post(self, **kwargs):
+    def __get_generic_post_params(self):
         name = 'New Map!'
         description = 'New map description'
         zoom = 4
@@ -50,7 +50,7 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
         }
         sharing_url = 'newmap'
         slug = 'new-map-123'
-        params = {
+        return {
             'name': name,
             'caption': description,
             'slug': slug,
@@ -61,23 +61,42 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
             'project_id': self.project.id
         }
 
+    def test_create_map_post_no_datasource_flags_yields_error(self, **kwargs):
+        params = self.__get_generic_post_params()
         response = self.client_user.post(
             self.url,
             data=json.dumps(params),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/json"
         )
+        msg = 'Either create_new_dataset should be set to True '
+        msg += 'or data_sources should contain a list of valid dataset IDs'
+        self.assertEqual(msg, response.data[0])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_map_post_create_new_dataset_makes_dataset(self, **kwargs):
+        params = self.__get_generic_post_params()
+        params.create_new_dataset = 1
+        response = self.client_user.post(
+            self.url,
+            data=json.dumps(params),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_map_post_new_datasource(self, **kwargs):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         new_obj = self.model.objects.all().order_by('-id',)[0]
-        self.assertEqual(new_obj.name, name)
-        self.assertEqual(new_obj.description, description)
+        self.assertEqual(new_obj.name, params.name)
+        self.assertEqual(new_obj.description, params.description)
         # self.assertEqual(new_obj.tags, convert_tags_to_list(tags))
-        self.assertEqual(new_obj.zoom, zoom)
-        self.assertEqual(new_obj.slug, slug)
+        self.assertEqual(new_obj.zoom, params.zoom)
+        self.assertEqual(new_obj.slug, params.slug)
         self.assertEqual(new_obj.project_id, self.project.id)
-        self.assertEqual(new_obj.basemap.id, 1)
+        self.assertEqual(new_obj.basemap.id, params.basemap)
 
-class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
+class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -86,13 +105,13 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         self.urls = [self.url]
         self.view = views.MapInstance.as_view()
         self.metadata = get_metadata()
-        
+
         self.metadata.update({
             'layers': {'read_only': True, 'required': False, 'type': 'field'},
             'layers_url': {'read_only': True, 'required': False, 'type': 'field'},
         })
-        
-        
+
+
     '''
     def _check_children(self, children):
         self.assertTrue(not children is None)
@@ -139,22 +158,24 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
             ]
         }
         slug = 'newmap'
-        response = self.client_user.put(self.url,
-                            data=urllib.urlencode({
-                                'name': name,
-                                'caption': description,
-                                'basemap': basemap,
-                                'center': json.dumps(center),
-                                'slug': slug 
-                            }),
-                            HTTP_X_CSRFTOKEN=self.csrf_token,
-                            content_type="application/x-www-form-urlencoded"
-                        )
+        response = self.client_user.put(
+            self.url,
+            data=urllib.urlencode({
+                'name': name,
+                'caption': description,
+                'basemap': basemap,
+                'center': json.dumps(center),
+                'slug': slug
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
+        print response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_map = models.StyledMap.objects.get(id=self.map.id)
         self.assertEqual(updated_map.name, name)
         self.assertEqual(updated_map.description, description)
-    
+
     def test_update_project_using_patch(self, **kwargs):
         import json
         name = 'Dummy name'
@@ -189,38 +210,38 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
 
 '''
 ('IDEAL', {
-    'layers': [], 
-    'project_id': 5, 
-    'name': u'Oakland Map', 
-    'tags': [], 
-    'url': 'http://testserver/api/0/maps/2/', 
-    'layers_url': 'http://localhost:7777/api/0/maps/2/layers/', 
-    'overlay_type': 'styled_map', 
-    'center': {u'type': u'Point', u'coordinates': [5.0, 23.0]}, 
-    'slug': u'', 
-    'caption': None, 
-    'zoom': 3, 
-    'owner': u'tester', 
-    'panel_styles': None, 
-    'basemap': 1, 
-    'id': 2, 
+    'layers': [],
+    'project_id': 5,
+    'name': u'Oakland Map',
+    'tags': [],
+    'url': 'http://testserver/api/0/maps/2/',
+    'layers_url': 'http://localhost:7777/api/0/maps/2/layers/',
+    'overlay_type': 'styled_map',
+    'center': {u'type': u'Point', u'coordinates': [5.0, 23.0]},
+    'slug': u'',
+    'caption': None,
+    'zoom': 3,
+    'owner': u'tester',
+    'panel_styles': None,
+    'basemap': 1,
+    'id': 2,
     'sharing_url': u''})
 
 ('ACTUAL', {
-    'layers': [], 
-    'project_id': 9, 
-    'name': u'New Map Name', 
-    'tags': [], 
-    'url': 'http://testserver/api/0/maps/4/', 
-    'layers_url': 'http://localhost:7777/api/0/maps/4/layers/', 
-    'overlay_type': 'styled_map', 
-    'center': {u'type': u'Point', u'coordinates': [-122.27640407752006, 37.85713522119835]}, 'slug': u'newmap', 
-    'caption': u'Test description', 
-    'zoom': 17, 
-    'owner': u'tester', 
-    'panel_styles': None, 
-    'basemap': 1, 
-    'id': 4, 
+    'layers': [],
+    'project_id': 9,
+    'name': u'New Map Name',
+    'tags': [],
+    'url': 'http://testserver/api/0/maps/4/',
+    'layers_url': 'http://localhost:7777/api/0/maps/4/layers/',
+    'overlay_type': 'styled_map',
+    'center': {u'type': u'Point', u'coordinates': [-122.27640407752006, 37.85713522119835]}, 'slug': u'newmap',
+    'caption': u'Test description',
+    'zoom': 17,
+    'owner': u'tester',
+    'panel_styles': None,
+    'basemap': 1,
+    'id': 4,
     'sharing_url': u'newmap'})
 
 'url': {'read_only': True, 'required': False, 'type': 'field'},

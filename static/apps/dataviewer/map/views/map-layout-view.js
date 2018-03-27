@@ -25,7 +25,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'unhide-detail', this.unhideDetail);
                 this.listenTo(this.app.vent, 'unhide-list', this.unhideList);
                 this.listenTo(this.app.vent, 'hide-list', this.hideList);
-                this.listenTo(this.app.vent, 'datamanager-modified', this.showMarkerListManager);
+                //this.listenTo(this.app.vent, 'datamanager-modified', this.showMarkerListManager);
             },
             hideList: function () {
                 this.showLeft = false;
@@ -50,13 +50,14 @@ define(["marionette",
                 this.app.vent.trigger('highlight-marker', view.model);
             },
             onShow: function () {
+                var that = this;
                 this.mapRegion.show(this.basemapView);
-                if (this.app && this.app.map) {
-                    this.showMarkerListManager();
-                }
+                //if (this.app && this.app.map) {
+                setTimeout(this.showMarkerListManager.bind(this), 220)
             },
 
             showMarkerListManager: function () {
+                console.log('showMarkerListManager')
                 this.showLeft = true;
                 this.updateDisplay();
                 this.leftRegion.show(new MarkerListingManager({

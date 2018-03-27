@@ -51,7 +51,7 @@ define([
                     model.fetch({"reset": true});
                 }
             }
-            console.log('\'bout to ROUTE');
+
             detailView = new DataDetail({
                 model: this.app.dataManager.getModel(dataType, parseInt(id)),
                 app: this.app

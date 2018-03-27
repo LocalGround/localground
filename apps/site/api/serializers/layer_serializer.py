@@ -11,9 +11,13 @@ class LayerSerializer(BaseSerializer):
     metadata = fields.JSONField(
         style={'base_template': 'json.html', 'rows': 5}, required=False)
     map_id = serializers.SerializerMethodField()
+    data_source = serializers.SerializerMethodField()
 
     def get_map_id(self, obj):
         return obj.styled_map.id
+
+    def get_data_source(self, obj):
+        return 'form_{0}'.format(obj.dataset.id)
 
     def create(self, validated_data):
         map_id = self.context.get('view').kwargs.get('map_id')
@@ -27,7 +31,7 @@ class LayerSerializer(BaseSerializer):
     class Meta:
         model = models.Layer
         fields = BaseSerializer.Meta.fields + (
-            'title', 'data_source', 'group_by', 'metadata', 'map_id', 'symbols'
+            'title', 'dataset', 'data_source', 'metadata', 'map_id', 'symbols'
         )
         depth = 0
 

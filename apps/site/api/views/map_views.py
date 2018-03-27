@@ -1,16 +1,25 @@
 from rest_framework import generics, status
 from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract_views import QueryableListCreateAPIView
+from localground.apps.site.api.views.abstract_views \
+    import QueryableListCreateAPIView
 from localground.apps.site import models
 from localground.apps.site.api.permissions import CheckProjectPermissions
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 
+
 class MapList(QueryableListCreateAPIView):
     error_messages = {}
     warnings = []
-    serializer_class = serializers.MapSerializer
+
+    def get_serializer_class(self):
+        method = self.get_serializer_context().get('request').method
+        if method == 'GET':
+            return serializers.MapSerializer
+        else:
+            return serializers.MapDetailSerializer
+
     filter_backends = (filters.SQLFilterBackend,)
     model = models.StyledMap
     paginate_by = 100
@@ -22,13 +31,6 @@ class MapList(QueryableListCreateAPIView):
             return self.model.objects.get_objects_public(
                 access_key=self.request.GET.get('access_key')
             )
-
-    '''def perform_create(self, serializer):
-        d = {
-            'access_authority': models.ObjectAuthority.objects.get(id=1)
-        }
-        serializer.save(**d)
-    '''
 
     def create(self, request, *args, **kwargs):
         response = super(MapList, self).create(request, *args, **kwargs)
@@ -56,7 +58,7 @@ class MapInstance(generics.RetrieveUpdateDestroyAPIView):
             response.status = status.HTTP_400_BAD_REQUEST
         return response
 
+
 class MapInstanceSlug(MapInstance):
     serializer_class = serializers.MapDetailSerializerSlug
     lookup_field = 'slug'
-    
