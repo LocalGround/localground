@@ -57,6 +57,13 @@ define(["marionette",
             },
 
             childView: SymbolView,
+            // getChildView: function() {
+            //     if (this.model.get('group_by') === 'individual') {
+            //         return IndividualSymbolView;
+            //     } else {
+            //         return SymbolView;
+            //     }
+            // },
             childViewContainer: "#symbols-list",
 
             reRender: function () {

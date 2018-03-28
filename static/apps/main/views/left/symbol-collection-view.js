@@ -20,6 +20,7 @@ define(["jquery",
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
+                console.log(this);
             },
             childViewContainer: '.symbol',
             childView: SymbolItemView,
@@ -69,7 +70,8 @@ define(["jquery",
                     isChecked: this.model.get("isShowing"),
                     layer_id: this.layerId,
                     map_id: this.mapId,
-                    data_source: this.layer.get('data_source')
+                    data_source: this.layer.get('data_source'),
+                    isIndividual: this.layer.get('group_by') === 'individual'
                 }
             },
 

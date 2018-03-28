@@ -53,7 +53,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
                       symbolJSON.id = symbolJSON.id || (i + 1);
                       return symbolJSON;
                   }))
-                  const uncategorizedSymbol = collection.findWhere({ rule: this.UNCATEGORIZED_SYMBOL_RULE });
+                  let uncategorizedSymbol = collection.findWhere({ rule: this.UNCATEGORIZED_SYMBOL_RULE });
                   if (!uncategorizedSymbol) {
                       uncategorizedSymbol = new Symbol({
                           rule: this.UNCATEGORIZED_SYMBOL_RULE,
