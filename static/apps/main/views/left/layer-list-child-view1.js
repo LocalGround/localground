@@ -57,6 +57,13 @@ define(["marionette",
             },
 
             childView: SymbolView,
+            // getChildView: function() {
+            //     if (this.model.get('group_by') === 'individual') {
+            //         return IndividualSymbolView;
+            //     } else {
+            //         return SymbolView;
+            //     }
+            // },
             childViewContainer: "#symbols-list",
 
             reRender: function () {
@@ -89,12 +96,15 @@ define(["marionette",
                 this.dataCollection.each(function (recordModel) {
                     var matched = false;
                     that.symbolModels.each(function (symbolModel) {
+                        console.log(recordModel.id, symbolModel.get('rule'));
                         if (symbolModel.checkModel(recordModel)) {
+                            console.log('matched');
                             symbolModel.addModel(recordModel);
                             matched = true;
                         }
                     })
                     if (!matched) {
+                        console.log('didnt match');
                         uncategorizedSymbol.addModel(recordModel);
                     }
                 });
@@ -177,8 +187,8 @@ define(["marionette",
 
                     // otherwise, set flag, toggle, render, and save:
                     symbol.set('isShowing', isShowing);
-                    childView.redrawOverlays();
-                    childView.render();
+                    //childView.redrawOverlays();
+                    //childView.render();
                 })
                 if (isShowing) {
                     this.$el.find('#symbols-list').show()

@@ -178,6 +178,7 @@ define(["marionette",
             // create the view that allows the user to edit *individual* symbol attributes
             showSymbolMenu: function(symbol, coords, layerId) {
                 if (this.symbolMenu) {
+                    console.log('destroying');
                     this.symbolMenu.destroy();
                 }
                 console.log('show symbol menu', this.model);

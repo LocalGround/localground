@@ -75,6 +75,9 @@ define(['underscore',
 				$a.parent().parent().remove();
 				that.model.fetch();
             });
+        },
+        onDestroy: function() {
+            console.log('destroying marker');
         }
     });
     return MarkerBubble;

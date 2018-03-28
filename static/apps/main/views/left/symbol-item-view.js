@@ -36,6 +36,26 @@ define(["marionette",
             //     'click': 'makeActive'
             // },
 
+            modelEvents: {
+                'change': 'render'
+            },
+
+            // for some reason this approach is buggy...
+            // modelEvents: function () {
+            //     let events = {};
+            //     this.model.get('fields').forEach(field => {
+            //         events[`change:${field.col_name}`] = 'render';
+            //     })
+            //     return events;
+            // },
+
+            
+            onRender: function() {
+                console.log(this);
+                console.log(this.model);
+                console.log('changed record attr');
+            },
+
             template: Handlebars.compile(SymbolItemTemplate),
             tagName: "li",
             className: "symbol-item marker-container",
@@ -44,7 +64,12 @@ define(["marionette",
                     active: this.active,
                     layer_id: this.parent.layerId,
                     map_id: this.parent.mapId,
-                    data_source: this.parent.layer.get('data_source')
+                    data_source: this.parent.layer.get('data_source'),
+                    rule: this.symbolModel.get('rule'),
+                    icon: this.symbolModel.get('icon'),
+                    isIndividual: this.parent.layer.get('group_by') === 'individual',
+                    width: this.symbolModel.get('width'),
+                    height: this.symbolModel.get('height')
                 };
             },
             handleRoute: function (layerID) {
@@ -54,10 +79,12 @@ define(["marionette",
             },
             makeActive: function () {
                 var activeItem = this.app.selectedItemView;
-                if (activeItem && !activeItem.isDestroyed) {
+                if (activeItem) {
                     activeItem.active = false;
                     activeItem.render();
-                    if (activeItem.overlay && !activeItem.overlay.isDestroyed) {
+
+                    // some item's don't have associated overlays, so check first
+                    if (activeItem.overlay) {
                         activeItem.overlay.deactivate();
                     }
                 }
@@ -69,6 +96,7 @@ define(["marionette",
                 this.render();
             },
             onDestroy: function () {
+                console.log('destroying symbol-item-view');
                 if (this.overlay != null) {
                     this.overlay.destroy();
                 }

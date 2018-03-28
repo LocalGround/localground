@@ -70,6 +70,8 @@ define(["jquery",
                     this.createCorrectSymbols();
                 } else if (this.model.get('group_by') === 'basic') {
                     this.createCorrectSymbols();
+                } else if (this.model.get('group_by') === 'individual') {
+                    this.createCorrectSymbols();
                 } else {
                     this.buildPalettes(this.model.get('symbols').length);
                     this.updateMapAndRender();
@@ -267,6 +269,7 @@ define(["jquery",
                     this.simpleData();
                 } else if (gb === 'individual') {
                     console.log('individual');
+                    this.individualData();
                 } else {
                     this.model.get('metadata').currentProp = this.model.get('group_by');
                     if (this.model.get('metadata').isContinuous) {
@@ -276,6 +279,14 @@ define(["jquery",
                     }
                 }
                 
+            },
+
+            simpleData: function () {
+                this.setSymbols(this.buildSimpleSymbols(this.model.get('data_source')));
+            },
+
+            individualData: function() {
+                this.setSymbols(this.buildIndividualSymbols(this.model.get('data_source')));
             },
 
             contData: function() {
@@ -290,6 +301,53 @@ define(["jquery",
                 this.setSymbols(this.buildCategoricalSymbols(catInfo));
             },
 
+            buildSimpleSymbols: function (key) {
+                name = this.app.dataManager.getCollection(key).getTitle();
+
+                this.layerDraft.simple = new Symbols([{
+                    "rule": "*",
+                    "title": name,
+                    "shape": this.$el.find(".global-marker-shape").val(),
+                    "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
+                  //  "fillColor": "#60c7cc",
+                    "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
+                    "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
+                    "strokeColor": this.model.get("metadata").strokeColor,
+                    'width': this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
+                    "isShowing": this.model.get("metadata").isShowing,
+                    "id": 1
+                }]);
+                this.layerNoLongerNew();
+                return this.layerDraft.simple;
+            },
+
+            buildIndividualSymbols: function(key) {
+                this.layerDraft.individual = new Symbols();
+                let collection = this.app.dataManager.getCollection(key);
+                collection.forEach((item) => {
+                    const random_color = "#000000".replace(/0/g, function(){
+                        return (~~(Math.random()*16)).toString(16);
+                    });
+                    this.layerDraft.individual.add({
+                        "rule": "id = " + item.id,
+                        "title": item,
+                        "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
+                        "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
+                        "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
+                        "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
+                        "shape": this.$el.find(".global-marker-shape").val(),
+                        "fillColor": random_color,
+                        "strokeColor": this.model.get("metadata").strokeColor,
+                        "isShowing": this.model.get("metadata").isShowing,
+                        "id": item.id,
+                    });
+                });
+                this.layerNoLongerNew();
+                console.log(this.layerDraft.individual);
+                return this.layerDraft.individual;
+
+            },
+
             buildContinuousSymbols: function (cont) {
                 var counter = 0,
                 selected = this.model.get('metadata').currentProp;
@@ -299,7 +357,7 @@ define(["jquery",
                 this.layerDraft.continuous = new Symbols();
                 while (cont.currentFloor < cont.max) {
                     this.layerDraft.continuous.add({
-                        "rule": selected + " >= " + cont.currentFloor.toFixed(0) + " and " + selected + " <= " + (cont.currentFloor + cont.segmentSize).toFixed(0),
+                        "rule": selected + " >= " + cont.currentFloor.toFixed(0) + " and " + selected + " < " + (cont.currentFloor + cont.segmentSize).toFixed(0),
                         "title": "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
                         "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
                         "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
@@ -314,6 +372,7 @@ define(["jquery",
                     counter++;
                     cont.currentFloor = Math.round((cont.currentFloor + cont.segmentSize)*100)/100;
                 }
+                console.log(cont.currentFloor);
                 console.log(this.layerDraft.continuous);
                 this.layerNoLongerNew();
                 return this.layerDraft.continuous;
@@ -353,9 +412,15 @@ define(["jquery",
                     buckets = this.model.get("metadata").buckets,
                     key = this.model.get('data_source'),
                     collection = this.app.dataManager.getCollection(key);
+                    console.log(collection);
                 this.continuousData = [];
                 collection.models.forEach((d) => {
-                    if (d.get(selected)) {
+                    
+                    // must use this check to distinguish between 0 and null/undefined
+                    // e.g. simply doing "if (d.get(selected)) {...}" will miss 0s
+                    if (typeof d.get(selected) === 'number') {
+
+                        console.log(d.get(selected));
                         this.continuousData.push(d.get(selected));
                     }
                 });
@@ -367,6 +432,7 @@ define(["jquery",
                 cont.range = cont.max - cont.min;
                 cont.segmentSize = cont.range / buckets;
                 cont.currentFloor = cont.min;
+                console.log(cont);
                 return cont;
             },
 
@@ -392,32 +458,6 @@ define(["jquery",
                     }
                 });
                 return cat;
-            },
-
-
-
-            simpleData: function () {
-                this.setSymbols(this.buildSimpleSymbols(this.model.get('data_source')));
-            },
-
-            buildSimpleSymbols: function (key) {
-                name = this.app.dataManager.getCollection(key).getTitle();
-
-                this.layerDraft.simple = new Symbols([{
-                    "rule": "*",
-                    "title": name,
-                    "shape": this.$el.find(".global-marker-shape").val(),
-                    "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
-                  //  "fillColor": "#60c7cc",
-                    "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
-                    "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
-                    "strokeColor": this.model.get("metadata").strokeColor,
-                    'width': this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
-                    "isShowing": this.model.get("metadata").isShowing,
-                    "id": 1
-                }]);
-                this.layerNoLongerNew();
-                return this.layerDraft.simple;
             },
 
             setSymbols: function (symbs) {
