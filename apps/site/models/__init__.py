@@ -7,6 +7,7 @@ from localground.apps.site.models.abstract.mixins import ExtentsMixin, \
 
 # layers
 from localground.apps.site.models.layer import Layer
+from localground.apps.site.models.symbol import Symbol
 
 from localground.apps.site.models.icon import Icon
 
