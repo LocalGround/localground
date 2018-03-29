@@ -61,7 +61,8 @@ define(["marionette",
             var geoJSON = this.model.get("geometry"),
                 opts = {
                     model: this.model,
-                    map: this.map
+                    map: this.map,
+                    symbol: this.symbol
                 };
             if (geoJSON.type === 'Point') {
                 this._overlay = new Point(this.app, opts);

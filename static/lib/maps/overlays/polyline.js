@@ -22,6 +22,7 @@ define(["jquery"], function ($) {
         };
 
         this.initialize = function (app, opts) {
+            console.log('polyline', this);
             this.app = app;
             $.extend(this, opts);
             this.createOverlay(opts.isShowingOnMap || false);
@@ -41,11 +42,13 @@ define(["jquery"], function ($) {
         };
 
         this.redraw = function () {
+            console.log('polyline redraw', this.active);
             this._googleOverlay.setOptions({
                 //strokeColor: '#' + this.model.get("strokeColor")
-                strokeColor: this.model.collection.fillColor,
+                //strokeColor: this.model.collection.fillColor,
+                strokeColor: this.symbol.get('fillColor'),
                 strokeOpacity: 1.0,
-                strokeWeight: 5,
+                strokeWeight: this.active ? 10 : 5,
                 draggable: this.active ? true : false,
                 editable: this.active ? true : false,
             });
@@ -230,6 +233,7 @@ define(["jquery"], function ($) {
         };
 
         this.makeEditable = function (model) {
+            console.log(' polyline: make editable');
             var that = this;
             google.maps.event.clearListeners(this._googleOverlay.getPath());
 			this._googleOverlay.setOptions({'draggable': false, 'editable': true});

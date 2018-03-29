@@ -81,7 +81,7 @@ define(["marionette",
             },
             makeActive: function (e) {
                 var activeItem = this.app.selectedItemView;
-                if (activeItem) {
+                if (activeItem && !activeItem.isDestroyed) {
                     activeItem.active = false;
                     activeItem.render();
 

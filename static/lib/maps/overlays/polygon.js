@@ -41,8 +41,8 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             this._googleOverlay.setOptions({
                 // strokeColor: '#' + this.model.get("strokeColor"),
                 // fillColor: '#' + this.model.get("fillColor")
-                strokeColor: this.model.collection.fillColor,
-                fillColor: this.model.collection.fillColor,
+                strokeColor: this.symbol.get('fillColor'),
+                fillColor: this.symbol.get('fillColor'),
                 strokeOpacity: 0.8,
                 strokeWeight: 2,
                 draggable: this.active ? true : false,

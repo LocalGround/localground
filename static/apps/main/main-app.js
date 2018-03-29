@@ -94,7 +94,7 @@ define([
             //this.vent.trigger('highlight-symbol-item', info);
 
 
-            //this.vent.trigger('highlight-marker', dataDetailView.model);
+            this.vent.trigger('highlight-marker', dataDetailView.model);
         },
 
         showBreadcrumbs: function () {
