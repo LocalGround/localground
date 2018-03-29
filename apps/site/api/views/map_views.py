@@ -16,9 +16,9 @@ class MapList(QueryableListCreateAPIView):
     def get_serializer_class(self):
         method = self.get_serializer_context().get('request').method
         if method == 'GET':
-            return serializers.MapSerializer
+            return serializers.MapSerializerList
         else:
-            return serializers.MapDetailSerializer
+            return serializers.MapSerializerPost
 
     filter_backends = (filters.SQLFilterBackend,)
     model = models.StyledMap
@@ -46,7 +46,7 @@ class MapInstance(generics.RetrieveUpdateDestroyAPIView):
     error_messages = {}
     warnings = []
     queryset = models.StyledMap.objects.select_related('owner').all()
-    serializer_class = serializers.MapDetailSerializer
+    serializer_class = serializers.MapSerializerDetail
     model = models.StyledMap
 
     def update(self, request, *args, **kwargs):
@@ -60,5 +60,5 @@ class MapInstance(generics.RetrieveUpdateDestroyAPIView):
 
 
 class MapInstanceSlug(MapInstance):
-    serializer_class = serializers.MapDetailSerializerSlug
+    serializer_class = serializers.MapSerializerDetailSlug
     lookup_field = 'slug'

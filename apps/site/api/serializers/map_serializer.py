@@ -9,19 +9,36 @@ from localground.apps.site.api.serializers.layer_serializer import \
     LayerSerializer
 
 
-class MapSerializer(BaseNamedSerializer):
+class MapSerializerList(BaseNamedSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='map-detail',)
     sharing_url = serializers.SerializerMethodField()
+    project_id = serializers.SerializerMethodField()
     center = fields.GeometryField(
-                help_text='Assign a GeoJSON string',
-                required=True,
-                style={'base_template': 'json.html', 'rows': 5}
-            )
+        help_text='Assign a GeoJSON string',
+        required=True,
+        style={'base_template': 'json.html', 'rows': 5}
+    )
     panel_styles = fields.JSONField(
         style={'base_template': 'json.html', 'rows': 5}, required=False)
     basemap = serializers.PrimaryKeyRelatedField(
         queryset=models.TileSet.objects.all())
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
+
+    def get_sharing_url(self, obj):
+        return '{0}/maps/{1}'.format(settings.SERVER_URL, obj.slug)
+
+    def get_project_id(self, obj):
+        return obj.project.id
+
+    class Meta:
+        model = models.StyledMap
+        fields = BaseNamedSerializer.Meta.fields + (
+            'sharing_url', 'center',  'basemap', 'zoom', 'panel_styles',
+            'project_id')
+        depth = 0
+
+
+class MapSerializerPost(MapSerializerList):
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
@@ -33,8 +50,10 @@ class MapSerializer(BaseNamedSerializer):
         required=False, write_only=True,
         style={'base_template': 'json.html', 'rows': 5})
 
-    def get_sharing_url(self, obj):
-        return obj.slug
+    class Meta:
+        model = models.StyledMap
+        fields = MapSerializerList.Meta.fields + ('create_new_dataset', 'data_sources')
+        depth = 0
 
     def get_datasets(self, data_sources, project_id):
         datasets = []
@@ -100,29 +119,15 @@ class MapSerializer(BaseNamedSerializer):
             layers.append(layer)
         return self.instance
 
-    '''
-    def get_fields(self, *args, **kwargs):
-        fields = super(MapSerializer, self).get_fields(*args, **kwargs)
-        # restrict project list at runtime:
-        fields['project_id'].queryset = self.get_projects()
-        return fields
-    '''
 
-    class Meta:
-        model = models.StyledMap
-        fields = BaseNamedSerializer.Meta.fields + (
-            'sharing_url', 'center', 'basemap', 'zoom',
-            'panel_styles', 'project_id', 'create_new_dataset', 'data_sources')
-        depth = 0
-
-
-class MapDetailSerializer(MapSerializer):
+class MapSerializerDetail(MapSerializerList):
     layers = serializers.SerializerMethodField()
     layers_url = serializers.SerializerMethodField()
 
     class Meta:
         model = models.StyledMap
-        fields = MapSerializer.Meta.fields + ('layers', 'layers_url')
+        read_only_fields = ('project_id',)
+        fields = MapSerializerList.Meta.fields + ('slug', 'layers', 'layers_url')
         depth = 0
 
     def get_layers(self, obj):
@@ -133,7 +138,7 @@ class MapDetailSerializer(MapSerializer):
         return '%s/api/0/maps/%s/layers/' % (settings.SERVER_URL, obj.id)
 
 
-class MapDetailSerializerSlug(MapDetailSerializer):
+class MapSerializerDetailSlug(MapSerializerDetail):
     extra_kwargs = {
         'url': {'lookup_field': 'slug'}
     }

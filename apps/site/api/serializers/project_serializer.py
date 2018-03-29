@@ -15,7 +15,7 @@ from localground.apps.site.api.metadata import CustomMetadata
 from localground.apps.site.api.serializers.marker_serializer import \
     MarkerSerializer, MarkerSerializerDetail
 from localground.apps.site.api.serializers.map_serializer import \
-    MapSerializer
+    MapSerializerList
 from localground.apps.site.api.serializers.marker_w_attrs_serializer import \
     create_dynamic_serializer
 from localground.apps.site.api.serializers.field_serializer import \
@@ -74,7 +74,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
     def get_maps(self, obj):
         return self.serialize_list(
             models.StyledMap,
-            MapSerializer,
+            MapSerializerList,
             models.StyledMap.objects.filter(project=obj)
         )
 

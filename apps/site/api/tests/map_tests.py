@@ -2,9 +2,11 @@ from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
-import urllib, json
+import urllib
+import json
 from rest_framework import status
 from localground.apps.site.api.fields.list_field import convert_tags_to_list
+
 
 def get_metadata():
     return {
@@ -12,17 +14,20 @@ def get_metadata():
         "id": {'read_only': True, 'required': False, 'type': 'integer'},
         "name": {'read_only': False, 'required': False, 'type': 'string'},
         "caption": {'read_only': False, 'required': False, 'type': 'memo'},
-        "overlay_type":{ 'type': 'field', 'required': False, 'read_only': True },
+        'overlay_type': {
+            'type': 'field', 'required': False, 'read_only': True},
         "tags": {'read_only': False, 'required': False, 'type': 'field'},
         "owner": {'read_only': True, 'required': False, 'type': 'field'},
         "slug": {'read_only': False, 'required': True, 'type': 'slug'},
-        "sharing_url": { 'type': 'field', 'required': False, 'read_only': True },
-        "center": {'read_only': False, 'required': True, 'type': 'geojson' },
+        "sharing_url": {'type': 'field', 'required': False, 'read_only': True},
+        "center": {'read_only': False, 'required': True, 'type': 'geojson'},
         "basemap": {'read_only': False, 'required': True, 'type': 'field'},
         "zoom": {'read_only': False, 'required': False, 'type': 'integer'},
-        "panel_styles": {'read_only': False, 'required': False, 'type': 'json'},
+        "panel_styles": {
+            'read_only': False, 'required': False, 'type': 'json'},
         "project_id": {'read_only': False, 'required': False, 'type': 'field'}
     }
+
 
 class ApiMapListTest(test.TestCase, ViewMixinAPI):
 

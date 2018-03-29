@@ -11,12 +11,13 @@ class Layer(BaseAudit):
     dataset = models.ForeignKey('Form', related_name='%(class)s+')
     display_field = models.ForeignKey('Field', related_name='%(class)s+')
     title = models.CharField(max_length=255, null=False, blank=False)
-    description = models.TextField(null=True, blank=True)
+    # description = models.TextField(null=True, blank=True)
     # data_source = models.TextField(null=True, blank=True)
     # group_by = models.CharField(max_length=64)
     metadata = JSONField(blank=True, null=True)
-    symbols = JSONField(
-        blank=True, null=True, default=[Symbol.SIMPLE.to_JSON()])
+    symbols = JSONField(blank=True, null=True, default=[
+        Symbol.SIMPLE.to_JSON()
+    ])
 
     @classmethod
     def create(cls, **kwargs):

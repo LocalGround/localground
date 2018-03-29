@@ -37,7 +37,8 @@ from localground.apps.site.api.serializers.user_profile_serializer import \
 from localground.apps.site.api.serializers.layer_serializer import \
     LayerSerializer, LayerDetailSerializer
 from localground.apps.site.api.serializers.map_serializer import \
-    MapSerializer, MapDetailSerializer, MapDetailSerializerSlug
+    MapSerializerList, MapSerializerPost, MapSerializerDetail, \
+    MapSerializerDetailSlug
 from localground.apps.site.api.serializers.tileset_serializer import \
     TileSetSerializer
 from localground.apps.site.api.serializers.video_serializer import \
