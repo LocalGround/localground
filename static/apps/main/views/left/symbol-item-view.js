@@ -46,13 +46,6 @@ define(["marionette",
             //     return events;
             // },
 
-            
-            onRender: function() {
-                console.log(this);
-                console.log(this.model);
-                console.log('changed record attr');
-            },
-
             template: Handlebars.compile(SymbolItemTemplate),
             tagName: "li",
             className: "symbol-item marker-container",
@@ -71,9 +64,7 @@ define(["marionette",
             },
             handleRoute: function(info) {
                 if (this.parent.layerId === info.layerId) {
-                    console.log('matched mapID');
                     if (this.model.id === info.markerId) {
-                        console.log('successfully matched!');
                         this.makeActive();
 
                     }

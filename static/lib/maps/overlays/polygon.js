@@ -41,10 +41,11 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             this._googleOverlay.setOptions({
                 // strokeColor: '#' + this.model.get("strokeColor"),
                 // fillColor: '#' + this.model.get("fillColor")
+                path: this.getGoogleLatLngFromModel(),
                 strokeColor: this.symbol.get('fillColor'),
                 fillColor: this.symbol.get('fillColor'),
                 strokeOpacity: 0.8,
-                strokeWeight: 2,
+                strokeWeight: this.active ? 5 : 2,
                 draggable: this.active ? true : false,
                 editable: this.active ? true : false
             });

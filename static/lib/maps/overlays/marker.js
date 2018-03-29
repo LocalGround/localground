@@ -12,11 +12,9 @@ define([
     var Marker = Base.extend({
 
         initialize: function (opts) {
-            console.log('Marker init');
             _.extend(this, opts);
             Base.prototype.initialize.apply(this, arguments);
             // this is what redraws a marker when you select it
-            console.log(this);
             this.redraw();
             //listen to all of these Symbol change events and re-render:
             ['fillColor', 'strokeColor', 'shape', 'width',
@@ -31,7 +29,6 @@ define([
         },
 
         redraw: function () {
-            console.log('marker redraw', this);
             if (this.getShapeType() === "Point") {
                 if (this.active) {
                     var icon = {};
@@ -50,7 +47,14 @@ define([
                     }
                 }
             } else {
-                this._overlay.redraw();
+                if (this.active) {
+                    this._overlay.active = true;
+                    this._overlay.redraw();
+                } else {
+                    this._overlay.active = false;
+                    this._overlay.redraw();
+                }
+                
             }
         }
 

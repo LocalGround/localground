@@ -27,7 +27,8 @@ define(["marionette",
                 'show-marker': 'show',
                 'hide-marker': 'hide',
                 'zoom-to-overlay': 'zoomTo',
-                'reset-overlay': 'restoreModelGeometry'
+                'reset-overlay': 'restoreModelGeometry',
+                'change:geometry': 'render'
             };
             if (this.model.get('overlay_type') !== 'map-image') {
                 events['change:geometry'] = 'reRender';
@@ -177,7 +178,6 @@ define(["marionette",
 
         activate: function () {
             this.active = true;
-            this.makeEditable();
             this.redraw()
         },
 
@@ -187,7 +187,6 @@ define(["marionette",
         },
 
         makeEditable: function () {
-            console.log('make editable');
             if (this.active) {
                 this._overlay.makeEditable(this.model);
             }
