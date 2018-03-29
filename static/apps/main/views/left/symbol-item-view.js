@@ -29,16 +29,10 @@ define(["marionette",
 
             },
             modelEvents: {
-                'highlight-symbol-item': 'handleRoute'
-            },
-            active: false,
-            // events: {
-            //     'click': 'makeActive'
-            // },
-
-            modelEvents: {
+                'highlight-symbol-item': 'handleRoute',
                 'change': 'render'
             },
+            active: false,
 
             // for some reason this approach is buggy...
             // modelEvents: function () {
@@ -65,11 +59,9 @@ define(["marionette",
                     height: this.symbolModel.get('height')
                 };
             },
-            handleRoute: function(info) {
-                if (this.parent.layerId === info.layerId) {
-                    if (this.model.id === info.markerId) {
-                        this.makeActive();
-                    }
+            handleRoute: function(layerId) {
+                if (this.parent.layerId === layerId) {
+                    this.makeActive();
                 }
             },
             makeActive: function () {
