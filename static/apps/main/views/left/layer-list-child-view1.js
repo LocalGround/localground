@@ -38,7 +38,6 @@ define(["marionette",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log('Initializing LayerListChildView:', this.model);
                 this.symbolModels = this.collection;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
                 if (!this.model || !this.collection || !this.dataCollection) {
@@ -96,15 +95,12 @@ define(["marionette",
                 this.dataCollection.each(function (recordModel) {
                     var matched = false;
                     that.symbolModels.each(function (symbolModel) {
-                        console.log(recordModel.id, symbolModel.get('rule'));
                         if (symbolModel.checkModel(recordModel)) {
-                            console.log('matched');
                             symbolModel.addModel(recordModel);
                             matched = true;
                         }
                     })
                     if (!matched) {
-                        console.log('didnt match');
                         uncategorizedSymbol.addModel(recordModel);
                     }
                 });

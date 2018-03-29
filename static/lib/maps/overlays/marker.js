@@ -47,7 +47,14 @@ define([
                     }
                 }
             } else {
-                this._overlay.redraw();
+                if (this.active) {
+                    this._overlay.active = true;
+                    this._overlay.redraw();
+                } else {
+                    this._overlay.active = false;
+                    this._overlay.redraw();
+                }
+                
             }
         }
 

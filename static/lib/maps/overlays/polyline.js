@@ -43,9 +43,11 @@ define(["jquery"], function ($) {
         this.redraw = function () {
             this._googleOverlay.setOptions({
                 //strokeColor: '#' + this.model.get("strokeColor")
-                strokeColor: this.model.collection.fillColor,
+                //strokeColor: this.model.collection.fillColor,
+                path: this.getGoogleGeometryFromModel(),
+                strokeColor: this.symbol.get('fillColor'),
                 strokeOpacity: 1.0,
-                strokeWeight: 5,
+                strokeWeight: this.active ? 8 : 5,
                 draggable: this.active ? true : false,
                 editable: this.active ? true : false,
             });

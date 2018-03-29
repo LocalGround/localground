@@ -91,7 +91,7 @@ define([
             // loop through children, call a function on the matching layer
 
 
-            //this.vent.trigger('highlight-marker', dataDetailView.model);
+            this.vent.trigger('highlight-marker', dataDetailView.model);
         },
 
         showBreadcrumbs: function () {

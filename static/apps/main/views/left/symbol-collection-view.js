@@ -20,7 +20,6 @@ define(["jquery",
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
-                console.log(this);
             },
             childViewContainer: '.symbol',
             childView: SymbolItemView,

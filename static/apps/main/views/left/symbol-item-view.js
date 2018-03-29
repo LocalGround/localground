@@ -49,13 +49,6 @@ define(["marionette",
             //     return events;
             // },
 
-            
-            onRender: function() {
-                console.log(this);
-                console.log(this.model);
-                console.log('changed record attr');
-            },
-
             template: Handlebars.compile(SymbolItemTemplate),
             tagName: "li",
             className: "symbol-item marker-container",
@@ -72,14 +65,16 @@ define(["marionette",
                     height: this.symbolModel.get('height')
                 };
             },
-            handleRoute: function (layerID) {
-                if (this.parent.layerId === layerID) {
-                    this.makeActive();
+            handleRoute: function(info) {
+                if (this.parent.layerId === info.layerId) {
+                    if (this.model.id === info.markerId) {
+                        this.makeActive();
+                    }
                 }
             },
             makeActive: function () {
                 var activeItem = this.app.selectedItemView;
-                if (activeItem) {
+                if (activeItem && !activeItem.isDestroyed) {
                     activeItem.active = false;
                     activeItem.render();
 
