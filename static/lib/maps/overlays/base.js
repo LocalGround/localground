@@ -177,6 +177,7 @@ define(["marionette",
 
         activate: function () {
             this.active = true;
+            this.makeEditable();
             this.redraw()
         },
 
@@ -186,6 +187,7 @@ define(["marionette",
         },
 
         makeEditable: function () {
+            console.log('make editable');
             if (this.active) {
                 this._overlay.makeEditable(this.model);
             }
