@@ -5,6 +5,7 @@ from django.conf import settings
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api import fields
 
+
 class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
     '''
     Hack: can't use HyperlinkSerializer field for URLs with two
@@ -14,7 +15,6 @@ class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
     url = serializers.SerializerMethodField()#'get_url')
     col_name = serializers.SerializerMethodField()
     form = serializers.SerializerMethodField()
-    is_display_field = serializers.BooleanField()
     extras = fields.JSONField(
         style={'base_template': 'json.html', 'rows': 5},
         required=False,
@@ -29,24 +29,25 @@ class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = models.Field
-        fields = ('id', 'form', 'col_alias', 'col_name', 'extras', 'is_display_field',
+        fields = ('id', 'form', 'col_alias', 'col_name', 'extras',
                     'ordering', 'data_type', 'url')
-        
+
     def get_url(self, obj):
         return '%s/api/0/datasets/%s/fields/%s' % \
                 (settings.SERVER_URL, obj.form.id, obj.id)
-        
+
     def get_col_name(self, obj):
         return obj.col_name
-    
+
     def get_form(self, obj):
         return obj.form.id
+
 
 class FieldSerializer(FieldSerializerBase):
     class Meta:
         model = models.Field
         fields = FieldSerializerBase.Meta.fields
-    
+
 class FieldSerializerUpdate(FieldSerializerBase):
     data_type = serializers.SlugRelatedField(slug_field='name', read_only=True)
     class Meta:

@@ -18,7 +18,6 @@ def get_metadata():
             'type': 'field', 'required': False, 'read_only': True},
         "tags": {'read_only': False, 'required': False, 'type': 'field'},
         "owner": {'read_only': True, 'required': False, 'type': 'field'},
-        "slug": {'read_only': False, 'required': True, 'type': 'slug'},
         "sharing_url": {'type': 'field', 'required': False, 'read_only': True},
         "center": {'read_only': False, 'required': True, 'type': 'geojson'},
         "basemap": {'read_only': False, 'required': True, 'type': 'field'},
@@ -54,14 +53,11 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
             ]
         }
         sharing_url = 'newmap'
-        slug = 'new-map-123'
         return {
             'name': name,
             'caption': description,
-            'slug': slug,
             'zoom': zoom,
             'center': json.dumps(center),
-            'sharing_url': sharing_url,
             'basemap': 1,
             'project_id': self.project.id
         }
@@ -81,16 +77,31 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
 
     def test_create_map_post_create_new_dataset_makes_dataset(self, **kwargs):
         params = self.__get_generic_post_params()
-        params.create_new_dataset = 1
+        params['create_new_dataset'] = 1
         response = self.client_user.post(
             self.url,
             data=json.dumps(params),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/json"
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_obj = self.model.objects.all().order_by('-id',)[0]
+        self.assertEqual(new_obj.name, params['name'])
+        self.assertEqual(new_obj.description, params['caption'])
+        self.assertEqual(new_obj.zoom, params['zoom'])
+        self.assertEqual(new_obj.project_id, self.project.id)
+        self.assertEqual(new_obj.basemap.id, params['basemap'])
 
+    '''
     def test_create_map_post_new_datasource(self, **kwargs):
+        params = self.__get_generic_post_params()
+        params['create_new_dataset'] = 1
+        response = self.client_user.post(
+            self.url,
+            data=json.dumps(params),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         new_obj = self.model.objects.all().order_by('-id',)[0]
         self.assertEqual(new_obj.name, params.name)
@@ -100,6 +111,7 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(new_obj.slug, params.slug)
         self.assertEqual(new_obj.project_id, self.project.id)
         self.assertEqual(new_obj.basemap.id, params.basemap)
+    '''
 
 class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
 

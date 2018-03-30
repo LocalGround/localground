@@ -16,7 +16,7 @@ class Layer(BaseAudit):
     # group_by = models.CharField(max_length=64)
     metadata = JSONField(blank=True, null=True)
     symbols = JSONField(blank=True, null=True, default=[
-        Symbol.SIMPLE.to_JSON()
+        Symbol.SIMPLE.to_dict()
     ])
 
     @classmethod
@@ -25,13 +25,14 @@ class Layer(BaseAudit):
         if kwargs.get('dataset') is None:
             # if no dataset is passed in, create a new one:
             from localground.apps.site.models import Form
-            dataset = Form.objects.create(
+            dataset = Form.create(
                 owner=kwargs.get('owner'),
                 name='Untitled Dataset',
                 last_updated_by=kwargs.get('last_updated_by'),
                 project=kwargs.get('project')
             )
             kwargs['dataset'] = dataset
+            kwargs['display_field'] = dataset.fields[0]
 
         kwargs.pop('project')
         return Layer.objects.create(**kwargs)

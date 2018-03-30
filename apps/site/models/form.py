@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from django.db.models import Q
 from localground.apps.site.managers import FormManager
 from localground.apps.site.models import NamedMixin, BaseAudit, \
-     ProjectMixin, Record
+     ProjectMixin, Record, Field, DataType
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 
@@ -11,6 +11,33 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
     table_name = models.CharField(max_length=255, unique=True)
     objects = FormManager()
     filter_fields = BaseAudit.filter_fields + ('slug',)
+
+    @classmethod
+    def create(cls, **kwargs):
+        dataset = Form.objects.create(
+            owner=kwargs.get('owner'),
+            name='Untitled Dataset',
+            last_updated_by=kwargs.get('last_updated_by'),
+            project=kwargs.get('project')
+        )
+
+        # In addition to creating the new form, also create two new fields
+        # for free: Name and description
+        data_type = DataType.objects.get(id=1)
+        i = 1
+        for alias in ['Name', 'Description']:
+            Field.objects.create(
+                col_alias=alias,
+                data_type=data_type,
+                ordering=i,
+                # is_display_field=(i == 1),
+                form=dataset,
+                owner=dataset.owner,
+                last_updated_by=dataset.last_updated_by
+            )
+            i += 1
+        return dataset
+
 
     @classmethod
     def get_filter_fields(cls):

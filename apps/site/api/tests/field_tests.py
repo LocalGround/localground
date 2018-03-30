@@ -18,8 +18,6 @@ def get_base_metadata():
         'col_alias': {'read_only': False, 'required': True, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'},
         'col_name': {'read_only': True, 'required': False, 'type': 'field'},
-        'is_display_field': {'read_only': False, 'required': True,
-                             'type': 'boolean'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'}
     }
@@ -69,32 +67,6 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
             i += 1
         self.assertEqual(self.form.fields[0].ordering, 1)
         self.assertEqual(self.form.fields[0].col_alias, 'Display Name')
-
-    def test_only_one_is_display_field_at_a_time(self, **kwargs):
-        self.field3 = self.create_field(
-            self.form,
-            name="Field 3",
-            ordering=3,
-            is_display_field=True
-        )
-        self.assertEqual(self.field3.is_display_field, True)
-        response = self.client_user.post(
-            self.url,
-            data=urllib.urlencode({
-                'col_alias': 'Display Name',
-                'ordering': 4,
-                'data_type': 'text',
-                'is_display_field': True
-            }),
-            HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
-        )
-        num_display_fields = 0
-        for field in self.form.fields:
-            if field.is_display_field:
-                self.assertEqual(field.col_alias, 'Display Name')
-                num_display_fields += 1
-        self.assertEqual(num_display_fields, 1)
 
     def test_create_field_using_post(self, **kwargs):
         response = self.client_user.post(

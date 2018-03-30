@@ -12,11 +12,6 @@ class Field(BaseAudit):
     col_alias = models.CharField(max_length=255, verbose_name="column name")
     data_type = models.ForeignKey('DataType')
     extras = JSONField(blank=True, null=True)
-
-    # field to be displayed in viewer
-    is_display_field = models.BooleanField(default=False)
-
-    # how the fields should be ordered in the data entry form:
     ordering = models.IntegerField()
 
     def can_view(self, user=None, access_key=None):

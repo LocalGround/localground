@@ -50,9 +50,16 @@ class MapSerializerPost(MapSerializerList):
         required=False, write_only=True,
         style={'base_template': 'json.html', 'rows': 5})
 
+    layers = serializers.SerializerMethodField()
+
+    def get_layers(self, obj):
+        layers = models.Layer.objects.filter(styled_map=obj)
+        return LayerSerializer(layers, many=True, context={'request': {}}).data
+
     class Meta:
         model = models.StyledMap
-        fields = MapSerializerList.Meta.fields + ('create_new_dataset', 'data_sources')
+        fields = MapSerializerList.Meta.fields + (
+            'create_new_dataset', 'data_sources', 'layers')
         depth = 0
 
     def get_datasets(self, data_sources, project_id):
@@ -106,7 +113,8 @@ class MapSerializerPost(MapSerializerList):
                     owner=validated_data.get('owner'),
                     styled_map=self.instance,
                     project=self.instance.project,
-                    dataset=dataset
+                    dataset=dataset,
+                    display_field=dataset.fields[0]
                 )
                 layers.append(layer)
         else:
@@ -124,18 +132,18 @@ class MapSerializerDetail(MapSerializerList):
     layers = serializers.SerializerMethodField()
     layers_url = serializers.SerializerMethodField()
 
-    class Meta:
-        model = models.StyledMap
-        read_only_fields = ('project_id',)
-        fields = MapSerializerList.Meta.fields + ('slug', 'layers', 'layers_url')
-        depth = 0
-
     def get_layers(self, obj):
         layers = models.Layer.objects.filter(styled_map=obj)
         return LayerSerializer(layers, many=True, context={'request': {}}).data
 
     def get_layers_url(self, obj):
         return '%s/api/0/maps/%s/layers/' % (settings.SERVER_URL, obj.id)
+
+    class Meta:
+        model = models.StyledMap
+        read_only_fields = ('project_id',)
+        fields = MapSerializerList.Meta.fields + ('slug', 'layers', 'layers_url')
+        depth = 0
 
 
 class MapSerializerDetailSlug(MapSerializerDetail):

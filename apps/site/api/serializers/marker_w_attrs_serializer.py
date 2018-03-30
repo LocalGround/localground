@@ -255,19 +255,14 @@ def create_dynamic_serializer(form, **kwargs):
     generate a dynamic serializer from dynamic model
     """
     field_names = []
-    display_field = None
 
     for field in form.fields:
-        if field.is_display_field:
-            display_field = field
-            field_names.append('display_name')
         field_names.append(field.col_name)
 
     class Meta:
         model = models.Record
         fields = MarkerWAttrsSerializerMixin.Meta.fields + \
             tuple(field_names)
-        read_only_fields = ('display_name',)
 
     attrs = {
         '__module__':
@@ -361,16 +356,6 @@ def create_dynamic_serializer(form, **kwargs):
                     allow_null=True,
                     required=False)
             })
-
-    # set custom display name field getter, according on the display_field:
-    if display_field is not None:
-        def get_display_name(self, obj):
-            return obj.attributes.get(display_field.col_name)
-
-        attrs.update({
-            'display_name': serializers.SerializerMethodField(),
-            'get_display_name': get_display_name
-        })
 
     return type(
         'DynamicMarkerSerializer', (MarkerWAttrsSerializerMixin, ), attrs
