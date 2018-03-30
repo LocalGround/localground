@@ -108,10 +108,17 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
         # check that the display field has been set:
         self.assertEqual(layer.display_field, dataset.fields[0])
 
-    '''
-    def test_create_map_post_new_datasource(self, **kwargs):
+    def test_create_map_attach_new_datasets(self, **kwargs):
         params = self.__get_generic_post_params()
-        params['create_new_dataset'] = 1
+        ds1 = self.create_form()
+        ds2 = self.create_form()
+        ds3 = self.create_form()
+        params['data_sources'] = json.dumps([
+            'form_{0}'.format(ds1.id),
+            'form_{0}'.format(ds2.id),
+            'form_{0}'.format(ds3.id)
+        ])
+        dataset_count_initial = len(models.Form.objects.all())
         response = self.client_user.post(
             self.url,
             data=json.dumps(params),
@@ -119,15 +126,12 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
             content_type="application/json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        new_obj = self.model.objects.all().order_by('-id',)[0]
-        self.assertEqual(new_obj.name, params.name)
-        self.assertEqual(new_obj.description, params.description)
-        # self.assertEqual(new_obj.tags, convert_tags_to_list(tags))
-        self.assertEqual(new_obj.zoom, params.zoom)
-        self.assertEqual(new_obj.slug, params.slug)
-        self.assertEqual(new_obj.project_id, self.project.id)
-        self.assertEqual(new_obj.basemap.id, params.basemap)
-    '''
+        styled_map = self.model.objects.all().order_by('-id',)[0]
+        self.assertEqual(len(styled_map.layers), 3)
+        self.assertEqual(styled_map.layers[0].dataset, ds1)
+        self.assertEqual(styled_map.layers[1].dataset, ds2)
+        self.assertEqual(styled_map.layers[2].dataset, ds3)
+
 
 class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
 

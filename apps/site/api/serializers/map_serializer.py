@@ -71,7 +71,6 @@ class MapSerializerPost(MapSerializerList):
                 form_id = int(data_source.split('_')[1])
                 form = models.Form.objects.get(id=form_id)
                 datasets.append(form)
-                print(form)
             except Exception:
                 raise serializers.ValidationError(
                     '{0} is not a valid dataset'.format(data_source))
@@ -112,6 +111,7 @@ class MapSerializerPost(MapSerializerList):
                 layer = models.Layer.create(
                     last_updated_by=validated_data.get('last_updated_by'),
                     owner=validated_data.get('owner'),
+                    title=dataset.name + ' Layer',
                     styled_map=self.instance,
                     project=self.instance.project,
                     dataset=dataset,

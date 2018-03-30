@@ -16,7 +16,7 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
     def create(cls, **kwargs):
         dataset = Form.objects.create(
             owner=kwargs.get('owner'),
-            name='Untitled Dataset',
+            name=kwargs.get('name', 'Untitled Dataset'),
             last_updated_by=kwargs.get('last_updated_by'),
             project=kwargs.get('project')
         )

@@ -31,6 +31,7 @@ class Layer(BaseAudit):
             )
             kwargs['dataset'] = dataset
             kwargs['display_field'] = dataset.fields[0]
+            kwargs['title'] = 'Untitled Layer',
 
         kwargs.pop('project')
         return Layer.objects.create(**kwargs)
@@ -44,4 +45,3 @@ class Layer(BaseAudit):
 
     class Meta:
         app_label = 'site'
-        unique_together = ('title', 'styled_map')

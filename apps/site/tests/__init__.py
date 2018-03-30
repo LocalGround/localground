@@ -474,14 +474,14 @@ class ModelMixin(object):
                     project=None):
 
         from localground.apps.site import models
-        f = models.Form(
+        f = models.Form.create(
             owner=user or self.user,
             name=name,
             description=description,
             last_updated_by=user or self.user,
             project=project or self.project
         )
-        f.save()
+        # f.save()
         return f
 
     def create_form_with_fields(

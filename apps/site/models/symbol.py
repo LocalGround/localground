@@ -10,7 +10,7 @@ class Symbol(object):
 
     def __init__(self, **kwargs):
         self.rule = kwargs.get('rule', '*')
-        self.title = kwargs.get('title', 'Untitled Layer')
+        self.title = kwargs.get('title', 'Untitled Symbol')
         self.shape = kwargs.get('shape', Symbol.CIRCLE)
         self.fillOpacity = kwargs.get('fillOpacity', 1)
         self.strokeWeight = kwargs.get('strokeWeight', 1)
