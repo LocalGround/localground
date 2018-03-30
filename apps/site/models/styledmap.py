@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from django.contrib.gis.db import models
-from localground.apps.site.models import NamedMixin, ProjectMixin, BaseAudit
+from localground.apps.site.models import \
+    NamedMixin, ProjectMixin, BaseAudit, Layer
 from jsonfield import JSONField
 from localground.apps.site.managers import StyledMapManager
 import json
@@ -52,12 +53,19 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         max_length=100,
         db_index=True,
         help_text='Unique url identifier')
-    basemap = models.ForeignKey(
-        'TileSet',
-        default=1)  # default to grayscale
+    basemap = models.ForeignKey('TileSet', default=1)  # default to grayscale
     filter_fields = BaseAudit.filter_fields + \
         ('slug', 'name', 'description', 'tags', 'owner', 'project')
     objects = StyledMapManager()
+
+    @property
+    def layers(self):
+        if not hasattr(self, '_layers') or self._layers is None:
+            self._layers = list(
+                Layer.objects.select_related('dataset', 'display_field')
+                .filter(styled_map=self).order_by('ordering', )
+            )
+        return self._layers
 
     def can_view(self, user, access_key=None):
         # all maps are viewable

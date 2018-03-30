@@ -107,6 +107,7 @@ class MapSerializerPost(MapSerializerList):
         if data_sources:
             project_id = validated_data.get('project_id')
             datasets = self.get_datasets(data_sources, project_id)
+            i = 1
             for dataset in datasets:
                 layer = models.Layer.create(
                     last_updated_by=validated_data.get('last_updated_by'),
@@ -114,15 +115,18 @@ class MapSerializerPost(MapSerializerList):
                     styled_map=self.instance,
                     project=self.instance.project,
                     dataset=dataset,
-                    display_field=dataset.fields[0]
+                    display_field=dataset.fields[0],
+                    ordering=i
                 )
+                i += 1
                 layers.append(layer)
         else:
             layer = models.Layer.create(
                 last_updated_by=validated_data.get('last_updated_by'),
                 owner=validated_data.get('owner'),
                 styled_map=self.instance,
-                project=self.instance.project
+                project=self.instance.project,
+                ordering=1
             )
             layers.append(layer)
         return self.instance
