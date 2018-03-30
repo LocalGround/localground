@@ -63,6 +63,10 @@ define(["marionette",
                     height: this.symbolModel.get('height')
                 };
             },
+
+            onRender: function() {
+                console.log('SymbolItem render', this);
+            },
             handleRoute: function(info) {
                 console.log('handle route');
                 if (this.parent.layerId === info.layerId) {
@@ -92,12 +96,13 @@ define(["marionette",
                 this.render();
             },
 
+            // this function only does something when adding or deleting entire markers:
             updateGeometry: function() {
-                if (this.model.get('geometry') === null) {
+                if (this.model.get('geometry') === null) { // delete marker
                     this.overlay.destroy();
                     this.overlay = null;
                     console.log(this.overlay);
-                } else {
+                } else if (this.overlay === null) { // create new marker
                     this.overlay = new MarkerOverlay({
                         model: this.model,
                         symbol: this.symbolModel,

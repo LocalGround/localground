@@ -95,7 +95,7 @@ define(["jquery"], function ($) {
             );
         };
         this.geometrySave = function() {
-
+            console.log('geometrySave()');
             // A slight delay is needed here to make sure any new coordinate values
             // finish updating the _googleOverlay object before we attempt to save
             setTimeout(() => {
