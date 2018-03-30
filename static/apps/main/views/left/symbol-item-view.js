@@ -13,7 +13,7 @@ define(["marionette",
                 _.extend(this, opts);
                 this.symbolModel = this.parent.model;
                 this.overlay = null;
-                const route = this.parent.mapId + '/layers/' + this.parent.layerId + '/' + this.parent.layer.get('data_source') + '/' + this.model.id;
+                this.route = this.parent.mapId + '/layers/' + this.parent.layerId + '/' + this.parent.layer.get('data_source') + '/' + this.model.id;
                 if (this.model.get('geometry') != null) {
                     this.overlay = new MarkerOverlay({
                         model: this.model,
@@ -21,7 +21,7 @@ define(["marionette",
                         app: this.app,
                         isShowing: this.symbolModel.get('isShowing'),
                         displayOverlay: this.symbolModel.get('isShowing'),
-                        route: route
+                        route: this.route
                     });
                     this.overlay.render();
                 }
@@ -93,6 +93,16 @@ define(["marionette",
             updateGeometry: function() {
                 if (this.model.get('geometry') === null) {
                     this.overlay.destroy();
+                } else {
+                    this.overlay = new MarkerOverlay({
+                        model: this.model,
+                        symbol: this.symbolModel,
+                        app: this.app,
+                        isShowing: this.symbolModel.get('isShowing'),
+                        displayOverlay: this.symbolModel.get('isShowing'),
+                        route: this.route
+                    });
+                    this.overlay.render();
                 }
             },
 

@@ -120,8 +120,6 @@ define([
                 $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
-            console.log(this);
-            console.log(this.app.mode);
 
             return {
                 mode: this.app.mode,
