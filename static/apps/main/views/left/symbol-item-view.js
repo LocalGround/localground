@@ -34,6 +34,7 @@ define(["marionette",
             // },
 
             modelEvents: {
+                'change:geometry': 'updateGeometry',
                 'change': 'render'
             },
 
@@ -88,6 +89,13 @@ define(["marionette",
                 }
                 this.render();
             },
+
+            updateGeometry: function() {
+                if (this.model.get('geometry') === null) {
+                    this.overlay.destroy();
+                }
+            },
+
             onDestroy: function () {
                 console.log('destroying symbol-item-view');
                 if (this.overlay != null) {

@@ -28,7 +28,7 @@ define(["marionette",
                 'hide-marker': 'hide',
                 'zoom-to-overlay': 'zoomTo',
                 'reset-overlay': 'restoreModelGeometry',
-                'change:geometry': 'render'
+                // 'change:geometry': 'render'
             };
             if (this.model.get('overlay_type') !== 'map-image') {
                 events['change:geometry'] = 'reRender';
@@ -106,6 +106,9 @@ define(["marionette",
         },
 
         render: function () {
+            if (this.model.get('geometry') === null) {
+                return;
+            }
             this.redraw();
             if (this.displayOverlay) {
                 this.show();
