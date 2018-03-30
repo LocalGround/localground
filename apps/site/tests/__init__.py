@@ -526,14 +526,13 @@ class ModelMixin(object):
         return f
 
     def create_field(self, form, name='Field 1', extras=None,
-                     data_type=None, ordering=1, is_display_field=False):
+                     data_type=None, ordering=1):
         from localground.apps.site import models
         data_type = data_type or DataType.objects.get(id=1)
         f = models.Field(
             col_alias=name,
             data_type=data_type,
             ordering=ordering,
-            is_display_field=is_display_field,
             form=form,
             owner=self.user,
             last_updated_by=self.user,
@@ -688,7 +687,8 @@ class ModelMixin(object):
         audio.save()
         return audio
 
-    def create_styled_map(self):
+    def create_styled_map(
+            self, dataset=None, display_field=None, layer_title=None):
         from localground.apps.site.models import StyledMap
         from django.contrib.gis.geos import GEOSGeometry
         map = models.StyledMap(
@@ -700,6 +700,22 @@ class ModelMixin(object):
             name='Oakland Map'
         )
         map.save()
+
+        # Create dummy layer:
+        if dataset and not display_field:
+            display_field = dataset.fields[0]
+
+        models.Layer.create(
+            last_updated_by=map.last_updated_by,
+            owner=map.owner,
+            styled_map=map,
+            dataset=dataset,
+            display_field=display_field,
+            title=layer_title or 'Untitled Layer',
+            group_by='uniform',
+            project=self.project,
+            ordering=1
+        )
         return map
 
     def create_relation(

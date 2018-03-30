@@ -66,10 +66,3 @@ class FormTest(NamedMixinTest, ProjectMixinTest, BaseAuditAbstractModelClassTest
                 'col_name': 'time_stamp',
                 'label': u'time stamp'
             })
-
-    def test_get_fields(self, **kwargs):
-        formWithFields = self.create_form_with_fields(num_fields=9)
-        retrievedFields = formWithFields.get_fields(print_only = True)
-        self.assertEqual(9, len(retrievedFields))
-        for field in retrievedFields:
-            self.assertTrue(type(field) is Field)

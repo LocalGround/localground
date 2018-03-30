@@ -110,8 +110,8 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                         name="Class Form",
                         num_fields=0
                     )
-        self.field = self.create_field(self.form, name="Field 1")
-        self.field2 = self.create_field(self.form, name="Field 2")
+        self.field = self.create_field(self.form, name="Field 1", ordering=3)
+        self.field2 = self.create_field(self.form, name="Field 2", ordering=4)
         self.url = '/api/0/datasets/%s/fields/%s/' % (
             self.field.form.id, self.field.id
         )
@@ -145,27 +145,6 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
         updated_field = models.Field.objects.get(id=self.field.id)
         self.assertEqual(updated_field.col_alias, 'Address')
         self.assertEqual(updated_field.ordering, 2)
-
-    '''
-    def test_out_of_bounds_ordering_throws_error_put(self, **kwargs):
-        response = self.client_user.put(self.url,
-                        data=urllib.urlencode({
-                            'col_alias': 'Field 3',
-                            'ordering': 20
-                        }),
-                        HTTP_X_CSRFTOKEN=self.csrf_token,
-                        content_type="application/x-www-form-urlencoded"
-                    )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_out_of_bounds_ordering_throws_error_patch(self, **kwargs):
-        response = self.client_user.patch(self.url,
-                        data=urllib.urlencode({ 'ordering': 20 }),
-                        HTTP_X_CSRFTOKEN=self.csrf_token,
-                        content_type="application/x-www-form-urlencoded"
-                    )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    '''
 
     def test_update_field_using_patch(self, **kwargs):
         response = self.client_user.patch(
@@ -206,6 +185,36 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_cannot_delete_field_if_only_field_in_form(self, **kwargs):
+        # delete all of the fields from the form except for the current field:
+        models.Field.objects.filter(
+            form=self.form).exclude(id=self.field.id).delete()
+
+        # try to delete the current field (you shouldn't be able to):
+        response = self.client_user.delete(
+            self.url,
+            HTTP_X_CSRFTOKEN=self.csrf_token
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data.get('detail'),
+            'Error: This dataset must contain at least 1 field')
+
+    def test_cannot_delete_field_if_used_in_layer_display_field(self):
+        map = self.create_styled_map(
+            dataset=self.form, display_field=self.field)
+
+        # try to delete the current field (you shouldn't be able to):
+        response = self.client_user.delete(
+            self.url,
+            HTTP_X_CSRFTOKEN=self.csrf_token
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error_message = 'The following map layers display this field: Oakland '
+        error_message += 'Map: Untitled Layer. Please modify the dependent '
+        error_message += 'layers\' display fields before deleting this field'
+        self.assertEqual(response.data.get('detail'), error_message)
+
     def test_reserved_col_alias_throws_error_patch(self, **kwargs):
         for col_alias in [
             'name', 'caption', 'description', 'display_name', 'tags'
@@ -219,8 +228,9 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_delete_field_reorders_other_fields(self, **kwargs):
-        f3 = self.create_field(self.form, name="Field 3", ordering=3)
-        f4 = self.create_field(self.form, name="Field 4", ordering=4)
+        f3 = self.create_field(self.form, name="Field 3", ordering=5)
+        f4 = self.create_field(self.form, name="Field 4", ordering=6)
+        # delete field 1
         response = self.client_user.delete(
             self.url,
             HTTP_X_CSRFTOKEN=self.csrf_token
@@ -228,7 +238,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         ordering = 1
         for field in self.form.fields:
-            self.assertTrue(field.id in [self.field2.id, f3.id, f4.id])
+            # print field.id, field.col_alias, field.ordering, ordering
             self.assertEqual(field.ordering, ordering)
             ordering += 1
 

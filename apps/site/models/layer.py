@@ -12,6 +12,8 @@ class Layer(BaseAudit):
     display_field = models.ForeignKey('Field', related_name='%(class)s+')
     title = models.CharField(max_length=255, null=False, blank=False)
     ordering = models.IntegerField()
+    group_by = models.CharField(
+        max_length=255, null=False, blank=False, default='uniform')
     metadata = JSONField(blank=True, null=True)
     symbols = JSONField(blank=True, null=True, default=[
         Symbol.SIMPLE.to_dict()
@@ -31,7 +33,7 @@ class Layer(BaseAudit):
             )
             kwargs['dataset'] = dataset
             kwargs['display_field'] = dataset.fields[0]
-            kwargs['title'] = 'Untitled Layer',
+            kwargs['title'] = 'Untitled Layer'
 
         kwargs.pop('project')
         return Layer.objects.create(**kwargs)
@@ -45,3 +47,6 @@ class Layer(BaseAudit):
 
     class Meta:
         app_label = 'site'
+
+    def __unicode__(self):
+        return '{0}. {1}'.format(self.id, self.title)

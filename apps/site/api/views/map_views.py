@@ -7,6 +7,8 @@ from localground.apps.site.api.permissions import CheckProjectPermissions
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
+from localground.apps.site.api.permissions import \
+    CheckProjectPermissions, CheckUserCanPostToProject
 
 
 class MapList(QueryableListCreateAPIView):
@@ -20,7 +22,8 @@ class MapList(QueryableListCreateAPIView):
         else:
             return serializers.MapSerializerPost
 
-    filter_backends = (filters.SQLFilterBackend,)
+    filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
+    permission_classes = (CheckProjectPermissions, CheckUserCanPostToProject)
     model = models.StyledMap
     paginate_by = 100
 

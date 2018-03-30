@@ -37,36 +37,38 @@ class FieldMixin(object):
             new_order += 1
 
     def validate_is_valid_col_alias(self, col_alias, form, pk=None):
-        #if doesn't exist, no need to validate:
+        # if doesn't exist, no need to validate:
         if not col_alias:
             return
 
         col_alias = col_alias.lower()
         # ensure that col_alias isn't a reserved name:
-        if col_alias in ['id', 'name', 'caption', 'description', 'display_name', 'tags',
-                         'owner', 'last_updated_by', 'date_created', 'timestamp']:
-            raise exceptions.ParseError('"%s" is a reserved column name' % col_alias)
+        if col_alias in [
+            'id', 'name', 'caption', 'description', 'display_name', 'tags',
+                'owner', 'last_updated_by', 'date_created', 'timestamp']:
+            raise exceptions.ParseError(
+                '"%s" is a reserved column name' % col_alias)
         # ensure that it doesn't already exist:
         for f in form.fields:
             if f.col_alias.lower() == col_alias and f.id != pk:
                 raise exceptions.ParseError(
                     'There is already a form field called "%s"' % col_alias)
 
-
     def validate_ordering_value(self, ordering, form, is_create=False):
-        #Am pretty sure this is more trouble than it's worth
+        # Am pretty sure this is more trouble than it's worth
         # no validation needed if ordering is undefined:
         if ordering is None:
             return
 
-        # ensure that ordering value makes sense (between 1 and the total # of fields):
+        # ensure that ordering value makes sense
+        # (between 1 and the total # of fields):
         max_val = len(form.fields)
         if is_create:
             max_val += 1
         elif ordering < 1 or ordering > max_val:
             # only raise an exception on update:
             raise exceptions.ParseError(
-                    'Your ordering must be an integer between 1 and %s' % max_val)
+                'Your ordering must be an integer between 1 and %s' % max_val)
 
 
 class FieldList(FieldMixin, QueryableListCreateAPIView):
@@ -99,12 +101,44 @@ class FieldInstance(FieldMixin, generics.RetrieveUpdateDestroyAPIView):
         do_reshuffle = self.request.data.get('do_reshuffle')
         form = self.get_form()
         data = serializer.validated_data
-        self.validate_is_valid_col_alias(data.get('col_alias'), form, pk=int(self.kwargs.get('pk')))
+        self.validate_is_valid_col_alias(
+            data.get('col_alias'), form, pk=int(self.kwargs.get('pk')))
         instance = serializer.save()
         if do_reshuffle:
             self.update_ordering(instance, form)
 
+    def __throw_error_if_only_one_field(self, instance):
+        if len(instance.form.fields) == 1:
+            raise exceptions.ParseError(
+                'Error: This dataset must contain at least 1 field')
+
+    def __throw_error_if_layer_dependencies(self, instance):
+        dependent_layers = models.Layer.objects.values(
+            'styled_map__name', 'title').filter(display_field=instance)
+
+        if len(dependent_layers) > 0:
+            clashes = []
+            for layer in dependent_layers:
+                clashes.append('{0}: {1}'.format(
+                    layer.get('styled_map__name'), layer.get('title')
+                ))
+            msg = 'The following map layers display this field: {0}'.format(
+                ', '.join(clashes)
+            )
+            msg += '. Please modify the dependent layers\' display fields '
+            msg += 'before deleting this field'
+            raise exceptions.ParseError(msg)
+
     def perform_destroy(self, instance):
         form = instance.form
+
+        # 2 validation checks:
+        #   a) make sure that the form keeps at least one field:
+        #   b) make sure that if a layer is relying on the field for its
+        #      display name, that it shows an error:
+        self.__throw_error_if_only_one_field(instance)
+        self.__throw_error_if_layer_dependencies(instance)
+
+        # if no errors, destroy field:
         instance.delete()
         self.reorder_fields_if_needed(form)

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from localground.apps.site import models
-from localground.apps.site.api.serializers.base_serializer import AuditSerializerMixin
+from localground.apps.site.api.serializers.base_serializer import \
+    AuditSerializerMixin
 from django.conf import settings
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api import fields
@@ -12,25 +13,29 @@ class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
     dynamic parameters because of DRF limitations. So, we'll build
     the URL for ourselves:
     '''
-    url = serializers.SerializerMethodField()#'get_url')
+    url = serializers.SerializerMethodField()
     col_name = serializers.SerializerMethodField()
     form = serializers.SerializerMethodField()
+    help_text = 'Use to store ratings and lookup tables. Example: ['
+    help_text += '{"key1": "value1", "key2": "value2" }, '
+    help_text += '{"key1": "value3", "key2": "value4" }]'
     extras = fields.JSONField(
         style={'base_template': 'json.html', 'rows': 5},
         required=False,
         allow_null=True,
-        help_text='Use to store ratings and lookup tables. Example: [{"key1": "value1", "key2": "value2" }, {"key1": "value3", "key2": "value4" }]'
-        )
+        help_text=help_text
+    )
     data_type = serializers.SlugRelatedField(
-                                queryset=models.DataType.objects.all(),
-                                slug_field='name',
-                                required=False
-                            )
+        queryset=models.DataType.objects.all(),
+        slug_field='name',
+        required=False
+    )
 
     class Meta:
         model = models.Field
-        fields = ('id', 'form', 'col_alias', 'col_name', 'extras',
-                    'ordering', 'data_type', 'url')
+        fields = (
+            'id', 'form', 'col_alias', 'col_name', 'extras', 'ordering',
+            'data_type', 'url')
 
     def get_url(self, obj):
         return '%s/api/0/datasets/%s/fields/%s' % \
@@ -48,9 +53,11 @@ class FieldSerializer(FieldSerializerBase):
         model = models.Field
         fields = FieldSerializerBase.Meta.fields
 
+
 class FieldSerializerUpdate(FieldSerializerBase):
     data_type = serializers.SlugRelatedField(slug_field='name', read_only=True)
+
     class Meta:
         model = models.Field
-        read_only_fields = ( 'data_type')
-        fields =  FieldSerializerBase.Meta.fields
+        read_only_fields = ('data_type')
+        fields = FieldSerializerBase.Meta.fields

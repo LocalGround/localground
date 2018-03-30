@@ -4,7 +4,6 @@ from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 from django.conf import settings
-from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api.serializers.layer_serializer import \
     LayerSerializer
 
@@ -38,7 +37,7 @@ class MapSerializerList(BaseNamedSerializer):
         depth = 0
 
 
-class MapSerializerPost(MapSerializerList):
+class MapSerializerPost(MapSerializerList, BaseNamedSerializer):
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
@@ -56,16 +55,25 @@ class MapSerializerPost(MapSerializerList):
         layers = models.Layer.objects.filter(styled_map=obj)
         return LayerSerializer(layers, many=True, context={'request': {}}).data
 
+    def get_fields(self, *args, **kwargs):
+        fields = super(MapSerializerPost, self).get_fields(*args, **kwargs)
+        # restrict project list at runtime:
+        fields['project_id'].queryset = self.get_projects()
+        return fields
+
     class Meta:
         model = models.StyledMap
-        fields = MapSerializerList.Meta.fields + (
+        fields = BaseNamedSerializer.Meta.fields + (
+            'sharing_url', 'center',  'basemap', 'zoom', 'project_id',
             'create_new_dataset', 'data_sources', 'layers')
         depth = 0
 
     def get_datasets(self, data_sources, project_id):
         datasets = []
         if len(data_sources) == 0:
-            raise serializers.ValidationError('At least one data source should be specified in the data_sources array')
+            error_message = 'At least one data source should be specified '
+            errow_message += 'in the data_sources array'
+            raise serializers.ValidationError(error_message)
         for data_source in data_sources:
             try:
                 form_id = int(data_source.split('_')[1])
@@ -115,6 +123,7 @@ class MapSerializerPost(MapSerializerList):
                     styled_map=self.instance,
                     project=self.instance.project,
                     dataset=dataset,
+                    group_by='uniform',
                     display_field=dataset.fields[0],
                     ordering=i
                 )
@@ -125,6 +134,7 @@ class MapSerializerPost(MapSerializerList):
                 last_updated_by=validated_data.get('last_updated_by'),
                 owner=validated_data.get('owner'),
                 styled_map=self.instance,
+                group_by='uniform',
                 project=self.instance.project,
                 ordering=1
             )
@@ -146,7 +156,8 @@ class MapSerializerDetail(MapSerializerList):
     class Meta:
         model = models.StyledMap
         read_only_fields = ('project_id',)
-        fields = MapSerializerList.Meta.fields + ('slug', 'layers', 'layers_url')
+        fields = MapSerializerList.Meta.fields + (
+            'slug', 'layers', 'layers_url')
         depth = 0
 
 

@@ -12,6 +12,17 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
     objects = FormManager()
     filter_fields = BaseAudit.filter_fields + ('slug',)
 
+    class Meta:
+        app_label = 'site'
+        verbose_name = 'form'
+        verbose_name_plural = 'forms'
+
+    def has_access(self, user, access_key=None):
+        self.can_view(user, access_key=access_key)
+
+    def __unicode__(self):
+        return self.name
+
     @classmethod
     def create(cls, **kwargs):
         dataset = Form.objects.create(
@@ -38,7 +49,6 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
             i += 1
         return dataset
 
-
     @classmethod
     def get_filter_fields(cls):
         from localground.apps.lib.helpers import QueryField, FieldTypes
@@ -50,37 +60,15 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
         )
         return query_fields
 
-    class Meta:
-        app_label = 'site'
-        verbose_name = 'form'
-        verbose_name_plural = 'forms'
-
-    def has_access(self, user, access_key=None):
-        self.can_view(user, access_key=access_key)
-
-    def __unicode__(self):
-        # return '%s - %s (%s)' % (self.id, self.name, self.table_name)
-        return self.name
-
     @property
     def fields(self):
-        if not hasattr(self, '_fields') or self._fields is None:
-            self._fields = list(
-                self.field_set.select_related('data_type').all()
-                .order_by('ordering', )
-            )
-        return self._fields
+        return list(
+            self.field_set.select_related('data_type').all()
+            .order_by('ordering', )
+        )
 
     def get_records(self):
         return Record.objects.filter(form=self)
-
-    def get_fields(self, ordering='ordering', print_only=False):
-        if print_only:
-            fields = []
-            for f in self.fields:
-                fields.append(f)
-            return fields
-        return self.fields
 
     def save(self, user=None, *args, **kwargs):
         from localground.apps.lib.helpers import generic

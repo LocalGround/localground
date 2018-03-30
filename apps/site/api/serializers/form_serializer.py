@@ -16,6 +16,13 @@ class FormSerializerList(BaseNamedSerializer):
         required=True
     )
 
+    def create(self, validated_data):
+        # Call the Form's custom create method, which creates
+        # 2 fields "for free": Name and Description:
+        validated_data.update(self.get_presave_create_dictionary())
+        self.instance = models.Form.create(**validated_data)
+        return self.instance
+
     def get_fields(self, *args, **kwargs):
         fields = super(BaseNamedSerializer, self).get_fields(*args, **kwargs)
         # restrict project list at runtime:
