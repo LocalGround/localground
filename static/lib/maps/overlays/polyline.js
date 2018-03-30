@@ -109,7 +109,6 @@ define(["jquery"], function ($) {
                 if (!_.isEqual(this.model.get('geometry'), geoJSON)) {
                     this.model.set('geometry', geoJSON);
                     this.model.save();
-                    // console.log('sent to server');
                 }
             }, 100);
         };
@@ -120,8 +119,11 @@ define(["jquery"], function ($) {
                                                 // line must have at least 2 vertices
                 if (ev.vertex != null && this._googleOverlay.getPath().getLength() > this.minimumVertices) {
                     this._googleOverlay.getPath().removeAt(ev.vertex);
+                    this.geometrySave();
                 }
             }, 100);
+            
+            //this.registerMouseUpEvent();
         };
 
         /**

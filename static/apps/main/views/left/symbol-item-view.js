@@ -64,8 +64,10 @@ define(["marionette",
                 };
             },
             handleRoute: function(info) {
+                console.log('handle route');
                 if (this.parent.layerId === info.layerId) {
                     if (this.model.id === info.markerId) {
+                        console.log('make active', this);
                         this.makeActive();
 
                     }
@@ -93,6 +95,8 @@ define(["marionette",
             updateGeometry: function() {
                 if (this.model.get('geometry') === null) {
                     this.overlay.destroy();
+                    this.overlay = null;
+                    console.log(this.overlay);
                 } else {
                     this.overlay = new MarkerOverlay({
                         model: this.model,
