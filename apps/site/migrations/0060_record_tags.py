@@ -12,9 +12,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='record',
-            name='tags',
-            field=django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None),
+        migrations.AlterField(
+            model_name='layer',
+            name='group_by',
+            field=models.CharField(max_length=255),
         ),
     ]
