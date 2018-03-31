@@ -264,11 +264,9 @@ class ModelMixin(object):
 
         m = models.Record(
             project=project,
-            name=name,
             owner=user,
             extras=extras,
-            last_updated_by=user,
-            tags=tags
+            last_updated_by=user
         )
         if geom.geom_type == "Point":
             m.point = geom
