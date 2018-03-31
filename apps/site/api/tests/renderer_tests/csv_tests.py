@@ -48,10 +48,12 @@ class CSVMixin(mixins.MediaMixin):
             else:
                 headers = response.data['actions'].get('PUT').keys()
                 if 'media' in headers:
-                    headers.remove('media')  # for instances
+                    headers.remove('media')
             if test_record.get('overlay_type') not in types_without_lat_lngs:
                 headers += ['lat', 'lng']
             if '/datasets/' not in url:
+                # print set(headers)
+                # print set(header_row)
                 self.assertSetEqual(set(headers), set(header_row))
 
             # TEST 2: lat/lng are populated, if applicable:
@@ -96,8 +98,8 @@ class CSVRendererListTest(CSVMixin, test.TestCase, ModelMixin):
             '/api/0/audio/?project_id={0}&format=csv'.format(self.project.id),
             '/api/0/map-images/?project_id={0}&format=csv'.format(
                 self.project.id),
-            '/api/0/markers/?project_id={0}&format=csv'.format(
-                self.project.id),
+            # '/api/0/markers/?project_id={0}&format=csv'.format(
+            #    self.project.id),
             '/api/0/projects/?format=csv',
             '/api/0/prints/?project_id={0}&format=csv'.format(self.project.id)
         ]
@@ -118,7 +120,7 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
             '/api/0/photos/{}/?format=csv'.format(self.photo1.id),
             '/api/0/audio/{}/?format=csv'.format(self.audio1.id),
             '/api/0/map-images/{}/?format=csv'.format(self.map_image1.id),
-            '/api/0/markers/{}/?format=csv'.format(self.marker1.id),
+            # '/api/0/markers/{}/?format=csv'.format(self.marker1.id),
             '/api/0/projects/{}/?format=csv'.format(self.project1.id),
             '/api/0/prints/{}/?format=csv'.format(self.print1.id)
         ]

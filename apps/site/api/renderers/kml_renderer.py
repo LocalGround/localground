@@ -42,12 +42,13 @@ class KMLRenderer(renderers.BaseRenderer):
             if (not data.get('geometry') or
                     not data.get('geometry').get('coordinates')):
                 continue
-            name = KML.as_node('name', [data['name']])
+            name = KML.as_node('name', [data.get('name')])
             cdata = None
             if 'file_path_orig' in data:
                 cdata = KML.wrap_cdata(
                     data['overlay_type'], data['file_path_orig'])
-            description = KML.as_node('description', [cdata, data['caption']])
+            description = KML.as_node(
+                'description', [cdata, data.get('caption')])
             coord = KML.get_coord(data['geometry'])
             point = KML.as_node('Point', [coord])
             placemark = KML.as_node('Placemark', [name, description, point])

@@ -527,8 +527,7 @@ class ModelMixin(object):
 
     def insert_form_data_record(self, form, project=None, photo=None,
                                 audio=None, name=None):
-        return self.create_marker_w_attrs(
-            project=project, form=form, name=name)
+        return self.create_record(project=project, form=form)
 
     def create_imageopt(self, mapimage):
         from localground.apps.site import models

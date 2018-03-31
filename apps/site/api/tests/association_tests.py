@@ -19,7 +19,7 @@ class ApiRelatedMediaListTest(
         # requery:
         self.form = models.Form.objects.get(id=self.form.id)
 
-        self.markerwattrs = self.create_marker_w_attrs(self.user, self.project, form=self.form)
+        self.record = self.create_record(self.user, self.project, form=self.form)
 
         # self.record = self.insert_form_data_record(
         #                 form=self.form, project=self.project
@@ -28,10 +28,10 @@ class ApiRelatedMediaListTest(
             '/api/0/markers/%s/%s/' % (self.marker.id, 'photos'),
             '/api/0/markers/%s/%s/' % (self.marker.id, 'audio'),
             '/api/0/datasets/%s/data/%s/%s/' % (
-                self.form.id, self.markerwattrs.id, 'photos'
+                self.form.id, self.record.id, 'photos'
             ),
             '/api/0/datasets/%s/data/%s/%s/' % (
-                self.form.id, self.markerwattrs.id, 'audio'
+                self.form.id, self.record.id, 'audio'
             )
         ]
         self.metadata = {
@@ -66,8 +66,8 @@ class ApiRelatedMediaListTest(
                 source_model = models.Record
                 source_id = self.marker.id
             else:
-                source_model = type(self.markerwattrs)
-                source_id = self.markerwattrs.id
+                source_model = type(self.record)
+                source_id = self.record.id
 
             source_type = source_model.get_content_type()
             entity_type = models.Base.get_model(
@@ -108,18 +108,18 @@ class ApiRelatedMediaListTest(
 
     def test_cannot_attach_sites_to_sites(self, **kwargs):
         m1 = self.create_marker(self.user, self.project)
-        mwa1 = self.markerwattrs = self.create_marker_w_attrs(self.user, self.project, form=self.form)
+        mwa1 = self.record = self.create_record(self.user, self.project, form=self.form)
         # r1 = self.insert_form_data_record(form=self.form, project=self.project)
         source_type = 'audio'
 
         urls = {
             '/api/0/markers/%s/markers/' % self.marker.id: m1.id,
             '/api/0/datasets/%s/data/%s/markers/' % (
-                self.form.id, self.markerwattrs.id
+                self.form.id, self.record.id
             ): m1.id,
             '/api/0/markers/%s/%s/' % (self.marker.id, source_type): mwa1.id,
             '/api/0/datasets/%s/data/%s/%s/' % (
-                self.form.id, self.markerwattrs.id, source_type
+                self.form.id, self.record.id, source_type
             ): mwa1.id
         }
         for url in urls:
@@ -145,7 +145,7 @@ class ApiRelatedMediaInstanceTest(
         )
         # requery:
         self.form = models.Form.objects.get(id=self.form.id)
-        self.markerwattrs = self.create_marker_w_attrs(self.user, self.project, form=self.form)
+        self.record = self.create_record(self.user, self.project, form=self.form)
         # self.record = self.insert_form_data_record(
         #     form=self.form, project=self.project
         # )
@@ -174,25 +174,25 @@ class ApiRelatedMediaInstanceTest(
                 self.marker.id, 'audio', self.audio1.id
             ),
             '/api/0/datasets/%s/data/%s/%s/%s/' % (
-                self.form.id, self.markerwattrs.id, 'photos', self.photo1.id
+                self.form.id, self.record.id, 'photos', self.photo1.id
             ),
             '/api/0/datasets/%s/data/%s/%s/%s/' % (
-                self.form.id, self.markerwattrs.id, 'audio', self.audio1.id
+                self.form.id, self.record.id, 'audio', self.audio1.id
             )
         ]
 
         # create associations
         self.create_relation(self.marker, self.photo1)
         self.create_relation(self.marker, self.audio1)
-        self.create_relation(self.markerwattrs, self.photo1)
-        self.create_relation(self.markerwattrs, self.audio1)
+        self.create_relation(self.record, self.photo1)
+        self.create_relation(self.record, self.audio1)
 
     def tearDown(self):
         # delete associations:
         self.delete_relation(self.marker, self.photo1)
         self.delete_relation(self.marker, self.audio1)
-        self.delete_relation(self.markerwattrs, self.photo1)
-        self.delete_relation(self.markerwattrs, self.audio1)
+        self.delete_relation(self.record, self.photo1)
+        self.delete_relation(self.record, self.audio1)
 
     def test_page_200_status_basic_user(self, **kwargs):
         ViewMixinAPI.test_page_200_status_basic_user(self)
@@ -209,17 +209,17 @@ class ApiRelatedMediaInstanceTest(
                 'source_model': self.marker, 'attach_model': self.photo1
             },
             '/api/0/datasets/%s/data/%s/photos/%s/' % (
-                self.form.id, self.markerwattrs.id, self.photo1.id
+                self.form.id, self.record.id, self.photo1.id
             ): {
-                'source_model': self.markerwattrs, 'attach_model': self.photo1
+                'source_model': self.record, 'attach_model': self.photo1
             },
             '/api/0/markers/%s/audio/%s/' % (self.marker.id, self.audio1.id): {
                 'source_model': self.marker, 'attach_model': self.audio1
             },
             '/api/0/datasets/%s/data/%s/audio/%s/' % (
-                self.form.id, self.markerwattrs, self.audio1.id
+                self.form.id, self.record, self.audio1.id
             ): {
-                'source_model': self.markerwattrs, 'attach_model': self.audio1
+                'source_model': self.record, 'attach_model': self.audio1
             }
         }
         for url in urls:
@@ -262,9 +262,9 @@ class ApiRelatedMediaInstanceTest(
                 'source_model': self.marker, 'attach_model': self.photo1
             },
             '/api/0/datasets/%s/data/%s/photos/%s/' % (
-                self.form.id, self.markerwattrs.id, self.photo1.id
+                self.form.id, self.record.id, self.photo1.id
             ): {
-                'source_model': self.markerwattrs, 'attach_model': self.photo1
+                'source_model': self.record, 'attach_model': self.photo1
             },
             '/api/0/markers/%s/audio/%s/' % (
                 self.marker.id, self.audio1.id
@@ -272,9 +272,9 @@ class ApiRelatedMediaInstanceTest(
                 'source_model': self.marker, 'attach_model': self.audio1
             },
             '/api/0/datasets/%s/data/%s/audio/%s/' % (
-                self.form.id, self.markerwattrs.id, self.audio1.id
+                self.form.id, self.record.id, self.audio1.id
             ): {
-                'source_model': self.markerwattrs, 'attach_model': self.audio1
+                'source_model': self.record, 'attach_model': self.audio1
             }
         }
         for url in urls:

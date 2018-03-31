@@ -8,7 +8,7 @@ class ApiHomePageTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.urls = ['/api/0/']
+        self.urls = ['/api/0/?format=json']
         self.view = views.api_root
 
     def test_page_has_required_links(self):
@@ -17,7 +17,7 @@ class ApiHomePageTest(test.TestCase, ViewMixinAPI):
             if response.status_code == status.HTTP_200_OK:
                 for item in [
                     'projects', 'photos', 'audio', 'users', 'groups', 'markers',
-                    'tiles', 'prints', 'map-images', 'forms'
+                    'tiles', 'prints', 'map-images', 'datasets'
                 ]:
                     self.assertIn(item, response.content)
     def test_check_metadata(self):

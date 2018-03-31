@@ -8,11 +8,12 @@ from django import test
 from jsonfield import JSONField
 
 
-class LayerModelTests(BaseAuditAbstractModelClassTest,test.TestCase):
+class LayerModelTests(BaseAuditAbstractModelClassTest, test.TestCase):
     def setUp(self):
         from localground.apps.site import models
         BaseAuditAbstractModelClassTest.setUp(self)
-        self.model = self.create_layer()
+        self.map = self.create_styled_map()
+        self.model = self.map.layers[0]
         self.object_type = self.model_name = self.pretty_name = 'layer'
         self.model_name_plural = self.pretty_name_plural = 'layers'
         self.other_user = User.objects.create_user(
@@ -28,8 +29,8 @@ class LayerModelTests(BaseAuditAbstractModelClassTest,test.TestCase):
         for prop in [
             ('styled_map', models.ForeignKey),
             ('title', models.CharField),
-            ('description', models.TextField),
-            ('data_source', models.TextField),
+            ('display_field', models.ForeignKey),
+            ('dataset', models.ForeignKey),
             ('group_by', models.CharField),
             ('metadata', JSONField),
             ('symbols', JSONField),

@@ -38,11 +38,11 @@ class KMLRendererListTest(test.TestCase, ModelMixin):
 
     def test_kml_is_valid_xml(self):
         self.create_marker(
-            self.user, self.project, name="Marker 1", geoJSON=mixins.point)
+            self.user, self.project, geoJSON=mixins.point)
         self.create_marker(
-            self.user, self.project, name="Marker 2", geoJSON=mixins.point2)
+            self.user, self.project, geoJSON=mixins.point2)
         self.create_marker(
-            self.user, self.project, name="Marker 3", geoJSON=mixins.point3)
+            self.user, self.project, geoJSON=mixins.point3)
         response = self.client_user.get(self.url, {
             'project_id': self.project.id,
             'format': 'kml'
@@ -71,7 +71,7 @@ class KMLRendererInstanceTest(test.TestCase, ModelMixin):
     def setUp(self):
         ModelMixin.setUp(self)
         self.marker = self.create_marker(
-            self.user, self.project, name="Marker 1", geoJSON=mixins.point)
+            self.user, self.project, geoJSON=mixins.point)
         self.url = '/api/0/markers/%s/' % self.marker.id
 
     def test_kml_is_valid_xml(self):
