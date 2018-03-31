@@ -1,5 +1,5 @@
 from localground.apps.site.api.serializers.base_serializer \
-    import GeometrySerializer
+    import GeometrySerializer1
 from rest_framework import serializers
 from django.conf import settings
 from rest_framework.reverse import reverse
@@ -39,7 +39,7 @@ class CustomDataTimeField(serializers.DateTimeField):
         return str(datetime_object)
 
 
-class MarkerWAttrsSerializerMixin(GeometrySerializer):
+class MarkerWAttrsSerializerMixin(GeometrySerializer1):
     # update_metadata = serializers.SerializerMethodField()
     # url = serializers.HyperlinkedIdentityField(
     '''
@@ -171,7 +171,7 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer):
 
     class Meta:
         model = models.Record
-        fields = GeometrySerializer.Meta.fields + \
+        fields = GeometrySerializer1.Meta.fields + \
             ('form', 'extras', 'url', 'media') + \
             ('attached_photos_ids',
              'attached_audio_ids',

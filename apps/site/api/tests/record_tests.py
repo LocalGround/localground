@@ -12,7 +12,7 @@ from localground.apps.site.tests import Client, ModelMixin
 
 def get_metadata():
     return {
-        'caption': {'read_only': False, 'required': False, 'type': 'memo'},
+        'description': {'read_only': False, 'required': False, 'type': 'string'},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False,
@@ -86,7 +86,7 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.view = views.MarkerWAttrsList.as_view()
         self.metadata = get_metadata()
         self.form = self.create_form_with_fields(num_fields=7)
-        self.markerwattrs = self.create_marker_w_attrs(
+        self.markerwattrs = self.create_record(
             self.user, self.project, form=self.form)
         self.urls = ['/api/0/datasets/%s/data/' % self.form.id]
 
@@ -290,8 +290,6 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 new_marker = self.form.get_records().order_by('-id',)[0]
 
-                self.assertEqual(new_marker.name, name)
-                self.assertEqual(new_marker.description, description)
                 self.assertEqual(
                     new_marker.geometry,
                     GEOSGeometry(
@@ -309,7 +307,7 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.view = views.MarkerWAttrsInstance.as_view()
         self.form = self.create_form_with_fields(num_fields=7)
         self.metadata = get_metadata()
-        self.markerwattrs = self.create_marker_w_attrs(
+        self.markerwattrs = self.create_record(
             self.user, self.project, form=self.form)
         self.urls = [
             '/api/0/datasets/%s/data/%s/' %
@@ -423,24 +421,12 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
             # first just check for some pre-existing default data
             marker = models.Record.objects.get(id=marker_id)
-            '''
-            self.assertEqual(
-                json.loads(marker.geometry.geojson),
-                self.Point
-            )
-            '''
-
-            self.assertEqual(
-                marker.description,
-                'this is the caption text'
-            )
 
             url = self.list_url + '%s/' % marker_id
             key = posted_data[marker_id][0]
             new_data_item = new_hstore_data_dict[key]
             new_data = {
-                key: new_data_item,
-                'caption': None,
+                key: new_data_item
             }
             response = self.client_user.put(
                     url,
@@ -460,12 +446,6 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
             # finally, check that other fields are replaced (nulled)
             marker = models.Record.objects.get(id=marker_id)
-            self.assertEqual(marker.description, 'None')
-            self.assertEqual(response.data['caption'], 'None')
-            '''
-            self.assertEqual(marker.geometry.geojson, None)
-            self.assertEqual(response.data['geometry'], None)
-            '''
 
     def test_patch(self):
         marker = self.post_hstore_data_all({
@@ -477,7 +457,6 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             'field_6': 2,
             'field_7': 'Independent'
         })
-        self.assertEqual(marker.description, 'this is the caption text')
         self.assertEqual(
             json.loads(marker.geometry.geojson),
             self.Point
@@ -511,9 +490,6 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
             # finally, check that other fields have not been replaced (nulled)
             marker = models.Record.objects.get(id=marker.id)
-            self.assertEqual(marker.description, 'this is the caption text')
-            self.assertEqual(
-                response.data['caption'], 'this is the caption text')
             self.assertEqual(json.loads(marker.geometry.geojson), self.Point)
             self.assertEqual(response.data['geometry'], self.Point)
 
@@ -531,8 +507,6 @@ class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             {'extras': self.ExtrasBad}
         ]:
             params = {
-                'name': 'New Marker Name',
-                'caption': 'Test description',
                 'geometry': self.Point,
                 'extras': self.ExtrasGood
             }

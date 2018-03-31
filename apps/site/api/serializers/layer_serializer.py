@@ -13,6 +13,31 @@ class LayerSerializer(BaseSerializer):
     display_field = serializers.SerializerMethodField()
     map_id = serializers.SerializerMethodField()
     data_source = serializers.SerializerMethodField()
+    dataset = serializers.PrimaryKeyRelatedField(
+        queryset=models.Form.objects.all())
+
+    def get_fields(self, *args, **kwargs):
+        fields = super(LayerSerializer, self).get_fields(*args, **kwargs)
+        # restrict project list at runtime:
+        if not self.context.get('view'):
+            return fields
+
+        # filter possible datasets and possible views:
+        map_id = self.context.get('view').kwargs.get('map_id')
+        layer_id = self.context.get('view').kwargs.get('pk')
+        project = models.StyledMap.objects.get(id=map_id).project
+        if fields.get('dataset'):
+            fields['dataset'].queryset = models.Form.objects.filter(
+                project=project
+            )
+        if layer_id:
+            try:
+                layer = models.Layer.objects.get(id=layer_id)
+                fields['display_field'].queryset = models.Field.objects.filter(
+                    form=layer.dataset)
+            except Exception:
+                pass
+        return fields
 
     def get_map_id(self, obj):
         return obj.styled_map.id
@@ -28,6 +53,8 @@ class LayerSerializer(BaseSerializer):
         validated_data.update({
             'styled_map_id': map_id
         })
+        form = models.Form.objects.get(id=validated_data.get('dataset').id)
+        validated_data['display_field'] = form.fields[0]
         validated_data.update(self.get_presave_create_dictionary())
         self.instance = self.Meta.model.objects.create(**validated_data)
         return self.instance
@@ -42,6 +69,8 @@ class LayerSerializer(BaseSerializer):
 
 
 class LayerDetailSerializer(LayerSerializer):
+    display_field = serializers.PrimaryKeyRelatedField(
+        queryset=models.Field.objects.all())
 
     def update(self, instance, validated_data):
         map_id = self.context.get('view').kwargs.get('map_id')
@@ -53,5 +82,8 @@ class LayerDetailSerializer(LayerSerializer):
 
     class Meta:
         model = models.Layer
-        fields = LayerSerializer.Meta.fields
+        fields = BaseSerializer.Meta.fields + (
+            'title', 'data_source', 'group_by', 'display_field',
+            'ordering', 'metadata', 'map_id', 'symbols'
+        )
         depth = 0

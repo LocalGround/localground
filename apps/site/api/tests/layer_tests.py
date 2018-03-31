@@ -9,15 +9,13 @@ from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 
 class ApiLayerTest(object):
-    name = 'New Layer Name'
-    #tags = "a,b,c"
-    #slug = 'my_layer'
+    title = 'New Layer Name'
     metadata = {
         'symbols': {'read_only': False, 'required': False, 'type': 'json'},
         'group_by': {'read_only': False, 'required': True, 'type': 'string'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'title': {'read_only': False, 'required': True, 'type': 'string'},
-        'data_source': {'read_only': False, 'required': False, 'type': 'string'},
+        'data_source': {'read_only': True, 'required': False, 'type': 'field'},
         'metadata': {'read_only': False, 'required': False, 'type': 'json'},
         'map_id': {'read_only': True, 'required': False, 'type': 'field'}
     }
@@ -29,12 +27,16 @@ class ApiLayerTest(object):
             "rule": "worms = 0", "title": "No worms"}
     ]
 
-    def _test_save_layer(self, method, status_id, symbols, group_by='uniform'):
+    def _test_save_layer(
+        self, method, status_id, symbols, dataset=None, display_field=None,
+            group_by='uniform'):
         d = {
-            'title': self.name,
-            'map_id': self.map_id,
+            'title': self.title,
+            'ordering': 1,
             'group_by': group_by,
-            'symbols': json.dumps(symbols)
+            'symbols': json.dumps(symbols),
+            'dataset': dataset,
+            'display_field': display_field
         }
         response = method(
             self.url,
@@ -50,37 +52,42 @@ class ApiLayerTest(object):
                 rec = models.Layer.objects.get(id=self.obj.id)
             else:
                 rec = models.Layer.objects.all().order_by('-id',)[0]
-            self.assertEqual(rec.title, self.name)
+            self.assertEqual(rec.title, self.title)
             self.assertEqual(rec.symbols, self.symbols)
-            #self.assertEqual(rec.tags, convert_tags_to_list(self.tags))
-            #self.assertEqual(rec.slug, self.slug)
+            self.assertEqual(rec.dataset.id, self.form.id)
+            self.assertEqual(rec.ordering, 1)
 
 
 class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.model = self.create_layer()
+        self.model = models.Layer
+        self.form = self.create_form()
+        self.map = self.create_styled_map(
+            dataset=self.form, layer_title='My Layer')
         self.url = '/api/0/maps/{0}/layers/'.format(
-            self.model.styled_map.id
-            )
+            self.map.id
+        )
         self.urls = [self.url]
-        self.map_id = self.model.styled_map.id
-        #self.model = models.Layer
+        # self.map_id = self.model.styled_map.id
+        # self.model = models.Layer
         self.view = views.LayerList.as_view()
 
     def test_create_layer_using_post(self, **kwargs):
         self._test_save_layer(
             self.client_user.post,
             status.HTTP_201_CREATED,
-            self.symbols
+            self.symbols,
+            dataset=self.form.id
         )
 
     def test_create_view_invalid_json(self, **kwargs):
         self._test_save_layer(
             self.client_user.post,
             status.HTTP_400_BAD_REQUEST,
-            'dsadaadasdasdjkjdkasda/ewqeqw/'
+            'dsadaadasdasdjkjdkasda/ewqeqw/',
+            dataset=self.form.id
         )
 
 
@@ -88,12 +95,15 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.obj = self.create_layer()
-        #self.url = '/api/0/layers/%s/' % self.obj.id
+        self.form = self.create_form()
+        self.map = self.create_styled_map(
+            dataset=self.form, layer_title='My Layer')
+        self.obj = self.map.layers[0]
+        # self.url = '/api/0/layers/%s/' % self.obj.id
         self.url = '/api/0/maps/{0}/layers/{1}/'.format(
             self.obj.styled_map.id, self.obj.id
         )
-        self.map_id = self.obj.styled_map.id
+        self.map_id = self.map.id
         self.urls = [self.url]
         self.model = models.Layer
         self.view = views.LayerInstance.as_view()
@@ -102,28 +112,30 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         self._test_save_layer(
             self.client_user.put,
             status.HTTP_200_OK,
-            self.symbols
+            self.symbols,
+            display_field=self.form.fields[0].id
         )
 
     def test_update_view_using_patch(self, **kwargs):
         response = self.client_user.patch(
             self.url,
             data=urllib.urlencode({
-                'title': self.name,
+                'title': self.title,
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rec = models.Layer.objects.get(id=self.obj.id)
-        self.assertEqual(rec.title, self.name)
-        self.assertNotEqual(self.obj.title, self.name)
+        self.assertEqual(rec.title, self.title)
+        self.assertNotEqual(self.obj.title, self.title)
 
     def test_update_view_invalid_json(self, **kwargs):
         self._test_save_layer(
             self.client_user.put,
             status.HTTP_400_BAD_REQUEST,
-            'dsadaadasdasdjkjdkasda/ewqeqw/'
+            'dsadaadasdasdjkjdkasda/ewqeqw/',
+            display_field=self.form.fields[0].id
         )
 
     def test_clear_children(self, **kwargs):
@@ -131,7 +143,8 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         self._test_save_layer(
             self.client_user.put,
             status.HTTP_200_OK,
-            self.symbols
+            self.symbols,
+            display_field=self.form.fields[0].id
         )
 
         # and then get rid of them:

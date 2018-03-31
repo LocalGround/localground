@@ -186,34 +186,23 @@ class ModelMixin(object):
         uao.save()
         return uao
 
-    '''
-    TODO: Fix this method
-    def create_layer(self, user=None, name='Test Layer', authority_id=1):
-        from localground.apps.site import models
-        import random
-        slug = ''.join(
-            random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16)
-        )
-        user = user or self.user
-        layer = models.Layer(
-            title='my first layer',
-            data_source='photos',
-            layer_type='basic',
-            map_id=1
-        )
-        layer.save()
-        return layer
-    '''
+    def create_layer(
+            self, map, dataset=None, display_field=None,
+            title='Untitled Layer', ordering=1, group_by='uniform'):
+        if dataset and not display_field:
+            display_field = dataset.fields[0]
 
-    def create_layer(self):
-        layer = models.Layer(
-            last_updated_by=self.user,
-            owner=self.user,
-            group_by='uniform',
-            styled_map=self.create_styled_map()
+        models.Layer.create(
+            last_updated_by=map.last_updated_by,
+            owner=map.owner,
+            styled_map=map,
+            dataset=dataset,
+            display_field=display_field,
+            title=title,
+            group_by=group_by,
+            project=map.project,
+            ordering=ordering
         )
-        layer.save()
-        return layer
 
     def create_generic_association(self):
         marker = self.create_marker()
@@ -290,9 +279,8 @@ class ModelMixin(object):
         m.save()
         return m
 
-    def create_marker_w_attrs(
-            self, user=None, project=None,
-            name="Test Marker With Attrs", geoJSON=None, point=None,
+    def create_record(
+            self, user=None, project=None, geoJSON=None, point=None,
             extras={"random key": "random value"}, tags=[], form=None):
         from localground.apps.site import models
         geom = None
@@ -312,7 +300,6 @@ class ModelMixin(object):
 
         mwa = models.Record(
             project=project,
-            name=name,
             owner=user,
             extras=extras,
             last_updated_by=user,
@@ -481,7 +468,6 @@ class ModelMixin(object):
             last_updated_by=user or self.user,
             project=project or self.project
         )
-        # f.save()
         return f
 
     def create_form_with_fields(
@@ -511,7 +497,7 @@ class ModelMixin(object):
             fld = self.create_field(
                 name=field_name,
                 data_type=DataType.objects.get(id=(i + 1)),
-                ordering=(i + 1),
+                ordering=(i + 3),
                 form=f)
             if i+1 == 6:
                 fld.extras = [{"name": "Bad", "value": 1},
@@ -688,7 +674,8 @@ class ModelMixin(object):
         return audio
 
     def create_styled_map(
-            self, dataset=None, display_field=None, layer_title=None):
+            self, dataset=None, display_field=None,
+            layer_title='Untitled Layer'):
         from localground.apps.site.models import StyledMap
         from django.contrib.gis.geos import GEOSGeometry
         map = models.StyledMap(
@@ -702,20 +689,9 @@ class ModelMixin(object):
         map.save()
 
         # Create dummy layer:
-        if dataset and not display_field:
-            display_field = dataset.fields[0]
-
-        models.Layer.create(
-            last_updated_by=map.last_updated_by,
-            owner=map.owner,
-            styled_map=map,
-            dataset=dataset,
-            display_field=display_field,
-            title=layer_title or 'Untitled Layer',
-            group_by='uniform',
-            project=self.project,
-            ordering=1
-        )
+        self.create_layer(
+            map, dataset=dataset, display_field=display_field,
+            title=layer_title)
         return map
 
     def create_relation(

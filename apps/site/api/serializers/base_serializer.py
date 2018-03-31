@@ -57,8 +57,31 @@ class BaseSerializer(
             'model_name': model_meta.object_name.lower()
         }
 
+    overlay_type = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField()
+
+    def get_overlay_type(self, obj):
+        return obj._meta.verbose_name
+
+    def get_owner(self, obj):
+        return obj.owner.username
+
+    def get_projects(self):
+        if self.context.get('view'):
+            view = self.context['view']
+            if view.request.user.is_authenticated():
+                return models.Project.objects.get_objects(view.request.user)
+            else:
+                return models.Project.objects.get_objects_public(
+                    access_key=view.request.GET.get('access_key')
+                )
+        elif getattr(self, 'user', None) is not None:
+            return models.Project.objects.get_objects(self.user)
+        else:
+            return models.Project.objects.all()
+
     class Meta:
-        fields = ('id',)
+        fields = ('id', 'overlay_type', 'owner')
 
 
 class BaseNamedSerializer(BaseSerializer):
@@ -76,32 +99,49 @@ class BaseNamedSerializer(BaseSerializer):
         source='description', required=False, allow_null=True, label='caption',
         style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
     )
-    overlay_type = serializers.SerializerMethodField()
-    owner = serializers.SerializerMethodField()
-
-    def get_projects(self):
-        if self.context.get('view'):
-            view = self.context['view']
-            if view.request.user.is_authenticated():
-                return models.Project.objects.get_objects(view.request.user)
-            else:
-                return models.Project.objects.get_objects_public(
-                    access_key=view.request.GET.get('access_key')
-                )
-        elif getattr(self, 'user', None) is not None:
-            return models.Project.objects.get_objects(self.user)
-        else:
-            return models.Project.objects.all()
 
     class Meta:
-        fields = ('url', 'id', 'name', 'caption', 'overlay_type',
-                  'tags', 'owner')
+        fields = BaseSerializer.Meta.fields + \
+            ('url', 'id', 'name', 'caption', 'tags')
 
-    def get_overlay_type(self, obj):
-        return obj._meta.verbose_name
 
-    def get_owner(self, obj):
-        return obj.owner.username
+class GeometrySerializer1(BaseSerializer):
+    tags = fields.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_null=True,
+        label='tags',
+        style={'base_template': 'tags.html'},
+        help_text='Tag your object here'
+    )
+    geometry = fields.GeometryField(
+        help_text='Assign a GeoJSON string',
+        allow_null=True,
+        required=False,
+        style={'base_template': 'json.html', 'rows': 5},
+        source='point'
+    )
+    extras = JSONField(
+        help_text='Store arbitrary key / value pairs, e.g. {"key": "value"}',
+        allow_null=True,
+        required=False,
+        style={'base_template': 'json.html', 'rows': 5})
+
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(),
+        source='project',
+        required=False
+    )
+
+    def get_fields(self, *args, **kwargs):
+        fields = super(BaseSerializer, self).get_fields(*args, **kwargs)
+        # restrict project list at runtime:
+        fields['project_id'].queryset = self.get_projects()
+        return fields
+
+    class Meta:
+        fields = BaseSerializer.Meta.fields + \
+            ('project_id', 'tags', 'geometry', 'extras')
 
 
 class GeometrySerializer(BaseNamedSerializer):

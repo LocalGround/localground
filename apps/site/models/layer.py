@@ -12,8 +12,7 @@ class Layer(BaseAudit):
     display_field = models.ForeignKey('Field', related_name='%(class)s+')
     title = models.CharField(max_length=255, null=False, blank=False)
     ordering = models.IntegerField()
-    group_by = models.CharField(
-        max_length=255, null=False, blank=False, default='uniform')
+    group_by = models.CharField(max_length=255)
     metadata = JSONField(blank=True, null=True)
     symbols = JSONField(blank=True, null=True, default=[
         Symbol.SIMPLE.to_dict()
