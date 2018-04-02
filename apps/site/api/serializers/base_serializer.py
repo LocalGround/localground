@@ -56,7 +56,6 @@ class BaseSerializer(
             'app_label': model_meta.app_label,
             'model_name': model_meta.object_name.lower()
         }
-
     overlay_type = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
 
@@ -66,25 +65,13 @@ class BaseSerializer(
     def get_owner(self, obj):
         return obj.owner.username
 
-    def get_projects(self):
-        if self.context.get('view'):
-            view = self.context['view']
-            if view.request.user.is_authenticated():
-                return models.Project.objects.get_objects(view.request.user)
-            else:
-                return models.Project.objects.get_objects_public(
-                    access_key=view.request.GET.get('access_key')
-                )
-        elif getattr(self, 'user', None) is not None:
-            return models.Project.objects.get_objects(self.user)
-        else:
-            return models.Project.objects.all()
+    field_list = ('id', 'overlay_type', 'owner')
 
     class Meta:
-        fields = ('id', 'overlay_type', 'owner')
+        abstract = True
 
 
-class BaseNamedSerializer(BaseSerializer):
+class NamedSerializerMixin(serializers.ModelSerializer):
     tags = fields.ListField(
         child=serializers.CharField(),
         required=False,
@@ -100,9 +87,51 @@ class BaseNamedSerializer(BaseSerializer):
         style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
     )
 
+    field_list = ('url', 'id', 'name', 'caption', 'tags')
+
     class Meta:
-        fields = BaseSerializer.Meta.fields + \
-            ('url', 'id', 'name', 'caption', 'tags')
+        abstract = True
+
+
+class ProjectSerializerMixin(serializers.ModelSerializer):
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(),
+        source='project',
+        required=True
+    )
+
+    def get_projects(self):
+        if self.context.get('view'):
+            view = self.context['view']
+            if view.request.user.is_authenticated():
+                return models.Project.objects.get_objects(view.request.user)
+            else:
+                return models.Project.objects.get_objects_public(
+                    access_key=view.request.GET.get('access_key')
+                )
+        elif getattr(self, 'user', None) is not None:
+            return models.Project.objects.get_objects(self.user)
+        else:
+            return models.Project.objects.all()
+
+    def get_fields(self, *args, **kwargs):
+        '''
+        This code ensures that the user can only add data to the projects for
+        which they have access. In addition, if the object has already been
+        created, the project cannot be reassigned.
+        '''
+        fields = super(
+            ProjectSerializerMixin, self).get_fields(*args, **kwargs)
+        method = self.context.get('request').method
+        # raise Exception(method)
+        if self.instance or method in ['PUT', 'PATCH', 'GET']:
+            fields['project_id'].read_only = True
+        else:
+            # only writable on create:
+            fields['project_id'].queryset = self.get_projects()
+
+        return fields
+    field_list = ('project_id',)
 
 
 class GeometrySerializer1(BaseSerializer):
@@ -140,11 +169,11 @@ class GeometrySerializer1(BaseSerializer):
         return fields
 
     class Meta:
-        fields = BaseSerializer.Meta.fields + \
+        fields = BaseSerializer.field_list + \
             ('project_id', 'tags', 'geometry', 'extras')
 
 
-class GeometrySerializer(BaseNamedSerializer):
+class GeometrySerializer(NamedSerializerMixin, BaseSerializer):
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         allow_null=True,
@@ -171,7 +200,8 @@ class GeometrySerializer(BaseNamedSerializer):
         return fields
 
     class Meta:
-        fields = BaseNamedSerializer.Meta.fields + \
+        fields = BaseSerializer.field_list + \
+            NamedSerializerMixin.field_list + \
             ('project_id', 'geometry', 'extras')
 
 
@@ -237,7 +267,7 @@ class MediaGeometrySerializerNew(GeometrySerializer):
             ('attribution', 'media_file')
 
 
-class ExtentsSerializer(BaseNamedSerializer):
+class ExtentsSerializer(NamedSerializerMixin, BaseSerializer):
     project_id = fields.ProjectField(
         label='project_id',
         source='project',
@@ -250,4 +280,6 @@ class ExtentsSerializer(BaseNamedSerializer):
     )
 
     class Meta:
-        fields = BaseNamedSerializer.Meta.fields + ('project_id', 'center')
+        fields = BaseSerializer.field_list + \
+            NamedSerializerMixin.field_list + \
+            ('project_id', 'center')

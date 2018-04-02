@@ -61,7 +61,7 @@ class LayerSerializer(BaseSerializer):
 
     class Meta:
         model = models.Layer
-        fields = BaseSerializer.Meta.fields + (
+        fields = BaseSerializer.field_list + (
             'title', 'dataset', 'data_source', 'group_by', 'display_field',
             'ordering', 'metadata', 'map_id', 'symbols'
         )
@@ -82,7 +82,7 @@ class LayerDetailSerializer(LayerSerializer):
 
     class Meta:
         model = models.Layer
-        fields = BaseSerializer.Meta.fields + (
+        fields = BaseSerializer.field_list + (
             'title', 'data_source', 'group_by', 'display_field',
             'ordering', 'metadata', 'map_id', 'symbols'
         )

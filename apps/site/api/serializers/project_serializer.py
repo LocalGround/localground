@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.conf import settings
 from localground.apps.site import models
 from localground.apps.site.api.serializers.base_serializer import \
-    BaseNamedSerializer
+    NamedSerializerMixin, BaseSerializer
 from localground.apps.site.api.serializers.photo_serializer import \
     PhotoSerializer
 from localground.apps.site.api.serializers.video_serializer import \
@@ -32,7 +32,8 @@ class ProjectSerializerMixin(object):
             obj.id)
 
 
-class ProjectSerializer(BaseNamedSerializer, ProjectSerializerMixin):
+class ProjectSerializer(
+        NamedSerializerMixin, ProjectSerializerMixin, BaseSerializer):
     sharing_url = serializers.SerializerMethodField()
     access_authority = serializers.PrimaryKeyRelatedField(
         queryset=models.ObjectAuthority.objects.all(),
@@ -43,7 +44,7 @@ class ProjectSerializer(BaseNamedSerializer, ProjectSerializerMixin):
     class Meta:
         model = models.Project
         read_only_fields = ('time_stamp', 'date_created', 'last_updated_by')
-        fields = BaseNamedSerializer.Meta.fields + (
+        fields = BaseSerializer.field_list + NamedSerializerMixin.field_list + (
             'slug', 'access_authority', 'sharing_url', 'time_stamp',
             'date_created', 'last_updated_by')
         depth = 0
@@ -52,7 +53,7 @@ class ProjectSerializer(BaseNamedSerializer, ProjectSerializerMixin):
         return obj.last_updated_by.username
 
 
-class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
+class ProjectDetailSerializer(ProjectSerializer):
     slug = serializers.SlugField(
         max_length=100, label='friendly url', required=False)
     datasets = serializers.SerializerMethodField()

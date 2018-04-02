@@ -1,20 +1,16 @@
 from localground.apps.site.api.serializers.base_serializer import \
-    BaseNamedSerializer
+    BaseSerializer, NamedSerializerMixin, ProjectSerializerMixin
 from localground.apps.site.api.serializers.field_serializer import \
     FieldSerializer
 from django.conf import settings
-from rest_framework import serializers, validators
+from rest_framework import serializers
 from localground.apps.site import models
 
 
-class FormSerializerList(BaseNamedSerializer):
+class DatasetSerializerList(
+        BaseSerializer, NamedSerializerMixin, ProjectSerializerMixin):
     data_url = serializers.SerializerMethodField()
     fields_url = serializers.SerializerMethodField()
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=True
-    )
 
     def create(self, validated_data):
         # Call the Form's custom create method, which creates
@@ -23,16 +19,11 @@ class FormSerializerList(BaseNamedSerializer):
         self.instance = models.Form.create(**validated_data)
         return self.instance
 
-    def get_fields(self, *args, **kwargs):
-        fields = super(BaseNamedSerializer, self).get_fields(*args, **kwargs)
-        # restrict project list at runtime:
-        fields['project_id'].queryset = self.get_projects()
-        return fields
-
     class Meta:
         model = models.Form
-        fields = BaseNamedSerializer.Meta.fields + \
-            ('data_url', 'fields_url', 'project_id')
+        fields = BaseSerializer.field_list + \
+            NamedSerializerMixin.field_list + \
+            ProjectSerializerMixin.field_list + ('data_url', 'fields_url')
         depth = 0
 
     def get_data_url(self, obj):
@@ -42,12 +33,12 @@ class FormSerializerList(BaseNamedSerializer):
         return '%s/api/0/datasets/%s/fields/' % (settings.SERVER_URL, obj.pk)
 
 
-class FormSerializerDetail(FormSerializerList):
+class DatasetSerializerDetail(DatasetSerializerList):
     fields = serializers.SerializerMethodField('get_form_fields')
 
     class Meta:
         model = models.Form
-        fields = FormSerializerList.Meta.fields + ('fields',)
+        fields = DatasetSerializerList.Meta.fields + ('fields',)
         depth = 0
 
     def get_form_fields(self, obj):

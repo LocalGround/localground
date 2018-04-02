@@ -52,8 +52,8 @@ define(["jquery",
 
 
                 // (03/2018: If we add the ability to change a layer's dataset,
-                // we need to reset the layer type to 'basic' in the case where because 
-                // we won't know what the fields/dataColumns are 
+                // we need to reset the layer type to 'basic' in the case where because
+                // we won't know what the fields/dataColumns are
 
 
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
@@ -68,7 +68,7 @@ define(["jquery",
                 // this is so existing unique individual attributes aren't overwritten by global ones
                 if (this.model.get('newLayer') === true) {
                     this.createCorrectSymbols();
-                } else if (this.model.get('group_by') === 'basic') {
+                } else if (this.model.get('group_by') === 'uniform') {
                     this.createCorrectSymbols();
                 } else if (this.model.get('group_by') === 'individual') {
                     this.createCorrectSymbols();
@@ -220,7 +220,7 @@ define(["jquery",
             },
 
             selectGroupBy: function (e) {
-  
+
                 this.model.set('group_by', $(e.target).val() || this.$el.find("#data-type-select").val());
                 this.model.get('metadata').isContinuous = false;
 
@@ -240,7 +240,7 @@ define(["jquery",
                         text: record.get("col_alias"),
                         value: record.get("col_name"),
                         hasData: this.fieldHasData(collection, field),
-                        type: record.get("data_type") 
+                        type: record.get("data_type")
                     });
                 });
                 return dataColumns;
@@ -278,7 +278,7 @@ define(["jquery",
                         this.catData();
                     }
                 }
-                
+
             },
 
             simpleData: function () {
@@ -415,7 +415,7 @@ define(["jquery",
                     console.log(collection);
                 this.continuousData = [];
                 collection.models.forEach((d) => {
-                    
+
                     // must use this check to distinguish between 0 and null/undefined
                     // e.g. simply doing "if (d.get(selected)) {...}" will miss 0s
                     if (typeof d.get(selected) === 'number') {
@@ -506,7 +506,7 @@ define(["jquery",
             buildPalettes: function (itemCount) {
                 let count = itemCount;
                 if (count > 8) { count = 8; }
-                
+
                 let seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8;
                 const catPalettes = ['cb-Accent', 'cb-Dark2', 'cb-Paired', 'cb-Pastel1', 'cb-Set1', 'cb-Set2', 'cb-Set3'];
                 const contPalettes = ['cb-Blues', 'cb-Oranges', 'cb-Greys', 'cb-YlGn', 'cb-RdYlBu', 'tol-dv', 'cb-Purples'];

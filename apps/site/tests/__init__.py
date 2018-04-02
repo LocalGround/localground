@@ -457,7 +457,6 @@ class ModelMixin(object):
     def create_form(self, name='A title',
                     description='A description', user=None,
                     project=None):
-
         from localground.apps.site import models
         f = models.Form.create(
             owner=user or self.user,
@@ -466,6 +465,9 @@ class ModelMixin(object):
             last_updated_by=user or self.user,
             project=project or self.project
         )
+        # add tags:
+        f.tags = ['a', 'b']
+        f.save()
         return f
 
     def create_form_with_fields(
@@ -473,6 +475,7 @@ class ModelMixin(object):
             name='A title',
             description='A description',
             user=None,
+            tags='b',
             num_fields=2,
             project=None):
         '''
@@ -488,8 +491,8 @@ class ModelMixin(object):
         '''
         if user is None:
             user = self.user
-        f = self.create_form(name, description, user=user,
-                             project=project)
+        f = self.create_form(
+            name, description, user=user, project=project)
         for i in range(0, num_fields):
             field_name = 'Field %s' % (i + 1)
             fld = self.create_field(

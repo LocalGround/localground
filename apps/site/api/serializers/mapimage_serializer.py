@@ -1,14 +1,13 @@
-import os, json
 from rest_framework import serializers
 from django.conf import settings
-from django.forms.fields import FileField
-from localground.apps.lib.helpers import upload_helpers, generic, get_timestamp_no_milliseconds
+from localground.apps.lib.helpers import upload_helpers, generic
 from localground.apps.site import models
 from localground.apps.site.api import fields
-from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer, AuditSerializerMixin
+from localground.apps.site.api.serializers.base_serializer import \
+    NamedSerializerMixin, BaseSerializer
 
 
-class MapImageSerializerCreate(BaseNamedSerializer):
+class MapImageSerializerCreate(NamedSerializerMixin, BaseSerializer):
 
     def __init__(self, *args, **kwargs):
         super(MapImageSerializerCreate, self).__init__(*args, **kwargs)
@@ -23,7 +22,9 @@ class MapImageSerializerCreate(BaseNamedSerializer):
 
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     media_file = serializers.CharField(
-        source='file_name_orig', required=True, style={'base_template': 'file.html'},
+        source='file_name_orig',
+        required=True,
+        style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
     status = serializers.PrimaryKeyRelatedField(
@@ -57,47 +58,21 @@ class MapImageSerializerCreate(BaseNamedSerializer):
     media_scaled_url = serializers.SerializerMethodField()
 
     def get_fields(self, *args, **kwargs):
-        fields = super(MapImageSerializerCreate, self).get_fields(*args, **kwargs)
+        fields = super(
+            MapImageSerializerCreate, self).get_fields(*args, **kwargs)
         # restrict project list at runtime:
         fields['project_id'].queryset = self.get_projects()
         return fields
 
     class Meta:
         model = models.MapImage
-        fields = BaseNamedSerializer.Meta.fields + (
-            'overlay_type', 'source_print', 'project_id', 'geometry',
-            'overlay_path', 'media_file', 'file_path', 'file_name',
-            'uuid', 'status', 'media_thumb_url', 'media_scaled_url'
-        )
+        fields = BaseSerializer.field_list + \
+            NamedSerializerMixin.field_list + (
+                'overlay_type', 'source_print', 'project_id', 'geometry',
+                'overlay_path', 'media_file', 'file_path', 'file_name',
+                'uuid', 'status', 'media_thumb_url', 'media_scaled_url'
+            )
         read_only_fields = ('uuid',)
-
-    # Will eventually delete because instance is now taking care of process
-    def process_file(self, file, owner):
-        #save to disk: Will eventually be removed
-        model_name_plural = models.MapImage.model_name_plural
-        uuid = generic.generateID()
-        file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file, uuid=uuid)
-        file_name, ext = os.path.splitext(file_name_new)
-
-        # create thumbnail:
-        from PIL import Image
-        thumbnail_name = '%s_thumb.png' % file_name
-        media_path = upload_helpers.generate_absolute_path(owner, model_name_plural, uuid=uuid)
-        im = Image.open(media_path + '/' + file_name_new)
-        im.thumbnail([500, 500], Image.ANTIALIAS)
-        # Looks similar to the LGFileField parameters for save
-        # except that it has to be tweaked to match S3 standards
-        im.save('%s/%s' % (media_path, thumbnail_name))
-
-        return {
-            'uuid': uuid,
-            'file_name_orig': file.name,
-            'name': self.initial_data.get('name') or file.name,
-            'file_name_new': file_name_new,
-            'file_name_thumb': thumbnail_name,
-            'content_type': ext.replace('.', ''),
-            'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural, uuid=uuid)
-        }
 
     def create(self, validated_data):
         # Overriding the create method to handle file processing
@@ -157,14 +132,17 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         except Exception:
             return None
 
+
 class MapImageSerializerUpdate(MapImageSerializerCreate):
-    media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
+    media_file = serializers.CharField(
+        source='file_name_orig', required=False, read_only=True)
     status = serializers.PrimaryKeyRelatedField(
         queryset=models.StatusCode.objects.all(),
         read_only=False)
+
     class Meta:
         model = models.MapImage
-        fields = BaseNamedSerializer.Meta.fields + (
+        fields = BaseSerializer.field_list + NamedSerializerMixin.field_list + (
             'overlay_type', 'source_print', 'project_id',
             'geometry', 'overlay_path',
             'media_file', 'file_path', 'file_name', 'uuid', 'status'
@@ -173,7 +151,8 @@ class MapImageSerializerUpdate(MapImageSerializerCreate):
 
     # overriding update
     def update(self, instance, validated_data):
-        instance = super(MapImageSerializerUpdate, self).update(instance, validated_data)
+        instance = super(
+            MapImageSerializerUpdate, self).update(instance, validated_data)
 
         from localground.apps.tasks import process_map
         result = process_map.delay(self.instance)
