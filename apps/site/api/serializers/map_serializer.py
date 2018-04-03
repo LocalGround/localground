@@ -8,10 +8,11 @@ from localground.apps.site.api.serializers.layer_serializer import \
     LayerSerializer
 
 
-class MapSerializerList(NamedSerializerMixin, BaseSerializer):
+class MapSerializerList(
+        NamedSerializerMixin, ProjectSerializerMixin, BaseSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='map-detail',)
     sharing_url = serializers.SerializerMethodField()
-    project_id = serializers.SerializerMethodField()
+    # project_id = serializers.SerializerMethodField()
     center = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         required=True,
@@ -27,20 +28,20 @@ class MapSerializerList(NamedSerializerMixin, BaseSerializer):
     def get_sharing_url(self, obj):
         return '{0}/maps/{1}'.format(settings.SERVER_URL, obj.slug)
 
-    def get_project_id(self, obj):
-        return obj.project.id
+    # def get_project_id(self, obj):
+    #     return obj.project.id
 
     class Meta:
         model = models.StyledMap
         fields = BaseSerializer.field_list + \
-            NamedSerializerMixin.field_list + (
-                'sharing_url', 'center',  'basemap', 'zoom', 'panel_styles',
-                'project_id'
+            NamedSerializerMixin.field_list + \
+            ProjectSerializerMixin.field_list + (
+                'sharing_url', 'center',  'basemap', 'zoom', 'panel_styles'
             )
         depth = 0
 
 
-class MapSerializerPost(MapSerializerList, ProjectSerializerMixin):
+class MapSerializerPost(MapSerializerList):
     create_new_dataset = serializers.BooleanField(
         required=False, write_only=True)
     data_sources = fields.JSONField(
@@ -58,7 +59,7 @@ class MapSerializerPost(MapSerializerList, ProjectSerializerMixin):
         fields = BaseSerializer.field_list + \
             NamedSerializerMixin.field_list + \
             ProjectSerializerMixin.field_list + (
-                'sharing_url', 'center',  'basemap', 'zoom', 'project_id',
+                'sharing_url', 'center',  'basemap', 'zoom',
                 'create_new_dataset', 'data_sources', 'layers')
         depth = 0
 

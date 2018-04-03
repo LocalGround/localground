@@ -12,6 +12,7 @@ Somehow, there has to be test files that involve serializers
 although I did prepare model tests that check for successful upload and removal
 '''
 
+
 def get_metadata():
     return {
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
@@ -24,7 +25,7 @@ def get_metadata():
                          'required': False, 'type': 'field'},
         'source_print': {'read_only': False, 'required': False,
                          'type': 'field'},
-        'project_id': {'read_only': False, 'required': False, 'type': 'field'},
+        'project_id': {'read_only': False, 'required': True, 'type': 'field'},
         'geometry': {'read_only': True, 'required': False, 'type': 'geojson'},
         'overlay_path': {'read_only': True, 'required': False,
                          'type': 'field'},
@@ -105,7 +106,6 @@ class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
             self.assertNotEqual(
                 path.find('{0}/map-images/'.format(
                     self.user.username)), -1)
-            #self.assertNotEqual(path.find('/profile/map-images/'), -1)
 
 
 class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):
@@ -119,9 +119,11 @@ class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):
         self.view = views.MapImageInstance.as_view()
         self.metadata = get_metadata()
         self.metadata.update({
-            "media_file": {"type": "string", "required": False,
-                           "read_only": True},
-            'status': {'read_only': False, 'required': True, 'type': 'field'}
+            "media_file": {
+                "type": "string", "required": False, "read_only": True},
+            'status': {'read_only': False, 'required': True, 'type': 'field'},
+            'project_id':
+                {'read_only': True, 'required': True, 'type': 'field'},
         })
 
     def test_update_print_using_put(self, **kwargs):

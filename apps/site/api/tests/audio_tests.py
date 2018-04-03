@@ -131,9 +131,10 @@ class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
         self.view = views.AudioInstance.as_view()
         self.metadata = get_metadata()
         self.metadata.update({
-            "media_file": {
-                "type": "string", "required": False, "read_only": True
-            }
+            "media_file":
+                {"type": "string", "required": False, "read_only": True},
+            'project_id':
+                {'read_only': True, 'required': True, 'type': 'field'}
         })
 
     def test_update_audio_using_put(self, **kwargs):

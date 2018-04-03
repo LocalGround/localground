@@ -22,7 +22,7 @@ def get_metadata():
         "center": {'read_only': False, 'required': True, 'type': 'geojson'},
         "basemap": {'read_only': False, 'required': True, 'type': 'field'},
         "zoom": {'read_only': False, 'required': False, 'type': 'integer'},
-        "project_id": {'read_only': False, 'required': False, 'type': 'field'}
+        "project_id": {'read_only': False, 'required': True, 'type': 'field'}
     }
 
 

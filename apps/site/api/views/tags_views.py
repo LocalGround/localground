@@ -2,7 +2,6 @@ from rest_framework import status, generics, serializers, fields
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from localground.apps.site.models import Audio, Photo, Print, Video
-from localground.apps.site.api.serializers import MediaGeometrySerializer
 from django.db.models import Func, F
 from itertools import chain
 
@@ -19,6 +18,3 @@ class TagList(APIView):
     	alltags = [tag for tag in alltags if tag.startswith(filterstring)]
     response = Response(alltags, status=status.HTTP_200_OK)
     return response
-
-
-       	

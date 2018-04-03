@@ -13,28 +13,35 @@ from rest_framework import status
 See the bottom of the file for test plans
 '''
 
+
 def get_metadata():
     return {
-        "url": { "type": "field", "required": False, "read_only": True },
-        "id": { "type": "integer", "required": False, "read_only": True },
-        "name": { "type": "string", "required": False, "read_only": False },
-        "overlay_type": { "type": "field", "required": False, "read_only": True },
-        "tags": { "type": "field", "required": False, "read_only": False },
-        "owner": { "type": "field", "required": False, "read_only": True },
-        "project_id": { "type": "field", "required": False, "read_only": False },
-        "geometry": { "type": "geojson", "required": False, "read_only": False },
-        "attribution": { "type": "string", "required": False, "read_only": False },
-        "caption": { "type": "memo", "required": False, "read_only": False },
-        "path_large": { "type": "field", "required": False, "read_only": True },
-        "path_medium": { "type": "field", "required": False, "read_only": True },
-        "path_medium_sm": { "type": "field", "required": False, "read_only": True },
-        "path_small": { "type": "field", "required": False, "read_only": True },
-        "path_marker_lg": { "type": "field", "required": False, "read_only": True },
-        "path_marker_sm": { "type": "field", "required": False, "read_only": True },
-        # "file_path": { "type": "field", "required": False, "read_only": True },
-        "media_file": { "type": "string", "required": True, "read_only": False },
+        "url": {"type": "field", "required": False, "read_only": True},
+        "id": {"type": "integer", "required": False, "read_only": True},
+        "name": {"type": "string", "required": False, "read_only": False},
+        "overlay_type":
+            {"type": "field", "required": False, "read_only": True},
+        "tags": {"type": "field", "required": False, "read_only": False},
+        "owner": {"type": "field", "required": False, "read_only": True},
+        "project_id": {"type": "field", "required": False, "read_only": False},
+        "geometry": {"type": "geojson", "required": False, "read_only": False},
+        "attribution":
+            {"type": "string", "required": False, "read_only": False},
+        "caption": {"type": "memo", "required": False, "read_only": False},
+        "path_large": {"type": "field", "required": False, "read_only": True},
+        "path_medium": {"type": "field", "required": False, "read_only": True},
+        "path_medium_sm":
+            {"type": "field", "required": False, "read_only": True},
+        "path_small": {"type": "field", "required": False, "read_only": True},
+        "path_marker_lg":
+            {"type": "field", "required": False, "read_only": True},
+        "path_marker_sm":
+            {"type": "field", "required": False, "read_only": True},
+        "media_file": {"type": "string", "required": True, "read_only": False},
         'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
+
+
 extras = {
     "source": "http://google.com",
     "video": "youtube.com",
@@ -44,6 +51,7 @@ point = {
     "type": "Point",
     "coordinates": [12.492324113849, 41.890307434153]
 }
+
 
 class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
 
@@ -149,10 +157,15 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self.urls = [self.url]
         self.view = views.PhotoInstance.as_view()
         self.metadata = get_metadata()
-        self.metadata.update({"media_file": { "type": "string", "required": False, "read_only": True }})
+        self.metadata.update({
+            "media_file":
+                {"type": "string", "required": False, "read_only": True},
+            'project_id':
+                {'read_only': True, 'required': True, 'type': 'field'}
+        })
 
     def tearDown(self):
-        #delete method also removes files from file system:
+        # delete method also removes files from file system:
         for photo in models.Photo.objects.all():
             photo.delete()
         if os.path.exists('test.jpg'):
@@ -161,17 +174,18 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
     def test_update_photo_using_put(self, **kwargs):
         name, description = 'New Photo Name', 'Test description'
         tags = "a, b, d"
-        response = self.client_user.put(self.url,
-                    data=json.dumps({
-                        'geometry': json.dumps(point),
-                        'name': name,
-                        'caption': description,
-                        'tags' : tags,
-                        'extras': json.dumps(extras)
-                    }),
-                    HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/json"
-                )
+        response = self.client_user.put(
+            self.url,
+            data=json.dumps({
+                'geometry': json.dumps(point),
+                'name': name,
+                'caption': description,
+                'tags': tags,
+                'extras': json.dumps(extras)
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
         """
         response = self.client_user.put(self.url,
             data=urllib.urlencode({
@@ -258,18 +272,3 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         (height, width) = img.size
         self.assertEqual(width, 100)
         self.assertEqual(height, 200)
-
-
-'''
-Plans for updating the photos api test
-
-Goal - replace filesystem based tests with ones that ensure photos
-       are completely uploaded onto the amazon S3 cloud storage
-
-       What kind of tests must be put to ensure proper photo upload?
-
-       Check that file name exists
-       Check that url includes the bucket name and the aws amazon s3 keywords
-       Check that all the image sizes have valid links
-
-'''

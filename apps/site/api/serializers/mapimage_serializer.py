@@ -4,10 +4,11 @@ from localground.apps.lib.helpers import upload_helpers, generic
 from localground.apps.site import models
 from localground.apps.site.api import fields
 from localground.apps.site.api.serializers.base_serializer import \
-    NamedSerializerMixin, BaseSerializer
+    NamedSerializerMixin, ProjectSerializerMixin, BaseSerializer
 
 
-class MapImageSerializerCreate(NamedSerializerMixin, BaseSerializer):
+class MapImageSerializerCreate(
+        NamedSerializerMixin, ProjectSerializerMixin, BaseSerializer):
 
     def __init__(self, *args, **kwargs):
         super(MapImageSerializerCreate, self).__init__(*args, **kwargs)
@@ -33,11 +34,6 @@ class MapImageSerializerCreate(NamedSerializerMixin, BaseSerializer):
         default=1,
         queryset=models.StatusCode.objects.all()
     )
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=False
-    )
     source_print = serializers.PrimaryKeyRelatedField(
         queryset=models.Print.objects.all(),
         required=False,
@@ -57,18 +53,12 @@ class MapImageSerializerCreate(NamedSerializerMixin, BaseSerializer):
     media_thumb_url = serializers.SerializerMethodField()
     media_scaled_url = serializers.SerializerMethodField()
 
-    def get_fields(self, *args, **kwargs):
-        fields = super(
-            MapImageSerializerCreate, self).get_fields(*args, **kwargs)
-        # restrict project list at runtime:
-        fields['project_id'].queryset = self.get_projects()
-        return fields
-
     class Meta:
         model = models.MapImage
         fields = BaseSerializer.field_list + \
-            NamedSerializerMixin.field_list + (
-                'overlay_type', 'source_print', 'project_id', 'geometry',
+            NamedSerializerMixin.field_list + \
+            ProjectSerializerMixin.field_list + (
+                'overlay_type', 'source_print', 'geometry',
                 'overlay_path', 'media_file', 'file_path', 'file_name',
                 'uuid', 'status', 'media_thumb_url', 'media_scaled_url'
             )
@@ -142,11 +132,12 @@ class MapImageSerializerUpdate(MapImageSerializerCreate):
 
     class Meta:
         model = models.MapImage
-        fields = BaseSerializer.field_list + NamedSerializerMixin.field_list + (
-            'overlay_type', 'source_print', 'project_id',
-            'geometry', 'overlay_path',
-            'media_file', 'file_path', 'file_name', 'uuid', 'status'
-        )
+        fields = BaseSerializer.field_list + \
+            ProjectSerializerMixin.field_list + \
+            NamedSerializerMixin.field_list + (
+                'overlay_type', 'source_print', 'geometry', 'overlay_path',
+                'media_file', 'file_path', 'file_name', 'uuid', 'status'
+            )
         read_only_fields = ('uuid',)
 
     # overriding update

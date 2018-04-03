@@ -122,19 +122,22 @@ class ProjectSerializerMixin(serializers.ModelSerializer):
         '''
         fields = super(
             ProjectSerializerMixin, self).get_fields(*args, **kwargs)
-        method = self.context.get('request').method
-        # raise Exception(method)
-        if self.instance or method in ['PUT', 'PATCH', 'GET']:
-            fields['project_id'].read_only = True
-        else:
-            # only writable on create:
-            fields['project_id'].queryset = self.get_projects()
+
+        # validation processing for serializers called by views:
+        if self.context.get('request'):
+            method = self.context.get('request').method
+            # raise Exception(method)
+            if self.instance or method in ['PUT', 'PATCH', 'GET']:
+                fields['project_id'].read_only = True
+            else:
+                # only writable on create:
+                fields['project_id'].queryset = self.get_projects()
 
         return fields
     field_list = ('project_id',)
 
 
-class GeometrySerializer1(BaseSerializer):
+class GeometrySerializer1(ProjectSerializerMixin, BaseSerializer):
     tags = fields.ListField(
         child=serializers.CharField(),
         required=False,
@@ -156,24 +159,13 @@ class GeometrySerializer1(BaseSerializer):
         required=False,
         style={'base_template': 'json.html', 'rows': 5})
 
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=False
-    )
-
-    def get_fields(self, *args, **kwargs):
-        fields = super(BaseSerializer, self).get_fields(*args, **kwargs)
-        # restrict project list at runtime:
-        fields['project_id'].queryset = self.get_projects()
-        return fields
-
     class Meta:
         fields = BaseSerializer.field_list + \
-            ('project_id', 'tags', 'geometry', 'extras')
+            ProjectSerializerMixin.field_list + ('tags', 'geometry', 'extras')
 
 
-class GeometrySerializer(NamedSerializerMixin, BaseSerializer):
+class GeometrySerializer(
+        NamedSerializerMixin, ProjectSerializerMixin, BaseSerializer):
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         allow_null=True,
@@ -187,58 +179,10 @@ class GeometrySerializer(NamedSerializerMixin, BaseSerializer):
         required=False,
         style={'base_template': 'json.html', 'rows': 5})
 
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=False
-    )
-
-    def get_fields(self, *args, **kwargs):
-        fields = super(GeometrySerializer, self).get_fields(*args, **kwargs)
-        # restrict project list at runtime:
-        fields['project_id'].queryset = self.get_projects()
-        return fields
-
     class Meta:
         fields = BaseSerializer.field_list + \
             NamedSerializerMixin.field_list + \
-            ('project_id', 'geometry', 'extras')
-
-
-'''
-This is the old version of the class, which is used
-to store media within its own server.
-However, it will be depricated eventually
-'''
-
-
-class MediaGeometrySerializer(GeometrySerializer):
-    ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
-    file_name = serializers.CharField(
-        source='file_name_new', required=False, read_only=True)
-    media_file = serializers.CharField(
-        source='file_name_orig', required=True,
-        style={'base_template': 'file.html'},
-        help_text='Valid file types are: ' + ', '.join(ext_whitelist)
-    )
-    file_path_orig = serializers.SerializerMethodField()
-
-    class Meta:
-        fields = GeometrySerializer.Meta.fields + (
-            'attribution', 'file_name', 'media_file', 'file_path_orig')
-
-    def get_file_path_orig(self, obj):
-        # original file gets renamed to file_name_new in storage
-        # (spaces, etc. removed)
-        return obj.encrypt_url(obj.file_name_new)
-
-
-'''
-This is the new version of the class,
-which sends files to the Amazon S3 cloud storage
-to make uploading, changing, and removing files easier
-This will eventually replace the old class
-'''
+            ProjectSerializerMixin.field_list + ('geometry', 'extras')
 
 
 class MediaGeometrySerializerNew(GeometrySerializer):
@@ -267,11 +211,8 @@ class MediaGeometrySerializerNew(GeometrySerializer):
             ('attribution', 'media_file')
 
 
-class ExtentsSerializer(NamedSerializerMixin, BaseSerializer):
-    project_id = fields.ProjectField(
-        label='project_id',
-        source='project',
-        required=False)
+class ExtentsSerializer(
+        NamedSerializerMixin, ProjectSerializerMixin, BaseSerializer):
 
     center = fields.GeometryField(
         help_text='Assign a GeoJSON string',
@@ -282,4 +223,4 @@ class ExtentsSerializer(NamedSerializerMixin, BaseSerializer):
     class Meta:
         fields = BaseSerializer.field_list + \
             NamedSerializerMixin.field_list + \
-            ('project_id', 'center')
+            ProjectSerializerMixin.field_list + ('center',)

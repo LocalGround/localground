@@ -1,5 +1,5 @@
 from localground.apps.site.api.serializers.base_serializer import \
-    ExtentsSerializer
+    ExtentsSerializer, ProjectSerializerMixin
 from rest_framework import serializers
 from localground.apps.site import models
 from django.forms import widgets
@@ -21,15 +21,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         model.pdf_path_S3.storage.location = model.get_storage_location()
         model.map_image_path_S3.storage.location = model.get_storage_location()
 
-    def get_fields(self, *args, **kwargs):
-        fields = super(PrintSerializerMixin, self).get_fields(*args, **kwargs)
-        # note: queryset restricted at runtime
-        fields['project_id'].queryset = self.get_projects()
-        return fields
-
     uuid = serializers.SerializerMethodField()
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(), source='project')
     layout_url = serializers.HyperlinkedRelatedField(
         view_name='layout-detail',
         source='layout',
@@ -111,7 +103,8 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         )
 
 
-class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
+class PrintSerializer(
+        ExtentsSerializer, ProjectSerializerMixin, PrintSerializerMixin):
 
     class Meta:
         model = models.Print
@@ -176,7 +169,8 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
         return self.instance
 
 
-class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
+class PrintSerializerDetail(
+        ExtentsSerializer, ProjectSerializerMixin, PrintSerializerMixin):
     center = fields.GeometryField(
                 help_text='Assign a GeoJSON center point',
                 style={'base_template': 'json.html', 'rows': 5},
@@ -186,10 +180,6 @@ class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
         min_value=1, max_value=20, default=17, read_only=True)
     layout = serializers.SerializerMethodField()
     map_provider = serializers.SerializerMethodField()
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=False)
 
     class Meta:
         model = models.Print
@@ -201,6 +191,3 @@ class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
 
     def get_layout(self, obj):
         return obj.layout.id
-
-    def get_project(self, obj):
-        return obj.project.id
