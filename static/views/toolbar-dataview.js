@@ -165,6 +165,7 @@ define([
         },
 
         showModal: function (opts) {
+            console.log('show modal');
             //generic function that displays a view in a modal
             var params = {};
             _.extend(params, opts);

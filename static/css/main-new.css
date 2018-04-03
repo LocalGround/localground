@@ -798,6 +798,9 @@ span.action.rounded:hover, a.action.rounded:hover {
   overflow: auto;
   background-color: black;
   background-color: rgba(0, 0, 0, 0.8);
+  /*
+      Field Form Modal
+    */
 }
 
 .modal .content {
@@ -814,6 +817,18 @@ span.action.rounded:hover, a.action.rounded:hover {
   width: 800px;
   height: auto;
   position: relative;
+}
+
+.modal .content.spreadsheet {
+  /* vertical-align: middle; */
+  border-radius: 6px;
+  background-color: #fefefe;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+  height: auto;
+  margin: calc((100vh - 480px) / 2) auto 0px auto;
+  transform: none;
+  display: block;
+  position: static;
 }
 
 .modal header {
@@ -845,6 +860,84 @@ span.action.rounded:hover, a.action.rounded:hover {
   text-align: right;
 }
 
+.modal .buttons {
+  text-align: right;
+}
+
+.modal .close {
+  color: #888;
+  float: right;
+  font-size: 24px;
+  line-height: 24px;
+  cursor: pointer;
+}
+
+.modal .close:hover,
+.modal .close:focus {
+  color: #DDD;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal h1 {
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.modal h2 {
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.modal .card-img-preview {
+  background-position: center center;
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  height: 185px;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.modal .column {
+  width: calc(25% - 12px);
+  margin: 4px 5px 8px;
+  border: 1px solid #e4e5eb;
+  border-radius: 2px;
+  flex-direction: column;
+  width: calc(25% - 12px);
+}
+
+.modal #gallery-main.container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.modal .column h1 {
+  font-size: 14px;
+  padding: 10px 10px 1px;
+  font-weight: 400;
+}
+
+.modal .column h2 {
+  font-size: 12px;
+  padding: 0 10px 12px;
+  color: #7a7a7a;
+}
+
+.modal nav li.active {
+  border-bottom: solid;
+  font-weight: 600;
+  border-color: #4e70d4;
+}
+
+.modal nav li.active {
+  border-bottom: solid;
+  font-weight: 600;
+  border-color: #4e70d4;
+}
+
 .modal .body {
   background-color: #fafafc;
   border-top: 1px solid #e4e5eb;
@@ -855,6 +948,229 @@ span.action.rounded:hover, a.action.rounded:hover {
 
 .modal .body > div {
   margin: 20px;
+}
+
+.modal .body {
+  /* padding: 0px 20px; */
+  background-color: #ffffff;
+  border-top: none;
+  max-height: 75vh;
+  overflow-y: scroll;
+}
+
+.modal .body nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modal .body nav li {
+  display: inline-block;
+  padding: 14px 4px;
+  font-size: 12px;
+  margin: 0 20px 0 20px;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.modal .body .inline-form {
+  margin: 6px 0px;
+  width: 100%;
+}
+
+.modal .body .inline-form td {
+  padding: 0px 6px;
+}
+
+.modal .body .inline-form label {
+  text-align: left;
+}
+
+.modal .modal-body .grey-bg {
+  background-color: #eee;
+  border-top: 1px solid #ddd;
+  margin: 0px !important;
+}
+
+.modal .filter {
+  padding: 18px;
+  width: calc(100% - 40px);
+  background-color: #fafafc;
+  margin: 0;
+  border-bottom: 1px solid #e4e5eb;
+}
+
+.modal .modal-search-form {
+  width: 300px;
+  display: inline-block;
+}
+
+.modal .modal-search-form .fa {
+  padding: 4px 0 4px 16px;
+  color: #7a7a7a;
+}
+
+.modal .modal-search-form input {
+  padding: 6px;
+  background-color: white;
+  margin-right: -40px;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.modal .modal-search-form button {
+  outline: none;
+  border: none;
+  background-color: transparent;
+}
+
+.modal .button-secondary {
+  background-color: #fafafc;
+  border: none;
+  border-radius: 3px;
+  padding: 0 12px;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin: 0 2px;
+  border: 1px solid #e4e5eb;
+  -webkit-transition: background 0.3s linear;
+  -moz-transition: background 0.3s linear;
+  -ms-transition: background 0.3s linear;
+  -o-transition: background 0.3s linear;
+  transition: background 0.3s linear;
+  line-height: 26px;
+  height: 29px;
+  vertical-align: bottom;
+  letter-spacing: 0.7px;
+  width: 80px;
+}
+
+.modal .pull-right {
+  float: right;
+}
+
+.modal #gallery-main.container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  padding: 20px 14px 24px;
+  overflow: scroll;
+  /*height: 50%;*/
+}
+
+.modal .selected-card {
+  color: #fff;
+  background-color: #7b9be1;
+}
+
+.modal .selected-card h1, .modal .selected-card h2, .modal .selected-card > .fa-map-marker, .modal .selected-card .coords {
+  color: #fff;
+}
+
+.modal .database-views-modal table {
+  width: 100%;
+  font-size: 13px;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-top: 20px;
+}
+
+.modal .database-views-modal th {
+  line-height: 20px;
+  font-weight: 600;
+  padding: 5px;
+}
+
+.modal .database-views-modal td {
+  padding: 0px 0px;
+  border: none;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /*line-height: 40px;*/
+  padding: 5px;
+}
+
+.modal th {
+  text-align: left;
+}
+
+.modal .thumbnail-img {
+  height: 36px;
+  width: 36px;
+  padding: 4px 10px 4px 20px;
+}
+
+.modal .pull-right {
+  float: right;
+}
+
+.modal #media-photos, .modal #media-audio, .modal #media-videos {
+  float: right;
+}
+
+.modal .database-views-modal tr {
+  cursor: pointer;
+  border-bottom: 1px solid #E2E2E2;
+}
+
+.modal .database-views-modal .table:hover, .modal .database-views-modal td:hover {
+  background-color: #7b9be1;
+  color: white;
+}
+
+.modal .error {
+  background-color: #fae5e3;
+  color: #b94a48;
+  padding: 5px;
+}
+
+.modal .errorMessage {
+  color: #b94a48;
+  margin: 0px 15px;
+  font-size: 13px;
+}
+
+.modal .map-input {
+  border-radius: 1px;
+  border: 1px solid #d9d9d9;
+  border-top: 1px solid #c0c0c0;
+  font-size: 13px;
+  height: 25px;
+  padding: 1px 8px;
+  width: 25em;
+  margin-bottom: 20px;
+  margin-top: 15px;
+}
+
+.modal .map-input:focus {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  border: 1px solid #4d90fe;
+  outline: none;
+}
+
+.modal .fieldTable {
+  width: 100%;
+}
+
+.modal .fieldTable th:last-child {
+  text-align: right;
+}
+
+.modal .fieldTable td:last-child {
+  text-align: right;
+}
+
+.modal .fieldTable .th-display-field {
+  width: 40px;
 }
 
 .modal.show {

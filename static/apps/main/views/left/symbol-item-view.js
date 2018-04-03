@@ -35,7 +35,7 @@ define(["marionette",
 
             modelEvents: {
                 'change:geometry': 'updateGeometry',
-                'change': 'render'
+                //'change': 'render'
             },
 
             // for some reason this approach is buggy...
@@ -98,11 +98,22 @@ define(["marionette",
 
             // this function only does something when adding or deleting entire markers:
             updateGeometry: function() {
+                try {
+                    console.log(JSON.stringify(this.model.get('geometry')));
+                }
+                catch (error) {
+                    console.log('its null');
+                }
+                
+                console.trace();
+                console.log('updateGeometry', this);
                 if (this.model.get('geometry') === null) { // delete marker
+                    console.log('delete marker');
                     this.overlay.destroy();
                     this.overlay = null;
-                    console.log(this.overlay);
+
                 } else if (this.overlay === null) { // create new marker
+                    console.log('create marker');
                     this.overlay = new MarkerOverlay({
                         model: this.model,
                         symbol: this.symbolModel,
@@ -112,6 +123,7 @@ define(["marionette",
                         route: this.route
                     });
                     this.overlay.render();
+                    this.overlay.activate();
                 }
             },
 
