@@ -236,6 +236,7 @@ define([
             });
         },
         showMediaBrowser: function (e) {
+            console.log('show media browser');
             var addMediaLayoutView = new AddMedia({
                 app: this.app,
                 parentModel: this.model

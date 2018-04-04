@@ -120,8 +120,6 @@ define([
                 $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
-            console.log(this);
-            console.log(this.app.mode);
 
             return {
                 mode: this.app.mode,
@@ -273,6 +271,7 @@ define([
         },
 
         deleteMarker: function () {
+            console.log('data detail deleteMarker()')
             this.model.set('geometry', null);
             //Backbone.Model.prototype.set.call(this.model, "geoometry", null);
             this.commitForm();
@@ -426,6 +425,12 @@ define([
         },
 
         onRender: function () {
+            try {
+                console.log(this.model.get('geometry').toString());
+            }
+            catch (error) {
+                console.log('its null');
+            }
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {

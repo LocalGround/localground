@@ -2,6 +2,7 @@ define([
     "marionette",
     "backbone",
     "apps/main/router",
+    "lib/modals/modal",
     "views/breadcrumbs",
     "lib/maps/basemap",
     "lib/data/dataManager",
@@ -10,7 +11,7 @@ define([
     "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, ToolbarGlobal, Basemap,
+], function (Marionette, Backbone, Router, Modal, ToolbarGlobal, Basemap,
              DataManager, LeftPanel, RightPanel, Projects, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
@@ -44,6 +45,7 @@ define([
                 vent: this.vent,
                 projectJSON: projectJSON
             });
+            this.modal = new Modal();
             this.showBreadcrumbs();
             this.showBasemap();
             //this.listenTo(this.vent, 'data-loaded', this.loadRegions);
@@ -53,6 +55,8 @@ define([
             this.listenTo(this.vent, 'hide-list', this.hideList);
             this.listenTo(this.vent, 'edit-layer', this.showRightLayout);
             this.listenTo(this.vent, 'show-data-detail', this.showDataDetail);
+            this.listenTo(this.vent, 'show-modal', this.showModal);
+            this.listenTo(this.vent, 'hide-modal', this.hideModal);
             this.addMessageListeners();
             this.loadRegions();
         },
@@ -139,6 +143,25 @@ define([
             this.container.$el.addClass(className);
             //wait 'til CSS animation completes before redrawing map
             setTimeout(this.basemapView.redraw, 220);
+        },
+
+        showModal: function (opts) {
+            console.log('show modal');
+            //generic function that displays a view in a modal
+            var params = {};
+            _.extend(params, opts);
+            _.extend(params, {
+                showSaveButton: opts.saveFunction ? true : false,
+                showDeleteButton: opts.deleteFunction ? true : false,
+                saveFunction: opts.saveFunction ? opts.saveFunction.bind(opts.view) : null,
+                deleteFunction: opts.deleteFunction ? opts.deleteFunction.bind(opts.view) : null
+            });
+            this.modal.update(params);
+            this.modal.show();
+        },
+
+        hideModal: function() {
+            this.modal.hide();
         },
 
         hideList: function () {

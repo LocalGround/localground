@@ -23,7 +23,8 @@
             </select>
         </div>
     
-{{#unless isBasic}}    
+{{#unless isBasic}}   
+        {{#unless isIndividual}}
         <div class="row">
             <label class="msv-label">Group by:</label>
             <div>
@@ -82,7 +83,7 @@
                 </div>
             </div>
         </div>
-    
+        {{/unless}}
         <div class="row">
             <label class="msv-label">Marker Fill: </label>
             <input id="marker-width" type="number" value="{{metadata.width}}">

@@ -13,7 +13,7 @@ define(["marionette",
                 _.extend(this, opts);
                 this.symbolModel = this.parent.model;
                 this.overlay = null;
-                const route = this.parent.mapId + '/layers/' + this.parent.layerId + '/' + this.parent.layer.get('data_source') + '/' + this.model.id;
+                this.route = this.parent.mapId + '/layers/' + this.parent.layerId + '/' + this.parent.layer.get('data_source') + '/' + this.model.id;
                 if (this.model.get('geometry') != null) {
                     this.overlay = new MarkerOverlay({
                         model: this.model,
@@ -21,7 +21,7 @@ define(["marionette",
                         app: this.app,
                         isShowing: this.symbolModel.get('isShowing'),
                         displayOverlay: this.symbolModel.get('isShowing'),
-                        route: route
+                        route: this.route
                     });
                     this.overlay.render();
                 }
@@ -30,7 +30,8 @@ define(["marionette",
             },
             modelEvents: {
                 'highlight-symbol-item': 'handleRoute',
-                'change': 'render'
+                //'change': 'render'
+                'change:geometry': 'updateGeometry',
             },
             active: false,
 
@@ -59,6 +60,9 @@ define(["marionette",
                     height: this.symbolModel.get('height')
                 };
             },
+            onRender: function() {
+                console.log('SymbolItem render', this);
+            },
             handleRoute: function(layerId) {
                 if (this.parent.layerId === layerId) {
                     this.makeActive();
@@ -82,6 +86,38 @@ define(["marionette",
                 }
                 this.render();
             },
+
+            // this function only does something when adding or deleting entire markers:
+            updateGeometry: function() {
+                try {
+                    console.log(JSON.stringify(this.model.get('geometry')));
+                }
+                catch (error) {
+                    console.log('its null');
+                }
+
+                console.trace();
+                console.log('updateGeometry', this);
+                if (this.model.get('geometry') === null) { // delete marker
+                    console.log('delete marker');
+                    this.overlay.destroy();
+                    this.overlay = null;
+
+                } else if (this.overlay === null) { // create new marker
+                    console.log('create marker');
+                    this.overlay = new MarkerOverlay({
+                        model: this.model,
+                        symbol: this.symbolModel,
+                        app: this.app,
+                        isShowing: this.symbolModel.get('isShowing'),
+                        displayOverlay: this.symbolModel.get('isShowing'),
+                        route: this.route
+                    });
+                    this.overlay.render();
+                    this.overlay.activate();
+                }
+            },
+
             onDestroy: function () {
                 console.log('destroying symbol-item-view');
                 if (this.overlay != null) {

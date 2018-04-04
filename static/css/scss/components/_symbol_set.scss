@@ -1,5 +1,4 @@
 .sort-by {
-    width: 100%;
     font-size: 12px;
     padding: 8px 20px;
     /* margin: 10px 0px; */
@@ -9,7 +8,6 @@
 }
 
 .symbol-header {
-    display: flex;
     background: #f7f7f7;
     border-bottom: 1px solid #ebebeb;
 }
@@ -23,4 +21,19 @@
 .symbol-header:hover .symbol-edit {
     display: block;
     cursor: pointer;
+}
+
+.ind-symbol {
+    svg {
+        vertical-align: middle;
+    }
+    .symbol-edit {
+        vertical-align: text-bottom;
+    }
+}
+
+.symbol-header {
+    svg {
+        vertical-align: middle;
+    }
 }
