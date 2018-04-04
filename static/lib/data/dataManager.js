@@ -1,9 +1,8 @@
 define(["underscore", "marionette", "models/project",
             "collections/photos", "collections/audio", "collections/videos",
-            "collections/mapimages", "collections/markers",
-            "collections/records", "collections/fields",
+            "collections/mapimages", "collections/records", "collections/fields",
             "collections/tilesets", "collections/maps"],
-    function (_, Marionette, Project, Photos, Audio, Videos, MapImages, Markers,
+    function (_, Marionette, Project, Photos, Audio, Videos, MapImages,
                 Records, Fields, TileSets, Maps) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
@@ -89,10 +88,6 @@ define(["underscore", "marionette", "models/project",
                         opts.isMedia = true;
                         collection = new Videos(jsonData, opts);
                         break;
-                    case "markers":
-                        opts.isSite = true;
-                        collection = new Markers(jsonData, opts);
-                        break;
                     case "map_images":
                         opts.isMedia = true;
                         collection = new MapImages(jsonData, opts);
@@ -152,11 +147,6 @@ define(["underscore", "marionette", "models/project",
                 this.vent.trigger('datamanager-modified');
             },
 
-            /*addNewRecordsCollection: function (dataType) {
-                this.dataDictionary[dataType] = this.createRecordsCollection(dataType);
-                this.vent.trigger('datamanager-modified');
-            },*/
-
             each: function (f) {
                 this.getLookup().forEach((obj) => {
                     f(this.getCollection(obj.id));
@@ -171,9 +161,7 @@ define(["underscore", "marionette", "models/project",
                 */
                 var collection,
                     dataType,
-                    lookup = [
-                        { id: "markers", name: "Sites", hasData: this.getCollection("markers").length > 0 }
-                    ];
+                    lookup = [];
                 for (dataType in this.dataDictionary) {
                     collection = this.dataDictionary[dataType];
                     if (collection.getIsCustomType()) {
@@ -185,9 +173,6 @@ define(["underscore", "marionette", "models/project",
                     }
                 };
                 lookup.push.apply(lookup, [
-                    // { id: "photos", name: "Photos", hasData: this.getCollection("photos").length > 0 },
-                    // { id: "audio", name: "Audio", hasData: this.getCollection("audio").length > 0 },
-                    // { id: "videos", name: "Videos", hasData: this.getCollection("videos").length > 0 },
                     { id: "map_images", name: "Map Images", hasData: this.getCollection("map_images").length > 0 }
                 ])
                 return lookup;

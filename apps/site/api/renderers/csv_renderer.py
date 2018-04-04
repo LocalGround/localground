@@ -39,7 +39,7 @@ class CSVRenderer(renderers.BaseRenderer):
 
     def process_instances_with_children(self, data, headers):
         '''
-        Builds dataset array with child records (for projects & markers):
+        Builds dataset array with child records (for projects & records):
         '''
         # add top-level record:
         top_level_record = data.copy()
@@ -87,8 +87,9 @@ class CSVRenderer(renderers.BaseRenderer):
         elif 'overlay_type' in data:
             overlay_type = data.get('overlay_type')
             # if hierarchical object, then flatten (for project or marker):
-            if overlay_type in ['project', 'marker']:
-                headers, dataset = self.process_instances_with_children(data, headers)
+            if overlay_type == 'project' or 'form_' in overlay_type:
+                headers, dataset = self.process_instances_with_children(
+                    data, headers)
             else:
                 headers = data.keys()
                 dataset = [data]

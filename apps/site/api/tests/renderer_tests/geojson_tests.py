@@ -14,13 +14,29 @@ class GeoJSONRendererListTest(test.TestCase, ModelMixin):
 
     def setUp(self):
         ModelMixin.setUp(self)
-        self.url = '/api/0/markers/'
+
+        self.form = self.create_form_with_fields(
+            name="Class Form", num_fields=7
+        )
+        self.record1 = self.insert_form_data_record(
+            form=self.form,
+            project=self.project,
+            geoJSON=mixins.point,
+            name='rec1'
+        )
+        self.record2 = self.insert_form_data_record(
+            form=self.form,
+            project=self.project,
+            geoJSON=mixins.line,
+            name='rec2'
+        )
+        self.url = '/api/0/datasets/%s/data/' % (
+            self.form.id
+        )
+        self.key = 'form_{0}'.format(self.form.id)
 
     def test_geojson_format_looks_correct(self):
-        self.create_marker(
-            self.user, self.project, name="Marker 1", geoJSON=mixins.point)
-        self.create_marker(
-            self.user, self.project, name="Marker 2", geoJSON=mixins.line)
+
         response = self.client_user.get(self.url, {
                 'format': 'geojson',
                 'project_id': self.project.id
@@ -37,9 +53,6 @@ class GeoJSONRendererListTest(test.TestCase, ModelMixin):
         self.assertEqual(rec.get("geometry"), mixins.line)
         self.assertTrue(isinstance(rec.get("properties"), dict))
 
-        # Make sure 'extras' attribute gets merged into the properties:
-        self.assertEqual(rec.get("properties").get("key"), "value")
-
     def tearDown(self):
         models.Form.objects.all().delete()
 
@@ -48,9 +61,25 @@ class GeoJSONRendererInstanceTest(test.TestCase, ModelMixin):
 
     def setUp(self):
         ModelMixin.setUp(self)
-        self.marker = self.create_marker(
-            self.user, self.project, name="Marker 1", geoJSON=mixins.point)
-        self.url = '/api/0/markers/%s/' % self.marker.id
+        self.form = self.create_form_with_fields(
+            name="Class Form", num_fields=7
+        )
+        self.record1 = self.insert_form_data_record(
+            form=self.form,
+            geoJSON=mixins.point,
+            project=self.project,
+            name='rec1'
+        )
+        self.record2 = self.insert_form_data_record(
+            form=self.form,
+            geoJSON=mixins.line,
+            project=self.project,
+            name='rec2'
+        )
+        self.url = '/api/0/datasets/%s/data/%s/' % (
+            self.form.id, self.record1.id
+        )
+        self.key = 'form_{0}'.format(self.form.id)
 
     def test_geojson_format_looks_correct(self):
         response = self.client_user.get(self.url, {
@@ -61,6 +90,3 @@ class GeoJSONRendererInstanceTest(test.TestCase, ModelMixin):
         self.assertEqual(data.get("type"), "Feature")
         self.assertEqual(data.get("geometry"), mixins.point)
         self.assertTrue(isinstance(data.get("properties"), dict))
-
-        # Make sure 'extras' attribute gets merged into the properties:
-        self.assertEqual(data.get("properties").get("key"), "value")

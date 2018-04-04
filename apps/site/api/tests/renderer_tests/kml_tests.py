@@ -12,22 +12,25 @@ from localground.apps.site.api.tests.renderer_tests import mixins
 
 class KMLRendererListTest(test.TestCase, ModelMixin):
     '''
-    These tests test the KML renderer using the /api/0/markers/ (though any
-    geospatial endpoint could be used).
+    These tests test the KML renderer using the /api/0/datasets/<id>/data/
+    (though any geospatial endpoint could be used).
     '''
 
     def setUp(self):
         ModelMixin.setUp(self)
-        self.url = '/api/0/markers/'
-
-    def test_page_500_status_basic_user(self, urls=None, **kwargs):
-        response = self.client_user.get(self.url, {
-            'format': 'kml'
-        })
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_500_INTERNAL_SERVER_ERROR
+        self.form = self.create_form_with_fields(
+            name="Class Form", num_fields=7
         )
+        self.record1 = self.insert_form_data_record(
+            form=self.form,
+            project=self.project,
+            geoJSON=mixins.point,
+            name='rec1'
+        )
+        self.url = '/api/0/datasets/%s/data/' % (
+            self.form.id
+        )
+        self.key = 'form_{0}'.format(self.form.id)
 
     def test_page_200_status_basic_user(self, urls=None, **kwargs):
         response = self.client_user.get(self.url, {
@@ -37,12 +40,18 @@ class KMLRendererListTest(test.TestCase, ModelMixin):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_kml_is_valid_xml(self):
-        self.create_marker(
-            self.user, self.project, geoJSON=mixins.point)
-        self.create_marker(
-            self.user, self.project, geoJSON=mixins.point2)
-        self.create_marker(
-            self.user, self.project, geoJSON=mixins.point3)
+        self.insert_form_data_record(
+            form=self.form,
+            project=self.project,
+            geoJSON=mixins.point2,
+            name='rec2'
+        )
+        self.insert_form_data_record(
+            form=self.form,
+            project=self.project,
+            geoJSON=mixins.point3,
+            name='rec3'
+        )
         response = self.client_user.get(self.url, {
             'project_id': self.project.id,
             'format': 'kml'
@@ -70,9 +79,19 @@ class KMLRendererInstanceTest(test.TestCase, ModelMixin):
 
     def setUp(self):
         ModelMixin.setUp(self)
-        self.marker = self.create_marker(
-            self.user, self.project, geoJSON=mixins.point)
-        self.url = '/api/0/markers/%s/' % self.marker.id
+        self.form = self.create_form_with_fields(
+            name="Class Form", num_fields=7
+        )
+        self.record1 = self.insert_form_data_record(
+            form=self.form,
+            project=self.project,
+            geoJSON=mixins.point,
+            name='rec1'
+        )
+        self.url = '/api/0/datasets/%s/data/' % (
+            self.form.id
+        )
+        self.key = 'form_{0}'.format(self.form.id)
 
     def test_kml_is_valid_xml(self):
         response = self.client_user.get(self.url + '?format=kml')

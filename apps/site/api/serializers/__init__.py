@@ -12,8 +12,6 @@ from localground.apps.site.api.serializers.project_serializer import \
     ProjectSerializer, ProjectDetailSerializer
 from localground.apps.site.api.serializers.sharing_serializer import \
     SharingListSerializer, SharingDetailSerializer
-from localground.apps.site.api.serializers.marker_serializer import \
-    MarkerSerializer, MarkerSerializerDetail
 from localground.apps.site.api.serializers.marker_w_attrs_serializer \
     import MarkerWAttrsSerializer
 from localground.apps.site.api.serializers.association_serializer import \

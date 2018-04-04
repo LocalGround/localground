@@ -31,7 +31,7 @@ class ZipMediaMixin(mixins.MediaMixin):
             self.assertIsNone(valid_if_none)
             zip_file.close()
 
-    def _all_media_files_present_in_zip_file(self):
+    def _all_media_files_present_in_zip_file(self, is_list=False):
         for url in self.urls.keys():
             expected_count = self.urls.get(url)
             response = self.client_user.get(
@@ -47,10 +47,11 @@ class ZipMediaMixin(mixins.MediaMixin):
             num_rows = 0
             for row in reader:
                 key = row.get('overlay_type')
-                if 'form_' in key:
+                if 'form_' in key and not is_list:
                     key = 'record'
                 num_rows += 1
-                file_path_columns = ZIPRenderer.PATH_FIELD_LOOKUP.get(key) or []
+                file_path_columns = ZIPRenderer.PATH_FIELD_LOOKUP.get(key) \
+                    or []
                 for file_path_column in file_path_columns:
                     for column_header in row:
                         # "endswith" handles nested file paths, for example
@@ -65,10 +66,12 @@ class ZipMediaMixin(mixins.MediaMixin):
                 self.assertTrue(num_rows > 4)
             else:
                 # make sure that it found at least 2 file paths
+                # print url
+                # print zip_file.namelist()
+                # print file_path_columns
                 self.assertTrue(
                     len(zip_file.namelist()) >= (1 + len(file_path_columns))
                 )
-
 
 
 class ZIPRendererListTest(ZipMediaMixin, test.TestCase, ModelMixin):
@@ -90,8 +93,7 @@ class ZIPRendererListTest(ZipMediaMixin, test.TestCase, ModelMixin):
         }
 
     def test_all_media_files_present_in_zip_file(self):
-        self._all_media_files_present_in_zip_file()
-
+        self._all_media_files_present_in_zip_file(is_list=True)
 
 
 class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
@@ -117,33 +119,26 @@ class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
             name="Class Form", num_fields=9
         )
         # self.form = models.Form.objects.get(id=self.form.id)  # requery
-        self.records = self.create_records(
-            self.form, 8, photo=self.photo1, audio=self.audio1
-        )
-        self.record1 = self.records[0]
-        self.record2 = self.records[1]
-
-        self.marker1 = self.create_marker(
-            self.user, self.project, name="f1", tags=self.tags1,
-            point=self.point
-        )
-        self.marker2 = self.create_marker(
-            self.user, self.project, name="f2", tags=self.tags2,
-            point=self.point
+        self.record1 = self.insert_form_data_record(
+            form=self.form,
+            project=self.project,
+            geoJSON=mixins.point,
+            name='rec1'
         )
 
         self.urls = {
-            # 1 project + 2 photos + 2 audio + 2 markers + 8 records
-            '/api/0/projects/{}/'.format(self.project.id): 15,
+            # 1 project + 2 photos + 2 audio + 1 record
+            '/api/0/projects/{0}/'.format(self.project.id): 6,
             # 1 project + 2 photos + 2 audio (no records)
-            '/api/0/markers/{}/'.format(self.marker1.id): 5
+            '/api/0/datasets/{0}/data/{1}/'.format(
+                self.form.id, self.record1.id): 5
         }
 
     def test_all_media_files_present_in_zip_file(self):
-        self.create_relation(self.marker1, self.photo1)
-        self.create_relation(self.marker1, self.photo2)
-        self.create_relation(self.marker1, self.audio1)
-        self.create_relation(self.marker1, self.audio2)
+        self.create_relation(self.record1, self.photo1)
+        self.create_relation(self.record1, self.photo2)
+        self.create_relation(self.record1, self.audio1)
+        self.create_relation(self.record1, self.audio2)
 
         file_path_columns = ZIPRenderer.URL_PATH_FIELDS
-        self._all_media_files_present_in_zip_file()
+        self._all_media_files_present_in_zip_file(is_list=False)

@@ -528,9 +528,12 @@ class ModelMixin(object):
         f.save()
         return f
 
-    def insert_form_data_record(self, form, project=None, photo=None,
-                                audio=None, name=None):
-        return self.create_record(project=project, form=form)
+    def insert_form_data_record(
+            self, form, project=None, photo=None, audio=None, name=None,
+            point=None, geoJSON=None):
+
+        return self.create_record(
+            project=project, form=form, point=point, geoJSON=geoJSON)
 
     def create_imageopt(self, mapimage):
         from localground.apps.site import models

@@ -91,24 +91,32 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         children = {}
         children.update(data.get('datasets'))
         children.update(data.get('media'))
-        for k in ['markers', 'photos', 'audio', 'map_images']:
+        for k in ['photos', 'audio', 'map_images']:
             self.assertFalse(children.get(k) is None)
             self.assertTrue(
                 isinstance(children.get(k).get('overlay_type'), basestring))
             self.assertTrue(isinstance(children.get(k).get('data'), list))
 
     def test_get_project_with_marker_arrays(self, **kwargs):
-        self.create_marker(self.user, self.project)
+        self.form = self.create_form_with_fields(
+            name="Class Form", num_fields=7
+        )
+        self.record = self.create_record(
+            self.user, self.project, form=self.form)
+        self.photo1 = self.create_photo(self.user, self.project)
+        self.audio1 = self.create_audio(self.user, self.project)
+        self.create_relation(self.record, self.photo1)
+        self.create_relation(self.record, self.audio1)
         response = self.client_user.get(
             self.url, {'marker_with_media_arrays': 1})
         self._check_children(response.data)
         datasets = response.data.get("datasets")
 
         # check arrays:
-        marker = datasets.get('markers').get('data')[0]
-        self.assertTrue('attached_photos_ids' in marker)
-        self.assertTrue('attached_audio_ids' in marker)
-        self.assertTrue('attached_map_images_id' in marker)
+        key = 'form_{0}'.format(self.form.id)
+        record = datasets.get(key).get('data')[0]
+        self.assertTrue('attached_photos_ids' in record)
+        self.assertTrue('attached_audio_ids' in record)
 
     def test_update_project_using_put(self, **kwargs):
         name, description = 'New Project Name', 'Test description'

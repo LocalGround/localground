@@ -11,25 +11,21 @@ entities = ['audio', 'photos', 'map-images']
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
-#router.register(r'audio', views.AudioViewSet)
-#router.register(r'photos', views.PhotoViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
-#router.register(r'map-images', views.MapImageViewSet)
 router.register(r'data-types', views.DataTypeViewSet)
-#router.register(r'tiles', views.TileViewSet)
-#router.register(r'fields', views.FieldViewSet)
 router.register(r'layouts', views.LayoutViewSet)
 router.register(r'overlay-sources', views.OverlaySourceViewSet)
 
 # The API URLs are now determined automatically by the router.
 # Additionally, we include the login URLs for the browseable API.
-urlpatterns = patterns('',
-                       url(r'^$', views.api_root),
-                       # a hack to include both ViewSets and views on the front
-                       # page
-                       url(r'^', include(router.urls[1:])),
-                       )
+urlpatterns = patterns(
+    '',
+    url(r'^$', views.api_root),
+    # a hack to include both ViewSets and views on the front
+    # page
+    url(r'^', include(router.urls[1:])),
+)
 
 urlpatterns += format_suffix_patterns(patterns('',
     url(
@@ -37,11 +33,11 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.ListUsernames.as_view(),
         name="usernames"),
     url(
-        r'^(?P<group_name_plural>markers|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
+        r'^(?P<group_name_plural>prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
         views.RelatedMediaList.as_view(),
         name='related-media-list'),
     url(
-        r'^(?P<group_name_plural>markers|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
+        r'^(?P<group_name_plural>prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
         views.RelatedMediaInstance.as_view(),
         name='related-media-detail'),
     url(
@@ -130,13 +126,6 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.MapImageList.as_view(),
         name='mapimage-list'),
     url(
-        r'^markers/(?P<pk>[0-9]+)/$',
-        views.MarkerInstance.as_view(),
-        name='record-detail'),
-    url(r'^markers/$',
-        views.MarkerList.as_view(),
-        name='record-list'),
-    url(
         r'^datasets/(?P<form_id>[0-9]+)/data/(?P<pk>[0-9]+)/$',
         views.MarkerWAttrsInstance.as_view()),
     url(r'^datasets/(?P<form_id>[0-9]+)/data/$',
@@ -148,17 +137,8 @@ urlpatterns += format_suffix_patterns(patterns('',
     url(r'^prints/$',
         views.PrintList.as_view(),
         name='print-list'),
-    #url(
-    #    r'^forms/(?P<form_id>[0-9]+)/data/(?P<pk>[0-9]+)/$',
-    #    views.FormDataInstance.as_view(),
-    #    name='form-data-instance'),
-    #url(
-    #    r'^forms/(?P<form_id>[0-9]+)/data/$',
-    #    views.FormDataList.as_view(),
-    #    name='form-data-list'),
     url(
         r'^datasets/(?P<form_id>[0-9]+)/fields/(?P<pk>[0-9]+)/$',
-        #r'^fields/(?P<pk>[0-9]+)/$',
         views.FieldInstance.as_view(),
         name='field-detail'),
     url(
@@ -211,5 +191,5 @@ urlpatterns += format_suffix_patterns(patterns('',
     ))
 
 if settings.DEBUG:
-   # Store static CSS, JS, etc. locally:
-   urlpatterns += static('/static/', document_root=settings.STATIC_ROOT)
+    # Store static CSS, JS, etc. locally:
+    urlpatterns += static('/static/', document_root=settings.STATIC_ROOT)

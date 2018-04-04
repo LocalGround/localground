@@ -12,8 +12,6 @@ from localground.apps.site.api.serializers.mapimage_serializer import \
 from localground.apps.site.api.serializers.audio_serializer import \
     AudioSerializer
 from localground.apps.site.api.metadata import CustomMetadata
-from localground.apps.site.api.serializers.marker_serializer import \
-    MarkerSerializer, MarkerSerializerDetail
 from localground.apps.site.api.serializers.map_serializer import \
     MapSerializerList
 from localground.apps.site.api.serializers.marker_w_attrs_serializer import \
@@ -44,9 +42,11 @@ class ProjectSerializer(
     class Meta:
         model = models.Project
         read_only_fields = ('time_stamp', 'date_created', 'last_updated_by')
-        fields = BaseSerializer.field_list + NamedSerializerMixin.field_list + (
-            'slug', 'access_authority', 'sharing_url', 'time_stamp',
-            'date_created', 'last_updated_by')
+        fields = BaseSerializer.field_list + NamedSerializerMixin.field_list \
+            + (
+                'slug', 'access_authority', 'sharing_url', 'time_stamp',
+                'date_created', 'last_updated_by'
+            )
         depth = 0
 
     def get_last_updated_by(self, obj):
@@ -84,13 +84,7 @@ class ProjectDetailSerializer(ProjectSerializer):
                 'field_set', 'field_set__data_type'
             ).filter(project=obj)
 
-        datasets = {
-            # 'photos': self.get_photos(obj),
-            # 'videos': self.get_videos(obj),
-            # 'audio': self.get_audio(obj),
-            # 'map_images': self.get_mapimages(obj),
-            'markers': self.get_markers(obj)
-        }
+        datasets = {}
 
         # add table data:
         for form in forms:
@@ -158,15 +152,6 @@ class ProjectDetailSerializer(ProjectSerializer):
                 processed_only=False
             ),
             name="Map Images"
-        )
-
-    def get_markers(self, obj):
-        return self.serialize_list(
-            models.Record,
-            MarkerSerializer,
-            models.Record.objects.get_objects_with_lists(
-                project=obj,
-            )
         )
 
     def serialize_list(

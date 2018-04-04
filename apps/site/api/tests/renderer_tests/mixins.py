@@ -4,7 +4,7 @@ from django.contrib.gis.geos import Point
 
 point = {
     "type": "Point",
-    "coordinates": [12.49, 41.89]
+    "coordinates": [-122.28, 37.87]
 }
 point2 = {
     "type": "Point",
@@ -47,11 +47,14 @@ class MediaMixin():
         )
         self.form = models.Form.objects.get(id=self.form.id)  # requery
         self.records = self.create_records(
-            self.form, 8, photo=self.photo1, audio=self.audio1
+            self.form, 8, photo=self.photo1, audio=self.audio1,
+            point=self.point
         )
         self.record1 = self.records[0]
+
         self.record2 = self.records[1]
 
+        # Expensive. Only run if necessary:
         self.map_image1 = self.create_mapimage(
             self.user, self.project, name="f1", tags=self.tags1,
             generate_print=True
@@ -59,22 +62,6 @@ class MediaMixin():
         self.map_image2 = self.create_mapimage(
             self.user, self.project, name="f2", tags=self.tags2,
             generate_print=True
-        )
-
-        self.marker1 = self.create_marker(
-            self.user, self.project, name="f1", tags=self.tags1,
-            point=self.point
-        )
-        self.marker2 = self.create_marker(
-            self.user, self.project, name="f2", tags=self.tags2,
-            point=self.point
-        )
-
-        self.project1 = self.create_project(
-            self.user, name="f1", tags=self.tags1
-        )
-        self.project2 = self.create_project(
-            self.user, name="f2", tags=self.tags2
         )
 
         self.print1 = self.map_image1.source_print
@@ -86,6 +73,13 @@ class MediaMixin():
         self.print2.name = "f2"
         self.print2.tags = self.tags2
         self.print2.save()
+
+        self.project1 = self.create_project(
+            self.user, name="f1", tags=self.tags1
+        )
+        self.project2 = self.create_project(
+            self.user, name="f2", tags=self.tags2
+        )
 
     def create_photo_with_media(self, name="f1", tags=[], point=None):
         import Image
@@ -142,7 +136,8 @@ class MediaMixin():
             )
             return models.Audio.objects.get(id=response.data.get("id"))
 
-    def create_records(self, form, num_records, photo=None, audio=None):
+    def create_records(
+            self, form, num_records, photo=None, audio=None, point=None):
         records = []
         for n in range(0, num_records):
             records.append(
@@ -151,6 +146,7 @@ class MediaMixin():
                     project=self.project,
                     photo=photo,
                     audio=audio,
+                    point=point,
                     name='f{}'.format((n+1))
                 )
             )

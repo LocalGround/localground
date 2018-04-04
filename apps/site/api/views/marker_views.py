@@ -1,3 +1,4 @@
+'''
 from rest_framework import generics
 from localground.apps.site.api import serializers, filters
 from localground.apps.site.api.views.abstract_views import \
@@ -71,3 +72,4 @@ class MarkerInstance(
     def perform_update(self, serializer):
         d = self.get_geometry_dictionary(serializer)
         serializer.save(**d)
+'''

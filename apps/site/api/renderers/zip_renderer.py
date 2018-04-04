@@ -31,7 +31,14 @@ class ZIPRenderer(renderers.BaseRenderer):
         ],
         'audio': ['file_path_orig', 'file_path'],
         'map-image': ['overlay_path', 'file_path'],
-        'record': [],
+        'record': [
+            'path_large',
+            'path_medium',
+            'path_medium_sm',
+            'path_small',
+            'path_marker_lg',
+            'path_marker_sm'
+        ],
         'print': [],  # ['pdf', 'thumb']
         'project': []
     }

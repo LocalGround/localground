@@ -12,7 +12,7 @@ class CSVMixin(mixins.MediaMixin):
 
     def test_csv_is_valid_for_objects(self):
         # issuing tests for many URL endpoints (photos, audio,
-        # map images, markers, projects, and prints):
+        # map images, projects, and prints):
         for url in self.urls:
             response = self.client_user.get(url)
             data = StringIO(response.content)
@@ -98,8 +98,6 @@ class CSVRendererListTest(CSVMixin, test.TestCase, ModelMixin):
             '/api/0/audio/?project_id={0}&format=csv'.format(self.project.id),
             '/api/0/map-images/?project_id={0}&format=csv'.format(
                 self.project.id),
-            # '/api/0/markers/?project_id={0}&format=csv'.format(
-            #    self.project.id),
             '/api/0/projects/?format=csv',
             '/api/0/prints/?project_id={0}&format=csv'.format(self.project.id)
         ]
@@ -120,7 +118,6 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
             '/api/0/photos/{}/?format=csv'.format(self.photo1.id),
             '/api/0/audio/{}/?format=csv'.format(self.audio1.id),
             '/api/0/map-images/{}/?format=csv'.format(self.map_image1.id),
-            # '/api/0/markers/{}/?format=csv'.format(self.marker1.id),
             '/api/0/projects/{}/?format=csv'.format(self.project1.id),
             '/api/0/prints/{}/?format=csv'.format(self.print1.id)
         ]
@@ -141,8 +138,7 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
             'project': 1,
             'photo': 2,
             'audio': 2,
-            'map-image': 2,
-            'marker': 2
+            'map-image': 2
         }
         actual = {}
         for row in reader:
@@ -151,33 +147,6 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
                 actual[key] = 0
             actual[key] += 1
 
-        self.assertSetEqual(set(expected.keys()), set(actual.keys()))
-        for key in expected.keys():
-            self.assertEqual(expected[key], actual[key])
-
-    def test_marker_instance_has_child_records(self):
-        self.create_relation(self.marker1, self.photo1)
-        self.create_relation(self.marker1, self.photo2)
-        self.create_relation(self.marker1, self.audio1)
-        self.create_relation(self.marker1, self.audio2)
-        self.create_relation(self.marker1, self.record1)
-        self.create_relation(self.marker1, self.record2)
-
-        url = '/api/0/markers/{}/'.format(self.marker1.id)
-        response = self.client_user.get(url + '?format=csv')
-        data = StringIO(response.content)
-        reader = csv.DictReader(data)
-        expected = {
-            'marker': 1,
-            'photo': 2,
-            'audio': 2,
-        }
-        actual = {}
-        for row in reader:
-            key = row.get('overlay_type')
-            if not actual.get(key):
-                actual[key] = 0
-            actual[key] += 1
         self.assertSetEqual(set(expected.keys()), set(actual.keys()))
         for key in expected.keys():
             self.assertEqual(expected[key], actual[key])
