@@ -1,6 +1,6 @@
 {{#if isIndividual}}
-    <a model-id="{{id}}" id="{{id}}" href="#/{{map_id}}/layers/{{layer_id}}/{{data_source}}/{{id}}" {{#if active }}class="highlight"{{/if}}>
-        <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ width }}">
+    <a model-id="{{id}}" id="{{id}}" href="#/{{map_id}}/layers/{{layer_id}}/{{data_source}}/{{id}}" class="ind-symbol {{#if active }}highlight{{/if}}">
+        <svg viewBox="{{ icon.viewBox }}" width="20" height="20">
             <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
                 stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>
         </svg>

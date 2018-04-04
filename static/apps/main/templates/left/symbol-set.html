@@ -2,9 +2,9 @@
     <div class="symbol-header" {{#if empty}}style="display: none;"{{/if}}>
         <input type="checkbox" value="{{ id }}" class='symbol-isShowing' {{#if isChecked}}CHECKED{{/if}} />
         <svg viewBox="{{ icon.viewBox }}" width="20" height="20">
-            <path fill="{{ icon.fillColor }}" opacity="{{ icon.fillOpacity }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke" stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}">
-            </path>
-        </svg>
+                <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
+                    stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>
+            </svg>
         <span class="sort-by">{{property}}</span>
         <p class="symbol-edit"><i class="fa fa-pencil" aria-hidden="true"></i></p>
     </div>

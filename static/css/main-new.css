@@ -305,7 +305,6 @@ ul {
 }
 
 .sort-by {
-  width: 100%;
   font-size: 12px;
   padding: 8px 20px;
   /* margin: 10px 0px; */
@@ -315,7 +314,6 @@ ul {
 }
 
 .symbol-header {
-  display: flex;
   background: #f7f7f7;
   border-bottom: 1px solid #ebebeb;
 }
@@ -329,6 +327,18 @@ ul {
 .symbol-header:hover .symbol-edit {
   display: block;
   cursor: pointer;
+}
+
+.ind-symbol svg {
+  vertical-align: middle;
+}
+
+.ind-symbol .symbol-edit {
+  vertical-align: text-bottom;
+}
+
+.symbol-header svg {
+  vertical-align: middle;
 }
 
 .style-by-menu {
