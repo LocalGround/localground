@@ -795,6 +795,7 @@ define(
             this.vent = _.extend({}, Backbone.Events);
 
             this.dataManager = new DataManager({
+                projectJSON,
                 vent: this.vent,
                 projectID: this.projects.models[0].id,
                 model: this.projects.models[0]
