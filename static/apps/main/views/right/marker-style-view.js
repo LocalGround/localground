@@ -136,6 +136,7 @@ define(["jquery",
                     selectedColorPalette: this.selectedColorPalette,
                     dataColumnsList: this.dataColumnsList, // new
                     isBasic: this.model.get('group_by') === 'basic',
+                    isIndividual: this.model.get('group_by') === 'individual',
                     propCanBeCont: this.propCanBeCont()
                 };
                 if (this.fields) {
