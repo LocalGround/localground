@@ -2,7 +2,8 @@ var rootDir = "../../";
 define([
     "backbone",
     rootDir + "apps/main/main-app",
-    rootDir + "lib/maps/basemap"
+    rootDir + "lib/maps/basemap",
+    "tests/spec-helper1"
 ],
     function (Backbone, MainApp, BaseMapView) {
         'use strict';
@@ -40,6 +41,11 @@ define([
             it("should initialize correctly", function () {
                 expect(mainApp.initialize).toHaveBeenCalledTimes(1);
                 expect(mainApp).toEqual(jasmine.any(MainApp));
+                console.log('dataManager:', this.dataManager);
+                console.log('photos:', this.photos);
+                console.log('audio:', this.audio);
+                console.log('form_2:', this.form_2);
+                console.log('form_3:', this.form_3);
             });
         });
     });
