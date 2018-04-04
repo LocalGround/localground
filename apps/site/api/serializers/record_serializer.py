@@ -171,7 +171,7 @@ class RecordSerializerMixin(GeometrySerializer):
 
     class Meta:
         model = models.Record
-        fields = GeometrySerializer.Meta.fields + \
+        fields = GeometrySerializer.field_list + \
             ('form', 'extras', 'url', 'media') + \
             ('attached_photos_ids',
              'attached_audio_ids',

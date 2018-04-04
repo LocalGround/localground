@@ -8,7 +8,7 @@ from localground.apps.site import models
 
 
 class DatasetSerializerList(
-        BaseSerializer, NamedSerializerMixin, ProjectSerializerMixin):
+        NamedSerializerMixin, ProjectSerializerMixin, BaseSerializer):
     data_url = serializers.SerializerMethodField()
     fields_url = serializers.SerializerMethodField()
 

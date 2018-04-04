@@ -62,7 +62,7 @@ class NamedSerializerMixin(serializers.ModelSerializer):
         style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
     )
 
-    field_list = ('url', 'id', 'name', 'caption', 'tags')
+    field_list = ('id', 'name', 'caption', 'tags', 'url')
 
     class Meta:
         abstract = True
@@ -169,11 +169,9 @@ class GeometrySerializer(ProjectSerializerMixin, BaseSerializer):
         required=False,
         style={'base_template': 'json.html', 'rows': 5})
 
-    field_list = ('tags', 'geometry', 'extras')
-
-    class Meta:
-        fields = BaseSerializer.field_list + \
-            ProjectSerializerMixin.field_list + ('tags', 'geometry', 'extras')
+    field_list = BaseSerializer.field_list + \
+        ProjectSerializerMixin.field_list + \
+        ('tags', 'geometry', 'extras')
 
 
 class MediaGeometrySerializer(GeometrySerializer):
@@ -197,8 +195,4 @@ class MediaGeometrySerializer(GeometrySerializer):
         # Sets the storage location upon initialization:
         model.media_file_orig.storage.location = model.get_storage_location()
 
-    field_list = ('attribution', 'media_file')
-
-    class Meta:
-        fields = GeometrySerializer.Meta.fields + \
-            ('attribution', 'media_file')
+    field_list = GeometrySerializer.field_list + ('attribution', 'media_file')
