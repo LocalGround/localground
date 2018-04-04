@@ -129,14 +129,6 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
 
 
 class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
-    '''
-    Todo:
-        * ensure that DELETE works
-           - issues a delete request,
-           - then do a get and make sure it's gone
-        * PATCH: ensure that only the field you patch gets
-          changed (nothing gets nulled out inadvertently)
-    '''
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=True)
@@ -151,8 +143,8 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         self.view = views.VideoInstance.as_view()
         self.metadata = get_metadata()
         self.metadata.update({
-            'project_id': {
-                'read_only': True, 'required': False, 'type': 'field'},
+            'project_id':
+                {'read_only': True, 'required': True, 'type': 'field'},
             'video_link': {
                 'read_only': False, 'required': False, 'type': 'string'}
         })

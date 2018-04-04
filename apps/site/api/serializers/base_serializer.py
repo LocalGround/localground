@@ -46,7 +46,7 @@ class AuditSerializerMixin(object):
             instance, validated_data)
 
 
-class NamedSerializerMixin(serializers.ModelSerializer):
+class TagsSerializerMixin(serializers.ModelSerializer):
     tags = fields.ListField(
         child=serializers.CharField(),
         required=False,
@@ -55,6 +55,10 @@ class NamedSerializerMixin(serializers.ModelSerializer):
         style={'base_template': 'tags.html'},
         help_text='Tag your object here'
     )
+    field_list = ('tags',)
+
+
+class NamedSerializerMixin(TagsSerializerMixin, serializers.ModelSerializer):
     name = serializers.CharField(
         required=False, allow_null=True, label='name', allow_blank=True)
     caption = serializers.CharField(
@@ -62,10 +66,22 @@ class NamedSerializerMixin(serializers.ModelSerializer):
         style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
     )
 
-    field_list = ('id', 'name', 'caption', 'tags', 'url')
+    field_list = ('id', 'name', 'caption', 'tags', 'url') + \
+        TagsSerializerMixin.field_list
 
     class Meta:
         abstract = True
+
+
+class GeometrySerializerMixin(serializers.ModelSerializer):
+    geometry = fields.GeometryField(
+        help_text='Assign a GeoJSON string',
+        allow_null=True,
+        required=False,
+        style={'base_template': 'json.html', 'rows': 5},
+        source='point'
+    )
+    field_list = ('geometry',)
 
 
 class ProjectSerializerMixin(serializers.ModelSerializer):
@@ -113,7 +129,6 @@ class ProjectSerializerMixin(serializers.ModelSerializer):
 
 
 class ExtentsSerializerMixin(serializers.ModelSerializer):
-
     center = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         required=False,
@@ -147,22 +162,10 @@ class BaseSerializer(
         abstract = True
 
 
-class GeometrySerializer(ProjectSerializerMixin, BaseSerializer):
-    tags = fields.ListField(
-        child=serializers.CharField(),
-        required=False,
-        allow_null=True,
-        label='tags',
-        style={'base_template': 'tags.html'},
-        help_text='Tag your object here'
-    )
-    geometry = fields.GeometryField(
-        help_text='Assign a GeoJSON string',
-        allow_null=True,
-        required=False,
-        style={'base_template': 'json.html', 'rows': 5},
-        source='point'
-    )
+class GeometrySerializer(
+        TagsSerializerMixin, GeometrySerializerMixin, ProjectSerializerMixin,
+        BaseSerializer):
+
     extras = JSONField(
         help_text='Store arbitrary key / value pairs, e.g. {"key": "value"}',
         allow_null=True,
@@ -170,8 +173,10 @@ class GeometrySerializer(ProjectSerializerMixin, BaseSerializer):
         style={'base_template': 'json.html', 'rows': 5})
 
     field_list = BaseSerializer.field_list + \
+        GeometrySerializerMixin.field_list + \
         ProjectSerializerMixin.field_list + \
-        ('tags', 'geometry', 'extras')
+        TagsSerializerMixin.field_list + \
+        ('extras',)
 
 
 class MediaGeometrySerializer(GeometrySerializer):
@@ -180,7 +185,6 @@ class MediaGeometrySerializer(GeometrySerializer):
         source='media_file_orig',
         required=True,
         style={'base_template': 'file.html'},
-        # write_only=True,
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
 

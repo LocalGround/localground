@@ -1,51 +1,19 @@
 from rest_framework import serializers
 from localground.apps.site.api.serializers.base_serializer import \
-    BaseSerializer
+    BaseSerializer, NamedSerializerMixin, ProjectSerializerMixin, \
+    GeometrySerializerMixin
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 import re
 
 
-class VideoSerializer(BaseSerializer):
+class VideoSerializer(
+        GeometrySerializerMixin, NamedSerializerMixin, ProjectSerializerMixin,
+        BaseSerializer):
     VIDEO_PROVIDERS = (
         ('vimeo', 'Vimeo'),
         ('youtube', 'YouTube')
     )
-    geometry = fields.GeometryField(
-        help_text='Assign a GeoJSON string',
-        allow_null=True,
-        required=False,
-        style={'base_template': 'json.html', 'rows': 5},
-        source='point'
-    )
-
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=True
-    )
-
-    caption = serializers.CharField(
-        source='description', required=False, allow_null=True, label='caption',
-        style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True)
-
-    tags = fields.ListField(
-        child=serializers.CharField(),
-        required=False,
-        allow_null=True,
-        label='tags',
-        style={'base_template': 'tags.html'},
-        help_text='Tag your object here'
-    )
-    owner = serializers.SerializerMethodField()
-
-    def get_owner(self, obj):
-        return obj.owner.username
-
-    overlay_type = serializers.SerializerMethodField()
-
-    def get_overlay_type(self, obj):
-        return obj._meta.verbose_name
 
     video_provider = serializers.ChoiceField(
         source='provider', choices=VIDEO_PROVIDERS, read_only=True)
@@ -104,18 +72,16 @@ class VideoSerializer(BaseSerializer):
     class Meta:
         model = models.Video
         read_only_fields = ('video_id', 'video_provider')
-        fields = (
-            'id', 'url', 'name', 'caption', 'tags', 'video_link',
-            'video_id', 'video_provider', 'geometry', 'project_id',
-            'owner', 'overlay_type', 'attribution')
+        fields = BaseSerializer.field_list + \
+            NamedSerializerMixin.field_list + \
+            GeometrySerializerMixin.field_list + \
+            ProjectSerializerMixin.field_list + (
+                'video_link', 'video_id', 'video_provider', 'attribution'
+            )
 
 
 class VideoUpdateSerializer(VideoSerializer):
-    project_id = serializers.SerializerMethodField()
     video_link = serializers.CharField(required=False)
-
-    def get_project_id(self, obj):
-        return obj.project.id
 
     def update(self, instance, validated_data):
         # Extend to add auditing information:
@@ -135,7 +101,9 @@ class VideoUpdateSerializer(VideoSerializer):
     class Meta:
         model = models.Video
         read_only_fields = ('video_id', 'video_provider')
-        fields = (
-            'id', 'url', 'name', 'caption', 'tags', 'video_link',
-            'video_id', 'video_provider', 'geometry', 'project_id',
-            'owner', 'overlay_type', 'attribution')
+        fields = BaseSerializer.field_list + \
+            NamedSerializerMixin.field_list + \
+            ProjectSerializerMixin.field_list + (
+                'video_link', 'video_id', 'video_provider', 'geometry',
+                'attribution'
+            )
