@@ -39,7 +39,7 @@ class CustomDataTimeField(serializers.DateTimeField):
         return str(datetime_object)
 
 
-class MarkerWAttrsSerializerMixin(GeometrySerializer1):
+class RecordSerializerMixin(GeometrySerializer1):
     # update_metadata = serializers.SerializerMethodField()
     # url = serializers.HyperlinkedIdentityField(
     '''
@@ -220,12 +220,12 @@ class MarkerWAttrsSerializerMixin(GeometrySerializer1):
         return instance
 
 
-class MarkerWAttrsSerializer(MarkerWAttrsSerializerMixin):
+class RecordSerializer(RecordSerializerMixin):
 
     media = serializers.SerializerMethodField()
 
     class Meta:
-        fields = MarkerWAttrsSerializerMixin.Meta.fields + ('media',)
+        fields = RecordSerializerMixin.Meta.fields + ('media',)
 
     def get_media(self, obj):
         from django.contrib.contenttypes.models import ContentType
@@ -261,7 +261,7 @@ def create_dynamic_serializer(form, **kwargs):
 
     class Meta:
         model = models.Record
-        fields = MarkerWAttrsSerializerMixin.Meta.fields + \
+        fields = RecordSerializerMixin.Meta.fields + \
             tuple(field_names)
 
     attrs = {
@@ -358,5 +358,5 @@ def create_dynamic_serializer(form, **kwargs):
             })
 
     return type(
-        'DynamicMarkerSerializer', (MarkerWAttrsSerializerMixin, ), attrs
+        'DynamicMarkerSerializer', (RecordSerializerMixin, ), attrs
     )

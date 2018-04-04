@@ -14,7 +14,7 @@ from localground.apps.site.api.serializers.audio_serializer import \
 from localground.apps.site.api.metadata import CustomMetadata
 from localground.apps.site.api.serializers.map_serializer import \
     MapSerializerList
-from localground.apps.site.api.serializers.marker_w_attrs_serializer import \
+from localground.apps.site.api.serializers.record_serializer import \
     create_dynamic_serializer
 from localground.apps.site.api.serializers.field_serializer import \
     FieldSerializerUpdate

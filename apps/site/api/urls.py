@@ -127,9 +127,9 @@ urlpatterns += format_suffix_patterns(patterns('',
         name='mapimage-list'),
     url(
         r'^datasets/(?P<form_id>[0-9]+)/data/(?P<pk>[0-9]+)/$',
-        views.MarkerWAttrsInstance.as_view()),
+        views.RecordInstance.as_view()),
     url(r'^datasets/(?P<form_id>[0-9]+)/data/$',
-        views.MarkerWAttrsList.as_view()),
+        views.RecordList.as_view()),
     url(
         r'^prints/(?P<pk>[0-9]+)/$',
         views.PrintInstance.as_view(),

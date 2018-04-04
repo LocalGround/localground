@@ -1,20 +1,35 @@
-'''
 from rest_framework import generics
 from localground.apps.site.api import serializers, filters
+from localground.apps.site.api.serializers.record_serializer import \
+    create_dynamic_serializer
 from localground.apps.site.api.views.abstract_views import \
     QueryableListCreateAPIView
 from localground.apps.site import models
+from django.http import Http404
 
+class RecordMixin(object):
 
-class MarkerGeometryMixin(object):
+    def get_serializer_class(self, is_list=False):
+        '''
+        This serializer class gets build dynamically, according to the
+        user-generated table being queried
+        '''
+        try:
+            #form = models.Form.objects.get(id=1)
+            form = models.Form.objects.get(id=self.kwargs.get('form_id'))
+        except models.Form.DoesNotExist:
+            raise Http404
+        return create_dynamic_serializer(form)
 
     def get_geometry_dictionary(self, serializer):
+        geom = serializer.validated_data.get('point')
+
         # If method is PATCH and geom is None, don't clear out
         # existing geometry:
-        geom = serializer.validated_data.get('point')
         if self.request.method == 'PATCH' and geom is None:
             return serializer.validated_data
 
+        # Otherwise, overwrite:
         d = {}
         if geom:
             del serializer.validated_data['point']
@@ -39,37 +54,24 @@ class MarkerGeometryMixin(object):
         d.update(serializer.validated_data)
         return d
 
-
-class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin):
-    filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
-    paginate_by = 100
-    serializer_class = serializers.MarkerSerializer
-
     def get_queryset(self):
-        from rest_framework.exceptions import APIException
-        r = self.request.GET or self.request.POST
-        if not r.get('project_id'):
-            raise APIException({
-                'project_id': ['A project_id is required']
-            })
-        record_set = models.Record.objects.get_objects_with_lists(
-            project=models.Project.objects.get(
-                id=int(r.get('project_id'))),
-            form=None
-        )
-        return record_set
+        #raise Exception(dir(self.request))
+        return models.Record.objects \
+                             .get_objects_with_lists(self.kwargs.get('form_id'))
+
+
+class RecordList(RecordMixin, QueryableListCreateAPIView):
+    filter_backends = (filters.SQLFilterBackend,)
+    paginate_by = 100
 
     def perform_create(self, serializer):
         d = self.get_geometry_dictionary(serializer)
         serializer.save(**d)
 
 
-class MarkerInstance(
-        MarkerGeometryMixin, generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Record.objects.select_related('owner', 'project')
-    serializer_class = serializers.MarkerSerializerDetail
+class RecordInstance(
+        RecordMixin, generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         d = self.get_geometry_dictionary(serializer)
         serializer.save(**d)
-'''

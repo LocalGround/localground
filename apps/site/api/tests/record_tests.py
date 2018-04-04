@@ -79,11 +79,11 @@ class DataMixin(object):
     }'''
 
 
-class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
+class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.view = views.MarkerWAttrsList.as_view()
+        self.view = views.RecordList.as_view()
         self.metadata = get_metadata()
         self.form = self.create_form_with_fields(num_fields=7)
         self.markerwattrs = self.create_record(
@@ -301,10 +301,10 @@ class APIMarkerWAttrsListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 )
 
 
-class APIMarkerWAttrsInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
+class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.view = views.MarkerWAttrsInstance.as_view()
+        self.view = views.RecordInstance.as_view()
         self.form = self.create_form_with_fields(num_fields=7)
         self.metadata = get_metadata()
         self.markerwattrs = self.create_record(
