@@ -1,11 +1,11 @@
 from localground.apps.site.api.serializers.base_serializer import \
-    MediaGeometrySerializerNew
+    MediaGeometrySerializer
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.lib.helpers import upload_helpers
 
 
-class AudioSerializer(MediaGeometrySerializerNew):
+class AudioSerializer(MediaGeometrySerializer):
     file_path = serializers.SerializerMethodField()
     file_path_orig = serializers.SerializerMethodField()
     ext_whitelist = [
@@ -26,7 +26,7 @@ class AudioSerializer(MediaGeometrySerializerNew):
 
     class Meta:
         model = models.Audio
-        fields = MediaGeometrySerializerNew.Meta.fields + \
+        fields = MediaGeometrySerializer.Meta.fields + \
             ('file_path', 'file_path_orig')
         depth = 0
 

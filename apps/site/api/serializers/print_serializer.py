@@ -1,5 +1,6 @@
 from localground.apps.site.api.serializers.base_serializer import \
-    ExtentsSerializer, ProjectSerializerMixin
+    ExtentsSerializerMixin, NamedSerializerMixin, ProjectSerializerMixin, \
+    BaseSerializer
 from rest_framework import serializers
 from localground.apps.site import models
 from django.forms import widgets
@@ -7,7 +8,9 @@ from localground.apps.site.api import fields
 from django.core.files import File
 
 
-class PrintSerializerMixin(serializers.ModelSerializer):
+class PrintSerializerMixin(
+        ExtentsSerializerMixin, NamedSerializerMixin, ProjectSerializerMixin,
+        BaseSerializer):
 
     def __init__(self, *args, **kwargs):
         super(PrintSerializerMixin, self).__init__(*args, **kwargs)
@@ -103,8 +106,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         )
 
 
-class PrintSerializer(
-        ExtentsSerializer, ProjectSerializerMixin, PrintSerializerMixin):
+class PrintSerializer(PrintSerializerMixin):
 
     class Meta:
         model = models.Print
@@ -169,8 +171,7 @@ class PrintSerializer(
         return self.instance
 
 
-class PrintSerializerDetail(
-        ExtentsSerializer, ProjectSerializerMixin, PrintSerializerMixin):
+class PrintSerializerDetail(PrintSerializerMixin):
     center = fields.GeometryField(
                 help_text='Assign a GeoJSON center point',
                 style={'base_template': 'json.html', 'rows': 5},

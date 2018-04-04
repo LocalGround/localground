@@ -2,14 +2,14 @@ import os
 import sys
 from django.conf import settings
 from localground.apps.site.api.serializers.base_serializer \
-    import MediaGeometrySerializerNew
+    import MediaGeometrySerializer
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.site.api.fields import FileField
 from localground.apps.lib.helpers import upload_helpers, generic
 
 
-class PhotoSerializer(MediaGeometrySerializerNew):
+class PhotoSerializer(MediaGeometrySerializer):
     path = serializers.SerializerMethodField()
     path_large = serializers.SerializerMethodField()
     path_medium = serializers.SerializerMethodField()
@@ -20,9 +20,9 @@ class PhotoSerializer(MediaGeometrySerializerNew):
 
     class Meta:
         model = models.Photo
-        fields = MediaGeometrySerializerNew.Meta.fields + (
-            'media_file', 'path', 'path_large', 'path_medium', 'path_medium_sm',
-            'path_small', 'path_marker_lg', 'path_marker_sm'
+        fields = MediaGeometrySerializer.Meta.fields + (
+            'media_file', 'path', 'path_large', 'path_medium',
+            'path_medium_sm', 'path_small', 'path_marker_lg', 'path_marker_sm'
         )
         depth = 0
 

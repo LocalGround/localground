@@ -46,31 +46,6 @@ class AuditSerializerMixin(object):
             instance, validated_data)
 
 
-class BaseSerializer(
-        AuditSerializerMixin, serializers.HyperlinkedModelSerializer):
-
-    def __init__(self, *args, **kwargs):
-        super(BaseSerializer, self).__init__(*args, **kwargs)
-        model_meta = self.Meta.model._meta
-        format_kwargs = {
-            'app_label': model_meta.app_label,
-            'model_name': model_meta.object_name.lower()
-        }
-    overlay_type = serializers.SerializerMethodField()
-    owner = serializers.SerializerMethodField()
-
-    def get_overlay_type(self, obj):
-        return obj._meta.verbose_name
-
-    def get_owner(self, obj):
-        return obj.owner.username
-
-    field_list = ('id', 'overlay_type', 'owner')
-
-    class Meta:
-        abstract = True
-
-
 class NamedSerializerMixin(serializers.ModelSerializer):
     tags = fields.ListField(
         child=serializers.CharField(),
@@ -137,7 +112,42 @@ class ProjectSerializerMixin(serializers.ModelSerializer):
     field_list = ('project_id',)
 
 
-class GeometrySerializer1(ProjectSerializerMixin, BaseSerializer):
+class ExtentsSerializerMixin(serializers.ModelSerializer):
+
+    center = fields.GeometryField(
+        help_text='Assign a GeoJSON string',
+        required=False,
+        style={'base_template': 'json.html', 'rows': 5}
+    )
+    field_list = ('center',)
+
+
+class BaseSerializer(
+        AuditSerializerMixin, serializers.HyperlinkedModelSerializer):
+
+    def __init__(self, *args, **kwargs):
+        super(BaseSerializer, self).__init__(*args, **kwargs)
+        model_meta = self.Meta.model._meta
+        format_kwargs = {
+            'app_label': model_meta.app_label,
+            'model_name': model_meta.object_name.lower()
+        }
+    overlay_type = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField()
+
+    def get_overlay_type(self, obj):
+        return obj._meta.verbose_name
+
+    def get_owner(self, obj):
+        return obj.owner.username
+
+    field_list = ('id', 'overlay_type', 'owner')
+
+    class Meta:
+        abstract = True
+
+
+class GeometrySerializer(ProjectSerializerMixin, BaseSerializer):
     tags = fields.ListField(
         child=serializers.CharField(),
         required=False,
@@ -159,33 +169,14 @@ class GeometrySerializer1(ProjectSerializerMixin, BaseSerializer):
         required=False,
         style={'base_template': 'json.html', 'rows': 5})
 
+    field_list = ('tags', 'geometry', 'extras')
+
     class Meta:
         fields = BaseSerializer.field_list + \
             ProjectSerializerMixin.field_list + ('tags', 'geometry', 'extras')
 
 
-class GeometrySerializer(
-        NamedSerializerMixin, ProjectSerializerMixin, BaseSerializer):
-    geometry = fields.GeometryField(
-        help_text='Assign a GeoJSON string',
-        allow_null=True,
-        required=False,
-        style={'base_template': 'json.html', 'rows': 5},
-        source='point'
-    )
-    extras = JSONField(
-        help_text='Store arbitrary key / value pairs, e.g. {"key": "value"}',
-        allow_null=True,
-        required=False,
-        style={'base_template': 'json.html', 'rows': 5})
-
-    class Meta:
-        fields = BaseSerializer.field_list + \
-            NamedSerializerMixin.field_list + \
-            ProjectSerializerMixin.field_list + ('geometry', 'extras')
-
-
-class MediaGeometrySerializerNew(GeometrySerializer):
+class MediaGeometrySerializer(GeometrySerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     media_file = serializers.CharField(
         source='media_file_orig',
@@ -196,7 +187,7 @@ class MediaGeometrySerializerNew(GeometrySerializer):
     )
 
     def __init__(self, *args, **kwargs):
-        super(MediaGeometrySerializerNew, self).__init__(*args, **kwargs)
+        super(MediaGeometrySerializer, self).__init__(*args, **kwargs)
         if not self.instance:
             return
         try:
@@ -206,21 +197,8 @@ class MediaGeometrySerializerNew(GeometrySerializer):
         # Sets the storage location upon initialization:
         model.media_file_orig.storage.location = model.get_storage_location()
 
+    field_list = ('attribution', 'media_file')
+
     class Meta:
         fields = GeometrySerializer.Meta.fields + \
             ('attribution', 'media_file')
-
-
-class ExtentsSerializer(
-        NamedSerializerMixin, ProjectSerializerMixin, BaseSerializer):
-
-    center = fields.GeometryField(
-        help_text='Assign a GeoJSON string',
-        required=False,
-        style={'base_template': 'json.html', 'rows': 5}
-    )
-
-    class Meta:
-        fields = BaseSerializer.field_list + \
-            NamedSerializerMixin.field_list + \
-            ProjectSerializerMixin.field_list + ('center',)
