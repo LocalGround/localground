@@ -2,19 +2,14 @@ import os
 import sys
 from django.conf import settings
 from localground.apps.site.api.serializers.base_serializer \
-    import BaseSerializer
+    import BaseSerializer, ProjectSerializerMixin
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.lib.helpers import upload_helpers, generic
 
 
-class IconSerializerBase(BaseSerializer):
+class IconSerializerBase(ProjectSerializerMixin, BaseSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'png', 'svg']
-    project_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.Project.objects.all(),
-        source='project',
-        required=True
-    )
     icon_file = serializers.CharField(
         source='file_name_orig', required=True,
         style={'base_template': 'file.html'},
@@ -26,7 +21,6 @@ class IconSerializerBase(BaseSerializer):
         required=False
     )
     file_path = serializers.SerializerMethodField('get_file_path_new')
-    owner = serializers.SerializerMethodField()
 
     def get_file_path_new(self, obj):
         try:
@@ -34,11 +28,15 @@ class IconSerializerBase(BaseSerializer):
         except Exception:
             return None
 
-    def get_owner(self, obj):
-        return obj.owner.username
-
     class Meta:
         abstract = True
+        model = models.Icon
+        read_only_fields = ('width', 'height', 'file_type')
+        fields = ProjectSerializerMixin.field_list + \
+            BaseSerializer.field_list + (
+                'url', 'name', 'icon_file', 'file_type', 'file_path', 'size',
+                'width', 'height', 'anchor_x', 'anchor_y'
+            )
 
 
 class IconSerializerList(IconSerializerBase):
@@ -50,9 +48,7 @@ class IconSerializerList(IconSerializerBase):
     class Meta:
         model = models.Icon
         read_only_fields = ('width', 'height', 'file_type')
-        fields = ('url', 'id', 'name', 'icon_file', 'file_type', 'file_path',
-                  'owner', 'project_id', 'size', 'width', 'height', 'anchor_x',
-                  'anchor_y')
+        fields = IconSerializerBase.Meta.fields
         depth = 0
 
     def create(self, validated_data):
@@ -97,11 +93,6 @@ class IconSerializerUpdate(IconSerializerBase):
     height = serializers.IntegerField(read_only=True)
     icon_file = serializers.CharField(
         source='file_name_orig', required=False, read_only=True)
-    project_id = serializers.SerializerMethodField()
-
-    def get_project_id(self, obj):
-        # Instance is read-only
-        return obj.project.id
 
     def update(self, instance, validated_data):
         data = self.get_presave_update_dictionary()
@@ -113,11 +104,3 @@ class IconSerializerUpdate(IconSerializerBase):
 
         data.update(resized_icon_parameters)
         return super(IconSerializerBase, self).update(instance, data)
-
-    class Meta:
-        model = models.Icon
-        read_only_fields = ('width', 'height', 'project_id', 'file_type')
-        fields = ('url', 'id', 'name', 'icon_file', 'file_type', 'file_path',
-                  'owner', 'size', 'width', 'height', 'project_id', 'anchor_x',
-                  'anchor_y')
-        depth = 0

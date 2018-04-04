@@ -19,7 +19,7 @@ def get_metadata():
                          'type': 'field'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
-        'project_id': {'read_only': True, 'required': False, 'type': 'field'},
+        "project_id": {"type": "field", "required": True, "read_only": False},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'},
@@ -307,6 +307,10 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.view = views.RecordInstance.as_view()
         self.form = self.create_form_with_fields(num_fields=7)
         self.metadata = get_metadata()
+        self.metadata.update({
+            'project_id':
+                {'read_only': True, 'required': True, 'type': 'field'}
+        })
         self.markerwattrs = self.create_record(
             self.user, self.project, form=self.form)
         self.urls = [

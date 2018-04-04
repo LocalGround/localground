@@ -56,12 +56,6 @@ class RecordSerializerMixin(GeometrySerializer):
     attached_videos_ids = serializers.SerializerMethodField()
     attached_map_images_ids = serializers.SerializerMethodField()
 
-    project_id = serializers.PrimaryKeyRelatedField(
-        source='project',
-        required=False,
-        read_only=True
-    )
-
     def get_url(self, obj):
         return '%s/api/0/datasets/%s/data/%s' % \
                 (settings.SERVER_URL, obj.form.id, obj.id)

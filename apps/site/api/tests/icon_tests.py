@@ -294,11 +294,8 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                 'required': False,
                 'read_only': True
             },
-            'project_id': {
-                'read_only': True,
-                'required': False,
-                'type': 'field'
-            }
+            'project_id':
+                {'read_only': True, 'required': True, 'type': 'field'}
         })
 
     def tearDown(self):
