@@ -1,16 +1,14 @@
 <form class="form">
     <div class="row {{#if generalError}}error{{/if}}">
         <label>Map Name</label>
-        <input type="text" placeholder="name of map" id="new-map-name" value="{{name}}">
+        <input id="map-name" type="text" value="{{name}}"
+            placeholder="name of your map">
     </div>
     <div class="row">
         <label>Description</label>
-        <textarea placeholder="map description" id="new-map-description" value="{{description}}"></textarea>
+        <textarea id="map-description" value=""
+            placeholder="Add a description to help people understand your map"></textarea>
     </div>
-    <!-- div class="row {{#if slugError}}error{{/if}}">
-        <label>Friendly URL</label>
-        <input type="text" placeholder="enter name or leave blank for autofill" id="new-map-slug" value="{{slug}}">
-    </div -->
     <div class="row">
         <input type="radio" name="choose-dataset" id="new-dataset">
         <label>Create a new dataset</label>

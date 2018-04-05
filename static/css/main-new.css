@@ -173,11 +173,10 @@ ul {
   display: block;
 }
 
-.highlight {
-  background: #7b9be1;
-  color: #ffffff;
-}
-
+/*.highlight {
+    background: rgb(123, 155, 225);
+    color: #ffffff;
+}*/
 .breadcrumb {
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 transparent, 0 2px 4px -1px transparent;
   z-index: 2;
@@ -686,6 +685,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   display: flex;
   flex-wrap: wrap;
   margin: 8px 0px;
+  /* direct descendents inline */
 }
 
 .form-inline .row > label {
@@ -693,21 +693,19 @@ span.action.rounded:hover, a.action.rounded:hover {
   /*border: solid 1px #000;*/
 }
 
-.form-inline .row textarea, .form-inline .row input[type="text"], .form-inline .row input[type="number"], .form-inline .row input[type="date"],
-.form-inline .row input[type="password"], .form-inline .row input[type="email"], .form-inline .row select, .form-inline .row div {
+.form-inline .row > textarea, .form-inline .row > input[type="text"], .form-inline .row > input[type="number"],
+.form-inline .row > input[type="date"], .form-inline .row > input[type="password"], .form-inline .row > input[type="email"],
+.form-inline .row > select, .form-inline .row > div {
   flex: 3;
-  /*border: solid 1px #000;*/
 }
 
-.form-inline .row.error {
-  justify-content: flex-end;
+.form-inline .row.error div {
+  display: flex;
+  flex-wrap: wrap;
 }
 
-.form-inline .row.error p {
-  width: 90%;
-  /*border: solid 1px #000;*/
-  align-self: flex-end;
-  text-align: left;
+.form-inline .row.error div p {
+  padding: 0px;
 }
 
 .form .row {
@@ -725,6 +723,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   line-height: 1em;
   margin: 0px;
   font-weight: 400;
+  padding-top: 3px;
 }
 
 .banner-username {
@@ -965,7 +964,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   background-color: #ffffff;
   border-top: none;
   max-height: 75vh;
-  overflow-y: scroll;
+  /*overflow-y: scroll;*/
 }
 
 .modal .body nav ul {
@@ -1300,4 +1299,5 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
+
 /*# sourceMappingURL=main-new.css.map */

@@ -92,7 +92,7 @@ span.action.rounded:hover, a.action.rounded:hover {
     input[type="radio"]:checked{
         border: 6px solid #4099ff;
     }
-    
+
     input[type="checkbox"] {
         margin: 0px;
         -webkit-appearance: button;
@@ -148,19 +148,22 @@ span.action.rounded:hover, a.action.rounded:hover {
             flex: 1;
             /*border: solid 1px #000;*/
         }
-        textarea, input[type="text"], input[type="number"], input[type="date"],
-        input[type="password"], input[type="email"], select, div {
+
+        /* direct descendents inline */
+        > textarea, > input[type="text"], > input[type="number"],
+        > input[type="date"], > input[type="password"], > input[type="email"],
+        > select, > div {
             flex: 3;
-            /*border: solid 1px #000;*/
         }
+
     }
     .row.error {
-        justify-content: flex-end;
-        p {
-            width: 90%;
-            /*border: solid 1px #000;*/
-            align-self: flex-end;
-            text-align: left;
+        div {
+            display: flex;
+            flex-wrap: wrap;
+            p {
+                padding: 0px;
+            }
         }
     }
 }
@@ -177,6 +180,7 @@ span.action.rounded:hover, a.action.rounded:hover {
             line-height: 1em;
             margin: 0px;
             font-weight: 400;
+            padding-top: 3px;
         }
     }
 }

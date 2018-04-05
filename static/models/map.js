@@ -29,14 +29,7 @@ define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
 		},
         defaults: function () {
             return _.extend({}, BaseItem.prototype.defaults, {
-                checked: false,
-                panel_styles: {
-                    display_legend: true,
-                    title: {type: "title", font: "Lato", fw: "bold", color: "ffffff", backgroundColor: "4e70d4", size: "15"},
-                    subtitle: {type: "subtitle", font: "Lato", fw: "regular", color: "666", backgroundColor: "f7f7f7", size: "12"},
-                    paragraph: {type: "paragraph", font: "Lato", fw: "regular", color: "666", backgroundColor: "f0f1f5", size: "12"},
-                    tags: {type: "tags", font: "Lato", fw: "regular", color: "3d3d3d", backgroundColor: "f7f7f7", size: "10"}
-                }
+                checked: false
             });
         },
 

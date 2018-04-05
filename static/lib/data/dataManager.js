@@ -41,6 +41,12 @@ define(["underscore", "marionette", "models/project",
                 this.maps = new Maps(this.model.get('maps').data, {
                     projectID: this.model.id});
             },
+            addMap: function (map) {
+                map.getLayers().each(function (layer) {
+                    console.log(layer.get('title'));
+                })
+                this.maps.add(map);
+            },
 
             initCollections: function () {
                 var dataLists = {};
@@ -120,6 +126,7 @@ define(["underscore", "marionette", "models/project",
             },
 
             createRecordsCollection:  function (jsonData, opts, fields) {
+                console.log(opts.fields);
                 var fieldsURL,
                     collection;
                 opts.formID = parseInt(opts.dataType.split("_")[1]);
@@ -186,6 +193,7 @@ define(["underscore", "marionette", "models/project",
             },
 
             getModel: function (dataType, id) {
+                console.log(this.dataDictionary[dataType])
                 return this.dataDictionary[dataType].getModel(id);
             },
 

@@ -9,7 +9,7 @@ define(["jquery",
         "text!../../templates/left/select-map.html",
         "lib/modals/modal"
     ],
-    function ($, Marionette, Handlebars, Map, Maps, Layer, Layers, NewMap, MapTemplate, Modal) {
+    function ($, Marionette, Handlebars, Map, Maps, Layer, Layers, CreateMapForm, MapTemplate, Modal) {
         'use strict';
 
         var SelectMapView = Marionette.ItemView.extend(_.extend({}, {
@@ -71,7 +71,7 @@ define(["jquery",
                 this.render();
             },
 
-            newMap: function (mapAttrs) {
+            /*newMap: function (mapAttrs) {
                 var that = this,
                     latLng = this.app.basemapView.getCenter();
                 this.map = new Map({
@@ -99,7 +99,7 @@ define(["jquery",
                         that.app.vent.trigger("send-modal-error", that.slugError);
                     }
                 });
-            },
+            },*/
 
             updateMap: function (map) {
                 var that = this;
@@ -123,49 +123,6 @@ define(["jquery",
                 // sets newly created map as the selected map
                 this.$el.find('#map-select').val(this.map.id);
 
-                //Moved to create new map:
-                /*var layers = new Layers(null, {mapID: this.map.get("id")});
-                this.map.set("layers", layers);
-
-                dm.each(function (collection) {
-                   if (collection.length < 1) {
-                        return;
-                    }
-                    if (collection.getIsSite()) {
-                        var layer = new Layer({
-                            map_id: that.map.id,
-                            data_source: collection.getDataType(),
-                            group_by: "basic",
-                            filters: {},
-                            symbols: [{
-                                "fillColor": collection.fillColor,
-                                "width": 20,
-                                "rule": "*",
-                                "title": collection.getTitle()
-                            }],
-                            metadata: {
-                                buckets: 4,
-                                paletteId: 0,
-                                fillOpacity: 1,
-                                width: 20,
-                                fillColor: collection.fillColor,
-                                strokeColor: "#ffffff",
-                                strokeWeight: 1,
-                                strokeOpacity: 1,
-                                shape: "circle"
-                            },
-                            title: collection.getTitle()
-                        });
-                        layers.add(layer);
-                        layer.save(null, {
-                            success: console.log('layers saved successfully'),
-                            error: function (model, response){
-                                var messages = JSON.parse(response.responseText);
-                                console.log(messages);
-                            }
-                        });;
-                    }});
-                */
                 this.setActiveMap(this.map);
              //   this.render();
                 this.app.router.navigate('//' + this.map.id);
@@ -199,9 +156,21 @@ define(["jquery",
             },
 
             showAddMapModal: function () {
-                var createMapModel = new NewMap({
+                var latLng = this.app.basemapView.getCenter();
+                var createMapModel = new CreateMapForm({
                     app: this.app,
-                    mode: 'createNewMap'
+                    model: new Map({
+                        center: {
+                            "type": "Point",
+                            "coordinates": [
+                                latLng.lng(),
+                                latLng.lat()
+                            ]
+                        },
+                        basemap: this.app.getMapTypeId(),
+                        zoom: this.app.getZoom(),
+                        project_id: this.app.getProjectID()
+                    })
                 });
 
                 this.modal.update({
