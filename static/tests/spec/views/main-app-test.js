@@ -3,11 +3,19 @@ define([
     "backbone",
     rootDir + "apps/main/main-app",
     rootDir + "lib/maps/basemap",
+    rootDir + "apps/main/views/left/left-panel",
+    rootDir + "views/data-detail",
     "tests/spec-helper1"
 ],
-    function (Backbone, MainApp, BaseMapView) {
+    function (Backbone, MainApp, BaseMapView, LeftPanelView, DataDetailView) {
         'use strict';
         var mainApp, fixture, initApp;
+        const info = {
+            mapId: 3, 
+            layerId: 6,
+            dataSource: 'form_2', 
+            markerId: 12
+        };
 
         initApp = function (scope) {
 
@@ -16,12 +24,12 @@ define([
             spyOn(MainApp.prototype, 'showBreadcrumbs').and.callThrough();
             spyOn(MainApp.prototype, 'showBasemap').and.callThrough();
             spyOn(MainApp.prototype, 'addMessageListeners').and.callThrough();
-            spyOn(MainApp.prototype, 'loadRegions').and.callThrough();
+            spyOn(MainApp.prototype, 'showLeftLayout').and.callThrough();
             spyOn(MainApp.prototype, 'hideDetail').and.callThrough();
             spyOn(MainApp.prototype, 'unhideDetail').and.callThrough();
             spyOn(MainApp.prototype, 'hideList').and.callThrough();
             spyOn(MainApp.prototype, 'unhideList').and.callThrough();
-            spyOn(MainApp.prototype, 'showDataDetail');
+            spyOn(MainApp.prototype, 'showDataDetail').and.callThrough();
             spyOn(MainApp.prototype, 'showModal');
             spyOn(MainApp.prototype, 'hideModal').and.callThrough();
 
@@ -63,8 +71,8 @@ define([
             it("should call addMessageListeners()", function() {
                 expect(mainApp.addMessageListeners).toHaveBeenCalledTimes(1);
             });
-            it("should call loadRegions()", function() {
-                expect(mainApp.loadRegions).toHaveBeenCalledTimes(1);
+            it("should call showLeftLayout()", function() {
+                expect(mainApp.showLeftLayout).toHaveBeenCalledTimes(1);
             });
 
             // .vent listeners
@@ -93,11 +101,11 @@ define([
                 mainApp.vent.trigger('hide-detail');
                 expect(mainApp.hideDetail).toHaveBeenCalledTimes(1);
             });
-            it("should listen to 'show-data-detail'", function() {
-                expect(mainApp.showDataDetail).toHaveBeenCalledTimes(0);
-                mainApp.vent.trigger('show-data-detail');
-                expect(mainApp.showDataDetail).toHaveBeenCalledTimes(1);
-            });
+            // it("should listen to 'show-data-detail'", function() {
+            //     expect(mainApp.showDataDetail).toHaveBeenCalledTimes(0);
+            //     mainApp.vent.trigger('show-data-detail', info);
+            //     expect(mainApp.showDataDetail).toHaveBeenCalledTimes(1);
+            // });
             it("should listen to 'show-modal'", function() {
                 expect(mainApp.showModal).toHaveBeenCalledTimes(0);
                 mainApp.vent.trigger('show-modal');
@@ -109,5 +117,48 @@ define([
                 expect(mainApp.hideModal).toHaveBeenCalledTimes(1);
             });
 
+            it("should have correct regions", function() {
+                expect(mainApp.regions.container).toEqual(".main-panel");
+                expect(mainApp.regions.rightRegion).toEqual("#right-panel");
+                expect(mainApp.regions.mapRegion).toEqual("#map-panel");
+                expect(mainApp.regions.leftRegion).toEqual("#left-panel");
+                expect(mainApp.regions.breadcrumbRegion).toEqual("#breadcrumb");
+            });
+            
+
         });
+
+        describe("MainApp functions: ", function () {
+            beforeEach(function () {
+                initApp(this);
+            });
+            afterEach(function () {
+                Backbone.history.stop();
+            });
+            it("showLeftLayout() should instantiate LeftPanelView", function() {
+                // don't need to invoke showLeftLayout() to test it because it gets called upon initialization
+                spyOn(mainApp.leftRegion.__proto__, 'show');
+                expect(mainApp.leftPanelView).toEqual(jasmine.any(LeftPanelView));
+                
+                // trouble spying on delegated methods...
+                //expect(mainApp.leftRegion.__proto__.show).toHaveBeenCalledTimes(1)
+                expect(mainApp.showLeftLayout).toHaveBeenCalledTimes(1);
+            });
+            
+            it("showLeftLayout() should display LeftPanelView html", function() {
+                // don't need to invoke showLeftLayout() to test it because it gets called upon initialization
+                expect(mainApp.leftRegion.$el).toContainElement('#layers_region');
+            });
+
+            it("showDataDetail() should instantiate DataDetailView", function() {
+                console.log(mainApp);
+                mainApp.showDataDetail(info);
+                //mainApp.vent.trigger('show-data-detail');
+                
+                //expect(mainApp.dataDetailView).toEqual(jasmine.any(DataDetailView));
+                expect(1).toEqual(1);
+            })
+
+        });
+        
     });

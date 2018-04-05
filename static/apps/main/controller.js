@@ -27,7 +27,7 @@ define([
             const routeInfo = {
                 mapId: parseInt(mapId), 
                 layerId: parseInt(layerId),
-                dataSource: parseInt(dataSource), 
+                dataSource: dataSource, 
                 markerId: parseInt(markerId)
             };
             if (!this.app.selectedMapModel || this.app.selectedMapModel.id !== routeInfo.mapId) {
@@ -37,12 +37,8 @@ define([
             
             this.app.screenType = 'map';
             this.app.dataType = dataSource;
-            let detailView = new DataDetail({
-                model: this.app.dataManager.getModel(dataSource, parseInt(markerId)),
-                app: this.app
-            });
 
-            this.app.vent.trigger('show-data-detail', detailView, routeInfo);
+            this.app.vent.trigger('show-data-detail', routeInfo);
             // setTimeout(() => {
             //     this.app.vent.trigger('highlight-symbol-item', routeInfo)
             // }, 1000);

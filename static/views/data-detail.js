@@ -416,6 +416,7 @@ define([
             if (this.form) {
                 this.form.remove();
             }
+            console.log(this.model);
             this.form = new DataForm({
                 model: this.model,
                 schema: this.model.getFormSchema(),

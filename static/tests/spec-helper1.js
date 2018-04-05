@@ -84,5 +84,9 @@ define(
             this.photos = this.dataManager.getCollection('audio');
             this.form_2 = this.dataManager.getCollection('form_2');
             this.form_3 = this.dataManager.getCollection('form_3');
+            console.log(this.form_3.at(0));
+            // this.test_record = this.form_2.at(0);
+            // this.test_record.set('datasets', {});
+            // this.test_record.set('media', {});
         });
 });

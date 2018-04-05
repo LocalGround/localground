@@ -125,6 +125,7 @@ define(["underscore", "marionette", "models/project",
             },
 
             createRecordsCollection:  function (jsonData, opts, fields) {
+                console.log(opts.fields);
                 var fieldsURL,
                     collection;
                 opts.formID = parseInt(opts.dataType.split("_")[1]);
@@ -201,6 +202,7 @@ define(["underscore", "marionette", "models/project",
             },
 
             getModel: function (dataType, id) {
+                console.log(this.dataDictionary[dataType]);
                 return this.dataDictionary[dataType].getModel(id);
             },
 
