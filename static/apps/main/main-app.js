@@ -53,7 +53,7 @@ define([
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
-            this.listenTo(this.vent, 'edit-layer', this.showRightLayout);
+            //this.listenTo(this.vent, 'edit-layer', this.showRightLayout);
             this.listenTo(this.vent, 'show-data-detail', this.showDataDetail);
             this.listenTo(this.vent, 'show-modal', this.showModal);
             this.listenTo(this.vent, 'hide-modal', this.hideModal);
