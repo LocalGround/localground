@@ -5,7 +5,6 @@ define(["jquery",
         "views/media_browser",
         "views/create-media",
         "models/record",
-        "models/marker",
         "models/audio",
         "models/video",
         "collections/photos",
@@ -20,7 +19,7 @@ define(["jquery",
         "lib/carousel/carousel"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
-        Record, Marker, AudioModel, Video, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
+        Record, AudioModel, Video, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
         SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
@@ -606,9 +605,6 @@ define(["jquery",
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "videos":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Video", "Video Link", "Tags", "Attribution", "Owner", "Delete"];
-                    case "markers":
-                        cols = ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Media", "Delete"];
-                        return cols;
                     default:
                         if (!this.fields) {
                             return null;
@@ -634,8 +630,6 @@ define(["jquery",
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "videos":
                         return [30, 80, 80, 200, 400, 65, 100, 200, 100, 80, 100];
-                    case "markers":
-                        return [30, 80, 80, 200, 400, 200, 120, 100, 100];
                     default:
                         if (!this.fields){
                             return null;
@@ -706,18 +700,6 @@ define(["jquery",
                            { data: "owner", readOnly: true},
                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                       ];
-                    case "markers":
-                       return [
-                            { data: "id", readOnly: true},
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' },
-                            { data: "name", renderer: "html"},
-                            { data: "caption", renderer: "html"},
-                            { data: "tags", renderer: "html" },
-                            { data: "owner", readOnly: true},
-                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                       ];
                     default:
                         if (!this.fields) {
                             return null;
@@ -854,8 +836,6 @@ define(["jquery",
                 dataType = dataType != undefined ? dataType : this.app.dataType;
                 if (dataType == "audio" || dataType == "photos") {
                     return;
-                } else if (dataType == "markers"){
-                    rec = new Marker({project_id: projectID});
                 } else if (dataType == "videos") {
                     rec = new Video({project_id: projectID});
                 } else {

@@ -21,8 +21,6 @@ define(['marionette',
                     overlayView = PhotoOverlay;
                 } else if (this.app.dataType == "audio") {
                     overlayView = AudioOverlay;
-                } else if (this.app.dataType == "markers") {
-                    overlayView = MarkerOverlay;
                 } else {
                     alert("dataType not handled");
                 }

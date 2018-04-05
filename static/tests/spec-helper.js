@@ -11,7 +11,6 @@ define(
         "collections/videos",
         "collections/maps",
         "collections/mapimages",
-        "collections/markers",
         "collections/records",
         "collections/prints",
         "collections/forms",
@@ -19,7 +18,6 @@ define(
         "models/project",
         "models/projectUser",
         "models/photo",
-        "models/marker",
         "models/audio",
         "models/video",
         "models/record",
@@ -34,7 +32,7 @@ define(
     ],
 
     function (Backbone, Marionette, $, appUtilities, Projects, Photos, AudioFiles, Videos, Maps,
-              MapImages, Markers, Records, Prints, Forms, Fields, Project, ProjectUser, Photo, Marker,
+              MapImages, Records, Prints, Forms, Fields, Project, ProjectUser, Photo,
               Audio, Video, Record, Map, MapImage, Print, Layer, Form, Field, DataManager, Router) {
         'use strict';
         afterEach(function () {
@@ -112,8 +110,6 @@ define(
                     model = this.photos.at(0);
                 } else if (overlay_type == "audio") {
                     model = this.audioFiles.at(0);
-                } else if (overlay_type == "marker") {
-                    model = this.markers.at(0);
                 } else if (overlay_type == "record") {
                     model = this.form_1.at(0);
                 } else if (overlay_type == "print") {
@@ -504,20 +500,6 @@ define(
                 new Print({id: 2, name: "Print 2", tags: ['parks', 'berkeley', 'tag1'], project_id: 1, overlay_type: "print" }),
                 new Print({id: 3, name: "Print 3", tags: ['emeryville'], project_id: 2, overlay_type: "print" })
             ]);
-            this.markers = new Markers([
-                new Marker({ id: 1, name: "POI 1", tags: ['my house'], project_id: 1, overlay_type: "marker", caption: "Caption1", color: "FF0000", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, extras: {featured_image: 1} }),
-                new Marker({id: 2, name: "POI 2", tags: ['friend\'s house', 'tag1'], project_id: 1, overlay_type: "marker", extras: {featured_image: 20}}),
-                new Marker({id: 3, name: "POI 3", tags: ['coffee shop', 'tag1'], project_id: 2, overlay_type: "marker" })
-            ], {
-                title: "Markers",
-                overlayType: "marker",
-                isSite: true,
-                isCustomType: false,
-                isMedia: false,
-                dataType: "markers",
-                projectID: 1,
-                key: "markers"
-            });
 
             this.form_1 = new Records([
                 new Record({id: 1, name: "Blue Team", caption: "Blue Team Caption", test_text: "Blue team", test_integer: 4, test_rating: 3, test_choice: "Red", test_boolean: true, fields: this.form.fields.toJSON(), display_name: "Blue team", tags: ['my house'], project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, photo_count: 3, audio_count: 1, video_count: 2 }),
@@ -582,7 +564,6 @@ define(
                 videos: this.videos,
                 audio: this.audioFiles,
                 map_images: this.map_images,
-                markers: this.markers,
                 form_1: this.form_1
             };
 
@@ -624,12 +605,6 @@ define(
                             overlay_type: "map_image",
                             data: this.map_images.toJSON()
                         },
-                        markers: {
-                            name: "Sites",
-                            id: "markers",
-                            overlay_type: "marker",
-                            data: this.markers.toJSON()
-                        },
                         videos: {
                             name: "Videos",
                             id: "videos",
@@ -657,12 +632,6 @@ define(
                             id: "form_1",
                             overlay_type: "record",
                             data: this.form_1.toJSON()
-                        },
-                        markers: {
-                            name: "Sites",
-                            id: "markers",
-                            overlay_type: "marker",
-                            data: this.markers.toJSON()
                         }
                     }}),
                 new Project({
@@ -695,49 +664,6 @@ define(
             ]);
 
             this.project = this.projects.at(0);
-
-            this.marker = this.markers.at(0);
-            this.marker_1 = this.markers.at(1);
-            this.marker.set("children", {
-                photos: {
-                    name: "Photos",
-                    id: "photos",
-                    overlay_type: "photo",
-                    data: this.photos.toJSON()
-                },
-                audio: {
-                    name: "Audio",
-                    id: "audio",
-                    overlay_type: "audio",
-                    data: this.audioFiles.toJSON()
-                },
-                videos: {
-                    name: "Videos",
-                    id: "videos",
-                    overlay_type: "video",
-                    data: this.videos.toJSON()
-                }
-            });
-            this.marker_1.set("children", {
-                photos: {
-                    name: "Photos",
-                    id: "photos",
-                    overlay_type: "photo",
-                    data: this.photos.toJSON()
-                },
-                audio: {
-                    name: "Audio",
-                    id: "audio",
-                    overlay_type: "audio",
-                    data: this.audioFiles.toJSON()
-                },
-                videos: {
-                    name: "Videos",
-                    id: "videos",
-                    overlay_type: "video",
-                    data: this.videos.toJSON()
-                }
-            });
             this.form_1.at(0).set("children", {
                 photos: {
                     name: "Photos",

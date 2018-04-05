@@ -168,7 +168,7 @@ define([
         showMediaDetail: function (opts) {
             var collection = this.dataManager.getCollection(opts.dataType),
                 model = collection.get(opts.id);
-            if (opts.dataType == "markers" || opts.dataType.indexOf("form_") != -1) {
+            if (opts.dataType.indexOf("form_") != -1) {
                 if (!model.get("children")) {
                     model.fetch({"reset": true});
                 }

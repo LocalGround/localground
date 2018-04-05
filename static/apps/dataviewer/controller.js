@@ -46,7 +46,7 @@ define([
 
             //1. for gallery and map:
             var model = dm.getModel(dataType, parseInt(id));
-            if (dataType == "markers" || dataType.indexOf("form_") != -1) {
+            if (dataType.indexOf("form_") != -1) {
                 if (!model.get("children")) {
                     model.fetch({"reset": true});
                 }

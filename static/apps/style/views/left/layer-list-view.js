@@ -40,8 +40,8 @@ define(["marionette",
             },
 
             events: function () {
-                return _.extend({ 
-                    //'click .add-layer' : 'createNewLayer' 
+                return _.extend({
+                    //'click .add-layer' : 'createNewLayer'
                 });
             },
 
@@ -85,7 +85,7 @@ define(["marionette",
                         "rule": "*",
                         "title": "At least 1 sculpture"
                     }],
-                    title: "Layer 1", 
+                    title: "Layer 1",
                     newLayer: true
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);

@@ -26,7 +26,7 @@ define([
         },
 
         currentCollection: null,
-        dataType: "markers",
+        dataType: "photos",
         screenType: "map",
         mode: "edit",
         start: function (options) {
@@ -121,7 +121,7 @@ define([
                 return this.dataManager.getCollection(this.dataType);
             } catch (e) {
                 console.warn("error retrieving:", this.dataType, "switching to markers...");
-                this.dataType = "markers";
+                this.dataType = "photos";
                 return this.dataManager.getCollection(this.dataType);
             }
             console.error("Data type error:", this.dataType);

@@ -154,8 +154,6 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                         return "videos";
                     case "audio":
                         return "audio";
-                    case "marker":
-                        return "markers";
                     default: alert("case not handled");
                 }
             },

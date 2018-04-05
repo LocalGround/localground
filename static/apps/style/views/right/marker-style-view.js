@@ -232,8 +232,6 @@ define(["jquery",
                 //still need to account for map-images below...
                 if (key == "photos" || key == "audio") {
                     this.buildGenericPropertiesList(photoAudioList, collection);
-                } else if (key == "markers") {
-                    this.buildGenericPropertiesList(markerList, collection);
                 } else if (key.includes("form_")) {
                     this.buildCustomPropertiesList(collection);
                 }
