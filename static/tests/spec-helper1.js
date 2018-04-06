@@ -1,11 +1,13 @@
 var google = {};
-define(
-    [
+define([
+        "jquery",
+        "underscore",
         "backbone",
         "marionette",
-        "jquery",
-        "lib/data/dataManager"
-    ], function (Backbone, Marionette, $, DataManager) {
+        "lib/data/dataManager",
+        "lib/appUtilities",
+        "apps/main/router"
+    ], function ($, _, Backbone, Marionette, DataManager, appUtilities, Router) {
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker, .modal, #map_canvas').remove();
@@ -74,11 +76,11 @@ define(
             });
 
             this.vent = _.extend({}, Backbone.Events);
+
             this.getProjectJSON = () => {
                 return JSON.parse(JSON.stringify(projectJSON));
             };
 
-            this.projectJSON = JSON.parse(JSON.stringify(projectJSON));
             this.dataManager = new DataManager({
                 projectJSON: this.getProjectJSON(),
                 vent: this.vent
@@ -89,9 +91,14 @@ define(
             this.photos = this.dataManager.getCollection('audio');
             this.form_2 = this.dataManager.getCollection('form_2');
             this.form_3 = this.dataManager.getCollection('form_3');
-            console.log(this.form_3.at(0));
-            // this.test_record = this.form_2.at(0);
-            // this.test_record.set('datasets', {});
-            // this.test_record.set('media', {});
+
+            //spoof the main-app for child view testing
+            this.app = _.extend({}, appUtilities);
+            _.extend(this.app, {
+                username: "Tester",
+                vent: this.vent,
+                dataManager: this.dataManager
+            });
+
         });
 });

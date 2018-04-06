@@ -148,6 +148,7 @@ define(["jquery",
                 this.$el.find('.right-panel-btn').show();
             },
             hidePanel: function (e) {
+                alert('hide panel');
                 $('#right-panel .show-hide').removeClass("hide").addClass("show");
                 this.app.vent.trigger('hide-detail');
                 if (e) {

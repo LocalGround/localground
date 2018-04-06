@@ -6,6 +6,7 @@ require(['boot'], function () {
     'use strict';
     var specs = [
         'spec/views/main-app-test.js',
+        'spec/views/main/breadcrumbs-test.js',
     ];
 
     require(specs, function () {

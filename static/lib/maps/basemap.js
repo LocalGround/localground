@@ -54,6 +54,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'add-rectangle', this.initRectangleMode);
                 this.listenTo(this.app.vent, 'add-polyline', this.initPolylineMode);
                 this.listenTo(this.app.vent, 'add-polygon', this.initPolygonMode);
+                this.listenTo(this.app.vent, 'new-map-loaded', this.update);
 
                 // call parent:
                 Marionette.View.prototype.initialize.call(this);
@@ -102,7 +103,7 @@ define(["marionette",
                     this.drawingManager.setDrawingMode(drawingMode);
                     return;
                 }
-                
+
                 this.drawingManager = new google.maps.drawing.DrawingManager({
                     drawingMode: drawingMode,
                     drawingControl: false,
@@ -483,6 +484,12 @@ define(["marionette",
                 this.renderMap();
                 this.addControls();
                 this.addEventHandlers();
+            },
+            update: function (mapModel) {
+                var location = mapModel.getDefaultLocation();
+                this.setCenter(location.center);
+                this.setZoom(location.zoom);
+                this.setMapTypeId(mapModel.getDefaultSkin().basemap);
             }
 
         });

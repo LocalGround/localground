@@ -1,24 +1,21 @@
-define(["jquery",
+define(["underscore",
+        "jquery",
         "marionette",
         "handlebars",
-        "apps/main/views/left/select-map-view",
+        "apps/main/views/left/map-title-view",
         "apps/main/views/left/layer-list-view",
         "apps/main/views/left/skin-view",
         "apps/main/views/left/panel-styles-view",
         "text!../../templates/left/left-panel-layout.html"
     ],
-    function ($, Marionette, Handlebars, SelectMapView, LayerListView, SkinView, PanelStylesView, LeftPanelLayoutTemplate) {
+    function (_, $, Marionette, Handlebars, MapTitleView, LayerListView, SkinView, PanelStylesView, LeftPanelLayoutTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var LeftPanelLayout = Marionette.LayoutView.extend({
             template: Handlebars.compile(LeftPanelLayoutTemplate),
 
             initialize: function (opts) {
-                /*This Layout View relies on a Map model which gets set from the change-map event,
-                which is triggered from the select-map-view.js */
-                this.app = opts.app;
-                this.render();
-                this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
+                _.extend(this, opts);
             },
             events: {
                 'click #new-layer-options a' : 'createNewLayer',
@@ -35,40 +32,24 @@ define(["jquery",
                 styles: "#global_style_region"
             },
             onRender: function () {
-                // only load views after the LayoutView has
-                // been rendered to the screen:
-                var skv = new SkinView({ app: this.app });
+                console.log('rendering left panel view...')
 
-                //DEPRECATE???
-                this.sv = new SelectMapView({
+                this.skins.show(new SkinView({
+                    app: this.app
+                }));
+                this.menu.show(new MapTitleView({
                     app: this.app,
-                    collection: this.app.dataManager.maps
-                }),
-                this.menu.show(this.sv);
-                this.skins.show(skv);
-            },
-
-            handleNewMap: function (model) {
-                var ps = new PanelStylesView({
-                        app: this.app,
-                        model: model
-                    });
-                this.lv = new LayerListView({
+                    model: this.model
+                }));
+                this.layers.show(new LayerListView({
                     app: this.app,
-                    model: model,
-                    collection: model.getLayers()
-                });
-                //set active model:
-                this.app.selectedMapModel = model;
-                this.app.model = model;
-                this.model = model;
-
-                //replace the PanelStylesView
-                this.styles.show(ps);
-
-                //replace the LayerListView:
-                this.layers.show(this.lv);
-                //this.app.vent.trigger('ready-for-routing');
+                    model: this.model,
+                    collection: this.model.getLayers()
+                }));
+                this.styles.show(new PanelStylesView({
+                    app: this.app,
+                    model: this.model
+                }));
             },
             hidePanel: function (e) {
                 $(e.target).removeClass("hide").addClass("show");

@@ -1,22 +1,26 @@
+/**
+ * This view's job is as follows:
+ * 1. Show a list of available maps
+ * 2. If user opts to create a new map, trigger the functionality to create one
+ * 3. If the user chooses to navigate to a different map, delegate to the Router
+ *    to instantiate correct functionality.
+*/
 define([
     "underscore",
     "handlebars",
     "marionette",
-    "lib/modals/modal",
+    "models/map",
     "views/generate-print",
+    "apps/main/views/left/new-map-modal-view",
     "text!../templates/breadcrumbs.html"
-], function (_, Handlebars, Marionette,
-             Modal, PrintLayoutView, BreadcrumbsTemplate) {
+], function (_, Handlebars, Marionette, Map, PrintLayoutView,
+        CreateMapForm, BreadcrumbsTemplate) {
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
         template: Handlebars.compile(BreadcrumbsTemplate),
         initialize: function (opts) {
             _.extend(this, opts);
             this.modal = this.app.modal;
-            if (!this.activeMap && this.collection.length > 0) {
-                this.activeMap = this.collection.at(0);
-            }
-            this.listenTo(this.app.vent, 'route-map', this.getSelectedMap);
             this.listenTo(this.collection, 'add', this.render);
         },
         templateHelpers: function () {
@@ -31,62 +35,48 @@ define([
         events: {
             'click #map-menu': 'showMapList',
             'click #map-list': 'hideMapList',
-            'click .add-map': "triggerAddMap"
+            'click .add-map': "showAddMapModal"
         },
 
-        triggerAddMap: function (e) {
-            alert('open-new-map-modal');
-            this.app.vent.trigger('open-new-map-modal');
+        showAddMapModal: function (e) {
+            var latLng = this.app.basemapView.getCenter();
+            var createMapModel = new CreateMapForm({
+                app: this.app,
+                model: new Map({
+                    center: {
+                        "type": "Point",
+                        "coordinates": [
+                            latLng.lng(),
+                            latLng.lat()
+                        ]
+                    },
+                    basemap: this.app.getMapTypeId(),
+                    zoom: this.app.getZoom(),
+                    project_id: this.app.getProjectID()
+                })
+            });
+
+            this.modal.update({
+                class: "add-map",
+                view: createMapModel,
+                title: 'New Map',
+                width: 600,
+                saveButtonText: "Create Map",
+                closeButtonText: "Cancel",
+                showSaveButton: true,
+                saveFunction: createMapModel.saveMap.bind(createMapModel),
+                showDeleteButton: false
+            });
+            this.modal.show();
             if (e) { e.preventDefault(); }
         },
+
         showMapList: function() {
             this.$el.find('#map-list').toggle();
         },
 
         hideMapList: function() {
             this.$el.find('#map-list').hide();
-        },
-        selectMap: function () {
-            var id = $(event.target).data('value'),
-            map = this.collection.get(id);
-            this.setActiveMap(map);
-        },
-        setInitialModel: function () {
-            // on initialize, pass the first model in the collection
-            // to be set as the active map
-            this.setActiveMap(this.collection.at(0));
-            this.render();
-        },
-
-        getSelectedMap: function(mapId) {
-            console.log('route to map');
-            this.setActiveMap(this.collection.get(mapId));
-        },
-        setActiveMap: function (map) {
-            if (this.collection.length == 0) {
-                return;
-            }
-            var selectedMapModel = map,
-                that = this;
-            this.activeMap = map;
-            selectedMapModel.fetch({ success: function () {
-                that.setCenterZoom(selectedMapModel);
-                that.setMapTypeId(selectedMapModel);
-                that.app.vent.trigger("change-map", selectedMapModel);
-                that.app.vent.trigger("hide-right-panel");
-                that.render();
-            }});
-        },
-
-        setCenterZoom: function (selectedMapModel) {
-            var location = selectedMapModel.getDefaultLocation();
-            this.app.basemapView.setCenter(location.center);
-            this.app.basemapView.setZoom(location.zoom);
-        },
-
-        setMapTypeId: function (selectedMapModel) {
-            var skin = selectedMapModel.getDefaultSkin();
-            this.app.basemapView.setMapTypeId(skin.basemap);
         },
 
         showPrintModal: function (opts) {

@@ -6,9 +6,9 @@ define([
     return Marionette.Controller.extend({
         initialize: function (options) {
             this.app = options.app;
+            this.dataManager = this.app.dataManager;
         },
         defaultMap: function () {
-            console.log('default map');
             this.app.vent.trigger('init-default-map');
         },
         displayMap: function (mapId) {
@@ -24,7 +24,8 @@ define([
         },
 
         mapHasChanged: function (mapId) {
-            return !this.app.selectedMapModel || this.app.selectedMapModel.id !== mapId;
+            return !this.dataManager.getMap() ||
+                this.dataManager.getMap().id !== mapId;
         },
 
         displayDataDetail: function(mapId, layerId, dataSource, markerId) {
@@ -34,18 +35,11 @@ define([
                 dataSource: dataSource,
                 markerId: parseInt(markerId)
             };
-            if (!this.app.selectedMapModel || this.app.selectedMapModel.id !== routeInfo.mapId) {
-                console.log('route map from datadetail route');
+            if (this.mapHasChanged(routeInfo.mapId)) {
                 this.app.vent.trigger('route-map', mapId);
             }
 
-            this.app.screenType = 'map';
-            this.app.dataType = dataSource;
-
             this.app.vent.trigger('show-data-detail', routeInfo);
-            // setTimeout(() => {
-            //     this.app.vent.trigger('highlight-symbol-item', routeInfo)
-            // }, 1000);
             this.app.vent.trigger('highlight-symbol-item', routeInfo);
         }
     });

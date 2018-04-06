@@ -24,7 +24,6 @@ define([
             leftRegion: "#left-panel",
             breadcrumbRegion: "#breadcrumb"
         },
-        screenType: "style",
         mode: "edit",
         showLeft: true,
         showRight: false,
@@ -51,8 +50,9 @@ define([
             this.modal = new Modal({
                 app: this
             });
-            this.showBreadcrumbs();
             this.showBasemap();
+
+            this.listenTo(this.vent, 'route-map', this.setActiveMap);
             this.listenTo(this.vent, 'hide-detail', this.hideDetail);
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
@@ -62,31 +62,14 @@ define([
             this.listenTo(this.vent, 'show-modal', this.showModal);
             this.listenTo(this.vent, 'hide-modal', this.hideModal);
             this.addMessageListeners();
-            this.showLeftLayout();
-        },
 
-        showLeftLayout: function () {
-            //load view into left region:
-            this.leftPanelView = new LeftPanel({
-                app: this
-            });
-            this.leftRegion.show(this.leftPanelView);
+            //ONLY SHOW LEFT PANEL AND TOOLBAR AFTER MAP HAS BEEN ROUTED
+            //this.showBreadcrumbs();
+            //this.showLeftLayout();
         },
-
-        // showRightLayout: function (layer, collection) {
-        //     var rightPanelView = new RightPanel({
-        //         app: this,
-        //         model: layer,
-        //         collection: collection
-        //     });
-        //     this.rightRegion.show(rightPanelView);
-        // },
 
         showDataDetail: function(info) {
-            console.log(info);
-            console.log(this.dataManager.getModel(info.dataSource, info.markerId));
             var model = this.dataManager.getModel(info.dataSource, info.markerId);
-            //model.trigger('highlight-symbol-item', info.layerId);
             this.dataDetailView = new DataDetail({
                 model: model,
                 app: this
@@ -110,14 +93,35 @@ define([
         },
 
         showBreadcrumbs: function () {
-            console.log('toolbar-global');
-            this.toolbarView = new ToolbarGlobal({
+            this.breadcrumbRegion.show(new ToolbarGlobal({
                 app: this,
                 displayMap: true,
-                model: this.dataManager.model,
+                model: this.dataManager.getProject(),
+                activeMap: this.dataManager.getMap(),
                 collection: this.dataManager.maps
+            }));
+        },
+
+
+        showLeftLayout: function () {
+            this.leftPanelView = new LeftPanel({
+                app: this,
+                model: this.dataManager.getMap()
             });
-            this.breadcrumbRegion.show(this.toolbarView);
+            this.leftRegion.show(this.leftPanelView);
+        },
+
+        setActiveMap: function (mapID) {
+            this.dataManager.setMapById(mapID);
+            const map = this.dataManager.getMap();
+            map.fetch({ success: this.applyNewMap.bind(this) });
+        },
+
+        applyNewMap: function () {
+            this.vent.trigger('new-map-loaded', this.dataManager.getMap());
+            this.vent.trigger("hide-right-panel");
+            this.showBreadcrumbs();
+            this.showLeftLayout();
         },
 
         getZoom: function () {

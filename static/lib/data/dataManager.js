@@ -11,6 +11,15 @@ define(["underscore", "marionette", "models/project",
             colorCounter: 0,
             dataLoaded: false,
             template: false,
+            getProject: function () {
+                return this.project;
+            },
+            getMap: function () {
+                return this.map;
+            },
+            setMapById: function (mapID) {
+                this.map = this.maps.get(mapID);
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
                 if (typeof this.projectJSON === 'undefined') {
@@ -26,8 +35,8 @@ define(["underscore", "marionette", "models/project",
                 return Object.keys(this.dataDictionary).length === 0;
             },
             initProject: function () {
-                if (!this.model) {
-                    this.model = new Project(this.projectJSON);
+                if (!this.project) {
+                    this.project = new Project(this.projectJSON);
                 }
                 this.initCollections();
                 this.initMaps();
@@ -38,8 +47,8 @@ define(["underscore", "marionette", "models/project",
                 this.tilesets.fetch({reset: 'true'});
             },
             initMaps: function () {
-                this.maps = new Maps(this.model.get('maps').data, {
-                    projectID: this.model.id});
+                this.maps = new Maps(this.project.get('maps').data, {
+                    projectID: this.project.id});
             },
             addMap: function (map) {
                 map.getLayers().each(function (layer) {
@@ -50,8 +59,8 @@ define(["underscore", "marionette", "models/project",
 
             initCollections: function () {
                 var dataLists = {};
-                _.extend(dataLists, this.model.get('datasets'));
-                _.extend(dataLists, this.model.get('media'));
+                _.extend(dataLists, this.project.get('datasets'));
+                _.extend(dataLists, this.project.get('media'));
                 var opts, dataType, jsonData, collection;
                 for (dataType in dataLists) {
                     opts = dataLists[dataType];
@@ -62,7 +71,7 @@ define(["underscore", "marionette", "models/project",
                         isCustomType: false,
                         isMedia: false,
                         dataType: dataType,
-                        projectID: this.model.id
+                        projectID: this.project.id
                     });
                     collection = this.initCollection(opts);
                     this.dataDictionary[dataType] = collection;

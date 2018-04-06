@@ -52,7 +52,7 @@ define(["jquery",
 
 
                 // (03/2018: If we add the ability to change a layer's dataset,
-                // we need to reset the layer type to 'basic' in the case where because
+                // we need to reset the layer type to 'uniform' in the case where because
                 // we won't know what the fields/dataColumns are
 
 
@@ -135,7 +135,7 @@ define(["jquery",
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
                     dataColumnsList: this.dataColumnsList, // new
-                    isBasic: this.model.get('group_by') === 'basic',
+                    isBasic: this.model.get('group_by') === 'uniform',
                     isIndividual: this.model.get('group_by') === 'individual',
                     propCanBeCont: this.propCanBeCont()
                 };
@@ -180,7 +180,7 @@ define(["jquery",
             },
 
             propCanBeCont: function() {
-                if (this.model.get('group_by') === 'basic') {
+                if (this.model.get('group_by') === 'uniform') {
                     return false;
                 }
                 if (this.model.get('group_by') === 'individual') {
@@ -266,7 +266,7 @@ define(["jquery",
 
             createCorrectSymbols: function () {
                 const gb = this.model.get('group_by');
-                if (gb === 'basic') {
+                if (gb === 'uniform') {
                     this.simpleData();
                 } else if (gb === 'individual') {
                     console.log('individual');
@@ -515,7 +515,7 @@ define(["jquery",
 
                 let paletteList, buckets;
                 const gb = this.model.get('group_by');
-                if (gb === 'basic') {
+                if (gb === 'uniform') {
                     buckets = count;
                     paletteList = catPalettes;
                 } else if (gb === 'individual') {

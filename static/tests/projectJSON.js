@@ -6,7 +6,7 @@ var projectJSON = {
     "caption": "Testing two projects",
     "overlay_type": "project",
     "tags": [
-      
+
     ],
     "owner": "riley",
     "slug": "my-second-project-3",
@@ -62,7 +62,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_3",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -76,7 +76,7 @@ var projectJSON = {
             "extras": null,
             "form": 3,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -94,7 +94,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_3",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -118,7 +118,7 @@ var projectJSON = {
                     "caption": null,
                     "overlay_type": "photo",
                     "tags": [
-                      
+
                     ],
                     "owner": "riley",
                     "project_id": 3,
@@ -156,7 +156,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_3",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -170,7 +170,7 @@ var projectJSON = {
             "extras": null,
             "form": 3,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -188,7 +188,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_3",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -220,7 +220,7 @@ var projectJSON = {
             "extras": null,
             "form": 3,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -238,7 +238,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_3",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -268,7 +268,7 @@ var projectJSON = {
             "extras": null,
             "form": 3,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -281,213 +281,6 @@ var projectJSON = {
           }
         ],
         "name": "Buildings"
-      },
-      "markers": {
-        "dataType": "records",
-        "overlay_type": "record",
-        "data": [
-          {
-            "url": "\/api\/0\/markers\/7\/",
-            "id": 7,
-            "name": "",
-            "caption": "",
-            "overlay_type": "marker",
-            "tags": [
-              
-            ],
-            "owner": "riley",
-            "project_id": 3,
-            "geometry": {
-              "type": "Polygon",
-              "coordinates": [
-                [
-                  [
-                    -122.62115478516,
-                    39.232253141715
-                  ],
-                  [
-                    -122.3876953125,
-                    39.364032338048
-                  ],
-                  [
-                    -122.42340087891,
-                    39.067180503085
-                  ],
-                  [
-                    -122.62115478516,
-                    39.232253141715
-                  ]
-                ]
-              ]
-            },
-            "extras": null,
-            "attached_photos_ids": [
-              7,
-              21,
-              6
-            ],
-            "attached_audio_ids": null,
-            "attached_videos_ids": null,
-            "attached_map_images_id": null
-          },
-          {
-            "url": "\/api\/0\/markers\/8\/",
-            "id": 8,
-            "name": "Marker 2",
-            "caption": "",
-            "overlay_type": "marker",
-            "tags": [
-              
-            ],
-            "owner": "riley",
-            "project_id": 3,
-            "geometry": {
-              "type": "Point",
-              "coordinates": [
-                -122.30851912825,
-                37.887327093421
-              ]
-            },
-            "extras": null,
-            "attached_photos_ids": [
-              4
-            ],
-            "attached_audio_ids": null,
-            "attached_videos_ids": null,
-            "attached_map_images_id": null
-          },
-          {
-            "url": "\/api\/0\/markers\/9\/",
-            "id": 9,
-            "name": "Marker 3",
-            "caption": "",
-            "overlay_type": "marker",
-            "tags": [
-              
-            ],
-            "owner": "riley",
-            "project_id": 3,
-            "geometry": null,
-            "extras": null,
-            "attached_photos_ids": [
-              6
-            ],
-            "attached_audio_ids": null,
-            "attached_videos_ids": null,
-            "attached_map_images_id": null
-          },
-          {
-            "url": "\/api\/0\/markers\/45\/",
-            "id": 45,
-            "name": "444",
-            "caption": "",
-            "overlay_type": "marker",
-            "tags": [
-              
-            ],
-            "owner": "riley",
-            "project_id": 3,
-            "geometry": null,
-            "extras": null,
-            "attached_photos_ids": null,
-            "attached_audio_ids": null,
-            "attached_videos_ids": null,
-            "attached_map_images_id": null
-          },
-          {
-            "url": "\/api\/0\/markers\/46\/",
-            "id": 46,
-            "name": "555",
-            "caption": "",
-            "overlay_type": "marker",
-            "tags": [
-              
-            ],
-            "owner": "riley",
-            "project_id": 3,
-            "geometry": {
-              "type": "Polygon",
-              "coordinates": [
-                [
-                  [
-                    -122.70904541016,
-                    38.369655567587
-                  ],
-                  [
-                    -123.21166992188,
-                    37.64685933621
-                  ],
-                  [
-                    -123.59619140625,
-                    37.446516047833
-                  ],
-                  [
-                    -123.82415771484,
-                    37.709899354855
-                  ],
-                  [
-                    -123.66760253906,
-                    38.153997218446
-                  ],
-                  [
-                    -123.33801269531,
-                    38.151837403007
-                  ],
-                  [
-                    -122.70904541016,
-                    38.369655567587
-                  ]
-                ]
-              ]
-            },
-            "extras": null,
-            "attached_photos_ids": null,
-            "attached_audio_ids": null,
-            "attached_videos_ids": null,
-            "attached_map_images_id": null
-          },
-          {
-            "url": "\/api\/0\/markers\/48\/",
-            "id": 48,
-            "name": "777",
-            "caption": "",
-            "overlay_type": "marker",
-            "tags": [
-              
-            ],
-            "owner": "riley",
-            "project_id": 3,
-            "geometry": {
-              "type": "Polygon",
-              "coordinates": [
-                [
-                  [
-                    -124.7607421875,
-                    39.002110299225
-                  ],
-                  [
-                    -124.013671875,
-                    38.444984668895
-                  ],
-                  [
-                    -123.44993591309,
-                    38.625990407241
-                  ],
-                  [
-                    -124.7607421875,
-                    39.002110299225
-                  ]
-                ]
-              ]
-            },
-            "extras": null,
-            "attached_photos_ids": null,
-            "attached_audio_ids": null,
-            "attached_videos_ids": null,
-            "attached_map_images_id": null
-          }
-        ],
-        "name": "Records"
       },
       "form_2": {
         "dataType": "form_2",
@@ -542,7 +335,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -566,7 +359,7 @@ var projectJSON = {
                     "caption": null,
                     "overlay_type": "photo",
                     "tags": [
-                      
+
                     ],
                     "owner": "riley",
                     "project_id": 3,
@@ -604,7 +397,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -648,7 +441,7 @@ var projectJSON = {
                     "caption": "",
                     "overlay_type": "photo",
                     "tags": [
-                      
+
                     ],
                     "owner": "riley",
                     "project_id": 3,
@@ -677,7 +470,7 @@ var projectJSON = {
                     "caption": null,
                     "overlay_type": "photo",
                     "tags": [
-                      
+
                     ],
                     "owner": "riley",
                     "project_id": 3,
@@ -700,7 +493,7 @@ var projectJSON = {
                     "caption": null,
                     "overlay_type": "photo",
                     "tags": [
-                      
+
                     ],
                     "owner": "riley",
                     "project_id": 3,
@@ -729,7 +522,7 @@ var projectJSON = {
                     "caption": null,
                     "overlay_type": "photo",
                     "tags": [
-                      
+
                     ],
                     "owner": "riley",
                     "project_id": 3,
@@ -752,7 +545,7 @@ var projectJSON = {
                     "caption": null,
                     "overlay_type": "photo",
                     "tags": [
-                      
+
                     ],
                     "owner": "riley",
                     "project_id": 3,
@@ -775,7 +568,7 @@ var projectJSON = {
                     "caption": null,
                     "overlay_type": "photo",
                     "tags": [
-                      
+
                     ],
                     "owner": "riley",
                     "project_id": 3,
@@ -819,7 +612,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -843,7 +636,7 @@ var projectJSON = {
                     "caption": null,
                     "overlay_type": "photo",
                     "tags": [
-                      
+
                     ],
                     "owner": "riley",
                     "project_id": 3,
@@ -872,7 +665,7 @@ var projectJSON = {
                     "caption": null,
                     "overlay_type": "photo",
                     "tags": [
-                      
+
                     ],
                     "owner": "riley",
                     "project_id": 3,
@@ -910,7 +703,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -944,7 +737,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -962,7 +755,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -996,7 +789,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1014,7 +807,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1028,7 +821,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1046,7 +839,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1054,7 +847,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1072,7 +865,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1092,7 +885,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1110,7 +903,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1148,7 +941,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1166,7 +959,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1204,7 +997,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1222,7 +1015,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1260,7 +1053,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1278,7 +1071,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1292,7 +1085,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1310,7 +1103,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1318,7 +1111,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1336,7 +1129,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1364,7 +1157,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1382,7 +1175,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1412,7 +1205,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1430,7 +1223,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1444,7 +1237,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1462,7 +1255,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1470,7 +1263,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1488,7 +1281,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "form_2",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1496,7 +1289,7 @@ var projectJSON = {
             "extras": null,
             "form": 2,
             "media": {
-              
+
             },
             "attached_photos_ids": null,
             "attached_audio_ids": null,
@@ -1520,7 +1313,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1543,7 +1336,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1566,7 +1359,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1589,7 +1382,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1612,7 +1405,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1641,7 +1434,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1670,7 +1463,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1693,7 +1486,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1716,7 +1509,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1739,7 +1532,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1762,7 +1555,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1785,7 +1578,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1814,7 +1607,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1843,7 +1636,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1872,7 +1665,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1901,7 +1694,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1930,7 +1723,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1959,7 +1752,7 @@ var projectJSON = {
             "caption": "",
             "overlay_type": "photo",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "project_id": 3,
@@ -1988,7 +1781,7 @@ var projectJSON = {
         "dataType": "audio",
         "overlay_type": "audio",
         "data": [
-          
+
         ],
         "name": "Audio"
       },
@@ -1996,7 +1789,7 @@ var projectJSON = {
         "dataType": "videos",
         "overlay_type": "video",
         "data": [
-          
+
         ],
         "name": "Videos"
       },
@@ -2011,7 +1804,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "map-image",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "source_print": null,
@@ -2031,7 +1824,7 @@ var projectJSON = {
             "caption": null,
             "overlay_type": "map-image",
             "tags": [
-              
+
             ],
             "owner": "riley",
             "source_print": 8,
@@ -2059,7 +1852,7 @@ var projectJSON = {
           "caption": null,
           "overlay_type": "styled_map",
           "tags": [
-            
+
           ],
           "owner": "riley",
           "slug": "map-3",
@@ -2117,7 +1910,7 @@ var projectJSON = {
           "caption": null,
           "overlay_type": "styled_map",
           "tags": [
-            
+
           ],
           "owner": "riley",
           "slug": "map-2",
