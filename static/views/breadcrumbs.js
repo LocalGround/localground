@@ -3,24 +3,27 @@ define([
     "handlebars",
     "marionette",
     "lib/modals/modal",
-    "collections/maps",
     "views/generate-print",
     "text!../templates/breadcrumbs.html"
 ], function (_, Handlebars, Marionette,
-             Modal, Maps, PrintLayoutView, BreadcrumbsTemplate) {
+             Modal, PrintLayoutView, BreadcrumbsTemplate) {
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
         template: Handlebars.compile(BreadcrumbsTemplate),
-        previewURL: null,
+        initialize: function (opts) {
+            _.extend(this, opts);
+            this.modal = new Modal();
+            this.listenTo(this.collection, 'add', this.render);
+        },
         templateHelpers: function () {
             var name;
             let mapList;
             if (this.model) {
                 name = this.model.get("name") === "Untitled" ? "" : this.model.get("name");
             }
-            if (this.displayMap && this.maps.models[0]) {
-                this.currentMap = this.maps.models[0].get('name');
-                mapList = this.maps.models.map(mapModel => {
+            if (this.displayMap && this.collection.models[0]) {
+                this.currentMap = this.collection.models[0].get('name');
+                mapList = this.collection.models.map(mapModel => {
                     return {
                         name: mapModel.get('name'),
                         id: mapModel.get('id')
@@ -44,23 +47,6 @@ define([
 
         modal: null,
 
-        initialize: function (opts) {
-            _.extend(this, opts);
-            if (this.app.dataManager) {
-                this.model = this.app.dataManager.model;
-            }
-            this.app.activeTab = "data";
-            if (this.app.screenType == "style") {
-                this.app.activeTab = "style";
-            }
-
-            this.modal = new Modal();
-
-            Marionette.ItemView.prototype.initialize.call(this);
-            this.listenTo(this.app.vent, 'data-loaded', this.setModel);
-            this.getPreviewMap();
-        },
-
         triggerAddMap: function (e) {
             this.app.vent.trigger('open-new-map-modal');
             if (e) { e.preventDefault(); }
@@ -71,22 +57,6 @@ define([
 
         hideMapList: function() {
             this.$el.find('#map-list').hide();
-        },
-
-        getPreviewMap: function () {
-            var that = this;
-            this.maps = this.app.dataManager.maps;
-            // this.maps = new Maps(null, { projectID: this.app.getProjectID() });
-            // //this.maps.setServerQuery("WHERE project_id = " + this.app.getProjectID());
-            // this.maps.fetch({
-            //     reset: true,
-            //     success: function (collection) {
-            //         if (collection.length > 0) {
-            //             that.previewURL = collection.at(0).get("slug");
-            //             that.render();
-            //         }
-            //     }
-            // });
         },
 
         showModal: function (opts) {
@@ -106,11 +76,6 @@ define([
                 saveFunction: printLayout.callMakePrint.bind(printLayout)
             });
             this.modal.show();
-        },
-
-        setModel: function () {
-            this.model = this.app.dataManager.model;
-            this.render();
         }
     });
     return Toolbar;

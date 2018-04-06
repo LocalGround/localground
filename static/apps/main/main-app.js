@@ -108,9 +108,12 @@ define([
         },
 
         showBreadcrumbs: function () {
+            console.log('toolbar-global');
             this.toolbarView = new ToolbarGlobal({
                 app: this,
-                displayMap: true
+                displayMap: true,
+                model: this.dataManager.model,
+                collection: this.dataManager.maps
             });
             this.breadcrumbRegion.show(this.toolbarView);
         },
