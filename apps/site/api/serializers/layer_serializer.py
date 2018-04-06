@@ -46,7 +46,7 @@ class LayerSerializer(BaseSerializer):
         return 'form_{0}'.format(obj.dataset.id)
 
     def get_display_field(self, obj):
-        return obj.display_field.col_name
+        return obj.display_field.col_name_db
 
     def create(self, validated_data):
         map_id = self.context.get('view').kwargs.get('map_id')
@@ -69,8 +69,9 @@ class LayerSerializer(BaseSerializer):
 
 
 class LayerDetailSerializer(LayerSerializer):
-    display_field = serializers.PrimaryKeyRelatedField(
-        queryset=models.Field.objects.all())
+    display_field = serializers.SlugRelatedField(
+        queryset=models.Field.objects.all(),
+        slug_field='col_name_db')
 
     def update(self, instance, validated_data):
         map_id = self.context.get('view').kwargs.get('map_id')

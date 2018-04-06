@@ -61,7 +61,7 @@ define ([
                 let layer = new Layer({
                     map_id: this.app.selectedMapModel.id,
                     data_source: data_source,
-                    group_by: "basic",
+                    group_by: "uniform",
                     symbols: [{
                         "fillColor": random_color,
                         "width": 20,
@@ -88,13 +88,13 @@ define ([
                     title: layer_title
                 });
                 let layers = this.app.selectedMapModel.get('layers');
-                
+
                 layer.save(null, {
                     dataType:"text",
                     success: () => {
                         layers.add(layer);
                         this.app.vent.trigger('close-modal');
-                    },          
+                    },
                     error: (model, response) => {
                         var messages = response.responseText;
                         if (messages.slug && messages.slug.length > 0) {
@@ -103,7 +103,7 @@ define ([
                         this.updateModal(response);
                     }
                 });
-                
+
             },
 
             updateModal: function (errorMessage) {

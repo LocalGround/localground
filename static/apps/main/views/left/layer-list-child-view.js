@@ -56,18 +56,18 @@ define(["jquery",
          //   className: "layer-column",
             templateHelpers: function () {
                 // let defaultField = this.dataset.fields ? this.dataset.fields.models[1].get('col_name') : 'id';
-                // let simpleDataset = this.dataset.models.map(item => {
+                // let uniformDataset = this.dataset.models.map(item => {
                 //     return {
                 //         property: item.get(defaultField),
                 //         id: item.get('id')
                 //     }
                 // });
                 //console.log(defaultField);
-                //console.log(simpleDataset);
+                //console.log(uniformDataset);
                 return {
                     //name: this.model.get('title'),
                     name: this.dataset.name,
-                    //dataList: simpleDataset,
+                    //dataList: uniformDataset,
                     isChecked: this.model.get("metadata").isShowing
                 };
             },

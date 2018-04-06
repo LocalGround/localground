@@ -25,7 +25,7 @@ define(["jquery",
             events: {
                 "click .layer-save" : "saveLayer",
                 "click .style-source-tab" : "showSourceRegion",
-                "click .style-basic-tab" : "showMarkerStyleRegion",
+                "click .style-uniform-tab" : "showMarkerStyleRegion",
                 'click .hide': 'hidePanel',
                 'click .show': 'showPanel'
             },

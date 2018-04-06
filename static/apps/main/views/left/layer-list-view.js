@@ -119,7 +119,7 @@ define(["marionette",
             //     var layer = new Layer({
             //         map_id: this.app.selectedMapModel.id,
             //         data_source: "markers", //default
-            //         group_by: "basic",
+            //         group_by: "uniform",
             //         filters: {},
             //         symbols: [{
             //             "fillColor": "#7075FF",

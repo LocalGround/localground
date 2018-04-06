@@ -7,13 +7,11 @@ define([
     "lib/maps/basemap",
     "lib/data/dataManager",
     "apps/main/views/left/left-panel",
-    "apps/main/views/right/right-panel",
     "views/data-detail",
-    "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, Modal, ToolbarGlobal, Basemap,
-             DataManager, LeftPanel, RightPanel, DataDetail, Projects, appUtilities) {
+             DataManager, LeftPanel, DataDetail, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
     var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
@@ -52,7 +50,7 @@ define([
             });
             this.showBasemap();
 
-            this.listenTo(this.vent, 'route-map', this.setActiveMap);
+            this.listenTo(this.vent, 'route-map', this.setActiveMapModel);
             this.listenTo(this.vent, 'hide-detail', this.hideDetail);
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
@@ -111,7 +109,7 @@ define([
             this.leftRegion.show(this.leftPanelView);
         },
 
-        setActiveMap: function (mapID) {
+        setActiveMapModel: function (mapID) {
             this.dataManager.setMapById(mapID);
             const map = this.dataManager.getMap();
             map.fetch({ success: this.applyNewMap.bind(this) });
@@ -119,7 +117,6 @@ define([
 
         applyNewMap: function () {
             this.vent.trigger('new-map-loaded', this.dataManager.getMap());
-            this.vent.trigger("hide-right-panel");
             this.showBreadcrumbs();
             this.showLeftLayout();
         },

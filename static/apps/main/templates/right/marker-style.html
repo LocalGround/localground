@@ -5,7 +5,7 @@
 <div class="toggle-buttons">
     <ul>
         <li class=" active">
-            <a class="marker-style-tabs style-basic-tab">Basic</a>
+            <a class="marker-style-tabs style-uniform-tab">Basic</a>
         </li>
         <li>
             <a class="marker-style-tabs style-source-tab">Source Code</a>
@@ -25,7 +25,7 @@
                         <option value="continuous" {{#ifequal groupBy "continuous"}} SELECTED {{/ifequal}} {{#unless hasContinuousFields}}disabled="disabled"{{/unless}} >
                             Continuous
                         </option>
-                        <option value="basic" {{#ifequal groupBy "basic"}} SELECTED {{/ifequal}}>Simple</option>
+                        <option value="uniform" {{#ifequal groupBy "uniform"}} SELECTED {{/ifequal}}>Uniform</option>
                         <option value="individual" {{#ifequal groupBy "individual"}} SELECTED {{/ifequal}}>Individual Sites</option>
                     </select>
                 </td>
@@ -281,7 +281,7 @@
 </div>
 {{/ifequal}}
 
-{{#ifequal groupBy "basic"}}
+{{#ifequal groupBy "uniform"}}
 <table class="color-properties">
         <tbody>
             <tr>

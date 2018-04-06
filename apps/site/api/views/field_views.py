@@ -44,7 +44,7 @@ class FieldMixin(object):
         col_alias = col_alias.lower()
         # ensure that col_alias isn't a reserved name:
         if col_alias in [
-            'id', 'name', 'caption', 'description', 'display_name', 'tags',
+            'id', 'caption', 'display_name', 'tags',
                 'owner', 'last_updated_by', 'date_created', 'timestamp']:
             raise exceptions.ParseError(
                 '"%s" is a reserved column name' % col_alias)

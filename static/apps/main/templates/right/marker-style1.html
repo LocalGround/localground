@@ -1,18 +1,18 @@
 <div class="toggle-container marker-style visual-edit" id="visual-marker-style">
     <form class="form-inline">
-        <h5 class="msv-header">Layer Properties</h5> 
+        <h5 class="msv-header">Layer Properties</h5>
         <i class="fa fa-times style-by-menu_close"></i>
         <div class="color-properties row">
-            
+
             <label>Style:</label>
             <select name="place-properties" id="data-type-select" class="marker-style-select">
-                
-                <option value="basic" {{#ifequal groupBy "basic"}} SELECTED {{/ifequal}}>Simple</option>
+
+                <option value="uniform" {{#ifequal groupBy "uniform"}} SELECTED {{/ifequal}}>Uniform</option>
                 <option value="individual" {{#ifequal groupBy "individual"}} SELECTED {{/ifequal}}>Individual Sites</option>
                 <optgroup label="Style by Data Column:">
                     {{#each dataColumnsList}}
-                        <option 
-                            value={{this.value}} 
+                        <option
+                            value={{this.value}}
                             {{#ifequal ../groupBy this.value}}SELECTED{{/ifequal}}
                             {{#unless this.hasData}}disabled="disabled"{{/unless}}
                         > {{groupBy}}
@@ -22,8 +22,8 @@
                 </optgroup>
             </select>
         </div>
-    
-{{#unless isBasic}}   
+
+{{#unless isBasic}}
         {{#unless isIndividual}}
         <div class="row">
             <label class="msv-label">Group by:</label>

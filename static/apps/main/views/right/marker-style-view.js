@@ -16,7 +16,7 @@ define(["jquery",
         /**
          * In this view, this.model = Layer, and this.collection = Symbols
          * This view's main function is to build the Symbols base on the user's input
-         * (e.g. simple, categorical, or continuous. Plus any Layer-level
+         * (e.g. uniform, categorical, or continuous. Plus any Layer-level
          * symbol styles (marker size, stroke, etc.))
          */
         var MarkerStyleView = Marionette.CompositeView.extend({
@@ -25,7 +25,7 @@ define(["jquery",
             layerDraft: {
                 continuous: null,
                 categorical: null,
-                simple: null,
+                uniform: null,
                 individual: null
             },
             template: Handlebars.compile(MarkerStyleTemplate),
@@ -267,7 +267,7 @@ define(["jquery",
             createCorrectSymbols: function () {
                 const gb = this.model.get('group_by');
                 if (gb === 'uniform') {
-                    this.simpleData();
+                    this.uniformData();
                 } else if (gb === 'individual') {
                     console.log('individual');
                     this.individualData();
@@ -282,8 +282,8 @@ define(["jquery",
 
             },
 
-            simpleData: function () {
-                this.setSymbols(this.buildSimpleSymbols(this.model.get('data_source')));
+            uniformData: function () {
+                this.setSymbols(this.buildUniformSymbols(this.model.get('data_source')));
             },
 
             individualData: function() {
@@ -302,10 +302,10 @@ define(["jquery",
                 this.setSymbols(this.buildCategoricalSymbols(catInfo));
             },
 
-            buildSimpleSymbols: function (key) {
+            buildUniformSymbols: function (key) {
                 name = this.app.dataManager.getCollection(key).getTitle();
 
-                this.layerDraft.simple = new Symbols([{
+                this.layerDraft.uniform = new Symbols([{
                     "rule": "*",
                     "title": name,
                     "shape": this.$el.find(".global-marker-shape").val(),
@@ -319,7 +319,7 @@ define(["jquery",
                     "id": 1
                 }]);
                 this.layerNoLongerNew();
-                return this.layerDraft.simple;
+                return this.layerDraft.uniform;
             },
 
             buildIndividualSymbols: function(key) {

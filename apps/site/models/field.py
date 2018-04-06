@@ -78,6 +78,5 @@ class Field(BaseAudit):
         super(Field, self).save(*args, **kwargs)
 
         # 2. ensure that the column name is unique, and add column to table:
-        if is_new:
-            self.col_name_db = 'col_%s' % self.id
-            super(Field, self).save(update_fields=['col_name_db'])
+        self.col_name_db = self.col_name
+        super(Field, self).save(update_fields=['col_name_db'])

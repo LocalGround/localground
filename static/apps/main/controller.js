@@ -13,6 +13,7 @@ define([
         },
         displayMap: function (mapId) {
              this.app.vent.trigger('route-map', mapId);
+             this.app.vent.trigger('hide-detail');
         },
 
         displayLayer: function(mapId, layerId) {
