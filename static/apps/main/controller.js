@@ -12,8 +12,7 @@ define([
             this.app.vent.trigger('init-default-map');
         },
         displayMap: function (mapId) {
-             console.log('display map: ', mapId);
-            this.app.vent.trigger('route-map', mapId);
+             this.app.vent.trigger('route-map', mapId);
         },
 
         displayLayer: function(mapId, layerId) {

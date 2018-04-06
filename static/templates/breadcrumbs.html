@@ -12,10 +12,9 @@
             <span class="breadcrumb-text">{{ name }} </span>
         </div>
     </div>
-
+    <div class="breadcrumb-level-container">
+        <div><i class="fa fa-angle-right fa" id="map-menu"></i></div>
         {{#if map}}
-        <div class="breadcrumb-level-container">
-            <div><i class="fa fa-angle-right fa" id="map-menu"></i></div>
             <div class="breadcrumb-hover" id="map-menu" style="margin-top: -2px">
                 <span class="breadcrumb-text_current">  {{ map }} </span>
                 <i class="fa fa-angle-down"></i>
@@ -32,9 +31,12 @@
                     <div class="map-item"><i class="fa fa-plus"></i> Add New</div>
                 </a>
             </div>
-        </div>
-
-        {{/if}}
+        {{ else }}
+            <a href="#" class="add-map">
+                <div class="map-item"><i class="fa fa-plus"></i> Add New</div>
+            </a>
+        {{/if}}    
+    </div>
 
     {{/if}}
 </div>

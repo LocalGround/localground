@@ -1,3 +1,4 @@
+// main: ../main-new.scss
 $icon-line-height: 22px;
 
 .breadcrumb {
@@ -34,8 +35,9 @@ $icon-line-height: 22px;
     height: 28px;
     border-radius: 3px;
     padding: 0px 5px;
+    cursor: pointer;
     &:hover {
-        background: #f3f3f3;;
+        background: #f3f3f3;
     }
 }
 
@@ -50,7 +52,7 @@ $icon-line-height: 22px;
 .breadcrumb-text_current {
     @extend .breadcrumb-text;
     font-weight: 600;
-  
+
 }
 
 .bread-crumb_maplist {
@@ -65,5 +67,3 @@ $icon-line-height: 22px;
     width: 100%;
     box-shadow: 0 2px 10px rgba(0,0,0,.2);
 }
-
-

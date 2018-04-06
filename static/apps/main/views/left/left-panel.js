@@ -38,6 +38,8 @@ define(["jquery",
                 // only load views after the LayoutView has
                 // been rendered to the screen:
                 var skv = new SkinView({ app: this.app });
+
+                //DEPRECATE???
                 this.sv = new SelectMapView({
                     app: this.app,
                     collection: this.app.dataManager.maps
@@ -110,7 +112,7 @@ define(["jquery",
                 // delete selected map
                 this.model.destroy();
 
-                // re-render menu region
+                // DEPRECATE????
                 this.menu.show(this.sv, {forceShow: true});
 
                 //rerender layers

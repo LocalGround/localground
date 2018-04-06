@@ -8,10 +8,9 @@ define(["marionette",
         "apps/main/views/right/marker-style-view",
         "apps/main/views/right/symbol-style-menu-view",
         "apps/main/views/left/new-layer-modal-view",
-        "lib/modals/modal"
     ],
     function (Marionette, Handlebars, Layers, Layer, Symbols, LayerListChild,
-        LayerListTemplate, MarkerStyleView, SymbolStyleMenuView, NewLayer, Modal) {
+        LayerListTemplate, MarkerStyleView, SymbolStyleMenuView, NewLayer) {
         'use strict';
         /**
          *  In this view, this.model = Map, this.collection = Layers
@@ -46,7 +45,7 @@ define(["marionette",
                 this.app = opts.app;
                 this.model = opts.model;
 
-                this.modal = new Modal();
+                this.modal = this.app.modal; //new Modal();
 
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
                 this.listenTo(this.app.vent, 'route-layer', this.routerSendCollection);
@@ -108,7 +107,7 @@ define(["marionette",
                 });
                 this.modal.show();
             },
- 
+
             // createNewLayer: function (mapID) {
             //     var continueAction = true;
             //     if (this.app.layerHasBeenAltered && !this.layerHasBeenSaved) {

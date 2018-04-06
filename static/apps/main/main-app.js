@@ -48,7 +48,9 @@ define([
                 vent: this.vent,
                 projectJSON: options.projectJSON
             });
-            this.modal = new Modal();
+            this.modal = new Modal({
+                app: this
+            });
             this.showBreadcrumbs();
             this.showBasemap();
             this.listenTo(this.vent, 'hide-detail', this.hideDetail);
