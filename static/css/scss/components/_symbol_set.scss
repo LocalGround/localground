@@ -1,3 +1,4 @@
+// main: ../main-new.scss
 .sort-by {
     font-size: 12px;
     padding: 8px 20px;
@@ -35,5 +36,11 @@
 .symbol-header {
     svg {
         vertical-align: middle;
+    }
+}
+.symbol {
+    .highlight {
+        background: rgb(123, 155, 225);
+        color: #ffffff;
     }
 }

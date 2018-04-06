@@ -8,11 +8,12 @@ define([
     "lib/data/dataManager",
     "apps/main/views/left/left-panel",
     "apps/main/views/right/right-panel",
+    "views/data-detail",
     "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, Modal, ToolbarGlobal, Basemap,
-             DataManager, LeftPanel, RightPanel, Projects, appUtilities) {
+             DataManager, LeftPanel, RightPanel, DataDetail, Projects, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
     var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
@@ -39,32 +40,29 @@ define([
             Backbone.history.start();
         },
         initialize: function (options) {
+            console.log('init app');
+            options = options || {};
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.selectedProjectID = projectJSON.id;
+            this.selectedProjectID = options.projectJSON.id;
             this.dataManager = new DataManager({
                 vent: this.vent,
-                projectJSON: projectJSON
+                projectJSON: options.projectJSON
             });
             this.modal = new Modal();
             this.showBreadcrumbs();
             this.showBasemap();
-            //this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'hide-detail', this.hideDetail);
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
-            this.listenTo(this.vent, 'edit-layer', this.showRightLayout);
+            //this.listenTo(this.vent, 'edit-layer', this.showRightLayout);
             this.listenTo(this.vent, 'show-data-detail', this.showDataDetail);
             this.listenTo(this.vent, 'show-modal', this.showModal);
             this.listenTo(this.vent, 'hide-modal', this.hideModal);
             this.addMessageListeners();
-            this.loadRegions();
-        },
-        loadRegions: function () {
-            let that = this;
             this.showLeftLayout();
-        //    this.showRightLayout();
         },
+
         showLeftLayout: function () {
             //load view into left region:
             this.leftPanelView = new LeftPanel({
@@ -73,17 +71,28 @@ define([
             this.leftRegion.show(this.leftPanelView);
         },
 
-        showRightLayout: function (layer, collection) {
-            var rightPanelView = new RightPanel({
-                app: this,
-                model: layer,
-                collection: collection
-            });
-            this.rightRegion.show(rightPanelView);
-        },
+        // showRightLayout: function (layer, collection) {
+        //     var rightPanelView = new RightPanel({
+        //         app: this,
+        //         model: layer,
+        //         collection: collection
+        //     });
+        //     this.rightRegion.show(rightPanelView);
+        // },
 
-        showDataDetail: function(dataDetailView) {
-            this.rightRegion.show(dataDetailView);
+        showDataDetail: function(info) {
+            console.log(info);
+            console.log(this.dataManager.getModel(info.dataSource, info.markerId));
+            var model = this.dataManager.getModel(info.dataSource, info.markerId);
+            //model.trigger('highlight-symbol-item', info.layerId);
+            this.dataDetailView = new DataDetail({
+                model: model,
+                app: this
+            });
+            console.log(this.dataDetailView);
+
+
+            this.rightRegion.show(this.dataDetailView);
             this.unhideDetail();
 
             // this won't do what we want here because the record model is not
@@ -95,7 +104,7 @@ define([
             // loop through children, call a function on the matching layer
 
 
-            this.vent.trigger('highlight-marker', dataDetailView.model);
+            this.vent.trigger('highlight-marker', this.dataDetailView.model);
         },
 
         showBreadcrumbs: function () {

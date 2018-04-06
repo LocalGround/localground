@@ -69,13 +69,7 @@ define(["underscore", "marionette", "models/project",
                     //delete opts.data;
                 }
                 this.dataLoaded = true;
-                var that = this;
-                // setTimeout(function () {
-                //     that.vent.trigger('data-loaded');
-                //     that.vent.trigger('datamanager-modified');
-                // }, 500)
-                // CAUTION: this won't work if
-                // google maps not loaded yet
+
             },
             initCollection: function (opts) {
                 var collection;
@@ -100,7 +94,7 @@ define(["underscore", "marionette", "models/project",
                         break;
                     default:
                         if (opts.dataType.includes("form_")) {
-                            collection = this.createRecordsCollection(jsonData, opts, opts.fields);
+                            collection = this.createRecordsCollection(jsonData, opts);
                         } else {
                             throw new Error("case not handled");
                         }
@@ -126,7 +120,6 @@ define(["underscore", "marionette", "models/project",
             },
 
             createRecordsCollection:  function (jsonData, opts, fields) {
-                console.log(opts.fields);
                 var fieldsURL,
                     collection;
                 opts.formID = parseInt(opts.dataType.split("_")[1]);

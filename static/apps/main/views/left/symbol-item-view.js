@@ -25,15 +25,18 @@ define(["marionette",
                     });
                     this.overlay.render();
                 }
-                //this.listenTo(this.app.vent, 'highlight-symbol-item', this.handleRoute);
+                this.listenTo(this.app.vent, 'highlight-symbol-item', this.handleRoute);
 
             },
-            modelEvents: {
-                'highlight-symbol-item': 'handleRoute',
-                //'change': 'render'
-                'change:geometry': 'updateGeometry',
-            },
             active: false,
+            // events: {
+            //     'click': 'makeActive'
+            // },
+
+            modelEvents: {
+                'change:geometry': 'updateGeometry',
+                //'change': 'render'
+            },
 
             // for some reason this approach is buggy...
             // modelEvents: function () {
@@ -60,15 +63,21 @@ define(["marionette",
                     height: this.symbolModel.get('height')
                 };
             },
+
             onRender: function() {
                 console.log('SymbolItem render', this);
             },
-            handleRoute: function(layerId) {
-                if (this.parent.layerId === layerId) {
-                    this.makeActive();
+            handleRoute: function(info) {
+                console.log('handle route');
+                if (this.parent.layerId === info.layerId) {
+                    if (this.model.id === info.markerId) {
+                        console.log('make active', this);
+                        this.makeActive();
+
+                    }
                 }
             },
-            makeActive: function () {
+            makeActive: function (e) {
                 var activeItem = this.app.selectedItemView;
                 if (activeItem && !activeItem.isDestroyed) {
                     activeItem.active = false;

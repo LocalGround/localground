@@ -29,19 +29,25 @@ define([
         },
 
         displayDataDetail: function(mapId, layerId, dataSource, markerId) {
-            markerId = parseInt(markerId)
-            layerId = parseInt(layerId);
-            mapId = parseInt(mapId);
-            const model = this.app.dataManager.getModel(dataSource, markerId);
-            if (this.mapHasChanged(mapId)) {
+            const routeInfo = {
+                mapId: parseInt(mapId),
+                layerId: parseInt(layerId),
+                dataSource: dataSource,
+                markerId: parseInt(markerId)
+            };
+            if (!this.app.selectedMapModel || this.app.selectedMapModel.id !== routeInfo.mapId) {
                 console.log('route map from datadetail route');
                 this.app.vent.trigger('route-map', mapId);
             }
-            model.trigger('highlight-symbol-item', layerId)
-            this.app.vent.trigger('show-data-detail', new DataDetail({
-                model: model,
-                app: this.app
-            }));
+
+            this.app.screenType = 'map';
+            this.app.dataType = dataSource;
+
+            this.app.vent.trigger('show-data-detail', routeInfo);
+            // setTimeout(() => {
+            //     this.app.vent.trigger('highlight-symbol-item', routeInfo)
+            // }, 1000);
+            this.app.vent.trigger('highlight-symbol-item', routeInfo);
         }
     });
 });
