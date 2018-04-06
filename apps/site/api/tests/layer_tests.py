@@ -113,7 +113,7 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
             self.client_user.put,
             status.HTTP_200_OK,
             self.symbols,
-            display_field=self.form.fields[0].id
+            display_field=self.form.fields[0].col_name
         )
 
     def test_update_view_using_patch(self, **kwargs):
@@ -144,7 +144,7 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
             self.client_user.put,
             status.HTTP_200_OK,
             self.symbols,
-            display_field=self.form.fields[0].id
+            display_field=self.form.fields[0].col_name
         )
 
         # and then get rid of them:
