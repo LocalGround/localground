@@ -10,7 +10,7 @@ define([
     "views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, Modal, ToolbarGlobal, Basemap,
+], function (Marionette, Backbone, Router, Modal, BreadCrumb, Basemap,
              DataManager, LeftPanel, DataDetail, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
@@ -37,7 +37,6 @@ define([
             Backbone.history.start();
         },
         initialize: function (options) {
-            console.log('init app');
             options = options || {};
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = options.projectJSON.id;
@@ -72,11 +71,10 @@ define([
                 model: model,
                 app: this
             });
-            console.log(this.dataDetailView);
-
 
             this.rightRegion.show(this.dataDetailView);
             this.unhideDetail();
+
 
             // this won't do what we want here because the record model is not
             // represented by its own view (hence no 'model' exists for a given record).
@@ -86,12 +84,11 @@ define([
             // instead we will trigger an event on the LayerList parent,
             // loop through children, call a function on the matching layer
 
-
             this.vent.trigger('highlight-marker', this.dataDetailView.model);
         },
 
         showBreadcrumbs: function () {
-            this.breadcrumbRegion.show(new ToolbarGlobal({
+            this.breadcrumbRegion.show(new BreadCrumb({
                 app: this,
                 displayMap: true,
                 model: this.dataManager.getProject(),

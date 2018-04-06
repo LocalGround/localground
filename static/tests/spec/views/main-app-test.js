@@ -5,9 +5,12 @@ define([
     rootDir + "lib/maps/basemap",
     rootDir + "apps/main/views/left/left-panel",
     rootDir + "views/data-detail",
+    rootDir + "views/breadcrumbs",
+    rootDir + "models/map",
     "tests/spec-helper1"
 ],
-    function (Backbone, MainApp, BaseMapView, LeftPanelView, DataDetailView) {
+    function (Backbone, MainApp, BaseMapView, LeftPanelView, DataDetailView,
+            BreadCrumb, Map) {
         'use strict';
         var mainApp, fixture;
         const info = {
@@ -17,10 +20,12 @@ define([
             markerId: 12
         };
 
-        const initApp = function (scope) {
+        const initApp = (scope) => {
 
             // 1) add spies for all relevant objects:
             spyOn(MainApp.prototype, 'initialize').and.callThrough();
+            spyOn(MainApp.prototype, 'setActiveMapModel').and.callThrough();
+            spyOn(MainApp.prototype, 'applyNewMap').and.callThrough();
             spyOn(MainApp.prototype, 'showBreadcrumbs').and.callThrough();
             spyOn(MainApp.prototype, 'showBasemap').and.callThrough();
             spyOn(MainApp.prototype, 'addMessageListeners').and.callThrough();
@@ -30,8 +35,14 @@ define([
             spyOn(MainApp.prototype, 'hideList').and.callThrough();
             spyOn(MainApp.prototype, 'unhideList').and.callThrough();
             spyOn(MainApp.prototype, 'showDataDetail').and.callThrough();
-            spyOn(MainApp.prototype, 'showModal');
             spyOn(MainApp.prototype, 'hideModal').and.callThrough();
+            spyOn(Map.prototype, 'fetch');
+
+            //do not execute:
+            spyOn(MainApp.prototype, 'showModal');
+            spyOn(BaseMapView.prototype, 'setCenter');
+            spyOn(BaseMapView.prototype, 'setZoom');
+            spyOn(BaseMapView.prototype, 'setMapTypeId');
 
             // 3) add dummy HTML elements:
             fixture = setFixtures('<div id="breadcrumb" class="breadcrumb"></div> \
@@ -51,6 +62,12 @@ define([
             fixture.append(mainApp.$el);
         };
 
+        const routeMap = () => {
+            //these two lines needed to spoof map routing:
+            mainApp.vent.trigger('route-map', 2);
+            mainApp.applyNewMap();
+        }
+
         describe("MainApp initialization: ", function () {
             beforeEach(function () {
                 initApp(this);
@@ -66,14 +83,8 @@ define([
             it("should call showBasemap()", function() {
                 expect(mainApp.showBasemap).toHaveBeenCalledTimes(1);
             });
-            it("should call showBreadcrumbs()", function() {
-                expect(mainApp.showBreadcrumbs).toHaveBeenCalledTimes(1);
-            });
             it("should call addMessageListeners()", function() {
                 expect(mainApp.addMessageListeners).toHaveBeenCalledTimes(1);
-            });
-            it("should call showLeftLayout()", function() {
-                expect(mainApp.showLeftLayout).toHaveBeenCalledTimes(1);
             });
 
             // .vent listeners
@@ -102,11 +113,11 @@ define([
                 mainApp.vent.trigger('hide-detail');
                 expect(mainApp.hideDetail).toHaveBeenCalledTimes(1);
             });
-            // it("should listen to 'show-data-detail'", function() {
-            //     expect(mainApp.showDataDetail).toHaveBeenCalledTimes(0);
-            //     mainApp.vent.trigger('show-data-detail', info);
-            //     expect(mainApp.showDataDetail).toHaveBeenCalledTimes(1);
-            // });
+            it("should listen to 'show-data-detail'", function() {
+                expect(mainApp.showDataDetail).toHaveBeenCalledTimes(0);
+                mainApp.vent.trigger('show-data-detail', info);
+                expect(mainApp.showDataDetail).toHaveBeenCalledTimes(1);
+            });
             it("should listen to 'show-modal'", function() {
                 expect(mainApp.showModal).toHaveBeenCalledTimes(0);
                 mainApp.vent.trigger('show-modal');
@@ -129,6 +140,26 @@ define([
 
         });
 
+        describe("MainApp vent listeners: ", function () {
+            beforeEach(function () {
+                initApp(this);
+            });
+            afterEach(function () {
+                Backbone.history.stop();
+            });
+            it("Listens for route-map", function() {
+                expect(mainApp.setActiveMapModel).toHaveBeenCalledTimes(0);
+                expect(Map.prototype.fetch).toHaveBeenCalledTimes(0);
+
+                mainApp.vent.trigger('route-map', 2)
+                expect(mainApp.setActiveMapModel).toHaveBeenCalledTimes(1);
+                expect(Map.prototype.fetch).toHaveBeenCalledTimes(1);
+                expect(mainApp.setActiveMapModel).toHaveBeenCalledWith(2);
+
+            });
+
+        });
+
         describe("MainApp functions: ", function () {
             beforeEach(function () {
                 initApp(this);
@@ -136,29 +167,60 @@ define([
             afterEach(function () {
                 Backbone.history.stop();
             });
-            it("showLeftLayout() should instantiate LeftPanelView", function() {
-                // don't need to invoke showLeftLayout() to test it because it gets called upon initialization
-                spyOn(mainApp.leftRegion.__proto__, 'show');
-                expect(mainApp.leftPanelView).toEqual(jasmine.any(LeftPanelView));
 
-                // trouble spying on delegated methods...
-                //expect(mainApp.leftRegion.__proto__.show).toHaveBeenCalledTimes(1)
+            it("showLeftLayout() should instantiate LeftPanelView", function() {
+                //spoof fetch callback: triggers apply new map upon success:
+                expect(mainApp.showBreadcrumbs).toHaveBeenCalledTimes(0);
+                expect(mainApp.showLeftLayout).toHaveBeenCalledTimes(0);
+
+
+                expect(mainApp.getRegion('leftRegion').hasView()).toBeFalsy();
+
+                mainApp.vent.trigger('route-map', 2);
+                mainApp.applyNewMap();
+
+                expect(mainApp.getRegion('leftRegion').hasView()).toBeTruthy();
+                expect(mainApp.getRegion('leftRegion').currentView).toEqual(jasmine.any(LeftPanelView));
+                expect(mainApp.showBreadcrumbs).toHaveBeenCalledTimes(1);
                 expect(mainApp.showLeftLayout).toHaveBeenCalledTimes(1);
             });
 
             it("showLeftLayout() should display LeftPanelView html", function() {
-                // don't need to invoke showLeftLayout() to test it because it gets called upon initialization
+                routeMap();
                 expect(mainApp.leftRegion.$el).toContainElement('#layers_region');
             });
 
             it("showDataDetail() should instantiate DataDetailView", function() {
-                console.log(mainApp);
+                expect(!mainApp.dataDetailView);
                 mainApp.showDataDetail(info);
-                //mainApp.vent.trigger('show-data-detail');
 
-                //expect(mainApp.dataDetailView).toEqual(jasmine.any(DataDetailView));
+                expect(mainApp.dataDetailView).toEqual(jasmine.any(DataDetailView));
+            });
+            it("showDataDetail() should display DataDetailView html", function() {
+
+                expect(mainApp.container.$el).not.toContainElement('#delete-geometry');
+                mainApp.showDataDetail(info);
+
+                expect(mainApp.dataDetailView.$el).toContainElement('h4');
+            });
+
+            it("showBreadcrumbs() should instantiate BreadCrumb view", function() {
+                routeMap();
+                expect(mainApp.getRegion('breadcrumbRegion').currentView).toEqual(jasmine.any(BreadCrumb));
+            });
+
+            it("showBreadcrumbs() should display BreadCrumb html", function() {
+                routeMap();
+                expect(mainApp.getRegion('breadcrumbRegion').$el).toContainElement('.breadcrumb-container');
+            });
+
+            it("getCenter() should return correct coordinates", function() {
+                mainApp.showBasemap();
                 expect(1).toEqual(1);
-            })
+                //console.log(mainApp.basemapView);
+                // const bb = mainApp.getCenter();
+                // console.log(bb);
+            });
 
         });
 

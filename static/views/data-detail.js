@@ -100,7 +100,6 @@ define([
             $(window).on("resize", _.bind(this.screenSize, this));
 
             this.isMobile();
-            console.log('later log', this);
 
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
@@ -416,7 +415,6 @@ define([
             if (this.form) {
                 this.form.remove();
             }
-            console.log(this.model);
             this.form = new DataForm({
                 model: this.model,
                 schema: this.model.getFormSchema(),
