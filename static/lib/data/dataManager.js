@@ -28,6 +28,7 @@ define(["underscore", "marionette", "models/project",
                 }
                 this.initProject();
                 this.initTilesets();
+                this.map = this.maps.at(0);
                 this.listenTo(this.vent, "delete-collection", this.deleteCollection);
                 this.listenTo(this.vent, "create-collection", this.addNewRecordsCollection);
             },

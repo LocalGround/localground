@@ -9,7 +9,8 @@ define([
             this.dataManager = this.app.dataManager;
         },
         defaultMap: function () {
-            this.app.vent.trigger('init-default-map');
+            //redirect to display first map in list:
+            window.location.href= '#/' + this.dataManager.getMap().id;
         },
         displayMap: function (mapId) {
              this.app.vent.trigger('route-map', mapId);
@@ -17,7 +18,7 @@ define([
         },
 
         displayLayer: function(mapId, layerId) {
-            this.app.vent.trigger('route-layer', mapId, layerId);
+            this.app.vent.trigger('route- ', mapId, layerId);
         },
 
         newLayer: function (mapID) {
