@@ -5,9 +5,10 @@ define([
     rootDir + "lib/maps/basemap",
     rootDir + "apps/main/views/left/left-panel",
     rootDir + "views/data-detail",
+    rootDir + "views/breadcrumbs",
     "tests/spec-helper1"
 ],
-    function (Backbone, MainApp, BaseMapView, LeftPanelView, DataDetailView) {
+    function (Backbone, MainApp, BaseMapView, LeftPanelView, DataDetailView, BreadCrumb) {
         'use strict';
         var mainApp, fixture;
         const info = {
@@ -102,11 +103,11 @@ define([
                 mainApp.vent.trigger('hide-detail');
                 expect(mainApp.hideDetail).toHaveBeenCalledTimes(1);
             });
-            // it("should listen to 'show-data-detail'", function() {
-            //     expect(mainApp.showDataDetail).toHaveBeenCalledTimes(0);
-            //     mainApp.vent.trigger('show-data-detail', info);
-            //     expect(mainApp.showDataDetail).toHaveBeenCalledTimes(1);
-            // });
+            it("should listen to 'show-data-detail'", function() {
+                expect(mainApp.showDataDetail).toHaveBeenCalledTimes(0);
+                mainApp.vent.trigger('show-data-detail', info);
+                expect(mainApp.showDataDetail).toHaveBeenCalledTimes(1);
+            });
             it("should listen to 'show-modal'", function() {
                 expect(mainApp.showModal).toHaveBeenCalledTimes(0);
                 mainApp.vent.trigger('show-modal');
@@ -147,18 +148,39 @@ define([
             });
 
             it("showLeftLayout() should display LeftPanelView html", function() {
-                // don't need to invoke showLeftLayout() to test it because it gets called upon initialization
+                // don't need to invoke showLeftLayout() because it already gets called upon initialization
                 expect(mainApp.leftRegion.$el).toContainElement('#layers_region');
             });
 
             it("showDataDetail() should instantiate DataDetailView", function() {
-                console.log(mainApp);
+                expect(!mainApp.dataDetailView);
                 mainApp.showDataDetail(info);
-                //mainApp.vent.trigger('show-data-detail');
 
-                //expect(mainApp.dataDetailView).toEqual(jasmine.any(DataDetailView));
-                expect(1).toEqual(1);
-            })
+                expect(mainApp.dataDetailView).toEqual(jasmine.any(DataDetailView));
+            });
+            it("showDataDetail() should display DataDetailView html", function() {
+
+                expect(mainApp.container.$el).not.toContainElement('#delete-geometry');
+                mainApp.showDataDetail(info);
+
+                expect(mainApp.dataDetailView.$el).toContainElement('h4');
+            });
+
+            it("showBreadcrumbs() should instantiate BreadCrumb view", function() {
+                // don't need to invoke showBreadcrumbs() because it already gets called upon initialization
+                expect(mainApp.breadcrumb).toEqual(jasmine.any(BreadCrumb));
+            });
+
+            it("showBreadcrumbs() should display BreadCrumb html", function() {
+                expect(mainApp.breadcrumb.$el).toContainElement('.breadcrumb-container');
+            });
+
+            it("getCenter() should return correct coordinates", function() {
+                mainApp.showBasemap();
+                //console.log(mainApp.basemapView);
+                // const bb = mainApp.getCenter();
+                // console.log(bb);
+            });
 
         });
 

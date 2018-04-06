@@ -80,7 +80,6 @@ define(["models/base",
                     extras,
                     j,
                     schema = {};
-                console.log(this);
                 for (i = 0; i < this.get("fields").length; i++) {
                     field = this.get("fields")[i];
                     field.val = this.get(field.col_name);

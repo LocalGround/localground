@@ -12,7 +12,7 @@ define([
     "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, Modal, ToolbarGlobal, Basemap,
+], function (Marionette, Backbone, Router, Modal, BreadCrumb, Basemap,
              DataManager, LeftPanel, RightPanel, DataDetail, Projects, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
@@ -40,7 +40,6 @@ define([
             Backbone.history.start();
         },
         initialize: function (options) {
-            console.log('init app');
             options = options || {};
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = options.projectJSON.id;
@@ -81,37 +80,23 @@ define([
         // },
 
         showDataDetail: function(info) {
-            console.log(info);
-            console.log(this.dataManager.getModel(info.dataSource, info.markerId));
             this.dataDetailView = new DataDetail({
                 model: this.dataManager.getModel(info.dataSource, info.markerId),
                 app: this
             });
-            console.log(this.dataDetailView);
-
 
             this.rightRegion.show(this.dataDetailView);
             this.unhideDetail();
-
-            // this won't do what we want here because the record model is not
-            // represented by its own view (hence no 'model' exists for a given record).
-            // Rather, the records are simply pieces of content in the SymbolSet itemView
-            //dataDetailView.model.set("active", true);
-
-            // instead we will trigger an event on the LayerList parent,
-            // loop through children, call a function on the matching layer
-            //this.vent.trigger('highlight-symbol-item', info);
-
 
             this.vent.trigger('highlight-marker', this.dataDetailView.model);
         },
 
         showBreadcrumbs: function () {
-            this.toolbarView = new ToolbarGlobal({
+            this.breadcrumb = new BreadCrumb({
                 app: this,
                 displayMap: true
             });
-            this.breadcrumbRegion.show(this.toolbarView);
+            this.breadcrumbRegion.show(this.breadcrumb);
         },
 
         getZoom: function () {
