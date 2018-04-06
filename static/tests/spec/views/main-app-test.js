@@ -9,15 +9,15 @@ define([
 ],
     function (Backbone, MainApp, BaseMapView, LeftPanelView, DataDetailView) {
         'use strict';
-        var mainApp, fixture, initApp;
+        var mainApp, fixture;
         const info = {
-            mapId: 3, 
+            mapId: 3,
             layerId: 6,
-            dataSource: 'form_2', 
+            dataSource: 'form_2',
             markerId: 12
         };
 
-        initApp = function (scope) {
+        const initApp = function (scope) {
 
             // 1) add spies for all relevant objects:
             spyOn(MainApp.prototype, 'initialize').and.callThrough();
@@ -44,9 +44,10 @@ define([
                 </div>');
             // 2) initialize ProfileApp object:
             mainApp = new MainApp({
-                dataManager: scope.dataManager,
-                vent: scope.vent
+                vent: scope.vent,
+                projectJSON: scope.getProjectJSON()
             });
+            mainApp.dataManager = scope.dataManager;
             fixture.append(mainApp.$el);
         };
 
@@ -124,7 +125,7 @@ define([
                 expect(mainApp.regions.leftRegion).toEqual("#left-panel");
                 expect(mainApp.regions.breadcrumbRegion).toEqual("#breadcrumb");
             });
-            
+
 
         });
 
@@ -139,12 +140,12 @@ define([
                 // don't need to invoke showLeftLayout() to test it because it gets called upon initialization
                 spyOn(mainApp.leftRegion.__proto__, 'show');
                 expect(mainApp.leftPanelView).toEqual(jasmine.any(LeftPanelView));
-                
+
                 // trouble spying on delegated methods...
                 //expect(mainApp.leftRegion.__proto__.show).toHaveBeenCalledTimes(1)
                 expect(mainApp.showLeftLayout).toHaveBeenCalledTimes(1);
             });
-            
+
             it("showLeftLayout() should display LeftPanelView html", function() {
                 // don't need to invoke showLeftLayout() to test it because it gets called upon initialization
                 expect(mainApp.leftRegion.$el).toContainElement('#layers_region');
@@ -154,11 +155,11 @@ define([
                 console.log(mainApp);
                 mainApp.showDataDetail(info);
                 //mainApp.vent.trigger('show-data-detail');
-                
+
                 //expect(mainApp.dataDetailView).toEqual(jasmine.any(DataDetailView));
                 expect(1).toEqual(1);
             })
 
         });
-        
+
     });

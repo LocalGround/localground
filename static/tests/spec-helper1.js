@@ -74,8 +74,13 @@ define(
             });
 
             this.vent = _.extend({}, Backbone.Events);
+            this.getProjectJSON = () => {
+                return JSON.parse(JSON.stringify(projectJSON));
+            };
+
+            this.projectJSON = JSON.parse(JSON.stringify(projectJSON));
             this.dataManager = new DataManager({
-                projectJSON,
+                projectJSON: this.getProjectJSON(),
                 vent: this.vent
             });
 

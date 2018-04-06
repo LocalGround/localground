@@ -41,11 +41,12 @@ define([
         },
         initialize: function (options) {
             console.log('init app');
+            options = options || {};
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = projectJSON.id;
             this.dataManager = new DataManager({
                 vent: this.vent,
-                projectJSON: projectJSON
+                projectJSON: options.projectJSON
             });
             this.modal = new Modal();
             this.showBreadcrumbs();
@@ -61,7 +62,7 @@ define([
             this.addMessageListeners();
             this.showLeftLayout();
         },
-  
+
         showLeftLayout: function () {
             //load view into left region:
             this.leftPanelView = new LeftPanel({
