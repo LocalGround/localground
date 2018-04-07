@@ -29,23 +29,11 @@ define(["marionette",
 
             },
             active: false,
-            // events: {
-            //     'click': 'makeActive'
-            // },
 
             modelEvents: {
                 'change:geometry': 'updateGeometry',
-                //'change': 'render'
+                'change': 'render'
             },
-
-            // for some reason this approach is buggy...
-            // modelEvents: function () {
-            //     let events = {};
-            //     this.model.get('fields').forEach(field => {
-            //         events[`change:${field.col_name}`] = 'render';
-            //     })
-            //     return events;
-            // },
 
             template: Handlebars.compile(SymbolItemTemplate),
             tagName: "li",
