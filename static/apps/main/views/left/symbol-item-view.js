@@ -60,18 +60,19 @@ define(["marionette",
                     icon: this.symbolModel.get('icon'),
                     isIndividual: this.parent.layer.get('group_by') === 'individual',
                     width: this.symbolModel.get('width'),
-                    height: this.symbolModel.get('height')
+                    height: this.symbolModel.get('height'),
+                    display_name: this.model.get(this.parent.layer.get("display_field"))
                 };
             },
 
-            onRender: function() {
+            /*onRender: function() {
                 console.log('SymbolItem render', this);
-            },
+            },*/
             handleRoute: function(info) {
-                console.log('handle route');
+                //console.log('handle route');
                 if (this.parent.layerId === info.layerId) {
                     if (this.model.id === info.markerId) {
-                        console.log('make active', this);
+                        //console.log('make active', this);
                         this.makeActive();
 
                     }
