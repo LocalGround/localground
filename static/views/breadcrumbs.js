@@ -25,13 +25,11 @@ define([
             this.listenTo(this.collection, 'add', this.render);
         },
         templateHelpers: function () {
-            const helpers = {
+            return {
                 mapList: this.collection.toJSON(),
                 name: this.model.get("name"),
                 map: this.activeMap ? this.activeMap.get("name") : null
             };
-            console.log(helpers);
-            return helpers;
         },
 
         events: {
@@ -71,7 +69,7 @@ define([
         },
 
         showMapList: function() {
-            this.$el.find('#map-list').toggle();
+            this.$el.find('#map-list').show();
         },
 
         hideMapList: function() {

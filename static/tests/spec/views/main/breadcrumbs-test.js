@@ -3,23 +3,24 @@ define([
     "backbone",
     rootDir + "views/breadcrumbs",
     rootDir + "models/map",
-    rootDir + "collections/maps",
+    rootDir + "lib/modals/modal",
     "tests/spec-helper1"
 ],
-    function (Backbone, Breadcrumbs, Map, Maps) {
+    function (Backbone, Breadcrumbs, Map, Modal) {
         'use strict';
         const initToolbar = function (scope) {
 
             // 1) add spies for all relevant objects:
             spyOn(Breadcrumbs.prototype, 'initialize').and.callThrough();
             spyOn(Breadcrumbs.prototype, 'render').and.callThrough();
-            spyOn(Maps.prototype, 'add').and.callThrough();
-            //spyOn(Breadcrumbs.prototype, 'render').and.callThrough();
+            spyOn(Breadcrumbs.prototype, 'showMapList').and.callThrough();
+            spyOn(Breadcrumbs.prototype, 'hideMapList').and.callThrough();
+            spyOn(Breadcrumbs.prototype, 'showAddMapModal').and.callThrough();
 
-            // 3) add dummy HTML elements:
+            // 2) add dummy HTML elements:
             scope.fixture = setFixtures('<div id="breadcrumb" class="breadcrumb"></div>');
 
-            // 2) initialize Toolbar:
+            // 3) initialize Toolbar:
             scope.toolbar = new Breadcrumbs({
                 app: scope.app,
                 model: scope.dataManager.getProject(),
@@ -42,11 +43,9 @@ define([
 
             it("should listens for collection add", function () {
                 expect(Breadcrumbs.prototype.render).toHaveBeenCalledTimes(0);
-
-                expect(this.toolbar.collection.add).toHaveBeenCalledTimes(0);
                 this.toolbar.collection.add(
-                    new Map(null, { projectID: this.toolbar.model.id }));
-
+                    new Map({ name: 'My new map' }, { projectID: this.toolbar.model.id })
+                );
                 expect(Breadcrumbs.prototype.render).toHaveBeenCalledTimes(1);
             });
         });
@@ -56,12 +55,72 @@ define([
                 initToolbar(this);
             });
 
-            it("should render toolbar correctly", function () {
-                //expect(this.toolbar.initialize).toHaveBeenCalledTimes(1);
+            it("should render breadcrumbs correctly", function () {
                 this.toolbar.render();
-                console.log(this.toolbar.$el.html());
-                expect(1).toEqual(1);
+                expect(this.toolbar.$el).toContainText(this.toolbar.model.get('name'));
+                expect(this.toolbar.$el.find('.breadcrumb-level-container').length).toEqual(3);
             });
+
+            it("should render map list correctly", function () {
+                this.toolbar.render();
+                expect(this.toolbar.$el.find('#map-list .map-item').length).toEqual(3);
+                this.toolbar.collection.add(
+                    new Map({ name: 'My new map', id: 99 }, { projectID: this.toolbar.model.id })
+                );
+                expect(this.toolbar.$el.find('#map-list .map-item').length).toEqual(4);
+                let i = 0;
+                const $menu = this.toolbar.$el.find('#map-list');
+                this.toolbar.collection.each(map => {
+                    expect($menu).toContainText(map.get('name'));
+                    expect($menu).toContainElement('a[href="#/' + map.id + '"]');
+                    i++;
+                });
+                expect(i).toEqual(3);
+            });
+
+            it("should render add button correctly", function () {
+                this.toolbar.render();
+                const $menu = this.toolbar.$el.find('#map-list');
+                expect($menu).toContainElement('.add-map');
+                expect(this.toolbar.$el.find('.add-map')).toContainText('Add New');
+            });
+
+        });
+        describe("Breadcrumbs event handlers: ", function () {
+            beforeEach(function () {
+                initToolbar(this);
+            });
+
+            it("should show / hide the map list on click", function () {
+                this.toolbar.render();
+                const $menu = this.toolbar.$el.find('#map-list');
+                expect($menu.css('display')).toEqual('none');
+                expect(Breadcrumbs.prototype.showMapList).toHaveBeenCalledTimes(0);
+                expect(Breadcrumbs.prototype.hideMapList).toHaveBeenCalledTimes(0);
+
+                //spoof user click to show map menu:
+                this.toolbar.$el.find('#map-menu').trigger('click');
+                expect(Breadcrumbs.prototype.showMapList).toHaveBeenCalledTimes(1);
+                expect($menu.css('display')).toEqual('block');
+
+                //spoof user click to hide map menu:
+                this.toolbar.$el.find('#map-list').trigger('click');
+                expect(Breadcrumbs.prototype.hideMapList).toHaveBeenCalledTimes(1);
+                expect($menu.css('display')).toEqual('none');
+            });
+
+            it("should show the create map modal form", function () {
+                this.toolbar.render();
+                expect(Breadcrumbs.prototype.showAddMapModal).toHaveBeenCalledTimes(0);
+
+                //spoof user click to add new map:
+                this.toolbar.$el.find('.add-map').trigger('click');
+                expect(Breadcrumbs.prototype.showAddMapModal).toHaveBeenCalledTimes(1);
+
+                //TODO: Start Here...
+
+            });
+
         });
 
     });

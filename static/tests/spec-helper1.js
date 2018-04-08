@@ -6,8 +6,10 @@ define([
         "marionette",
         "lib/data/dataManager",
         "lib/appUtilities",
-        "apps/main/router"
-    ], function ($, _, Backbone, Marionette, DataManager, appUtilities, Router) {
+        "apps/main/router",
+        "lib/modals/modal"
+    ], function ($, _, Backbone, Marionette, DataManager, appUtilities, Router,
+            Modal) {
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker, .modal, #map_canvas').remove();
@@ -97,7 +99,22 @@ define([
             _.extend(this.app, {
                 username: "Tester",
                 vent: this.vent,
-                dataManager: this.dataManager
+                dataManager: this.dataManager,
+                modal: new Modal(),
+                basemapView: {
+                    getCenter: function () {
+                        return {
+                            lat: function () { return 84; },
+                            lng: function () { return -122; }
+                        };
+                    },
+                    getMapTypeId:  function () {
+                        return 5;
+                    },
+                    getZoom: function () {
+                        return 18;
+                    }
+                }
             });
 
         });
