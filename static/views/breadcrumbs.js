@@ -76,6 +76,7 @@ define([
             this.$el.find('#map-list').hide();
         },
 
+        //TODO: come back to this. Where does the print button go?
         showPrintModal: function (opts) {
             var printLayout = new PrintLayoutView({
                 app: this.app

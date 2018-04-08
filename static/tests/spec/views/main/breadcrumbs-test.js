@@ -4,9 +4,10 @@ define([
     rootDir + "views/breadcrumbs",
     rootDir + "models/map",
     rootDir + "lib/modals/modal",
+    "apps/main/views/left/new-map-modal-view",
     "tests/spec-helper1"
 ],
-    function (Backbone, Breadcrumbs, Map, Modal) {
+    function (Backbone, Breadcrumbs, Map, Modal, CreateMapForm) {
         'use strict';
         const initToolbar = function (scope) {
 
@@ -16,6 +17,8 @@ define([
             spyOn(Breadcrumbs.prototype, 'showMapList').and.callThrough();
             spyOn(Breadcrumbs.prototype, 'hideMapList').and.callThrough();
             spyOn(Breadcrumbs.prototype, 'showAddMapModal').and.callThrough();
+            spyOn(Modal.prototype, 'show').and.callThrough();
+            spyOn(CreateMapForm.prototype, 'initialize').and.callThrough();
 
             // 2) add dummy HTML elements:
             scope.fixture = setFixtures('<div id="breadcrumb" class="breadcrumb"></div>');
@@ -112,13 +115,15 @@ define([
             it("should show the create map modal form", function () {
                 this.toolbar.render();
                 expect(Breadcrumbs.prototype.showAddMapModal).toHaveBeenCalledTimes(0);
+                expect(Modal.prototype.show).toHaveBeenCalledTimes(0);
+                expect(CreateMapForm.prototype.initialize).toHaveBeenCalledTimes(0);
 
                 //spoof user click to add new map:
                 this.toolbar.$el.find('.add-map').trigger('click');
                 expect(Breadcrumbs.prototype.showAddMapModal).toHaveBeenCalledTimes(1);
-
-                //TODO: Start Here...
-
+                expect(Modal.prototype.show).toHaveBeenCalledTimes(1);
+                expect(CreateMapForm.prototype.initialize).toHaveBeenCalledTimes(1);
+                expect(this.toolbar.modal.view).toEqual(jasmine.any(CreateMapForm));
             });
 
         });
