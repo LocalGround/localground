@@ -1,12 +1,11 @@
-define(["jquery",
-        "marionette",
+define(["marionette",
         "handlebars",
         "text!../../templates/left/map-title.html",
     ],
-    function ($, Marionette, Handlebars, MapTemplate) {
+    function (Marionette, Handlebars, MapTemplate) {
         'use strict';
 
-        var SelectMapView = Marionette.ItemView.extend({
+        var MapTitleView = Marionette.ItemView.extend({
             template: Handlebars.compile(MapTemplate),
             initialize: function (opts) {
                 var that = this;
@@ -17,9 +16,9 @@ define(["jquery",
                 'click .map-edit': 'showEditModal'
             },
             showEditModal: function (e) {
-                alert('show edit modal');
-                //if (e) { e.preventDefault(); }
+                console.log('show edit modal');
+                if (e) { e.preventDefault(); }
             }
         });
-        return SelectMapView;
+        return MapTitleView;
     });
