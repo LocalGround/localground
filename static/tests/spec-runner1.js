@@ -7,6 +7,7 @@ require(['boot'], function () {
     var specs = [
         'spec/views/main-app-test.js',
         'spec/views/main/breadcrumbs-test.js',
+        'spec/views/main/create-new-map-test.js',
         'spec/views/main/map-title-view-test.js',
     ];
 
