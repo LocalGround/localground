@@ -14,7 +14,7 @@ define([
             // 1) add spies for all relevant objects:
             spyOn(Breadcrumbs.prototype, 'initialize').and.callThrough();
             spyOn(Breadcrumbs.prototype, 'render').and.callThrough();
-            spyOn(Breadcrumbs.prototype, 'showMapList').and.callThrough();
+            spyOn(Breadcrumbs.prototype, 'toggleMapList').and.callThrough();
             spyOn(Breadcrumbs.prototype, 'hideMapList').and.callThrough();
             spyOn(Breadcrumbs.prototype, 'showAddMapModal').and.callThrough();
             spyOn(Modal.prototype, 'show').and.callThrough();
@@ -66,11 +66,11 @@ define([
 
             it("should render map list correctly", function () {
                 this.toolbar.render();
-                expect(this.toolbar.$el.find('#map-list .map-item').length).toEqual(3);
+                expect(this.toolbar.$el.find('#map-list li').length).toEqual(3);
                 this.toolbar.collection.add(
                     new Map({ name: 'My new map', id: 99 }, { projectID: this.toolbar.model.id })
                 );
-                expect(this.toolbar.$el.find('#map-list .map-item').length).toEqual(4);
+                expect(this.toolbar.$el.find('#map-list li').length).toEqual(4);
                 let i = 0;
                 const $menu = this.toolbar.$el.find('#map-list');
                 this.toolbar.collection.each(map => {
@@ -85,7 +85,7 @@ define([
                 this.toolbar.render();
                 const $menu = this.toolbar.$el.find('#map-list');
                 expect($menu).toContainElement('.add-map');
-                expect(this.toolbar.$el.find('.add-map')).toContainText('Add New');
+                expect(this.toolbar.$el.find('.add-map')).toContainText('Add Map');
             });
 
         });
@@ -94,16 +94,29 @@ define([
                 initToolbar(this);
             });
 
+            it("should hide the map list if toolbar clicked", function () {
+                this.toolbar.render();
+                const $menu = this.toolbar.$el.find('#map-list');
+                this.toolbar.$el.find('#map-menu').trigger('click');
+                expect(Breadcrumbs.prototype.toggleMapList).toHaveBeenCalledTimes(1);
+                expect($menu.css('display')).toEqual('block');
+
+                //spoof user click to hide map menu:
+                this.toolbar.$el.trigger('click');
+                expect(Breadcrumbs.prototype.hideMapList).toHaveBeenCalledTimes(1);
+                expect($menu.css('display')).toEqual('none');
+            });
+
             it("should show / hide the map list on click", function () {
                 this.toolbar.render();
                 const $menu = this.toolbar.$el.find('#map-list');
                 expect($menu.css('display')).toEqual('none');
-                expect(Breadcrumbs.prototype.showMapList).toHaveBeenCalledTimes(0);
+                expect(Breadcrumbs.prototype.toggleMapList).toHaveBeenCalledTimes(0);
                 expect(Breadcrumbs.prototype.hideMapList).toHaveBeenCalledTimes(0);
 
                 //spoof user click to show map menu:
                 this.toolbar.$el.find('#map-menu').trigger('click');
-                expect(Breadcrumbs.prototype.showMapList).toHaveBeenCalledTimes(1);
+                expect(Breadcrumbs.prototype.toggleMapList).toHaveBeenCalledTimes(1);
                 expect($menu.css('display')).toEqual('block');
 
                 //spoof user click to hide map menu:

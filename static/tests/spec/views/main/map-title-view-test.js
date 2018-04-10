@@ -40,7 +40,7 @@ define([
                 expect($el).toContainElement('.selected-map');
                 expect($el).toContainElement('.selected-map-item');
                 expect($el).toContainElement('.selected-map-name');
-                expect($el).toContainElement('i.fa.fa-pencil');
+                //expect($el).toContainElement('i.fa.fa-pencil');
                 expect($el).toContainElement('i.fa.fa-eye');
 
                 expect($el.find('.selected-map-name'))
@@ -51,7 +51,7 @@ define([
                 this.mapTitleView.render();
                 const $el = this.mapTitleView.$el;
                 expect(this.mapTitleView.showEditModal).toHaveBeenCalledTimes(0);
-                $el.find('.map-edit').trigger('click');
+                $el.trigger('click');
                 expect(this.mapTitleView.showEditModal).toHaveBeenCalledTimes(1);
 
             });

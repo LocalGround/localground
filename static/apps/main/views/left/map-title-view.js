@@ -16,7 +16,7 @@ define(["marionette",
                 'click': 'showEditModal'
             },
             showEditModal: function (e) {
-                alert('show edit modal');
+                console.log('show edit modal');
                 if (e) { e.preventDefault(); }
             }
         });

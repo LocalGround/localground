@@ -33,8 +33,8 @@ define([
         },
 
         events: {
-            'click #map-menu': 'showMapList',
-            'click #map-list': 'hideMapList',
+            'click': 'hideMapList',
+            'click #map-menu': 'toggleMapList',
             'click .add-map': "showAddMapModal"
         },
 
@@ -68,11 +68,14 @@ define([
             if (e) { e.preventDefault(); }
         },
 
-        showMapList: function() {
-            this.$el.find('#map-list').show();
+        toggleMapList: function(e) {
+            this.$el.find('#map-list').toggle();
+            if (e) {
+                e.stopPropagation();
+            }
         },
 
-        hideMapList: function() {
+        hideMapList: function (e) {
             this.$el.find('#map-list').hide();
         },
 
