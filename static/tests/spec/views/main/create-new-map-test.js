@@ -24,8 +24,8 @@ define([
                     "type": "Point",
                     "coordinates": [ latLng.lng(), latLng.lat() ]
                 },
-                basemap: scope.app.getMapTypeId(),
-                zoom: scope.app.getZoom(),
+                basemap: scope.app.basemapView.getMapTypeId(),
+                zoom: scope.app.basemapView.getZoom(),
                 project_id: scope.app.getProjectID()
             });
             scope.view  = new CreateMapForm({

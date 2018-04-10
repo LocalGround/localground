@@ -71,7 +71,7 @@ define(["underscore",
                 if (!confirm("Are you sure you want to delete this map?")) {
                     return;
                 }
-                
+
                 // delete selected map's layers
                 var listModel;
                 while (listModel = this.layers.currentView.collection.first()) {
@@ -80,9 +80,9 @@ define(["underscore",
 
                 // delete selected map
                 this.model.destroy();
-  
-                this.app.router.navigate('//');   
-                
+
+                this.app.router.navigate('//');
+
             }
         });
         return LeftPanelLayout;

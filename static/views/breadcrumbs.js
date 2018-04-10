@@ -47,8 +47,8 @@ define([
                         "type": "Point",
                         "coordinates": [ latLng.lng(), latLng.lat() ]
                     },
-                    basemap: this.app.getMapTypeId(),
-                    zoom: this.app.getZoom(),
+                    basemap: this.app.basemapView.getMapTypeId(),
+                    zoom: this.app.basemapView.getZoom(),
                     project_id: this.app.getProjectID()
                 })
             });

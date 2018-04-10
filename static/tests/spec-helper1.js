@@ -5,10 +5,11 @@ define([
         "backbone",
         "marionette",
         "lib/data/dataManager",
+        "collections/layers",
         "lib/appUtilities",
         "apps/main/router",
         "lib/modals/modal"
-    ], function ($, _, Backbone, Marionette, DataManager, appUtilities, Router,
+    ], function ($, _, Backbone, Marionette, DataManager, Layers, appUtilities, Router,
             Modal) {
         'use strict';
         afterEach(function () {
@@ -82,6 +83,61 @@ define([
             this.getProjectJSON = () => {
                 return JSON.parse(JSON.stringify(projectJSON));
             };
+            this.getLayers = (mapID) => {
+                return new Layers([{
+                    "id": 55,
+                    "overlay_type": "layer",
+                    "owner": "vanwars",
+                    "title": "Flower Layer",
+                    "dataset": 23,
+                    "data_source": "form_2",
+                    "group_by": "uniform",
+                    "display_field": "name",
+                    "ordering": 1,
+                    "metadata": {
+                        "strokeWeight": 1,
+                        "buckets": 4,
+                        "isShowing": true,
+                        "strokeOpacity": 1,
+                        "width": 20,
+                        "shape": "circle",
+                        "fillOpacity": 1,
+                        "strokeColor": "#ffffff",
+                        "paletteId": 0,
+                        "fillColor": "#4e70d4"
+                    },
+                    "map_id": 48,
+                    "symbols": [
+                        {
+                            "fillOpacity": 1,
+                            "title": "Untitled Symbol",
+                            "strokeWeight": 1,
+                            "isShowing": true,
+                            "strokeOpacity": 1,
+                            "height": 20,
+                            "width": 20,
+                            "shape": "circle",
+                            "rule": "*",
+                            "strokeColor": "#ffffff",
+                            "id": 1,
+                            "fillColor": "#4e70d4"
+                        },
+                        {
+                            "fillOpacity": 1,
+                            "title": "Uncategorized",
+                            "strokeWeight": 1,
+                            "isShowing": true,
+                            "rule": "¯\\_(ツ)_/¯",
+                            "height": 20,
+                            "width": 20,
+                            "shape": "circle",
+                            "strokeOpacity": 1,
+                            "strokeColor": "#FFFFFF",
+                            "fillColor": "#4e70d4"
+                        }
+                    ]
+                }], { projectID: projectJSON.id, mapID: mapID });
+            };
 
             this.dataManager = new DataManager({
                 projectJSON: this.getProjectJSON(),
@@ -93,8 +149,9 @@ define([
             this.photos = this.dataManager.getCollection('audio');
             this.form_2 = this.dataManager.getCollection('form_2');
             this.form_3 = this.dataManager.getCollection('form_3');
-            this.map = this.dataManager.maps.get(3);
-            console.log(this.map);
+            this.map = this.dataManager.getMaps().get(3);
+            this.map.set('layers', this.getLayers(this.map.id));
+            //console.log(this.map);
             console.log(this.map.getLayers());
 
             //spoof the main-app for child view testing
@@ -117,8 +174,7 @@ define([
                     getZoom: function () {
                         return 18;
                     }
-                }
-
+                },
                 router: new Router({ app: this }),
                 start: function (options) {
                     Backbone.history.start();
