@@ -72,8 +72,8 @@ ul {
 }
 
 .style-main-panel {
-  height: calc(100% - 61px);
-  top: 41px;
+  height: calc(100% - 43px);
+  top: 43px;
   display: flex;
   position: absolute;
   width: 100%;
@@ -178,55 +178,52 @@ ul {
   z-index: 2;
   position: absolute;
   width: 100%;
+  min-height: 44px;
 }
 
 .breadcrumb-container {
-  display: inline-flex;
-  padding: 10px 30px;
-  height: 20px;
+  padding: 5px 30px;
 }
 
-.breadcrumb-level-container {
-  display: inline-flex;
-  position: relative;
+.breadcrumb-container > div, .breadcrumb-container .breadcrumb-hover, .breadcrumb-container .fa {
+  display: inline-block;
 }
 
-.breadcrumb-level-container .fa-angle-right {
+.breadcrumb-container > div .fa-angle-right {
   padding: 0px 15px;
-  line-height: 22px;
 }
 
-.breadcrumb-level-container .fa-angle-down {
-  line-height: 22px;
+.breadcrumb-container > div .fa-angle-down {
   padding: 0px 8px;
   font-weight: 600;
+  line-height: 5px;
 }
 
-.breadcrumb-hover {
-  height: 28px;
+.breadcrumb-container .breadcrumb-hover {
   border-radius: 3px;
-  padding: 0px 5px;
+  box-sizing: border-box;
+  padding: 5px;
   cursor: pointer;
 }
 
-.breadcrumb-hover:hover {
+.breadcrumb-container .breadcrumb-hover:hover {
   background: #f3f3f3;
 }
 
-.breadcrumb-text, .breadcrumb-text_current {
+.breadcrumb-container .breadcrumb-hover a, .breadcrumb-container .breadcrumb-hover span {
   font-size: 14px;
   font-weight: 300;
   display: inline-block;
 }
 
-.breadcrumb-text_current {
+.breadcrumb-container .breadcrumb-hover span.current {
   font-weight: 600;
 }
 
 #map-list {
   position: absolute;
-  left: 36px;
-  top: 26px;
+  margin-top: 5px;
+  margin-left: 40px;
   z-index: 500;
   border-radius: 0px 0px 5px 5px;
 }

@@ -1,0 +1,55 @@
+// main: ../main-new.scss
+$icon-line-height: 34px;
+
+.breadcrumb {
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 rgba(0, 0, 0, 0), 0 2px 4px -1px rgba(0, 0, 0, 0);
+    z-index: 2;
+    position: absolute;
+    width: 100%;
+    min-height: 44px;
+}
+
+.breadcrumb-container {
+    padding: 5px 30px;
+    > div, .breadcrumb-hover, .fa {
+        display: inline-block;
+    }
+    > div {
+        .fa-angle-right {
+            padding: 0px 15px;
+        }
+
+        .fa-angle-down {
+            padding: 0px 8px;
+            font-weight: 600;
+            line-height: 5px;
+        }
+
+    }
+    .breadcrumb-hover {
+        border-radius: 3px;
+        box-sizing: border-box;
+        padding: 5px;
+        cursor: pointer;
+
+        &:hover {
+            background: #f3f3f3;
+        }
+        a, span {
+            font-size: 14px;
+            font-weight: 300;
+            display: inline-block;
+        }
+        span.current {
+            font-weight: 600;
+        }
+    }
+}
+
+#map-list {
+    position: absolute;
+    margin-top: 5px;
+    margin-left: 40px;
+    z-index: 500;
+    border-radius: 0px 0px 5px 5px;
+}
