@@ -48,3 +48,39 @@
         color: #3b444f;
     }
 }
+
+
+.dropdown-menu {
+    width: 140px;
+    position: absolute;
+    background-color: white;
+    border-radius: 3px;
+    border: 1px solid #e4e5eb;
+    margin-top: 4px;
+    z-index: 100;
+    box-shadow: $dropdownShadow;
+
+    .divider {
+        border-top: solid 1px #EEE;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0px;
+        li {
+            display: block;
+            text-transform: none;
+            line-height: 100%;
+            a {
+                display: block;
+                padding: 8px 0px 8px 15px;
+            }
+        }
+        li:hover {
+            background-color: $dropdownHover;
+            a {
+                color: white;
+            }
+        }
+    }
+}

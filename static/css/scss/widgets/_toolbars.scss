@@ -49,37 +49,6 @@ nav.toolbar-main {
 .toggle-button {
     text-transform: uppercase;
 }
-.dropdown-menu {
-    width: 140px;
-    position: absolute;
-    background-color: white;
-    border-radius: 3px;
-    border: 1px solid #e4e5eb;
-    margin-top: 4px;
-    z-index: 100;
-    box-shadow: $dropdownShadow;
-
-    .divider {
-        border-top: solid 1px #EEE;
-    }
-
-    ul {
-        list-style: none;
-        padding: 0px;
-        li {
-            display: block;
-            text-transform: none;
-            padding: 8px 0px 8px 15px;
-            line-height: 100%;
-        }
-        li:hover {
-            background-color: $dropdownHover;
-            a {
-                color: white;
-            }
-        }
-    }
-}
 
 .toolbar-secondary {
     box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);

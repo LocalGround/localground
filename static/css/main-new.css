@@ -793,6 +793,45 @@ span.action.rounded:hover, a.action.rounded:hover {
   color: #3b444f;
 }
 
+.dropdown-menu {
+  width: 140px;
+  position: absolute;
+  background-color: white;
+  border-radius: 3px;
+  border: 1px solid #e4e5eb;
+  margin-top: 4px;
+  z-index: 100;
+  box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
+}
+
+.dropdown-menu .divider {
+  border-top: solid 1px #EEE;
+}
+
+.dropdown-menu ul {
+  list-style: none;
+  padding: 0px;
+}
+
+.dropdown-menu ul li {
+  display: block;
+  text-transform: none;
+  line-height: 100%;
+}
+
+.dropdown-menu ul li a {
+  display: block;
+  padding: 8px 0px 8px 15px;
+}
+
+.dropdown-menu ul li:hover {
+  background-color: #7b9be1;
+}
+
+.dropdown-menu ul li:hover a {
+  color: white;
+}
+
 .modal {
   display: none;
   position: fixed;
@@ -1236,41 +1275,6 @@ nav.toolbar-main .nav {
 
 .toggle-button {
   text-transform: uppercase;
-}
-
-.dropdown-menu {
-  width: 140px;
-  position: absolute;
-  background-color: white;
-  border-radius: 3px;
-  border: 1px solid #e4e5eb;
-  margin-top: 4px;
-  z-index: 100;
-  box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
-}
-
-.dropdown-menu .divider {
-  border-top: solid 1px #EEE;
-}
-
-.dropdown-menu ul {
-  list-style: none;
-  padding: 0px;
-}
-
-.dropdown-menu ul li {
-  display: block;
-  text-transform: none;
-  padding: 8px 0px 8px 15px;
-  line-height: 100%;
-}
-
-.dropdown-menu ul li:hover {
-  background-color: #7b9be1;
-}
-
-.dropdown-menu ul li:hover a {
-  color: white;
 }
 
 .toolbar-secondary {
