@@ -37,6 +37,7 @@ define([
             Backbone.history.start();
         },
         initialize: function (options) {
+            console.log('init app');
             options = options || {};
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.selectedProjectID = options.projectJSON.id;

@@ -34,6 +34,7 @@ define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
         },
 
         getLayers: function () {
+            console.log('getLayers', this.get('layers'));
             if (this.get("layers")) {
                 if (!(this.get("layers") instanceof Layers)) {
                     this.set("layers", new Layers(this.get("layers"), {mapID: this.id}));
