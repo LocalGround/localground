@@ -10,7 +10,7 @@ define(["marionette", "underscore", "jquery"],
             initialize: function (opts) {
                 var key, that = this;
                 _.extend(this, opts);
-                this.tilesets = this.app.dataManager.tilesets;
+                this.tilesets = this.app.dataManager.getTilesets();
                 this.map = this.app.map;
                 for (key in this.tilesets.mapTypes) {
                     this.map.mapTypes.set(key, this.tilesets.mapTypes[key]);

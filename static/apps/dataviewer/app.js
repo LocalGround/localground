@@ -112,9 +112,6 @@ define([
                     break;
             }
         },
-        isDataLoaded: function () {
-            return this.dataManager.dataLoaded;
-        },
 
         getCollection: function () {
             try {

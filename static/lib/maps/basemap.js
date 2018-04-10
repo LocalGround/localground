@@ -38,7 +38,7 @@ define(["marionette",
             initialize: function (opts) {
                 // set initial properties (init params override state params):
                 this.app = opts.app;
-                this.tilesets = this.app.dataManager.tilesets;
+                this.tilesets = this.app.dataManager.getTilesets();
                 this.restoreState();
                 $.extend(this, opts);
 

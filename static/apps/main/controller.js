@@ -10,7 +10,7 @@ define([
         },
         defaultMap: function () {
             //redirect to display first map in list:
-            window.location.href= '#/' + this.dataManager.maps.at(0).id;
+            window.location.href= '#/' + this.dataManager.getMaps().at(0).id;
         },
         displayMap: function (mapId) {
              this.app.vent.trigger('route-map', mapId);

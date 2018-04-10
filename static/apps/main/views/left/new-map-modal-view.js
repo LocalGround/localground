@@ -10,7 +10,6 @@ define ([
         var CreateMapForm = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.listenTo(this.app.vent, "send-modal-error", this.updateModal);
                 this.template = Handlebars.compile(CreateMapFormTemplate);
             },
 
@@ -27,16 +26,9 @@ define ([
                 }
             },
             templateHelpers: function () {
-                var datasets = [];
-                this.app.dataManager.each(function (item) {
-                    if (item.isSite) {
-                        datasets.push({key: item.key, title: item.title});
-                    }
-                });
                 var helpers = {
-                    generalError: this.generalError,
                     name: 'Untitled Map',
-                    datasets: datasets
+                    datasets: this.app.dataManager.getDatasets()
                 };
                 return helpers;
             },
@@ -55,7 +47,8 @@ define ([
                 this.model.set("data_sources", JSON.stringify(data_sources));
 
                 this.model.save(null, {
-                    success: this.displayMap.bind(this)
+                    success: this.displayMap.bind(this),
+                    failure: this.handleServerError.bind(this)
                 });
             },
             displayMap: function () {
@@ -64,7 +57,8 @@ define ([
                 this.app.router.navigate('//' + this.model.id);
             },
 
-            updateModal: function (errorMessage) {
+            handleServerError: function (errorMessage) {
+                //TODO: Fix this
                 if (errorMessage.status == '400') {
                     var messages = JSON.parse(errorMessage.responseText);
                     this.slugError = messages.slug[0];

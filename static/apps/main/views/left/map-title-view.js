@@ -13,10 +13,10 @@ define(["marionette",
                 this.modal = this.app.modal;
             },
             events: {
-                'click .map-edit': 'showEditModal'
+                'click': 'showEditModal'
             },
             showEditModal: function (e) {
-                console.log('show edit modal');
+                alert('show edit modal');
                 if (e) { e.preventDefault(); }
             }
         });

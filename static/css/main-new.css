@@ -223,17 +223,12 @@ ul {
   font-weight: 600;
 }
 
-.bread-crumb_maplist {
+#map-list {
   position: absolute;
-  display: flex;
-  flex-direction: column;
   left: 36px;
-  top: 27px;
+  top: 26px;
   z-index: 500;
-  background: white;
-  padding: 10px;
-  width: 100%;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 0px 0px 5px 5px;
 }
 
 .selected-map {
@@ -1254,6 +1249,10 @@ nav.toolbar-main .nav {
   box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
 }
 
+.dropdown-menu .divider {
+  border-top: solid 1px #EEE;
+}
+
 .dropdown-menu ul {
   list-style: none;
   padding: 0px;
@@ -1261,10 +1260,8 @@ nav.toolbar-main .nav {
 
 .dropdown-menu ul li {
   display: block;
-  margin: 6px 0px;
-  line-height: 100%;
   text-transform: none;
-  padding: 6px 0px 6px 20px;
+  padding: 8px 0px 8px 15px;
   line-height: 100%;
 }
 

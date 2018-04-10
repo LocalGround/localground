@@ -59,15 +59,17 @@ nav.toolbar-main {
     z-index: 100;
     box-shadow: $dropdownShadow;
 
+    .divider {
+        border-top: solid 1px #EEE;
+    }
+
     ul {
         list-style: none;
         padding: 0px;
         li {
             display: block;
-            margin: 6px 0px;
-            line-height: 100%;
             text-transform: none;
-            padding: 6px 0px 6px 20px;
+            padding: 8px 0px 8px 15px;
             line-height: 100%;
         }
         li:hover {

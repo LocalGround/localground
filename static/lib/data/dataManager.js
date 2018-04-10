@@ -6,61 +6,40 @@ define(["underscore", "marionette", "models/project",
                 Records, Fields, TileSets, Maps) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
-            dataDictionary: {},
-            formColors: ['#60C7CC', '#CF2045', '#A3A737', '#F27CA5'],
-            colorCounter: 0,
-            dataLoaded: false,
+            __dataDictionary: {},
             template: false,
-            getProject: function () {
-                return this.project;
-            },
-            getMap: function () {
-                return this.map;
-            },
-            setMapById: function (mapID) {
-                this.map = this.maps.get(mapID);
-            },
             initialize: function (opts) {
                 _.extend(this, opts);
                 if (typeof this.projectJSON === 'undefined') {
                     window.location = '/';
                     return false;
                 }
-                this.initProject();
-                this.initTilesets();
+                this.__initProject();
+                this.__initTilesets();
                 this.listenTo(this.vent, "delete-collection", this.deleteCollection);
                 this.listenTo(this.vent, "create-collection", this.addNewRecordsCollection);
             },
-            isEmpty: function () {
-                return Object.keys(this.dataDictionary).length === 0;
-            },
-            initProject: function () {
-                if (!this.project) {
-                    this.project = new Project(this.projectJSON);
+            __initProject: function () {
+                if (!this.__project) {
+                    this.__project = new Project(this.projectJSON);
                 }
-                this.initCollections();
-                this.initMaps();
+                this.__initCollections();
+                this.__initMaps();
             },
 
-            initTilesets: function () {
-                this.tilesets = new TileSets();
-                this.tilesets.fetch({reset: 'true'});
+            __initTilesets: function () {
+                this.__tilesets = new TileSets();
+                this.__tilesets.fetch({reset: 'true'});
             },
-            initMaps: function () {
-                this.maps = new Maps(this.project.get('maps').data, {
-                    projectID: this.project.id});
-            },
-            addMap: function (map) {
-                map.getLayers().each(function (layer) {
-                    console.log(layer.get('title'));
-                })
-                this.maps.add(map);
+            __initMaps: function () {
+                this.__maps = new Maps(this.__project.get('maps').data, {
+                    projectID: this.__project.id});
             },
 
-            initCollections: function () {
+            __initCollections: function () {
                 var dataLists = {};
-                _.extend(dataLists, this.project.get('datasets'));
-                _.extend(dataLists, this.project.get('media'));
+                _.extend(dataLists, this.__project.get('datasets'));
+                _.extend(dataLists, this.__project.get('media'));
                 var opts, dataType, jsonData, collection;
                 for (dataType in dataLists) {
                     opts = dataLists[dataType];
@@ -71,16 +50,13 @@ define(["underscore", "marionette", "models/project",
                         isCustomType: false,
                         isMedia: false,
                         dataType: dataType,
-                        projectID: this.project.id
+                        projectID: this.__project.id
                     });
-                    collection = this.initCollection(opts);
-                    this.dataDictionary[dataType] = collection;
-                    //delete opts.data;
+                    collection = this.__initCollection(opts);
+                    this.__dataDictionary[dataType] = collection;
                 }
-                this.dataLoaded = true;
-
             },
-            initCollection: function (opts) {
+            __initCollection: function (opts) {
                 var collection;
                 var jsonData = opts.data;
                 delete opts.data;
@@ -103,7 +79,7 @@ define(["underscore", "marionette", "models/project",
                         break;
                     default:
                         if (opts.dataType.includes("form_")) {
-                            collection = this.createRecordsCollection(jsonData, opts);
+                            collection = this.__createRecordsCollection(jsonData, opts);
                         } else {
                             throw new Error("case not handled");
                         }
@@ -112,95 +88,110 @@ define(["underscore", "marionette", "models/project",
                 return collection;
             },
 
-            attachFieldsToRecord: function (fields, record) {
+            __attachFieldsToRecord: function (fields, record) {
                 fields.each(function (field) {
                     field.set("val", record.get(field.get("col_name")));
                 });
                 record.set('fields', fields.toJSON());
             },
 
-            attachFieldsToRecords:  function (fields, records) {
+            __attachFieldsToRecords:  function (fields, records) {
                 // some extra post-processing for custom datatypes so that
                 // it's easier to loop through fields and output corresponding
                 // values
                 records.each((record) => {
-                    this.attachFieldsToRecord(fields, record);
+                    this.__attachFieldsToRecord(fields, record);
                 });
             },
 
-            createRecordsCollection:  function (jsonData, opts, fields) {
+            __createRecordsCollection:  function (jsonData, opts, fields) {
                 var fieldsURL,
                     collection;
                 opts.formID = parseInt(opts.dataType.split("_")[1]);
                 opts.url = '/api/0/datasets/' + opts.formID + '/data/';
                 fieldsURL = '/api/0/datasets/' + opts.formID + '/fields/';
                 _.extend(opts, {
-                    fillColor: this.getMarkerColor(),
                     fields: new Fields(opts.fields, { baseURL: fieldsURL }),
                     isCustomType: true,
                     isSite: true,
                     key: opts.dataType
                 });
                 collection = new Records(jsonData, opts);
-                this.attachFieldsToRecords(opts.fields, collection);
+                this.__attachFieldsToRecords(opts.fields, collection);
                 return collection
             },
 
-            getMarkerColor: function () {
-                var index = this.colorCounter++ % this.formColors.length;
-                return this.formColors[index];
+            __getCollections: function () {
+                return Object.values(this.__dataDictionary);
             },
 
+            /******************/
+            /* PUBLIC METHODS */
+            /******************/
+            getProject: function () {
+                return this.__project;
+            },
+            getMap: function () {
+                return this.map;
+            },
+            setMapById: function (mapID) {
+                this.map = this.__maps.get(mapID);
+            },
+            addMap: function (map) {
+                map.getLayers().each(function (layer) {
+                    console.log(layer.get('title'));
+                })
+                this.__maps.add(map);
+            },
             deleteCollection: function (dataType) {
-                delete this.dataDictionary[dataType];
-                this.vent.trigger('datamanager-modified');
+                delete this.__dataDictionary[dataType];
             },
-
             each: function (f) {
+                //TODO: deprecate. There are newer convenience functions that
+                //      are better.
                 this.getLookup().forEach((obj) => {
                     f(this.getCollection(obj.id));
                 });
             },
-
+            getModel: function (dataType, id) {
+                return this.__dataDictionary[dataType].getModel(id);
+            },
             getLookup: function () {
-                /*
-                Because order matters, returns a list of
-                id / name pairs in the correct order. First
-                sites, then custom data types, then media.
-                */
-                var collection,
-                    dataType,
-                    lookup = [];
-                for (dataType in this.dataDictionary) {
-                    collection = this.dataDictionary[dataType];
-                    if (collection.getIsCustomType()) {
-                        lookup.push({
-                            id: collection.getDataType(),
-                            name: collection.getTitle(),
-                            hasData: collection.length > 0
-                        });
-                    }
-                };
+                // First datasets, then map images (order matters):
+                const lookup = [];
+                this.getDatasets().forEach(collection => {
+                    lookup.push({
+                        id: collection.getDataType(),
+                        name: collection.getTitle(),
+                        hasData: collection.length > 0
+                    })
+                });
                 lookup.push.apply(lookup, [
                     { id: "map_images", name: "Map Images", hasData: this.getCollection("map_images").length > 0 }
                 ])
                 return lookup;
             },
-
             getCollection: function (dataType) {
-                if (!this.dataDictionary[dataType]) {
+                if (!this.__dataDictionary[dataType]) {
                     throw new Error("No collection found for " + dataType);
                 }
-                return this.dataDictionary[dataType];
+                return this.__dataDictionary[dataType];
             },
-
-            getModel: function (dataType, id) {
-                console.log(this.dataDictionary[dataType])
-                return this.dataDictionary[dataType].getModel(id);
+            getDatasets: function () {
+                return this.__getCollections().filter(collection => {
+                    return collection.getIsCustomType();
+                });
             },
-
-            getCollections: function () {
-                return Object.entries(this.dataDictionary);
+            getMediaCollections: function () {
+                return this.__getCollections().filter(collection => {
+                    return collection.getIsMedia();
+                });
+            },
+            getMaps: function () {
+                return this.__maps;
+            },
+            getTilesets: function () {
+                return this.__tilesets;
             }
         });
         return DataManager;

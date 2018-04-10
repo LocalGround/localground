@@ -43,7 +43,6 @@ define([
             spyOn(DataViewerApp.prototype, "loadMainRegion").and.callThrough();
             spyOn(DataViewerApp.prototype, "initMainView"); // don't call through
             spyOn(DataViewerApp.prototype, "adjustLayout").and.callThrough();
-            spyOn(DataViewerApp.prototype, "isDataLoaded").and.callThrough();
             spyOn(DataViewerApp.prototype, "saveAppState").and.callThrough();
             spyOn(DataViewerApp.prototype, "restoreAppState").and.callThrough();
 

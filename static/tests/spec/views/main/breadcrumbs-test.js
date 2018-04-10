@@ -27,8 +27,8 @@ define([
             scope.toolbar = new Breadcrumbs({
                 app: scope.app,
                 model: scope.dataManager.getProject(),
-                collection: scope.dataManager.maps,
-                activeMap: scope.dataManager.maps.at(0)
+                collection: scope.dataManager.getMaps(),
+                activeMap: scope.dataManager.getMaps().at(0)
             });
         };
 
@@ -41,7 +41,7 @@ define([
                 expect(this.toolbar.initialize).toHaveBeenCalledTimes(1);
                 expect(this.toolbar).toEqual(jasmine.any(Breadcrumbs));
                 expect(this.toolbar.model).toEqual(this.dataManager.getProject());
-                expect(this.toolbar.collection).toEqual(this.dataManager.maps);
+                expect(this.toolbar.collection).toEqual(this.dataManager.getMaps());
             });
 
             it("should listens for collection add", function () {

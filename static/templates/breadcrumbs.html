@@ -14,28 +14,20 @@
     </div>
     <div class="breadcrumb-level-container">
         <div><i class="fa fa-angle-right fa"></i></div>
-        {{#if map}}
-            <div class="breadcrumb-hover" id="map-menu" style="margin-top: -2px">
-                <span class="breadcrumb-text_current">  {{ map }} </span>
-                <i class="fa fa-angle-down"></i>
-            </div>
-            <div id="map-list" class="bread-crumb_maplist" style="display: none;">
+        <div class="breadcrumb-hover" id="map-menu" style="margin-top: -2px">
+            <span class="breadcrumb-text_current">  {{ map }} </span>
+            <i class="fa fa-angle-down"></i>
+        </div>
+        <div id="map-list" class="dropdown-menu" style="display: none;">
+            <ul>
                 {{#each mapList}}
-                <a href="#/{{this.id}}">
-                    <div class="map-item" data-value="{{ this.id }}">
-                        <p class="map-name" data-value="{{ this.id }}">{{ this.name }}</p>
-                    </div>
-                </a>
+                <li><a href="#/{{this.id}}">{{ this.name }}</a></li>
                 {{/each}}
-                <a href="#" class="add-map">
-                    <div class="map-item"><i class="fa fa-plus"></i> Add New</div>
-                </a>
-            </div>
-        {{else}}
-            <a href="#" class="add-map">
-                <div class="map-item"><i class="fa fa-plus"></i> Add New</div>
-            </a>
-        {{/if}}
+                <li class="divider add-map">
+                    <a href="#/{{this.id}}"><i class="fa fa-plus"></i> Add Map</a>
+                </li>
+            </ul>
+        </div>
     </div>
 
     {{/if}}

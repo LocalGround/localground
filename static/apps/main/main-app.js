@@ -93,7 +93,7 @@ define([
                 displayMap: true,
                 model: this.dataManager.getProject(),
                 activeMap: this.dataManager.getMap(),
-                collection: this.dataManager.maps
+                collection: this.dataManager.getMaps()
             }));
         },
 

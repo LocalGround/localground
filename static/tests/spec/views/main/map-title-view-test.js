@@ -19,7 +19,7 @@ define([
             // 3) initialize Toolbar:
             scope.mapTitleView  = new MapTitleView({
                 app: scope.app,
-                model: scope.dataManager.maps.at(0)
+                model: scope.dataManager.getMaps().at(0)
             });
         };
 
@@ -31,7 +31,7 @@ define([
             it("should initialize correctly", function () {
                 expect(this.mapTitleView.initialize).toHaveBeenCalledTimes(1);
                 expect(this.mapTitleView.modal).toEqual(jasmine.any(Modal));
-                expect(this.mapTitleView.model).toEqual(this.dataManager.maps.at(0));
+                expect(this.mapTitleView.model).toEqual(this.dataManager.getMaps().at(0));
             });
 
             it("should render correctly", function () {

@@ -326,12 +326,6 @@ nav .selected{
     color:white;
 }
 
-.dropdown-menu .fa {
-    color:#d3d3d3;
-    font-size: 1.4em;
-    padding: 2px 8px;
-}
-
 .dropdown-menu table {
      width:100%;
      border-collapse:collapse;

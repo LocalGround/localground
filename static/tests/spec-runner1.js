@@ -9,6 +9,8 @@ require(['boot'], function () {
         'spec/views/main/breadcrumbs-test.js',
         'spec/views/main/create-new-map-test.js',
         'spec/views/main/map-title-view-test.js',
+
+        'spec/lib/data-manager-test.js',
     ];
 
     require(specs, function () {
