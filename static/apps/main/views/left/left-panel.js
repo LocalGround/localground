@@ -34,9 +34,6 @@ define(["underscore",
             onRender: function () {
                 console.log('rendering left panel view...')
 
-                this.skins.show(new SkinView({
-                    app: this.app
-                }));
                 this.menu.show(new MapTitleView({
                     app: this.app,
                     model: this.model
@@ -46,10 +43,14 @@ define(["underscore",
                     model: this.model,
                     collection: this.model.getLayers()
                 }));
-                this.styles.show(new PanelStylesView({
+                /*this.styles.show(new PanelStylesView({
                     app: this.app,
                     model: this.model
                 }));
+                this.skins.show(new SkinView({
+                    app: this.app
+                }));*/
+
             },
             hidePanel: function (e) {
                 $(e.target).removeClass("hide").addClass("show");

@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 import sys
 from django.contrib import admin
 from localground.apps.site.views import document_view
-from localground.apps.site.views.pages import MainView
+from localground.apps.site.views.pages import PublicView, MainView
 from django.conf.urls.static import static
 
 urlpatterns = patterns('',
@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     (r'^main/(?P<project_id>[0-9]+)/$', MainView.as_view(template_name='pages/main.html')),
     (r'^data/(?P<project_id>[0-9]+)/$', MainView.as_view(template_name='pages/data.html')),
     (r'^style/(?P<project_id>[0-9]+)/$', MainView.as_view(template_name='pages/style.html')),
-    (r'^presentation/(?P<project_id>[0-9]+)$', MainView.as_view(template_name='pages/presentation.html')),
+    (r'^presentation/(?P<project_id>[0-9]+)$', PublicView.as_view(template_name='pages/presentation.html')),
     #(r'^data/$', login_required(direct_to_template), {'template_name': 'pages/data.html'}),
     #(r'^style/$', login_required(direct_to_template), {'template_name': 'pages/style.html'}),
     #(r'^map/$', login_required(direct_to_template), {'template_name': 'pages/map.html'}),

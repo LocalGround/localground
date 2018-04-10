@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-from django.http import Http404
-from django.template import TemplateDoesNotExist
-from django.shortcuts import render as direct_to_template
-from django.shortcuts import render_to_response
+from django.http import Http404, HttpResponseRedirect
+from django.template import TemplateDoesNotExist, RequestContext
+from django.shortcuts import render as direct_to_template, render_to_response
 from django.views.generic import TemplateView
-from django.template import RequestContext
 
 
 def about_pages(request, page_name):
@@ -27,15 +25,14 @@ def style_guide_pages(request, page_name='banners'):
         raise Http404()
 
 
-class MainView(TemplateView):
-
+class PublicView(TemplateView):
     def get_context_data(self, project_id, *args, **kwargs):
         from localground.apps.site.api.serializers import \
             ProjectDetailSerializer
         from localground.apps.site.models import Project
         from rest_framework.renderers import JSONRenderer
 
-        context = super(MainView, self).get_context_data(
+        context = super(PublicView, self).get_context_data(
             *args, **kwargs)
 
         serializer = ProjectDetailSerializer(
@@ -45,3 +42,11 @@ class MainView(TemplateView):
         renderer = JSONRenderer()
         context.update({'project': renderer.render(serializer.data)})
         return context
+
+
+class MainView(PublicView):
+    # if not logged in, redirect to login screen:
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated():
+            return HttpResponseRedirect('/accounts/login/')
+        return super(MainView, self).dispatch(request, *args, **kwargs)

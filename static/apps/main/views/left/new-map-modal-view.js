@@ -37,14 +37,22 @@ define ([
                 this.model.set("name", this.$el.find("#map-name").val());
                 this.model.set("description",
                     this.$el.find("#map-description").val());
-                this.model.set("create_new_dataset",
-                    this.$el.find('#new-dataset').prop('checked'));
 
-                var data_sources = []
-                this.$el.find('input[type="checkbox"]:checked').each(function() {
-                    data_sources.push(this.value);
-                });
-                this.model.set("data_sources", JSON.stringify(data_sources));
+                // Either create a new dataset or select existing one
+                const createNewDataset = this.$el.find('#new-dataset').prop('checked');
+                if (createNewDataset) {
+                    this.model.set("create_new_dataset", true);
+                } else {
+                    const data_sources = []
+                    this.$el.find('input[type="checkbox"]:checked').each(function() {
+                        data_sources.push(this.value);
+                    });
+                    if (data_sources.length === 0) {
+                        console.error('no data sources chosen');
+                        return;
+                    }
+                    this.model.set("data_sources", JSON.stringify(data_sources));
+                }
 
                 this.model.save(null, {
                     success: this.displayMap.bind(this),
