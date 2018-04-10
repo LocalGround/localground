@@ -102,19 +102,19 @@ define([
                 
 
             });
-            it("clicking '#map-delete' calls deleteMap()", function () {
-                lpv.render();
-                console.log(lpv);
-                console.log(lpv.layers);
-                //expect(Layer.prototype.destroy).not.toHaveBeenCalled();
+            // it("clicking '#map-delete' calls deleteMap()", function () {
+            //     lpv.render();
+            //     console.log(lpv);
+            //     console.log(lpv.layers);
+            //     //expect(Layer.prototype.destroy).not.toHaveBeenCalled();
                 
-                console.log(lpv.layers.currentView.children.length);
-                spyOn(window, 'confirm').and.returnValue(true);
-                $(lpv.$el.find('#map-delete').click());
-                expect(Layer.prototype.destroy).toHaveBeenCalled();
+            //     console.log(lpv.layers.currentView.children.length);
+            //     spyOn(window, 'confirm').and.returnValue(true);
+            //     $(lpv.$el.find('#map-delete').click());
+            //     expect(Layer.prototype.destroy).toHaveBeenCalled();
                
                 
-            });
+            // });
 
 
 
