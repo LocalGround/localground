@@ -173,61 +173,6 @@ ul {
   display: block;
 }
 
-.breadcrumb {
-  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 transparent, 0 2px 4px -1px transparent;
-  z-index: 2;
-  position: absolute;
-  width: 100%;
-  min-height: 44px;
-}
-
-.breadcrumb-container {
-  padding: 5px 30px;
-}
-
-.breadcrumb-container > div, .breadcrumb-container .breadcrumb-hover, .breadcrumb-container .fa {
-  display: inline-block;
-}
-
-.breadcrumb-container > div .fa-angle-right {
-  padding: 0px 15px;
-}
-
-.breadcrumb-container > div .fa-angle-down {
-  padding: 0px 8px;
-  font-weight: 600;
-  line-height: 5px;
-}
-
-.breadcrumb-container .breadcrumb-hover {
-  border-radius: 3px;
-  box-sizing: border-box;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.breadcrumb-container .breadcrumb-hover:hover {
-  background: #f3f3f3;
-}
-
-.breadcrumb-container .breadcrumb-hover a, .breadcrumb-container .breadcrumb-hover span {
-  font-size: 14px;
-  font-weight: 300;
-  display: inline-block;
-}
-
-.breadcrumb-container .breadcrumb-hover span.current {
-  font-weight: 600;
-}
-
-#map-list {
-  position: absolute;
-  margin-top: 5px;
-  margin-left: 40px;
-  z-index: 500;
-  border-radius: 0px 0px 5px 5px;
-}
-
 .selected-map {
   padding: 10px;
   border-bottom: solid 1px #ebebeb;
@@ -509,6 +454,61 @@ ul {
   text-align: center;
   margin-top: -20px;
   margin-bottom: 30px;
+}
+
+.breadcrumb {
+  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 transparent, 0 2px 4px -1px transparent;
+  z-index: 2;
+  position: absolute;
+  width: 100%;
+  min-height: 44px;
+}
+
+.breadcrumb-container {
+  padding: 5px 30px;
+}
+
+.breadcrumb-container .breadcrumb-hover, .breadcrumb-container .fa {
+  display: inline-block;
+}
+
+.breadcrumb-container .fa-angle-right {
+  padding: 0px 15px;
+}
+
+.breadcrumb-container .fa-angle-down {
+  padding: 0px 8px;
+  font-weight: 600;
+  line-height: 5px;
+}
+
+.breadcrumb-container .breadcrumb-hover {
+  border-radius: 3px;
+  box-sizing: border-box;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.breadcrumb-container .breadcrumb-hover:hover {
+  background: #f3f3f3;
+}
+
+.breadcrumb-container .breadcrumb-hover > a, .breadcrumb-container .breadcrumb-hover > span {
+  font-size: 14px;
+  font-weight: 300;
+  display: inline-block;
+}
+
+.breadcrumb-container .breadcrumb-hover span.current {
+  font-weight: 600;
+}
+
+#map-list {
+  position: absolute;
+  margin-left: -5px;
+  margin-top: 11px;
+  z-index: 500;
+  border-radius: 0px 0px 5px 5px;
 }
 
 .button, .button-action, .button-primary, .button-secondary, .button-tertiary {

@@ -61,7 +61,7 @@ define([
             it("should render breadcrumbs correctly", function () {
                 this.toolbar.render();
                 expect(this.toolbar.$el).toContainText(this.toolbar.model.get('name'));
-                expect(this.toolbar.$el.find('.breadcrumb-level-container').length).toEqual(3);
+                expect(this.toolbar.$el.find('.breadcrumb-hover').length).toEqual(3);
             });
 
             it("should render map list correctly", function () {
@@ -102,6 +102,7 @@ define([
                 expect($menu.css('display')).toEqual('block');
 
                 //spoof user click to hide map menu:
+                expect(Breadcrumbs.prototype.hideMapList).toHaveBeenCalledTimes(0);
                 this.toolbar.$el.trigger('click');
                 expect(Breadcrumbs.prototype.hideMapList).toHaveBeenCalledTimes(1);
                 expect($menu.css('display')).toEqual('none');
@@ -119,10 +120,6 @@ define([
                 expect(Breadcrumbs.prototype.toggleMapList).toHaveBeenCalledTimes(1);
                 expect($menu.css('display')).toEqual('block');
 
-                //spoof user click to hide map menu:
-                this.toolbar.$el.find('#map-list').trigger('click');
-                expect(Breadcrumbs.prototype.hideMapList).toHaveBeenCalledTimes(1);
-                expect($menu.css('display')).toEqual('none');
             });
 
             it("should show the create map modal form", function () {

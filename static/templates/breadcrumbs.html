@@ -1,26 +1,21 @@
 <div class="breadcrumb-container">
-    <div>
-        <div class="breadcrumb-hover">
-            <a href="/">Home</a>
-        </div>
+    <div class="breadcrumb-hover">
+        <a href="/">Home</a>
     </div>
 
     {{#if name}}
-    <div>
-        <i class="fa fa-angle-right fa"></i>
-        <div class="breadcrumb-hover">
-            <span>{{ name }}</span>
-        </div>
+    <i class="fa fa-angle-right fa"></i>
+    <div class="breadcrumb-hover">
+        <span>{{ name }}</span>
     </div>
     {{/if}}
 
     {{#if map}}
-    <div id="map-menu">
-        <i class="fa fa-angle-right fa"></i>
-        <div class="breadcrumb-hover">
-            <span class="current">{{ map }}</span>
-            <i class="fa fa-angle-down"></i>
-        </div>
+    <i class="fa fa-angle-right fa"></i>
+    <div id="map-menu" class="breadcrumb-hover">
+        <span class="current">{{ map }}</span>
+        <i class="fa fa-angle-down"></i>
+
         <div id="map-list" class="dropdown-menu" style="display: none;">
             <ul>
                 {{#each mapList}}

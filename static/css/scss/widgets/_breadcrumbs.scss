@@ -11,20 +11,19 @@ $icon-line-height: 34px;
 
 .breadcrumb-container {
     padding: 5px 30px;
-    > div, .breadcrumb-hover, .fa {
+
+    .breadcrumb-hover, .fa {
         display: inline-block;
     }
-    > div {
-        .fa-angle-right {
-            padding: 0px 15px;
-        }
 
-        .fa-angle-down {
-            padding: 0px 8px;
-            font-weight: 600;
-            line-height: 5px;
-        }
+    .fa-angle-right {
+        padding: 0px 15px;
+    }
 
+    .fa-angle-down {
+        padding: 0px 8px;
+        font-weight: 600;
+        line-height: 5px;
     }
     .breadcrumb-hover {
         border-radius: 3px;
@@ -35,7 +34,7 @@ $icon-line-height: 34px;
         &:hover {
             background: #f3f3f3;
         }
-        a, span {
+        >a, >span {
             font-size: 14px;
             font-weight: 300;
             display: inline-block;
@@ -48,8 +47,8 @@ $icon-line-height: 34px;
 
 #map-list {
     position: absolute;
-    margin-top: 5px;
-    margin-left: 40px;
+    margin-left: -5px;
+    margin-top: 11px;
     z-index: 500;
     border-radius: 0px 0px 5px 5px;
 }
