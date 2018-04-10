@@ -93,6 +93,9 @@ define([
             this.photos = this.dataManager.getCollection('audio');
             this.form_2 = this.dataManager.getCollection('form_2');
             this.form_3 = this.dataManager.getCollection('form_3');
+            this.map = this.dataManager.maps.get(3);
+            console.log(this.map);
+            console.log(this.map.getLayers());
 
             //spoof the main-app for child view testing
             this.app = _.extend({}, appUtilities);
@@ -115,7 +118,13 @@ define([
                         return 18;
                     }
                 }
+
+                router: new Router({ app: this }),
+                start: function (options) {
+                    Backbone.history.start();
+                }
             });
+            console.log(this.app);
 
         });
 });

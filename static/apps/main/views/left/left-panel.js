@@ -19,8 +19,6 @@ define(["underscore",
             },
             events: {
                 'click #new-layer-options a' : 'createNewLayer',
-                'click .hide': 'hidePanel',
-                'click .show': 'showPanel',
                 'click .map-save' : 'saveMap',
                 'click #map-delete': 'deleteMap'
             },
@@ -52,16 +50,6 @@ define(["underscore",
                 }));*/
 
             },
-            hidePanel: function (e) {
-                $(e.target).removeClass("hide").addClass("show");
-                this.app.vent.trigger('hide-list');
-                e.preventDefault();
-            },
-            showPanel: function (e) {
-                $(e.target).removeClass("show").addClass("hide");
-                this.app.vent.trigger('unhide-list');
-                e.preventDefault();
-            },
 
             saveMap: function () {
                 this.model.set("zoom", this.app.getZoom());
@@ -78,36 +66,23 @@ define(["underscore",
             },
 
             deleteMap: function () {
+                console.log(this.layers);
+                console.log(this.layers.currentView.collection.length);
                 if (!confirm("Are you sure you want to delete this map?")) {
                     return;
                 }
-
-                // delete marker overlays from selected map's layers
-                this.lv.children.call("deleteOverlays");
-
+                
                 // delete selected map's layers
                 var listModel;
-                while (listModel = this.lv.collection.first()) {
+                while (listModel = this.layers.currentView.collection.first()) {
                     listModel.destroy();
                 }
 
                 // delete selected map
                 this.model.destroy();
-
-                // DEPRECATE????
-                this.menu.show(this.sv, {forceShow: true});
-
-                //rerender layers
-                //this.app.vent.trigger('update-layer-list');
-
-                this.app.router.navigate();
-
-                // resets the map list so the correct layers are displayed
-                this.app.vent.trigger('update-map-list');
-
-                // hide the right panel if it is open;
-                //necessary so the user cannot edit a non-existent layer
-                this.app.vent.trigger("hide-right-panel");
+  
+                this.app.router.navigate('//');   
+                
             }
         });
         return LeftPanelLayout;

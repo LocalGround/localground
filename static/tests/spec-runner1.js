@@ -5,12 +5,15 @@ require(['boot'], function () {
      */
     'use strict';
     var specs = [
-        'spec/views/main-app-test.js',
+        //views:
+        'spec/views/main/main-app-test.js',
         'spec/views/main/breadcrumbs-test.js',
         'spec/views/main/create-new-map-test.js',
         'spec/views/main/map-title-view-test.js',
+        'spec/views/main/left-panel-view-test.js',
 
-        'spec/lib/data-manager-test.js',
+        //lib:
+        'spec/lib/data-manager-test.js'
     ];
 
     require(specs, function () {
