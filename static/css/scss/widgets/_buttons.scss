@@ -1,0 +1,59 @@
+// main: ../main-new.scss
+.button, .button-action, .button-primary, .button-secondary, .button-tertiary {
+    border: none;
+    border-radius: 3px;
+    line-height: 26px;
+    height: 29px;
+    vertical-align: middle;
+    letter-spacing: 0.7px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin: 0 2px;
+    padding: 0 12px;
+}
+.button-action {
+    background-color: #008580;
+    color: white;
+}
+.button-primary {
+    background-color: $primary-color;
+    color: white;
+    padding: 0 11px;
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+.button-secondary {
+    background-color: $action-color;
+    border: 1px solid #e4e5eb;
+}
+.button-secondary:hover {
+    background-color: #f1f3fb;
+    border-color: #4e70d4;
+}
+.button-tertiary {
+    text-transform: uppercase;
+    font-weight: 600;
+    color: $primary-color;
+    background: none;
+    border: none;
+}
+.button-warning {
+    color: $dark-red;
+}
+span.rounded, a.rounded {
+    background-color: #e7e7e7;
+    color: #767676;
+    font-size: 12px;
+    padding: 1px 8px;
+    border-radius: 20px;
+    margin: 0 2px;
+    font-weight: 400;
+}
+span.action.rounded, a.action.rounded {
+    border: 1px solid #e7e7e7;
+    background-color: white;
+}
+span.action.rounded:hover, a.action.rounded:hover {
+    border-color: #7eace2;
+    color: #4e70d4;
+}

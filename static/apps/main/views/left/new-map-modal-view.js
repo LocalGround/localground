@@ -42,7 +42,6 @@ define ([
             },
             templateHelpers: function () {
                 this.formData.errors = this.errors;
-                console.log(this.formData);
                 return this.formData;
             },
 
@@ -71,15 +70,15 @@ define ([
                 const data_sources = []
                 this.formData.datasets.forEach(dataset => {
                     const isSelected = this.$el.find('#' + dataset.dataType).prop('checked');
+                    dataset.checked = isSelected ? 'checked': '';
                     if (isSelected) {
                         data_sources.push(dataset.dataType);
-                        dataset.checked = 'checked';
-                    } else {
-                        dataset.checked = '';
                     }
                 });
+
+                // validate that at least one datasource was selected:
                 if (data_sources.length === 0) {
-                    this.errors.datasets =  'Please select at least one data source';
+                    this.errors.datasets = 'Please select at least one data source (or indicate that you want to create a new one).';
                     return;
                 }
                 this.model.set("data_sources", JSON.stringify(data_sources));
@@ -110,16 +109,7 @@ define ([
             },
 
             handleServerError: function (errorMessage) {
-                //TODO: Fix this
-                if (errorMessage.status == '400') {
-                    var messages = JSON.parse(errorMessage.responseText);
-                    this.slugError = messages.slug[0];
-                    this.generalError = null;
-                } else {
-                    this.generalError = "Save Unsuccessful. Unspecified Server Error. Consider changing Map Title or Friendly Url";
-                    this.slugError = null;
-                }
-                this.render();
+                alert('there was an error');
             }
         });
         return CreateMapForm;
