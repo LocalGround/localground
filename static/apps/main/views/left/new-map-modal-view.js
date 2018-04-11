@@ -42,53 +42,54 @@ define ([
             },
             templateHelpers: function () {
                 this.formData.errors = this.errors;
+                console.log(this.formData);
                 return this.formData;
             },
 
-            applyChanges: function () {
-                this.errors = {};
+            setName: function () {
                 this.formData.name = this.$el.find("#map-name").val();
-                this.formData.description = this.$el.find("#map-description").val();
-                this.formData.create = this.$el.find('#new-dataset').prop('checked') ? "checked" : "";
-                this.formData.existing = this.formData.create ? "" : "checked";
-                console.log(this.formData);
-                //validate name:
                 if (this.formData.name.length > 0) {
                     this.model.set("name", this.formData.name);
                 } else {
                     this.errors.name = "A valid map name is required";
                 }
+            },
+            setDescription: function () {
+                this.formData.description = this.$el.find("#map-description").val();
+                this.model.set("description", this.formData.description);
+            },
+            setDatasets: function () {
+                this.formData.create = this.$el.find('#new-dataset').prop('checked') ? "checked" : "";
+                this.formData.existing = this.formData.create ? "" : "checked";
 
                 // validate dataset selection: either create one or select existing one
                 if (this.formData.create === 'checked') {
                     this.model.set("create_new_dataset", true);
-                } else {
-                    const data_sources = []
-                    this.formData.datasets.forEach(dataset => {
-                        if (dataset.dataType === this.value) {
-                            this.checked = '';
-                        }
-                    });
-                    var that = this;
-                    this.$el.find('input[type="checkbox"]').each(function() {
-                        if ($(this).prop('checked')) {
-                            data_sources.push(this.value);
-                            that.formData.datasets.forEach(dataset => {
-                                if (dataset.dataType === this.value) {
-                                    this.checked = 'checked';
-                                }
-                            })
-                        }
-                    });
-                    if (data_sources.length === 0) {
-                        this.errors.datasets =  'Please select at least one data source';
-                    } else {
-                        this.model.set("data_sources", JSON.stringify(data_sources));
-                    }
+                    return;
                 }
 
-                // no description validation necessary:
-                this.model.set("description", this.formData.description);
+                const data_sources = []
+                this.formData.datasets.forEach(dataset => {
+                    const isSelected = this.$el.find('#' + dataset.dataType).prop('checked');
+                    if (isSelected) {
+                        data_sources.push(dataset.dataType);
+                        dataset.checked = 'checked';
+                    } else {
+                        dataset.checked = '';
+                    }
+                });
+                if (data_sources.length === 0) {
+                    this.errors.datasets =  'Please select at least one data source';
+                    return;
+                }
+                this.model.set("data_sources", JSON.stringify(data_sources));
+            },
+
+            applyChanges: function () {
+                this.errors = {};
+                this.setName();
+                this.setDescription();
+                this.setDatasets();
             },
 
             saveMap: function () {

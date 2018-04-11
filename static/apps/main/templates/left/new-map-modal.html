@@ -21,7 +21,7 @@
         <label>Use existing project dataset(s):</label>
         <div class="checkbox-list" style="margin-left: 30px;{{#if create}} display: none;{{/if}}" >
             {{#each datasets}}
-                <input type="checkbox" name="dataset" {{this.checked}} value="{{this.key}}">
+                <input type="checkbox" id="{{this.key}}" name="dataset" {{this.checked}} value="{{this.key}}">
                 <label>{{this.title}}</label><br>
             {{/each}}
         </div>
