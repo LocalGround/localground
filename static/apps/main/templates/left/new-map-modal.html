@@ -1,32 +1,32 @@
 <form class="form">
-    <div class="row {{#if generalError}}error{{/if}}">
+    <div class="row {{#if errors.name}} error{{/if}}">
         <label>Map Name</label>
         <input id="map-name" type="text" value="{{name}}"
             placeholder="name of your map">
+        {{#if errors.name}}
+            <p>{{ errors.name }}</p>
+        {{/if}}
     </div>
     <div class="row">
         <label>Description</label>
         <textarea id="map-description" value=""
-            placeholder="Add a description to help people understand your map"></textarea>
+            placeholder="Add a description to help people understand your map">{{description}}</textarea>
     </div>
     <div class="row">
-        <input type="radio" name="choose-dataset" id="new-dataset">
+        <input type="radio" name="choose-dataset" id="new-dataset" {{create}}>
         <label>Create a new dataset</label>
     </div>
-    <div class="row">
-        <input type="radio" name="choose-dataset" id="existing-datasets" checked>
+    <div class="row {{#if errors.datasets}} error{{/if}}" style="padding: 0px;">
+        <input type="radio" name="choose-dataset" id="existing-datasets" {{existing}}>
         <label>Use existing project dataset(s):</label>
-        <div class="checkbox-list" style="margin-left: 30px;">
+        <div class="checkbox-list" style="margin-left: 30px;{{#if create}} display: none;{{/if}}" >
             {{#each datasets}}
-                <input type="checkbox" name="dataset" checked value="{{this.key}}">
+                <input type="checkbox" name="dataset" {{this.checked}} value="{{this.key}}">
                 <label>{{this.title}}</label><br>
             {{/each}}
         </div>
+        {{#if errors.datasets}}
+            <p>{{ errors.datasets }}</p>
+        {{/if}}
     </div>
-    {{#if slugError}}
-        <p class="errorMessage">{{slugError}}</p>
-    {{/if}}
-    {{#if generalError}}
-        <p class="errorMessage">{{generalError}}</p>
-    {{/if}}
 </form>

@@ -128,9 +128,12 @@ span.action.rounded:hover, a.action.rounded:hover {
     }
     .row.error {
         background-color: #fae5e3;
-        padding: 5px 15px;
+        padding: 5px 10px;
         label, p {
             color: #b94a48;
+        }
+        input[type="checkbox"] {
+            background-color: #fae5e3;
         }
     }
     .checkbox-list {
@@ -163,6 +166,9 @@ span.action.rounded:hover, a.action.rounded:hover {
             flex-wrap: wrap;
             p {
                 padding: 0px;
+            }
+            input[type="checkbox"] {
+                background-color: #fae5e3;
             }
         }
     }

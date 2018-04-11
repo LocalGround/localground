@@ -664,11 +664,15 @@ span.action.rounded:hover, a.action.rounded:hover {
 
 .form .row.error, .form-inline .row.error {
   background-color: #fae5e3;
-  padding: 5px 15px;
+  padding: 5px 10px;
 }
 
 .form .row.error label, .form .row.error p, .form-inline .row.error label, .form-inline .row.error p {
   color: #b94a48;
+}
+
+.form .row.error input[type="checkbox"], .form-inline .row.error input[type="checkbox"] {
+  background-color: #fae5e3;
 }
 
 .form .checkbox-list td, .form-inline .checkbox-list td {
@@ -700,6 +704,10 @@ span.action.rounded:hover, a.action.rounded:hover {
 
 .form-inline .row.error div p {
   padding: 0px;
+}
+
+.form-inline .row.error div input[type="checkbox"] {
+  background-color: #fae5e3;
 }
 
 .form .row {
