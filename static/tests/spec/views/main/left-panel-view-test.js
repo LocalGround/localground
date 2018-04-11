@@ -109,6 +109,21 @@ define([
 
 
             // });
+            // it("clicking '#map-delete' calls deleteMap()", function () {
+            //     spyOn(window, 'confirm').and.returnValue(true);
+            //     spyOn(Base.prototype, 'hide');
+            //     spyOn(Base.prototype, 'onBeforeDestroy');
+            //     lpv.render();
+            //     console.log(lpv);
+            //     console.log(lpv.layers);
+
+            //     expect(lpv.layers.currentView.children.length).toEqual(2);
+                
+            //     $(lpv.$el.find('#map-delete').click());
+            //     expect(lpv.layers.currentView.children.length).toEqual(0);
+
+
+            // });
 
 
 
