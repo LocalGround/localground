@@ -4,8 +4,10 @@ define(["marionette",
         "models/symbol",
         "models/record",
         "apps/main/views/left/symbol-collection-view",
+        "apps/main/views/left/edit-layer-name-modal-view",
+
     ],
-    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView) {
+    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView, EditLayerName) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -21,14 +23,17 @@ define(["marionette",
                 'reset': 'reRender'
             },
             modelEvents: {
-                'change:group_by': 'updateGroupBy'
+                'change:group_by': 'updateGroupBy',
+                'change:title': 'render'
             },
             events: {
                 //edit event here, pass the this.model to the right panel
                 'click #fakeadd': 'addFakeModel',
                 'click .layer-delete' : 'deleteLayer',
                 'change .layer-isShowing': 'showHideOverlays',
-                'click #layer-style-by': 'showStyleByMenu'
+                'click #layer-style-by': 'showStyleByMenu',
+                'click .collapse': 'collapseSymbols',
+                'click .layer-name': 'editLayerName'
             },
             childEvents: {
                 'isShowing:changed': function () {
@@ -39,6 +44,7 @@ define(["marionette",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.symbolModels = this.collection;
+                this.modal = this.app.modal;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
                 if (!this.model || !this.collection || !this.dataCollection) {
                     console.error("model, collection, and dataCollection are required");
@@ -168,6 +174,32 @@ define(["marionette",
                 }
                 this.app.vent.trigger('show-style-menu', this.model, coords);
             },
+
+            editLayerName: function() {
+                console.log('edit layer name');
+
+                var editLayerNameModal = new EditLayerName({
+                    app: this.app, 
+                    model: this.model
+                });
+
+                this.modal.update({
+                    app: this.app,
+                    class: "edit-layer-name",
+                    view: editLayerNameModal,
+                    title: 'Edit Layer Name',
+                    width: 400,
+                    //height: 200,
+                    saveButtonText: "Save",
+                    closeButtonText: "Cancel",
+                    showSaveButton: true,
+                    saveFunction: editLayerNameModal.saveLayer.bind(editLayerNameModal),
+                    showDeleteButton: false
+                });
+                this.modal.show();
+
+            },
+
             showHideOverlays: function () {
                 const isShowing = this.$el.find('input').prop('checked');
 
@@ -184,26 +216,38 @@ define(["marionette",
                     // otherwise, set flag, toggle, render, and save:
                     symbol.set('isShowing', isShowing);
                     //childView.redrawOverlays();
-                    //childView.render();
+                    childView.render();
                 })
-                if (isShowing) {
-                    this.$el.find('#symbols-list').show()
-                } else {
-                    this.$el.find('#symbols-list').hide()
-                }
+                // if (isShowing) {
+                //     this.$el.find('#symbols-list').show()
+                // } else {
+                //     this.$el.find('#symbols-list').hide()
+                // }
                 this.saveChanges();
                 //this.$el.find('#symbol-list').toggle();
             },
 
             handleChildShowHide: function () {
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying();
+            
                 this.saveChanges();
                 this.toggleCheckbox();
                 //this.render(); //too expensive
             },
+
             toggleCheckbox: function () {
-                this.$el.find('.layer-isShowing').prop('checked', this.model.get('metadata').isShowing);
+                const symbolsShowing = this.collection.filter(model => {
+                    return model.get('isShowing');
+                });
+                if (symbolsShowing.length > 0 && symbolsShowing.length < this.collection.length) {
+                    this.$el.find('#cb' + this.model.id)[0].indeterminate = true;
+                } else {
+                    this.$el.find('#cb' + this.model.id)[0].indeterminate = false;
+                    this.$el.find('.layer-isShowing').prop('checked', this.model.get('metadata').isShowing);
+                }
             },
+
+            // deprecated
             allSymbolsAreDisplaying: function(collection) {
                 var isShowing = true;
                 this.collection.each( model => {
@@ -217,6 +261,20 @@ define(["marionette",
             addCssToSelectedLayer: function(markerId) {
                 console.log('adding highlight class');
                 this.$el.find('#' + markerId).addClass('highlight');
+            },
+
+            collapseSymbols: function () {
+                if (this.model.get('metadata').collapsed === true) {
+                    this.model.get('metadata').collapsed = false
+                    this.$el.find('.symbol').css('height', 'auto');
+                    this.$el.find('.collapse').removeClass('fa-angle-up');
+                    this.$el.find('.collapse').addClass('fa-angle-down');
+                } else {
+                    this.model.get('metadata').collapsed = true;
+                    this.$el.find('.symbol').css('height', 0);
+                    this.$el.find('.collapse').removeClass('fa-angle-down');
+                    this.$el.find('.collapse').addClass('fa-angle-up');
+                }
             },
 
             saveChanges: function() {

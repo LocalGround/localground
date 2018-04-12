@@ -202,11 +202,16 @@ ul {
   cursor: pointer;
 }
 
+.layer-container {
+  background: white;
+}
+
 .symbol-item {
   border-bottom: 1px solid #ebebeb;
   font-size: 12px;
   list-style: none;
   background-color: #f7f7f7;
+  height: inherit;
 }
 
 .symbol-item:hover {
@@ -1299,5 +1304,4 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
-
 /*# sourceMappingURL=main-new.css.map */

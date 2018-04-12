@@ -1,8 +1,13 @@
+.layer-container {
+    background: white;
+}
+
 .symbol-item {
     border-bottom: 1px solid #ebebeb;
     font-size: 12px;
     list-style: none;
     background-color: #f7f7f7;
+    height: inherit;
 
     &:hover {
         background: #EEE;

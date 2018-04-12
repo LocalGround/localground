@@ -1,30 +1,32 @@
-<button id="fakeadd">Fake Add</button>
-<div class='layer-column' id='layer{{id}}'>
-    <input class='layer-isShowing' type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} />
-    <p class="layer-name">{{ title }}</p>
-    <a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-    <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a>
-</div>
-<div>
-    <p class="layer-datasource" >data source: {{name}}</p>
-</div>
-<div>
-    <div>
-        <i class="fa fa-angle-down"></i>
+<div class="layer-container">
+    <button id="fakeadd">Fake Add</button>
+    <div class='layer-column' id='layer{{id}}'>
+        <input class='layer-isShowing' id='cb{{id}}' type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} />
+        <p class="layer-name">{{ title }}</p>
+        <a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+        <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a>
     </div>
-    
-    <a><p class="layer-style-by" id="layer-style-by">styled by: <span>{{group_by}}</span></p></a>
-</div>
-<div id="symbols-list" {{#unless isChecked}}style="display: none"{{/unless}}>
-    {{#each dataList}}
-    <li class="list-item">
-        <a>
-            <p>{{this.display_name}}
-                {{#ifequal this.property ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
+    <div>
+        <p class="layer-datasource" >data source: {{name}}</p>
+    </div>
+    <div>
+        <div>
+            <i class="fa fa-angle-down collapse"></i>
+        </div>
+        
+        <a><p class="layer-style-by" id="layer-style-by">styled by: <span>{{group_by}}</span></p></a>
+    </div>
+    <div id="symbols-list">
+        {{#each dataList}}
+        <li class="list-item">
+            <a>
+                <p>{{this.display_name}}
+                    {{#ifequal this.property ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
 
-            </p>
-        </a>
+                </p>
+            </a>
 
-    </li>
-    {{/each}}
+        </li>
+        {{/each}}
+    </div>
 </div>

@@ -3,6 +3,7 @@ define([
     "jquery",
     "backbone",
     "marionette",
+    rootDir + "lib/maps/overlays/base",
     rootDir + "lib/maps/overlays/marker",
     rootDir + "apps/main/views/left/left-panel",
     rootDir + "apps/main/views/left/map-title-view",
@@ -11,7 +12,7 @@ define([
     rootDir + "models/layer",
     "tests/spec-helper1"
 ],
-    function ($, Backbone, Marionette, MarkerOverlay, LeftPanelView, MapTitleView,
+    function ($, Backbone, Marionette, Base, MarkerOverlay, LeftPanelView, MapTitleView,
             LayerListView, Router, Layer) {
         'use strict';
         var lpv, fixture;
@@ -109,21 +110,19 @@ define([
 
 
             // });
-            // it("clicking '#map-delete' calls deleteMap()", function () {
-            //     spyOn(window, 'confirm').and.returnValue(true);
-            //     spyOn(Base.prototype, 'hide');
-            //     spyOn(Base.prototype, 'onBeforeDestroy');
-            //     lpv.render();
-            //     console.log(lpv);
-            //     console.log(lpv.layers);
-
-            //     expect(lpv.layers.currentView.children.length).toEqual(2);
+            it("clicking '#map-delete' calls deleteMap()", function () {
+                spyOn(window, 'confirm').and.returnValue(true);
+                spyOn(Base.prototype, 'hide');
+                spyOn(Base.prototype, 'onBeforeDestroy');
                 
-            //     $(lpv.$el.find('#map-delete').click());
-            //     expect(lpv.layers.currentView.children.length).toEqual(0);
+                lpv.render();
+
+                expect(lpv.layers.currentView.children.length).toEqual(2);
+                $(lpv.$el.find('#map-delete').click());
+                expect(lpv.layers.currentView.children.length).toEqual(0);
 
 
-            // });
+            });
 
 
 
