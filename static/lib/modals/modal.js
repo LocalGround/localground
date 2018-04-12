@@ -53,6 +53,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     title: this.title,
                     width: this.width,
                     height: this.height,
+                    bodyClass: this.bodyClass,
                     //margin: this.margin,
                     showSaveButton: this.showSaveButton,
                     showDeleteButton: this.showDeleteButton,
@@ -79,6 +80,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts.saveButtonText = opts.saveButtonText || "Save";
                 opts.deleteButtonText = opts.deleteButtonText || "Delete";
                 opts.printButtonText = opts.printButtonText || "Print";
+                opts.bodyClass = opts.bodyClass || null;
                 _.extend(this, opts);
                 this.saveFunction = function () {
                     opts.saveFunction();

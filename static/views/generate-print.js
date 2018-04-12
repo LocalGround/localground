@@ -12,8 +12,6 @@ define(["marionette",
         var GeneratePrintLayout = Marionette.LayoutView.extend({
             template: Handlebars.compile(PrintLayoutTemplate),
 
-            className: "grey-bg",
-
             basemapView: null,
             printOptions: null,
 
@@ -63,7 +61,7 @@ define(["marionette",
                     dm = this.app.dataManager;//,
                     //dataSources = dm.getDataSources();
                 //console.log(dm);
-                
+
                 // the old, non-functioning
                 // for (i = 0; i < dataSources.length; i++) {
                 //     fillColor = null;
@@ -108,7 +106,7 @@ define(["marionette",
                     });
                 });
 
-                
+
                 //console.log("show overlays");
             },
 

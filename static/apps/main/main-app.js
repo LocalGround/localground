@@ -3,7 +3,7 @@ define([
     "backbone",
     "apps/main/router",
     "lib/modals/modal",
-    "views/breadcrumbs",
+    "apps/main/views/breadcrumbs",
     "lib/maps/basemap",
     "lib/data/dataManager",
     "apps/main/views/left/left-panel",

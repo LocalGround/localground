@@ -6,11 +6,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel=stylesheet type="text/css" href="/static/css/style.css" />
     <link rel=stylesheet type="text/css" href="/static/css/main.css" />
-    <link rel=stylesheet type="text/css" href="/static/css/modal_new_project.css" />
     <link rel=stylesheet type="text/css" href="/static/css/style-map.css" />
     <link rel=stylesheet type="text/css" href="/static/css/main-new.css" />
     <link rel=stylesheet type="text/css" href="/static/external/colorpicker/css/colorpicker.css" />
-   <!-- <link rel=stylesheet type="text/css" href="/static/css/main.css" /> -->
     <script>
         var projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
         console.log(projectJSON);
@@ -31,7 +29,7 @@
     </div>
     <div class="style-by-menu" id="style-by-menu" style="display: none;"></div>
     <div class="symbol-menu" id="symbol-menu" style="display: none;"></div>
-    
+
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places,drawing"></script>
     {% if DEBUG %}
         <script>

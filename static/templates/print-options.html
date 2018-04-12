@@ -1,12 +1,10 @@
-<div>
-    <div class="inline-form">
+<form class="form-inline">
+    <div class="row">
         <label>Title:</label>
-        <div class="container-input">
-            <input type="text" id="print-title" placeholder="Add a title to your map (optional)">
-        </div>
+        <input type="text" id="print-title" placeholder="Add a title to your map (optional)">
     </div>
 
-    <div class="inline-form">
+    <div class="row">
         <label>Instructions / Notes:</label>
         <div class="container-input">
             <textarea id="print-instructions"
@@ -14,22 +12,21 @@
         </div>
     </div>
 
-    <div class="inline-form">
+    <div class="row">
         <label>Layout</label>
-        <div class="container-input">
+        <div>
             <input class="option-layout" type="radio" name="print_layout" id="portrait" value="Portrait" checked> <label>Portrait</label>
             <br>
             <input class="option-layout" type="radio" name="print_layout" id="landscape" value="Landscape"> <label>Landscape</label>
         </div>
-
     </div>
 
-    <div class="inline-form">
+    <div class="row">
         <label>Collect Data?</label>
-        <div class="container-input">
+        <div>
             <input class="option-data" type="radio" name="data_collect" id="choose_yes" value="Yes" checked> <label>Yes</label>
             <br>
             <input class="option-data" type="radio" name="data_collect" id="choose_no" value="No"> <label>No</label>
         </div>
     </div>
-</div>
+</form>

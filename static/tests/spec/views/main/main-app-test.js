@@ -5,7 +5,7 @@ define([
     rootDir + "lib/maps/basemap",
     rootDir + "apps/main/views/left/left-panel",
     rootDir + "views/data-detail",
-    rootDir + "views/breadcrumbs",
+    rootDir + "apps/main/views/breadcrumbs",
     rootDir + "models/map",
     "tests/spec-helper1"
 ],

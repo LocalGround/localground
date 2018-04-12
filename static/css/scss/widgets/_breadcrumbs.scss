@@ -10,7 +10,11 @@ $icon-line-height: 34px;
 }
 
 .breadcrumb-container {
-    padding: 5px 30px;
+    padding: 5px 5px 5px 30px;
+
+    .button-secondary, .button-action {
+        margin-top: 2px;
+    }
 
     .breadcrumb-hover, .fa {
         display: inline-block;

@@ -28,12 +28,13 @@ define([
             return {
                 mapList: this.collection.toJSON(),
                 name: this.model.get("name"),
-                map: this.activeMap ? this.activeMap.get("name") : null
+                map: this.activeMap ? this.activeMap.toJSON() : null
             };
         },
 
         events: {
             'click': 'hideMapList',
+            'click #print-button': 'showPrintModal',
             'click #map-menu': 'toggleMapList',
             'click .add-map': "showAddMapModal"
         },
@@ -85,6 +86,7 @@ define([
                 app: this.app
             });
             this.modal.update({
+                bodyClass: 'gray',
                 app: this.app,
                 view: printLayout,
                 title: 'Generate Print',

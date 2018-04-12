@@ -4,7 +4,7 @@
             <span class="close">&times;</span>
             <h1>{{ title }}</h1>
         </header>
-        <div class="body" {{#if height }}style="height: {{ height }};"{{/if}}>
+        <div class="body {{bodyClass}}" {{#if height }}style="height: {{ height }};"{{/if}}>
             <!-- view content injectsed here -->
         </div>
         <footer>

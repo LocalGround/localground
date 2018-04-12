@@ -3,7 +3,7 @@
     border: none;
     border-radius: 3px;
     line-height: 26px;
-    height: 29px;
+    /*height: 29px;*/
     vertical-align: middle;
     letter-spacing: 0.7px;
     text-align: center;
@@ -15,6 +15,7 @@
 .button-action {
     background-color: #008580;
     color: white;
+    border: solid 1px #e4e5eb;
 }
 .button-primary {
     background-color: $primary-color;
