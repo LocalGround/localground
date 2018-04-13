@@ -325,11 +325,42 @@ ul {
   cursor: pointer;
 }
 
+.layer-container {
+  background: white;
+}
+
+.layer-container .layer-name {
+  cursor: pointer;
+}
+
+.layer-container .open-layer-menu {
+  float: right;
+  padding: 2px 7px;
+}
+
+.layer-container .layer-menu {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.layer-container .layer-column {
+  padding: 2px 10px;
+}
+
+.collapse .symbol-item {
+  display: none;
+}
+
 .symbol-item {
   border-bottom: 1px solid #ebebeb;
   font-size: 12px;
   list-style: none;
   background-color: #f7f7f7;
+  height: inherit;
 }
 
 .symbol-item:hover {
@@ -357,12 +388,18 @@ ul {
 
 .layer-style-by {
   font-size: 11px;
-  margin-left: 20px;
+  margin-left: 7px;
+  display: inline;
+  color: #8bb8ed;
+}
+
+.layer-style-by span {
+  color: inherit;
 }
 
 .sort-by {
   font-size: 12px;
-  padding: 8px 20px;
+  padding: 8px 0px;
   /* margin: 10px 0px; */
   display: inline-block;
   background-color: #f7f7f7;
@@ -927,7 +964,8 @@ span.action.rounded:hover, a.action.rounded:hover {
 }
 
 .dropdown-menu {
-  width: 140px;
+  width: auto;
+  min-width: 170px;
   position: absolute;
   background-color: white;
   border-radius: 3px;
@@ -954,7 +992,7 @@ span.action.rounded:hover, a.action.rounded:hover {
 
 .dropdown-menu ul li a {
   display: block;
-  padding: 8px 0px 8px 15px;
+  padding: 8px 15px 8px 15px;
 }
 
 .dropdown-menu ul li:hover {
@@ -1121,7 +1159,6 @@ span.action.rounded:hover, a.action.rounded:hover {
   border-top: 1px solid #e4e5eb;
   max-height: 75vh;
   overflow-y: auto;
-  min-height: 150px;
 }
 
 .modal .body.gray {
@@ -1431,5 +1468,4 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
-
 /*# sourceMappingURL=main-new.css.map */
