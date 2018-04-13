@@ -8,7 +8,8 @@ define(["underscore",
         "apps/main/views/left/panel-styles-view",
         "text!../../templates/left/left-panel-layout.html"
     ],
-    function (_, $, Marionette, Handlebars, MapTitleView, LayerListView, SkinView, PanelStylesView, LeftPanelLayoutTemplate) {
+    function (_, $, Marionette, Handlebars, MapTitleView, LayerListView,
+                SkinView, PanelStylesView, LeftPanelLayoutTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var LeftPanelLayout = Marionette.LayoutView.extend({
@@ -21,8 +22,7 @@ define(["underscore",
                 'click #new-layer-options a' : 'createNewLayer',
                 'click .map-save' : 'saveMap',
                 'click #map-delete': 'deleteMap',
-                'click .show-hide.hide': 'hideList',
-                'click .show-hide.show': 'showList'
+                'click .show-hide': 'toggleList'
             },
 
             regions: {
@@ -86,16 +86,14 @@ define(["underscore",
                 this.app.router.navigate('//');
 
             },
-            hideList: function (e) {
-                console.log(e.srcElement);
+            toggleList: function (e) {
+                if (e.srcElement.classList.contains('hide')) {
+                    this.app.vent.trigger('hide-list');
+                } else {
+                    this.app.vent.trigger('unhide-list');
+                }
                 e.srcElement.classList.toggle('hide');
                 e.srcElement.classList.toggle('show');
-                this.app.vent.trigger('hide-list');
-            },
-            showList: function (e) {
-                e.srcElement.classList.toggle('hide');
-                e.srcElement.classList.toggle('show');
-                this.app.vent.trigger('unhide-list');
             }
         });
         return LeftPanelLayout;

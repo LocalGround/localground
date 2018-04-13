@@ -1458,7 +1458,7 @@ tbody .failure-message, tbody .success-message {
     background-color: #f7f7f7;
     z-index: 40;
     flex: none;
-    overflow: scroll;
+    overflow: hidden;
     height:100%;
 }
 
