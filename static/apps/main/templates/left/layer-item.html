@@ -1,10 +1,7 @@
 <div class="layer-container">
-    <button id="fakeadd">Fake Add</button>
+    <!-- <button id="fakeadd">Fake Add</button> -->
     <div class='layer-column' id='layer{{id}}'>
         <input class='layer-isShowing' id='cb{{id}}' type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} />
-        <span>
-            <i class="fa fa-angle-down collapse"></i>
-        </span>
         <p class="layer-name">{{ title }}</p>
         <!-- <a class="delete-layer"><i class="fa fa-trash-o" aria-hidden="true"></i></a> -->
         <span class="open-layer-menu">
@@ -20,11 +17,14 @@
             </ul>
         </div>
     </div>
-    <div>
+    <div class="layer-column">
         <p class="layer-datasource" >data source: {{name}}</p>
     </div>
-    <div> 
-        <a><p class="layer-style-by" id="layer-style-by">styled by: <span>{{group_by}}</span></p></a>
+    <div class="layer-column"> 
+        <span>
+            <i class="fa fa-angle-down collapse"></i>
+        </span>
+        <a><p class="layer-style-by" id="layer-style-by">styled by: {{group_by}}</p></a>
     </div>
     <div id="symbols-list">
         {{#each dataList}}

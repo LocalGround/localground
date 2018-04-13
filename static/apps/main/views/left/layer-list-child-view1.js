@@ -57,6 +57,7 @@ define(["marionette",
                 }
                 this.assignRecordsToSymbols();
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
+                this.collapseSymbols();
 
                 $('body').click($.proxy(this.hideLayerMenu, this));
             },

@@ -15,6 +15,10 @@
             -ms-user-select: none; 
                 user-select: none; 
     }
+
+    .layer-column {
+        padding: 2px 10px;
+    }
 }
 
 .collapse {
@@ -55,5 +59,10 @@
 
 .layer-style-by {
     font-size: 11px;
-    margin-left: 20px;
+    margin-left: 7px;
+    display: inline;
+    color: #8bb8ed;
+    span {
+        color: inherit;
+    }
 }
