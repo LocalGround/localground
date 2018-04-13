@@ -1,30 +1,42 @@
-<button id="fakeadd">Fake Add</button>
-<div class='layer-column' id='layer{{id}}'>
-    <input class='layer-isShowing' type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} />
-    <p class="layer-name">{{ title }}</p>
-    <a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-    <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a>
-</div>
-<div>
-    <p class="layer-datasource" >data source: {{name}}</p>
-</div>
-<div>
-    <div>
-        <i class="fa fa-angle-down"></i>
+<div class="layer-container">
+    <button id="fakeadd">Fake Add</button>
+    <div class='layer-column' id='layer{{id}}'>
+        <input class='layer-isShowing' id='cb{{id}}' type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} />
+        <span>
+            <i class="fa fa-angle-down collapse"></i>
+        </span>
+        <p class="layer-name">{{ title }}</p>
+        <!-- <a class="delete-layer"><i class="fa fa-trash-o" aria-hidden="true"></i></a> -->
+        <span class="open-layer-menu">
+            <i class="fa fa-ellipsis-v"></i>
+        </span>
+        <!-- <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a> -->
+        <div class="layer-menu dropdown-menu" style="display: none">
+            <ul>
+                <li><a class='rename-layer'>Rename this layer</a></li>
+                <li><a class='delete-layer'>Delete this layer</a></li>
+                <li><a class='edit-display-field'>Set display field for this layer</a></li>
+                <li><a>Zoom to layer extents</a></li>
+            </ul>
+        </div>
     </div>
-    
-    <a><p class="layer-style-by" id="layer-style-by">styled by: <span>{{group_by}}</span></p></a>
-</div>
-<div id="symbols-list" {{#unless isChecked}}style="display: none"{{/unless}}>
-    {{#each dataList}}
-    <li class="list-item">
-        <a>
-            <p>{{this.display_name}}
-                {{#ifequal this.property ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
+    <div>
+        <p class="layer-datasource" >data source: {{name}}</p>
+    </div>
+    <div> 
+        <a><p class="layer-style-by" id="layer-style-by">styled by: <span>{{group_by}}</span></p></a>
+    </div>
+    <div id="symbols-list">
+        {{#each dataList}}
+        <li class="list-item">
+            <a>
+                <p>{{this.display_name}}
+                    {{#ifequal this.property ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
 
-            </p>
-        </a>
+                </p>
+            </a>
 
-    </li>
-    {{/each}}
+        </li>
+        {{/each}}
+    </div>
 </div>

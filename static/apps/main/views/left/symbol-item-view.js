@@ -26,7 +26,7 @@ define(["marionette",
                     this.overlay.render();
                 }
                 this.listenTo(this.app.vent, 'highlight-symbol-item', this.handleRoute);
-
+                console.log(this.model);
             },
             active: false,
 

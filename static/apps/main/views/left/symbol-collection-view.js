@@ -33,7 +33,7 @@ define(["jquery",
                 //edit event here, pass the this.model to the right panel
                 'click .layer-delete' : 'deleteLayer',
                 'click .symbol-edit': 'showSymbolEditMenu',
-                'change .symbol-isShowing': 'showHideOverlays'
+                'click .symbol-display': 'showHideOverlays'
             },
             modelEvents: function () {
                 const events = {
@@ -111,7 +111,15 @@ define(["jquery",
                 })
             },
             showHideOverlays: function () {
-                this.model.set("isShowing", this.$el.find('input').prop('checked'));
+                this.model.set("isShowing", !this.$el.find('.symbol-display').hasClass('fa-eye'));
+                
+                if(this.model.get('isShowing')) {
+                    this.$el.find('.symbol-display').removeClass('fa-eye-slash');
+                    this.$el.find('.symbol-display').addClass('fa-eye');
+                } else {
+                    this.$el.find('.symbol-display').removeClass('fa-eye');
+                    this.$el.find('.symbol-display').addClass('fa-eye-slash');
+                }
                 this.trigger('isShowing:changed'); //notify parent layer
             },
             onDestroy: function() {
