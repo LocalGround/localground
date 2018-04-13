@@ -16,7 +16,7 @@ define ([
                 const datasets = this.app.dataManager.getDatasets();
                 this.formData = {
                     name: 'Untitled Map',
-                    description: '',
+                    caption: '',
                     create: '',
                     existing: 'checked',
                     datasets: datasets.map(dataset => {
@@ -53,9 +53,9 @@ define ([
                     this.errors.name = "A valid map name is required";
                 }
             },
-            setDescription: function () {
-                this.formData.description = this.$el.find("#map-description").val();
-                this.model.set("description", this.formData.description);
+            setCaption: function () {
+                this.formData.caption = this.$el.find("#map-caption").val();
+                this.model.set("caption", this.formData.caption);
             },
             setDatasets: function () {
                 this.formData.create = this.$el.find('#new-dataset').prop('checked') ? "checked" : "";
@@ -87,7 +87,7 @@ define ([
             applyChanges: function () {
                 this.errors = {};
                 this.setName();
-                this.setDescription();
+                this.setCaption();
                 this.setDatasets();
             },
 

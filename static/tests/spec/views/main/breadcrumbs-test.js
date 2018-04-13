@@ -51,6 +51,12 @@ define([
                 );
                 expect(Breadcrumbs.prototype.render).toHaveBeenCalledTimes(1);
             });
+
+            it("should listens for collection update", function () {
+                expect(Breadcrumbs.prototype.render).toHaveBeenCalledTimes(0);
+                this.toolbar.collection.trigger('update');
+                expect(Breadcrumbs.prototype.render).toHaveBeenCalledTimes(1);
+            });
         });
 
         describe("Breadcrumbs templates: ", function () {

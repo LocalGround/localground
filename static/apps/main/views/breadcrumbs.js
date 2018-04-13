@@ -22,7 +22,10 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
             this.modal = this.app.modal;
-            this.listenTo(this.collection, 'add', this.render);
+        },
+        collectionEvents: {
+            update: 'render',
+            add: 'render'
         },
         templateHelpers: function () {
             return {

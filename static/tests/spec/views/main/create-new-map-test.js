@@ -80,7 +80,7 @@ define([
                 this.view.render();
                 const $el = this.view.$el;
                 expect($el.find('#map-name').val()).toEqual('Untitled Map');
-                expect($el.find('#map-description').val()).toEqual('');
+                expect($el.find('#map-caption').val()).toEqual('');
                 expect($el.find('#new-dataset').prop('checked')).toBeFalsy();
                 expect($el.find('#existing-datasets').prop('checked')).toBeTruthy();
                 this.app.dataManager.getDatasets().forEach(dataset => {
@@ -95,15 +95,15 @@ define([
                 expect(Map.prototype.save).toHaveBeenCalledTimes(0);
                 expect(this.noErrorFound('#map-name')).toBeTruthy();
                 $el.find('#map-name').val('');
-                $el.find('#map-description').val('Some description');
+                $el.find('#map-caption').val('Some description');
                 this.view.saveMap();
 
 
                 expect(this.errorDisplaysCorrectly(
                     '#map-name', 'A valid map name is required')).toBeTruthy();
 
-                //persists the description:
-                expect($el.find('#map-description').val()).toEqual('Some description');
+                //persists the caption:
+                expect($el.find('#map-caption').val()).toEqual('Some description');
                 expect(Map.prototype.save).toHaveBeenCalledTimes(0);
             });
 
@@ -112,7 +112,7 @@ define([
                 const $el = this.view.$el;
                 expect(Map.prototype.save).toHaveBeenCalledTimes(0);
                 $el.find('#map-name').val('My Favorite Flowers');
-                $el.find('#map-description').val('Some description');
+                $el.find('#map-caption').val('Some description');
                 this.app.dataManager.getDatasets().forEach(dataset => {
                     $el.find('#' + dataset.dataType).prop('checked', false);
                     expect($el.find('#' + dataset.dataType).prop('checked')).toBeFalsy();
@@ -127,7 +127,7 @@ define([
 
                 //persists the set values:
                 expect($el.find('#map-name').val()).toEqual('My Favorite Flowers');
-                expect($el.find('#map-description').val()).toEqual('Some description');
+                expect($el.find('#map-caption').val()).toEqual('Some description');
                 this.app.dataManager.getDatasets().forEach(dataset => {
                     expect($el.find('#' + dataset.dataType).prop('checked')).toBeFalsy();
                 });
@@ -145,13 +145,13 @@ define([
                 const $el = this.view.$el;
                 expect(Map.prototype.save).toHaveBeenCalledTimes(0);
                 $el.find('#map-name').val('My Favorite Flowers');
-                $el.find('#map-description').val('Some description');
+                $el.find('#map-caption').val('Some description');
                 $el.find('#new-dataset').prop('checked', true);
                 this.view.saveMap();
 
                 expect(Map.prototype.save).toHaveBeenCalledTimes(1);
                 expect(this.view.model.get('name')).toEqual('My Favorite Flowers');
-                expect(this.view.model.get('description')).toEqual('Some description');
+                expect(this.view.model.get('caption')).toEqual('Some description');
                 expect(this.view.model.get('create_new_dataset')).toBeTruthy();
             });
 
@@ -159,12 +159,12 @@ define([
                 this.view.render();
                 const $el = this.view.$el;expect(Map.prototype.save).toHaveBeenCalledTimes(0);
                 $el.find('#map-name').val('My Favorite Flowers');
-                $el.find('#map-description').val('Some description');
+                $el.find('#map-caption').val('Some description');
                 this.view.saveMap();
 
                 expect(Map.prototype.save).toHaveBeenCalledTimes(1);
                 expect(this.view.model.get('name')).toEqual('My Favorite Flowers');
-                expect(this.view.model.get('description')).toEqual('Some description');
+                expect(this.view.model.get('caption')).toEqual('Some description');
                 expect(this.view.model.get('data_sources')).toEqual('["form_3","form_2"]');
             });
 
@@ -172,13 +172,13 @@ define([
                 this.view.render();
                 const $el = this.view.$el;expect(Map.prototype.save).toHaveBeenCalledTimes(0);
                 $el.find('#map-name').val('My Favorite Flowers');
-                $el.find('#map-description').val('Some description');
+                $el.find('#map-caption').val('Some description');
                 $el.find('#form_2').prop('checked', false);
                 this.view.saveMap();
 
                 expect(Map.prototype.save).toHaveBeenCalledTimes(1);
                 expect(this.view.model.get('name')).toEqual('My Favorite Flowers');
-                expect(this.view.model.get('description')).toEqual('Some description');
+                expect(this.view.model.get('caption')).toEqual('Some description');
                 expect(this.view.model.get('data_sources')).toEqual('["form_3"]');
             });
 
@@ -190,7 +190,7 @@ define([
                 expect(this.app.router.navigate).toHaveBeenCalledTimes(0);
                 this.view.model.set("id", 999);
                 this.view.model.set("name", 'My Favorite Flowers');
-                this.view.model.set("description", 'Some description');
+                this.view.model.set("caption", 'Some description');
                 this.view.model.set("data_sources", '["form_3"]');
                 this.view.displayMap();
 

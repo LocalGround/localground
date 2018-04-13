@@ -11,6 +11,7 @@ require(['boot'], function () {
         'spec/views/main/create-new-map-test.js',
         'spec/views/main/map-title-view-test.js',
         'spec/views/main/left-panel-view-test.js',
+        'spec/views/main/edit-map-form-test.js',
 
         //lib:
         'spec/lib/data-manager-test.js'
