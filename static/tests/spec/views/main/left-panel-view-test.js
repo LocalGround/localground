@@ -64,7 +64,7 @@ define([
                 expect(lpv).toEqual(jasmine.any(LeftPanelView));
             });
             it("has correct regions", function() {
-                expect(lpv.regions.menu).toEqual("#map_dropdown_region");
+                expect(lpv.regions.menu).toEqual("#map_title");
                 expect(lpv.regions.layers).toEqual("#layers_region");
             });
             it("uses onRender() to display regions", function() {

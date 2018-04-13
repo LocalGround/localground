@@ -14,7 +14,7 @@
 }
 
 #toolbar-main > div{
-    display: flex;    
+    display: flex;
 }
 
 .left-wrapper {
@@ -134,7 +134,7 @@
     font: 11px;
     position: relative;
 }
-  
+
 .style-section-header-wrapper {
    padding: 10px;
     font-size: 12px;
@@ -244,7 +244,6 @@
     background: white;
    /* border: 1px solid #e4e5eb; */
     /*padding: 10px 0px; */
-    margin-top: 10px;
 }
 
 .layer-column {
@@ -413,11 +412,11 @@ table.color-properties td:first-child {
     box-sizing: border-box;
     border-top: .5px solid rgba(0,0,0,0.2);
     border-bottom: .5px solid rgba(0,0,0,0.2);
-    
+
 }
 .palette-item::before{
     content: "\200B";
-    
+
 }
 
 .palette-item:first-child {

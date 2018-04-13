@@ -80,7 +80,8 @@ ul {
 }
 
 .map-title {
-  padding: 10px 10px;
+  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 transparent, 0 2px 4px -1px transparent;
+  padding: 15px 10px;
   font-size: 18px;
   font-weight: 300;
   display: block;
@@ -100,6 +101,13 @@ ul {
 
 .map-title:hover .fa {
   display: block;
+}
+
+.add-layer {
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: solid 1px #EEE;
+  font-size: 0.8em;
 }
 
 .print-layout-left {
@@ -711,7 +719,7 @@ span.action.rounded:hover, a.action.rounded:hover {
 }
 
 .form .row label, .form .row p, .form-inline .row label, .form-inline .row p {
-  padding: 8px;
+  /*padding: 8px;*/
   font-weight: 400;
   color: #666;
   font-size: 12px;

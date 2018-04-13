@@ -24,7 +24,7 @@ define(["underscore",
             },
 
             regions: {
-                menu: "#map_dropdown_region",
+                menu: "#map_title",
                 layers: "#layers_region",
                 skins: "#map_skin_region",
                 styles: "#global_style_region"

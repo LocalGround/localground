@@ -1,16 +1,13 @@
 define(["marionette",
         "handlebars",
-        "collections/layers",
-        "models/layer",
-        "collections/symbols",
         "apps/main/views/left/layer-list-child-view1",
         "text!../../templates/left/layer-list.html",
         "apps/main/views/right/marker-style-view",
         "apps/main/views/right/symbol-style-menu-view",
         "apps/main/views/left/new-layer-modal-view",
     ],
-    function (Marionette, Handlebars, Layers, Layer, Symbols, LayerListChild,
-        LayerListTemplate, MarkerStyleView, SymbolStyleMenuView, NewLayer) {
+    function (Marionette, Handlebars, LayerListChild,
+        LayerListTemplate, MarkerStyleView, SymbolStyleMenuView, CreateLayerForm) {
         'use strict';
         /**
          *  In this view, this.model = Map, this.collection = Layers
@@ -18,7 +15,6 @@ define(["marionette",
          *  and SymbolStyleMenuView
          */
         var LayerListView = Marionette.CompositeView.extend(_.extend({}, {
-            stateKey: 'layer_list',
             template: Handlebars.compile(LayerListTemplate),
             templateHelpers: function () {
                 return {
@@ -48,36 +44,15 @@ define(["marionette",
                 this.modal = this.app.modal; //new Modal();
 
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
-                this.listenTo(this.app.vent, 'route-layer', this.routerSendCollection);
                 this.listenTo(this.app.vent, 'add-css-to-selected-layer', this.addCssToSelectedLayer);
-                this.listenTo(this.app.vent, 'route-new-layer', this.createNewLayer);
                 this.listenTo(this.app.vent, 'show-style-menu', this.showStyleMenu);
                 this.listenTo(this.app.vent, 'show-symbol-menu', this.showSymbolMenu);
                 this.listenTo(this.app.vent, 'hide-style-menu', this.hideStyleMenu);
                 this.listenTo(this.app.vent, 'hide-symbol-style-menu', this.hideSymbolStyleMenu);
-                //this.listenTo(this.app.vent, 'highlight-symbol-item', this.highlightItem);
             },
 
-            events: function () {
-                return _.extend({
-                    //'click .add-layer' : 'createNewLayer',
-                    'click #add-layer': 'createNewLayer'
-                });
-            },
-
-            showDropDown: function () {
-                this.$el.find("#new-layer-options").toggle();
-            },
-
-            routerSendCollection: function (mapId, layerId) {
-                var active;
-
-                // loops through children and send the matching child to the right panel
-                this.children.forEach(function(item) {
-                    if (item.model.get('id') == layerId) {
-                        item.childRouterSendCollection(mapId, layerId);
-                    }
-                });
+            events: {
+                'click .add-layer': 'createNewLayer'
             },
 
             // this just adds some css to indicate the selected layer
@@ -87,7 +62,7 @@ define(["marionette",
             },
 
             createNewLayer: function() {
-                var createLayerModel = new NewLayer({
+                var createLayerForm = new CreateLayerForm({
                     app: this.app,
                     mode: 'createNewLayer'
                 });
@@ -95,43 +70,17 @@ define(["marionette",
                 this.modal.update({
                     app: this.app,
                     class: "add-layer",
-                    view: createLayerModel,
+                    view: createLayerForm,
                     title: 'Add Layer',
-                    width: 600,
-                    //height: 400,
+                    width: 400,
                     saveButtonText: "Add Layer",
                     closeButtonText: "Cancel",
                     showSaveButton: true,
-                    saveFunction: createLayerModel.saveLayer.bind(createLayerModel),
+                    saveFunction: createLayerForm.saveLayer.bind(createLayerForm),
                     showDeleteButton: false
                 });
                 this.modal.show();
             },
-
-            // createNewLayer: function (mapID) {
-            //     var continueAction = true;
-            //     if (this.app.layerHasBeenAltered && !this.layerHasBeenSaved) {
-            //         continueAction = confirm("You have unsaved changes on your currently selected layer. If you continue, your changes will not be saved. Do you wish to continue?");
-            //     }
-            //     if(!continueAction) {
-            //         return;
-            //     }
-            //     var layer = new Layer({
-            //         map_id: this.app.selectedMapModel.id,
-            //         data_source: "markers", //default
-            //         group_by: "uniform",
-            //         filters: {},
-            //         symbols: [{
-            //             "fillColor": "#7075FF",
-            //             "width": 20,
-            //             "rule": "*",
-            //             "title": "At least 1 sculpture"
-            //         }],
-            //         title: "Layer 1",
-            //         newLayer: true
-            //     });
-            //     this.app.vent.trigger("edit-layer", layer, this.collection);
-            // },
 
             // create the view that allows the user to edit entire symbol sets
             showStyleMenu: function(model, coords) {
@@ -140,7 +89,6 @@ define(["marionette",
                     this.menu.destroy();
                 }
 
-                console.log('show styebyMenu');
                 this.menu = new MarkerStyleView({
                     app: this.app,
                     model: model
@@ -163,15 +111,6 @@ define(["marionette",
                 var parent = document.getElementById("style-by-menu");
 
                 $('.style-by-menu').hide();
-                // if (!parent.contains(e.target) && !$el.hasClass('layer-style-by') && !parent.hasClass('style-by-menu')) {
-                //     console.log(this.menu);
-                //     if (this.menu) {
-                //         console.log('DESTROY MENU');
-                //         $('.style-by-menu').hide();
-                //         this.menu.destroy();
-                //         //this.menu = null;
-                //     }
-                // }
             },
 
             // create the view that allows the user to edit *individual* symbol attributes
@@ -180,8 +119,6 @@ define(["marionette",
                     console.log('destroying');
                     this.symbolMenu.destroy();
                 }
-                console.log('show symbol menu', this.model);
-                console.log('show symbol menu', layerId);
                 this.symbolMenu = new SymbolStyleMenuView({
                     app: this.app,
                     layer: this.model.get('layers').get(layerId),
@@ -203,26 +140,7 @@ define(["marionette",
                 var parent = document.getElementById("style-by-menu");
 
                 $('.symbol-menu').hide();
-                // if (!parent.contains(e.target) && !$el.hasClass('layer-style-by') && !parent.hasClass('style-by-menu')) {
-                //     console.log(this.menu);
-                //     if (this.menu) {
-                //         console.log('DESTROY MENU');
-                //         $('.style-by-menu').hide();
-                //         this.menu.destroy();
-                //         //this.menu = null;
-                //     }
-                // }
             },
-
-            // highlightItem: function(info) {
-            //     this.children.each((view) => {
-            //         console.log(view.model.id);
-            //         if (view.model.id == info.layerId) {
-            //             console.log('matching layer ', info.layerId);
-            //             view.addCssToSelectedLayer(info.markerId);
-            //         }
-            //     })
-            // },
 
             onDestroy: function() {
                 console.log('DESTROYING>>>');

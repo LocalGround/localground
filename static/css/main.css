@@ -1452,7 +1452,7 @@ tbody .failure-message, tbody .success-message {
 
 .both #left-panel, .left #left-panel {
     order: 0;
-    border-right: 1px solid #e4e5eb;
+    /*border-right: 1px solid #e4e5eb;*/
     box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
     width: 280px;
     background-color: #f7f7f7;
