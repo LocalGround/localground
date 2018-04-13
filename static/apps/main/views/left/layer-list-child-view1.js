@@ -5,9 +5,9 @@ define(["marionette",
         "models/record",
         "apps/main/views/left/symbol-collection-view",
         "apps/main/views/left/edit-layer-name-modal-view",
-
+        "apps/main/views/left/edit-display-field-modal-view",
     ],
-    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView, EditLayerName) {
+    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView, EditLayerName, EditDisplayField) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -24,16 +24,20 @@ define(["marionette",
             },
             modelEvents: {
                 'change:group_by': 'updateGroupBy',
-                'change:title': 'render'
+                'change:title': 'render',
+                'change:display_field': 'render'
             },
             events: {
                 //edit event here, pass the this.model to the right panel
                 'click #fakeadd': 'addFakeModel',
-                'click .layer-delete' : 'deleteLayer',
+                'click .delete-layer' : 'deleteLayer',
                 'change .layer-isShowing': 'showHideOverlays',
                 'click #layer-style-by': 'showStyleByMenu',
                 'click .collapse': 'collapseSymbols',
-                'click .layer-name': 'editLayerName'
+                'click .layer-name': 'editLayerName',
+                'click .open-layer-menu': 'showLayerMenu',
+                'click .rename-layer': 'editLayerName',
+                'click .edit-display-field': 'editDisplayField'
             },
             childEvents: {
                 'isShowing:changed': function () {
@@ -43,6 +47,7 @@ define(["marionette",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this.model);
                 this.symbolModels = this.collection;
                 this.modal = this.app.modal;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
@@ -52,6 +57,8 @@ define(["marionette",
                 }
                 this.assignRecordsToSymbols();
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
+
+                $('body').click($.proxy(this.hideLayerMenu, this));
             },
             template: Handlebars.compile(LayerItemTemplate),
             templateHelpers: function () {
@@ -200,6 +207,53 @@ define(["marionette",
 
             },
 
+            showLayerMenu: function(event) {
+                const coords = {
+                    x: "110px",
+                    y: event.clientY
+                }
+                this.$el.find('.layer-menu').css({top: event.clientY - 30, left: "110px"});
+                this.$el.find('.layer-menu').toggle();
+
+                if (event) {
+                    event.stopPropagation();
+                }
+            },
+
+            hideLayerMenu: function(e) {
+                var $el = $(e.target);
+                if ($el.hasClass('layer-menu')) {
+                    return
+                } else {
+                    if (this.$el.find('.layer-menu').css('display') === 'block')
+                    this.$el.find('.layer-menu').toggle();
+                }
+            },
+
+            editDisplayField: function() {
+                console.log(this.model);
+
+                var editDisplayFieldModal = new EditDisplayField({
+                    app: this.app, 
+                    model: this.model
+                });
+
+                this.modal.update({
+                    app: this.app,
+                    class: "edit-display-field",
+                    view: editDisplayFieldModal,
+                    title: 'Display Field',
+                    width: 400,
+                    //height: 200,
+                    saveButtonText: "Save",
+                    closeButtonText: "Cancel",
+                    showSaveButton: true,
+                    saveFunction: editDisplayFieldModal.saveLayer.bind(editDisplayFieldModal),
+                    showDeleteButton: false
+                });
+                this.modal.show();
+            },
+ 
             showHideOverlays: function () {
                 const isShowing = this.$el.find('input').prop('checked');
 
@@ -267,11 +321,13 @@ define(["marionette",
                 if (this.model.get('metadata').collapsed === true) {
                     this.model.get('metadata').collapsed = false
                     this.$el.find('.symbol').css('height', 'auto');
+                    this.$el.find('.symbol-item').css('display', 'block');
                     this.$el.find('.collapse').removeClass('fa-angle-up');
                     this.$el.find('.collapse').addClass('fa-angle-down');
                 } else {
                     this.model.get('metadata').collapsed = true;
                     this.$el.find('.symbol').css('height', 0);
+                    this.$el.find('.symbol-item').css('display', 'none');
                     this.$el.find('.collapse').removeClass('fa-angle-down');
                     this.$el.find('.collapse').addClass('fa-angle-up');
                 }

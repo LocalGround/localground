@@ -1,5 +1,26 @@
 .layer-container {
     background: white;
+    .layer-name {
+        cursor: pointer;
+    }
+    .open-layer-menu {
+        float: right;
+        padding: 2px 7px;
+    }
+    .layer-menu {
+        -webkit-touch-callout: none; 
+        -webkit-user-select: none;
+         -khtml-user-select: none; 
+           -moz-user-select: none; 
+            -ms-user-select: none; 
+                user-select: none; 
+    }
+}
+
+.collapse {
+    .symbol-item {
+        display: none;
+    }
 }
 
 .symbol-item {

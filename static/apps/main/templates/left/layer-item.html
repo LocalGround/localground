@@ -2,18 +2,28 @@
     <button id="fakeadd">Fake Add</button>
     <div class='layer-column' id='layer{{id}}'>
         <input class='layer-isShowing' id='cb{{id}}' type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} />
+        <span>
+            <i class="fa fa-angle-down collapse"></i>
+        </span>
         <p class="layer-name">{{ title }}</p>
-        <a class="layer-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-        <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a>
+        <!-- <a class="delete-layer"><i class="fa fa-trash-o" aria-hidden="true"></i></a> -->
+        <span class="open-layer-menu">
+            <i class="fa fa-ellipsis-v"></i>
+        </span>
+        <!-- <a  href="/style/#/{{this.map_id}}/layers/{{this.id}}" class="edit">edit</a> -->
+        <div class="layer-menu dropdown-menu" style="display: none">
+            <ul>
+                <li><a class='rename-layer'>Rename this layer</a></li>
+                <li><a class='delete-layer'>Delete this layer</a></li>
+                <li><a class='edit-display-field'>Set display field for this layer</a></li>
+                <li><a>Zoom to layer extents</a></li>
+            </ul>
+        </div>
     </div>
     <div>
         <p class="layer-datasource" >data source: {{name}}</p>
     </div>
-    <div>
-        <div>
-            <i class="fa fa-angle-down collapse"></i>
-        </div>
-        
+    <div> 
         <a><p class="layer-style-by" id="layer-style-by">styled by: <span>{{group_by}}</span></p></a>
     </div>
     <div id="symbols-list">

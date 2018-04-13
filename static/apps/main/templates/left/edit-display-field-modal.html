@@ -1,0 +1,16 @@
+<form class="form">
+        <div class="row">
+            <label>Select Label</label>
+                <select id="display-field">
+                    {{#each displayFields}}
+                        <option {{#ifequal this.value ../current }} SELECTED {{/ifequal}} value="{{this.value}}">{{this.text}}</option>
+                    {{/each}}
+            </select>
+        </div>
+        {{#if slugError}}
+            <p class="errorMessage">{{slugError}}</p>
+        {{/if}}
+        {{#if generalError}}
+            <p class="errorMessage">{{generalError}}</p>
+        {{/if}}
+</form>
