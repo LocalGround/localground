@@ -1,18 +1,57 @@
 // main: ../main-new.scss
-$menuShadow: 0 2px 1px 1px rgba(53, 76, 122, 0.06);
-$selectionBorderHighlight: #297CBB;
+$menu-shadow: 0 2px 1px 1px rgba(53, 76, 122, 0.06);
+$selection-border-highlight: #297CBB;
 
-$dropdownShadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
-$dropdownHover: rgb(123, 155, 225);
+$dropdown-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
+$dropdown-hover: rgb(123, 155, 225);
 $light-gray: #f5f5f5;
-$offwhite: #fbfcfe;
+$off-white: #fbfcfe;
 $primary-color: #4e70d4;
-$action-color: #fafafc;
+$secondary-color: #fff;
+$action-color: #008580;
 $dark-red: #d73729;
+$light-red: #fae5e3;
+$title-color: rgb(53, 76, 121);
+$title-color-hover: rgba(53, 76, 121, 0.9);
 
+.selection-border-highlight {
+    color: white;
+    background: $selection-border-highlight;
+}
+.dropdown-hover {
+    color: white;
+    background: $dropdown-hover;
+}
 .off-white {
-    background-color: $offwhite;
+    background: $off-white;
 }
 .light-gray {
-    background-color: $light-gray;
+    background: $light-gray;
+}
+.primary-color {
+    color: white;
+    background: $primary-color;
+}
+.secondary-color {
+    color: white;
+    background: $action-color;
+}
+.action-color {
+    color: white;
+    background: $action-color;
+}
+.dark-red {
+    color: white;
+    background: $dark-red;
+}
+.light-red {
+    background: $light-red;
+}
+.title-color {
+    color: white;
+    background: $title-color;
+}
+.title-color-hover {
+    color: white;
+    background: $title-color-hover;
 }

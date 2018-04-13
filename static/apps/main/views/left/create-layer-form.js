@@ -4,7 +4,7 @@ define ([
     "marionette",
     "handlebars",
     "models/layer",
-    "text!../../templates/left/new-layer-modal.html"],
+    "text!../../templates/left/create-layer-form.html"],
     function ($, _, Marionette, Handlebars, Layer, NewLayerModalTemplate) {
         'use strict';
 

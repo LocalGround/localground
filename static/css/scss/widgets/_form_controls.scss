@@ -69,13 +69,13 @@
         }
     }
     .row.error {
-        background-color: #fae5e3;
+        background-color: $light-red;
         padding: 5px 10px;
         label, p {
-            color: #b94a48;
+            color: $dark-red;
         }
         input[type="checkbox"] {
-            background-color: #fae5e3;
+            background-color: $light-red
         }
     }
     .checkbox-list {
@@ -110,7 +110,7 @@
                 padding: 0px;
             }
             input[type="checkbox"] {
-                background-color: #fae5e3;
+                background-color: $light-red
             }
         }
     }

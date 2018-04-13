@@ -69,7 +69,7 @@
         margin-top: 30px;
         border: solid 1px #EEE;
         padding: 10px;
-        background: $offwhite;
+        background: $off-white;
         border: solid 1px #EEE !important;
         li {
             font-size: 0.9em;
@@ -78,5 +78,18 @@
             font-family: monospace;
             font-size: 1.2em;
         }
+    }
+
+    .swatch {
+        width: 258px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        font-weight: 400;
+        display: inline-block;
+        border-radius: 5px;
+        border: solid 1px #CCC;
+        margin: 5px 2px;
+        vertical-align: top;
     }
 }

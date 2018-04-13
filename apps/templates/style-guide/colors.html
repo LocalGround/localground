@@ -1,7 +1,23 @@
 {% extends "style-guide/base.html" %}
 {% block title %}Colors{% endblock %}
+
 {% block main %}
 <div class="container">
-    TODO
+    <h2>Color Swatches</h2>
+    <div id="swatches">
+        <div class="swatch off-white">$off-white</div>
+        <div class="swatch light-gray">$light-gray</div>
+        <div class="swatch selection-border-highlight">$selection-border-highlight</div>
+        <div class="swatch dropdown-hover">$dropdown-hover</div>
+        <div class="swatch primary-color">$primary-color</div>
+        <div class="swatch action-color">$action-color</div>
+        <div class="swatch dark-red">$dark-red</div>
+        <div class="swatch light-red">$light-red</div>
+        <div class="swatch title-color">$title-color</div>
+        <div class="swatch title-color-hover">$title-color-hover</div>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#swatches"></pre>
+
 </div>
 {% endblock %}

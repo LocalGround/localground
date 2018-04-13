@@ -4,7 +4,7 @@ define(["marionette",
         "text!../../templates/left/layer-list.html",
         "apps/main/views/right/marker-style-view",
         "apps/main/views/right/symbol-style-menu-view",
-        "apps/main/views/left/new-layer-modal-view",
+        "apps/main/views/left/create-layer-form",
     ],
     function (Marionette, Handlebars, LayerListChild,
         LayerListTemplate, MarkerStyleView, SymbolStyleMenuView, CreateLayerForm) {
@@ -61,7 +61,7 @@ define(["marionette",
                 this.$el.find('#' +'layer' + id).addClass('selected-layer');
             },
 
-            createNewLayer: function() {
+            createNewLayer: function(e) {
                 var createLayerForm = new CreateLayerForm({
                     app: this.app,
                     mode: 'createNewLayer'
@@ -80,6 +80,7 @@ define(["marionette",
                     showDeleteButton: false
                 });
                 this.modal.show();
+                if(e) { e.preventDefault(); }
             },
 
             // create the view that allows the user to edit entire symbol sets

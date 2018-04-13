@@ -8,7 +8,7 @@ nav.toolbar-main {
     border-bottom: 1px solid #e4e5eb;
     background-color: white;
     width: 100%;
-    box-shadow: $menuShadow;
+    box-shadow: $menu-shadow;
     font-size: 14px;
     position: relative;
     z-index: 40;
@@ -39,10 +39,10 @@ nav.toolbar-main {
         border-top: solid 2px rgba(0, 0, 0, 0);
     }
     > li:hover {
-        border-top: solid 2px $selectionBorderHighlight;
+        border-top: solid 2px $selection-border-highlight;
     }
     > li.active {
-        border-top: solid 2px $selectionBorderHighlight;
+        border-top: solid 2px $selection-border-highlight;
     }
 }
 

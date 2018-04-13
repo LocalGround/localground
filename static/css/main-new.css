@@ -39,12 +39,56 @@ a.logotype {
   text-transform: uppercase;
 }
 
+.selection-border-highlight {
+  color: white;
+  background: #297CBB;
+}
+
+.dropdown-hover {
+  color: white;
+  background: #7b9be1;
+}
+
 .off-white {
-  background-color: #fbfcfe;
+  background: #fbfcfe;
 }
 
 .light-gray {
-  background-color: #f5f5f5;
+  background: #f5f5f5;
+}
+
+.primary-color {
+  color: white;
+  background: #4e70d4;
+}
+
+.secondary-color {
+  color: white;
+  background: #008580;
+}
+
+.action-color {
+  color: white;
+  background: #008580;
+}
+
+.dark-red {
+  color: white;
+  background: #d73729;
+}
+
+.light-red {
+  background: #fae5e3;
+}
+
+.title-color {
+  color: white;
+  background: #354c79;
+}
+
+.title-color-hover {
+  color: white;
+  background: rgba(53, 76, 121, 0.9);
 }
 
 html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, select, form {
@@ -73,19 +117,19 @@ ul {
 
 .map-title {
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 transparent, 0 2px 4px -1px transparent;
-  padding: 15px 10px;
-  font-size: 18px;
-  font-weight: 300;
   display: block;
-  cursor: pointer;
   background: #354c79;
-  font-weight: 400;
+}
+
+.map-title h2 {
+  padding: 15px 10px;
   color: #fff;
-  /*position: fixed;*/
+  font-weight: 400;
+  font-size: 18px;
   width: 260px;
 }
 
-.map-title .fa {
+.map-title h2 .fa {
   display: none;
 }
 
@@ -98,15 +142,14 @@ ul {
 }
 
 .add-layer {
-  cursor: pointer;
   padding: 10px;
-  /*margin-top: 55px;*/
+  display: block;
   border-bottom: solid 1px #EEE;
   font-size: 0.8em;
 }
 
 .add-layer:hover {
-  background: #F0F0F0;
+  background: #f5f5f5;
 }
 
 .style-main-panel {
@@ -230,6 +273,19 @@ ul {
 .style-guide .prettyprint span {
   font-family: monospace;
   font-size: 1.2em;
+}
+
+.style-guide .swatch {
+  width: 258px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  font-weight: 400;
+  display: inline-block;
+  border-radius: 5px;
+  border: solid 1px #CCC;
+  margin: 5px 2px;
+  vertical-align: top;
 }
 
 .clear {
@@ -610,7 +666,7 @@ ul {
 }
 
 .button-secondary {
-  background-color: #fafafc;
+  background-color: #fff;
   border: 1px solid #e4e5eb;
 }
 
@@ -740,7 +796,7 @@ span.action.rounded:hover, a.action.rounded:hover {
 }
 
 .form .row.error label, .form .row.error p, .form-inline .row.error label, .form-inline .row.error p {
-  color: #b94a48;
+  color: #d73729;
 }
 
 .form .row.error input[type="checkbox"], .form-inline .row.error input[type="checkbox"] {
