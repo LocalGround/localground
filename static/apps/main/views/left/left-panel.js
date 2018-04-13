@@ -20,7 +20,9 @@ define(["underscore",
             events: {
                 'click #new-layer-options a' : 'createNewLayer',
                 'click .map-save' : 'saveMap',
-                'click #map-delete': 'deleteMap'
+                'click #map-delete': 'deleteMap',
+                'click .show-hide.hide': 'hideList',
+                'click .show-hide.show': 'showList'
             },
 
             regions: {
@@ -83,6 +85,17 @@ define(["underscore",
 
                 this.app.router.navigate('//');
 
+            },
+            hideList: function (e) {
+                console.log(e.srcElement);
+                e.srcElement.classList.toggle('hide');
+                e.srcElement.classList.toggle('show');
+                this.app.vent.trigger('hide-list');
+            },
+            showList: function (e) {
+                e.srcElement.classList.toggle('hide');
+                e.srcElement.classList.toggle('show');
+                this.app.vent.trigger('unhide-list');
             }
         });
         return LeftPanelLayout;

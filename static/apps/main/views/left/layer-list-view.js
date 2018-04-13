@@ -72,7 +72,7 @@ define(["marionette",
                     class: "add-layer",
                     view: createLayerForm,
                     title: 'Add Layer',
-                    width: 400,
+                    width: 300,
                     saveButtonText: "Add Layer",
                     closeButtonText: "Cancel",
                     showSaveButton: true,
@@ -105,8 +105,6 @@ define(["marionette",
 
             hideStyleMenu: function(e){
                 console.log('hide menu');
-                //this.menu.destroy();
-
                 var $el = $(e.target);
                 var parent = document.getElementById("style-by-menu");
 
@@ -135,10 +133,8 @@ define(["marionette",
 
             hideSymbolStyleMenu: function(e) {
                 console.log('hide symbol menu');
-
                 var $el = $(e.target);
                 var parent = document.getElementById("style-by-menu");
-
                 $('.symbol-menu').hide();
             },
 
