@@ -61,7 +61,7 @@ define([
                 class: "add-map",
                 view: createMapModel,
                 title: 'New Map',
-                width: 600,
+                width: 400,
                 saveButtonText: "Create Map",
                 closeButtonText: "Cancel",
                 showSaveButton: true,

@@ -56,7 +56,6 @@ define ([
                 });
             },
             updateMapName: function () {
-                console.log('UPDATE!!!!');
                 this.model.collection.trigger('update');
                 this.app.vent.trigger('close-modal');
             },

@@ -80,12 +80,26 @@ ul {
 }
 
 .map-title {
-  padding: 14px 0px 0px 10px;
-  font-size: 22px;
+  padding: 10px 10px;
+  font-size: 18px;
   font-weight: 300;
-  width: 300px;
   display: block;
   cursor: pointer;
+  background: #354c79;
+  font-weight: 400;
+  color: #fff;
+}
+
+.map-title .fa {
+  display: none;
+}
+
+.map-title:hover {
+  background: rgba(53, 76, 121, 0.9);
+}
+
+.map-title:hover .fa {
+  display: block;
 }
 
 .print-layout-left {
