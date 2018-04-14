@@ -16,7 +16,8 @@ class LayerSerializer(BaseSerializer):
     data_source = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
     dataset = serializers.PrimaryKeyRelatedField(
-        queryset=models.Form.objects.all())
+        queryset=models.Form.objects.all(),
+        allow_null=True)
 
     def get_fields(self, *args, **kwargs):
         fields = super(LayerSerializer, self).get_fields(*args, **kwargs)
@@ -70,19 +71,23 @@ class LayerSerializer(BaseSerializer):
         map_id = self.context.get('view').kwargs.get('map_id')
         map = models.StyledMap.objects.get(id=int(map_id))
         validated_data.update({
-            'display_field': dataset.fields[0],
             'group_by': 'uniform',
             'ordering': len(map.layers) + 1,
-            # 'project': map.project,
             'styled_map': map
         })
         validated_data.update(self.get_presave_create_dictionary())
 
-        if not dataset:
+        if create_new_dataset:
             # This custom "create" method will create a dataset if
             # not specified:
+            validated_data.update({
+                'project': map.project
+            })
             self.instance = models.Layer.create(**validated_data)
         else:
+            validated_data.update({
+                'display_field': dataset.fields[0]
+            })
             self.instance = self.Meta.model.objects.create(**validated_data)
 
         return self.instance

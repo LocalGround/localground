@@ -7,7 +7,8 @@ define(["marionette",
         "apps/main/views/left/edit-layer-name-modal-view",
         "apps/main/views/left/edit-display-field-modal-view",
     ],
-    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView, EditLayerName, EditDisplayField) {
+    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record,
+            SymbolView, EditLayerName, EditDisplayField) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -37,7 +38,8 @@ define(["marionette",
                 'click .layer-name': 'editLayerName',
                 'click .open-layer-menu': 'showLayerMenu',
                 'click .rename-layer': 'editLayerName',
-                'click .edit-display-field': 'editDisplayField'
+                'click .edit-display-field': 'editDisplayField',
+                'click .zoom-to-extents': 'zoomToExtents'
             },
             childEvents: {
                 'isShowing:changed': function () {
@@ -47,7 +49,6 @@ define(["marionette",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this.model);
                 this.symbolModels = this.collection;
                 this.modal = this.app.modal;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
@@ -70,13 +71,7 @@ define(["marionette",
             },
 
             childView: SymbolView,
-            // getChildView: function() {
-            //     if (this.model.get('group_by') === 'individual') {
-            //         return IndividualSymbolView;
-            //     } else {
-            //         return SymbolView;
-            //     }
-            // },
+
             childViewContainer: "#symbols-list",
 
             reRender: function () {
@@ -187,7 +182,7 @@ define(["marionette",
                 console.log('edit layer name');
 
                 var editLayerNameModal = new EditLayerName({
-                    app: this.app, 
+                    app: this.app,
                     model: this.model
                 });
 
@@ -235,7 +230,7 @@ define(["marionette",
                 console.log(this.model);
 
                 var editDisplayFieldModal = new EditDisplayField({
-                    app: this.app, 
+                    app: this.app,
                     model: this.model
                 });
 
@@ -254,7 +249,7 @@ define(["marionette",
                 });
                 this.modal.show();
             },
- 
+
             showHideOverlays: function () {
                 const isShowing = this.$el.find('input').prop('checked');
 
@@ -284,7 +279,7 @@ define(["marionette",
 
             handleChildShowHide: function () {
                 this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying();
-            
+
                 this.saveChanges();
                 this.toggleCheckbox();
                 //this.render(); //too expensive
@@ -332,6 +327,27 @@ define(["marionette",
                     this.$el.find('.collapse').removeClass('fa-angle-down');
                     this.$el.find('.collapse').addClass('fa-angle-up');
                 }
+            },
+            getMarkerOverlays: function () {
+                const markerOverlays = this.children.map(view => view.getMarkerOverlays());
+                if (markerOverlays.length > 0) {
+                    return markerOverlays.reduce((a, b) => a.concat(b));
+                }
+                return [];
+            },
+            getBounds: function () {
+                var bounds = new google.maps.LatLngBounds();
+                this.getMarkerOverlays().forEach(overlay => {
+                    bounds.union(overlay.getBounds());
+                })
+                return bounds;
+            },
+            zoomToExtents: function (e) {
+                var bounds = this.getBounds();
+                if (!bounds.isEmpty()) {
+                    this.app.map.fitBounds(bounds);
+                }
+                if (e) { e.preventDefault(); }
             },
 
             saveChanges: function() {

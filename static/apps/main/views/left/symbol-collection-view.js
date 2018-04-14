@@ -110,9 +110,15 @@ define(["jquery",
                     }
                 })
             },
+            getMarkerOverlays: function () {
+                // returns all child MarkerOverlays
+                // (and handles views w/o overlays):
+                return this.children.filter(itemView => itemView.overlay)
+                    .map(itemView => itemView.overlay);
+            },
             showHideOverlays: function () {
                 this.model.set("isShowing", !this.$el.find('.symbol-display').hasClass('fa-eye'));
-                
+
                 if(this.model.get('isShowing')) {
                     this.$el.find('.symbol-display').removeClass('fa-eye-slash');
                     this.$el.find('.symbol-display').addClass('fa-eye');

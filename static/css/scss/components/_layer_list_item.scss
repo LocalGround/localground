@@ -1,3 +1,4 @@
+// main: ../main-new.scss
 .layer-container {
     background: white;
     .layer-name {
@@ -8,12 +9,12 @@
         padding: 2px 7px;
     }
     .layer-menu {
-        -webkit-touch-callout: none; 
+        -webkit-touch-callout: none;
         -webkit-user-select: none;
-         -khtml-user-select: none; 
-           -moz-user-select: none; 
-            -ms-user-select: none; 
-                user-select: none; 
+         -khtml-user-select: none;
+           -moz-user-select: none;
+            -ms-user-select: none;
+                user-select: none;
     }
 
     .layer-column {
@@ -55,6 +56,11 @@
 .layer-datasource {
     font-size: 11px;
     margin-left: 20px;
+    a {
+        text-decoration: underline;
+        color: $selection-border-highlight;
+        font-size: 11px;
+    }
 }
 
 .layer-style-by {

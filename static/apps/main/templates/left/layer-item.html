@@ -13,12 +13,15 @@
                 <li><a class='rename-layer'>Rename this layer</a></li>
                 <li><a class='delete-layer'>Delete this layer</a></li>
                 <li><a class='edit-display-field'>Set display field for this layer</a></li>
-                <li><a>Zoom to layer extents</a></li>
+                <li><a class='zoom-to-extents'>Zoom to layer extents</a></li>
             </ul>
         </div>
     </div>
     <div class="layer-column">
-        <p class="layer-datasource" >data source: {{name}}</p>
+        <p class="layer-datasource">
+            data source:
+            <a href="/data/2/#/table/{{data_source}}" target="_blank">{{name}}</a>
+        </p>
     </div>
     <div class="layer-column">
         <span>
