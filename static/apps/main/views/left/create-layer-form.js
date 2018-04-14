@@ -45,7 +45,6 @@ define ([
                     generalError: this.generalError,
                     name: name,
                     slug: slug,
-                    description: description,
                     datasets: datasets
                 };
                 return helpers;

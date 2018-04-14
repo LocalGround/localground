@@ -7,13 +7,29 @@ import json
 
 
 class Layer(BaseAudit):
+    default_metadata = {
+        'buckets': 4,
+        'paletteId': 0,
+        'fillOpacity': 1,
+        'width': 20,
+        'fillColor': '#4e70d4',
+        'strokeColor': '#ffffff',
+        'strokeWeight': 1,
+        'strokeOpacity': 1,
+        'shape': 'circle',
+        'isShowing': False
+    }
     styled_map = models.ForeignKey('StyledMap', related_name='%(class)s+')
     dataset = models.ForeignKey('Form', related_name='%(class)s+')
     display_field = models.ForeignKey('Field', related_name='%(class)s+')
     title = models.CharField(max_length=255, null=False, blank=False)
     ordering = models.IntegerField()
     group_by = models.CharField(max_length=255)
-    metadata = JSONField(blank=True, null=True)
+    metadata = JSONField(
+        blank=True,
+        null=True,
+        default=json.dumps(default_metadata)
+    )
     symbols = JSONField(blank=True, null=True, default=[
         Symbol.SIMPLE.to_dict()
     ])

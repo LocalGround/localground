@@ -13,7 +13,7 @@ require(['boot'], function () {
         'spec/views/main/left-panel-view-test.js',
         'spec/views/main/edit-map-form-test.js',
         'spec/views/main/layer-list-view-test.js',
-        //'spec/views/main/create-layer-form-test.js',
+        'spec/views/main/create-layer-form-test.js',
 
         //lib:
         'spec/lib/data-manager-test.js'

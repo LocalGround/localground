@@ -3,16 +3,18 @@ from localground.apps.site.api.serializers.base_serializer import \
 from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
+from django.conf import settings
 
 
 class LayerSerializer(BaseSerializer):
-    symbols = fields.JSONField(
-        style={'base_template': 'json.html', 'rows': 5}, required=False)
-    metadata = fields.JSONField(
-        style={'base_template': 'json.html', 'rows': 5}, required=False)
+    create_new_dataset = serializers.BooleanField(
+        required=False, write_only=True)
+    symbols = fields.JSONField(required=False, read_only=True)
+    metadata = fields.JSONField(required=False, read_only=True)
     display_field = serializers.SerializerMethodField()
     map_id = serializers.SerializerMethodField()
     data_source = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
     dataset = serializers.PrimaryKeyRelatedField(
         queryset=models.Form.objects.all())
 
@@ -48,27 +50,61 @@ class LayerSerializer(BaseSerializer):
     def get_display_field(self, obj):
         return obj.display_field.col_name_db
 
+    def get_url(self, obj):
+        return '%s/api/0/maps/%s/layers/%s' % \
+                (settings.SERVER_URL, obj.styled_map.id, obj.id)
+
     def create(self, validated_data):
+        '''
+        Either:
+            1. the user opts to create a new dataset, or
+            2. the user specifies an existing datasource
+        '''
+        create_new_dataset = validated_data.pop('create_new_dataset', False)
+        dataset = validated_data.get('dataset')
+        if not create_new_dataset and dataset is None:
+            msg = 'Either create_new_dataset should be set to True '
+            msg += 'or a valid dataset should be specified.'
+            raise serializers.ValidationError(msg)
+
         map_id = self.context.get('view').kwargs.get('map_id')
+        map = models.StyledMap.objects.get(id=int(map_id))
         validated_data.update({
-            'styled_map_id': map_id
+            'display_field': dataset.fields[0],
+            'group_by': 'uniform',
+            'ordering': len(map.layers) + 1,
+            # 'project': map.project,
+            'styled_map': map
         })
-        form = models.Form.objects.get(id=validated_data.get('dataset').id)
-        validated_data['display_field'] = form.fields[0]
         validated_data.update(self.get_presave_create_dictionary())
-        self.instance = self.Meta.model.objects.create(**validated_data)
+
+        if not dataset:
+            # This custom "create" method will create a dataset if
+            # not specified:
+            self.instance = models.Layer.create(**validated_data)
+        else:
+            self.instance = self.Meta.model.objects.create(**validated_data)
+
         return self.instance
 
     class Meta:
         model = models.Layer
+        read_only_fields = ('ordering', 'group_by', 'symbols', 'metadata')
         fields = BaseSerializer.field_list + (
-            'title', 'dataset', 'data_source', 'group_by', 'display_field',
-            'ordering', 'metadata', 'map_id', 'symbols'
+            'title', 'dataset', 'create_new_dataset', 'data_source',
+            'group_by', 'display_field', 'ordering', 'map_id', 'symbols',
+            'metadata', 'url'
         )
         depth = 0
 
 
 class LayerDetailSerializer(LayerSerializer):
+    symbols = fields.JSONField(
+        style={'base_template': 'json.html', 'rows': 5},
+        required=True)
+    metadata = fields.JSONField(
+        style={'base_template': 'json.html', 'rows': 5},
+        required=True)
     display_field = serializers.SlugRelatedField(
         queryset=models.Field.objects.all(),
         slug_field='col_name_db')
