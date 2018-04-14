@@ -48,6 +48,11 @@ define(["jquery",
                 })
                 return events;
             },
+            onRender: function() {
+                if(!this.model.get('isShowing')) {
+                    this.$el.addClass('half-opac');
+                }
+            },
             redrawOverlays: function () {
                 if (this.model.get("isShowing")) {
                     this.showOverlays();
@@ -113,10 +118,13 @@ define(["jquery",
             showHideOverlays: function () {
                 this.model.set("isShowing", !this.$el.find('.symbol-display').hasClass('fa-eye'));
                 
+                
                 if(this.model.get('isShowing')) {
+                    this.$el.removeClass('half-opac');
                     this.$el.find('.symbol-display').removeClass('fa-eye-slash');
                     this.$el.find('.symbol-display').addClass('fa-eye');
                 } else {
+                    this.$el.addClass('half-opac');
                     this.$el.find('.symbol-display').removeClass('fa-eye');
                     this.$el.find('.symbol-display').addClass('fa-eye-slash');
                 }

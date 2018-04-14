@@ -62,7 +62,11 @@
     margin-left: 7px;
     display: inline;
     color: #8bb8ed;
+    font-weight: bold;
     span {
         color: inherit;
+    }
+    &:hover {
+        text-decoration: underline;
     }
 }

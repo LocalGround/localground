@@ -391,10 +391,15 @@ ul {
   margin-left: 7px;
   display: inline;
   color: #8bb8ed;
+  font-weight: bold;
 }
 
 .layer-style-by span {
   color: inherit;
+}
+
+.layer-style-by:hover {
+  text-decoration: underline;
 }
 
 .sort-by {
@@ -414,12 +419,36 @@ ul {
 .symbol-edit {
   padding-top: 8px;
   padding-right: 10px;
+  float: right;
   display: none;
 }
 
-.symbol-header:hover .symbol-edit {
-  display: block;
+.symbol-display {
+  padding-top: 8px;
+  padding-right: 10px;
+  float: right;
+}
+
+.symbol-display.fa-eye {
+  display: none;
+}
+
+.symbol-display.fa-eye-slash {
+  display: inline;
+}
+
+.symbol-header:hover .symbol-edit,
+.symbol-header:hover .symbol-display {
+  display: inline;
   cursor: pointer;
+}
+
+.half-opac .fa-eye,
+.half-opac .fa-eye-slash,
+.half-opac .sort-by,
+.half-opac .symbol-item p,
+.half-opac svg {
+  opacity: 0.5;
 }
 
 .ind-symbol svg {
