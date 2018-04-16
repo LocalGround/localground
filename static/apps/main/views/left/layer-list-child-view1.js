@@ -39,12 +39,7 @@ define(["marionette",
                 'click .rename-layer': 'editLayerName',
                 'click .edit-display-field': 'editDisplayField'
             },
-            childEvents: {
-                'isShowing:changed': function () {
-                    console.log('visibilityChanged!');
-                    this.handleChildShowHide();
-                }
-            },
+
             initialize: function (opts) {
                 _.extend(this, opts);
                 console.log(this.model);
@@ -56,11 +51,16 @@ define(["marionette",
                     return;
                 }
                 this.assignRecordsToSymbols();
-                this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying(this.collection);
                 this.collapseSymbols();
+                
 
                 $('body').click($.proxy(this.hideLayerMenu, this));
             },
+
+            onRender: function() {
+                this.showHideOverlays(null, this.model.get("metadata").isShowing);
+            },
+
             template: Handlebars.compile(LayerItemTemplate),
             templateHelpers: function () {
                 return {
@@ -255,62 +255,38 @@ define(["marionette",
                 this.modal.show();
             },
  
-            showHideOverlays: function () {
-                const isShowing = this.$el.find('input').prop('checked');
-
-                this.model.get("metadata").isShowing = isShowing;
-
-                this.children.each(function(childView) {
-                    var symbol = childView.model;
-
-                    //if childView already matches parent, do nothing; iterate:
-                    if (symbol.get("isShowing") === isShowing) {
-                        return;
-                    }
-
-                    // otherwise, set flag, toggle, render, and save:
-                    symbol.set('isShowing', isShowing);
-                    //childView.redrawOverlays();
-                    childView.render();
-                })
-                // if (isShowing) {
-                //     this.$el.find('#symbols-list').show()
-                // } else {
-                //     this.$el.find('#symbols-list').hide()
-                // }
-                this.saveChanges();
-                //this.$el.find('#symbol-list').toggle();
-            },
-
-            handleChildShowHide: function () {
-                this.model.get('metadata').isShowing = this.allSymbolsAreDisplaying();
-            
-                this.saveChanges();
-                this.toggleCheckbox();
-                //this.render(); //too expensive
-            },
-
-            toggleCheckbox: function () {
-                const symbolsShowing = this.collection.filter(model => {
-                    return model.get('isShowing');
-                });
-                if (symbolsShowing.length > 0 && symbolsShowing.length < this.collection.length) {
-                    this.$el.find('#cb' + this.model.id)[0].indeterminate = true;
+            // This function gets triggered both by user events and by onRender, so we manage
+            // the arguments to handle both situations. 
+            // If it is triggered by an event, there is only 1 argument.
+            // If it is triggered from onRender, there are 2 args, and arg1 is null.
+            showHideOverlays: function (event, state) {
+                let isShowing;
+                if (arguments.length === 1) {
+                    isShowing = this.$el.find('input').prop('checked');
+                    this.model.get("metadata").isShowing = isShowing;
                 } else {
-                    this.$el.find('#cb' + this.model.id)[0].indeterminate = false;
-                    this.$el.find('.layer-isShowing').prop('checked', this.model.get('metadata').isShowing);
+                    isShowing = state;
                 }
-            },
+                this.children.each(function(childView) {                    
+                    if (isShowing) {
 
-            // deprecated
-            allSymbolsAreDisplaying: function(collection) {
-                var isShowing = true;
-                this.collection.each( model => {
-                    isShowing = isShowing && (
-                        model.get("isShowing") || model.getModelsJSON().length === 0
-                    );
-                });
-                return isShowing;
+                        // when toggling show/hide of the entire layer (all overlays), 
+                        // defer to the individual child symbols. This way, we can remember show/hide 
+                        // attributes at the child/symbol level instead of resetting it every
+                        // time show/hide is toggled at the layer level
+                        childView.redrawOverlays();
+                    } else {
+                        // but when we are hiding at the layer level, we always hide all child symbols
+                        childView.hideOverlays(); 
+                    }
+                    
+                })
+                if (isShowing) {
+                    this.$el.find('#symbols-list').show()
+                } else {
+                    this.$el.find('#symbols-list').hide()
+                }
+                this.saveChanges();
             },
 
             addCssToSelectedLayer: function(markerId) {
