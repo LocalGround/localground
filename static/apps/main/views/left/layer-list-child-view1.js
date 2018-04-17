@@ -209,6 +209,7 @@ define(["marionette",
             },
 
             showLayerMenu: function(event) {
+                console.log('show layer menu');
                 const coords = {
                     x: "110px",
                     y: event.clientY

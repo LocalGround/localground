@@ -256,7 +256,6 @@ define([
             this.map = this.dataManager.getMaps().get(3);
             this.map.set('layers', this.getLayers(this.map.id));
             //console.log(this.map);
-            console.log(this.map.getLayers());
 
             //spoof the main-app for child view testing
             this.app = _.extend({}, appUtilities);
@@ -284,7 +283,6 @@ define([
                     Backbone.history.start();
                 }
             });
-            console.log(this.app);
 
         });
 });
