@@ -145,7 +145,7 @@ define([
                     "dataset": 2,
                     "data_source": "form_2",
                     "group_by": "height",
-                    "display_field": "col_8",
+                    "display_field": "height",
                     "ordering": 2,
                     "metadata": {
                         "fillOpacity": 1,

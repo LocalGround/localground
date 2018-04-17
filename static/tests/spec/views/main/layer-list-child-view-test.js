@@ -69,16 +69,18 @@ define([
 
             });
 
-            it("clicking '.rename-layer' should open layer edit modal", function () {
+            it("clicking '.rename-layer' should open 'layer edit' modal", function () {
                 this.view.render();
                 expect(Modal.prototype.update).toHaveBeenCalledTimes(0);
                 expect(Modal.prototype.show).toHaveBeenCalledTimes(0);
+                expect(EditLayerName.prototype.initialize).toHaveBeenCalledTimes(0);
                 this.view.$el.find('.open-layer-menu').trigger('click');
                 this.view.$el.find('.rename-layer').trigger('click');
                 expect(Modal.prototype.update).toHaveBeenCalledTimes(1);
                 expect(Modal.prototype.show).toHaveBeenCalledTimes(1);
+                expect(EditLayerName.prototype.initialize).toHaveBeenCalledTimes(1);
             });
-            it("'Edit Layer Name' modal renames modal", function () {
+            it("EditLayerName modal renames modal", function () {
                 this.view.render();
 
                 this.view.$el.find('.open-layer-menu').trigger('click');
@@ -94,6 +96,33 @@ define([
                 expect(this.view.model.get('title')).toEqual('Edited Trees Layer');
                 expect(this.view.$el.find('.layer-name').text()).toEqual('Edited Trees Layer');
             });
+
+            it("clicking '.rename-layer' should open 'edit display field' modal", function () {
+                this.view.render();
+                expect(Modal.prototype.update).toHaveBeenCalledTimes(0);
+                expect(Modal.prototype.show).toHaveBeenCalledTimes(0);
+                expect(EditDisplayField.prototype.initialize).toHaveBeenCalledTimes(0);
+                this.view.$el.find('.open-layer-menu').trigger('click');
+                this.view.$el.find('.edit-display-field').trigger('click');
+                expect(Modal.prototype.update).toHaveBeenCalledTimes(1);
+                expect(Modal.prototype.show).toHaveBeenCalledTimes(1);
+                expect(EditDisplayField.prototype.initialize).toHaveBeenCalledTimes(1);
+            });
+            it("EditDisplayField modal updates layer's 'display_field'", function() {
+                this.view.render();
+      
+                this.view.$el.find('.open-layer-menu').trigger('click');
+                this.view.$el.find('.edit-display-field').trigger('click');
+
+                expect(this.view.model.get('display_field')).toEqual('height');
+                expect(this.view.modal.$el.find('#display-field').val()).toEqual('height');
+                this.view.modal.$el.find('#display-field').val('type');
+                expect(this.view.modal.$el.find('#display-field').val()).toEqual('type');
+
+                this.view.modal.$el.find('.save-modal-form').trigger('click');
+                expect(this.view.model.get('display_field')).toEqual('type');
+            });
+            
 
         });
     });
