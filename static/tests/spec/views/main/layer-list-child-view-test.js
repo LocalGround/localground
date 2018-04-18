@@ -122,7 +122,21 @@ define([
                 this.view.modal.$el.find('.save-modal-form').trigger('click');
                 expect(this.view.model.get('display_field')).toEqual('type');
             });
-            
+            it(".collapse button hides and shows the Symbol Items", function() {
+                this.view.render();
+                expect(this.view.$el.find('.collapse')).toHaveClass('fa-angle-down');
+
+                this.view.$el.find('.collapse').trigger('click');
+
+                expect(this.view.$el.find('.collapse')).toHaveClass('fa-angle-up');
+                expect(this.view.$el.find('.symbol').css('height')).toEqual('0px');
+                expect(this.view.$el.find('.symbol-item').css('display')).toEqual('none');
+
+                this.view.$el.find('.collapse').trigger('click');
+
+                expect(this.view.$el.find('.collapse')).toHaveClass('fa-angle-down');                
+                expect(this.view.$el.find('.symbol-item').css('display')).toEqual('block');
+            });
 
         });
     });

@@ -50,8 +50,9 @@ define(["marionette",
                     console.error("model, collection, and dataCollection are required");
                     return;
                 }
+                
                 this.assignRecordsToSymbols();
-                this.collapseSymbols();
+                this.model.get('metadata').collapsed = false;
                 
 
                 $('body').click($.proxy(this.hideLayerMenu, this));
