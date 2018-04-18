@@ -16,7 +16,6 @@ define([
 
         const initView = function (scope) {
             spyOn(LayerListChildView.prototype, 'initialize').and.callThrough();
-            // prevents functions related to overlays from being called
             spyOn(LayerListChildView.prototype, 'showHideOverlays').and.callThrough();;  
 
             spyOn(EditLayerName.prototype, 'initialize').and.callThrough();
@@ -151,6 +150,5 @@ define([
                 expect(this.view.$el.find('#symbols-list').css('display')).toEqual('block');
                 expect(SymbolCollectionView.prototype.redrawOverlays).toHaveBeenCalledTimes(10);
             });
-
         });
     });

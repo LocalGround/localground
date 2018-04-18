@@ -16,6 +16,7 @@ define(["jquery",
         var SymbolCollectionView =  Marionette.CompositeView.extend({
             initialize: function (opts) {
                 this.collection = this.model.getModels();
+                console.log(this.collection);
                 _.extend(this, opts);
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
@@ -128,7 +129,6 @@ define(["jquery",
                     this.$el.find('.symbol-display').removeClass('fa-eye');
                     this.$el.find('.symbol-display').addClass('fa-eye-slash');
                 }
-                this.trigger('isShowing:changed'); //notify parent layer
             },
             onDestroy: function() {
                 console.log('destroy symbol collection view');
