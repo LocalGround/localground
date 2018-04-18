@@ -227,7 +227,7 @@ define([
                             "fillOpacity": 1,
                             "title": "Uncategorized",
                             "strokeWeight": 1,
-                            "isShowing": true,
+                            "isShowing": false,
                             "rule": "¯\\_(ツ)_/¯",
                             "height": 20,
                             "width": 20,

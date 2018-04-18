@@ -4,19 +4,20 @@ define([
     rootDir + "apps/main/views/left/layer-list-child-view1",
     rootDir + "apps/main/views/left/edit-layer-name-modal-view",
     rootDir + "apps/main/views/left/edit-display-field-modal-view",
+    rootDir + "apps/main/views/left/symbol-collection-view",
     rootDir + "apps/main/views/left/symbol-item-view",
     rootDir + "lib/maps/overlays/marker",
     rootDir + "lib/modals/modal",
     "tests/spec-helper1"
 ],
-    function (Backbone, LayerListChildView, EditLayerName, EditDisplayField, SymbolItemView, MarkerOverlay, Modal) {
+    function (Backbone, LayerListChildView, EditLayerName, EditDisplayField, SymbolCollectionView, SymbolItemView, MarkerOverlay, Modal) {
         'use strict';
         var map, layer;
 
         const initView = function (scope) {
             spyOn(LayerListChildView.prototype, 'initialize').and.callThrough();
             // prevents functions related to overlays from being called
-            spyOn(LayerListChildView.prototype, 'showHideOverlays');  
+            spyOn(LayerListChildView.prototype, 'showHideOverlays').and.callThrough();;  
 
             spyOn(EditLayerName.prototype, 'initialize').and.callThrough();
             spyOn(EditDisplayField.prototype, 'initialize').and.callThrough();
@@ -25,8 +26,10 @@ define([
             spyOn(MarkerOverlay.prototype, "initialize");
             spyOn(MarkerOverlay.prototype, "redraw");
 
-            // prevent this form being called
+            // prevent these from being called
             spyOn(SymbolItemView.prototype, 'onDestroy');
+            spyOn(SymbolCollectionView.prototype, 'redrawOverlays');
+            spyOn(SymbolCollectionView.prototype, 'hideOverlays');
 
             spyOn(scope.app.vent, 'trigger');
             spyOn(scope.app.router, 'navigate');
@@ -136,6 +139,17 @@ define([
 
                 expect(this.view.$el.find('.collapse')).toHaveClass('fa-angle-down');                
                 expect(this.view.$el.find('.symbol-item').css('display')).toEqual('block');
+            });
+            it("Layer checkbox hides and shows Layer content and icons", function() {
+                this.view.render();
+                expect(SymbolCollectionView.prototype.redrawOverlays).toHaveBeenCalledTimes(5);
+                this.view.$el.find('.layer-isShowing').prop('checked', false).trigger('change');
+                expect(this.view.$el.find('#symbols-list').css('display')).toEqual('none');
+                expect(SymbolCollectionView.prototype.hideOverlays).toHaveBeenCalledTimes(5);
+
+                this.view.$el.find('.layer-isShowing').prop('checked', true).trigger('change');
+                expect(this.view.$el.find('#symbols-list').css('display')).toEqual('block');
+                expect(SymbolCollectionView.prototype.redrawOverlays).toHaveBeenCalledTimes(10);
             });
 
         });
