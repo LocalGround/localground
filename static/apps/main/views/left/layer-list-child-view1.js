@@ -37,8 +37,12 @@ define(["marionette",
                 'click .layer-name': 'editLayerName',
                 'click .open-layer-menu': 'showLayerMenu',
                 'click .rename-layer': 'editLayerName',
-                'click .edit-display-field': 'editDisplayField'
-            },
+                'click .edit-display-field': 'editDisplayField',
+                'click .lgb': 'displayGeometryOptions',
+                'click #select-point': 'selectPoint',
+                'click #select-polygon': 'selectPolygon',
+                'click #select-polyline': 'selectPolyline',
+                },
 
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -50,6 +54,8 @@ define(["marionette",
                     console.error("model, collection, and dataCollection are required");
                     return;
                 }
+
+                this.newMarkerType = 'point';
                 
                 this.assignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
@@ -66,7 +72,8 @@ define(["marionette",
             templateHelpers: function () {
                 return {
                     name: this.dataCollection.name,
-                    isChecked: this.model.get("metadata").isShowing
+                    isChecked: this.model.get("metadata").isShowing,
+                    newMarkerType: this.newMarkerType
                 };
             },
 
@@ -225,11 +232,16 @@ define(["marionette",
 
             hideLayerMenu: function(e) {
                 var $el = $(e.target);
-                if ($el.hasClass('layer-menu')) {
+                console.log('hide: ', $el);
+                if ($el.hasClass('layer-menu') || $el.hasClass('lgb')) {
+                    console.log('return');
                     return
-                } else {
-                    if (this.$el.find('.layer-menu').css('display') === 'block')
+                } else if (this.$el.find('.layer-menu').css('display') === 'block') {
                     this.$el.find('.layer-menu').toggle();
+                } else if (this.$el.find('.geometry-options').css('display') === 'block') {
+                    console.log('toggle geom dropdown');
+                    this.$el.find('.geometry-options').toggle();
+                    //this.$el.find('.add-record-container').css({background: '#fafafc'});
                 }
             },
 
@@ -310,6 +322,34 @@ define(["marionette",
                     this.$el.find('.collapse').removeClass('fa-angle-down');
                     this.$el.find('.collapse').addClass('fa-angle-up');
                 }
+            },
+
+            displayGeometryOptions: function(e) {
+                console.log('display goem opts');
+                var $el = $(e.target);
+                //this.$el.find('.add-record-container').css({background: '#bbbbbb'});
+                console.log(this.$el.find('.geometry-options').css('display'));
+                if (this.$el.find('.geometry-options').css('display') === "block") {
+                    console.log('hide');
+                    this.$el.find('.geometry-options').css({display: 'none'})
+                } else {
+                    console.log('show');
+                    this.$el.find('.geometry-options').css({display: 'block'});
+                }
+                
+            },
+
+            selectPoint: function() {
+                this.newMarkerType = 'point';
+                this.render();
+            },
+            selectPolygon: function() {
+                this.newMarkerType = 'polygon';
+                this.render();
+            },
+            selectPolyline: function() {
+                this.newMarkerType = 'polyline';
+                this.render();
             },
 
             saveChanges: function() {

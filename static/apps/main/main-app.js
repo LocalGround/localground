@@ -23,6 +23,7 @@ define([
             breadcrumbRegion: "#breadcrumb"
         },
         mode: "edit",
+        screenType: "map",
         showLeft: true,
         showRight: false,
         layerHasBeenAltered: false,
