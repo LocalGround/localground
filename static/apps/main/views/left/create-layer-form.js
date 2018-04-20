@@ -26,71 +26,30 @@ define ([
                     $cb.removeAttr("disabled");
                 }
             },
-            slugError: null,
             templateHelpers: function () {
-                var name, slug, description;
-                // if (this.mode == 'editExistingMap') {
-                //     name = this.map.get('name');
-                //     slug = this.map.get('slug');
-                //     description = this.map.get('caption');
-                // }
-                var datasets = [];
-                this.app.dataManager.each(function (item) {
-                    if (item.isSite) {
-                        datasets.push({key: item.key, title: item.title});
-                    }
-                });
-                var helpers = {
-                    slugError: this.slugError,
-                    generalError: this.generalError,
-                    name: name,
-                    slug: slug,
-                    datasets: datasets
+                return {
+                    datasets: this.app.dataManager.getDatasets()
                 };
-                return helpers;
             },
 
             saveLayer: function() {
-                console.log('new layer modal, save!', this);
+                const map = this.app.dataManager.getMap();
                 const layer_title = this.$el.find('#layer-title').val();
-                const data_source = this.$el.find('#dataset-list').val();
-                const random_color = "#000000".replace(/0/g, function(){
-                    return (~~(Math.random()*16)).toString(16);
-                });
+                const dataset = this.$el.find('#dataset-list').val();
+                const create_new_dataset = this.$el.find('#layer-new-dataset').prop('checked');
                 let layer = new Layer({
-                    map_id: this.app.selectedMapModel.id,
-                    data_source: data_source,
-                    group_by: "uniform",
-                    symbols: [{
-                        "fillColor": random_color,
-                        "width": 20,
-                        "rule": "*",
-                        "title": layer_title,
-                        "fillOpacity": 1,
-                        "width": 20,
-                        "strokeColor": "#ffffff",
-                        "strokeWeight": 1,
-                        "strokeOpacity": 1,
-                        "shape": "circle"
-                    }],
-                    metadata: {
-                        buckets: 4,
-                        paletteId: 0,
-                        fillOpacity: 1,
-                        width: 20,
-                        fillColor: random_color,
-                        strokeColor: "#ffffff",
-                        strokeWeight: 1,
-                        strokeOpacity: 1,
-                        shape: "circle"
-                    },
+                    map_id: map.id,
+                    dataset: dataset,
+                    create_new_dataset: create_new_dataset,
                     title: layer_title
                 });
-                let layers = this.app.selectedMapModel.get('layers');
+                let layers = map.get('layers');
 
                 layer.save(null, {
                     dataType:"text",
-                    success: () => {
+                    success: (model, response) => {
+                        //apply additional server-generated data to model:
+                        layer.set(JSON.parse(response));
                         layers.add(layer);
                         this.app.vent.trigger('close-modal');
                     },
@@ -102,7 +61,6 @@ define ([
                         this.updateModal(response);
                     }
                 });
-
             },
 
             updateModal: function (errorMessage) {

@@ -28,21 +28,28 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
 			Base.prototype.initialize.apply(this, arguments);
             this.applyDefaults();
             if (data.map_id) {
-                this.urlRoot = "/api/0/maps/" + data.map_id + "/layers/";
+                this.urlRoot = "/api/0/maps/" + data.map_id + "/layers";
             } else {
                 console.warn("Layer Model Warning: without the map_id, the layer can't be saved to database");
             }
 		},
+        url: function () {
+            let baseURL =  Base.prototype.url.apply(this, arguments);
+            if (baseURL.indexOf('.json') === -1) {
+                baseURL += '/.json';
+            }
+            return baseURL;
+        },
         set: function(key, val, options) {
-              //save symbols to a temporary variable:
-              var symbols;
-              if (typeof key === 'object' && key.symbols) {
-                  symbols = key.symbols;
-                  delete key.symbols;
-              } else if (key === 'symbols') {
-                  symbols = val;
-                  key = null;
-              }
+            //save symbols to a temporary variable:
+            var symbols;
+            if (typeof key === 'object' && key.symbols) {
+                symbols = key.symbols;
+                delete key.symbols;
+            } else if (key === 'symbols') {
+                symbols = val;
+                key = null;
+            }
 
               //call default save functionality:
               Base.prototype.set.apply(this, arguments);
@@ -84,9 +91,13 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
         },
         toJSON: function () {
             var json = Base.prototype.toJSON.call(this);
-            json.symbols = JSON.stringify(this.get("symbols").toJSON());
-            json.metadata = JSON.stringify(json.metadata);
-            if (json.filters !== null) {
+            if (this.get("symbols")) {
+                json.symbols = JSON.stringify(this.get("symbols").toJSON());
+            }
+            if (json.metadata) {
+                json.metadata = JSON.stringify(json.metadata);
+            }
+            if (json.filters) {
                 json.filters = JSON.stringify(json.filters);
             }
             return json;
