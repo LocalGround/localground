@@ -20,7 +20,6 @@
         <input type="radio" name="choose-dataset" id="existing-datasets" {{existing}}>
         <label>Use existing project dataset(s):</label>
         <div class="checkbox-list" style="margin-left: 30px;{{#if create}} display: none;{{/if}}" >
-            {{datasets}}
             {{#each datasets}}
                 <input type="checkbox" id="{{this.formID}}" name="dataset" {{this.checked}} value="{{this.formID}}">
                 <label>{{this.title}}</label><br>

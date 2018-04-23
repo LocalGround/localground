@@ -23,20 +23,28 @@ class MapSerializerList(
     basemap = serializers.PrimaryKeyRelatedField(
         queryset=models.TileSet.objects.all())
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
+    layers = serializers.SerializerMethodField()
+    layers_url = serializers.SerializerMethodField()
+
     field_list = ('sharing_url', 'center',  'basemap', 'zoom', 'project_id')
 
     def get_sharing_url(self, obj):
         return '{0}/maps/{1}'.format(settings.SERVER_URL, obj.slug)
 
-    # def get_project_id(self, obj):
-    #     return obj.project.id
+    def get_layers(self, obj):
+        layers = models.Layer.objects.filter(styled_map=obj)
+        return LayerSerializer(layers, many=True, context={'request': {}}).data
+
+    def get_layers_url(self, obj):
+        return '%s/api/0/maps/%s/layers/' % (settings.SERVER_URL, obj.id)
 
     class Meta:
         model = models.StyledMap
         fields = BaseSerializer.field_list + \
             NamedSerializerMixin.field_list + \
             ProjectSerializerMixin.field_list + (
-                'sharing_url', 'center',  'basemap', 'zoom', 'panel_styles'
+                'sharing_url', 'center',  'basemap', 'zoom', 'panel_styles',
+                'slug', 'layers', 'layers_url'
             )
         depth = 0
 

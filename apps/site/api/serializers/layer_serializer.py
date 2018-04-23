@@ -2,6 +2,8 @@ from localground.apps.site.api.serializers.base_serializer import \
     BaseSerializer
 from localground.apps.site.api.serializers.field_serializer import \
     FieldSerializerSimple
+from localground.apps.site.api.serializers.dataset_serializer import \
+    DatasetSerializerDetail
 from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
@@ -118,6 +120,7 @@ class LayerSerializer(BaseSerializer):
 
 class LayerSerializerPost(LayerSerializer):
 
+    #dataset = DatasetSerializerDetail(allow_null=True, required=False)
     dataset = serializers.PrimaryKeyRelatedField(
         queryset=models.Form.objects.all(),
         allow_null=True, required=False)
@@ -155,7 +158,7 @@ class LayerDetailSerializer(LayerSerializer):
     class Meta:
         model = models.Layer
         fields = BaseSerializer.field_list + (
-            'title', 'group_by', 'display_field',
+            'title', 'group_by', 'display_field', 'dataset',
             'ordering', 'metadata', 'map_id', 'symbols'
         )
         depth = 0

@@ -129,6 +129,7 @@ define(["underscore", "marionette", "models/project",
                     projectID: this.getProject().id,
                     formID: dataset.id,
                     dataType: dataType,
+                    title: dataset.name,
                     fields: dataset.fields
                 });
                 this.__dataDictionary[dataType] = collection;
@@ -161,6 +162,34 @@ define(["underscore", "marionette", "models/project",
                         this.__addDataset(dataset);
                     }
                 });
+            },
+            destroyMap: function (map) {
+                const datasets = map.get('layers').map(layer => {
+                    return layer.get('dataset');
+                });
+                map.destroy();
+                const layers = [];
+                this.getMaps().forEach(map => {
+                    map.get('layers').forEach(layer => {
+                        layers.push(layer);
+                    })
+                });
+                const datasets_to_remove = datasets.filter(dataset => {
+                    // if another layer references the dataset, (don't remove)
+                    const datasetIsReferenced = layers.some(layer => {
+                        return dataset.id === layer.get('dataset').id;
+                    });
+                    if (datasetIsReferenced) {
+                        return false;
+                    } else {
+                        // only remove if dataset empty:
+                        return this.getCollection(dataset.overlay_type).length === 0;
+                    }
+                });
+                datasets_to_remove.forEach(dataset => {
+                    console.error('removing ', dataset.overlay_type);
+                    this.deleteCollection(dataset.overlay_type);
+                })
             },
             deleteCollection: function (dataType) {
                 delete this.__dataDictionary[dataType];

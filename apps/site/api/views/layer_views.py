@@ -3,10 +3,6 @@ from localground.apps.site.api import serializers, filters
 from localground.apps.site.api.views.abstract_views import \
     QueryableListCreateAPIView
 from localground.apps.site import models
-from localground.apps.site.api.permissions import CheckProjectPermissions
-from django.db.models import Q
-from django.core.exceptions import ValidationError
-from django.http import HttpResponse
 from rest_framework.response import Response
 
 
@@ -36,14 +32,19 @@ class LayerList(QueryableListCreateAPIView):
     def get_queryset(self):
         return self.model.objects.filter(styled_map=self.get_map())
 
+    # Override so that POST response can use a different serializer
     def create(self, request, *args, **kwargs):
-        response = super(LayerList, self).create(request, *args, **kwargs)
-        if len(self.warnings) > 0:
-            response.data.update({'warnings': self.warnings})
-        if self.error_messages:
-            response.data = self.error_messages
-            response.status = status.HTTP_400_BAD_REQUEST
-        return response
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        # return using different serializer:
+        return Response(
+            serializers.LayerSerializer(
+                serializer.instance, context={'request': {}}).data,
+            status=status.HTTP_201_CREATED, headers=headers
+        )
 
 
 class LayerInstance(

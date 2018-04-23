@@ -28,3 +28,11 @@ class FormInstance(generics.RetrieveUpdateDestroyAPIView):
             return models.Form.objects.get_objects(self.request.user)
         else:
             raise exceptions.ParseError('Login Required')
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+        except Exception as e:
+            raise exceptions.ValidationError(str(e))
+        return Response(status=status.HTTP_204_NO_CONTENT)

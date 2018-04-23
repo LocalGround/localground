@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from django.db.models import Q
 from localground.apps.site.managers import FormManager
 from localground.apps.site.models import NamedMixin, BaseAudit, \
-     ProjectMixin, Record, Field, DataType
+     ProjectMixin, Record, Field, DataType, Layer
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 
@@ -67,6 +67,9 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
             .order_by('ordering', )
         )
 
+    def get_linked_layers(self):
+        return Layer.objects.filter(dataset=self)
+
     def get_records(self):
         return Record.objects.filter(form=self)
 
@@ -90,4 +93,16 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
         super(Form, self).save(*args, **kwargs)
 
     def delete(self, destroy_everything=True, **kwargs):
-        super(Form, self).delete(**kwargs)
+        # Ensure that dataset is not deleted if there are layers linking to it:
+        if len(self.get_linked_layers()) > 0:
+            msg = 'This dataset cannot be removed because it is currently '
+            msg += 'being used by the following maps: {0}'.format(
+                ', '.join(map(
+                    lambda layer: '"{0}: {1}"'.format(
+                        layer.styled_map.id, layer.styled_map.name),
+                    self.get_linked_layers()
+                ))
+            )
+            raise Exception(msg)
+        else:
+            super(Form, self).delete(**kwargs)

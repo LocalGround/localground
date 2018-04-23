@@ -75,6 +75,13 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         # return '%s - %s' % self.id, self.name
         return self.name
 
+    def delete(self, **kwargs):
+        # this code is needed to delete empty datasets
+        # associated with child layers:
+        for layer in self.layers:
+            layer.delete()
+        super(StyledMap, self).delete(**kwargs)
+
     class Meta:
         app_label = 'site'
         verbose_name = 'styled_map'

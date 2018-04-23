@@ -63,6 +63,19 @@ class Layer(BaseAudit):
     def can_edit(self, user):
         return self.styled_map.can_edit(user)
 
+    def delete(self, **kwargs):
+        super(Layer, self).delete(**kwargs)
+        # print len(self.dataset.get_records())
+        # print len(self.dataset.get_linked_layers())
+        if len(self.dataset.get_records()) == 0 and \
+                len(self.dataset.get_linked_layers()) == 0:
+            '''
+            print 'Dataset id={0} is stale and empty. Deleting it...'.format(
+                self.dataset.id
+            )
+            '''
+            self.dataset.delete()
+
     class Meta:
         app_label = 'site'
 

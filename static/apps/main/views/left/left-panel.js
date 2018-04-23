@@ -68,21 +68,10 @@ define(["underscore",
             },
 
             deleteMap: function () {
-                console.log(this.layers);
-                console.log(this.layers.currentView.collection.length);
                 if (!confirm("Are you sure you want to delete this map?")) {
                     return;
                 }
-
-                // delete selected map's layers
-                var listModel;
-                while (listModel = this.layers.currentView.collection.first()) {
-                    listModel.destroy();
-                }
-
-                // delete selected map
-                this.model.destroy();
-
+                this.app.dataManager.destroyMap(this.model);
                 this.app.router.navigate('//');
 
             },
