@@ -129,6 +129,7 @@ define(["underscore", "marionette", "models/project",
                     projectID: this.getProject().id,
                     formID: dataset.id,
                     dataType: dataType,
+                    name: dataset.name,
                     title: dataset.name,
                     fields: dataset.fields
                 });

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from django.contrib.gis.db import models
 from localground.apps.site.models import \
-    NamedMixin, ProjectMixin, BaseAudit, Layer
+    NamedMixin, ProjectMixin, BaseAudit, Layer, Symbol
 from jsonfield import JSONField
 from localground.apps.site.managers import StyledMapManager
 import json
@@ -81,6 +81,44 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         for layer in self.layers:
             layer.delete()
         super(StyledMap, self).delete(**kwargs)
+
+    @classmethod
+    def create(cls, datasets=None, **kwargs):
+        # create map:
+        map = StyledMap.objects.create(**kwargs)
+
+        # create layers:
+        if datasets:
+            i = 1
+            for dataset in datasets:
+                layer = Layer.create(
+                    last_updated_by=kwargs.get('last_updated_by'),
+                    owner=kwargs.get('owner'),
+                    title=dataset.name + ' Layer',
+                    styled_map=map,
+                    project=map.project,
+                    dataset=dataset,
+                    group_by='uniform',
+                    symbols=[
+                        Symbol.SIMPLE.to_dict()
+                    ],
+                    display_field=dataset.fields[0],
+                    ordering=i
+                )
+                i += 1
+        else:
+            layer = Layer.create(
+                last_updated_by=kwargs.get('last_updated_by'),
+                owner=kwargs.get('owner'),
+                styled_map=map,
+                group_by='uniform',
+                symbols=[
+                    Symbol.SIMPLE.to_dict()
+                ],
+                project=map.project,
+                ordering=1
+            )
+        return map
 
     class Meta:
         app_label = 'site'
