@@ -70,6 +70,26 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_get_list_returns_expected_json(self):
+        self.create_styled_map()
+        response = self.client_user.get(
+            self.url,
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+        results = response.data.get('results')[0]
+        self.assertEqual(results.get('project_id'), self.project.id)
+        self.assertEqual(results.get('overlay_type'), 'styled_map')
+        self.assertEqual(results.get('owner'), u'tester')
+        self.assertEqual(results.get('name'), u'Oakland Map')
+        self.assertEqual(results.get('basemap'), 1)
+        self.assertEqual(results.get('zoom'), 3)
+        self.assertTrue(
+            results.get('panel_styles'), models.StyledMap.default_panel_styles)
+        self.assertEqual(
+            results.get('center'),
+            {u'type': u'Point', u'coordinates': [5.0, 23.0]})
+
     def test_create_map_post_no_datasource_flags_yields_error(self, **kwargs):
         params = self.__get_generic_post_params()
         response = self.client_user.post(
@@ -159,6 +179,41 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
                 'read_only': False, 'required': False, 'type': 'json'}
         })
         del self.metadata['project_id']
+
+    def test_get_instance_returns_expected_json(self):
+        response = self.client_user.get(
+            self.url,
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+        results = response.data
+        layers = results.get('layers')
+        self.assertEqual(results.get('project_id'), self.project.id)
+        self.assertEqual(results.get('overlay_type'), 'styled_map')
+        self.assertEqual(results.get('owner'), u'tester')
+        self.assertEqual(results.get('name'), u'Oakland Map')
+        self.assertEqual(results.get('basemap'), 1)
+        self.assertEqual(results.get('zoom'), 3)
+        self.assertTrue(
+            results.get('panel_styles'), models.StyledMap.default_panel_styles)
+        self.assertEqual(
+            results.get('center'),
+            {u'type': u'Point', u'coordinates': [5.0, 23.0]})
+
+        self.assertEqual(len(layers), 1)
+        layer = layers[0]
+        self.assertEqual(
+            set(layer.keys()),
+            set([
+                'display_field', 'data_source', 'map_id', 'title', 'ordering',
+                'overlay_type', 'dataset', 'symbols', 'url', 'group_by',
+                'owner', 'id', 'metadata'])
+            )
+        dataset = layer.get('dataset')
+        self.assertEqual(
+            set(dataset.keys()),
+            set(['id', 'fields', 'overlay_type', 'name'])
+        )
 
     def test_update_project_using_put(self, **kwargs):
         name, description = 'New Map Name', 'Test description'

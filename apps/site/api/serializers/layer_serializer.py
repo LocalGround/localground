@@ -1,8 +1,11 @@
 from localground.apps.site.api.serializers.base_serializer import \
     BaseSerializer
+from localground.apps.site.api.serializers.field_serializer import \
+    FieldSerializerUpdate
 from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
+from localground.apps.site.models.symbol import Symbol
 from django.conf import settings
 
 
@@ -15,9 +18,7 @@ class LayerSerializer(BaseSerializer):
     map_id = serializers.SerializerMethodField()
     data_source = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
-    dataset = serializers.PrimaryKeyRelatedField(
-        queryset=models.Form.objects.all(),
-        allow_null=True)
+    dataset = serializers.SerializerMethodField()
 
     def get_fields(self, *args, **kwargs):
         fields = super(LayerSerializer, self).get_fields(*args, **kwargs)
@@ -51,6 +52,16 @@ class LayerSerializer(BaseSerializer):
     def get_display_field(self, obj):
         return obj.display_field.col_name_db
 
+    def get_dataset(self, obj):
+        return {
+            'id': obj.dataset.id,
+            'overlay_type': 'form_{0}'.format(obj.dataset.id),
+            'name': obj.dataset.name,
+            'fields': FieldSerializerUpdate(
+                obj.dataset.fields, many=True, context={'request': {}}
+            ).data
+        }
+
     def get_url(self, obj):
         return '%s/api/0/maps/%s/layers/%s' % \
                 (settings.SERVER_URL, obj.styled_map.id, obj.id)
@@ -73,7 +84,10 @@ class LayerSerializer(BaseSerializer):
         validated_data.update({
             'group_by': 'uniform',
             'ordering': len(map.layers) + 1,
-            'styled_map': map
+            'styled_map': map,
+            'symbols': [
+                Symbol.SIMPLE.to_dict()
+            ]
         })
         validated_data.update(self.get_presave_create_dictionary())
 
@@ -83,6 +97,8 @@ class LayerSerializer(BaseSerializer):
             validated_data.update({
                 'project': map.project
             })
+            if dataset:
+                validated_data.pop('dataset')
             self.instance = models.Layer.create(**validated_data)
         else:
             validated_data.update({
@@ -91,6 +107,24 @@ class LayerSerializer(BaseSerializer):
             self.instance = self.Meta.model.objects.create(**validated_data)
 
         return self.instance
+
+    class Meta:
+        model = models.Layer
+        read_only_fields = (
+            'ordering', 'group_by', 'symbols', 'metadata', 'dataset')
+        fields = BaseSerializer.field_list + (
+            'title', 'dataset', 'create_new_dataset', 'data_source',
+            'group_by', 'display_field', 'ordering', 'map_id', 'symbols',
+            'metadata', 'url'
+        )
+        depth = 0
+
+
+class LayerSerializerPost(LayerSerializer):
+
+    dataset = serializers.PrimaryKeyRelatedField(
+        queryset=models.Form.objects.all(),
+        allow_null=True, required=False)
 
     class Meta:
         model = models.Layer

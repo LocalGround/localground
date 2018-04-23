@@ -15,9 +15,9 @@ define ([
             },
 
             events: {
-                "click #layer-new-dataset": "toggleCheckboxes",
-                "click #layer-existing-datasets": "toggleCheckboxes"
+                "click input[type=radio]": "toggleCheckboxes"
             },
+
             toggleCheckboxes: function (e) {
                 var $cb = this.$el.find('#dataset-list');
                 if (e.target.id === 'layer-new-dataset') {
@@ -26,6 +26,7 @@ define ([
                     $cb.removeAttr("disabled");
                 }
             },
+
             templateHelpers: function () {
                 return {
                     datasets: this.app.dataManager.getDatasets()
@@ -36,21 +37,21 @@ define ([
                 const map = this.app.dataManager.getMap();
                 const layer_title = this.$el.find('#layer-title').val();
                 const dataset = this.$el.find('#dataset-list').val();
-                const create_new_dataset = this.$el.find('#layer-new-dataset').prop('checked');
                 let layer = new Layer({
                     map_id: map.id,
-                    dataset: dataset,
-                    create_new_dataset: create_new_dataset,
                     title: layer_title
                 });
-                let layers = map.get('layers');
-
+                if (this.$el.find('#layer-new-dataset').prop('checked')) {
+                    layer.set('create_new_dataset', 'True');
+                } else {
+                    layer.set('dataset', dataset)
+                }
                 layer.save(null, {
                     dataType:"text",
                     success: (model, response) => {
                         //apply additional server-generated data to model:
                         layer.set(JSON.parse(response));
-                        layers.add(layer);
+                        map.get('layers').add(layer);
                         this.app.vent.trigger('close-modal');
                     },
                     error: (model, response) => {

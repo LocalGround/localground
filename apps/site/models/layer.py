@@ -36,6 +36,7 @@ class Layer(BaseAudit):
 
     @classmethod
     def create(cls, **kwargs):
+        # print kwargs
 
         if kwargs.get('dataset') is None:
             # if no dataset is passed in, create a new one:
@@ -47,6 +48,8 @@ class Layer(BaseAudit):
                 project=kwargs.get('project')
             )
             kwargs['dataset'] = dataset
+            # print dataset
+            # print dataset.fields[0]
             kwargs['display_field'] = dataset.fields[0]
             kwargs['title'] = 'Untitled Layer'
 

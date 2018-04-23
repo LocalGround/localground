@@ -13,10 +13,16 @@ from rest_framework.response import Response
 class LayerList(QueryableListCreateAPIView):
     error_messages = {}
     warnings = []
-    serializer_class = serializers.LayerSerializer
     filter_backends = (filters.SQLFilterBackend,)
     model = models.Layer
     paginate_by = 100
+
+    def get_serializer_class(self):
+        method = self.get_serializer_context().get('request').method
+        if method == 'GET':
+            return serializers.LayerSerializer
+        else:
+            return serializers.LayerSerializerPost
 
     def get_map(self):
         map_id = int(self.kwargs.get('map_id'))

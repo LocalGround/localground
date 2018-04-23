@@ -104,21 +104,20 @@ define(["underscore", "marionette", "models/project",
                 });
             },
 
-            __createRecordsCollection:  function (jsonData, opts, fields) {
-                var fieldsURL,
-                    collection;
+            __createRecordsCollection:  function (jsonData, opts) {
                 opts.formID = parseInt(opts.dataType.split("_")[1]);
                 opts.url = '/api/0/datasets/' + opts.formID + '/data/';
-                fieldsURL = '/api/0/datasets/' + opts.formID + '/fields/';
                 _.extend(opts, {
-                    fields: new Fields(opts.fields, { baseURL: fieldsURL }),
+                    fields: new Fields(opts.fields, {
+                        baseURL: '/api/0/datasets/' + opts.formID + '/fields/'
+                    }),
                     isCustomType: true,
                     isSite: true,
                     key: opts.dataType
                 });
-                collection = new Records(jsonData, opts);
+                const collection = new Records(jsonData, opts);
                 this.__attachFieldsToRecords(opts.fields, collection);
-                return collection
+                return collection;
             },
 
             __getCollections: function () {
@@ -138,8 +137,14 @@ define(["underscore", "marionette", "models/project",
                 this.map = this.__maps.get(mapID);
             },
             addMap: function (map) {
-                map.getLayers().each(function (layer) {
-                    console.log(layer.get('title'));
+                map.getLayers().forEach(layer => {
+                    alert('add new dataset to data manager');
+                    /*if (!this.this.__dataDictionary[layer.data_source]) {
+                        this.__createRecordsCollection([], {
+                            formID: 35,
+
+                        }});
+                    }*/
                 })
                 this.__maps.add(map);
             },
