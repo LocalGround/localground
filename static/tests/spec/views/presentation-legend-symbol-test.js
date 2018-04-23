@@ -16,7 +16,7 @@ define([
                 symbolModel = scope.layer.getSymbols().at(0);
                 symbolView = new LegendSymbolEntry({
                     app: scope.app,
-                    data_source: scope.layer.get("data_source"),
+                    dataset: scope.layer.get("dataset"),
                     isShowing: scope.layer.get("metadata").isShowing,
                     symbolCount: scope.layer.collection.length,
                     model: symbolModel

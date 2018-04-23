@@ -1,10 +1,10 @@
 {{#if isIndividual}}
-    <a model-id="{{id}}" id="{{id}}" href="#/{{map_id}}/layers/{{layer_id}}/{{data_source}}/{{id}}" class="ind-symbol {{#if active }}highlight{{/if}}">
+    <a model-id="{{id}}" id="{{id}}" href="#/{{map_id}}/layers/{{layer_id}}/{{dataset.overlay_type}}/{{id}}" class="ind-symbol {{#if active }}highlight{{/if}}">
         <svg viewBox="{{ icon.viewBox }}" width="20" height="20">
             <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
                 stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>
         </svg>
-        
+
         <p>
             {{display_name}}
             {{#ifequal display_name ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
@@ -13,7 +13,7 @@
         <p class="symbol-edit"><i class="fa fa-pencil" aria-hidden="true"></i></p>
     </a>
 {{else}}
-    <a model-id="{{id}}" id="{{id}}" href="#/{{map_id}}/layers/{{layer_id}}/{{data_source}}/{{id}}" {{#if active }}class="highlight"{{/if}}>
+    <a model-id="{{id}}" id="{{id}}" href="#/{{map_id}}/layers/{{layer_id}}/{{dataset.overlay_type}}/{{id}}" {{#if active }}class="highlight"{{/if}}>
         <p>
             {{display_name}}
             {{#ifequal display_name ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}

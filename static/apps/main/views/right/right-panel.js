@@ -31,7 +31,7 @@ define(["jquery",
             },
 
             modelEvents: {
-                'change:data_source': 'createMSV'
+                'change:dataset': 'createMSV'
             },
 
             regions: {

@@ -7,7 +7,21 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api import fields
 
 
-class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
+class FieldSerializerSimple(serializers.ModelSerializer):
+    data_type = serializers.SlugRelatedField(
+        queryset=models.DataType.objects.all(),
+        slug_field='name',
+        required=False
+    )
+
+    class Meta:
+        model = models.Field
+        read_only_fields = fields = (
+            'id',  'col_alias', 'col_name', 'extras', 'ordering',
+            'data_type')
+
+
+class FieldSerializerBase(AuditSerializerMixin, FieldSerializerSimple):
     '''
     Hack: can't use HyperlinkSerializer field for URLs with two
     dynamic parameters because of DRF limitations. So, we'll build
@@ -24,11 +38,6 @@ class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
         required=False,
         allow_null=True,
         help_text=help_text
-    )
-    data_type = serializers.SlugRelatedField(
-        queryset=models.DataType.objects.all(),
-        slug_field='name',
-        required=False
     )
 
     class Meta:

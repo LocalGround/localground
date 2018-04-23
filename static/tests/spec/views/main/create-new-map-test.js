@@ -165,7 +165,7 @@ define([
                 expect(Map.prototype.save).toHaveBeenCalledTimes(1);
                 expect(this.view.model.get('name')).toEqual('My Favorite Flowers');
                 expect(this.view.model.get('caption')).toEqual('Some description');
-                expect(this.view.model.get('data_sources')).toEqual('["form_3","form_2"]');
+                expect(this.view.model.get('datasets')).toEqual('["3","2"]');
             });
 
             it("Should issue request to include form_3", function () {
@@ -179,7 +179,7 @@ define([
                 expect(Map.prototype.save).toHaveBeenCalledTimes(1);
                 expect(this.view.model.get('name')).toEqual('My Favorite Flowers');
                 expect(this.view.model.get('caption')).toEqual('Some description');
-                expect(this.view.model.get('data_sources')).toEqual('["form_3"]');
+                expect(this.view.model.get('datasets')).toEqual('["3"]');
             });
 
 
@@ -191,7 +191,7 @@ define([
                 this.view.model.set("id", 999);
                 this.view.model.set("name", 'My Favorite Flowers');
                 this.view.model.set("caption", 'Some description');
-                this.view.model.set("data_sources", '["form_3"]');
+                this.view.model.set("datasets", '["3"]');
                 this.view.displayMap();
 
                 expect(this.dataManager.addMap).toHaveBeenCalledTimes(1);

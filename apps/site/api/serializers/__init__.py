@@ -21,7 +21,7 @@ from localground.apps.site.api.serializers.photo_serializer import \
 from localground.apps.site.api.serializers.audio_serializer import \
     AudioSerializer, AudioSerializerUpdate
 from localground.apps.site.api.serializers.field_serializer import \
-    FieldSerializer, FieldSerializerUpdate
+    FieldSerializer, FieldSerializerUpdate, FieldSerializerSimple
 from localground.apps.site.api.serializers.dataset_serializer import \
     DatasetSerializerList, DatasetSerializerDetail
 from localground.apps.site.api.serializers.print_serializer import \

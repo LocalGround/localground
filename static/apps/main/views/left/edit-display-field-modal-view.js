@@ -19,7 +19,7 @@ define ([
                 "click #layer-new-dataset": "toggleCheckboxes",
                 "click #layer-existing-datasets": "toggleCheckboxes"
             },
-            
+
             slugError: null,
             templateHelpers: function () {
                 var name;
@@ -68,7 +68,7 @@ define ([
             },
 
             getFields: function() {
-                const key = this.model.get('data_source'),
+                const key = this.model.get('dataset').overlay_type,
                     collection = this.app.dataManager.getCollection(key);
                 let fields = [];
                 console.log(collection);

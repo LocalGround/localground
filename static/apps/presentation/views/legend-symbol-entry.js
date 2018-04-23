@@ -58,7 +58,7 @@ define(['marionette',
                 _.extend(this, opts);
                 var that = this, matchedCollection;
                 this.template = Handlebars.compile(SymbolTemplate);
-                this.data = this.app.dataManager.getCollection(this.data_source);
+                this.data = this.app.dataManager.getCollection(this.dataset.overlay_type);
                 matchedCollection = new this.data.constructor(null, {
                     url: "dummy",
                     projectID: that.app.getProjectID()

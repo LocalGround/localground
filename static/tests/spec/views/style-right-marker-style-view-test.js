@@ -96,7 +96,7 @@ define([
                 //sets properties:
                 expect(categoricalMarkerStyleView.model).toEqual(this.testMap.get("layers").at(2));
                 expect(categoricalMarkerStyleView.dataType).toEqual(this.testMap.get("layers").at(2).get("layer_type"));
-                expect(categoricalMarkerStyleView.data_source).toEqual(this.testMap.get("layers").at(2).get("data_source"));
+                expect(categoricalMarkerStyleView.dataset).toEqual(this.testMap.get("layers").at(2).get("dataset"));
             });
 
             it("should listen for events", function () {
@@ -191,7 +191,7 @@ define([
                     { text: "Test Text", value: "test_text", hasData: true },
                     { text: 'Test Boolean', value: 'test_boolean', hasData: true },
                     { text: 'Test Choice', value: 'test_choice', hasData: true }
-                    
+
                 ]);
 
                 expect(categoricalFixture.find("#cat-prop").find("option:eq(0)").val()).toEqual("test_text");

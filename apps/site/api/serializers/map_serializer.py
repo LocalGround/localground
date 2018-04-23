@@ -44,7 +44,7 @@ class MapSerializerList(
 class MapSerializerPost(MapSerializerList):
     create_new_dataset = serializers.BooleanField(
         required=False, write_only=True)
-    data_sources = fields.JSONField(
+    datasets = fields.JSONField(
         required=False, write_only=True,
         style={'base_template': 'json.html', 'rows': 5})
 
@@ -60,41 +60,41 @@ class MapSerializerPost(MapSerializerList):
             NamedSerializerMixin.field_list + \
             ProjectSerializerMixin.field_list + (
                 'sharing_url', 'center',  'basemap', 'zoom',
-                'create_new_dataset', 'data_sources', 'layers')
+                'create_new_dataset', 'datasets', 'layers')
         depth = 0
 
-    def get_datasets(self, data_sources, project_id):
+    def get_datasets(self, dataset_ids, project_id):
         datasets = []
-        if len(data_sources) == 0:
-            error_message = 'At least one data source should be specified '
-            errow_message += 'in the data_sources array'
+        if len(dataset_ids) == 0:
+            error_message = 'At least one dataset should be specified '
+            error_message += 'in the datasets array'
             raise serializers.ValidationError(error_message)
-        for data_source in data_sources:
+        for dataset_id in dataset_ids:
             try:
-                form_id = int(data_source.split('_')[1])
+                form_id = int(dataset_id)
                 form = models.Form.objects.get(id=form_id)
                 datasets.append(form)
             except Exception:
                 raise serializers.ValidationError(
-                    '{0} is not a valid dataset'.format(data_source))
+                    '{0} is not a valid dataset id'.format(dataset_id))
         return datasets
 
     def create(self, validated_data):
         '''
         Either:
             1. the user opts to create a new dataset, or
-            2. the user passes in a list of existing data sources
+            2. the user passes in a list of existing datasets
 
-        TODO: if a datasource is deleted but there are layers that link to the
-        datasource, throw an exception from the API that lists the maps that
-        are dependent on the datasource.
+        TODO: if a dataset is deleted but there are layers that link to the
+        dataset, throw an exception from the API that lists the maps that
+        are dependent on the dataset.
         '''
         create_new_dataset = validated_data.pop('create_new_dataset', False)
-        data_sources = validated_data.pop('data_sources', None)
+        datasets = validated_data.pop('datasets', None)
 
-        if not create_new_dataset and data_sources is None:
+        if not create_new_dataset and datasets is None:
             msg = 'Either create_new_dataset should be set to True '
-            msg += 'or data_sources should contain a list of valid dataset IDs'
+            msg += 'or datasets should contain a list of valid dataset IDs'
             raise serializers.ValidationError(msg)
 
         import uuid
@@ -106,9 +106,9 @@ class MapSerializerPost(MapSerializerList):
         self.instance = self.Meta.model.objects.create(**validated_data)
 
         layers = []
-        if data_sources:
+        if datasets:
             project_id = validated_data.get('project_id')
-            datasets = self.get_datasets(data_sources, project_id)
+            datasets = self.get_datasets(datasets, project_id)
             i = 1
             for dataset in datasets:
                 layer = models.Layer.create(
@@ -119,6 +119,9 @@ class MapSerializerPost(MapSerializerList):
                     project=self.instance.project,
                     dataset=dataset,
                     group_by='uniform',
+                    symbols=[
+                        models.Symbol.SIMPLE.to_dict()
+                    ],
                     display_field=dataset.fields[0],
                     ordering=i
                 )

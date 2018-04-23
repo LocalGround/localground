@@ -13,7 +13,7 @@ define(["marionette",
                 _.extend(this, opts);
                 this.symbolModel = this.parent.model;
                 this.overlay = null;
-                this.route = this.parent.mapId + '/layers/' + this.parent.layerId + '/' + this.parent.layer.get('data_source') + '/' + this.model.id;
+                this.route = this.parent.mapId + '/layers/' + this.parent.layerId + '/' + this.parent.layer.get('dataset').overlay_type + '/' + this.model.id;
                 if (this.model.get('geometry') != null) {
                     this.overlay = new MarkerOverlay({
                         model: this.model,
@@ -43,7 +43,7 @@ define(["marionette",
                     active: this.active,
                     layer_id: this.parent.layerId,
                     map_id: this.parent.mapId,
-                    data_source: this.parent.layer.get('data_source'),
+                    dataset: this.parent.layer.get('dataset'),
                     rule: this.symbolModel.get('rule'),
                     icon: this.symbolModel.get('icon'),
                     isIndividual: this.parent.layer.get('group_by') === 'individual',

@@ -123,6 +123,16 @@ define(["underscore", "marionette", "models/project",
             __getCollections: function () {
                 return Object.values(this.__dataDictionary);
             },
+            __addDataset: function (dataset) {
+                const dataType = dataset.overlay_type;
+                const collection = this.__createRecordsCollection([], {
+                    projectID: this.getProject().id,
+                    formID: dataset.id,
+                    dataType: dataType,
+                    fields: dataset.fields
+                });
+                this.__dataDictionary[dataType] = collection;
+            },
 
             /******************/
             /* PUBLIC METHODS */
@@ -136,17 +146,21 @@ define(["underscore", "marionette", "models/project",
             setMapById: function (mapID) {
                 this.map = this.__maps.get(mapID);
             },
+            hasCollection: function (key) {
+                if (this.__dataDictionary[key]) {
+                    return true;
+                }
+                return false;
+            },
             addMap: function (map) {
-                map.getLayers().forEach(layer => {
-                    alert('add new dataset to data manager');
-                    /*if (!this.this.__dataDictionary[layer.data_source]) {
-                        this.__createRecordsCollection([], {
-                            formID: 35,
-
-                        }});
-                    }*/
-                })
                 this.__maps.add(map);
+                //if a new dataset has been created, add it to the DataManager:
+                map.getLayers().forEach(layer => {
+                    const dataset = layer.get("dataset");
+                    if (!this.hasCollection(dataset.overlay_type)) {
+                        this.__addDataset(dataset);
+                    }
+                });
             },
             deleteCollection: function (dataType) {
                 delete this.__dataDictionary[dataType];

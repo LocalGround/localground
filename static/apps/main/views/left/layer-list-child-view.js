@@ -29,7 +29,7 @@ define(["jquery",
                     this.showOverlays();
                 }
                 console.log('layer list childview initlize');
-                this.dataset = this.app.dataManager.getCollection(this.model.get('data_source'));
+                this.dataset = this.app.dataManager.getCollection(this.model.get('dataset').overlay_type);
 
                 //this.collection = new Symbols(this.model.get('symbols'));
                 if (this.symbolForUndefinedMarkers) {
@@ -89,7 +89,7 @@ define(["jquery",
                 return {
                     app: this.app,
                     collection: this.collection,
-                    dataSource: this.model.get("data_source"),
+                    dataset: this.model.get("dataset"),
                     layerId: this.model.id
 
                 };
@@ -171,7 +171,7 @@ define(["jquery",
                 var matchedCollection,
                     overlays,
                     that = this,
-                    dataSource = this.model.get("data_source"),
+                    dataset = this.model.get("dataset"),
                     dataCollection = this.app.dataManager.getCollection(dataSource),
                     symbols = this.model.getSymbols();
                     const currentProp = this.model.get('metadata').currentProp

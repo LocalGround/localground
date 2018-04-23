@@ -17,7 +17,7 @@ from localground.apps.site.api.serializers.map_serializer import \
 from localground.apps.site.api.serializers.record_serializer import \
     create_dynamic_serializer
 from localground.apps.site.api.serializers.field_serializer import \
-    FieldSerializerUpdate
+    FieldSerializerSimple
 
 
 class ProjectSerializerMixin(object):
@@ -175,7 +175,7 @@ class ProjectDetailSerializer(ProjectSerializer):
         }
         if fields:
             d.update({
-                'fields': FieldSerializerUpdate(
+                'fields': FieldSerializerSimple(
                     fields, many=True, context={'request': {}}).data
             })
         return d

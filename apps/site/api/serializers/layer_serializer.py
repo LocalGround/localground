@@ -1,7 +1,7 @@
 from localground.apps.site.api.serializers.base_serializer import \
     BaseSerializer
 from localground.apps.site.api.serializers.field_serializer import \
-    FieldSerializerUpdate
+    FieldSerializerSimple
 from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
@@ -16,7 +16,6 @@ class LayerSerializer(BaseSerializer):
     metadata = fields.JSONField(required=False, read_only=True)
     display_field = serializers.SerializerMethodField()
     map_id = serializers.SerializerMethodField()
-    data_source = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
     dataset = serializers.SerializerMethodField()
 
@@ -46,9 +45,6 @@ class LayerSerializer(BaseSerializer):
     def get_map_id(self, obj):
         return obj.styled_map.id
 
-    def get_data_source(self, obj):
-        return 'form_{0}'.format(obj.dataset.id)
-
     def get_display_field(self, obj):
         return obj.display_field.col_name_db
 
@@ -57,7 +53,7 @@ class LayerSerializer(BaseSerializer):
             'id': obj.dataset.id,
             'overlay_type': 'form_{0}'.format(obj.dataset.id),
             'name': obj.dataset.name,
-            'fields': FieldSerializerUpdate(
+            'fields': FieldSerializerSimple(
                 obj.dataset.fields, many=True, context={'request': {}}
             ).data
         }
@@ -70,7 +66,7 @@ class LayerSerializer(BaseSerializer):
         '''
         Either:
             1. the user opts to create a new dataset, or
-            2. the user specifies an existing datasource
+            2. the user specifies an existing dataset
         '''
         create_new_dataset = validated_data.pop('create_new_dataset', False)
         dataset = validated_data.get('dataset')
@@ -113,7 +109,7 @@ class LayerSerializer(BaseSerializer):
         read_only_fields = (
             'ordering', 'group_by', 'symbols', 'metadata', 'dataset')
         fields = BaseSerializer.field_list + (
-            'title', 'dataset', 'create_new_dataset', 'data_source',
+            'title', 'dataset', 'create_new_dataset',
             'group_by', 'display_field', 'ordering', 'map_id', 'symbols',
             'metadata', 'url'
         )
@@ -130,7 +126,7 @@ class LayerSerializerPost(LayerSerializer):
         model = models.Layer
         read_only_fields = ('ordering', 'group_by', 'symbols', 'metadata')
         fields = BaseSerializer.field_list + (
-            'title', 'dataset', 'create_new_dataset', 'data_source',
+            'title', 'dataset', 'create_new_dataset',
             'group_by', 'display_field', 'ordering', 'map_id', 'symbols',
             'metadata', 'url'
         )
@@ -159,7 +155,7 @@ class LayerDetailSerializer(LayerSerializer):
     class Meta:
         model = models.Layer
         fields = BaseSerializer.field_list + (
-            'title', 'data_source', 'group_by', 'display_field',
+            'title', 'group_by', 'display_field',
             'ordering', 'metadata', 'map_id', 'symbols'
         )
         depth = 0

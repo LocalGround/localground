@@ -99,7 +99,7 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
             content_type="application/json"
         )
         msg = 'Either create_new_dataset should be set to True '
-        msg += 'or data_sources should contain a list of valid dataset IDs'
+        msg += 'or datasets should contain a list of valid dataset IDs'
         self.assertEqual(msg, response.data[0])
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -141,10 +141,8 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
         ds1 = self.create_form()
         ds2 = self.create_form()
         ds3 = self.create_form()
-        params['data_sources'] = json.dumps([
-            'form_{0}'.format(ds1.id),
-            'form_{0}'.format(ds2.id),
-            'form_{0}'.format(ds3.id)
+        params['datasets'] = json.dumps([
+            ds1.id, ds2.id, ds3.id
         ])
         dataset_count_initial = len(models.Form.objects.all())
         response = self.client_user.post(
@@ -205,7 +203,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(
             set(layer.keys()),
             set([
-                'display_field', 'data_source', 'map_id', 'title', 'ordering',
+                'display_field', 'map_id', 'title', 'ordering',
                 'overlay_type', 'dataset', 'symbols', 'url', 'group_by',
                 'owner', 'id', 'metadata'])
             )

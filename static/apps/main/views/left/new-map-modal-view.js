@@ -14,6 +14,7 @@ define ([
                 this.template = Handlebars.compile(CreateMapFormTemplate);
 
                 const datasets = this.app.dataManager.getDatasets();
+                console.log(datasets);
                 this.formData = {
                     name: 'Untitled Map',
                     caption: '',
@@ -67,21 +68,21 @@ define ([
                     return;
                 }
 
-                const data_sources = []
+                const datasets = []
                 this.formData.datasets.forEach(dataset => {
-                    const isSelected = this.$el.find('#' + dataset.dataType).prop('checked');
+                    const isSelected = this.$el.find('#' + dataset.formID).prop('checked');
                     dataset.checked = isSelected ? 'checked': '';
                     if (isSelected) {
-                        data_sources.push(dataset.dataType);
+                        datasets.push(parseInt(dataset.formID));
                     }
                 });
 
                 // validate that at least one datasource was selected:
-                if (data_sources.length === 0) {
+                if (datasets.length === 0) {
                     this.errors.datasets = 'Please select at least one data source (or indicate that you want to create a new one).';
                     return;
                 }
-                this.model.set("data_sources", JSON.stringify(data_sources));
+                this.model.set("datasets", JSON.stringify(datasets));
             },
 
             applyChanges: function () {

@@ -69,7 +69,7 @@ define(["jquery",
                     isChecked: this.model.get("isShowing"),
                     layer_id: this.layerId,
                     map_id: this.mapId,
-                    data_source: this.layer.get('data_source'),
+                    dataset: this.layer.get('dataset'),
                     isIndividual: this.layer.get('group_by') === 'individual'
                 }
             },

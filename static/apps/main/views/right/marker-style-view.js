@@ -56,7 +56,7 @@ define(["jquery",
                 // we won't know what the fields/dataColumns are
 
 
-                this.data_source = this.model.get('data_source'); //e.g. "form_1"
+                this.dataset = this.model.get('dataset'); //e.g. "form_1"
                 //this.collection = new Symbols(this.model.get("symbols"));
                 this.collection = this.model.get('symbols');
 
@@ -230,7 +230,7 @@ define(["jquery",
 
             // New method (03/2018) - builds list of ALL data columns, not split into categorical or continuous
             buildDataColumnsList: function() {
-                const key = this.model.get('data_source'),
+                const key = this.model.get('dataset').overlay_type,
                     collection = this.app.dataManager.getCollection(key);
                 let dataColumns = [];
 
@@ -283,11 +283,11 @@ define(["jquery",
             },
 
             uniformData: function () {
-                this.setSymbols(this.buildUniformSymbols(this.model.get('data_source')));
+                this.setSymbols(this.buildUniformSymbols(this.model.get('dataset').overlay_type));
             },
 
             individualData: function() {
-                this.setSymbols(this.buildIndividualSymbols(this.model.get('data_source')));
+                this.setSymbols(this.buildIndividualSymbols(this.model.get('dataset').overlay_type));
             },
 
             contData: function() {
@@ -411,7 +411,7 @@ define(["jquery",
             getContInfo: function () {
                 var selected = this.model.get('metadata').currentProp,
                     buckets = this.model.get("metadata").buckets,
-                    key = this.model.get('data_source'),
+                    key = this.model.get('dataset').overlay_type,
                     collection = this.app.dataManager.getCollection(key);
                     console.log(collection);
                 this.continuousData = [];
@@ -443,7 +443,7 @@ define(["jquery",
              * category/entry
             */
             getCatInfo: function () {
-                var key = this.model.get('data_source'),
+                var key = this.model.get('dataset').overlay_type,
                 cat = {
                    list: [],
                    instanceCount: {},

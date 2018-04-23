@@ -89,8 +89,12 @@ define([
                     "overlay_type": "layer",
                     "owner": "riley",
                     "title": "Buildings Layer",
-                    "dataset": 3,
-                    "data_source": "form_3",
+                    "dataset": {
+                        "id": 3,
+                        "overlay_type": "form_3",
+                        "fields": this.form_3.get("fields"),
+                        "name": this.form_3.get("name")
+                    },
                     "group_by": "uniform",
                     "display_field": "col_11",
                     "ordering": 1,
@@ -142,8 +146,12 @@ define([
                     "overlay_type": "layer",
                     "owner": "riley",
                     "title": "Trees Layer",
-                    "dataset": 2,
-                    "data_source": "form_2",
+                    "dataset": {
+                        "id": 2,
+                        "overlay_type": "form_2",
+                        "fields": this.form_2.get("fields"),
+                        "name": this.form_2.get("name")
+                    },
                     "group_by": "height",
                     "display_field": "col_8",
                     "ordering": 2,

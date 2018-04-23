@@ -69,7 +69,7 @@ define(["jquery",
                 this.collection.remove(this.model);
                 this.deleteOverlays();
                 console.log(url);
-                
+
                 this.app.router.navigate(url);
                 this.app.vent.trigger('update-layer-list');
                 this.app.vent.trigger("hide-right-panel");
@@ -96,7 +96,7 @@ define(["jquery",
                 var matchedCollection,
                     overlays,
                     that = this,
-                    dataSource = this.model.get("data_source"),
+                    dataset = this.model.get("dataset"),
                     data = this.app.dataManager.getCollection(dataSource),
                     symbols = this.model.getSymbols();
                     //console.log(this.model.getSymbols());

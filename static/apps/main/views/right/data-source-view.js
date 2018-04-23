@@ -22,13 +22,13 @@ define(["marionette",
             templateHelpers: function () {
                 return {
                     dataSource: this.app.dataManager.getLookup(),
-                    currentDataSource: this.model.attributes.data_source
+                    currentDataSource: this.model.attributes.dataset
                 };
             },
 
             changeDataSource: function() {
-                var dataSource = this.$el.find(".selected-data-source").val();
-                this.model.set("data_source", dataSource);
+                var dataset = this.$el.find(".selected-data-source").val();
+                this.model.set("dataset", dataset);
             },
 
 
@@ -41,6 +41,3 @@ define(["marionette",
         });
         return DataSourceView;
     });
-
-
-

@@ -31,7 +31,7 @@ define(["marionette",
                     app: this.app,
                     //collection: new Symbols(model.get('symbols')),
                     collection: model.get('symbols'),
-                    dataCollection: dm.getCollection(model.get('data_source'))
+                    dataCollection: dm.getCollection(model.get('dataset').overlay_type)
                 };
             },
 
