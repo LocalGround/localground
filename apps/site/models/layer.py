@@ -20,7 +20,7 @@ class Layer(BaseAudit):
         'isShowing': False
     }
     styled_map = models.ForeignKey('StyledMap', related_name='%(class)s+')
-    dataset = models.ForeignKey('Form', related_name='%(class)s+')
+    dataset = models.ForeignKey('Dataset', related_name='%(class)s+')
     display_field = models.ForeignKey('Field', related_name='%(class)s+')
     title = models.CharField(max_length=255, null=False, blank=False)
     ordering = models.IntegerField()
@@ -35,26 +35,24 @@ class Layer(BaseAudit):
     ])
 
     @classmethod
-    def create(cls, **kwargs):
+    def create(cls, dataset=None, **kwargs):
         # print kwargs
 
-        if kwargs.get('dataset') is None:
+        if dataset is None:
             # if no dataset is passed in, create a new one:
-            from localground.apps.site.models import Form
-            dataset = Form.create(
+            from localground.apps.site.models import Dataset
+            dataset = Dataset.create(
                 owner=kwargs.get('owner'),
                 name='Untitled Dataset',
                 last_updated_by=kwargs.get('last_updated_by'),
                 project=kwargs.get('project')
             )
-            kwargs['dataset'] = dataset
-            # print dataset
-            # print dataset.fields[0]
+        if not kwargs.get('display_field'):
             kwargs['display_field'] = dataset.fields[0]
+        if not kwargs.get('title'):
             kwargs['title'] = 'Untitled Layer'
-
         kwargs.pop('project')
-        return Layer.objects.create(**kwargs)
+        return Layer.objects.create(dataset=dataset, **kwargs)
 
     def can_view(self, user, access_key=None):
         # all layer are viewable

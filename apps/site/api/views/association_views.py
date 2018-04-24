@@ -44,7 +44,7 @@ class RelatedMediaList(generics.ListCreateAPIView):
         if self.kwargs.get('entity_name_plural') in [
                 'markers',
                 'views',
-                'prints'] or 'form_' in self.kwargs.get('entity_name_plural'):
+                'prints'] or 'dataset_' in self.kwargs.get('entity_name_plural'):
             raise exceptions.ParseError(
                 'You cannot attach a %s to a %s' % (
                     entity_model.model_name, group_model.model_name

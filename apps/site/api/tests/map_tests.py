@@ -106,7 +106,7 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
     def test_create_map_post_create_new_dataset_makes_dataset(self, **kwargs):
         params = self.__get_generic_post_params()
         params['create_new_dataset'] = 1
-        dataset_count_initial = len(models.Form.objects.all())
+        dataset_count_initial = len(models.Dataset.objects.all())
         response = self.client_user.post(
             self.url,
             data=json.dumps(params),
@@ -115,7 +115,7 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         styled_map = self.model.objects.all().order_by('-id',)[0]
-        dataset = models.Form.objects.all().order_by('-id',)[0]
+        dataset = models.Dataset.objects.all().order_by('-id',)[0]
         layer = styled_map.layers[0]
         self.assertEqual(styled_map.name, params['name'])
         self.assertEqual(styled_map.description, params['caption'])
@@ -128,7 +128,7 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
 
         # check that a new dataset was created
         self.assertEqual(
-            dataset_count_initial + 1, len(models.Form.objects.all()))
+            dataset_count_initial + 1, len(models.Dataset.objects.all()))
 
         # check that the layer is attached to the dataset:
         self.assertEqual(layer.dataset, dataset)
@@ -144,7 +144,7 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
         params['datasets'] = json.dumps([
             ds1.id, ds2.id, ds3.id
         ])
-        dataset_count_initial = len(models.Form.objects.all())
+        dataset_count_initial = len(models.Dataset.objects.all())
         response = self.client_user.post(
             self.url,
             data=json.dumps(params),
@@ -234,7 +234,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
                 'slug': slug
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_map = models.StyledMap.objects.get(id=self.map.id)
@@ -252,7 +252,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
                 'slug': slug
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded")
+            content_type="application/x-www-dataset-urlencoded")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_map = models.StyledMap.objects.get(id=self.map.id)
         self.assertEqual(updated_map.name, name)

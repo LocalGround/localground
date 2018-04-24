@@ -87,7 +87,7 @@ class CSVRenderer(renderers.BaseRenderer):
         elif 'overlay_type' in data:
             overlay_type = data.get('overlay_type')
             # if hierarchical object, then flatten (for project or marker):
-            if overlay_type == 'project' or 'form_' in overlay_type:
+            if overlay_type == 'project' or 'dataset_' in overlay_type:
                 headers, dataset = self.process_instances_with_children(
                     data, headers)
             else:
@@ -96,7 +96,7 @@ class CSVRenderer(renderers.BaseRenderer):
 
         # special post-processing for record objects with nested foreign keys:
         for row in dataset:
-            if 'form_' in row.get('overlay_type'):
+            if 'dataset_' in row.get('overlay_type'):
                 self.process_record_instances_with_foreign_keys(row, headers)
 
         if len(dataset) > 0:

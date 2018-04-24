@@ -1,4 +1,4 @@
-from localground.apps.site.models import Form
+from localground.apps.site.models import Dataset
 from localground.apps.site.models import Field
 
 from django.contrib.gis.db import models
@@ -10,20 +10,21 @@ from localground.apps.site.tests.models import ProjectMixinTest, NamedMixinTest
 from django import test
 
 
-# form test in progress
-class FormTest(NamedMixinTest, ProjectMixinTest, BaseAuditAbstractModelClassTest, test.TestCase):
+# dataset test in progress
+class DatasetTest(
+        NamedMixinTest, ProjectMixinTest, BaseAuditAbstractModelClassTest,
+        test.TestCase):
 
     def setUp(self):
         BaseAuditAbstractModelClassTest.setUp(self)
-        #BaseAbstractModelClassTest.setUp(self)
         self.model = self.create_form()
-        self.object_type = self.model_name = self.pretty_name = 'form'
-        self.model_name_plural = self.pretty_name_plural = 'forms'
+        self.object_type = self.model_name = self.pretty_name = 'dataset'
+        self.model_name_plural = self.pretty_name_plural = 'datasets'
 
     def test_get_filter_fields(self, **kwargs):
 
         # this one contains a dictionary of information
-        # related to the form
+        # related to the dataset
         formWithFields = self.create_form_with_fields()
         query_fields_data = formWithFields.get_filter_fields()
         self.assertEqual(
@@ -35,7 +36,8 @@ class FormTest(NamedMixinTest, ProjectMixinTest, BaseAuditAbstractModelClassTest
                 'label': u'owner'
             })
 
-        self.assertEqual(query_fields_data['date_created'].to_dict(),
+        self.assertEqual(
+            query_fields_data['date_created'].to_dict(),
             {
                 'help_text': u'',
                 'type': 'date',
@@ -43,7 +45,8 @@ class FormTest(NamedMixinTest, ProjectMixinTest, BaseAuditAbstractModelClassTest
                 'label': u'date created'
             })
 
-        self.assertEqual(query_fields_data['id'].to_dict(),
+        self.assertEqual(
+            query_fields_data['id'].to_dict(),
             {
                 'help_text': u'',
                 'type': 'integer',
@@ -51,18 +54,28 @@ class FormTest(NamedMixinTest, ProjectMixinTest, BaseAuditAbstractModelClassTest
                 'label': u'ID'
             })
 
-        self.assertEqual(query_fields_data['project'].to_dict(),
+        self.assertEqual(
+            query_fields_data['project'].to_dict(),
             {
-                'help_text': 'Project to which the form belongs',
+                'help_text': 'Project to which the dataset belongs',
                 'type': 'string',
                 'col_name': 'project',
                 'label': u'project'
             })
 
-        self.assertEqual(query_fields_data['time_stamp'].to_dict(),
+        self.assertEqual(
+            query_fields_data['time_stamp'].to_dict(),
             {
                 'help_text': u'',
                 'type': 'date',
                 'col_name': 'time_stamp',
                 'label': u'time stamp'
             })
+
+    def test_dataset_throws_error_if_dependent_layers(self, **kwargs):
+        self.create_styled_map(dataset=self.model)
+
+        # if there is already a layer depending on this dataset,
+        # don't remove it
+        with self.assertRaises(Exception):
+            self.model.delete()

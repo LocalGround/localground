@@ -9,22 +9,22 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=False)
-        self.form = self.create_form_with_fields(
-            name="Class Form", num_fields=7)
+        self.dataset = self.create_form_with_fields(
+            name="Class Dataset", num_fields=7)
         # requery:
-        self.form = models.Form.objects.get(id=self.form.id)
+        self.dataset = models.Dataset.objects.get(id=self.dataset.id)
         self.record = self.create_record(
-            self.user, self.project, form=self.form)
+            self.user, self.project, dataset=self.dataset)
 
         # self.record = self.insert_form_data_record(
-        #                 form=self.form, project=self.project
+        #                 dataset=self.dataset, project=self.project
         #             )
         self.urls = [
             '/api/0/datasets/%s/data/%s/%s/' % (
-                self.form.id, self.record.id, 'photos'
+                self.dataset.id, self.record.id, 'photos'
             ),
             '/api/0/datasets/%s/data/%s/%s/' % (
-                self.form.id, self.record.id, 'audio'
+                self.dataset.id, self.record.id, 'audio'
             )
         ]
         self.metadata = {
@@ -44,8 +44,8 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixinAPI):
 
     def test_page_404_if_invalid_record_id(self, **kwargs):
         urls = [
-            '/api/0/datasets/%s/data/%s/%s/' % (self.form.id, 999, 'photos'),
-            '/api/0/datasets/%s/data/%s/%s/' % (self.form.id, 999, 'audio')
+            '/api/0/datasets/%s/data/%s/%s/' % (self.dataset.id, 999, 'photos'),
+            '/api/0/datasets/%s/data/%s/%s/' % (self.dataset.id, 999, 'audio')
         ]
         for url in urls:
             response = self.client_user.get(url)
@@ -95,12 +95,12 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixinAPI):
 
     def test_cannot_attach_sites_to_sites(self, **kwargs):
         mwa1 = self.record = self.create_record(
-            self.user, self.project, form=self.form)
+            self.user, self.project, dataset=self.dataset)
         source_type = 'audio'
 
         urls = {
             '/api/0/datasets/%s/data/%s/%s/' % (
-                self.form.id, self.record.id, source_type
+                self.dataset.id, self.record.id, source_type
             ): mwa1.id
         }
         for url in urls:
@@ -120,14 +120,14 @@ class ApiRelatedMediaInstanceTest(
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=False)
-        self.form = self.create_form_with_fields(
-            name="Class Form", num_fields=7
+        self.dataset = self.create_form_with_fields(
+            name="Class Dataset", num_fields=7
         )
         # requery:
-        self.form = models.Form.objects.get(id=self.form.id)
-        self.record = self.create_record(self.user, self.project, form=self.form)
+        self.dataset = models.Dataset.objects.get(id=self.dataset.id)
+        self.record = self.create_record(self.user, self.project, dataset=self.dataset)
         # self.record = self.insert_form_data_record(
-        #     form=self.form, project=self.project
+        #     dataset=self.dataset, project=self.project
         # )
         self.metadata = {
             "ordering": {"type": "integer", "required": False,
@@ -148,10 +148,10 @@ class ApiRelatedMediaInstanceTest(
         # create urls:
         self.urls = [
             '/api/0/datasets/%s/data/%s/%s/%s/' % (
-                self.form.id, self.record.id, 'photos', self.photo1.id
+                self.dataset.id, self.record.id, 'photos', self.photo1.id
             ),
             '/api/0/datasets/%s/data/%s/%s/%s/' % (
-                self.form.id, self.record.id, 'audio', self.audio1.id
+                self.dataset.id, self.record.id, 'audio', self.audio1.id
             )
         ]
 
@@ -174,12 +174,12 @@ class ApiRelatedMediaInstanceTest(
 
         urls = {
             '/api/0/datasets/%s/data/%s/photos/%s/' % (
-                self.form.id, self.record.id, self.photo1.id
+                self.dataset.id, self.record.id, self.photo1.id
             ): {
                 'source_model': self.record, 'attach_model': self.photo1
             },
             '/api/0/datasets/%s/data/%s/audio/%s/' % (
-                self.form.id, self.record, self.audio1.id
+                self.dataset.id, self.record, self.audio1.id
             ): {
                 'source_model': self.record, 'attach_model': self.audio1
             }
@@ -219,12 +219,12 @@ class ApiRelatedMediaInstanceTest(
     def _test_using_put_or_patch(self, f, params, **kwargs):
         urls = {
             '/api/0/datasets/%s/data/%s/photos/%s/' % (
-                self.form.id, self.record.id, self.photo1.id
+                self.dataset.id, self.record.id, self.photo1.id
             ): {
                 'source_model': self.record, 'attach_model': self.photo1
             },
             '/api/0/datasets/%s/data/%s/audio/%s/' % (
-                self.form.id, self.record.id, self.audio1.id
+                self.dataset.id, self.record.id, self.audio1.id
             ): {
                 'source_model': self.record, 'attach_model': self.audio1
             }
@@ -243,7 +243,7 @@ class ApiRelatedMediaInstanceTest(
                 url,
                 data=urllib.urlencode(params),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-form-urlencoded")
+                content_type="application/x-www-dataset-urlencoded")
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             updated_relation = models.GenericAssociation.objects.get(
                 id=relation.id

@@ -1,11 +1,12 @@
 from localground.apps.site import models
-from localground.apps.site.models import Layer
-from localground.apps.site.models import StyledMap
+from localground.apps.site.models import Layer, StyledMap, Symbol, Dataset
 from django.contrib.auth.models import User
 from localground.apps.site.tests.models.abstract_base_audit_tests import \
     BaseAuditAbstractModelClassTest
 from django import test
 from jsonfield import JSONField
+from django.contrib.gis.geos import GEOSGeometry
+import uuid
 
 
 class LayerModelTests(BaseAuditAbstractModelClassTest, test.TestCase):
@@ -22,6 +23,19 @@ class LayerModelTests(BaseAuditAbstractModelClassTest, test.TestCase):
             email='',
             password=self.user_password
         )
+
+    def get_map_kwargs(self):
+        return {
+            'center': GEOSGeometry('POINT(5 23)'),
+            'tags': [],
+            'description': '',
+            'zoom': 4,
+            'project': self.project,
+            'last_updated_by': self.user,
+            'owner': self.user,
+            'slug': uuid.uuid4().hex,
+            'name': 'My Test Map'
+        }
 
     def test_model_properties(self):
         from django.contrib.gis.db import models
@@ -49,3 +63,40 @@ class LayerModelTests(BaseAuditAbstractModelClassTest, test.TestCase):
         # always true, all layers are viewable
         self.assertTrue(self.model.can_view(self.user))
         self.assertTrue(self.model.can_view(self.other_user))
+
+    def test_creates_new_dataset_if_none_defined(self):
+        kwargs = self.get_map_kwargs()
+        map = StyledMap.objects.create(**kwargs)
+        num_datasets = len(Dataset.objects.all())
+        layer = Layer.create(
+            last_updated_by=kwargs.get('last_updated_by'),
+            owner=kwargs.get('owner'),
+            styled_map=map,
+            group_by='uniform',
+            symbols=[
+                Symbol.SIMPLE.to_dict()
+            ],
+            project=map.project,
+            ordering=1
+        )
+        self.assertEqual(num_datasets + 1, len(Dataset.objects.all()))
+
+    def test_uses_existing_dataset_if_defined(self):
+        kwargs = self.get_map_kwargs()
+        map = StyledMap.objects.create(**kwargs)
+        f1 = self.create_form_with_fields()
+        num_datasets = len(Dataset.objects.all())
+        layer = Layer.create(
+            last_updated_by=kwargs.get('last_updated_by'),
+            owner=kwargs.get('owner'),
+            styled_map=map,
+            dataset=f1,
+            group_by='uniform',
+            symbols=[
+                Symbol.SIMPLE.to_dict()
+            ],
+            project=map.project,
+            ordering=1
+        )
+        self.assertEqual(num_datasets, len(Dataset.objects.all()))
+        self.assertEqual(map.layers[0].dataset, f1)

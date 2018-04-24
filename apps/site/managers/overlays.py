@@ -13,17 +13,17 @@ class MarkerMixin():
     # 1) Records with attributes (i.e. Markers with Attributes)
     # 2) Records without attributes (i.e. plain Markers)
     def _get_objects_with_extras(
-            self, aggregation_type, form=None, project=None,
+            self, aggregation_type, dataset=None, project=None,
             ordering_field=None):
-        if form:
-            # return Records belonging to a specific form
-            q = self.filter(form=form)
+        if dataset:
+            # return Records belonging to a specific dataset
+            q = self.filter(dataset=dataset)
 
-        elif project and form==None:
-            # only return Records with NO forms, i.e. records without hstore attributes
-            q = self.filter(project=project).filter(form=None)
+        elif project and dataset==None:
+            # only return Records with NO datasets, i.e. records without hstore attributes
+            q = self.filter(project=project).filter(dataset=None)
         else:
-            raise Exception("either a form or a project must be passed in")
+            raise Exception("either a dataset or a project must be passed in")
 
         if aggregation_type not in ['count', 'array_agg']:
             raise Exception(
@@ -33,15 +33,15 @@ class MarkerMixin():
         return self._append_extras(q, aggregation_type)
 
     def get_objects_with_counts(
-            self, form=None, project=None, ordering_field=None):
+            self, dataset=None, project=None, ordering_field=None):
         return self._get_objects_with_extras(
-            'count', form=form, project=project, ordering_field=ordering_field
+            'count', dataset=dataset, project=project, ordering_field=ordering_field
         )
 
     def get_objects_with_lists(
-            self, form=None, project=None, ordering_field=None):
+            self, dataset=None, project=None, ordering_field=None):
         return self._get_objects_with_extras(
-            'array_agg', form=form, project=project,
+            'array_agg', dataset=dataset, project=project,
             ordering_field=ordering_field
         )
 
@@ -73,18 +73,18 @@ class MarkerMixin():
 
     def get_objects_public_with_counts(
             self,
-            forms=None,
+            datasets=None,
             project=None,
             access_key=None,
             ordering_field=None):
         q = self.get_objects_public(
             access_key=access_key,
             ordering_field=ordering_field)
-        return self._append_extras(q, "count", project=project, forms=forms)
+        return self._append_extras(q, "count", project=project, datasets=datasets)
 
     def get_objects_public_with_lists(
             self,
-            forms=None,
+            datasets=None,
             project=None,
             access_key=None,
             ordering_field=None):
@@ -92,7 +92,7 @@ class MarkerMixin():
             access_key=access_key,
             ordering_field=ordering_field)
         return self._append_extras(
-            q, "array_agg", project=project, forms=forms)
+            q, "array_agg", project=project, datasets=datasets)
 
     def to_dict_list(self):
         # does this need to be implemented, or can we just rely on

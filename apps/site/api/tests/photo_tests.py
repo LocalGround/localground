@@ -196,7 +196,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
                 'extras': json.dumps(extras)
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         """
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -214,7 +214,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         response = self.client_user.patch(self.url,
                                           data=urllib.urlencode({'geometry': point}),
                                           HTTP_X_CSRFTOKEN=self.csrf_token,
-                                          content_type="application/x-www-form-urlencoded")
+                                          content_type="application/x-www-dataset-urlencoded")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_photo = models.Photo.objects.get(id=self.photo.id)
         self.assertEqual(updated_photo.geometry.y, point['coordinates'][1])
@@ -262,7 +262,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         response = self.client_user.put(
                             rotation_url,
                             HTTP_X_CSRFTOKEN=self.csrf_token,
-                            content_type="application/x-www-form-urlencoded"
+                            content_type="application/x-www-dataset-urlencoded"
                         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_photo = models.Photo.objects.get(id=self.photo.id)

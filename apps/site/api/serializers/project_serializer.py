@@ -80,16 +80,16 @@ class ProjectDetailSerializer(ProjectSerializer):
         )
 
     def get_datasets(self, obj):
-        forms = models.Form.objects.prefetch_related(
+        datasets = models.Dataset.objects.prefetch_related(
                 'field_set', 'field_set__data_type'
             ).filter(project=obj)
 
-        datasets = {}
+        dataset_dictionary = {}
 
         # add table data:
-        for form in forms:
-            datasets['form_%s' % form.id] = self.get_table_records(form)
-        return datasets
+        for dataset in datasets:
+            dataset_dictionary['dataset_%s' % dataset.id] = self.get_table_records(dataset)
+        return dataset_dictionary
 
     def get_media(self, obj):
         media = {
@@ -100,16 +100,16 @@ class ProjectDetailSerializer(ProjectSerializer):
         }
         return media
 
-    def get_table_records(self, form):
-        records = form.get_records()
+    def get_table_records(self, dataset):
+        records = dataset.get_records()
         return self.serialize_list(
             models.Record,
-            create_dynamic_serializer(form),
+            create_dynamic_serializer(dataset),
             records,
-            name=form.name,
+            name=dataset.name,
             overlay_type='record',
-            model_name_plural='form_%s' % form.id,
-            fields=form.fields
+            model_name_plural='dataset_%s' % dataset.id,
+            fields=dataset.fields
         )
 
     def get_photos(self, obj):

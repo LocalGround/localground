@@ -53,7 +53,7 @@ from rest_framework.reverse import reverse
 def api_root(request, format=None, **kwargs):
     d = {}
     d['audio'] = reverse('audio-list', request=request, format=format)
-    d['datasets'] = reverse('form-list', request=request, format=format)
+    d['datasets'] = reverse('dataset-list', request=request, format=format)
     d['groups'] = reverse('group-list', request=request, format=format)
     d['icons'] = reverse('icon-list', request=request, format=format)
 

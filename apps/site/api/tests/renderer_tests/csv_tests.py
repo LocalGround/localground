@@ -38,7 +38,7 @@ class CSVMixin(mixins.MediaMixin):
             response = self.client_user.options(
                 url,
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-form-urlencoded"
+                content_type="application/x-www-dataset-urlencoded"
             )
 
             # TEST 1: there is a cell for every field exposed in the serializer
@@ -65,10 +65,10 @@ class CSVMixin(mixins.MediaMixin):
             self.assertEqual(test_record.get('tags'), ', '.join(self.tags1))
 
     def _test_media_flattened_for_records(self, is_detail=False):
-        url = '/api/0/datasets/{}/data/'.format(self.records[0].form.id)
+        url = '/api/0/datasets/{}/data/'.format(self.records[0].dataset.id)
         if is_detail:
             url = '/api/0/datasets/{}/data/{}/'.format(
-                self.records[0].form.id, self.records[0].id)
+                self.records[0].dataset.id, self.records[0].id)
         response = self.client_user.get(url + '?format=csv')
         data = StringIO(response.content)
         reader = csv.DictReader(data)
@@ -134,7 +134,7 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
         data = StringIO(response.content)
         reader = csv.DictReader(data)
         expected = {
-            'form_{}'.format(self.form.id): 8,
+            'dataset_{}'.format(self.dataset.id): 8,
             'project': 1,
             'photo': 2,
             'audio': 2,

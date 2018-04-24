@@ -21,7 +21,7 @@ class Record(ExtrasMixin, PointMixin, ProjectMixin,
     tags = ArrayField(models.TextField(), default=list)
     polyline = models.LineStringField(blank=True, null=True)
     polygon = models.PolygonField(blank=True, null=True)
-    form = models.ForeignKey('Form', null=True)
+    dataset = models.ForeignKey('Dataset', null=True)
 
     objects = MarkerManager()
     filter_fields = ('id', 'project', 'tags',)

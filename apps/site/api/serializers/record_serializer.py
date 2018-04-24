@@ -49,7 +49,7 @@ class RecordSerializerMixin(GeometrySerializer):
     '''
     url = serializers.SerializerMethodField()
 
-    form = serializers.SerializerMethodField()
+    dataset = serializers.SerializerMethodField()
     media = serializers.SerializerMethodField()
     attached_photos_ids = serializers.SerializerMethodField()
     attached_audio_ids = serializers.SerializerMethodField()
@@ -58,13 +58,13 @@ class RecordSerializerMixin(GeometrySerializer):
 
     def get_url(self, obj):
         return '%s/api/0/datasets/%s/data/%s' % \
-                (settings.SERVER_URL, obj.form.id, obj.id)
+                (settings.SERVER_URL, obj.dataset.id, obj.id)
 
-    def get_form(self, obj):
-        return self.form.id
+    def get_dataset(self, obj):
+        return self.dataset.id
 
     def get_overlay_type(self, obj):
-        return 'form_{0}'.format(obj.form.id)
+        return 'dataset_{0}'.format(obj.dataset.id)
 
     def get_media(self, obj):
         from django.contrib.contenttypes.models import ContentType
@@ -166,7 +166,7 @@ class RecordSerializerMixin(GeometrySerializer):
     class Meta:
         model = models.Record
         fields = GeometrySerializer.field_list + \
-            ('form', 'extras', 'url', 'media') + \
+            ('dataset', 'extras', 'url', 'media') + \
             ('attached_photos_ids',
              'attached_audio_ids',
              'attached_videos_ids',
@@ -185,8 +185,8 @@ class RecordSerializerMixin(GeometrySerializer):
 
         validated_data.update(self.get_presave_create_dictionary())
         validated_data.update({
-            'form': self.form,
-            'project': self.form.project
+            'dataset': self.dataset,
+            'project': self.dataset.project
         })
         self.instance = self.Meta.model.objects.create(**validated_data)
         return self.instance
@@ -244,13 +244,13 @@ class RecordSerializer(RecordSerializerMixin):
         return media
 
 
-def create_dynamic_serializer(form, **kwargs):
+def create_dynamic_serializer(dataset, **kwargs):
     """
     generate a dynamic serializer from dynamic model
     """
     field_names = []
 
-    for field in form.fields:
+    for field in dataset.fields:
         field_names.append(field.col_name)
 
     class Meta:
@@ -262,7 +262,7 @@ def create_dynamic_serializer(form, **kwargs):
         '__module__':
             'localground.apps.site.api.serializers.MarkerWAttrsSerializer',
         'Meta': Meta,
-        'form': form
+        'dataset': dataset
     }
 
     # functions to create custom hstore fields
@@ -340,7 +340,7 @@ def create_dynamic_serializer(form, **kwargs):
         models.DataType.DataTypes.CHOICE: createChoiceField
     }
 
-    for field in form.fields:
+    for field in dataset.fields:
         if field.data_type.id in fieldCases:
             fieldCases[field.data_type.id]()
         else:

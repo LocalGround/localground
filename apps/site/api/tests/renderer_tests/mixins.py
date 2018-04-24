@@ -42,12 +42,12 @@ class MediaMixin():
             name="f2", tags=self.tags2, point=self.point
         )
 
-        self.form = self.create_form_with_fields(
-            name="Class Form", num_fields=9
+        self.dataset = self.create_form_with_fields(
+            name="Class Dataset", num_fields=9
         )
-        self.form = models.Form.objects.get(id=self.form.id)  # requery
+        self.dataset = models.Dataset.objects.get(id=self.dataset.id)  # requery
         self.records = self.create_records(
-            self.form, 8, photo=self.photo1, audio=self.audio1,
+            self.dataset, 8, photo=self.photo1, audio=self.audio1,
             point=self.point
         )
         self.record1 = self.records[0]
@@ -137,12 +137,12 @@ class MediaMixin():
             return models.Audio.objects.get(id=response.data.get("id"))
 
     def create_records(
-            self, form, num_records, photo=None, audio=None, point=None):
+            self, dataset, num_records, photo=None, audio=None, point=None):
         records = []
         for n in range(0, num_records):
             records.append(
                 self.insert_form_data_record(
-                    form=self.form,
+                    dataset=self.dataset,
                     project=self.project,
                     photo=photo,
                     audio=audio,

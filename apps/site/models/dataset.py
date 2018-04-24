@@ -7,15 +7,15 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 
 
-class Form(NamedMixin, ProjectMixin, BaseAudit):
+class Dataset(NamedMixin, ProjectMixin, BaseAudit):
     table_name = models.CharField(max_length=255, unique=True)
     objects = FormManager()
     filter_fields = BaseAudit.filter_fields + ('slug',)
 
     class Meta:
         app_label = 'site'
-        verbose_name = 'form'
-        verbose_name_plural = 'forms'
+        verbose_name = 'dataset'
+        verbose_name_plural = 'datasets'
 
     def has_access(self, user, access_key=None):
         self.can_view(user, access_key=access_key)
@@ -25,14 +25,14 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
 
     @classmethod
     def create(cls, **kwargs):
-        dataset = Form.objects.create(
+        dataset = Dataset.objects.create(
             owner=kwargs.get('owner'),
             name=kwargs.get('name', 'Untitled Dataset'),
             last_updated_by=kwargs.get('last_updated_by'),
             project=kwargs.get('project')
         )
 
-        # In addition to creating the new form, also create two new fields
+        # In addition to creating the new dataset, also create two new fields
         # for free: Name and description
         data_type = DataType.objects.get(id=1)
         i = 1
@@ -42,7 +42,7 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
                 data_type=data_type,
                 ordering=i,
                 # is_display_field=(i == 1),
-                form=dataset,
+                dataset=dataset,
                 owner=dataset.owner,
                 last_updated_by=dataset.last_updated_by
             )
@@ -55,7 +55,7 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
         query_fields = super(BaseAudit, cls).get_filter_fields()
         query_fields['project'] = QueryField(
             'project', django_fieldname='project', title='project',
-            help_text='Project to which the form belongs',
+            help_text='Project to which the dataset belongs',
             data_type=FieldTypes.STRING
         )
         return query_fields
@@ -71,7 +71,7 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
         return Layer.objects.filter(dataset=self)
 
     def get_records(self):
-        return Record.objects.filter(form=self)
+        return Record.objects.filter(dataset=self)
 
     def save(self, user=None, *args, **kwargs):
         from localground.apps.lib.helpers import generic
@@ -90,7 +90,7 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
         if user:
             self.last_updated_by = user
         self.time_stamp = get_timestamp_no_milliseconds()
-        super(Form, self).save(*args, **kwargs)
+        super(Dataset, self).save(*args, **kwargs)
 
     def delete(self, destroy_everything=True, **kwargs):
         # Ensure that dataset is not deleted if there are layers linking to it:
@@ -105,4 +105,4 @@ class Form(NamedMixin, ProjectMixin, BaseAudit):
             )
             raise Exception(msg)
         else:
-            super(Form, self).delete(**kwargs)
+            super(Dataset, self).delete(**kwargs)

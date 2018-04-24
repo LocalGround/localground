@@ -35,7 +35,7 @@ class BatchQueryObjectMixin(ModelMixin):
         self._create_objects()
 
     def tearDown(self):
-        models.Form.objects.all().delete()
+        models.Dataset.objects.all().delete()
 
     def _create_objects(self):
         create_object_function = getattr(self, self.create_function_name)
@@ -178,13 +178,13 @@ class BatchMarkerWithAttributesQuerySecurityTest(
 
     def _create_objects(self):
         num_fields = 3
-        self.form = self.create_form_with_fields(num_fields=num_fields)
+        self.dataset = self.create_form_with_fields(num_fields=num_fields)
         self.model = models.Record
         self.objects = []
         for project in self.projects:
             for i, fn in enumerate(self.file_names):
                 self.objects.append(
-                    self.insert_form_data_record(self.form, project)
+                    self.insert_form_data_record(self.dataset, project)
                 )
 
     def test_viewer_can_view_objects(self, ):
@@ -194,7 +194,7 @@ class BatchMarkerWithAttributesQuerySecurityTest(
         # user(1) should be able to view 6 projects....
         self.assertEqual(
             9,
-            len(self.model.objects.get_objects_with_lists(form=self.form))
+            len(self.model.objects.get_objects_with_lists(dataset=self.dataset))
         )
         # user(1) should only be able to edit 3 projects...
         self.assertEqual(

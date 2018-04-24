@@ -147,7 +147,7 @@ class RecordManager(models.GeoManager, RecordMixin):
         # Same as get_objects, but it queries for more related objects.
         from localground.apps.site import models
         self.related_fields = ['project', 'owner']
-        form = models.Form.objects.get(table_name=self.model._meta.db_table)
+        dataset = models.Dataset.objects.get(table_name=self.model._meta.db_table)
         queryset = self.get_objects(
             user,
             project=project,
@@ -164,12 +164,12 @@ class RecordManager(models.GeoManager, RecordMixin):
         # Returns all objects that belong to a project that has been
         # marked as public
         from localground.apps.site import models
-        form = models.Form.objects.get(table_name=self.model._meta.db_table)
+        dataset = models.Dataset.objects.get(table_name=self.model._meta.db_table)
 
-        # if the form is public access, return all records.  Making a
+        # if the dataset is public access, return all records.  Making a
         # data set publicly viewable means that EVERY record in the dataset
         # is public, regardless of the project permissions setting:
-        if form.project.can_view(access_key=access_key):
+        if dataset.project.can_view(access_key=access_key):
             #q = self.model.objects.distinct().select_related(*self.related_fields)
             q = self.model.objects.select_related(*self.related_fields)
             if request is not None:

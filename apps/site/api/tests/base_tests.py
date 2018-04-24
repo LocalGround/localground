@@ -75,7 +75,7 @@ class ViewMixinAPI(ModelMixin):
             response = self.client_user.options(
                 url,
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-form-urlencoded"
+                content_type="application/x-www-dataset-urlencoded"
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             try:

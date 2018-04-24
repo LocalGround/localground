@@ -59,14 +59,14 @@ class ProjectManager(models.GeoManager, ProjectMixin):
 
 
 class FormMixin(GroupMixin):
-    # For now, only the owner can view / edit a form.
+    # For now, only the owner can view / edit a dataset.
     # Todo: restrict viewing data to the row-level, based on project
     # permissions.
     related_fields = ['owner', 'last_updated_by']
     prefetch_fields = ['field_set']
 
     def my_forms(self, user=None):
-        # a form is associated with one or more projects
+        # a dataset is associated with one or more projects
         return self.model.objects.distinct().filter(
             Q(owner=user)
         ).order_by('name',)
@@ -110,7 +110,7 @@ class FormMixin(GroupMixin):
 
         from localground.apps.site.models import ObjectAuthority
 
-        # condition #1: check if forms have been shared directly:
+        # condition #1: check if datasets have been shared directly:
         c1 = (
             (
                 Q(access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK)
@@ -121,7 +121,7 @@ class FormMixin(GroupMixin):
         )
 
         # condition #2: check if any of the projects associated with
-        #               forms have been shared (which means that the form
+        #               datasets have been shared (which means that the dataset
         #               has been indirectly shared)
         c2 = (
             (Q(

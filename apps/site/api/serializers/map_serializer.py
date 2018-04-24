@@ -79,8 +79,8 @@ class MapSerializerPost(MapSerializerList):
         for dataset_id in dataset_ids:
             try:
                 form_id = int(dataset_id)
-                form = models.Form.objects.get(id=form_id)
-                datasets.append(form)
+                dataset = models.Dataset.objects.get(id=form_id)
+                datasets.append(dataset)
             except Exception:
                 raise serializers.ValidationError(
                     '{0} is not a valid dataset id'.format(dataset_id))
@@ -102,7 +102,6 @@ class MapSerializerPost(MapSerializerList):
                 models.StyledMap.default_panel_styles
         datasets = self.get_datasets(
             dataset_ids, validated_data.get('project_id'))
-        raise Exception(validated_data)
         self.instance = self.Meta.model.create(
             datasets=datasets, **validated_data)
         return self.instance

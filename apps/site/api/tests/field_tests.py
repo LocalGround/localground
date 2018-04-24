@@ -13,7 +13,7 @@ class FieldTestMixin(ViewMixinAPI):
 
 def get_base_metadata():
     return {
-        "form": {'read_only': True, 'required': False, 'type': 'field'},
+        "dataset": {'read_only': True, 'required': False, 'type': 'field'},
         'ordering': {'read_only': False, 'required': True, 'type': 'integer'},
         'col_alias': {'read_only': False, 'required': True, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'},
@@ -26,14 +26,14 @@ def get_base_metadata():
 class ApiFieldListTest(test.TestCase, FieldTestMixin):
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.form = self.create_form_with_fields(
-                        name="Class Form",
+        self.dataset = self.create_form_with_fields(
+                        name="Class Dataset",
                         num_fields=0
                     )
-        self.field1 = self.create_field(self.form, name="Field 1", ordering=1)
-        self.field2 = self.create_field(self.form, name="Field 2", ordering=2)
+        self.field1 = self.create_field(self.dataset, name="Field 1", ordering=1)
+        self.field2 = self.create_field(self.dataset, name="Field 2", ordering=2)
         self.model = models.Field
-        self.url = '/api/0/datasets/%s/fields/' % self.form.id
+        self.url = '/api/0/datasets/%s/fields/' % self.dataset.id
         self.urls = [self.url]
         self.metadata = {
             'data_type': {'read_only': False, 'required': False,
@@ -43,8 +43,8 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
         self.view = views.FieldList.as_view()
 
     def test_reorders_fields_correctly(self, **kwargs):
-        self.field3 = self.create_field(self.form, name="Field 3", ordering=4)
-        self.field4 = self.create_field(self.form, name="Field 4", ordering=9)
+        self.field3 = self.create_field(self.dataset, name="Field 3", ordering=4)
+        self.field4 = self.create_field(self.dataset, name="Field 4", ordering=9)
         self.assertEqual(self.field1.ordering, 1)
         self.assertEqual(self.field2.ordering, 2)
         self.assertEqual(self.field3.ordering, 4)
@@ -59,14 +59,14 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
                 'data_type': 'text'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         i = 1
-        for field in self.form.fields:
+        for field in self.dataset.fields:
             self.assertEqual(field.ordering, i)
             i += 1
-        self.assertEqual(self.form.fields[0].ordering, 1)
-        self.assertEqual(self.form.fields[0].col_alias, 'Display Name')
+        self.assertEqual(self.dataset.fields[0].ordering, 1)
+        self.assertEqual(self.dataset.fields[0].col_alias, 'Display Name')
 
     def test_create_field_using_post(self, **kwargs):
         response = self.client_user.post(
@@ -77,7 +77,7 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
                 'data_type': 'text'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -97,7 +97,7 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
                     'data_type': 'text'
                 }),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-form-urlencoded"
+                content_type="application/x-www-dataset-urlencoded"
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -106,17 +106,17 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.form = self.create_form_with_fields(
-                        name="Class Form",
+        self.dataset = self.create_form_with_fields(
+                        name="Class Dataset",
                         num_fields=0
                     )
-        self.field = self.create_field(self.form, name="Field 1", ordering=3)
-        self.field2 = self.create_field(self.form, name="Field 2", ordering=4)
+        self.field = self.create_field(self.dataset, name="Field 1", ordering=3)
+        self.field2 = self.create_field(self.dataset, name="Field 2", ordering=4)
         self.url = '/api/0/datasets/%s/fields/%s/' % (
-            self.field.form.id, self.field.id
+            self.field.dataset.id, self.field.id
         )
         self.url2 = '/api/0/datasets/%s/fields/%s/' % (
-            self.field2.form.id, self.field2.id
+            self.field2.dataset.id, self.field2.id
         )
         self.urls = [self.url]
         self.metadata = {
@@ -128,7 +128,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
         self.view = views.FieldInstance.as_view()
 
     def tearDown(self):
-        models.Form.objects.all().delete()
+        models.Dataset.objects.all().delete()
 
     def test_update_field_using_put(self, **kwargs):
         response = self.client_user.put(
@@ -138,7 +138,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                 'ordering': 2
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -153,7 +153,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                 'col_alias': 'Address 1'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_field = models.Field.objects.get(id=self.field.id)
@@ -166,7 +166,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                 'col_alias': 'Field 1'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -181,14 +181,14 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                     'ordering': 1
                 }),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-form-urlencoded"
+                content_type="application/x-www-dataset-urlencoded"
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_cannot_delete_field_if_only_field_in_form(self, **kwargs):
-        # delete all of the fields from the form except for the current field:
+        # delete all of the fields from the dataset except for the current field:
         models.Field.objects.filter(
-            form=self.form).exclude(id=self.field.id).delete()
+            dataset=self.dataset).exclude(id=self.field.id).delete()
 
         # try to delete the current field (you shouldn't be able to):
         response = self.client_user.delete(
@@ -202,7 +202,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
 
     def test_cannot_delete_field_if_used_in_layer_display_field(self):
         map = self.create_styled_map(
-            dataset=self.form, display_field=self.field)
+            dataset=self.dataset, display_field=self.field)
 
         # try to delete the current field (you shouldn't be able to):
         response = self.client_user.delete(
@@ -223,13 +223,13 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                 self.url,
                 data=urllib.urlencode({'col_alias': col_alias}),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-form-urlencoded"
+                content_type="application/x-www-dataset-urlencoded"
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_delete_field_reorders_other_fields(self, **kwargs):
-        f3 = self.create_field(self.form, name="Field 3", ordering=5)
-        f4 = self.create_field(self.form, name="Field 4", ordering=6)
+        f3 = self.create_field(self.dataset, name="Field 3", ordering=5)
+        f4 = self.create_field(self.dataset, name="Field 4", ordering=6)
         # delete field 1
         response = self.client_user.delete(
             self.url,
@@ -237,7 +237,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         ordering = 1
-        for field in self.form.fields:
+        for field in self.dataset.fields:
             # print field.id, field.col_alias, field.ordering, ordering
             self.assertEqual(field.ordering, ordering)
             ordering += 1

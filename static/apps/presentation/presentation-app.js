@@ -168,12 +168,12 @@ define([
         showMediaDetail: function (opts) {
             var collection = this.dataManager.getCollection(opts.dataType),
                 model = collection.get(opts.id);
-            if (opts.dataType.indexOf("form_") != -1) {
+            if (opts.dataType.indexOf("dataset_") != -1) {
                 if (!model.get("children")) {
                     model.fetch({"reset": true});
                 }
             }
-            if (opts.dataType.indexOf("form_") != -1) {
+            if (opts.dataType.indexOf("dataset_") != -1) {
                 model.set("fields", collection.fields.toJSON());
             }
             model.set("active", true);

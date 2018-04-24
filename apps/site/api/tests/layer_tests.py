@@ -41,7 +41,7 @@ class ApiLayerTest(object):
             else:
                 rec = models.Layer.objects.all().order_by('-id',)[0]
             self.assertEqual(rec.title, self.title)
-            self.assertEqual(rec.dataset.id, self.form.id)
+            self.assertEqual(rec.dataset.id, self.dataset.id)
             self.assertEqual(rec.ordering, 2)
             for key in [
                 'title', 'strokeWeight', 'rule', 'isShowing',
@@ -78,7 +78,7 @@ class ApiLayerTest(object):
             self.assertEqual(results['dataset']['name'], u'A title')
             self.assertEqual(
                 results['dataset']['overlay_type'],
-                'form_{0}'.format(data['dataset']))
+                'dataset_{0}'.format(data['dataset']))
             self.assertEqual(results['dataset']['id'], data['dataset'])
             self.assertEqual(results['owner'], u'tester')
             self.assertEqual(results['group_by'], 'uniform')
@@ -100,7 +100,7 @@ class ApiLayerTest(object):
             else:
                 rec = models.Layer.objects.all().order_by('-id',)[0]
             self.assertEqual(rec.title, self.title)
-            self.assertEqual(rec.dataset.id, self.form.id)
+            self.assertEqual(rec.dataset.id, self.dataset.id)
             self.assertEqual(rec.ordering, 2)
             for key in [
                 'title', 'strokeWeight', 'rule', 'isShowing',
@@ -114,9 +114,9 @@ class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.model = models.Layer
-        self.form = self.create_form()
+        self.dataset = self.create_form()
         self.map = self.create_styled_map(
-            dataset=self.form, layer_title='My Layer')
+            dataset=self.dataset, layer_title='My Layer')
         self.url = '/api/0/maps/{0}/layers/'.format(
             self.map.id
         )
@@ -130,7 +130,7 @@ class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
             status.HTTP_201_CREATED,
             data={
                 'title': self.title,
-                'dataset': self.form.id
+                'dataset': self.dataset.id
             }
         )
 
@@ -138,7 +138,7 @@ class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
         self._test_save_layer_post(
             status.HTTP_400_BAD_REQUEST,
             data={
-                'dataset': self.form.id
+                'dataset': self.dataset.id
             }
         )
 
@@ -154,9 +154,9 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.form = self.create_form()
+        self.dataset = self.create_form()
         self.map = self.create_styled_map(
-            dataset=self.form, layer_title='My Layer')
+            dataset=self.dataset, layer_title='My Layer')
         self.obj = self.map.layers[0]
         # self.url = '/api/0/layers/%s/' % self.obj.id
         self.url = '/api/0/maps/{0}/layers/{1}/'.format(
@@ -177,8 +177,8 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
                 'ordering': 1,
                 'group_by': 'uniform',
                 'symbols': json.dumps(symbols),
-                'dataset': self.form.id,
-                'display_field': self.form.fields[0].col_name
+                'dataset': self.dataset.id,
+                'display_field': self.dataset.fields[0].col_name
             }
         )
 
@@ -189,7 +189,7 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
                 'title': self.title,
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rec = models.Layer.objects.get(id=self.obj.id)
@@ -206,8 +206,8 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
                 'ordering': 1,
                 'group_by': 'uniform',
                 'symbols': json.dumps(symbols),
-                'dataset': self.form.id,
-                'display_field': self.form.fields[0].id
+                'dataset': self.dataset.id,
+                'display_field': self.dataset.fields[0].id
             }
         )
 
@@ -222,8 +222,8 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
                 'ordering': 1,
                 'group_by': 'uniform',
                 'symbols': json.dumps(symbols),
-                'dataset': self.form.id,
-                'display_field': self.form.fields[0].col_name
+                'dataset': self.dataset.id,
+                'display_field': self.dataset.fields[0].col_name
             }
         )
 
@@ -234,7 +234,7 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
                 'symbols': []
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rec = models.Layer.objects.get(id=self.obj.id)

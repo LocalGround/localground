@@ -78,7 +78,7 @@ define(["underscore", "marionette", "models/project",
                         collection = new MapImages(jsonData, opts);
                         break;
                     default:
-                        if (opts.dataType.includes("form_")) {
+                        if (opts.dataType.includes("dataset_")) {
                             collection = this.__createRecordsCollection(jsonData, opts);
                         } else {
                             throw new Error("case not handled");

@@ -12,9 +12,9 @@ class BatchQueryGroupMixin(ModelMixin):
     model = models.Project
 
     def setUp(self):
-        # to set up this test, we'll create 2 forms that that
+        # to set up this test, we'll create 2 datasets that that
         # are owned by self.owner.  A unique, private project
-        # will be assigned to each form.
+        # will be assigned to each dataset.
 
         ModelMixin.setUp(self, load_fixtures=False)
 
@@ -29,10 +29,10 @@ class BatchQueryGroupMixin(ModelMixin):
         self._create_groups()
 
     def tearDown(self):
-        models.Form.objects.all().delete()
+        models.Dataset.objects.all().delete()
 
     def test_owner_can_view_objects(self):
-        # Both forms are owned by self.owner
+        # Both datasets are owned by self.owner
         self.assertEqual(
             3,
             len(self.model.objects.get_objects(self.owner))
@@ -56,12 +56,12 @@ class BatchQueryGroupMixin(ModelMixin):
         # grant user2 direct access to group1
         self.add_group_viewer(self.group1, self.user2)
 
-        # user2 should be able to view 1 forms....
+        # user2 should be able to view 1 datasets....
         self.assertEqual(
             2,
             len(self.model.objects.get_objects(self.user2))
         )
-        # user2 should only be able to edit 0 form...
+        # user2 should only be able to edit 0 dataset...
         self.assertEqual(
             1,
             len(self.model.objects.get_objects_editable(self.user2))
@@ -79,12 +79,12 @@ class BatchQueryGroupMixin(ModelMixin):
         # grant user2 direct access to group1
         self.add_group_editor(self.group1, self.user2)
 
-        # user2 should be able to view 1 form....
+        # user2 should be able to view 1 dataset....
         self.assertEqual(
             2,
             len(self.model.objects.get_objects(self.user2))
         )
-        # user2 should only be able to edit 1 form...
+        # user2 should only be able to edit 1 dataset...
         self.assertEqual(
             2,
             len(self.model.objects.get_objects_editable(self.user2))
@@ -94,12 +94,12 @@ class BatchQueryGroupMixin(ModelMixin):
         # grant user2 direct access to group1
         self.add_group_manager(self.group1, self.user2)
 
-        # user2 should be able to view 1 forms....
+        # user2 should be able to view 1 datasets....
         self.assertEqual(
             2,
             len(self.model.objects.get_objects(self.user2))
         )
-        # user2 should only be able to edit 1 forms...
+        # user2 should only be able to edit 1 datasets...
         self.assertEqual(
             2,
             len(self.model.objects.get_objects_editable(self.user2))

@@ -8,11 +8,11 @@ from localground.apps.site import models
 class FormList(QueryableListCreateAPIView):
     serializer_class = serializers.DatasetSerializerList
     filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
-    model = models.Form
+    model = models.Dataset
 
     def get_queryset(self):
         if self.request.user.is_authenticated():
-            return models.Form.objects.get_objects(self.request.user)
+            return models.Dataset.objects.get_objects(self.request.user)
         else:
             raise exceptions.ParseError('Login Required')
 
@@ -20,12 +20,12 @@ class FormList(QueryableListCreateAPIView):
 
 
 class FormInstance(generics.RetrieveUpdateDestroyAPIView):
-    model = models.form
+    model = models.dataset
     serializer_class = serializers.DatasetSerializerDetail
 
     def get_queryset(self):
         if self.request.user.is_authenticated():
-            return models.Form.objects.get_objects(self.request.user)
+            return models.Dataset.objects.get_objects(self.request.user)
         else:
             raise exceptions.ParseError('Login Required')
 

@@ -13,14 +13,14 @@ class DatasetSerializerList(
     fields_url = serializers.SerializerMethodField()
 
     def create(self, validated_data):
-        # Call the Form's custom create method, which creates
+        # Call the Dataset's custom create method, which creates
         # 2 fields "for free": Name and Description:
         validated_data.update(self.get_presave_create_dictionary())
-        self.instance = models.Form.create(**validated_data)
+        self.instance = models.Dataset.create(**validated_data)
         return self.instance
 
     class Meta:
-        model = models.Form
+        model = models.Dataset
         fields = BaseSerializer.field_list + \
             NamedSerializerMixin.field_list + \
             ProjectSerializerMixin.field_list + ('data_url', 'fields_url')
@@ -37,7 +37,7 @@ class DatasetSerializerDetail(DatasetSerializerList):
     fields = serializers.SerializerMethodField('get_form_fields')
 
     class Meta:
-        model = models.Form
+        model = models.Dataset
         fields = DatasetSerializerList.Meta.fields + ('fields',)
         depth = 0
 

@@ -7,6 +7,7 @@ from localground.apps.site.api.views.abstract_views import \
 from localground.apps.site import models
 from django.http import Http404
 
+
 class RecordMixin(object):
 
     def get_serializer_class(self, is_list=False):
@@ -15,11 +16,12 @@ class RecordMixin(object):
         user-generated table being queried
         '''
         try:
-            #form = models.Form.objects.get(id=1)
-            form = models.Form.objects.get(id=self.kwargs.get('form_id'))
-        except models.Form.DoesNotExist:
+            # dataset = models.Dataset.objects.get(id=1)
+            dataset = models.Dataset.objects.get(
+                id=self.kwargs.get('dataset_id'))
+        except models.Dataset.DoesNotExist:
             raise Http404
-        return create_dynamic_serializer(form)
+        return create_dynamic_serializer(dataset)
 
     def get_geometry_dictionary(self, serializer):
         geom = serializer.validated_data.get('point')
@@ -55,9 +57,9 @@ class RecordMixin(object):
         return d
 
     def get_queryset(self):
-        #raise Exception(dir(self.request))
-        return models.Record.objects \
-                             .get_objects_with_lists(self.kwargs.get('form_id'))
+        # raise Exception(dir(self.request))
+        return models.Record.objects.get_objects_with_lists(
+            self.kwargs.get('dataset_id'))
 
 
 class RecordList(RecordMixin, QueryableListCreateAPIView):

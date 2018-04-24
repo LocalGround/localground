@@ -90,7 +90,7 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
                 'video_provider': 'youtube'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -114,7 +114,7 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
                 'attribution': 'van gogh'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.get("name"), name)
@@ -157,7 +157,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
                 'attribution': 'Phil'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_video = models.Video.objects.get(id=self.video.id)
@@ -175,7 +175,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
                 'video_link': vl
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_video = models.Video.objects.get(id=self.video.id)
@@ -198,7 +198,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
                 'tags': ''
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_video = models.Video.objects.get(id=self.video.id)
@@ -220,7 +220,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
             self.url,
             data=urllib.urlencode({'geometry': point}),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_video = models.Video.objects.get(id=self.video.id)
@@ -241,7 +241,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
                 'caption': 'New Caption'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         # print response
         self.assertEqual(response.status_code, status.HTTP_200_OK)

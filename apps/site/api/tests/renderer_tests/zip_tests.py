@@ -47,7 +47,7 @@ class ZipMediaMixin(mixins.MediaMixin):
             num_rows = 0
             for row in reader:
                 key = row.get('overlay_type')
-                if 'form_' in key and not is_list:
+                if 'dataset_' in key and not is_list:
                     key = 'record'
                 num_rows += 1
                 file_path_columns = ZIPRenderer.PATH_FIELD_LOOKUP.get(key) \
@@ -89,7 +89,7 @@ class ZIPRendererListTest(ZipMediaMixin, test.TestCase, ModelMixin):
             '/api/0/photos/': 2,
             '/api/0/audio/': 2,
             '/api/0/prints/': 2,
-            '/api/0/datasets/{}/data/'.format(self.record1.form.id): 8
+            '/api/0/datasets/{}/data/'.format(self.record1.dataset.id): 8
         }
 
     def test_all_media_files_present_in_zip_file(self):
@@ -115,12 +115,12 @@ class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
             name="f2", tags=self.tags2, point=self.point
         )
 
-        self.form = self.create_form_with_fields(
-            name="Class Form", num_fields=9
+        self.dataset = self.create_form_with_fields(
+            name="Class Dataset", num_fields=9
         )
-        # self.form = models.Form.objects.get(id=self.form.id)  # requery
+        # self.dataset = models.Dataset.objects.get(id=self.dataset.id)  # requery
         self.record1 = self.insert_form_data_record(
-            form=self.form,
+            dataset=self.dataset,
             project=self.project,
             geoJSON=mixins.point,
             name='rec1'
@@ -131,7 +131,7 @@ class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
             '/api/0/projects/{0}/'.format(self.project.id): 6,
             # 1 project + 2 photos + 2 audio (no records)
             '/api/0/datasets/{0}/data/{1}/'.format(
-                self.form.id, self.record1.id): 5
+                self.dataset.id, self.record1.id): 5
         }
 
     def test_all_media_files_present_in_zip_file(self):

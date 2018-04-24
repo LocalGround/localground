@@ -8,6 +8,7 @@ from localground.apps.site.api import fields
 
 
 class FieldSerializerSimple(serializers.ModelSerializer):
+
     data_type = serializers.SlugRelatedField(
         queryset=models.DataType.objects.all(),
         slug_field='name',
@@ -29,7 +30,7 @@ class FieldSerializerBase(AuditSerializerMixin, FieldSerializerSimple):
     '''
     url = serializers.SerializerMethodField()
     col_name = serializers.SerializerMethodField()
-    form = serializers.SerializerMethodField()
+    dataset = serializers.SerializerMethodField()
     help_text = 'Use to store ratings and lookup tables. Example: ['
     help_text += '{"key1": "value1", "key2": "value2" }, '
     help_text += '{"key1": "value3", "key2": "value4" }]'
@@ -43,18 +44,18 @@ class FieldSerializerBase(AuditSerializerMixin, FieldSerializerSimple):
     class Meta:
         model = models.Field
         fields = (
-            'id', 'form', 'col_alias', 'col_name', 'extras', 'ordering',
+            'id', 'dataset', 'col_alias', 'col_name', 'extras', 'ordering',
             'data_type', 'url')
 
     def get_url(self, obj):
         return '%s/api/0/datasets/%s/fields/%s' % \
-                (settings.SERVER_URL, obj.form.id, obj.id)
+                (settings.SERVER_URL, obj.dataset.id, obj.id)
 
     def get_col_name(self, obj):
         return obj.col_name
 
-    def get_form(self, obj):
-        return obj.form.id
+    def get_dataset(self, obj):
+        return obj.dataset.id
 
 
 class FieldSerializer(FieldSerializerBase):

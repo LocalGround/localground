@@ -18,19 +18,19 @@ class KMLRendererListTest(test.TestCase, ModelMixin):
 
     def setUp(self):
         ModelMixin.setUp(self)
-        self.form = self.create_form_with_fields(
-            name="Class Form", num_fields=7
+        self.dataset = self.create_form_with_fields(
+            name="Class Dataset", num_fields=7
         )
         self.record1 = self.insert_form_data_record(
-            form=self.form,
+            dataset=self.dataset,
             project=self.project,
             geoJSON=mixins.point,
             name='rec1'
         )
         self.url = '/api/0/datasets/%s/data/' % (
-            self.form.id
+            self.dataset.id
         )
-        self.key = 'form_{0}'.format(self.form.id)
+        self.key = 'dataset_{0}'.format(self.dataset.id)
 
     def test_page_200_status_basic_user(self, urls=None, **kwargs):
         response = self.client_user.get(self.url, {
@@ -41,13 +41,13 @@ class KMLRendererListTest(test.TestCase, ModelMixin):
 
     def test_kml_is_valid_xml(self):
         self.insert_form_data_record(
-            form=self.form,
+            dataset=self.dataset,
             project=self.project,
             geoJSON=mixins.point2,
             name='rec2'
         )
         self.insert_form_data_record(
-            form=self.form,
+            dataset=self.dataset,
             project=self.project,
             geoJSON=mixins.point3,
             name='rec3'
@@ -72,26 +72,26 @@ class KMLRendererListTest(test.TestCase, ModelMixin):
         parseString(data, ContentHandler())
 
     def tearDown(self):
-        models.Form.objects.all().delete()
+        models.Dataset.objects.all().delete()
 
 
 class KMLRendererInstanceTest(test.TestCase, ModelMixin):
 
     def setUp(self):
         ModelMixin.setUp(self)
-        self.form = self.create_form_with_fields(
-            name="Class Form", num_fields=7
+        self.dataset = self.create_form_with_fields(
+            name="Class Dataset", num_fields=7
         )
         self.record1 = self.insert_form_data_record(
-            form=self.form,
+            dataset=self.dataset,
             project=self.project,
             geoJSON=mixins.point,
             name='rec1'
         )
         self.url = '/api/0/datasets/%s/data/' % (
-            self.form.id
+            self.dataset.id
         )
-        self.key = 'form_{0}'.format(self.form.id)
+        self.key = 'dataset_{0}'.format(self.dataset.id)
 
     def test_kml_is_valid_xml(self):
         response = self.client_user.get(self.url + '?format=kml')

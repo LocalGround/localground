@@ -279,12 +279,12 @@ class ModelMixin(object):
 
     def create_record(
             self, user=None, project=None, geoJSON=None, point=None,
-            extras={"random key": "random value"}, tags=[], form=None):
+            extras={"random key": "random value"}, tags=[], dataset=None):
         from localground.apps.site import models
         geom = None
         user = user or self.user
         project = project or self.project
-        form = form or self.create_form()
+        dataset = dataset or self.create_form()
         if geoJSON is None and point is None:
             from django.contrib.gis.geos import Point
             lat = 37.87
@@ -302,7 +302,7 @@ class ModelMixin(object):
             extras=extras,
             last_updated_by=user,
             tags=tags,
-            form=form
+            dataset=dataset
         )
         if geom.geom_type == "Point":
             mwa.point = geom
@@ -458,7 +458,7 @@ class ModelMixin(object):
                     description='A description', user=None,
                     project=None):
         from localground.apps.site import models
-        f = models.Form.create(
+        f = models.Dataset.create(
             owner=user or self.user,
             name=name,
             description=description,
@@ -499,7 +499,7 @@ class ModelMixin(object):
                 name=field_name,
                 data_type=DataType.objects.get(id=(i + 1)),
                 ordering=(i + 3),
-                form=f)
+                dataset=f)
             if i+1 == 6:
                 fld.extras = [{"name": "Bad", "value": 1},
                               {"name": "Ok", "value": 2},
@@ -512,7 +512,7 @@ class ModelMixin(object):
             fld.save()
         return f
 
-    def create_field(self, form, name='Field 1', extras=None,
+    def create_field(self, dataset, name='Field 1', extras=None,
                      data_type=None, ordering=1):
         from localground.apps.site import models
         data_type = data_type or DataType.objects.get(id=1)
@@ -520,7 +520,7 @@ class ModelMixin(object):
             col_alias=name,
             data_type=data_type,
             ordering=ordering,
-            form=form,
+            dataset=dataset,
             owner=self.user,
             last_updated_by=self.user,
             extras=extras
@@ -529,11 +529,11 @@ class ModelMixin(object):
         return f
 
     def insert_form_data_record(
-            self, form, project=None, photo=None, audio=None, name=None,
+            self, dataset, project=None, photo=None, audio=None, name=None,
             point=None, geoJSON=None):
 
         return self.create_record(
-            project=project, form=form, point=point, geoJSON=geoJSON)
+            project=project, dataset=dataset, point=point, geoJSON=geoJSON)
 
     def create_imageopt(self, mapimage):
         from localground.apps.site import models
@@ -676,12 +676,14 @@ class ModelMixin(object):
         audio.save()
         return audio
 
-    def create_styled_map(
-            self, dataset=None, display_field=None,
-            layer_title='Untitled Layer'):
+    def create_styled_map(self, dataset=None):
         from localground.apps.site.models import StyledMap
         from django.contrib.gis.geos import GEOSGeometry
-        map = models.StyledMap(
+        datasets = None
+        if dataset:
+            datasets = [dataset]
+        map = models.StyledMap.create(
+            datasets=datasets,
             center=GEOSGeometry('POINT(5 23)'),
             zoom=3,
             last_updated_by=self.user,
@@ -689,12 +691,6 @@ class ModelMixin(object):
             project=self.project,
             name='Oakland Map'
         )
-        map.save()
-
-        # Create dummy layer:
-        self.create_layer(
-            map, dataset=dataset, display_field=display_field,
-            title=layer_title)
         return map
 
     def create_relation(

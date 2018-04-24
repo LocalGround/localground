@@ -32,14 +32,14 @@ class LayerSerializer(BaseSerializer):
         layer_id = self.context.get('view').kwargs.get('pk')
         project = models.StyledMap.objects.get(id=map_id).project
         if fields.get('dataset'):
-            fields['dataset'].queryset = models.Form.objects.filter(
+            fields['dataset'].queryset = models.Dataset.objects.filter(
                 project=project
             )
         if layer_id:
             try:
                 layer = models.Layer.objects.get(id=layer_id)
                 fields['display_field'].queryset = models.Field.objects.filter(
-                    form=layer.dataset)
+                    dataset=layer.dataset)
             except Exception:
                 pass
         return fields
@@ -53,7 +53,7 @@ class LayerSerializer(BaseSerializer):
     def get_dataset(self, obj):
         return {
             'id': obj.dataset.id,
-            'overlay_type': 'form_{0}'.format(obj.dataset.id),
+            'overlay_type': 'dataset_{0}'.format(obj.dataset.id),
             'name': obj.dataset.name,
             'fields': FieldSerializerSimple(
                 obj.dataset.fields, many=True, context={'request': {}}
@@ -122,7 +122,7 @@ class LayerSerializerPost(LayerSerializer):
 
     #dataset = DatasetSerializerDetail(allow_null=True, required=False)
     dataset = serializers.PrimaryKeyRelatedField(
-        queryset=models.Form.objects.all(),
+        queryset=models.Dataset.objects.all(),
         allow_null=True, required=False)
 
     class Meta:

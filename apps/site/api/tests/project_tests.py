@@ -45,7 +45,7 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
         self.metadata = get_metadata()
 
     def tearDown(self):
-        models.Form.objects.all().delete()
+        models.Dataset.objects.all().delete()
 
     def test_create_project_using_post(self, **kwargs):
         name = 'New Project!'
@@ -98,11 +98,11 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
             self.assertTrue(isinstance(children.get(k).get('data'), list))
 
     def test_get_project_with_marker_arrays(self, **kwargs):
-        self.form = self.create_form_with_fields(
-            name="Class Form", num_fields=7
+        self.dataset = self.create_form_with_fields(
+            name="Class Dataset", num_fields=7
         )
         self.record = self.create_record(
-            self.user, self.project, form=self.form)
+            self.user, self.project, dataset=self.dataset)
         self.photo1 = self.create_photo(self.user, self.project)
         self.audio1 = self.create_audio(self.user, self.project)
         self.create_relation(self.record, self.photo1)
@@ -113,7 +113,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         datasets = response.data.get("datasets")
 
         # check arrays:
-        key = 'form_{0}'.format(self.form.id)
+        key = 'dataset_{0}'.format(self.dataset.id)
         record = datasets.get(key).get('data')[0]
         self.assertTrue('attached_photos_ids' in record)
         self.assertTrue('attached_audio_ids' in record)
@@ -127,7 +127,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
                 'caption': description
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_project = models.Project.objects.get(id=self.project.id)
@@ -141,7 +141,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
             self.url,
             data=urllib.urlencode({'name': name}),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded")
+            content_type="application/x-www-dataset-urlencoded")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_project = models.Project.objects.get(id=self.project.id)
         self.assertEqual(updated_project.name, name)

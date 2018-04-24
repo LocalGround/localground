@@ -8,7 +8,7 @@ from localground.apps.site.tests.models.abstract_base_audit_tests import \
 from django import test
 
 
-# form test in progress
+# dataset test in progress
 class FieldTest(BaseAuditAbstractModelClassTest, test.TestCase):
 
     def setUp(self):

@@ -72,7 +72,7 @@ class UploadSourceTest(BaseAbstractModelClassTest, test.TestCase):
 
     def test_unicode(self, **kwargs):
         # str method calls the __unicode__  private method
-        self.assertEqual(str(self.model), '1. Web Form')
+        self.assertEqual(str(self.model), '1. Web Dataset')
 
     def test_get_source(self, **kwargs):
         self.assertEqual(UploadSource.get_source(2).id, 2)

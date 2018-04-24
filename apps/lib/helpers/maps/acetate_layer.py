@@ -220,7 +220,7 @@ a.generate_acetate_layer_with_map()
         from PIL import Image
         paths, path_attributes, icon = [], [], None
         keys = Icon.get_icon_keys()
-        forms = models.Form.objects.filter(project__id=self.project_id)
+        forms = models.Dataset.objects.filter(project__id=self.project_id)
         extents = Extents.get_extents_from_center_lat_lng(self.center, self.zoom, self.width, self.height)
         extents.toPixels(self.zoom)
         layers = [

@@ -122,7 +122,7 @@ class BaseUploadedMedia(BaseNamedMedia):
 
     @classmethod
     def inline_form(cls, user):
-        from localground.apps.site.forms import get_inline_media_form
+        from localground.apps.site.datasets import get_inline_media_form
         return get_inline_media_form(cls, user)
 
     def get_object_type(self):

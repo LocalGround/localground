@@ -7,7 +7,7 @@ from localground.apps.site.models import DataType
 
 
 class Field(BaseAudit):
-    form = models.ForeignKey('Form')
+    dataset = models.ForeignKey('Dataset')
     col_name_db = models.CharField(max_length=255, db_column="col_name")
     col_alias = models.CharField(max_length=255, verbose_name="column name")
     data_type = models.ForeignKey('DataType')
@@ -15,13 +15,13 @@ class Field(BaseAudit):
     ordering = models.IntegerField()
 
     def can_view(self, user=None, access_key=None):
-        return self.form.can_view(user=user, access_key=access_key)
+        return self.dataset.can_view(user=user, access_key=access_key)
 
     def can_edit(self, user):
-        return self.form.can_edit(user)
+        return self.dataset.can_edit(user)
 
     def can_manage(self, user):
-        return self.form.can_manage(user)
+        return self.dataset.can_manage(user)
 
     def to_dict(self):
         return dict(alias=self.col_alias, id=self.id)
@@ -53,8 +53,8 @@ class Field(BaseAudit):
         app_label = 'site'
         verbose_name = 'field'
         verbose_name_plural = 'fields'
-        ordering = ['form__id', 'ordering']
-        unique_together = (('col_alias', 'form'), ('col_name_db', 'form'))
+        ordering = ['dataset__id', 'ordering']
+        unique_together = (('col_alias', 'dataset'), ('col_name_db', 'dataset'))
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None

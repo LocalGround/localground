@@ -1,5 +1,5 @@
 from localground.apps.site import models
-from localground.apps.site.models import StyledMap, Form, Layer
+from localground.apps.site.models import StyledMap, Dataset, Layer
 from localground.apps.site.managers import StyledMapManager
 from localground.apps.site.tests.models.abstract_base_tests import \
 BaseAbstractModelClassTest
@@ -75,17 +75,17 @@ class StyledMapTests(
         self.assertTrue(isinstance(StyledMap.objects, StyledMapManager))
 
     def test_create_map_new_dataset(self, **kwargs):
-        num_datasets = len(Form.objects.all())
+        num_datasets = len(Dataset.objects.all())
         map = StyledMap.create(**self.get_kwargs())
 
         # Check that a new layer has been added:
         self.assertEqual(len(map.layers), 1)
 
-        # Check that a new form has been create:
-        self.assertEqual(num_datasets + 1, len(Form.objects.all()))
+        # Check that a new dataset has been create:
+        self.assertEqual(num_datasets + 1, len(Dataset.objects.all()))
 
     def test_delete_map_removes_orphaned_empty_datasets(self, **kwargs):
-        num_datasets = len(Form.objects.all())
+        num_datasets = len(Dataset.objects.all())
         map = StyledMap.create(**self.get_kwargs())
         # Check that a new layer has been added:
         new_layer_id = map.layers[0].id
@@ -95,8 +95,8 @@ class StyledMapTests(
         # ensure that the Layer and the Dataset no longer exist:
         with self.assertRaises(Layer.DoesNotExist):
             Layer.objects.get(id=new_layer_id)
-        with self.assertRaises(Form.DoesNotExist):
-            Form.objects.get(id=new_dataset_id)
+        with self.assertRaises(Dataset.DoesNotExist):
+            Dataset.objects.get(id=new_dataset_id)
 
     def test_delete_map_does_not_remove_datasets_referenced_elsewhere(
             self, **kwargs):
@@ -111,7 +111,7 @@ class StyledMapTests(
 
         # ensure that the Layer and the Dataset no longer exist:
         self.assertEqual(
-            Form.objects.get(id=new_dataset_id).name, 'A title')
+            Dataset.objects.get(id=new_dataset_id).name, 'A title')
 
     def test_delete_map_does_not_remove_dataset_if_not_empty(
             self, **kwargs):
@@ -120,25 +120,25 @@ class StyledMapTests(
         new_dataset = map.layers[0].dataset
         new_dataset_id = new_dataset.id
         self.create_record(
-            project=new_dataset.project, form=new_dataset, point=map.center)
+            project=new_dataset.project, dataset=new_dataset, point=map.center)
 
         # delete one of the maps (but not the other one):
         map.delete()
 
         # ensure that the Layer and the Dataset no longer exist:
         self.assertEqual(
-            Form.objects.get(id=new_dataset_id).name, 'Untitled Dataset')
+            Dataset.objects.get(id=new_dataset_id).name, 'Untitled Dataset')
 
     def test_create_map_existing_dataset(self, **kwargs):
         f1 = self.create_form_with_fields()
         f2 = self.create_form_with_fields()
         datasets = [f1, f2]
-        num_datasets = len(Form.objects.all())
+        num_datasets = len(Dataset.objects.all())
         map = StyledMap.create(datasets=datasets, **self.get_kwargs())
         # Check that a new layer has been added for each dataset specified:
         self.assertEqual(len(map.layers), 2)
         self.assertEqual(map.layers[0].dataset, f1)
         self.assertEqual(map.layers[1].dataset, f2)
 
-        # Check that a new form has *not been created:
-        self.assertEqual(num_datasets, len(Form.objects.all()))
+        # Check that a new dataset has *not been created:
+        self.assertEqual(num_datasets, len(Dataset.objects.all()))

@@ -30,7 +30,7 @@ define([
 
         templateHelpers: function () {
             this.forms.each(function (model) {
-                model.set("instance_type", "form_" + model.id);
+                model.set("instance_type", "dataset_" + model.id);
             });
             return {
                 forms: this.forms.toJSON(),

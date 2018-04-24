@@ -23,7 +23,7 @@ def get_metadata():
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'},
-        'form': {'read_only': True, 'required': False, 'type': 'field'},
+        'dataset': {'read_only': True, 'required': False, 'type': 'field'},
         'media': {'read_only': True, 'required': False, 'type': 'field'},
         'attached_photos_ids': {
             'read_only': True, 'required': False, 'type': 'field'},
@@ -85,10 +85,10 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
         ViewMixinAPI.setUp(self)
         self.view = views.RecordList.as_view()
         self.metadata = get_metadata()
-        self.form = self.create_form_with_fields(num_fields=7)
+        self.dataset = self.create_form_with_fields(num_fields=7)
         self.markerwattrs = self.create_record(
-            self.user, self.project, form=self.form)
-        self.urls = ['/api/0/datasets/%s/data/' % self.form.id]
+            self.user, self.project, dataset=self.dataset)
+        self.urls = ['/api/0/datasets/%s/data/' % self.dataset.id]
 
     def tearDown(self):
         pass
@@ -117,9 +117,9 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     url,
                     data=urllib.urlencode(default_data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded"
+                    content_type="application/x-www-dataset-urlencoded"
                 )
-                new_marker = self.form.get_records().order_by('-id',)[0]
+                new_marker = self.dataset.get_records().order_by('-id',)[0]
 
                 self.assertEqual(
                     response.data[d.keys()[0]], d.values()[0]
@@ -150,9 +150,9 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     url,
                     data=urllib.urlencode(data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded"
+                    content_type="application/x-www-dataset-urlencoded"
                 )
-                new_marker = self.form.get_records().order_by('-id',)[0]
+                new_marker = self.dataset.get_records().order_by('-id',)[0]
 
                 '''
                 for i in range(0, dict_len):
@@ -188,10 +188,10 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     url,
                     data=urllib.urlencode(default_data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded"
+                    content_type="application/x-www-dataset-urlencoded"
                 )
 
-                new_marker = self.form.get_records().order_by('-id',)[0]
+                new_marker = self.dataset.get_records().order_by('-id',)[0]
                 '''
                 self.assertEqual(
                     new_marker.attributes[d.keys()[0]], d.values()[0]
@@ -225,7 +225,7 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     url + '?project_id={0}'.format(self.project.id),
                     data=urllib.urlencode(data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded"
+                    content_type="application/x-www-dataset-urlencoded"
                 )
                 d = response.data
                 for key in hstore_data.keys():
@@ -263,7 +263,7 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     url,
                     data=urllib.urlencode(params),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded")
+                    content_type="application/x-www-dataset-urlencoded")
                 self.assertEqual(
                     response.status_code,
                     status.HTTP_400_BAD_REQUEST)
@@ -285,10 +285,10 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                         'extras': self.ExtrasGood
                     }),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded")
+                    content_type="application/x-www-dataset-urlencoded")
 
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-                new_marker = self.form.get_records().order_by('-id',)[0]
+                new_marker = self.dataset.get_records().order_by('-id',)[0]
 
                 self.assertEqual(
                     new_marker.geometry,
@@ -305,19 +305,19 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.view = views.RecordInstance.as_view()
-        self.form = self.create_form_with_fields(num_fields=7)
+        self.dataset = self.create_form_with_fields(num_fields=7)
         self.metadata = get_metadata()
         self.metadata.update({
             'project_id':
                 {'read_only': True, 'required': True, 'type': 'field'}
         })
         self.markerwattrs = self.create_record(
-            self.user, self.project, form=self.form)
+            self.user, self.project, dataset=self.dataset)
         self.urls = [
             '/api/0/datasets/%s/data/%s/' %
-            (self.markerwattrs.form.id, self.markerwattrs.id)
+            (self.markerwattrs.dataset.id, self.markerwattrs.id)
         ]
-        self.list_url = '/api/0/datasets/%s/data/' % self.form.id
+        self.list_url = '/api/0/datasets/%s/data/' % self.dataset.id
         self.hstore_data = [
             {'field_1': 'field_1 text'},
             {'field_2': 77},
@@ -346,9 +346,9 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             url,
             data=urllib.urlencode(default_data),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
-        new_marker = self.form.get_records().order_by('-id',)[0]
+        new_marker = self.dataset.get_records().order_by('-id',)[0]
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         return new_marker
 
@@ -368,9 +368,9 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                 url,
                 data=urllib.urlencode(default_data),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-form-urlencoded"
+                content_type="application/x-www-dataset-urlencoded"
             )
-            new_marker = self.form.get_records().order_by('-id',)[0]
+            new_marker = self.dataset.get_records().order_by('-id',)[0]
 
             self.assertEqual(
                 response.data[d.keys()[0]], d.values()[0]
@@ -436,7 +436,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                     url,
                     data=urllib.urlencode(new_data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded")
+                    content_type="application/x-www-dataset-urlencoded")
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -482,7 +482,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                         key: new_data[key]
                     }),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded")
+                    content_type="application/x-www-dataset-urlencoded")
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -521,7 +521,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                     url,
                     data=urllib.urlencode(params),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded")
+                    content_type="application/x-www-dataset-urlencoded")
                 self.assertEqual(
                     response.status_code,
                     status.HTTP_400_BAD_REQUEST)
@@ -534,7 +534,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                     url,
                     data=urllib.urlencode({'geometry': geom}),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded"
+                    content_type="application/x-www-dataset-urlencoded"
                 )
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 updated_marker = models.Record.objects.get(
@@ -546,7 +546,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
     def test_delete_marker(self, **kwargs):
         marker_id = self.markerwattrs.id
-        form_id = self.markerwattrs.form.id
+        form_id = self.markerwattrs.dataset.id
 
         # ensure marker exists:
         models.Record.objects.get(id=marker_id)
@@ -609,13 +609,13 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                     photo_url,
                     data=urllib.urlencode(photo_data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded")
+                    content_type="application/x-www-dataset-urlencoded")
 
             audio_response = self.client_user.post(
                     audio_url,
                     data=urllib.urlencode(audio_data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
-                    content_type="application/x-www-form-urlencoded")
+                    content_type="application/x-www-dataset-urlencoded")
 
             self.assertEqual(
                 photo_response.status_code, status.HTTP_201_CREATED)

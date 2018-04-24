@@ -8,7 +8,7 @@ def persistant_queries(request):
     which are available to the interactive map.
     """
     from localground.apps.site.models import Project
-    from localground.apps.site.models import Form
+    from localground.apps.site.models import Dataset
     import simplejson as json
     from django.conf import settings
     #raise Exception(os.environ)
@@ -37,7 +37,7 @@ def persistant_queries(request):
     '''
     try:
         context.update({
-            'show_air_quality': Form.objects.get(id=84).has_access(request.user)
+            'show_air_quality': Dataset.objects.get(id=84).has_access(request.user)
         })
     except Exception:
         pass

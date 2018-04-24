@@ -152,7 +152,7 @@ class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
                 'tags': ''
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_audio = models.Audio.objects.get(id=self.audio.id)
@@ -173,7 +173,7 @@ class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
             self.url,
             data=urllib.urlencode({'geometry': point}),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_audio = models.Audio.objects.get(id=self.audio.id)

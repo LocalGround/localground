@@ -65,7 +65,7 @@ class ApiDatasetInstanceTest(test.TestCase, ViewMixinAPI):
         self.metadata['project_id']['read_only'] = True
 
     def test_put_name_caption_tags(self, urls=None, **kwargs):
-        name = 'my new form'
+        name = 'my new dataset'
         description = 'new caption'
         tags = 'bird, a cat, a dog'
         response = self.client_user.put(
@@ -76,7 +76,7 @@ class ApiDatasetInstanceTest(test.TestCase, ViewMixinAPI):
                 'tags': tags
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # check that response looks good:
@@ -86,13 +86,13 @@ class ApiDatasetInstanceTest(test.TestCase, ViewMixinAPI):
             response.data.get('tags'), [u'bird', u'a cat', u'a dog'])
 
         # check that DB commit worked
-        dataset = models.Form.objects.get(id=self.form_1.id)
+        dataset = models.Dataset.objects.get(id=self.form_1.id)
         self.assertEqual(dataset.name, name)
         self.assertEqual(dataset.description, description)
         self.assertEqual(dataset.tags, [u'bird', u'a cat', u'a dog'])
 
     def test_patch_name(self, urls=None, **kwargs):
-        name = 'my new form'
+        name = 'my new dataset'
         description = self.form_1.description
         tags = self.form_1.tags
         response = self.client_user.patch(
@@ -101,7 +101,7 @@ class ApiDatasetInstanceTest(test.TestCase, ViewMixinAPI):
                 'name': name
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-form-urlencoded"
+            content_type="application/x-www-dataset-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # check that response looks good:
@@ -110,7 +110,7 @@ class ApiDatasetInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.data.get('tags'), tags)
 
         # check that DB commit worked
-        dataset = models.Form.objects.get(id=self.form_1.id)
+        dataset = models.Dataset.objects.get(id=self.form_1.id)
         self.assertEqual(dataset.name, name)
         self.assertEqual(dataset.description, description)
         self.assertEqual(dataset.tags, tags)

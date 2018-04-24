@@ -15,25 +15,25 @@ class GeoJSONRendererListTest(test.TestCase, ModelMixin):
     def setUp(self):
         ModelMixin.setUp(self)
 
-        self.form = self.create_form_with_fields(
-            name="Class Form", num_fields=7
+        self.dataset = self.create_form_with_fields(
+            name="Class Dataset", num_fields=7
         )
         self.record1 = self.insert_form_data_record(
-            form=self.form,
+            dataset=self.dataset,
             project=self.project,
             geoJSON=mixins.point,
             name='rec1'
         )
         self.record2 = self.insert_form_data_record(
-            form=self.form,
+            dataset=self.dataset,
             project=self.project,
             geoJSON=mixins.line,
             name='rec2'
         )
         self.url = '/api/0/datasets/%s/data/' % (
-            self.form.id
+            self.dataset.id
         )
-        self.key = 'form_{0}'.format(self.form.id)
+        self.key = 'dataset_{0}'.format(self.dataset.id)
 
     def test_geojson_format_looks_correct(self):
 
@@ -54,32 +54,32 @@ class GeoJSONRendererListTest(test.TestCase, ModelMixin):
         self.assertTrue(isinstance(rec.get("properties"), dict))
 
     def tearDown(self):
-        models.Form.objects.all().delete()
+        models.Dataset.objects.all().delete()
 
 
 class GeoJSONRendererInstanceTest(test.TestCase, ModelMixin):
 
     def setUp(self):
         ModelMixin.setUp(self)
-        self.form = self.create_form_with_fields(
-            name="Class Form", num_fields=7
+        self.dataset = self.create_form_with_fields(
+            name="Class Dataset", num_fields=7
         )
         self.record1 = self.insert_form_data_record(
-            form=self.form,
+            dataset=self.dataset,
             geoJSON=mixins.point,
             project=self.project,
             name='rec1'
         )
         self.record2 = self.insert_form_data_record(
-            form=self.form,
+            dataset=self.dataset,
             geoJSON=mixins.line,
             project=self.project,
             name='rec2'
         )
         self.url = '/api/0/datasets/%s/data/%s/' % (
-            self.form.id, self.record1.id
+            self.dataset.id, self.record1.id
         )
-        self.key = 'form_{0}'.format(self.form.id)
+        self.key = 'dataset_{0}'.format(self.dataset.id)
 
     def test_geojson_format_looks_correct(self):
         response = self.client_user.get(self.url, {
