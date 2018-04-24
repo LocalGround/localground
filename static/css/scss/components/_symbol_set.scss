@@ -4,13 +4,19 @@
     padding: 8px 0px;
     /* margin: 10px 0px; */
     display: inline-block;
-    background-color: #f7f7f7;
+    background-color: white;
     font-weight: 600;
 }
 
-.symbol-header {
-    background: #f7f7f7;
+.symbol-wrapper {
     border-bottom: 1px solid #ebebeb;
+    padding-left: 12px;
+}
+
+.symbol-header {
+    background: white;
+    // border-top: 1px solid #ebebeb;    
+    padding: 0px 7px;
 }
 
 .symbol-edit {
@@ -65,6 +71,9 @@
     .highlight {
         background: rgb(123, 155, 225);
         color: #ffffff;
+        p {
+            color:#ffffff;
+        }
     }
 }
 

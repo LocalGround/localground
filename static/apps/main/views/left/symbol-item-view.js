@@ -38,6 +38,7 @@ define(["marionette",
             tagName: "li",
             className: "symbol-item marker-container",
             templateHelpers: function () {
+                let display_name = this.model.get(this.parent.layer.get("display_field"));
                 return {
                     active: this.active,
                     layer_id: this.parent.layerId,
@@ -48,7 +49,7 @@ define(["marionette",
                     isIndividual: this.parent.layer.get('group_by') === 'individual',
                     width: this.symbolModel.get('width'),
                     height: this.symbolModel.get('height'),
-                    display_name: this.model.get(this.parent.layer.get("display_field"))
+                    display_name: display_name === undefined ? "" : display_name
                 };
             },
 

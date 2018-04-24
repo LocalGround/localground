@@ -353,12 +353,6 @@ ul {
 
 .layer-container .add-record-container {
   float: right;
-  height: 25px;
-  width: 40px;
-  border-radius: 5px;
-  border: 1px solid #dedcdc;
-  padding: 2px 5px;
-  padding-top: 4px;
 }
 
 .layer-container .left-geometry-button {
@@ -392,15 +386,18 @@ ul {
   background-color: #EEE;
 }
 
+.layer-container .add-polygon_svg, .layer-container .add-polyline_svg {
+  margin-right: 5px;
+}
+
 .collapse .symbol-item {
   display: none;
 }
 
 .symbol-item {
-  border-bottom: 1px solid #ebebeb;
   font-size: 12px;
   list-style: none;
-  background-color: #f7f7f7;
+  background-color: white;
   height: inherit;
 }
 
@@ -419,6 +416,10 @@ ul {
 .symbol-item p {
   display: inline-block;
   margin-top: 3px;
+  vertical-align: middle;
+}
+
+.symbol-item svg {
   vertical-align: middle;
 }
 
@@ -448,13 +449,18 @@ ul {
   padding: 8px 0px;
   /* margin: 10px 0px; */
   display: inline-block;
-  background-color: #f7f7f7;
+  background-color: white;
   font-weight: 600;
 }
 
-.symbol-header {
-  background: #f7f7f7;
+.symbol-wrapper {
   border-bottom: 1px solid #ebebeb;
+  padding-left: 12px;
+}
+
+.symbol-header {
+  background: white;
+  padding: 0px 7px;
 }
 
 .symbol-edit {
@@ -506,6 +512,10 @@ ul {
 
 .symbol .highlight {
   background: #7b9be1;
+  color: #ffffff;
+}
+
+.symbol .highlight p {
   color: #ffffff;
 }
 

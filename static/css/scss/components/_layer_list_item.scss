@@ -21,12 +21,6 @@
     }
     .add-record-container {
         float: right;
-        height: 25px;
-        width: 40px;
-        border-radius: 5px;
-        border: 1px solid #dedcdc;
-        padding: 2px 5px;
-        padding-top: 4px;
     }
     .left-geometry-button {
         float: right;
@@ -54,6 +48,9 @@
             background-color: #EEE;
         }
     }
+    .add-polygon_svg, .add-polyline_svg {
+        margin-right: 5px;
+    }
 
 }
 
@@ -64,10 +61,10 @@
 }
 
 .symbol-item {
-    border-bottom: 1px solid #ebebeb;
+    // border-bottom: 1px solid #ebebeb;
     font-size: 12px;
     list-style: none;
-    background-color: #f7f7f7;
+    background-color: white;
     height: inherit;
 
     &:hover {
@@ -84,6 +81,9 @@
     p {
         display: inline-block;
         margin-top: 3px;
+        vertical-align: middle;
+    }
+    svg {
         vertical-align: middle;
     }
 }

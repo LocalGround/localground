@@ -6,8 +6,9 @@ define(["marionette",
         "apps/main/views/left/symbol-collection-view",
         "apps/main/views/left/edit-layer-name-modal-view",
         "apps/main/views/left/edit-display-field-modal-view",
+        "lib/maps/overlays/icon"
     ],
-    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView, EditLayerName, EditDisplayField) {
+    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView, EditLayerName, EditDisplayField, Icon) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -38,10 +39,13 @@ define(["marionette",
                 'click .open-layer-menu': 'showLayerMenu',
                 'click .rename-layer': 'editLayerName',
                 'click .edit-display-field': 'editDisplayField',
-                'click .lgb': 'displayGeometryOptions',
+                'click .add-record-container': 'displayGeometryOptions',
                 'click #select-point': 'selectPoint',
                 'click #select-polygon': 'selectPolygon',
                 'click #select-polyline': 'selectPolyline',
+                'click .add-record': 'addPoint',
+                'click .add-polyline_svg': 'addPolyline',
+                'click .add-polygon_svg': 'addPolygon'
                 },
 
             initialize: function (opts) {
@@ -163,6 +167,19 @@ define(["marionette",
                 this.dataCollection.add(recordModel);
             },
 
+            addRecord: function() {
+                let recordModel = new Record({
+                    'overlay_type': this.model.get('data_source'),
+                    "project_id": 3,
+                    "form": this.model.get('dataset'),
+                    "owner": this.model.get('owner'),
+                    'geometry': null,
+                    "fillColor": '#ed867d'
+                });
+                this.dataCollection.add(recordModel);
+                return recordModel;
+            },
+
             // triggered from the router
             checkSelectedItem: function(layerId) {
                 this.$el.attr('id', this.model.id);
@@ -233,7 +250,7 @@ define(["marionette",
             hideLayerMenu: function(e) {
                 var $el = $(e.target);
                 console.log('hide: ', $el);
-                if ($el.hasClass('layer-menu') || $el.hasClass('lgb')) {
+                if ($el.hasClass('layer-menu') || $el.hasClass('add-record-container')) {
                     console.log('return');
                     return
                 } else if (this.$el.find('.layer-menu').css('display') === 'block') {
@@ -339,18 +356,82 @@ define(["marionette",
                 
             },
 
-            selectPoint: function() {
-                this.newMarkerType = 'point';
-                this.render();
+            selectPoint: function(e) {
+                var that = this, MouseMover, $follower, mm;
+                MouseMover = function ($follower) {
+
+                    this.generateIcon = function () {
+                        var template, shape;
+                        template = Handlebars.compile('<svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
+                            '    <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
+                            '</svg>');
+                        shape = that.model.get("overlay_type");
+                        // If clicking an add new and click on marker, there is no overlay_type found
+                        //*
+                        // If outside, then save the model
+                        // and add it to the end of the list so the marker
+                        // so that new markers can be added seamlessly
+                        if (shape.indexOf("form_") != -1) {
+                            shape = "marker";
+                        }
+                        //*/
+                        else {
+                            //console.log("The current form of adding marker on empty form is buggy");
+                        }
+                        that.icon = new Icon({
+                            shape: shape,
+                            strokeWeight: 6,
+                            fillColor: that.model.collection.fillColor,
+                            width: that.model.collection.size,
+                            height: that.model.collection.size
+                        }).generateGoogleIcon();
+                        that.icon.width *= 1.5;
+                        that.icon.height *= 1.5;
+                        $follower.html(template(that.icon));
+                        $follower.show();
+                    };
+                    this.start = function () {
+                        this.generateIcon();
+                        $(window).bind('mousemove', this.mouseListener);
+                    };
+                    this.stop = function (event) {
+                        $(window).unbind('mousemove');
+                        $follower.remove();
+                        that.app.vent.trigger("place-marker", {
+                            x: event.clientX,
+                            y: event.clientY
+                        });
+                    };
+                    this.mouseListener = function (event) {
+                        $follower.css({
+                            top: event.clientY - that.icon.height * 3 / 4 + 4,
+                            left: event.clientX - that.icon.width * 3 / 4
+                        });
+                    };
+                };
+                //Instantiate Class and Add UI Event Handlers:
+                $follower = $('<div id="follower"></div>');
+                $('body').append($follower);
+                mm = new MouseMover($follower);
+                $(window).mousemove(mm.start.bind(mm));
+                $follower.click(mm.stop);
+
+                this.app.vent.trigger("add-new-marker", this.addRecord());
+                this.$el.find('.geometry-options').toggle();
+                e.preventDefault();
             },
-            selectPolygon: function() {
-                this.newMarkerType = 'polygon';
-                this.render();
+            selectPolygon: function(e) {
+                this.app.vent.trigger('add-polygon', this.addRecord());
+                this.$el.find('.geometry-options').toggle();
+                e.preventDefault();
             },
-            selectPolyline: function() {
-                this.newMarkerType = 'polyline';
-                this.render();
+            selectPolyline: function(e) {
+                this.app.vent.trigger('add-polyline', this.addRecord());
+                this.$el.find('.geometry-options').toggle();
+                e.preventDefault();
             },
+
+
 
             saveChanges: function() {
                 this.model.save();
