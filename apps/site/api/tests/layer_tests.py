@@ -115,8 +115,7 @@ class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
         ViewMixinAPI.setUp(self)
         self.model = models.Layer
         self.dataset = self.create_dataset()
-        self.map = self.create_styled_map(
-            dataset=self.dataset, layer_title='My Layer')
+        self.map = self.create_styled_map(dataset=self.dataset)
         self.url = '/api/0/maps/{0}/layers/'.format(
             self.map.id
         )
@@ -155,8 +154,7 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.dataset = self.create_dataset()
-        self.map = self.create_styled_map(
-            dataset=self.dataset, layer_title='My Layer')
+        self.map = self.create_styled_map(dataset=self.dataset)
         self.obj = self.map.layers[0]
         # self.url = '/api/0/layers/%s/' % self.obj.id
         self.url = '/api/0/maps/{0}/layers/{1}/'.format(
