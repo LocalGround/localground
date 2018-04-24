@@ -46,7 +46,6 @@ class UploadSource(Base):
         verbose_name_plural = 'upload-sources'
 
 
-
 class UploadType(Base):
     name = models.CharField(max_length=255)
 
@@ -74,8 +73,6 @@ class ObjectTypes():
     PHOTO = 'photo'
     AUDIO = 'audio'
     VIDEO = 'video'
-    MARKER = 'marker'
     SCAN = 'mapimage'
     PRINT = 'print'
     RECORD = 'record'
-
