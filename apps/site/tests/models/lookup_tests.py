@@ -132,7 +132,6 @@ class ObjectTypeTest(test.TestCase):
         self.assertEqual(ObjectTypes.PHOTO, 'photo')
         self.assertEqual(ObjectTypes.AUDIO, 'audio')
         self.assertEqual(ObjectTypes.VIDEO, 'video')
-        self.assertEqual(ObjectTypes.MARKER, 'marker')
         self.assertEqual(ObjectTypes.SCAN, 'mapimage')
         self.assertEqual(ObjectTypes.PRINT, 'print')
         self.assertEqual(ObjectTypes.RECORD, 'record')
