@@ -5,7 +5,7 @@ from localground.apps.site.api.views.abstract_views import \
 from localground.apps.site import models
 
 
-class FormList(QueryableListCreateAPIView):
+class DatasetList(QueryableListCreateAPIView):
     serializer_class = serializers.DatasetSerializerList
     filter_backends = (filters.SQLFilterBackend, filters.RequiredProjectFilter)
     model = models.Dataset
@@ -19,7 +19,7 @@ class FormList(QueryableListCreateAPIView):
     paginate_by = 100
 
 
-class FormInstance(generics.RetrieveUpdateDestroyAPIView):
+class DatasetInstance(generics.RetrieveUpdateDestroyAPIView):
     model = models.dataset
     serializer_class = serializers.DatasetSerializerDetail
 

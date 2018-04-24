@@ -84,7 +84,7 @@ class LayerModelTests(BaseAuditAbstractModelClassTest, test.TestCase):
     def test_uses_existing_dataset_if_defined(self):
         kwargs = self.get_map_kwargs()
         map = StyledMap.objects.create(**kwargs)
-        f1 = self.create_form_with_fields()
+        f1 = self.create_dataset_with_fields()
         num_datasets = len(Dataset.objects.all())
         layer = Layer.create(
             last_updated_by=kwargs.get('last_updated_by'),

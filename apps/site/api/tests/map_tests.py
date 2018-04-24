@@ -138,9 +138,9 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
 
     def test_create_map_attach_new_datasets(self, **kwargs):
         params = self.__get_generic_post_params()
-        ds1 = self.create_form()
-        ds2 = self.create_form()
-        ds3 = self.create_form()
+        ds1 = self.create_dataset()
+        ds2 = self.create_dataset()
+        ds3 = self.create_dataset()
         params['datasets'] = json.dumps([
             ds1.id, ds2.id, ds3.id
         ])
@@ -234,7 +234,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
                 'slug': slug
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_map = models.StyledMap.objects.get(id=self.map.id)
@@ -252,7 +252,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
                 'slug': slug
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded")
+            content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_map = models.StyledMap.objects.get(id=self.map.id)
         self.assertEqual(updated_map.name, name)

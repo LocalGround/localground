@@ -14,7 +14,7 @@ class GroupManageSecurityTest(test.TestCase, ModelMixin):
         ModelMixin.setUp(self)
         self.groups = [
             self.project,
-            # self.create_form_with_fields()
+            # self.create_dataset_with_fields()
         ]
 
     def test_owner_can_manage(self):
@@ -57,7 +57,7 @@ class GroupEditSecurityTest(test.TestCase, ModelMixin):
         ModelMixin.setUp(self)
         self.groups = [
             self.project,
-            # self.create_form_with_fields()
+            # self.create_dataset_with_fields()
         ]
 
     def test_owner_can_edit(self):
@@ -101,7 +101,7 @@ class GroupViewSecurityTest(test.TestCase, ModelMixin):
         self.key = 'r3VqnUjxIUI245ns'
         self.groups = [
             self.project,
-            #self.create_form_with_fields()
+            #self.create_dataset_with_fields()
         ]
 
     def test_owner_can_view(self):

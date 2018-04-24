@@ -331,7 +331,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                             'anchor_y': 15
                                         }),
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
-                                        content_type="application/x-www-dataset-urlencoded"
+                                        content_type="application/x-www-form-urlencoded"
                                         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
@@ -347,7 +347,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                             'name': 'icon_patch',
                                         }),
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
-                                        content_type="application/x-www-dataset-urlencoded"
+                                        content_type="application/x-www-form-urlencoded"
                                         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)
@@ -361,7 +361,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
                                             'size': 50,
                                         }),
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
-                                        content_type="application/x-www-dataset-urlencoded"
+                                        content_type="application/x-www-form-urlencoded"
                                         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_icon = models.Icon.objects.get(id=self.icon1.id)

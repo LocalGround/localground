@@ -42,7 +42,7 @@ class MediaMixin():
             name="f2", tags=self.tags2, point=self.point
         )
 
-        self.dataset = self.create_form_with_fields(
+        self.dataset = self.create_dataset_with_fields(
             name="Class Dataset", num_fields=9
         )
         self.dataset = models.Dataset.objects.get(id=self.dataset.id)  # requery
@@ -141,7 +141,7 @@ class MediaMixin():
         records = []
         for n in range(0, num_records):
             records.append(
-                self.insert_form_data_record(
+                self.insert_dataset_data_record(
                     dataset=self.dataset,
                     project=self.project,
                     photo=photo,

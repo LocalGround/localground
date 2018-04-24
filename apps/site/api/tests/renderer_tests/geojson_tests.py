@@ -15,16 +15,16 @@ class GeoJSONRendererListTest(test.TestCase, ModelMixin):
     def setUp(self):
         ModelMixin.setUp(self)
 
-        self.dataset = self.create_form_with_fields(
+        self.dataset = self.create_dataset_with_fields(
             name="Class Dataset", num_fields=7
         )
-        self.record1 = self.insert_form_data_record(
+        self.record1 = self.insert_dataset_data_record(
             dataset=self.dataset,
             project=self.project,
             geoJSON=mixins.point,
             name='rec1'
         )
-        self.record2 = self.insert_form_data_record(
+        self.record2 = self.insert_dataset_data_record(
             dataset=self.dataset,
             project=self.project,
             geoJSON=mixins.line,
@@ -35,7 +35,7 @@ class GeoJSONRendererListTest(test.TestCase, ModelMixin):
         )
         self.key = 'dataset_{0}'.format(self.dataset.id)
 
-    def test_geojson_format_looks_correct(self):
+    def test_geojson_datasetat_looks_correct(self):
 
         response = self.client_user.get(self.url, {
                 'format': 'geojson',
@@ -61,16 +61,16 @@ class GeoJSONRendererInstanceTest(test.TestCase, ModelMixin):
 
     def setUp(self):
         ModelMixin.setUp(self)
-        self.dataset = self.create_form_with_fields(
+        self.dataset = self.create_dataset_with_fields(
             name="Class Dataset", num_fields=7
         )
-        self.record1 = self.insert_form_data_record(
+        self.record1 = self.insert_dataset_data_record(
             dataset=self.dataset,
             geoJSON=mixins.point,
             project=self.project,
             name='rec1'
         )
-        self.record2 = self.insert_form_data_record(
+        self.record2 = self.insert_dataset_data_record(
             dataset=self.dataset,
             geoJSON=mixins.line,
             project=self.project,
@@ -81,7 +81,7 @@ class GeoJSONRendererInstanceTest(test.TestCase, ModelMixin):
         )
         self.key = 'dataset_{0}'.format(self.dataset.id)
 
-    def test_geojson_format_looks_correct(self):
+    def test_geojson_datasetat_looks_correct(self):
         response = self.client_user.get(self.url, {
                 'format': 'geojson'
             }, format='json')

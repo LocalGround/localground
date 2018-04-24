@@ -57,7 +57,7 @@ class ApiLayerTest(object):
             'overlay_type': u'layer',
             'dataset': {
                 'fields': [OrderedDict([('id', 22387), ('col_alias', u'Name'), ('col_name', 'name'), ('extras', None), ('ordering', 1), ('data_type', u'text')]), OrderedDict([('id', 22388), ('col_alias', u'Description'), ('col_name', 'description'), ('extras', None), ('ordering', 2), ('data_type', u'text')])],
-                'overlay_type': 'form_4755',
+                'overlay_type': 'dataset_4755',
                 'id': 4755,
                 'name': u'A title'
             },
@@ -114,7 +114,7 @@ class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.model = models.Layer
-        self.dataset = self.create_form()
+        self.dataset = self.create_dataset()
         self.map = self.create_styled_map(
             dataset=self.dataset, layer_title='My Layer')
         self.url = '/api/0/maps/{0}/layers/'.format(
@@ -154,7 +154,7 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.dataset = self.create_form()
+        self.dataset = self.create_dataset()
         self.map = self.create_styled_map(
             dataset=self.dataset, layer_title='My Layer')
         self.obj = self.map.layers[0]
@@ -189,7 +189,7 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
                 'title': self.title,
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rec = models.Layer.objects.get(id=self.obj.id)
@@ -234,7 +234,7 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
                 'symbols': []
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rec = models.Layer.objects.get(id=self.obj.id)

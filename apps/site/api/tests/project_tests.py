@@ -98,7 +98,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
             self.assertTrue(isinstance(children.get(k).get('data'), list))
 
     def test_get_project_with_marker_arrays(self, **kwargs):
-        self.dataset = self.create_form_with_fields(
+        self.dataset = self.create_dataset_with_fields(
             name="Class Dataset", num_fields=7
         )
         self.record = self.create_record(
@@ -127,7 +127,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
                 'caption': description
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_project = models.Project.objects.get(id=self.project.id)
@@ -141,7 +141,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
             self.url,
             data=urllib.urlencode({'name': name}),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded")
+            content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_project = models.Project.objects.get(id=self.project.id)
         self.assertEqual(updated_project.name, name)

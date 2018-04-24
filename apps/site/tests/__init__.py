@@ -284,7 +284,7 @@ class ModelMixin(object):
         geom = None
         user = user or self.user
         project = project or self.project
-        dataset = dataset or self.create_form()
+        dataset = dataset or self.create_dataset()
         if geoJSON is None and point is None:
             from django.contrib.gis.geos import Point
             lat = 37.87
@@ -454,7 +454,7 @@ class ModelMixin(object):
                 'thumbnail_' + uuid + '.jpg', File(open(thumb_file_path)))
         return p
 
-    def create_form(self, name='A title',
+    def create_dataset(self, name='A title',
                     description='A description', user=None,
                     project=None):
         from localground.apps.site import models
@@ -470,7 +470,7 @@ class ModelMixin(object):
         f.save()
         return f
 
-    def create_form_with_fields(
+    def create_dataset_with_fields(
             self,
             name='A title',
             description='A description',
@@ -491,7 +491,7 @@ class ModelMixin(object):
         '''
         if user is None:
             user = self.user
-        f = self.create_form(
+        f = self.create_dataset(
             name, description, user=user, project=project)
         for i in range(0, num_fields):
             field_name = 'Field %s' % (i + 1)
@@ -528,7 +528,7 @@ class ModelMixin(object):
         f.save()
         return f
 
-    def insert_form_data_record(
+    def insert_dataset_data_record(
             self, dataset, project=None, photo=None, audio=None, name=None,
             point=None, geoJSON=None):
 

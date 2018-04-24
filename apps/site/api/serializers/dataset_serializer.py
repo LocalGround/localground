@@ -34,14 +34,14 @@ class DatasetSerializerList(
 
 
 class DatasetSerializerDetail(DatasetSerializerList):
-    fields = serializers.SerializerMethodField('get_form_fields')
+    fields = serializers.SerializerMethodField('get_dataset_fields')
 
     class Meta:
         model = models.Dataset
         fields = DatasetSerializerList.Meta.fields + ('fields',)
         depth = 0
 
-    def get_form_fields(self, obj):
+    def get_dataset_fields(self, obj):
         return FieldSerializer(
             obj.fields, many=True,
             context={'request': {}}).data

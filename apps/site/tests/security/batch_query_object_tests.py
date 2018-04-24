@@ -178,13 +178,13 @@ class BatchMarkerWithAttributesQuerySecurityTest(
 
     def _create_objects(self):
         num_fields = 3
-        self.dataset = self.create_form_with_fields(num_fields=num_fields)
+        self.dataset = self.create_dataset_with_fields(num_fields=num_fields)
         self.model = models.Record
         self.objects = []
         for project in self.projects:
             for i, fn in enumerate(self.file_names):
                 self.objects.append(
-                    self.insert_form_data_record(self.dataset, project)
+                    self.insert_dataset_data_record(self.dataset, project)
                 )
 
     def test_viewer_can_view_objects(self, ):

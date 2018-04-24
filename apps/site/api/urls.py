@@ -147,10 +147,10 @@ urlpatterns += format_suffix_patterns(patterns('',
         name='field-list'),
     url(
         r'^datasets/(?P<pk>[0-9]+)/$',
-        views.FormInstance.as_view(),
+        views.DatasetInstance.as_view(),
         name='dataset-detail'),
     url(r'^datasets/$',
-        views.FormList.as_view(),
+        views.DatasetList.as_view(),
         name='dataset-list'),
     url(
         r'^photos/(?P<pk>[0-9]+)/rotate-left/$',

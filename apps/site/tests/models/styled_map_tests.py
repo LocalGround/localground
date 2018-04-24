@@ -101,7 +101,7 @@ class StyledMapTests(
     def test_delete_map_does_not_remove_datasets_referenced_elsewhere(
             self, **kwargs):
         # create the situation where t2 maps reference the same dataset:
-        f1 = self.create_form_with_fields()
+        f1 = self.create_dataset_with_fields()
         map1 = StyledMap.create(datasets=[f1], **self.get_kwargs())
         map2 = StyledMap.create(datasets=[f1], **self.get_kwargs())
         new_dataset_id = map1.layers[0].dataset.id
@@ -130,8 +130,8 @@ class StyledMapTests(
             Dataset.objects.get(id=new_dataset_id).name, 'Untitled Dataset')
 
     def test_create_map_existing_dataset(self, **kwargs):
-        f1 = self.create_form_with_fields()
-        f2 = self.create_form_with_fields()
+        f1 = self.create_dataset_with_fields()
+        f2 = self.create_dataset_with_fields()
         datasets = [f1, f2]
         num_datasets = len(Dataset.objects.all())
         map = StyledMap.create(datasets=datasets, **self.get_kwargs())

@@ -26,7 +26,7 @@ def get_base_metadata():
 class ApiFieldListTest(test.TestCase, FieldTestMixin):
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.dataset = self.create_form_with_fields(
+        self.dataset = self.create_dataset_with_fields(
                         name="Class Dataset",
                         num_fields=0
                     )
@@ -59,7 +59,7 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
                 'data_type': 'text'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
         i = 1
         for field in self.dataset.fields:
@@ -77,7 +77,7 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
                 'data_type': 'text'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -97,7 +97,7 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
                     'data_type': 'text'
                 }),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-dataset-urlencoded"
+                content_type="application/x-www-form-urlencoded"
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -106,7 +106,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.dataset = self.create_form_with_fields(
+        self.dataset = self.create_dataset_with_fields(
                         name="Class Dataset",
                         num_fields=0
                     )
@@ -128,6 +128,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
         self.view = views.FieldInstance.as_view()
 
     def tearDown(self):
+        models.StyledMap.objects.all().delete()
         models.Dataset.objects.all().delete()
 
     def test_update_field_using_put(self, **kwargs):
@@ -138,7 +139,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                 'ordering': 2
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -153,7 +154,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                 'col_alias': 'Address 1'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_field = models.Field.objects.get(id=self.field.id)
@@ -166,7 +167,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                 'col_alias': 'Field 1'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -181,11 +182,11 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                     'ordering': 1
                 }),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-dataset-urlencoded"
+                content_type="application/x-www-form-urlencoded"
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_cannot_delete_field_if_only_field_in_form(self, **kwargs):
+    def test_cannot_delete_field_if_only_field_in_dataset(self, **kwargs):
         # delete all of the fields from the dataset except for the current field:
         models.Field.objects.filter(
             dataset=self.dataset).exclude(id=self.field.id).delete()
@@ -201,8 +202,9 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
             'Error: This dataset must contain at least 1 field')
 
     def test_cannot_delete_field_if_used_in_layer_display_field(self):
-        map = self.create_styled_map(
-            dataset=self.dataset, display_field=self.field)
+        map = self.create_styled_map(dataset=self.dataset)
+        layer = self.create_layer(
+            map, dataset=self.dataset, display_field=self.field)
 
         # try to delete the current field (you shouldn't be able to):
         response = self.client_user.delete(
@@ -223,7 +225,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                 self.url,
                 data=urllib.urlencode({'col_alias': col_alias}),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-dataset-urlencoded"
+                content_type="application/x-www-form-urlencoded"
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 

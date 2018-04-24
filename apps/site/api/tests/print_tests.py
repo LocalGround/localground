@@ -114,7 +114,7 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI, PrintMixin):
                 'project_id': self.project.id
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         new_object = (models.Print.objects

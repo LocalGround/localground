@@ -9,14 +9,14 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=False)
-        self.dataset = self.create_form_with_fields(
+        self.dataset = self.create_dataset_with_fields(
             name="Class Dataset", num_fields=7)
         # requery:
         self.dataset = models.Dataset.objects.get(id=self.dataset.id)
         self.record = self.create_record(
             self.user, self.project, dataset=self.dataset)
 
-        # self.record = self.insert_form_data_record(
+        # self.record = self.insert_dataset_data_record(
         #                 dataset=self.dataset, project=self.project
         #             )
         self.urls = [
@@ -120,13 +120,13 @@ class ApiRelatedMediaInstanceTest(
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=False)
-        self.dataset = self.create_form_with_fields(
+        self.dataset = self.create_dataset_with_fields(
             name="Class Dataset", num_fields=7
         )
         # requery:
         self.dataset = models.Dataset.objects.get(id=self.dataset.id)
         self.record = self.create_record(self.user, self.project, dataset=self.dataset)
-        # self.record = self.insert_form_data_record(
+        # self.record = self.insert_dataset_data_record(
         #     dataset=self.dataset, project=self.project
         # )
         self.metadata = {
@@ -243,7 +243,7 @@ class ApiRelatedMediaInstanceTest(
                 url,
                 data=urllib.urlencode(params),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-dataset-urlencoded")
+                content_type="application/x-www-form-urlencoded")
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             updated_relation = models.GenericAssociation.objects.get(
                 id=relation.id

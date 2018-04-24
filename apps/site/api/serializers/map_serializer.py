@@ -78,8 +78,8 @@ class MapSerializerPost(MapSerializerList):
         datasets = []
         for dataset_id in dataset_ids:
             try:
-                form_id = int(dataset_id)
-                dataset = models.Dataset.objects.get(id=form_id)
+                dataset_id = int(dataset_id)
+                dataset = models.Dataset.objects.get(id=dataset_id)
                 datasets.append(dataset)
             except Exception:
                 raise serializers.ValidationError(

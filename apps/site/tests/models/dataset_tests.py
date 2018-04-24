@@ -17,7 +17,7 @@ class DatasetTest(
 
     def setUp(self):
         BaseAuditAbstractModelClassTest.setUp(self)
-        self.model = self.create_form()
+        self.model = self.create_dataset()
         self.object_type = self.model_name = self.pretty_name = 'dataset'
         self.model_name_plural = self.pretty_name_plural = 'datasets'
 
@@ -25,7 +25,7 @@ class DatasetTest(
 
         # this one contains a dictionary of information
         # related to the dataset
-        formWithFields = self.create_form_with_fields()
+        formWithFields = self.create_dataset_with_fields()
         query_fields_data = formWithFields.get_filter_fields()
         self.assertEqual(
             query_fields_data['owner'].to_dict(),

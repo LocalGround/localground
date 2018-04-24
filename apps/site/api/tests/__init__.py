@@ -9,7 +9,6 @@ from localground.apps.site.api.tests.icon_tests import *
 from localground.apps.site.api.tests.layer_tests import *
 from localground.apps.site.api.tests.map_tests import *
 from localground.apps.site.api.tests.mapimage_tests import *
-# from localground.apps.site.api.tests.marker_tests import *
 from localground.apps.site.api.tests.photo_tests import *
 from localground.apps.site.api.tests.print_tests import *
 from localground.apps.site.api.tests.project_tests import *

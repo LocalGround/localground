@@ -107,7 +107,7 @@ class UserProfileInstance(APITestCase, ViewMixinAPI):
             self.url,
             data=urllib.urlencode(params),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -138,7 +138,7 @@ class UserProfileInstance(APITestCase, ViewMixinAPI):
             self.url,
             data=urllib.urlencode(params),
             HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/x-www-dataset-urlencoded"
+            content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

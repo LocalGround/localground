@@ -38,7 +38,7 @@ class CSVMixin(mixins.MediaMixin):
             response = self.client_user.options(
                 url,
                 HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-dataset-urlencoded"
+                content_type="application/x-www-form-urlencoded"
             )
 
             # TEST 1: there is a cell for every field exposed in the serializer
