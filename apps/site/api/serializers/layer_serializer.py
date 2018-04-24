@@ -19,7 +19,7 @@ class LayerSerializer(BaseSerializer):
     display_field = serializers.SerializerMethodField()
     map_id = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
-    dataset = serializers.SerializerMethodField()
+    dataset = serializers.SerializerMethodField(read_only=True)
 
     def get_fields(self, *args, **kwargs):
         fields = super(LayerSerializer, self).get_fields(*args, **kwargs)

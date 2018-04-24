@@ -6,7 +6,7 @@ from localground.apps.site.api.tests.field_tests import *
 from localground.apps.site.api.tests.dataset_tests import *
 from localground.apps.site.api.tests.homepage_tests import *
 from localground.apps.site.api.tests.icon_tests import *
-# from localground.apps.site.api.tests.layer_tests import *
+from localground.apps.site.api.tests.layer_tests import *
 from localground.apps.site.api.tests.map_tests import *
 from localground.apps.site.api.tests.mapimage_tests import *
 from localground.apps.site.api.tests.photo_tests import *

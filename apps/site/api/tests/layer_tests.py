@@ -8,9 +8,13 @@ from rest_framework import status
 from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 
-class ApiLayerTest(object):
-    title = 'New Layer Name'
-    metadata = {
+symbols = [
+    models.Symbol.SIMPLE.to_dict()
+]
+
+
+def get_metadata():
+    return {
         'symbols': {'read_only': True, 'required': False, 'type': 'json'},
         'group_by': {'read_only': True, 'required': False, 'type': 'string'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
@@ -20,9 +24,9 @@ class ApiLayerTest(object):
         'map_id': {'read_only': True, 'required': False, 'type': 'field'}
     }
 
-    symbols = [
-        models.Symbol.SIMPLE.to_dict()
-    ]
+
+class ApiLayerTest(object):
+    title = 'New Layer Name'
 
     def _test_save_layer_post(self, status_id, data):
 
@@ -47,7 +51,7 @@ class ApiLayerTest(object):
                 'title', 'strokeWeight', 'rule', 'isShowing',
                 'strokeOpacity', 'height', 'width', 'shape', 'strokeColor'
                     ]:
-                self.assertEqual(rec.symbols[0][key], self.symbols[0][key])
+                self.assertEqual(rec.symbols[0][key], symbols[0][key])
             results = response.data
             '''
             {'display_field': u'name',
@@ -106,13 +110,14 @@ class ApiLayerTest(object):
                 'title', 'strokeWeight', 'rule', 'isShowing',
                 'strokeOpacity', 'height', 'width', 'shape', 'strokeColor'
                     ]:
-                self.assertEqual(rec.symbols[0][key], self.symbols[0][key])
+                self.assertEqual(rec.symbols[0][key], symbols[0][key])
 
 
 class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
+        self.metadata = get_metadata()
         self.model = models.Layer
         self.dataset = self.create_dataset()
         self.map = self.create_styled_map(dataset=self.dataset)
@@ -153,6 +158,14 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
+        self.metadata = get_metadata()
+        self.metadata.update({
+            'dataset': {'read_only': True, 'required': False, 'type': 'field'},
+            'symbols': {'read_only': False, 'required': True, 'type': 'json'},
+            'group_by': {
+                'read_only': False, 'required': True, 'type': 'string'},
+            'metadata': {'read_only': False, 'required': True, 'type': 'json'},
+        })
         self.dataset = self.create_dataset()
         self.map = self.create_styled_map(dataset=self.dataset)
         self.obj = self.map.layers[0]
@@ -169,7 +182,7 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         self._test_save_layer(
             self.client_user.put,
             status.HTTP_200_OK,
-            self.symbols,
+            symbols,
             data={
                 'title': self.title,
                 'ordering': 1,
@@ -214,7 +227,7 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         self._test_save_layer(
             self.client_user.put,
             status.HTTP_200_OK,
-            self.symbols,
+            symbols,
             data={
                 'title': self.title,
                 'ordering': 1,
