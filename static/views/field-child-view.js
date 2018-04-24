@@ -134,7 +134,7 @@ define([
         },
 
         addNewRating: function (e) {
-
+            this.updateRatingList();
             this.ratingsList.push({
                 name: "",
                 value: ""
@@ -145,6 +145,7 @@ define([
         },
 
         addNewChoice: function (e) {
+            this.updateChoiceList();
             this.choicesList.push({
                 name: ""
             });

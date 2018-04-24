@@ -69,19 +69,6 @@ define([
             fieldView.render();
         };
 
-        createNewFieldView = function (scope) {
-            var opts = {};
-            _.extend(opts, scope.form.toJSON(), {
-                model: new Field({}, {id: scope.form.id }),
-                parent: new CreateForm({
-                    model: scope.form,
-                    app: scope.app
-                })
-            });
-            fieldView = new FieldChildView(opts);
-            fieldView.render();
-        };
-
         createNewFieldViewNoParent = function (scope) {
             var opts = {};
             _.extend(opts, scope.form.toJSON(), {
@@ -342,6 +329,28 @@ define([
 
             });
 
+            it ("Saves the new rating input when adding another rating", function(){
+                var field = this.form.fields.at(3);
+                fixture.find(".add-new-rating").trigger("click");
+                var extras = field.get("extras");
+                var rating_rows = fixture.find(".rating-row");
+
+
+                $(rating_rows[3]).find(".rating-name").val("Test");
+                $(rating_rows[3]).find(".rating-value").val(5);
+                fieldView.updateRatingList();
+
+                extras = field.get("extras");
+                var lastIndexRating = extras[extras.length - 1];
+                expect(field.get("extras").length).toEqual(4);
+                fixture.find(".add-new-rating").trigger("click");
+
+                expect($(rating_rows[3]).find(".rating-name").val()).toEqual(lastIndexRating.name);
+                expect($(rating_rows[3]).find(".rating-value").val()).toEqual(lastIndexRating.value.toString());
+                expect(FieldChildView.prototype.addNewRating).toHaveBeenCalledTimes(2)
+                expect(field.get("extras").length).toEqual(5);
+            });
+
             it ("Detects user input error", function(){
 
                 var field = this.form.fields.at(3);
@@ -490,6 +499,26 @@ define([
 
                 expect($(choice_rows[2]).find(".choice").val()).not.toEqual(original_name);
 
+            });
+
+            it ("Saves the new choice input when adding another choice", function(){
+                var field = this.form.fields.at(4);
+                fixture.find(".add-new-choice").trigger("click");
+                var extras = field.get("extras");
+                var choice_rows = fixture.find(".choice-row");
+
+
+                $(choice_rows[3]).find(".choice").val("Test");
+                fieldView.updateChoiceList();
+
+                extras = field.get("extras");
+                var lastIndexchoice = extras[extras.length - 1];
+                expect(field.get("extras").length).toEqual(4);
+                fixture.find(".add-new-choice").trigger("click");
+
+                expect($(choice_rows[3]).find(".choice").val()).toEqual(lastIndexchoice.name);
+                expect(FieldChildView.prototype.addNewChoice).toHaveBeenCalledTimes(2)
+                expect(field.get("extras").length).toEqual(5);
             });
 
             it ("Detects user input error", function(){
