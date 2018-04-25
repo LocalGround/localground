@@ -336,14 +336,14 @@ define(["marionette",
                     this.model.get('metadata').collapsed = false
                     this.$el.find('.symbol').css('height', 'auto');
                     this.$el.find('.symbol-item').css('display', 'block');
-                    this.$el.find('.collapse').removeClass('fa-angle-up');
-                    this.$el.find('.collapse').addClass('fa-angle-down');
+                    this.$el.find('.collapse').removeClass('fa-caret-up');
+                    this.$el.find('.collapse').addClass('fa-caret-down');
                 } else {
                     this.model.get('metadata').collapsed = true;
                     this.$el.find('.symbol').css('height', 0);
                     this.$el.find('.symbol-item').css('display', 'none');
-                    this.$el.find('.collapse').removeClass('fa-angle-down');
-                    this.$el.find('.collapse').addClass('fa-angle-up');
+                    this.$el.find('.collapse').removeClass('fa-caret-down');
+                    this.$el.find('.collapse').addClass('fa-caret-up');
                 }
             },
 

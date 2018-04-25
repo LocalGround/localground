@@ -341,6 +341,7 @@ ul {
 .layer-container .open-layer-menu {
   float: right;
   padding: 2px 7px;
+  cursor: pointer;
 }
 
 .layer-container .layer-menu {
@@ -358,6 +359,8 @@ ul {
 
 .layer-container .add-record-container {
   float: right;
+  cursor: pointer;
+  margin-top: -3px;
 }
 
 .layer-container .left-geometry-button {
@@ -400,8 +403,17 @@ ul {
   border-bottom: 1px solid #e8e8e8;
 }
 
+.layer-container .geometry-list-wrapper {
+  left: 200px;
+}
+
+.layer-container .geometry-options {
+  margin-top: 0px;
+}
+
 .collapse-wrapper {
   line-height: 17px;
+  vertical-align: text-bottom;
 }
 
 .collapse .symbol-item {
@@ -453,12 +465,12 @@ ul {
 .layer-datasource {
   font-size: 11px;
   margin-left: 20px;
-  line-height: 11px;
+  line-height: 15px;
 }
 
 .layer-style-by {
   font-size: 11px;
-  margin-left: 7px;
+  margin-left: 4px;
   display: inline;
   color: #8bb8ed;
   font-weight: bold;

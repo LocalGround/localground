@@ -12,6 +12,7 @@
     .open-layer-menu {
         float: right;
         padding: 2px 7px;
+        cursor: pointer;
     }
     .layer-menu {
         -webkit-touch-callout: none; 
@@ -27,6 +28,8 @@
     }
     .add-record-container {
         float: right;
+        cursor: pointer;
+        margin-top: -3px;
     }
     .left-geometry-button {
         float: right;
@@ -62,11 +65,18 @@
         padding-bottom: 14px;
         border-bottom: 1px solid #e8e8e8;
     }
+    .geometry-list-wrapper {
+        left: 200px;
+    }
+    .geometry-options {
+        margin-top: 0px;
+    }
 
 }
 
 .collapse-wrapper {
     line-height: 17px;
+    vertical-align: text-bottom;
 }
 
 .collapse {
@@ -120,12 +130,12 @@
 .layer-datasource {
     font-size: 11px;
     margin-left: 20px;
-    line-height: 11px;
+    line-height: 15px;
 }
 
 .layer-style-by {
     font-size: 11px;
-    margin-left: 7px;
+    margin-left: 4px;
     display: inline;
     color: #8bb8ed;
     font-weight: bold;
