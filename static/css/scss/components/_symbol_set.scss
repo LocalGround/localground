@@ -9,7 +9,7 @@
 }
 
 .symbol-wrapper {
-    border-bottom: 1px solid #ebebeb;
+    // border-bottom: 1px solid #ebebeb;
     padding-left: 12px;
 }
 
@@ -63,11 +63,14 @@
 }
 
 .symbol-header {
+    border-left: 1px solid #e4e5eb;
     svg {
         vertical-align: middle;
     }
 }
 .symbol {
+    border-left: 1px solid #e4e5eb;
+
     .highlight {
         background: rgb(123, 155, 225);
         color: #ffffff;

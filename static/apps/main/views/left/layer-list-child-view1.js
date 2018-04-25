@@ -313,9 +313,15 @@ define(["marionette",
                     
                 })
                 if (isShowing) {
-                    this.$el.find('#symbols-list').show()
+                    this.$el.removeClass('hide-layer');
+                    // this.$el.find('#symbols-list').show();
+                    // this.$el.find('.lc-2').show();
+                    // this.$el.find('.lc-3').show();
                 } else {
-                    this.$el.find('#symbols-list').hide()
+                    this.$el.addClass('hide-layer');
+                    // this.$el.find('#symbols-list').hide()
+                    // this.$el.find('.lc-2').hide();
+                    // this.$el.find('.lc-3').hide();
                 }
                 this.saveChanges();
             },
