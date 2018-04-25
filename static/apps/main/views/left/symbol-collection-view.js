@@ -21,6 +21,7 @@ define(["jquery",
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
+                this.model.set('active', false);
             },
             childViewContainer: '.symbol',
             childView: SymbolItemView,
@@ -34,12 +35,15 @@ define(["jquery",
                 //edit event here, pass the this.model to the right panel
                 'click .layer-delete' : 'deleteLayer',
                 'click .symbol-edit': 'showSymbolEditMenu',
-                'click .symbol-display': 'showHideOverlays'
+                'click .symbol-display': 'showHideOverlays',
+                'mouseenter .symbol-edit': 'highlightSymbolContent',
+                'mouseleave .symbol-edit': 'unHighlightSymbolContent'
             },
             modelEvents: function () {
                 const events = {
                     'change:isShowing': 'redrawOverlays',
-                    'change:title': 'render'
+                    'change:title': 'render',
+                    'change:active': 'handleSymbolHighlight'
                 };
                 [
                     'fillColor', 'strokeColor', 'shape', 'width', 'markerSize',
@@ -89,7 +93,7 @@ define(["jquery",
                 const coords = {
                     x: event.clientX,
                     y: event.clientY
-                }
+                };
                 this.app.vent.trigger('show-symbol-menu', this.model, coords, this.layerId);
             },
             showOverlays: function () {
@@ -129,6 +133,30 @@ define(["jquery",
                     this.$el.find('.symbol-display').removeClass('fa-eye');
                     this.$el.find('.symbol-display').addClass('fa-eye-slash');
                 }
+            },
+
+            handleSymbolHighlight: function() {
+                if (this.model.get('active')) {
+                    this.highlightSymbolContent();
+                } else {
+                    this.unHighlightSymbolContent();
+                }
+            },
+
+            highlightSymbolContent: function () {
+                console.log('HOVER, add color');
+                this.$el.find('.symbol-wrapper').addClass('symbol-highlight');    
+            },
+            unHighlightSymbolContent: function () {
+                
+                if (this.model.get('active')) {
+                     // don't allow a hover event to affect highlighting if the symbol is active 
+                     // (i.e. if it is currently being edited)
+                    return;                     
+                }
+
+                console.log('HOVER, remove color');
+                this.$el.find('.symbol-wrapper').removeClass('symbol-highlight');      
             },
             onDestroy: function() {
                 console.log('destroy symbol collection view');

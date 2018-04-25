@@ -123,6 +123,8 @@ define(["marionette",
                     layer: this.model.get('layers').get(layerId),
                     model: symbol
                 });
+                
+                symbol.set('active', true);
 
                 $('.symbol-menu').append(this.symbolMenu.$el);
                 $('.symbol-menu').css({
@@ -132,11 +134,12 @@ define(["marionette",
                 $('.symbol-menu').show();
             },
 
-            hideSymbolStyleMenu: function(e) {
+            hideSymbolStyleMenu: function(e, symbol) {
                 console.log('hide symbol menu');
                 var $el = $(e.target);
                 var parent = document.getElementById("style-by-menu");
                 $('.symbol-menu').hide();
+                symbol.set('active', false);
             },
 
             onDestroy: function() {

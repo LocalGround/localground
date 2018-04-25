@@ -17,6 +17,8 @@
     background: white;
     // border-top: 1px solid #ebebeb;    
     padding: 0px 7px;
+    border-top: 3px solid white; 
+    border-right: 3px solid white; 
 }
 
 .symbol-edit {
@@ -70,6 +72,7 @@
 }
 .symbol {
     border-left: 1px solid #e4e5eb;
+    border-bottom: 3px solid white;
 
     .highlight {
         background: rgb(123, 155, 225);
@@ -78,5 +81,16 @@
             color:#ffffff;
         }
     }
+}
+
+.symbol-highlight {
+    .symbol-header {
+        border-top: 3px solid #8bb8ed;
+        border-right: 3px solid #8bb8ed;
+    } 
+    .symbol {
+        border-right: 3px solid #8bb8ed;
+        border-bottom: 3px solid #8bb8ed;
+    } 
 }
 

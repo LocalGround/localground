@@ -144,7 +144,7 @@ define(["jquery",
                 });
             },
             hideSymbolStyleMenu: function(e) {
-                this.app.vent.trigger('hide-symbol-style-menu', e);
+                this.app.vent.trigger('hide-symbol-style-menu', e, this.model);
             },
 
             rebuildMarkersAndSave: function() {
