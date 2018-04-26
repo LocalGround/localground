@@ -42,6 +42,7 @@ define(["marionette",
                 this.model = opts.model;
 
                 this.modal = this.app.modal; //new Modal();
+                console.log(this.collection.toJSON());
 
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
                 this.listenTo(this.app.vent, 'add-css-to-selected-layer', this.addCssToSelectedLayer);
@@ -124,6 +125,8 @@ define(["marionette",
                     model: symbol
                 });
 
+                symbol.set('active', true);
+
                 $('.symbol-menu').append(this.symbolMenu.$el);
                 $('.symbol-menu').css({
                     left: coords.x,
@@ -132,11 +135,12 @@ define(["marionette",
                 $('.symbol-menu').show();
             },
 
-            hideSymbolStyleMenu: function(e) {
+            hideSymbolStyleMenu: function(e, symbol) {
                 console.log('hide symbol menu');
                 var $el = $(e.target);
                 var parent = document.getElementById("style-by-menu");
                 $('.symbol-menu').hide();
+                symbol.set('active', false);
             },
 
             onDestroy: function() {

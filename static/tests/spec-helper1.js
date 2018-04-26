@@ -153,7 +153,7 @@ define([
                         "name": this.form_2.get("name")
                     },
                     "group_by": "height",
-                    "display_field": "col_8",
+                    "display_field": "height",
                     "ordering": 2,
                     "metadata": {
                         "fillOpacity": 1,
@@ -235,7 +235,7 @@ define([
                             "fillOpacity": 1,
                             "title": "Uncategorized",
                             "strokeWeight": 1,
-                            "isShowing": true,
+                            "isShowing": false,
                             "rule": "¯\\_(ツ)_/¯",
                             "height": 20,
                             "width": 20,
@@ -264,7 +264,6 @@ define([
             this.map = this.dataManager.getMaps().get(3);
             this.map.set('layers', this.getLayers(this.map.id));
             //console.log(this.map);
-            console.log(this.map.getLayers());
 
             //spoof the main-app for child view testing
             this.app = _.extend({}, appUtilities);
@@ -292,7 +291,6 @@ define([
                     Backbone.history.start();
                 }
             });
-            console.log(this.app);
 
         });
 });

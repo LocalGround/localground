@@ -1,12 +1,14 @@
 {{#unless isIndividual}}
+<div class="symbol-wrapper" style="background:{{ icon.fillColor }}">
     <div class="symbol-header" {{#if empty}}style="display: none;"{{/if}}>
         <!-- <input type="checkbox" value="{{ id }}" class='symbol-isShowing' {{#if isChecked}}CHECKED{{/if}} /> -->
-        {{#if isChecked}}<i class="fa fa-eye symbol-display"></i>{{else}}<i class="fa fa-eye-slash symbol-display"></i>{{/if}}
-        <svg viewBox="{{ icon.viewBox }}" width="20" height="20">
+        
+        <svg viewBox="{{ icon.viewBox }}" width="23" height="23">
                 <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
-                    stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>
+                    stroke-width="2" stroke="#e7e7e7" d="{{ icon.path }}"></path>
             </svg>
         <span class="sort-by">{{property}}</span>
+        {{#if isChecked}}<i class="fa fa-eye symbol-display"></i>{{else}}<i class="fa fa-eye-slash symbol-display"></i>{{/if}}
         <p class="symbol-edit"><i class="fa fa-pencil" aria-hidden="true"></i></p>
     </div>
 {{/unless}}

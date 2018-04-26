@@ -4,24 +4,55 @@
     padding: 8px 0px;
     /* margin: 10px 0px; */
     display: inline-block;
-    background-color: #f7f7f7;
+    background-color: white;
     font-weight: 600;
 }
 
+.symbol-wrapper {
+    // border-bottom: 1px solid #ebebeb;
+    padding-left: 12px;
+}
+
 .symbol-header {
-    background: #f7f7f7;
-    border-bottom: 1px solid #ebebeb;
+    background: white;
+    // border-top: 1px solid #ebebeb;    
+    padding: 0px 7px;
+    border-top: 3px solid white; 
+    border-right: 3px solid white; 
 }
 
 .symbol-edit {
     padding-top: 8px;
     padding-right: 10px;
+    float: right;
     display: none;
 }
 
-.symbol-header:hover .symbol-edit {
-    display: block;
+.symbol-display{
+    padding-top: 8px;
+    padding-right: 10px;
+    float: right;
+}
+.symbol-display.fa-eye {
+    display: none;
+}
+.symbol-display.fa-eye-slash {
+    display: inline;
+}
+
+.symbol-header:hover .symbol-edit,
+.symbol-header:hover .symbol-display {
+    display: inline;
     cursor: pointer;
+    
+}
+
+.half-opac .fa-eye,
+.half-opac .fa-eye-slash,
+.half-opac .sort-by,
+.half-opac .symbol-item p,
+.half-opac svg {
+    opacity: 0.5;
 }
 
 .ind-symbol {
@@ -34,13 +65,32 @@
 }
 
 .symbol-header {
+    border-left: 1px solid #e4e5eb;
     svg {
         vertical-align: middle;
     }
 }
 .symbol {
+    border-left: 1px solid #e4e5eb;
+    border-bottom: 3px solid white;
+
     .highlight {
         background: rgb(123, 155, 225);
         color: #ffffff;
+        p {
+            color:#ffffff;
+        }
     }
 }
+
+.symbol-highlight {
+    .symbol-header {
+        border-top: 3px solid #8bb8ed;
+        border-right: 3px solid #8bb8ed;
+    } 
+    .symbol {
+        border-right: 3px solid #8bb8ed;
+        border-bottom: 3px solid #8bb8ed;
+    } 
+}
+

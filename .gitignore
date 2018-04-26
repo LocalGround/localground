@@ -7,4 +7,5 @@ vagrant
 userdata
 *.komodoproject
 static/swampdragon
-~                
+~
+static/css/*css.map*          

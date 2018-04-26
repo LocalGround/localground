@@ -157,6 +157,19 @@ class LayerSerializerPost(LayerSerializer):
         depth = 0
 
 
+class FieldField(serializers.SlugRelatedField):
+
+    def to_internal_value(self, data):
+        if self.root.instance and data:
+            for field in self.root.instance.dataset.fields:
+                if field.col_name_db == data:
+                    return field
+        return self.root.instance.display_field
+
+    def to_representation(self, obj):
+        return getattr(obj, 'col_name')
+
+
 class LayerDetailSerializer(LayerSerializer):
     symbols = fields.SymbolsField(
         style={'base_template': 'json.html', 'rows': 5},
@@ -164,9 +177,10 @@ class LayerDetailSerializer(LayerSerializer):
     metadata = fields.JSONField(
         style={'base_template': 'json.html', 'rows': 5},
         required=True)
-    display_field = serializers.SlugRelatedField(
+    display_field = FieldField(
         queryset=models.Field.objects.all(),
-        slug_field='col_name_db')
+        slug_field='col_name_db'
+    )
 
     def update(self, instance, validated_data):
         map_id = self.context.get('view').kwargs.get('map_id')
