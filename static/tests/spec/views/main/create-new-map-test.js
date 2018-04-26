@@ -168,7 +168,7 @@ define([
                 expect(this.view.model.get('datasets')).toEqual('[3,2]');
             });
 
-            it("Should issue request to include form_3", function () {
+            it("Should issue request to include dataset_3", function () {
                 this.view.render();
                 const $el = this.view.$el;expect(Map.prototype.save).toHaveBeenCalledTimes(0);
                 $el.find('#map-name').val('My Favorite Flowers');

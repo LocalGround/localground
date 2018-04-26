@@ -16,7 +16,7 @@ define([
         const info = {
             mapId: 3,
             layerId: 6,
-            dataSource: 'form_2',
+            dataSource: 'dataset_2',
             markerId: 12
         };
 

@@ -81,7 +81,7 @@ define(["underscore", "marionette", "models/project",
                         if (opts.dataType.includes("dataset_")) {
                             collection = this.__createRecordsCollection(jsonData, opts);
                         } else {
-                            throw new Error("case not handled");
+                            throw new Error("case not handled: " + opts.dataType);
                         }
                         break;
                 }

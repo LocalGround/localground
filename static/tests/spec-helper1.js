@@ -91,9 +91,9 @@ define([
                     "title": "Buildings Layer",
                     "dataset": {
                         "id": 3,
-                        "overlay_type": "form_3",
-                        "fields": this.form_3.get("fields"),
-                        "name": this.form_3.get("name")
+                        "overlay_type": "dataset_3",
+                        "fields": this.dataset_3.get("fields"),
+                        "name": this.dataset_3.get("name")
                     },
                     "group_by": "uniform",
                     "display_field": "col_11",
@@ -148,9 +148,9 @@ define([
                     "title": "Trees Layer",
                     "dataset": {
                         "id": 2,
-                        "overlay_type": "form_2",
-                        "fields": this.form_2.get("fields"),
-                        "name": this.form_2.get("name")
+                        "overlay_type": "dataset_2",
+                        "fields": this.dataset_2.get("fields"),
+                        "name": this.dataset_2.get("name")
                     },
                     "group_by": "height",
                     "display_field": "height",
@@ -259,8 +259,8 @@ define([
             this.photos = this.dataManager.getCollection('photos');
             this.photo = this.photos.at(0);
             this.photos = this.dataManager.getCollection('audio');
-            this.form_2 = this.dataManager.getCollection('form_2');
-            this.form_3 = this.dataManager.getCollection('form_3');
+            this.dataset_2 = this.dataManager.getCollection('dataset_2');
+            this.dataset_3 = this.dataManager.getCollection('dataset_3');
             this.map = this.dataManager.getMaps().get(3);
             this.map.set('layers', this.getLayers(this.map.id));
             //console.log(this.map);

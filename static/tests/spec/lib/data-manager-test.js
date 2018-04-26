@@ -45,7 +45,7 @@ define([
             it("Correctly initializes *private* __dataDictionary property", function () {
                 var keys = Object.keys(this.dataManager.__dataDictionary);
                 expect(keys.sort()).toEqual([
-                    'form_3', 'form_2', 'photos', 'audio', 'map_images', 'videos'
+                    'dataset_3', 'dataset_2', 'photos', 'audio', 'map_images', 'videos'
                 ].sort());
             });
 
@@ -55,8 +55,8 @@ define([
 
             it("Sets data sources as expected", function () {
                 expect(this.dataManager.getLookup()).toEqual([
-                    { id: 'form_3', name: 'Buildings', hasData: true },
-                    { id: 'form_2', name: 'Trees', hasData: true },
+                    { id: 'dataset_3', name: 'Buildings', hasData: true },
+                    { id: 'dataset_2', name: 'Trees', hasData: true },
                     { id: 'map_images', name: 'Map Images', hasData: true }
                 ]);
             });
@@ -64,9 +64,9 @@ define([
             it("getDatasets works", function () {
                 const collections = this.dataManager.getDatasets();
                 expect(collections.length).toEqual(2);
-                expect(collections[0].key).toEqual('form_3');
+                expect(collections[0].key).toEqual('dataset_3');
                 expect(collections[0].length).toEqual(5);
-                expect(collections[1].key).toEqual('form_2');
+                expect(collections[1].key).toEqual('dataset_2');
                 expect(collections[1].length).toEqual(18);
             });
 
@@ -106,8 +106,8 @@ define([
             it("Gets a data entry associated with the correct key and returns expected values", function () {
                 var d, collection, jsonData, dataType, that = this;
                 d = {
-                    form_2: Records,
-                    form_3: Records,
+                    dataset_2: Records,
+                    dataset_3: Records,
                     photos: Photos,
                     audio: Audio,
                     videos: Videos,
@@ -124,15 +124,15 @@ define([
             });
 
             it("Successfully executes getModel for every data type", function () {
-                const form_3 = this.dataManager.getModel('form_3', 52);
-                expect(form_3.id).toEqual(52);
-                expect(form_3.get('overlay_type')).toEqual('form_3');
-                expect(form_3).toEqual(this.dataManager.getCollection('form_3').get(52));
+                const dataset_3 = this.dataManager.getModel('dataset_3', 52);
+                expect(dataset_3.id).toEqual(52);
+                expect(dataset_3.get('overlay_type')).toEqual('dataset_3');
+                expect(dataset_3).toEqual(this.dataManager.getCollection('dataset_3').get(52));
 
-                const form_2 = this.dataManager.getModel('form_2', 11);
-                expect(form_2.id).toEqual(11);
-                expect(form_2.get('overlay_type')).toEqual('form_2');
-                expect(form_2).toEqual(this.dataManager.getCollection('form_2').get(11));
+                const dataset_2 = this.dataManager.getModel('dataset_2', 11);
+                expect(dataset_2.id).toEqual(11);
+                expect(dataset_2.get('overlay_type')).toEqual('dataset_2');
+                expect(dataset_2).toEqual(this.dataManager.getCollection('dataset_2').get(11));
 
                 const photo = this.dataManager.getModel('photos', 20);
                 expect(photo.id).toEqual(20);

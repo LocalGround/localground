@@ -16,12 +16,12 @@ var projectJSON = {
     "date_created": "2018-01-18T20:44:26",
     "last_updated_by": "riley",
     "datasets": {
-      "form_3": {
-        "dataType": "form_3",
+      "dataset_3": {
+        "dataType": "dataset_3",
         "fields": [
           {
             "id": 11,
-            "form": 3,
+            "dataset": 3,
             "col_alias": "Height",
             "col_name": "height",
             "extras": null,
@@ -32,7 +32,7 @@ var projectJSON = {
           },
           {
             "id": 12,
-            "form": 3,
+            "dataset": 3,
             "col_alias": "Square Feet",
             "col_name": "square_feet",
             "extras": null,
@@ -43,7 +43,7 @@ var projectJSON = {
           },
           {
             "id": 13,
-            "form": 3,
+            "dataset": 3,
             "col_alias": "building_name",
             "col_name": "buildingname",
             "extras": null,
@@ -60,7 +60,7 @@ var projectJSON = {
             "id": 51,
             "name": "",
             "caption": null,
-            "overlay_type": "form_3",
+            "overlay_type": "dataset_3",
             "tags": [
 
             ],
@@ -74,7 +74,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 3,
+            "dataset": 3,
             "media": {
 
             },
@@ -92,7 +92,7 @@ var projectJSON = {
             "id": 52,
             "name": "",
             "caption": null,
-            "overlay_type": "form_3",
+            "overlay_type": "dataset_3",
             "tags": [
 
             ],
@@ -106,7 +106,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 3,
+            "dataset": 3,
             "media": {
               "photos": {
                 "overlay_type": "photo",
@@ -154,7 +154,7 @@ var projectJSON = {
             "id": 53,
             "name": "",
             "caption": null,
-            "overlay_type": "form_3",
+            "overlay_type": "dataset_3",
             "tags": [
 
             ],
@@ -168,7 +168,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 3,
+            "dataset": 3,
             "media": {
 
             },
@@ -186,7 +186,7 @@ var projectJSON = {
             "id": 54,
             "name": "",
             "caption": null,
-            "overlay_type": "form_3",
+            "overlay_type": "dataset_3",
             "tags": [
 
             ],
@@ -218,7 +218,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 3,
+            "dataset": 3,
             "media": {
 
             },
@@ -236,7 +236,7 @@ var projectJSON = {
             "id": 55,
             "name": "",
             "caption": null,
-            "overlay_type": "form_3",
+            "overlay_type": "dataset_3",
             "tags": [
 
             ],
@@ -266,7 +266,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 3,
+            "dataset": 3,
             "media": {
 
             },
@@ -282,12 +282,12 @@ var projectJSON = {
         ],
         "name": "Buildings"
       },
-      "form_2": {
-        "dataType": "form_2",
+      "dataset_2": {
+        "dataType": "dataset_2",
         "fields": [
           {
             "id": 8,
-            "form": 2,
+            "dataset": 2,
             "col_alias": "Height",
             "col_name": "height",
             "extras": null,
@@ -298,7 +298,7 @@ var projectJSON = {
           },
           {
             "id": 9,
-            "form": 2,
+            "dataset": 2,
             "col_alias": "Type",
             "col_name": "type",
             "extras": null,
@@ -309,7 +309,7 @@ var projectJSON = {
           },
           {
             "id": 10,
-            "form": 2,
+            "dataset": 2,
             "col_alias": "Deciduous\/Conifer",
             "col_name": "deciduousconifer",
             "extras": [
@@ -333,7 +333,7 @@ var projectJSON = {
             "id": 10,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -347,7 +347,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
               "photos": {
                 "overlay_type": "photo",
@@ -395,7 +395,7 @@ var projectJSON = {
             "id": 11,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -429,7 +429,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
               "photos": {
                 "overlay_type": "photo",
@@ -610,7 +610,7 @@ var projectJSON = {
             "id": 12,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -624,7 +624,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
               "photos": {
                 "overlay_type": "photo",
@@ -701,7 +701,7 @@ var projectJSON = {
             "id": 14,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -735,7 +735,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -753,7 +753,7 @@ var projectJSON = {
             "id": 15,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -787,7 +787,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -805,7 +805,7 @@ var projectJSON = {
             "id": 16,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -819,7 +819,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -837,7 +837,7 @@ var projectJSON = {
             "id": 17,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -845,7 +845,7 @@ var projectJSON = {
             "project_id": 3,
             "geometry": null,
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -863,7 +863,7 @@ var projectJSON = {
             "id": 18,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -883,7 +883,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -901,7 +901,7 @@ var projectJSON = {
             "id": 19,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -939,7 +939,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -957,7 +957,7 @@ var projectJSON = {
             "id": 20,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -995,7 +995,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -1013,7 +1013,7 @@ var projectJSON = {
             "id": 21,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -1051,7 +1051,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -1069,7 +1069,7 @@ var projectJSON = {
             "id": 36,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -1083,7 +1083,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -1101,7 +1101,7 @@ var projectJSON = {
             "id": 37,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -1109,7 +1109,7 @@ var projectJSON = {
             "project_id": 3,
             "geometry": null,
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -1127,7 +1127,7 @@ var projectJSON = {
             "id": 38,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -1155,7 +1155,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -1173,7 +1173,7 @@ var projectJSON = {
             "id": 47,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -1203,7 +1203,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -1221,7 +1221,7 @@ var projectJSON = {
             "id": 49,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -1235,7 +1235,7 @@ var projectJSON = {
               ]
             },
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -1253,7 +1253,7 @@ var projectJSON = {
             "id": 50,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -1261,7 +1261,7 @@ var projectJSON = {
             "project_id": 3,
             "geometry": null,
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
@@ -1279,7 +1279,7 @@ var projectJSON = {
             "id": 56,
             "name": "",
             "caption": null,
-            "overlay_type": "form_2",
+            "overlay_type": "dataset_2",
             "tags": [
 
             ],
@@ -1287,7 +1287,7 @@ var projectJSON = {
             "project_id": 3,
             "geometry": null,
             "extras": null,
-            "form": 2,
+            "dataset": 2,
             "media": {
 
             },
