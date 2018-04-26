@@ -3,11 +3,13 @@ define([
     "backbone",
     rootDir + "apps/main/views/left/layer-list-view",
     rootDir + "apps/main/views/left/create-layer-form",
+    rootDir + "apps/main/views/left/symbol-collection-view",
     rootDir + "lib/maps/overlays/marker",
     rootDir + "lib/modals/modal",
     "tests/spec-helper1"
 ],
-    function (Backbone, LayerListView, CreateLayerForm, MarkerOverlay, Modal) {
+    function (Backbone, LayerListView, CreateLayerForm, SymbolCollectionView,
+            MarkerOverlay, Modal) {
         'use strict';
         var map;
 
@@ -22,6 +24,9 @@ define([
 
             spyOn(scope.app.vent, 'trigger');
             spyOn(scope.app.router, 'navigate');
+            spyOn(SymbolCollectionView.prototype, 'initialize');
+            spyOn(SymbolCollectionView.prototype, 'render');
+
 
             map = scope.dataManager.getMaps().at(0);
             map.set("layers", scope.getLayers(map.id));

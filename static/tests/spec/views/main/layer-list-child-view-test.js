@@ -16,7 +16,7 @@ define([
 
         const initView = function (scope) {
             spyOn(LayerListChildView.prototype, 'initialize').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'showHideOverlays').and.callThrough();;  
+            spyOn(LayerListChildView.prototype, 'showHideOverlays').and.callThrough();;
 
             spyOn(EditLayerName.prototype, 'initialize').and.callThrough();
             spyOn(EditDisplayField.prototype, 'initialize').and.callThrough();
@@ -34,7 +34,7 @@ define([
             spyOn(scope.app.router, 'navigate');
 
             map = scope.dataManager.getMaps().at(0);
-            
+
             map.set("layers", scope.getLayers(map.id));
             console.log(map);
             layer = map.get('layers').at(1);
@@ -42,7 +42,7 @@ define([
                 app: scope.app,
                 model: layer,
                 collection: layer.get('symbols'),
-                dataCollection: scope.dataManager.getCollection(layer.get('data_source'))
+                dataCollection: scope.dataManager.getCollection(layer.get('dataset').overlay_type)
             });
         };
 
@@ -112,7 +112,7 @@ define([
             });
             it("EditDisplayField modal updates layer's 'display_field'", function() {
                 this.view.render();
-      
+
                 this.view.$el.find('.open-layer-menu').trigger('click');
                 this.view.$el.find('.edit-display-field').trigger('click');
 
@@ -136,7 +136,7 @@ define([
 
                 this.view.$el.find('.collapse').trigger('click');
 
-                expect(this.view.$el.find('.collapse')).toHaveClass('fa-caret-down');                
+                expect(this.view.$el.find('.collapse')).toHaveClass('fa-caret-down');
                 expect(this.view.$el.find('.symbol-item').css('display')).toEqual('block');
             });
             it("Layer checkbox hides and shows Layer content and icons", function() {

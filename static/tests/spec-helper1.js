@@ -96,7 +96,7 @@ define([
                         "name": this.dataset_3.get("name")
                     },
                     "group_by": "uniform",
-                    "display_field": "col_11",
+                    "display_field": "square_feet",
                     "ordering": 1,
                     "metadata": {
                         "strokeWeight": 1,

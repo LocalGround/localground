@@ -35,7 +35,7 @@ define ([
             },
 
             saveLayer: function() {
-                /*console.log('new layer modal, save!', this);
+                console.log('new layer modal, save!', this);
                 const display_field = this.$el.find('#display-field').val();
                 this.model.set('display_field', display_field);
 
@@ -51,7 +51,7 @@ define ([
                         }
                         this.updateModal(response);
                     }
-                });*/
+                });
 
             },
 
