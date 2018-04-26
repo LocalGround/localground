@@ -65,6 +65,7 @@ define(["marionette",
             template: Handlebars.compile(LayerItemTemplate),
             templateHelpers: function () {
                 return {
+                    project: this.app.dataManager.getProject(),
                     name: this.dataCollection.name,
                     isChecked: this.model.get("metadata").isShowing
                 };

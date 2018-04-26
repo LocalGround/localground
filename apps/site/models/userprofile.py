@@ -3,8 +3,11 @@ from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 from localground.apps.site.models.permissions import ObjectAuthority
 from localground.apps.site.models.project import Project
+from localground.apps.site.models.styledmap import StyledMap
 from datetime import datetime
 from django.conf import settings
+from django.contrib.gis.geos import GEOSGeometry
+import uuid
 
 
 class UserProfile(models.Model):
@@ -15,12 +18,13 @@ class UserProfile(models.Model):
     default_location = models.PointField(
         null=True,
         blank=True,
-        help_text='Search map by address, or drag the marker to your home location')
+        help_text='Default center point')
+    # default to private
     default_view_authority = models.ForeignKey(
         'ObjectAuthority',
         default=1,
         verbose_name='Share Preference',
-        help_text='Your default sharing settings for your maps and media')  # default to private
+        help_text='Your default sharing settings for your maps and media')
     contacts = models.ManyToManyField(
         'auth.User',
         related_name='%(app_label)s_%(class)s_related',
@@ -59,6 +63,18 @@ class UserProfile(models.Model):
         default_project.access_authority = ObjectAuthority.objects.get(id=1)
         default_project.owner = user
         default_project.save()
+
+        # create map:
+        StyledMap.create(
+            center=GEOSGeometry(
+                '{"type": "Point", "coordinates": [-122, 38]}'),
+            zoom=6,
+            last_updated_by=default_project.owner,
+            owner=default_project.owner,
+            project=default_project,
+            slug=uuid.uuid4().hex,
+            name='Untitled Map'
+        )
         return profile
 
     def can_view(self, user=None, access_key=None):
@@ -80,5 +96,6 @@ def create_profile_on_insert(sender, instance, created, **kwargs):
 
     if created:
         UserProfile.create(instance)
+
 
 signals.post_save.connect(create_profile_on_insert, sender=User)

@@ -40,7 +40,6 @@ class Symbol(object):
         g = (randint(0, 255) + hue) / 2
         b = (randint(0, 255) + hue) / 2
         random_color = 'rgb({0}, {1}, {2})'.format(r, g, b)
-        print random_color
         return random_color
 
     def __init__(self, **kwargs):
@@ -71,8 +70,6 @@ class Symbol(object):
 
     def _get_expressions(self, rule):
         expressions = [n.strip() for n in re.split('(\s+or|and\s+)', rule)]
-        print expressions
-        print ' '.join(expressions)
         return filter(lambda e: e != 'or' and e != 'and', expressions)
 
     def _serialize_field_names(self, rule, layer):
@@ -83,6 +80,8 @@ class Symbol(object):
     def _deserialize_field_names(self, layer):
         # retrieve lookup table of col_name_db --> col_name:
         crosswalk = self._generate_deserialization_crosswalk(self.rule, layer)
+        if not crosswalk:
+            return self.rule
         return self._do_substitutions(self.rule, layer, crosswalk)
 
     def _do_substitutions(self, rule, layer, crosswalk):
@@ -96,6 +95,9 @@ class Symbol(object):
         # (the column name) with col_name_db for relevant token sets:
         for i, tokens in enumerate(expression_token_list):
             if tokens[0] not in ['and', 'or']:
+                if len(tokens) != 3:
+                    raise exceptions.ValidationError(
+                        'Symbol rule "{0}" is not valid.'.format(rule))
                 tokens[0] = crosswalk[tokens[0]]
             expressions[i] = ' '.join(tokens)
 

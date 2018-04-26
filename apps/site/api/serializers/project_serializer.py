@@ -18,6 +18,8 @@ from localground.apps.site.api.serializers.record_serializer import \
     create_dynamic_serializer
 from localground.apps.site.api.serializers.field_serializer import \
     FieldSerializerSimple
+from django.contrib.gis.geos import GEOSGeometry
+import uuid
 
 
 class ProjectSerializerMixin(object):
@@ -48,6 +50,25 @@ class ProjectSerializer(
                 'date_created', 'last_updated_by'
             )
         depth = 0
+
+    def create(self, validated_data):
+        # Overriding create so that creating a new projects also creates
+        # a new map with a new dataset and a new layer
+        self.instance = super(ProjectSerializer, self).create(validated_data)
+        # Note: if no dataset specified, the create method automatically
+        # creates a new Layer and a new Dataset:
+        # TODO: default lat/lng?
+        models.StyledMap.create(
+            center=GEOSGeometry(
+                '{"type": "Point", "coordinates": [-122, 38]}'),
+            zoom=6,
+            last_updated_by=self.instance.owner,
+            owner=self.instance.owner,
+            project=self.instance,
+            slug=uuid.uuid4().hex,
+            name='Untitled Map'
+        )
+        return self.instance
 
     def get_last_updated_by(self, obj):
         return obj.last_updated_by.username

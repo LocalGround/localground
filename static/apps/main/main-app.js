@@ -28,6 +28,9 @@ define([
         layerHasBeenAltered: false,
         layerHasBeenSaved: false,
         currentCollection: null,
+        getProjectID: function () {
+            return this.dataManager.getProject().id;
+        },
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run

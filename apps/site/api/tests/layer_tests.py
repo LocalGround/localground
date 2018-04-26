@@ -274,3 +274,97 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.data[0], u'The field "weeeeee" could not be found.')
+
+    def test_symbol_rules_get_converted_to_field_notation_in_database(self):
+        f = self.create_field(
+                self.dataset, name='Worm Count',
+                data_type=models.DataType.objects.get(id=2),
+                ordering=5)
+        self.assertEqual(f.col_name, 'worm_count')
+        self.assertEqual(f.col_name_db, 'field_{0}'.format(f.id))
+        symbol = models.Symbol.SIMPLE.to_dict()
+        rule = '{0} > 3 and {0} < 6 and {1} = larry'.format(
+            f.col_name, self.dataset.fields[0].col_name
+        )
+        symbol['rule'] = rule
+        response = self.client_user.patch(
+            self.url,
+            data=json.dumps({
+                'symbols': [symbol]
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('symbols')[0]['rule'], rule)
+        layer = models.Layer.objects.get(id=self.obj.id)
+        self.assertEqual(
+            layer.symbols[0]['rule'],
+            '{0} > 3 and {0} < 6 and {1} = larry'.format(
+                f.col_name_db, self.dataset.fields[0].col_name_db
+            ))
+
+    def test_changing_field_name_doesnt_wreck_rules(self):
+        f = self.create_field(
+                self.dataset, name='Worm Count',
+                data_type=models.DataType.objects.get(id=2),
+                ordering=5)
+        symbol = models.Symbol.SIMPLE.to_dict()
+        rule = '{0} > 3 and {0} < 6 and {1} = larry'.format(
+            f.col_name, self.dataset.fields[0].col_name
+        )
+        symbol['rule'] = rule
+        response = self.client_user.patch(
+            self.url,
+            data=json.dumps({
+                'symbols': [symbol]
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+        layer = models.Layer.objects.get(id=self.obj.id)
+        self.assertEqual(
+            layer.symbols[0]['rule'],
+            '{0} > 3 and {0} < 6 and {1} = larry'.format(
+                f.col_name_db, self.dataset.fields[0].col_name_db
+            ))
+
+        f.col_alias = 'Worm 1 Count'
+        f.save()
+        response = self.client_user.get(
+            self.url,
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+        self.assertEqual(
+            response.data.get('symbols')[0]['rule'],
+            'worm_1_count > 3 and worm_1_count < 6 and name = larry'
+        )
+
+    def test_bad_symbol_rules_rejected(self):
+        f = self.create_field(
+                self.dataset, name='Worm Count',
+                data_type=models.DataType.objects.get(id=2),
+                ordering=5)
+        self.assertEqual(f.col_name, 'worm_count')
+        self.assertEqual(f.col_name_db, 'field_{0}'.format(f.id))
+        symbol = models.Symbol.SIMPLE.to_dict()
+        for rule in [
+                '{0} > 3 and {0} < 6 and name = larry'.format('blah'),
+                'name =',
+                'dasjdad das dadad dasd',
+                'worm_count = 5 and x =',
+                'worm_count > 5 and1 worm_count < 10'
+                ]:
+            symbol['rule'] = rule
+            response = self.client_user.patch(
+                self.url,
+                data=json.dumps({
+                    'symbols': [symbol]
+                }),
+                HTTP_X_CSRFTOKEN=self.csrf_token,
+                content_type="application/json"
+            )
+            # print response.data
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertTrue(isinstance(response.data['symbols'], list))

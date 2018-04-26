@@ -8,11 +8,13 @@ from localground.apps.site import models
 from sys import stderr
 import json
 from localground.apps.site.api.fields.geometry import GeometryField
-from localground.apps.site.api.fields.table_media import TablePhotoJSONField, TableAudioJSONField
+from localground.apps.site.api.fields.table_media import \
+    TablePhotoJSONField, TableAudioJSONField
 from localground.apps.site.api.fields.model_field import CustomModelField
 from localground.apps.site.api.fields.json_fields import \
     EntitiesField, JSONField, SymbolsField
 from localground.apps.site.api.fields.list_field import ListField
+
 
 class UrlField(relations.HyperlinkedIdentityField):
 
@@ -46,7 +48,7 @@ class ProjectField(serializers.Field):
         id = None
         try:
             id = int(data)
-        except:
+        except Exception:
             raise serializers.ValidationError("Project ID must be an integer")
         try:
             return models.Project.objects.get(id=id)
@@ -54,11 +56,10 @@ class ProjectField(serializers.Field):
             raise serializers.ValidationError(
                 "Project ID \"%s\" does not exist" %
                 data)
-        except:
+        except Exception:
             raise serializers.ValidationError(
                 "project_id=%s is invalid" %
                 data)
-
 
     def metadata(self):
         metadata = super(ProjectField, self).metadata()
@@ -72,10 +73,9 @@ class ProjectField(serializers.Field):
                     project.id
                 ])
             metadata["optionValues"] = opts
-        except:
+        except Exception:
             pass
         return metadata
-
 
 
 class ProjectsField(serializers.Field):
@@ -88,7 +88,7 @@ class ProjectsField(serializers.Field):
         try:
             ids = data.split(',')
             ids = [int(id.strip()) for id in ids]
-        except:
+        except Exception:
             raise serializers.ValidationError(
                 "Project IDs must be a list of comma-separated integers")
         return [models.Project.objects.get(id__in=ids)]
@@ -98,12 +98,11 @@ class ProjectsField(serializers.Field):
             raise serializers.ValidationError(
                 "Project IDs \"%s\" do not exist" %
                 data)
-        except:
+        except Exception:
             raise serializers.ValidationError(
                 "project_ids=%s is invalid" %
                 ids)
         return [models.Project.objects.get(id__in=ids)]
-
 
 
 class FileField(serializers.CharField):
@@ -115,7 +114,7 @@ class FileField(serializers.CharField):
             if files.get(self.source):
                 value = files.get(self.source).name
                 into[self.source] = value
-        except:
+        except Exception:
             value = None
             into[self.source] = value
 

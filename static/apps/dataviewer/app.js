@@ -38,6 +38,9 @@ define([
             Backbone.history.start();
             this.addMessageListeners();
         },
+        getProjectID: function () {
+            return this.selectedProjectID;
+        },
 
         initialize: function (options) {
             _.extend(this, options);

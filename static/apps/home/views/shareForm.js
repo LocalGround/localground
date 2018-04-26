@@ -127,7 +127,7 @@ define(["jquery",
 
             // redirect to the map, assuming the location is the homepage
             redirectToMapPage: function(projID){
-                window.location.assign(window.location.href + 'data/?project_id=' + projID + '#/map');
+                window.location.assign(window.location.href + 'main/' + projID + '/');
             },
 
             handleServerSuccess: function(model, response) {
