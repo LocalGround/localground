@@ -7,26 +7,6 @@ import django.contrib.postgres.fields
 from django.conf import settings
 import localground.apps.lib.helpers
 import os
-from django.core import serializers
-
-
-def get_extra_sql():
-    from localground.apps.settings import APPS_ROOT
-    sql_statements = open(os.path.join(APPS_ROOT, 'sql/custom.sql'), 'r').read()
-    return sql_statements
-
-
-fixture_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fixtures'))
-fixture_filename = 'database_initialization.json'
-
-def load_fixture(apps, schema_editor):
-    fixture_file = os.path.join(fixture_dir, fixture_filename)
-
-    fixture = open(fixture_file, 'rb')
-    objects = serializers.deserialize('json', fixture, ignorenonexistent=True)
-    for obj in objects:
-        obj.save()
-    fixture.close()
 
 
 class Migration(migrations.Migration):
@@ -120,8 +100,6 @@ class Migration(migrations.Migration):
         migrations.DeleteModel(
             name='WMSOverlay',
         ),
-        migrations.RunPython(load_fixture),
-        migrations.RunSQL(get_extra_sql()),
         migrations.AlterField(
             model_name='print',
             name='map_provider',

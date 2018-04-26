@@ -72,6 +72,7 @@ class KMLRendererListTest(test.TestCase, ModelMixin):
         parseString(data, ContentHandler())
 
     def tearDown(self):
+        models.StyledMap.objects.all().delete()
         models.Dataset.objects.all().delete()
 
 

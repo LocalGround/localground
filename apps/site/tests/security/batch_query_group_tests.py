@@ -29,6 +29,7 @@ class BatchQueryGroupMixin(ModelMixin):
         self._create_groups()
 
     def tearDown(self):
+        models.StyledMap.objects.all().delete()
         models.Dataset.objects.all().delete()
 
     def test_owner_can_view_objects(self):

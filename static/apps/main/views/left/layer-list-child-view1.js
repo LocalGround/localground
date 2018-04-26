@@ -172,7 +172,7 @@ define(["marionette",
             addRecord: function() {
                 let recordModel = new Record({
                     'overlay_type': this.model.get('dataset').overlay_type,
-                    "project_id": 3,
+                    "project_id": this.app.dataManager.getProject().id,
                     "form": this.model.get('dataset'),
                     "owner": this.model.get('owner'),
                     'geometry': null,

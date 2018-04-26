@@ -63,7 +63,7 @@ SELECT setval(pg_get_serial_sequence('"site_userprofile"','id'), coalesce(max("i
 SELECT setval(pg_get_serial_sequence('"site_genericassociation"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_genericassociation";
 SELECT setval(pg_get_serial_sequence('"site_datatype"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_datatype";
 SELECT setval(pg_get_serial_sequence('"site_field"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_field";
-SELECT setval(pg_get_serial_sequence('"site_form"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_form";
+SELECT setval(pg_get_serial_sequence('"site_dataset"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_dataset";
 SELECT setval(pg_get_serial_sequence('"site_layout"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_layout";
 SELECT setval(pg_get_serial_sequence('"site_print"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_print";
 SELECT setval(pg_get_serial_sequence('"site_mapimage"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "site_mapimage";

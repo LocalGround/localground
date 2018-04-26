@@ -54,6 +54,7 @@ class GeoJSONRendererListTest(test.TestCase, ModelMixin):
         self.assertTrue(isinstance(rec.get("properties"), dict))
 
     def tearDown(self):
+        models.StyledMap.objects.all().delete()
         models.Dataset.objects.all().delete()
 
 

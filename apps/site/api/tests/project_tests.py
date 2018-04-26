@@ -45,6 +45,7 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
         self.metadata = get_metadata()
 
     def tearDown(self):
+        models.StyledMap.objects.all().delete()
         models.Dataset.objects.all().delete()
 
     def test_create_project_using_post(self, **kwargs):
