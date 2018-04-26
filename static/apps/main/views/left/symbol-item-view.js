@@ -25,6 +25,7 @@ define(["marionette",
                     });
                     this.overlay.render();
                 }
+                console.log(this.model);
                 this.listenTo(this.app.vent, 'highlight-symbol-item', this.handleRoute);
             },
             active: false,
@@ -49,7 +50,8 @@ define(["marionette",
                     isIndividual: this.parent.layer.get('group_by') === 'individual',
                     width: this.symbolModel.get('width'),
                     height: this.symbolModel.get('height'),
-                    display_name: display_name === undefined ? "" : display_name
+                    display_name: display_name === undefined ? "" : display_name,
+                    geomType: this.model.get('geometry') ? this.model.get('geometry').type : null
                 };
             },
 
