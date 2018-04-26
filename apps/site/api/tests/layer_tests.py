@@ -25,8 +25,22 @@ def get_metadata():
     }
 
 
-class ApiLayerTest(object):
-    title = 'New Layer Name'
+class ApiLayerListTest(ViewMixinAPI, test.TestCase):
+
+    def setUp(self):
+        ViewMixinAPI.setUp(self)
+        self.metadata = get_metadata()
+        self.model = models.Layer
+        self.dataset = self.create_dataset()
+        self.map = self.create_styled_map(dataset=self.dataset)
+        self.url = '/api/0/maps/{0}/layers/'.format(
+            self.map.id
+        )
+        self.title = 'My Layer'
+        self.urls = [self.url]
+        # self.map_id = self.model.styled_map.id
+        # self.model = models.Layer
+        self.view = views.LayerList.as_view()
 
     def _test_save_layer_post(self, status_id, data):
 
@@ -40,10 +54,7 @@ class ApiLayerTest(object):
 
         # if it was successful, verify data:
         if status_id in [status.HTTP_201_CREATED, status.HTTP_200_OK]:
-            if hasattr(self, 'obj'):
-                rec = models.Layer.objects.get(id=self.obj.id)
-            else:
-                rec = models.Layer.objects.all().order_by('-id',)[0]
+            rec = models.Layer.objects.all().order_by('-id',)[0]
             self.assertEqual(rec.title, self.title)
             self.assertEqual(rec.dataset.id, self.dataset.id)
             self.assertEqual(rec.ordering, 2)
@@ -53,26 +64,7 @@ class ApiLayerTest(object):
                     ]:
                 self.assertEqual(rec.symbols[0][key], symbols[0][key])
             results = response.data
-            '''
-            {'display_field': u'name',
-            'map_id': 1931,
-            'title': u'New Layer Name',
-            'ordering': 2,
-            'overlay_type': u'layer',
-            'dataset': {
-                'fields': [OrderedDict([('id', 22387), ('col_alias', u'Name'), ('col_name', 'name'), ('extras', None), ('ordering', 1), ('data_type', u'text')]), OrderedDict([('id', 22388), ('col_alias', u'Description'), ('col_name', 'description'), ('extras', None), ('ordering', 2), ('data_type', u'text')])],
-                'overlay_type': 'dataset_4755',
-                'id': 4755,
-                'name': u'A title'
-            },
-            'symbols': [{'strokeWeight': 1, 'strokeOpacity': 1, 'height': 25, 'shape': 'circle', 'fillOpacity': 1, 'strokeColor': '#ffffff', 'title': 'Untitled Symbol', 'isShowing': True, 'rule': '*', 'width': 25, 'fillColor': 'rgb(251, 154, 153)'}],
-            'url': 'http://localhost:7777/api/0/maps/1931/layers/1982',
-            'group_by': u'uniform',
-            'owner': u'tester',
-            'id': 1982,
-            'metadata': {u'strokeWeight': 1, u'buckets': 4, u'isShowing': False, u'strokeOpacity': 1, u'width': 20, u'shape': u'circle', u'fillOpacity': 1, u'strokeColor': u'#ffffff', u'paletteId': 0, u'fillColor': u'#4e70d4'}}
-            '''
-            # print results
+
             self.assertEqual(results['display_field'], 'name')
             self.assertEqual(results['map_id'], self.map.id)
             self.assertEqual(results['title'], data.get('title'))
@@ -86,48 +78,9 @@ class ApiLayerTest(object):
             self.assertEqual(results['dataset']['id'], data['dataset'])
             self.assertEqual(results['owner'], u'tester')
             self.assertEqual(results['group_by'], 'uniform')
-
-    def _test_save_layer(self, method, status_id, symbols, data=None):
-
-        response = method(
-            self.url,
-            data=json.dumps(data),
-            HTTP_X_CSRFTOKEN=self.csrf_token,
-            content_type="application/json"
-        )
-        self.assertEqual(response.status_code, status_id)
-
-        # if it was successful, verify data:
-        if status_id in [status.HTTP_201_CREATED, status.HTTP_200_OK]:
-            if hasattr(self, 'obj'):
-                rec = models.Layer.objects.get(id=self.obj.id)
-            else:
-                rec = models.Layer.objects.all().order_by('-id',)[0]
-            self.assertEqual(rec.title, self.title)
-            self.assertEqual(rec.dataset.id, self.dataset.id)
-            self.assertEqual(rec.ordering, 2)
-            for key in [
-                'title', 'strokeWeight', 'rule', 'isShowing',
-                'strokeOpacity', 'height', 'width', 'shape', 'strokeColor'
-                    ]:
-                self.assertEqual(rec.symbols[0][key], symbols[0][key])
-
-
-class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
-
-    def setUp(self):
-        ViewMixinAPI.setUp(self)
-        self.metadata = get_metadata()
-        self.model = models.Layer
-        self.dataset = self.create_dataset()
-        self.map = self.create_styled_map(dataset=self.dataset)
-        self.url = '/api/0/maps/{0}/layers/'.format(
-            self.map.id
-        )
-        self.urls = [self.url]
-        # self.map_id = self.model.styled_map.id
-        # self.model = models.Layer
-        self.view = views.LayerList.as_view()
+            self.assertEqual(len(results['symbols']), 1)
+            self.assertEqual(
+                results['symbols'][0]['title'], 'Untitled Symbol')
 
     def test_create_layer_using_post(self, **kwargs):
         self._test_save_layer_post(
@@ -154,7 +107,7 @@ class ApiLayerListTest(ViewMixinAPI, ApiLayerTest, test.TestCase):
         )
 
 
-class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
+class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -173,71 +126,93 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         self.url = '/api/0/maps/{0}/layers/{1}/'.format(
             self.obj.styled_map.id, self.obj.id
         )
+        self.title = 'My Layer'
         self.map_id = self.map.id
         self.urls = [self.url]
         self.model = models.Layer
         self.view = views.LayerInstance.as_view()
 
+    def _test_save_layer(self, method, data):
+
+        response = method(
+            self.url,
+            data=json.dumps(data),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+
+        # if it was successful, verify symbols:
+        if response.status_code == status.HTTP_200_OK:
+            for key in [
+                'title', 'strokeWeight', 'rule', 'isShowing',
+                'strokeOpacity', 'height', 'width', 'shape', 'strokeColor'
+                    ]:
+                self.assertEqual(
+                    response.data['symbols'][0][key], symbols[0][key])
+        return response
+
     def test_update_view_using_put(self, **kwargs):
-        self._test_save_layer(
+        response = self._test_save_layer(
             self.client_user.put,
-            status.HTTP_200_OK,
-            symbols,
             data={
                 'title': self.title,
                 'ordering': 1,
+                'metadata': json.dumps(models.Layer.default_metadata),
                 'group_by': 'uniform',
                 'symbols': json.dumps(symbols),
                 'dataset': self.dataset.id,
                 'display_field': self.dataset.fields[0].col_name
             }
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        rec = models.Layer.objects.get(id=self.obj.id)
+        self.assertEqual(rec.title, self.title)
+        self.assertEqual(rec.dataset.id, self.dataset.id)
+        self.assertEqual(rec.ordering, 1)
+        self.assertEqual(rec.group_by, 'uniform')
+        self.assertEqual(rec.symbols, symbols)
+        self.assertEqual(rec.dataset, self.dataset)
+        self.assertEqual(rec.display_field, self.dataset.fields[0])
 
     def test_update_view_using_patch(self, **kwargs):
         response = self.client_user.patch(
             self.url,
             data=urllib.urlencode({
-                'title': self.title,
+                'title': 'My new title',
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rec = models.Layer.objects.get(id=self.obj.id)
-        self.assertEqual(rec.title, self.title)
-        self.assertNotEqual(self.obj.title, self.title)
+        self.assertEqual(rec.title, 'My new title')
+        self.assertEqual(response.data['title'], 'My new title')
 
     def test_update_view_invalid_json(self, **kwargs):
-        self._test_save_layer(
+        response = self._test_save_layer(
             self.client_user.put,
-            status.HTTP_400_BAD_REQUEST,
-            'dsadaadasdasdjkjdkasda/ewqeqw/',
-            data={
-                'title': self.title,
-                'ordering': 1,
-                'group_by': 'uniform',
-                'symbols': json.dumps(symbols),
-                'dataset': self.dataset.id,
-                'display_field': self.dataset.fields[0].id
-            }
+            'dsadaadasdasdjkjdkasda/ewqeqw/'
         )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_clear_children(self, **kwargs):
         # first add children:
-        self._test_save_layer(
+        response = self._test_save_layer(
             self.client_user.put,
-            status.HTTP_200_OK,
-            symbols,
             data={
                 'title': self.title,
-                'ordering': 1,
+                'ordering': 2,
+                'metadata': json.dumps(models.Layer.default_metadata),
                 'group_by': 'uniform',
                 'symbols': json.dumps(symbols),
                 'dataset': self.dataset.id,
                 'display_field': self.dataset.fields[0].col_name
             }
         )
-
+        rec = models.Layer.objects.get(id=self.obj.id)
+        self.assertEqual(rec.title, self.title)
+        self.assertEqual(rec.ordering, 2)
+        self.assertEqual(rec.symbols, symbols)
         # and then get rid of them:
         response = self.client_user.patch(
             self.url,
@@ -249,6 +224,7 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         rec = models.Layer.objects.get(id=self.obj.id)
+        self.assertEqual(rec.symbols, [])
 
     def test_delete_view(self, **kwargs):
         view_id = self.obj.id
@@ -272,3 +248,29 @@ class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
         except self.model.DoesNotExist:
             # trigger assertion success if photo is removed
             self.assertEqual(1, 1)
+
+    def test_update_invalid_display_field_throws_error(self, **kwargs):
+        response = self.client_user.patch(
+            self.url,
+            data=json.dumps({
+                'display_field': 'weeeeee'
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data[0], u'The field "weeeeee" could not be found.')
+
+    def test_symbol_rules_reference_valid_field_keys(self, **kwargs):
+        response = self.client_user.patch(
+            self.url,
+            data=json.dumps({
+                'display_field': 'weeeeee'
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data[0], u'The field "weeeeee" could not be found.')

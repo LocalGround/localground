@@ -1,17 +1,17 @@
 from rest_framework import serializers
 import json
-    
+from localground.apps.site.models import Symbol
+
+
 class EntitiesField(serializers.Field):
     type_label = 'json'
     type_name = 'EntitiesField'
-    
-    
+
     def get_attribute(self, obj):
         # We pass the object instance onto `to_representation`,
         # not just the field attribute.
         return obj
-    
-    
+
     def to_internal_value(self, value):
         '''
         This is a hack to do some pre-validation. The building of the
@@ -22,14 +22,14 @@ class EntitiesField(serializers.Field):
         if value:
             try:
                 entities = json.loads(value)
-            except:
+            except Exception:
                 raise serializers.ValidationError('Error parsing JSON')
 
             for child in entities:
                 try:
                     overlay_type = child['overlay_type']
                     ids = child['ids']
-                except:
+                except Exception:
                     raise serializers.ValidationError(
                         '%s must have an overlay_type and an ids attribute' %
                         child)
@@ -45,7 +45,7 @@ class EntitiesField(serializers.Field):
                         obj = Base.get_model(
                             model_name=overlay_type
                         ).objects.get(id=id)
-                    except:
+                    except Exception:
                         raise serializers.ValidationError(
                             'No %s object exists with id=%s' % (
                                 overlay_type,
@@ -55,7 +55,7 @@ class EntitiesField(serializers.Field):
         # directly applied to the entities many-to-many (which is impossible)
         # to specify before the object has been created.
         raise serializers.SkipField()
-    
+
     def to_representation(self, obj):
         if obj.entities is not None:
             entity_dict = {}
@@ -77,7 +77,7 @@ class EntitiesField(serializers.Field):
 class JSONField(serializers.Field):
     type_label = 'json'
     type_name = 'JSONField'
-        
+
     def to_internal_value(self, data):
         if isinstance(data, basestring) and len(data) == 0:
             return None
@@ -87,7 +87,7 @@ class JSONField(serializers.Field):
                 return d
             else:
                 raise serializers.ValidationError('Error parsing JSON')
-        except:
+        except Exception:
             raise serializers.ValidationError('Error parsing JSON')
         return data
 
@@ -102,3 +102,28 @@ class JSONField(serializers.Field):
                 raise Exception('Error parsing JSON')
         return None
 
+
+class SymbolsField(JSONField):
+    type_label = 'json'
+    type_name = 'JSONField'
+
+    def to_internal_value(self, symbols):
+        symbols = super(SymbolsField, self).to_internal_value(symbols)
+        if self.root.instance and symbols:
+            for i, symbol_dict in enumerate(symbols):
+                s = Symbol(**symbol_dict)
+                s.set_rule(symbol_dict['rule'], self.root.instance)
+                symbols[i] = s.to_dict()
+        return symbols
+
+    def get_attribute(self, obj):
+        # We pass the object instance onto `to_representation`,
+        # not just the field attribute.
+        return obj
+
+    def to_representation(self, layerModel):
+        for i, symbol_dict in enumerate(layerModel.symbols):
+            s = Symbol(**symbol_dict)
+            layerModel.symbols[i] = s.to_dict()
+            layerModel.symbols[i]['rule'] = s.get_rule(layerModel)
+        return layerModel.symbols

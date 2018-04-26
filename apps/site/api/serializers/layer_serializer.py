@@ -4,17 +4,20 @@ from localground.apps.site.api.serializers.field_serializer import \
     FieldSerializerSimple
 from localground.apps.site.api.serializers.dataset_serializer import \
     DatasetSerializerDetail
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 from localground.apps.site.models.symbol import Symbol
+from localground.apps.site.models.field import Field
+from localground.apps.site.models.dataset import Dataset
 from django.conf import settings
+from rest_framework.fields import empty
 
 
 class LayerSerializer(BaseSerializer):
     create_new_dataset = serializers.BooleanField(
         required=False, write_only=True)
-    symbols = fields.JSONField(required=False, read_only=True)
+    symbols = fields.SymbolsField(required=False, read_only=True)
     metadata = fields.JSONField(required=False, read_only=True)
     display_field = serializers.SerializerMethodField()
     map_id = serializers.SerializerMethodField()
@@ -48,7 +51,27 @@ class LayerSerializer(BaseSerializer):
         return obj.styled_map.id
 
     def get_display_field(self, obj):
-        return obj.display_field.col_name_db
+        return obj.display_field.col_name
+
+    def run_validation(self, data=empty):
+        # A hack to support users to set the display field using col_name
+        if isinstance(data, dict) and data.get('display_field'):
+            if self.instance:
+                dataset_id = self.instance.dataset.id
+            else:
+                dataset_id = data.get('dataset')
+            field = Field.get_field_by_col_name(
+                dataset_id, data.get('display_field')
+            )
+            if field is None:
+                raise exceptions.ValidationError(
+                    'The field "{0}" could not be found.'.format(
+                        data.get('display_field')
+                    )
+                )
+            data['display_field'] = field.col_name_db
+        return super(LayerSerializer, self).run_validation(
+            data=data)
 
     def get_dataset(self, obj):
         return {
@@ -119,8 +142,6 @@ class LayerSerializer(BaseSerializer):
 
 
 class LayerSerializerPost(LayerSerializer):
-
-    #dataset = DatasetSerializerDetail(allow_null=True, required=False)
     dataset = serializers.PrimaryKeyRelatedField(
         queryset=models.Dataset.objects.all(),
         allow_null=True, required=False)
@@ -137,7 +158,7 @@ class LayerSerializerPost(LayerSerializer):
 
 
 class LayerDetailSerializer(LayerSerializer):
-    symbols = fields.JSONField(
+    symbols = fields.SymbolsField(
         style={'base_template': 'json.html', 'rows': 5},
         required=True)
     metadata = fields.JSONField(

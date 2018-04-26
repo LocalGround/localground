@@ -3,7 +3,8 @@ from localground.apps.site.models import BaseAudit
 from datetime import datetime
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from jsonfield import JSONField
-from localground.apps.site.models import DataType
+from localground.apps.site.models import DataType, Layer
+from rest_framework import exceptions
 
 
 class Field(BaseAudit):
@@ -49,12 +50,22 @@ class Field(BaseAudit):
         # replace spaces and dashes with underscores:
         return str(re.sub(r'([-\s])+', '_', tmp).lower())
 
+    @classmethod
+    def get_field_by_col_name(cls, dataset_id, col_name):
+        from localground.apps.site.models import Dataset
+        fields = Dataset.objects.get(id=dataset_id).fields
+        for field in fields:
+            if field.col_name == col_name:
+                return field
+        return None
+
     class Meta:
         app_label = 'site'
         verbose_name = 'field'
         verbose_name_plural = 'fields'
         ordering = ['dataset__id', 'ordering']
-        unique_together = (('col_alias', 'dataset'), ('col_name_db', 'dataset'))
+        unique_together = (
+            ('col_alias', 'dataset'), ('col_name_db', 'dataset'))
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
@@ -71,12 +82,59 @@ class Field(BaseAudit):
             o = Field.objects.get(id=self.id)
             if o.data_type != self.data_type:
                 raise Exception(
-                    'You are not allowed to change the column type of an ' +
-                    'existing column')
+                    'You are not allowed to change the field type of an ' +
+                    'existing field')
 
         self.time_stamp = get_timestamp_no_milliseconds()
         super(Field, self).save(*args, **kwargs)
 
         # 2. ensure that the column name is unique, and add column to table:
-        self.col_name_db = self.col_name
+        self.col_name_db = 'field_{0}'.format(self.pk)
         super(Field, self).save(update_fields=['col_name_db'])
+
+    def _output_dependency(self, layer):
+        return '{0} > {1} > {2}'.format(
+            layer.styled_map.project.name,
+            layer.styled_map.name,
+            layer.title
+        )
+
+    def _get_display_field_dependencies(self):
+        layers = Layer.objects.filter(
+            display_field=self)
+        return [self._output_dependency(layer) for layer in layers]
+
+    def _get_symbol_dependencies(self):
+        maps = []
+        layers = Layer.objects.filter(
+            styled_map__project=self.dataset.project)
+        for layer in layers:
+            for symbol in layer.symbols:
+                if symbol['rule'].find(self.col_name_db) != -1:
+                    maps.append(self._output_dependency(layer))
+                    break
+        return list(set(maps))
+
+    def _throw_error_if_only_one_field(self):
+        if len(self.dataset.fields) == 1:
+            raise exceptions.ValidationError(
+                'Error: This dataset must contain at least 1 field')
+
+    def _throw_error_if_map_layer_dependencies(self):
+        # Ensure that dataset is not deleted if there are layers linking to it:
+        display_field_errors = self._get_display_field_dependencies()
+        map_symbol_dependency_errors = self._get_symbol_dependencies()
+        if display_field_errors or map_symbol_dependency_errors:
+            general_error = 'This field cannot be deleted because '
+            general_error += 'dependencies have been detected.'
+            messages = {
+                'error_message': general_error,
+                'dependencies':
+                    display_field_errors + map_symbol_dependency_errors
+            }
+            raise exceptions.ValidationError(messages)
+
+    def delete(self, **kwargs):
+        self._throw_error_if_only_one_field()
+        self._throw_error_if_map_layer_dependencies()
+        super(Field, self).delete(**kwargs)

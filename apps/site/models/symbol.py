@@ -1,4 +1,6 @@
 from localground.apps.lib.helpers import classproperty
+from rest_framework import exceptions
+import re
 
 
 class Symbol(object):
@@ -54,9 +56,82 @@ class Symbol(object):
         self.isShowing = kwargs.get('isShowing', True)
         self.fillColor = kwargs.get('fillColor', self.get_random_color())
 
+    def set_rule(self, rule, layer):
+        rule = rule.lower()
+        if rule == '*' or rule == u'\xaf\\_(\u30c4)_/\xaf':
+            self.rule = rule
+            return
+        server_rule = self._serialize_field_names(rule, layer)
+        self.rule = server_rule
+
+    def get_rule(self, layer):
+        if self.rule == '*' or self.rule == u'\xaf\\_(\u30c4)_/\xaf':
+            return self.rule
+        return self._deserialize_field_names(layer)
+
+    def _get_expressions(self, rule):
+        expressions = [n.strip() for n in re.split('(\s+or|and\s+)', rule)]
+        print expressions
+        print ' '.join(expressions)
+        return filter(lambda e: e != 'or' and e != 'and', expressions)
+
+    def _serialize_field_names(self, rule, layer):
+        # retrieve lookup table of col_name --> col_name_db:
+        crosswalk = self._generate_serialization_crosswalk(rule, layer)
+        return self._do_substitutions(rule, layer, crosswalk)
+
+    def _deserialize_field_names(self, layer):
+        # retrieve lookup table of col_name_db --> col_name:
+        crosswalk = self._generate_deserialization_crosswalk(self.rule, layer)
+        return self._do_substitutions(self.rule, layer, crosswalk)
+
+    def _do_substitutions(self, rule, layer, crosswalk):
+        # normalize expressions:
+        expressions = [n.strip() for n in re.split('(\s+or|and\s+)', rule)]
+
+        # tokenize each expression (split on spaces)
+        expression_token_list = [re.split('\s+', e) for e in expressions]
+
+        # iterate through tokens and replace the first token in each list
+        # (the column name) with col_name_db for relevant token sets:
+        for i, tokens in enumerate(expression_token_list):
+            if tokens[0] not in ['and', 'or']:
+                tokens[0] = crosswalk[tokens[0]]
+            expressions[i] = ' '.join(tokens)
+
+        # return the serialized rule:
+        return ' '.join(expressions)
+
+    def _generate_serialization_crosswalk(self, rule, layer):
+        expressions = self._get_expressions(rule)
+        crosswalk = {}
+        col_names = list(set([re.split('\s+', e)[0] for e in expressions]))
+        invalid_field_names = []
+        for col_name in col_names:
+            match = False
+            for field in layer.dataset.fields:
+                if field.col_name == col_name:
+                    crosswalk[col_name] = field.col_name_db
+                    break
+            if not crosswalk.get(col_name):
+                raise exceptions.ValidationError(
+                    'Symbol rule "{0}" is not valid.'.format(rule))
+        return crosswalk
+
+    def _generate_deserialization_crosswalk(self, rule, layer):
+        from localground.apps.site.models import Field
+        expressions = self._get_expressions(rule)
+        crosswalk = {}
+        col_name_db_list = [re.split('\s+', e)[0] for e in expressions]
+        fields = Field.objects.filter(col_name_db__in=col_name_db_list)
+        crosswalk = {}
+        for field in fields:
+            crosswalk[field.col_name_db] = field.col_name
+        return crosswalk
+
     def to_dict(self):
         return {
-            'rule': '*',
+            'rule': self.rule,
             'title': self.title,
             'shape': self.shape,
             'fillOpacity': self.fillOpacity,

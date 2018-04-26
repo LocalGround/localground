@@ -19,7 +19,8 @@ def get_base_metadata():
         'extras': {'read_only': False, 'required': False, 'type': 'json'},
         'col_name': {'read_only': True, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
-        'id': {'read_only': True, 'required': False, 'type': 'integer'}
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
+        'key': {'read_only': True, 'required': False, 'type': 'field'}
     }
 
 
@@ -198,7 +199,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.data.get('detail'),
+            response.data[0],
             'Error: This dataset must contain at least 1 field')
 
     def test_cannot_delete_field_if_used_in_layer_display_field(self):
@@ -211,11 +212,37 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
             self.url,
             HTTP_X_CSRFTOKEN=self.csrf_token
         )
+        error_message = 'This field cannot be deleted because dependencies '
+        error_message += 'have been detected.'
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        error_message = 'The following map layers display this field: Oakland '
-        error_message += 'Map: Untitled Layer. Please modify the dependent '
-        error_message += 'layers\' display fields before deleting this field'
-        self.assertEqual(response.data.get('detail'), error_message)
+        self.assertEqual(
+            response.data.get('dependencies')[0],
+            u'Test Project > Oakland Map > Untitled Layer')
+        self.assertEqual(
+            response.data.get('error_message'), error_message)
+
+    def test_cannot_delete_field_if_used_in_symbol_rule(self):
+        map = self.create_styled_map(dataset=self.dataset)
+        field_rule = '{0} = red'.format(self.field2.col_name_db)
+        symbols = [
+            models.Symbol(rule=field_rule).to_dict()
+        ]
+        layer = self.create_layer(
+            map, symbols=symbols, dataset=self.dataset,
+            display_field=self.field, title='Field Layer')
+
+        # try to delete the current field (you shouldn't be able to):
+        response = self.client_user.delete(
+            self.url2,
+            HTTP_X_CSRFTOKEN=self.csrf_token
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data.get('dependencies')[0],
+            u'Test Project > Oakland Map > Field Layer')
+        self.assertEqual(
+            response.data.get('error_message'),
+            u'This field cannot be deleted because dependencies have been detected.')
 
     def test_reserved_col_alias_throws_error_patch(self, **kwargs):
         for col_alias in [

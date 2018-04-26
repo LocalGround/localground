@@ -61,6 +61,10 @@ class Layer(BaseAudit):
     def can_edit(self, user):
         return self.styled_map.can_edit(user)
 
+    def to_dict(self):
+        from localground.apps.site.api.serializers import LayerDetailSerializer
+        return LayerDetailSerializer(self, context={'request': {}}).data
+
     def delete(self, **kwargs):
         super(Layer, self).delete(**kwargs)
         # print len(self.dataset.get_records())

@@ -108,38 +108,7 @@ class FieldInstance(FieldMixin, generics.RetrieveUpdateDestroyAPIView):
         if do_reshuffle:
             self.update_ordering(instance, dataset)
 
-    def __throw_error_if_only_one_field(self, instance):
-        if len(instance.dataset.fields) == 1:
-            raise exceptions.ParseError(
-                'Error: This dataset must contain at least 1 field')
-
-    def __throw_error_if_layer_dependencies(self, instance):
-        dependent_layers = models.Layer.objects.values(
-            'styled_map__name', 'title').filter(display_field=instance)
-
-        if len(dependent_layers) > 0:
-            clashes = []
-            for layer in dependent_layers:
-                clashes.append('{0}: {1}'.format(
-                    layer.get('styled_map__name'), layer.get('title')
-                ))
-            msg = 'The following map layers display this field: {0}'.format(
-                ', '.join(clashes)
-            )
-            msg += '. Please modify the dependent layers\' display fields '
-            msg += 'before deleting this field'
-            raise exceptions.ParseError(msg)
-
     def perform_destroy(self, instance):
         dataset = instance.dataset
-
-        # 2 validation checks:
-        #   a) make sure that the dataset keeps at least one field:
-        #   b) make sure that if a layer is relying on the field for its
-        #      display name, that it shows an error:
-        self.__throw_error_if_only_one_field(instance)
-        self.__throw_error_if_layer_dependencies(instance)
-
-        # if no errors, destroy field:
         instance.delete()
         self.reorder_fields_if_needed(dataset)

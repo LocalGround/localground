@@ -10,7 +10,8 @@ import json
 from localground.apps.site.api.fields.geometry import GeometryField
 from localground.apps.site.api.fields.table_media import TablePhotoJSONField, TableAudioJSONField
 from localground.apps.site.api.fields.model_field import CustomModelField
-from localground.apps.site.api.fields.json_fields import EntitiesField, JSONField
+from localground.apps.site.api.fields.json_fields import \
+    EntitiesField, JSONField, SymbolsField
 from localground.apps.site.api.fields.list_field import ListField
 
 class UrlField(relations.HyperlinkedIdentityField):
@@ -57,8 +58,8 @@ class ProjectField(serializers.Field):
             raise serializers.ValidationError(
                 "project_id=%s is invalid" %
                 data)
-    
-    
+
+
     def metadata(self):
         metadata = super(ProjectField, self).metadata()
         try:
@@ -68,7 +69,7 @@ class ProjectField(serializers.Field):
             for project in projects:
                 opts.append([
                     '{0} - {1}'.format(project.id, project.name),
-                    project.id 
+                    project.id
                 ])
             metadata["optionValues"] = opts
         except:
@@ -102,7 +103,7 @@ class ProjectsField(serializers.Field):
                 "project_ids=%s is invalid" %
                 ids)
         return [models.Project.objects.get(id__in=ids)]
-        
+
 
 
 class FileField(serializers.CharField):

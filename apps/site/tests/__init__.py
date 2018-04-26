@@ -187,15 +187,16 @@ class ModelMixin(object):
         return uao
 
     def create_layer(
-            self, map, dataset=None, display_field=None,
+            self, map, dataset=None, display_field=None, symbols=None,
             title='Untitled Layer', ordering=1, group_by='uniform'):
         if dataset and not display_field:
             display_field = dataset.fields[0]
-
-        models.Layer.create(
+        symbols = symbols or [models.Symbol.SIMPLE.to_dict()]
+        return models.Layer.create(
             last_updated_by=map.last_updated_by,
             owner=map.owner,
             styled_map=map,
+            symbols=symbols,
             dataset=dataset,
             display_field=display_field,
             title=title,

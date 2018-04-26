@@ -14,11 +14,15 @@ class FieldSerializerSimple(serializers.ModelSerializer):
         slug_field='name',
         required=False
     )
+    key = serializers.SerializerMethodField()
+
+    def get_key(self, obj):
+        return obj.col_name_db
 
     class Meta:
         model = models.Field
         read_only_fields = fields = (
-            'id',  'col_alias', 'col_name', 'extras', 'ordering',
+            'id',  'key', 'col_alias', 'col_name', 'extras', 'ordering',
             'data_type')
 
 
@@ -44,8 +48,8 @@ class FieldSerializerBase(AuditSerializerMixin, FieldSerializerSimple):
     class Meta:
         model = models.Field
         fields = (
-            'id', 'dataset', 'col_alias', 'col_name', 'extras', 'ordering',
-            'data_type', 'url')
+            'id', 'key', 'dataset', 'col_alias', 'col_name', 'extras',
+            'ordering', 'data_type', 'url')
 
     def get_url(self, obj):
         return '%s/api/0/datasets/%s/fields/%s' % \
