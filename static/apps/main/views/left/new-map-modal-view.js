@@ -14,7 +14,6 @@ define ([
                 this.template = Handlebars.compile(CreateMapFormTemplate);
 
                 const datasets = this.app.dataManager.getDatasets();
-                console.log(datasets);
                 this.formData = {
                     name: 'Untitled Map',
                     caption: '',
@@ -90,6 +89,12 @@ define ([
                 this.setName();
                 this.setCaption();
                 this.setDatasets();
+            },
+
+            onShow: function () {
+                setTimeout(() => {
+                    this.$el.find('#map-name').focus();
+                }, 50);
             },
 
             saveMap: function () {
