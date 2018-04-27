@@ -95,7 +95,7 @@ class Symbol(object):
         # (the column name) with col_name_db for relevant token sets:
         for i, tokens in enumerate(expression_token_list):
             if tokens[0] not in ['and', 'or']:
-                if len(tokens) < 3:
+                if len(tokens) != 3:
                     raise exceptions.ValidationError(
                         'Symbol rule "{0}" is not valid.'.format(rule))
                 tokens[0] = crosswalk[tokens[0]]
