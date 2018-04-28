@@ -27,6 +27,12 @@ define ([
                 }
             },
 
+            onShow: function () {
+                setTimeout(() => {
+                    this.$el.find('#layer-title').focus().select();
+                }, 50);
+            },
+
             templateHelpers: function () {
                 return {
                     datasets: this.app.dataManager.getDatasets()
