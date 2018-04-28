@@ -68,14 +68,14 @@ define(["jquery",
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
             templateHelpers: function () {
-                const rule = this.model.get('rule')
+                const title = this.model.get('title')
                 name = this.collection.name;
                 return {
                     empty: this.model.getModelsJSON().length === 0,
                     name: name,
                     icon: this.model.get('icon'),
                     markerList: this.model.getModelsJSON(),
-                    property: rule === '*' ? 'all ' + name : rule,
+                    property: title === '*' ? 'all ' + name : title,
                     isChecked: this.model.get("isShowing"),
                     layer_id: this.layerId,
                     map_id: this.mapId,

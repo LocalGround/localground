@@ -468,12 +468,6 @@ ul {
   line-height: 15px;
 }
 
-.layer-datasource a {
-  text-decoration: underline;
-  color: #297CBB;
-  font-size: 11px;
-}
-
 .layer-style-by {
   font-size: 11px;
   margin-left: 4px;
@@ -1614,5 +1608,4 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
-
 /*# sourceMappingURL=main-new.css.map */
