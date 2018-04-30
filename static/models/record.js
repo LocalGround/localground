@@ -23,16 +23,19 @@ define(["models/base",
                 }
             },
             url: function () {
-
                 var base =
                     _.result(this, 'urlRoot') ||
-                    _.result(this.collection, 'url') || urlError(),
+                    _.result(this.collection, 'url') || this.urlError(),
                     url;
                 if (this.isNew()) {
                     return base + '.json';
                 }
                 url = base.replace(/([^\/])$/, '$1/') + encodeURIComponent(this.id) + '/.json';
                 return url;
+            },
+
+            urlError: function() {
+                throw new Error('A "url" property or function must be specified');
             },
 
             toTemplateJSON: function () {

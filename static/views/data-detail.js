@@ -518,6 +518,7 @@ define([
             }
             this.model.destroy({
                 success: function () {
+                    that.destroy();
                     //trigger an event that clears out the deleted model's detail:
                     that.app.vent.trigger('hide-detail');
                 }, error: function(){

@@ -174,6 +174,7 @@ define(["marionette",
                     'overlay_type': this.model.get('dataset').overlay_type,
                     "project_id": this.app.dataManager.getProject().id,
                     "form": this.model.get('dataset'),
+                    "fields": this.model.get('dataset').fields,
                     "owner": this.model.get('owner'),
                     'geometry': null,
                     "fillColor": '#ed867d'
