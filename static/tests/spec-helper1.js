@@ -64,6 +64,19 @@ define([
                 },
                 Point: function () {
                     return;
+                },
+                drawing: {
+                    OverlayType: {
+                        POLYLINE: 'polyline',
+                        POLYGON: 'polygon',
+                        RECTANGLE: 'rectangle',
+                        POINT: 'point'
+                    },
+                    DrawingManager: function(opts) {
+                       this.setMap = function(map) {
+                            return;
+                       } 
+                    }
                 }
             };
             var $map_container = $('<div id="map_canvas"></div>');

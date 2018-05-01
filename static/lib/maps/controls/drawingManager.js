@@ -105,54 +105,57 @@ define(["jquery",
                 });
             },
 
+            googlePolygonToGeoJSON: (polygon) => {
+                var pathCoords = polygon.getPath().getArray(),
+                    coords = [],
+                    i = 0;
+                for (i; i < pathCoords.length; i++) {
+                    coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+                }
+                //add last coordinate again:
+                coords.push([pathCoords[0].lng(), pathCoords[0].lat()]);
+                return { type: 'Polygon', coordinates: [coords] };
+            },
+
+            googlePolylineToGeoJSON: (polyline) => {
+                var pathCoords = polyline.getPath().getArray(),
+                    coords = [],
+                    i = 0;
+                for (i; i < pathCoords.length; i++) {
+                    coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+                }
+                return { type: 'LineString', coordinates: coords };
+            },
+
             polygonComplete: function (temporaryPolygon) {
-                const googlePolygonToGeoJSON = (polygon) => {
-                    var pathCoords = polygon.getPath().getArray(),
-                        coords = [],
-                        i = 0;
-                    for (i; i < pathCoords.length; i++) {
-                        coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
-                    }
-                    //add last coordinate again:
-                    coords.push([pathCoords[0].lng(), pathCoords[0].lat()]);
-                    return { type: 'Polygon', coordinates: [coords] };
-                };
-                this.notify(googlePolygonToGeoJSON(temporaryPolygon));
+                this.notify(this.googlePolygonToGeoJSON(temporaryPolygon));
                 this.clear(temporaryPolygon);
             },
 
             polylineComplete: function (temporaryPolyline) {
-                const googlePolylineToGeoJSON = (polyline) => {
-                    var pathCoords = polyline.getPath().getArray(),
-                        coords = [],
-                        i = 0;
-                    for (i; i < pathCoords.length; i++) {
-                        coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
-                    }
-                    return { type: 'LineString', coordinates: coords };
-                }
-                this.notify(googlePolylineToGeoJSON(temporaryPolyline));
+                this.notify(this.googlePolylineToGeoJSON(temporaryPolyline));
                 this.clear(temporaryPolyline);
+            },
+
+            getGeoJSONFromBounds: function (r) {
+                var bounds = r.getBounds().toJSON(),
+                    north = bounds.north,
+                    south = bounds.south,
+                    east = bounds.east,
+                    west = bounds.west;
+                return {
+                    "type": "Polygon",
+                    "coordinates": [[
+                        [east, north], [east, south], [west, south], [west, north], [east, north]
+                    ]]
+                };
             },
 
             rectangleComplete: function (rect) {
                 rect.setOptions({ editable: false });
                 this.drawingManager.setDrawingMode(null);
-                var getGeoJSONFromBounds = function (r) {
-                    var bounds = r.getBounds().toJSON(),
-                        north = bounds.north,
-                        south = bounds.south,
-                        east = bounds.east,
-                        west = bounds.west;
-                    return {
-                        "type": "Polygon",
-                        "coordinates": [[
-                            [east, north], [east, south], [west, south], [west, north], [east, north]
-                        ]]
-                    };
-                };
 
-                this.notify(getGeoJSONFromBounds(rect));
+                this.notify(this.getGeoJSONFromBounds(rect));
                 this.clear(rect);
                 $('body').css({ cursor: 'auto' });
             },
