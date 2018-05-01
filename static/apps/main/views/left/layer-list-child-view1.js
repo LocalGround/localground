@@ -44,9 +44,6 @@ define(["marionette",
                 'click #select-point': 'selectPoint',
                 'click #select-polygon': 'selectPolygon',
                 'click #select-polyline': 'selectPolyline',
-                'click .add-record': 'addPoint',
-                'click .add-polyline_svg': 'addPolyline',
-                'click .add-polygon_svg': 'addPolygon',
                 'click .zoom-to-extents': 'zoomToExtents'
             },
 
@@ -182,6 +179,12 @@ define(["marionette",
                 recordModel.save(null, {
                     success: () => {
                         this.dataCollection.add(recordModel);
+                        var mapID = this.app.dataManager.getMap().id,
+                            layerID = this.model.id,
+                            overlay_type = this.model.get('dataset').overlay_type,
+                            recID = recordModel.id,
+                            route = `${mapID}/layers/${layerID}/${overlay_type}/${recID}`;
+                        this.app.router.navigate("//" + route);
                     }
                 });
             },
@@ -367,20 +370,21 @@ define(["marionette",
 
             },
 
-            selectPoint: function (e) {
-                this.app.vent.trigger('add-point', this.cid, e);
+            initDrawingManager: function (e, mode) {
+                this.app.vent.trigger(mode, this.cid, e);
+                this.app.vent.trigger('hide-detail');
                 this.$el.find('.geometry-options').toggle();
                 e.preventDefault();
+            },
+
+            selectPoint: function (e) {
+                this.initDrawingManager(e, 'add-point');
             },
             selectPolygon: function(e) {
-                this.app.vent.trigger('add-polygon', this.cid);
-                this.$el.find('.geometry-options').toggle();
-                e.preventDefault();
+                this.initDrawingManager(e, 'add-polygon');
             },
             selectPolyline: function(e) {
-                this.app.vent.trigger('add-polyline', this.cid);
-                this.$el.find('.geometry-options').toggle();
-                e.preventDefault();
+                this.initDrawingManager(e, 'add-polyline');
             },
 
             getMarkerOverlays: function () {
