@@ -17,12 +17,14 @@ define(["models/base",
             }),
             viewSchema: null,
             initialize: function (data, opts) {
-                //_.extend(this, opts);
+                opts = opts || {};
+                if (opts.urlRoot) {
+                    this.urlRoot = opts.urlRoot;
+                }
                 Base.prototype.initialize.apply(this, arguments);
                 if (opts) {
                     this.viewSchema = this._generateSchema(opts.updateMetadata, false);
                 }
-                console.log(this.get('url'), this.url());
             },
 
             toTemplateJSON: function () {

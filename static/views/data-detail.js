@@ -113,7 +113,6 @@ define([
             this.expanded = false;
             this.clickNum = 1;
             _.extend(this, opts);
-            console.log('data detail initialized', this);
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
@@ -377,12 +376,6 @@ define([
         },
 
         onRender: function () {
-            try {
-                console.log(this.model.get('geometry').toString());
-            }
-            catch (error) {
-                console.log('its null');
-            }
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {
@@ -446,7 +439,6 @@ define([
         saveModel: function () {
             var that = this,
                 isNew = this.model.get("id") ? false : true;
-            console.log(isNew);
             this.commitForm();
             this.model.save(null, {
                 success: function (model, response) {

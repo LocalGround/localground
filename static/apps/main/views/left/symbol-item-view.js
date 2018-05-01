@@ -25,7 +25,6 @@ define(["marionette",
                     });
                     this.overlay.render();
                 }
-                console.log(this.model);
                 this.listenTo(this.app.vent, 'highlight-symbol-item', this.handleRoute);
             },
             active: false,
@@ -96,7 +95,6 @@ define(["marionette",
                     return;
                 }
                 if (!this.overlay) { // create new overlay
-                    console.log(this.model.get("geometry"));
                     this.overlay = new MarkerOverlay({
                         model: this.model,
                         symbol: this.symbolModel,

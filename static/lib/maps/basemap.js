@@ -240,10 +240,6 @@ define(["marionette",
                     that.saveState();
                 });
 
-                google.maps.event.addListener(this.map, 'click', function (event) {
-                    that.placeMarkerOnMap(event.latLng);
-                });
-
                 //todo: possibly move to a layout module?
                 $(window).off('resize');
                 $(window).on('resize', function () {

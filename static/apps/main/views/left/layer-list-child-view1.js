@@ -215,7 +215,6 @@ define(["marionette",
             },
 
             editLayerName: function() {
-                console.log('edit layer name');
 
                 var editLayerNameModal = new EditLayerName({
                     app: this.app,
@@ -407,8 +406,6 @@ define(["marionette",
             },
 
             saveChanges: function() {
-                console.log(this.model.toJSON());
-                //return;
                 this.model.save();
             }
         });
