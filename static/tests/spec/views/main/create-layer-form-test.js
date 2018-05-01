@@ -71,31 +71,5 @@ define([
                 });
             });
 
-            /*
-            <div class="form">
-                <div class="row">
-                    <label>Layer Title: </label>
-                    <input id="layer-title" type="text" placeholder="Layer Title">
-                </div>
-
-                <div class="row">
-                    <input type="radio" name="choose-dataset" id="layer-new-dataset">
-                    <label>Create a new dataset</label>
-                </div>
-                <div class="row">
-                    <input type="radio" name="choose-dataset" id="layer-existing-datasets" checked>
-                    <label>Use existing project dataset:</label>
-                </div>
-                <div class="row">
-                    <select id="dataset-list">
-                        {{#each datasets}}
-                            <option value="{{this.formID}}">{{this.title}}</option>
-                        {{/each}}
-                    <select>
-                </div>
-            </div>
-
-            */
-
         });
     });

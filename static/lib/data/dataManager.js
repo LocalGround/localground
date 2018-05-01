@@ -164,6 +164,13 @@ define(["underscore", "marionette", "models/project",
                     }
                 });
             },
+            addLayerToMap: function (map, layer) {
+                const dataset = layer.get("dataset");
+                if (!this.hasCollection(dataset.overlay_type)) {
+                    this.__addDataset(dataset);
+                }
+                map.get('layers').add(layer);
+            },
             destroyMap: function (map) {
                 const datasets = map.get('layers').map(layer => {
                     return layer.get('dataset');

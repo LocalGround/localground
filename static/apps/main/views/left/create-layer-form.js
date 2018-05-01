@@ -3,15 +3,27 @@ define ([
     "underscore",
     "marionette",
     "handlebars",
-    "models/layer",
     "text!../../templates/left/create-layer-form.html"],
-    function ($, _, Marionette, Handlebars, Layer, NewLayerModalTemplate) {
+    function ($, _, Marionette, Handlebars, NewLayerModalTemplate) {
         'use strict';
 
         var NewLayer = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.template = Handlebars.compile(NewLayerModalTemplate);
+                this.datasets = this.app.dataManager.getDatasets();
+                console.log(this.datasets[0].formID)
+                this.formData = {
+                    title: 'Untitled Layer',
+                    create_new_dataset: '',
+                    dataset: this.datasets[0].formID,
+                    datasets: this.datasets
+                };
+            },
+            errors: {},
+            templateHelpers: function () {
+                this.formData.errors = this.errors;
+                return this.formData;
             },
 
             events: {
@@ -33,53 +45,53 @@ define ([
                 }, 50);
             },
 
-            templateHelpers: function () {
-                return {
-                    datasets: this.app.dataManager.getDatasets()
-                };
+            setTitle: function () {
+                this.formData.title = this.$el.find("#layer-title").val();
+                if (this.formData.title.length > 0) {
+                    this.model.set("title", this.formData.title);
+                } else {
+                    this.errors.title = "A valid layer name is required";
+                }
+            },
+            setDataset: function () {
+                this.formData.create_new_dataset = this.$el.find('#layer-new-dataset').prop('checked') ? "checked" : "";
+                if (this.formData.create_new_dataset === 'checked') {
+                    this.formData.dataset = null;
+                    this.model.set("create_new_dataset", true);
+                    this.model.set('dataset', null);
+                } else {
+                    this.formData.dataset = this.$el.find('#dataset-list').val();
+                    this.model.set("create_new_dataset", false);
+                    this.model.set('dataset', this.formData.dataset);
+                }
+            },
+
+            applyChanges: function () {
+                this.errors = {};
+                this.setTitle();
+                this.setDataset();
             },
 
             saveLayer: function() {
-                const map = this.app.dataManager.getMap();
-                const layer_title = this.$el.find('#layer-title').val();
-                const dataset = this.$el.find('#dataset-list').val();
-                let layer = new Layer({
-                    map_id: map.id,
-                    title: layer_title
-                });
-                if (this.$el.find('#layer-new-dataset').prop('checked')) {
-                    layer.set('create_new_dataset', 'True');
-                } else {
-                    layer.set('dataset', dataset)
+                var that = this;
+                this.applyChanges();
+                if (Object.keys(this.errors).length > 0) {
+                    this.render();
+                    return;
                 }
-                layer.save(null, {
+                this.model.save(null, {
                     dataType:"text",
                     success: (model, response) => {
                         //apply additional server-generated data to model:
-                        layer.set(JSON.parse(response));
-                        map.get('layers').add(layer);
+                        this.model.set(JSON.parse(response));
+                        this.app.dataManager.addLayerToMap(this.map, this.model);
                         this.app.vent.trigger('close-modal');
                     },
                     error: (model, response) => {
-                        var messages = response.responseText;
-                        if (messages.slug && messages.slug.length > 0) {
-                            this.slugError = messages.slug[0];
-                        }
-                        this.updateModal(response);
+                        //TODO: more robust error handling for server-side errors:
+                        console.error(response.responseText);
                     }
                 });
-            },
-
-            updateModal: function (errorMessage) {
-                if (errorMessage.status == '400') {
-                    var messages = JSON.parse(errorMessage.responseText);
-                    this.slugError = messages.slug[0];
-                    this.generalError = null;
-                } else {
-                    this.generalError = "Save Unsuccessful. Unspecified Server Error. Consider changing layer title";
-                    this.slugError = null;
-                }
-                this.render();
             }
         });
         return NewLayer;
