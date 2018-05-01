@@ -6,9 +6,10 @@ define(["marionette",
         "apps/main/views/left/symbol-collection-view",
         "apps/main/views/left/edit-layer-name-modal-view",
         "apps/main/views/left/edit-display-field-modal-view",
-        "lib/maps/overlays/icon"
+        "lib/maps/controls/mouseMover"
     ],
-    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView, EditLayerName, EditDisplayField, Icon) {
+    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record,
+            SymbolView, EditLayerName, EditDisplayField, MouseMover) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -40,12 +41,9 @@ define(["marionette",
                 'click .rename-layer': 'editLayerName',
                 'click .edit-display-field': 'editDisplayField',
                 'click .add-record-container': 'displayGeometryOptions',
-                'click #select-point': 'selectPoint',
-                'click #select-polygon': 'selectPolygon',
-                'click #select-polyline': 'selectPolyline',
-                'click .add-record': 'addPoint',
-                'click .add-polyline_svg': 'addPolyline',
-                'click .add-polygon_svg': 'addPolygon',
+                'click #select-point': 'initAddPoint',
+                'click #select-polygon': 'initAddPolygon',
+                'click #select-polyline': 'initAddPolyline',
                 'click .zoom-to-extents': 'zoomToExtents'
             },
 
@@ -55,6 +53,7 @@ define(["marionette",
                 this.symbolModels = this.collection;
                 this.modal = this.app.modal;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
+                this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
                 if (!this.model || !this.collection || !this.dataCollection) {
                     console.error("model, collection, and dataCollection are required");
                     return;
@@ -82,15 +81,8 @@ define(["marionette",
                     newMarkerType: this.newMarkerType
                 };
             },
-
             childView: SymbolView,
-            // getChildView: function() {
-            //     if (this.model.get('group_by') === 'individual') {
-            //         return IndividualSymbolView;
-            //     } else {
-            //         return SymbolView;
-            //     }
-            // },
+
             childViewContainer: "#symbols-list",
 
             reRender: function () {
@@ -134,6 +126,7 @@ define(["marionette",
                 });
             },
             assignRecordToSymbol: function (recordModel) {
+                console.log('add record to symbol');
                 var symbolView;
                 this.children.each(function (view) {
                     if (view.model.checkModel(recordModel)) {
@@ -147,7 +140,7 @@ define(["marionette",
                     );
                 }
                 symbolView.model.addModel(recordModel);
-                symbolView.render();
+                //symbolView.render();
             },
             addFakeModel: function () {
                 var categories = ['mural', 'sculpture', 'blah', undefined, null, '']
@@ -169,22 +162,35 @@ define(["marionette",
                 this.dataCollection.add(recordModel);
             },
 
-            addRecord: function() {
-                let recordModel = new Record({
+            addRecord: function (data) {
+                if (this.cid !== data.viewID) {
+                    return;
+                }
+
+                const recordModel = new Record({
                     'overlay_type': this.model.get('dataset').overlay_type,
                     "project_id": this.app.dataManager.getProject().id,
                     "form": this.model.get('dataset'),
                     "fields": this.model.get('dataset').fields,
                     "owner": this.model.get('owner'),
-                    'geometry': null,
+                    'geometry': data.geoJSON,
                     "fillColor": '#ed867d'
+<<<<<<< HEAD
                 }, {urlRoot: this.dataCollection});
+=======
+                }, { urlRoot: this.dataCollection.url });
+>>>>>>> c810ec8a61a0be52ded3f7b2ff10596c1d30266f
                 recordModel.save(null, {
                     success: () => {
-                        this.dataCollection.add(recordModel)
+                        this.dataCollection.add(recordModel);
+                        var mapID = this.app.dataManager.getMap().id,
+                            layerID = this.model.id,
+                            overlay_type = this.model.get('dataset').overlay_type,
+                            recID = recordModel.id,
+                            route = `${mapID}/layers/${layerID}/${overlay_type}/${recID}`;
+                        this.app.router.navigate("//" + route);
                     }
-                })
-                return recordModel;
+                });
             },
 
             // triggered from the router
@@ -216,7 +222,6 @@ define(["marionette",
             },
 
             editLayerName: function() {
-                console.log('edit layer name');
 
                 var editLayerNameModal = new EditLayerName({
                     app: this.app,
@@ -369,6 +374,7 @@ define(["marionette",
 
             },
 
+<<<<<<< HEAD
             selectPoint: function(e) {
                 var that = this, MouseMover, $follower, mm;
                 MouseMover = function ($follower) {
@@ -430,18 +436,23 @@ define(["marionette",
                 $follower.click(mm.stop);
 
                 this.app.vent.trigger("add-new-marker", this.addRecord());
+=======
+            notifyDrawingManager: function (e, mode) {
+                this.app.vent.trigger(mode, this.cid, e);
+                this.app.vent.trigger('hide-detail');
+>>>>>>> c810ec8a61a0be52ded3f7b2ff10596c1d30266f
                 this.$el.find('.geometry-options').toggle();
                 e.preventDefault();
             },
-            selectPolygon: function(e) {
-                this.app.vent.trigger('add-polygon', this.addRecord());
-                this.$el.find('.geometry-options').toggle();
-                e.preventDefault();
+
+            initAddPoint: function (e) {
+                this.notifyDrawingManager(e, 'add-point');
             },
-            selectPolyline: function(e) {
-                this.app.vent.trigger('add-polyline', this.addRecord());
-                this.$el.find('.geometry-options').toggle();
-                e.preventDefault();
+            initAddPolygon: function(e) {
+                this.notifyDrawingManager(e, 'add-polygon');
+            },
+            initAddPolyline: function(e) {
+                this.notifyDrawingManager(e, 'add-polyline');
             },
 
             getMarkerOverlays: function () {
@@ -467,8 +478,6 @@ define(["marionette",
             },
 
             saveChanges: function() {
-                console.log(this.model.toJSON());
-                //return;
                 this.model.save();
             }
         });

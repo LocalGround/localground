@@ -1,5 +1,10 @@
 // main: ../main-new.scss
 .form, .form-inline {
+    input, input[type="checkbox"], label {
+        &:disabled {
+            opacity: 0.4;
+        }
+    }
     textarea, input[type="text"], input[type="number"], input[type="date"],
     input[type="password"], input[type="email"], select {
         padding: 4px 6px;
@@ -11,10 +16,8 @@
         margin: 1px;
         width: 100%;
         border: solid 1px #ebecf2;
-        &:disabled {
-            opacity: 0.4;
-        }
     }
+    
     textarea {
         height: 75px;
     }
@@ -79,6 +82,11 @@
         }
     }
     .checkbox-list {
+        td {
+            font-size: 0.7em;
+        }
+    }
+    .checkbox-list:disabled {
         td {
             font-size: 0.7em;
         }

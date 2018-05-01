@@ -9,6 +9,7 @@ require(['boot'], function () {
         'spec/views/main/main-app-test.js',
         'spec/views/main/breadcrumbs-test.js',
         'spec/views/main/create-new-map-test.js',
+        'spec/views/main/create-layer-form-test.js',
         'spec/views/main/map-title-view-test.js',
         //'spec/views/main/left-panel-view-test.js',
         'spec/views/main/edit-map-form-test.js',

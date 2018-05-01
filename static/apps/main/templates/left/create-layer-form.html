@@ -1,21 +1,25 @@
-<form class="form">
-    <div class="row">
-        <label>Layer Title: </label>
-        <input id="layer-title" type="text" placeholder="Layer Title">
+<div class="form">
+    <div class="row {{#if errors.title}} error{{/if}}">
+        <label>Layer Name</label>
+        <input id="layer-title" type="text" value="{{ title }}">
+        {{#if errors.title}}
+            <p>{{ errors.title }}</p>
+        {{/if}}
     </div>
 
     <div class="row">
-        <input type="radio" name="choose-dataset" id="layer-new-dataset">
+        <input type="radio" name="choose-dataset" id="layer-new-dataset" {{ create_new_dataset }}>
         <label>Create a new dataset</label>
     </div>
     <div class="row">
-        <input type="radio" name="choose-dataset" id="layer-existing-datasets" checked>
+        <input type="radio" name="choose-dataset" id="layer-existing-datasets"
+            {{#if dataset}}checked{{/if}}>
         <label>Use existing project dataset:</label>
     </div>
     <div class="row">
         <select id="dataset-list">
             {{#each datasets}}
-                <option value="{{this.formID}}">{{this.title}}</option>
+                <option value="{{this.formID}}" {{#ifequal this.formID dataset}}SELECTED{{/ifequal}}>{{this.title}}</option>
             {{/each}}
         <select>
     </div>
@@ -25,4 +29,4 @@
     {{#if generalError}}
         <p class="errorMessage">{{generalError}}</p>
     {{/if}}
-</form>
+</div>

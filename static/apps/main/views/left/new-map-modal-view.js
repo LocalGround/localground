@@ -14,7 +14,6 @@ define ([
                 this.template = Handlebars.compile(CreateMapFormTemplate);
 
                 const datasets = this.app.dataManager.getDatasets();
-                console.log(datasets);
                 this.formData = {
                     name: 'Untitled Map',
                     caption: '',
@@ -34,11 +33,11 @@ define ([
 
             toggleCheckboxes: function (e) {
                 this.$el.find('#existing-datasets').parent().removeClass('error');
-                var $cb = this.$el.find('.checkbox-list');
+                var $cb = this.$el.find('.checkbox-list, .checkbox-list *');
                 if (e.target.id === 'new-dataset') {
-                    $cb.hide();
+                    $cb.attr("disabled", "disabled");
                 } else {
-                    $cb.show();
+                    $cb.removeAttr("disabled");
                 }
             },
             templateHelpers: function () {
@@ -90,6 +89,12 @@ define ([
                 this.setName();
                 this.setCaption();
                 this.setDatasets();
+            },
+
+            onShow: function () {
+                setTimeout(() => {
+                    this.$el.find('#map-name').focus().select();
+                }, 50);
             },
 
             saveMap: function () {
