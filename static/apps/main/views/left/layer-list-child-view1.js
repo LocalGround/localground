@@ -6,9 +6,11 @@ define(["marionette",
         "apps/main/views/left/symbol-collection-view",
         "apps/main/views/left/edit-layer-name-modal-view",
         "apps/main/views/left/edit-display-field-modal-view",
-        "lib/maps/overlays/icon"
+        "lib/maps/overlays/icon",
+        "lib/maps/controls/mouseMover"
     ],
-    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView, EditLayerName, EditDisplayField, Icon) {
+    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record,
+            SymbolView, EditLayerName, EditDisplayField, Icon, MouseMover) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -370,65 +372,15 @@ define(["marionette",
             },
 
             selectPoint: function(e) {
-                var that = this, MouseMover, $follower, mm;
-                MouseMover = function ($follower) {
-
-                    this.generateIcon = function () {
-                        var template, shape;
-                        template = Handlebars.compile('<svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
-                            '    <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
-                            '</svg>');
-                        shape = that.model.get("overlay_type");
-                        // If clicking an add new and click on marker, there is no overlay_type found
-                        //*
-                        // If outside, then save the model
-                        // and add it to the end of the list so the marker
-                        // so that new markers can be added seamlessly
-                        if (shape.indexOf("form_") != -1) {
-                            shape = "marker";
-                        }
-                        //*/
-                        else {
-                            //console.log("The current form of adding marker on empty form is buggy");
-                        }
-                        that.icon = new Icon({
-                            shape: shape,
-                            strokeWeight: 6,
-                            fillColor: "#eff0f2",
-                            width: that.model.collection.size,
-                            height: that.model.collection.size
-                        }).generateGoogleIcon();
-                        that.icon.width *= 1.5;
-                        that.icon.height *= 1.5;
-                        $follower.html(template(that.icon));
-                        $follower.show();
-                    };
-                    this.start = function () {
-                        this.generateIcon();
-                        $(window).bind('mousemove', this.mouseListener);
-                    };
-                    this.stop = function (event) {
-                        $(window).unbind('mousemove');
-                        $follower.remove();
-                        that.app.vent.trigger("place-marker", {
-                            x: event.clientX,
-                            y: event.clientY
-                        });
-                    };
-                    this.mouseListener = function (event) {
-                        $follower.css({
-                            top: event.clientY - that.icon.height * 3 / 4 + 4,
-                            left: event.clientX - that.icon.width * 3 / 4
-                        });
-                    };
-                };
-                //Instantiate Class and Add UI Event Handlers:
-                $follower = $('<div id="follower"></div>');
+                const $follower = $('<div id="follower"></div>');
                 $('body').append($follower);
-                mm = new MouseMover($follower);
+
+                const mm = new MouseMover($follower, {
+                    model: this.model,
+                    app: this.app
+                });
                 $(window).mousemove(mm.start.bind(mm));
                 $follower.click(mm.stop);
-
                 this.app.vent.trigger("add-new-marker", this.addRecord());
                 this.$el.find('.geometry-options').toggle();
                 e.preventDefault();
