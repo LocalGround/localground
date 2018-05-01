@@ -18,21 +18,24 @@ define(["models/base",
             viewSchema: null,
             initialize: function (data, opts) {
                 _.extend(this, opts);
-                console.log(this.urlRoot);
-                Base.prototype.initialize.apply(this, arguments);
+                //Base.prototype.initialize.apply(this, arguments);
                 if (opts) {
                     this.viewSchema = this._generateSchema(opts.updateMetadata, false);
                 }
             },
             url: function () {
                 var base =
+                    this.get('url') ||
                     _.result(this, 'urlRoot') ||
-                    _.result(this.collection, 'url') || this.urlError(),
+                    _.result(this.collection, 'url') ||
+                    this.urlError(),
                     url;
                 if (this.isNew()) {
                     return base + '.json';
                 }
                 url = base.replace(/([^\/])$/, '$1/') + encodeURIComponent(this.id) + '/.json';
+
+                console.log(url);
                 return url;
             },
 

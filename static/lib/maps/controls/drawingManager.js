@@ -1,48 +1,28 @@
-define(["marionette",
+/**
+  The Drawing Manager's only job is to put the map into a particular drawing mode
+  (point, polygon, polyline, or rectangle), and raises an "geometry-created" event
+  with the resulting geoJSON once the digitization process is complete.
+*/
+define(["jquery",
         "underscore",
+        "marionette",
         "lib/maps/controls/searchBox",
-        "lib/maps/controls/tileController"
+        "lib/maps/controls/tileController",
+        "lib/maps/controls/mouseMover",
     ],
-    function (Marionette, _, SearchBox, TileController) {
+    function ($, _, Marionette, SearchBox, TileController, MouseMover) {
 
         var DrawingManager = Marionette.View.extend({
 
             initialize: function (opts) {
-                //required opts:
-                // basemapView
-                // map
+                //required opts: basemapView, map, app
                 _.extend(this, opts);
                 this.color = '#ed867d';
-
-                // for adding points, lines, polygons, and rectangles to the map:
-                this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
+                this.listenTo(this.app.vent, 'point-complete', this.pointComplete);
+                this.listenTo(this.app.vent, 'add-point', this.initPointMode);
                 this.listenTo(this.app.vent, 'add-rectangle', this.initRectangleMode);
                 this.listenTo(this.app.vent, 'add-polyline', this.initPolylineMode);
                 this.listenTo(this.app.vent, 'add-polygon', this.initPolygonMode);
-            },
-
-            point2LatLng: function (point) {
-                var topRight, bottomLeft, scale, worldPoint, offset;
-                offset = this.basemapView.$el.offset();
-                point.x -= offset.left;
-                point.y -= offset.top;
-                topRight = this.map.getProjection().fromLatLngToPoint(this.map.getBounds().getNorthEast());
-                bottomLeft = this.map.getProjection().fromLatLngToPoint(this.map.getBounds().getSouthWest());
-                scale = Math.pow(2, this.map.getZoom());
-                worldPoint = new google.maps.Point(point.x / scale + bottomLeft.x, point.y / scale + topRight.y);
-                return this.map.getProjection().fromPointToLatLng(worldPoint);
-            },
-
-            initRectangleMode: function() {
-                this.initDrawingManager(google.maps.drawing.OverlayType.RECTANGLE);
-            },
-            initPolylineMode: function(model) {
-                this.activateMarker(model);
-                this.initDrawingManager(google.maps.drawing.OverlayType.POLYLINE);
-            },
-            initPolygonMode: function(model) {
-                this.activateMarker(model);
-                this.initDrawingManager(google.maps.drawing.OverlayType.POLYGON);
             },
             initDrawingManager: function (drawingMode) {
                 var polyOpts = {
@@ -54,11 +34,8 @@ define(["marionette",
                 };
 
                 if (this.drawingManager) {
-
-                    // make sure we're using the correct fill and stroke colors
                     this.drawingManager.polygonOptions = polyOpts;
                     this.drawingManager.polylineOptions = polyOpts;
-
                     this.drawingManager.setMap(this.map);
                     this.drawingManager.setDrawingMode(drawingMode);
                     return;
@@ -86,9 +63,44 @@ define(["marionette",
                 google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', this.rectangleComplete.bind(this));
                 this.drawingManager.setMap(this.map);
             },
+            initPointMode: function (viewID, e) {
+                this.viewID = viewID;
+                const mm = new MouseMover(e, {app: this.app});
+            },
+            initRectangleMode: function(viewID) {
+                this.viewID = viewID;
+                this.initDrawingManager(google.maps.drawing.OverlayType.RECTANGLE);
+            },
+            initPolylineMode: function(viewID) {
+                this.viewID = viewID;
+                this.initDrawingManager(google.maps.drawing.OverlayType.POLYLINE);
+            },
+            initPolygonMode: function(viewID) {
+                this.viewID = viewID;
+                this.initDrawingManager(google.maps.drawing.OverlayType.POLYGON);
+            },
+
+            point2LatLng: function (point) {
+                var topRight, bottomLeft, scale, worldPoint, offset;
+                offset = this.basemapView.$el.offset();
+                point.x -= offset.left;
+                point.y -= offset.top;
+                topRight = this.map.getProjection().fromLatLngToPoint(this.map.getBounds().getNorthEast());
+                bottomLeft = this.map.getProjection().fromLatLngToPoint(this.map.getBounds().getSouthWest());
+                scale = Math.pow(2, this.map.getZoom());
+                worldPoint = new google.maps.Point(point.x / scale + bottomLeft.x, point.y / scale + topRight.y);
+                return this.map.getProjection().fromPointToLatLng(worldPoint);
+            },
+
+            pointComplete: function (point) {
+                var location = this.point2LatLng(point);
+                this.notify({
+                    type: 'Point',
+                    coordinates: [location.lng(), location.lat()]
+                });
+            },
 
             polygonComplete: function (temporaryPolygon) {
-                //internal function to convert google to geoJSON:
                 const googlePolygonToGeoJSON = (polygon) => {
                     var pathCoords = polygon.getPath().getArray(),
                         coords = [],
@@ -122,36 +134,28 @@ define(["marionette",
                 rect.setOptions({ editable: false });
                 this.drawingManager.setDrawingMode(null);
                 var getGeoJSONFromBounds = function (r) {
-                        var bounds = r.getBounds().toJSON(),
-                            north = bounds.north,
-                            south = bounds.south,
-                            east = bounds.east,
-                            west = bounds.west;
-                        return {
-                            "type": "Polygon",
-                            "coordinates": [[
-                                [east, north], [east, south], [west, south], [west, north], [east, north]
-                            ]]
-                        };
-                    },
-                    r = getGeoJSONFromBounds(rect);
+                    var bounds = r.getBounds().toJSON(),
+                        north = bounds.north,
+                        south = bounds.south,
+                        east = bounds.east,
+                        west = bounds.west;
+                    return {
+                        "type": "Polygon",
+                        "coordinates": [[
+                            [east, north], [east, south], [west, south], [west, north], [east, north]
+                        ]]
+                    };
+                };
 
-                // hide the rectangle because we are manually displaying
-                // the map ourselves via 'that.targetedModel.trigger('show-marker');'
-                rect.setMap(null);
-                this.targetedModel.set("geometry", r);
-                //this.targetedModel.trigger('show-marker');
-                this.addMarkerClicked = false;
-                this.targetedModel = null;
-                this.drawingManager.setMap(null);
+                this.notify(getGeoJSONFromBounds(rect));
+                this.clear(rect);
                 $('body').css({ cursor: 'auto' });
             },
-
             notify: function (geoJSON) {
-                this.app.vent.trigger(
-                    'geometry-created', {
-                        'geometry': geoJSON
-                    });
+                this.app.vent.trigger('geometry-created', {
+                    geoJSON: geoJSON,
+                    viewID: this.viewID
+                });
             },
             clear: function (temporaryOverlay) {
                 temporaryOverlay.setMap(null);
@@ -159,30 +163,6 @@ define(["marionette",
                     drawingMode: null,
                     drawingControl: false
                 });
-            },
-
-            placeMarkerOnMapXY: function (point) {
-                var location = this.point2LatLng(point);
-                this.placeMarkerOnMap(location);
-            },
-
-            // If the add marker button is clicked, allow user to add marker on click
-            // after the marker is placed, disable adding marker and hide the "add marker" div
-            placeMarkerOnMap: function (location) {
-                if (!this.addMarkerClicked) {
-                    return;
-                }
-                this.targetedModel.trigger('commit-data-no-save');
-                if (!this.targetedModel.get("id")) {
-                    this.targetedModel.collection.add(this.targetedModel);
-                }
-                this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
-                this.targetedModel.trigger('show-marker');
-                this.targetedModel.save();
-                console.log(this.targetedModel);
-                this.app.vent.trigger('rerender-data-detail');
-                this.addMarkerClicked = false;
-                this.targetedModel = null;
             }
         });
         return DrawingManager;

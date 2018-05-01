@@ -13,13 +13,11 @@ define([
     "text!../templates/map-image-detail.html",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
-    "lib/maps/overlays/icon",
-    "lib/maps/controls/mouseMover",
     "lib/parallax",
     "touchPunch"
 ], function ($, _, Backbone, Handlebars, Marionette, DataForm, Photos, Audio, Videos,
         PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
-        MapImageTemplate, AudioPlayer, Carousel, Icon, MouseMover, MoveItItem, TouchPunch) {
+        MapImageTemplate, AudioPlayer, Carousel, MouseMover, MoveItItem, TouchPunch) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -32,7 +30,7 @@ define([
             'click .rotate-left': 'rotatePhoto',
             'click .rotate-right': 'rotatePhoto',
             "click #delete-geometry": "deleteMarker",
-            "click #add-rectangle": "activateRectangleTrigger",
+            "click #add-rectangle": "triggerRectangle",
             "click .streetview": 'showStreetView',
             "click .thumbnail-play-circle": 'playAudio',
             'click .circle': 'openExpanded',
@@ -41,7 +39,7 @@ define([
             // first, a trigger to display dropdown menu
             "click #add-geometry": "displayGeometryOptions",
             // add point, polyline, or polygon
-            'click #add-point': 'activateMarkerTrigger',
+            'click #add-point': 'triggerMarker',
             'click #add-polyline': 'triggerPolyline',
             'click #add-polygon': 'triggerPolygon',
             'click': 'hideGeometryOptions'
@@ -59,16 +57,38 @@ define([
             };
         },
 
+        triggerMarker: function (e) {
+            if (this.$el.find('#drop-marker-message').get(0)) {
+                //button has already been clicked
+                return;
+            }
+            //TODO: are messages needed for all of the geometry types:
+            this.$el.find("#add-marker-button").css({
+                background: "#4e70d4",
+                color: "white"
+            });
+            this.$el.find(".add-lat-lng").append("<p id='drop-marker-message'>click on the map to add location</p>");
+
+            this.app.vent.trigger('add-point', this.cid, e);
+            this.hideGeometryOptions();
+        },
+
         triggerPolyline: function(e) {
-            this.app.vent.trigger('add-polyline', this.model);
+            this.app.vent.trigger('add-polyline', this.cid);
             this.hideGeometryOptions();
             e.preventDefault();
         },
+
         triggerPolygon: function(e) {
             //this.app.vent.trigger("add-new-marker", this.model);
-            this.app.vent.trigger('add-polygon', this.model);
+            this.app.vent.trigger('add-polygon', this.cid);
             this.hideGeometryOptions();
             e.preventDefault();
+        },
+
+        triggerRectangle: function () {
+            $('body').css({ cursor: 'crosshair' });
+            this.app.vent.trigger("add-rectangle", this.cid);
         },
 
         getTemplate: function () {
@@ -105,6 +125,14 @@ define([
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
             this.listenTo(this.app.vent, 'rerender-data-detail', this.render);
+            this.listenTo(this.app.vent, 'geometry-created', this.saveGeoJSON);
+        },
+
+        saveGeoJSON: function (data) {
+            if (this.cid !== data.viewID) {
+                return;
+            }
+            this.model.save({geometry: data.geoJSON}, {patch: true});
         },
 
         templateHelpers: function () {
@@ -188,36 +216,6 @@ define([
                 this.screenSize();
             }
             this.oldWidth = $(window).width();
-        },
-
-        activateRectangleTrigger: function () {
-            $('body').css({ cursor: 'crosshair' });
-            this.app.vent.trigger("add-new-marker", this.model);
-            this.app.vent.trigger("add-rectangle", this.model);
-        },
-
-        activateMarkerTrigger: function () {
-            if (this.$el.find('#drop-marker-message').get(0)) {
-                //button has already been clicked
-                return;
-            }
-            this.$el.find("#add-marker-button").css({
-                background: "#4e70d4",
-                color: "white"
-            });
-            this.$el.find(".add-lat-lng").append("<p id='drop-marker-message'>click on the map to add location</p>");
-
-            var $follower = $('<div id="follower"></div>');
-            $('body').append($follower);
-
-            const mm = new MouseMover($follower, {
-                model: this.model,
-                app: this.app
-            });
-            $(window).mousemove(mm.start.bind(mm));
-            $follower.click(mm.stop);
-            this.app.vent.trigger("add-new-marker", this.model);
-            this.hideGeometryOptions();
         },
 
         deleteMarker: function () {

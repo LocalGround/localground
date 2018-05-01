@@ -6,11 +6,10 @@ define(["marionette",
         "apps/main/views/left/symbol-collection-view",
         "apps/main/views/left/edit-layer-name-modal-view",
         "apps/main/views/left/edit-display-field-modal-view",
-        "lib/maps/overlays/icon",
         "lib/maps/controls/mouseMover"
     ],
     function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record,
-            SymbolView, EditLayerName, EditDisplayField, Icon, MouseMover) {
+            SymbolView, EditLayerName, EditDisplayField, MouseMover) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -57,6 +56,7 @@ define(["marionette",
                 this.symbolModels = this.collection;
                 this.modal = this.app.modal;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
+                this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
                 if (!this.model || !this.collection || !this.dataCollection) {
                     console.error("model, collection, and dataCollection are required");
                     return;
@@ -86,13 +86,7 @@ define(["marionette",
             },
 
             childView: SymbolView,
-            // getChildView: function() {
-            //     if (this.model.get('group_by') === 'individual') {
-            //         return IndividualSymbolView;
-            //     } else {
-            //         return SymbolView;
-            //     }
-            // },
+
             childViewContainer: "#symbols-list",
 
             reRender: function () {
@@ -136,6 +130,7 @@ define(["marionette",
                 });
             },
             assignRecordToSymbol: function (recordModel) {
+                console.log('add record to symbol');
                 var symbolView;
                 this.children.each(function (view) {
                     if (view.model.checkModel(recordModel)) {
@@ -149,7 +144,7 @@ define(["marionette",
                     );
                 }
                 symbolView.model.addModel(recordModel);
-                symbolView.render();
+                //symbolView.render();
             },
             addFakeModel: function () {
                 var categories = ['mural', 'sculpture', 'blah', undefined, null, '']
@@ -171,22 +166,25 @@ define(["marionette",
                 this.dataCollection.add(recordModel);
             },
 
-            addRecord: function() {
-                let recordModel = new Record({
+            addRecord: function (data) {
+                if (this.cid !== data.viewID) {
+                    return;
+                }
+
+                const recordModel = new Record({
                     'overlay_type': this.model.get('dataset').overlay_type,
                     "project_id": this.app.dataManager.getProject().id,
                     "form": this.model.get('dataset'),
                     "fields": this.model.get('dataset').fields,
                     "owner": this.model.get('owner'),
-                    'geometry': null,
+                    'geometry': data.geoJSON,
                     "fillColor": '#ed867d'
-                }, {urlRoot: this.dataCollection.url});
+                }, { url: this.dataCollection.url });
                 recordModel.save(null, {
                     success: () => {
-                        this.dataCollection.add(recordModel)
+                        this.dataCollection.add(recordModel);
                     }
-                })
-                return recordModel;
+                });
             },
 
             // triggered from the router
@@ -371,27 +369,18 @@ define(["marionette",
 
             },
 
-            selectPoint: function(e) {
-                const $follower = $('<div id="follower"></div>');
-                $('body').append($follower);
-
-                const mm = new MouseMover($follower, {
-                    model: this.model,
-                    app: this.app
-                });
-                $(window).mousemove(mm.start.bind(mm));
-                $follower.click(mm.stop);
-                this.app.vent.trigger("add-new-marker", this.addRecord());
+            selectPoint: function (e) {
+                this.app.vent.trigger('add-point', this.cid, e);
                 this.$el.find('.geometry-options').toggle();
                 e.preventDefault();
             },
             selectPolygon: function(e) {
-                this.app.vent.trigger('add-polygon', this.addRecord());
+                this.app.vent.trigger('add-polygon', this.cid);
                 this.$el.find('.geometry-options').toggle();
                 e.preventDefault();
             },
             selectPolyline: function(e) {
-                this.app.vent.trigger('add-polyline', this.addRecord());
+                this.app.vent.trigger('add-polyline', this.cid);
                 this.$el.find('.geometry-options').toggle();
                 e.preventDefault();
             },
