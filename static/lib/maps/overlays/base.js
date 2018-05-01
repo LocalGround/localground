@@ -43,6 +43,7 @@ define(["marionette",
             this.initInfoBubble(opts);
             this.initOverlayType();
             this.listenTo(this.app.vent, "mode-change", this.redraw);
+            console.log('init overlay', this.model.get('url'));
         },
         initInfoBubble: function (opts) {
             this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
@@ -83,6 +84,7 @@ define(["marionette",
         },
 
         attachEventHandlers: function () {
+            console.log(this.model.get('url'));
             var that = this;
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
                 that.app.router.navigate("//" + that.route);

@@ -17,6 +17,8 @@ define(["models/base",
             }),
             viewSchema: null,
             initialize: function (data, opts) {
+                _.extend(this, opts);
+                console.log(this.urlRoot);
                 Base.prototype.initialize.apply(this, arguments);
                 if (opts) {
                     this.viewSchema = this._generateSchema(opts.updateMetadata, false);

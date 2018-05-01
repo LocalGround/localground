@@ -234,6 +234,7 @@ define(["marionette",
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
                 this.targetedModel.trigger('show-marker');
                 this.targetedModel.save();
+                console.log(this.targetedModel);
                 this.app.vent.trigger('rerender-data-detail');
                 this.addMarkerClicked = false;
                 this.targetedModel = null;
