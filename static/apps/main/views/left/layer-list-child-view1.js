@@ -95,7 +95,7 @@ define(["marionette",
 
             reRender: function () {
                 console.log('Symbols have been regenerated...');
-                //this.assignRecordsToSymbols();
+                this.assignRecordsToSymbols();
             },
             updateGroupBy: function () {
                 this.$el.find('.layer-style-by span').html(
@@ -178,7 +178,7 @@ define(["marionette",
                     "owner": this.model.get('owner'),
                     'geometry': null,
                     "fillColor": '#ed867d'
-                }, {urlRoot: this.dataCollection.url});
+                }, {urlRoot: this.dataCollection});
                 recordModel.save(null, {
                     success: () => {
                         this.dataCollection.add(recordModel)
@@ -394,7 +394,7 @@ define(["marionette",
                         that.icon = new Icon({
                             shape: shape,
                             strokeWeight: 6,
-                            fillColor: "#eff0f2",
+                            fillColor: that.model.collection.fillColor,
                             width: that.model.collection.size,
                             height: that.model.collection.size
                         }).generateGoogleIcon();
