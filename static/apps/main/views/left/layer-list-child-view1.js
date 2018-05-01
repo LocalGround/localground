@@ -175,11 +175,7 @@ define(["marionette",
                     "owner": this.model.get('owner'),
                     'geometry': data.geoJSON,
                     "fillColor": '#ed867d'
-<<<<<<< HEAD
-                }, {urlRoot: this.dataCollection});
-=======
                 }, { urlRoot: this.dataCollection.url });
->>>>>>> c810ec8a61a0be52ded3f7b2ff10596c1d30266f
                 recordModel.save(null, {
                     success: () => {
                         this.dataCollection.add(recordModel);
@@ -374,73 +370,9 @@ define(["marionette",
 
             },
 
-<<<<<<< HEAD
-            selectPoint: function(e) {
-                var that = this, MouseMover, $follower, mm;
-                MouseMover = function ($follower) {
-
-                    this.generateIcon = function () {
-                        var template, shape;
-                        template = Handlebars.compile('<svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
-                            '    <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
-                            '</svg>');
-                        shape = that.model.get("overlay_type");
-                        // If clicking an add new and click on marker, there is no overlay_type found
-                        //*
-                        // If outside, then save the model
-                        // and add it to the end of the list so the marker
-                        // so that new markers can be added seamlessly
-                        if (shape.indexOf("form_") != -1) {
-                            shape = "marker";
-                        }
-                        //*/
-                        else {
-                            //console.log("The current form of adding marker on empty form is buggy");
-                        }
-                        that.icon = new Icon({
-                            shape: shape,
-                            strokeWeight: 6,
-                            fillColor: that.model.collection.fillColor,
-                            width: that.model.collection.size,
-                            height: that.model.collection.size
-                        }).generateGoogleIcon();
-                        that.icon.width *= 1.5;
-                        that.icon.height *= 1.5;
-                        $follower.html(template(that.icon));
-                        $follower.show();
-                    };
-                    this.start = function () {
-                        this.generateIcon();
-                        $(window).bind('mousemove', this.mouseListener);
-                    };
-                    this.stop = function (event) {
-                        $(window).unbind('mousemove');
-                        $follower.remove();
-                        that.app.vent.trigger("place-marker", {
-                            x: event.clientX,
-                            y: event.clientY
-                        });
-                    };
-                    this.mouseListener = function (event) {
-                        $follower.css({
-                            top: event.clientY - that.icon.height * 3 / 4 + 4,
-                            left: event.clientX - that.icon.width * 3 / 4
-                        });
-                    };
-                };
-                //Instantiate Class and Add UI Event Handlers:
-                $follower = $('<div id="follower"></div>');
-                $('body').append($follower);
-                mm = new MouseMover($follower);
-                $(window).mousemove(mm.start.bind(mm));
-                $follower.click(mm.stop);
-
-                this.app.vent.trigger("add-new-marker", this.addRecord());
-=======
             notifyDrawingManager: function (e, mode) {
                 this.app.vent.trigger(mode, this.cid, e);
                 this.app.vent.trigger('hide-detail');
->>>>>>> c810ec8a61a0be52ded3f7b2ff10596c1d30266f
                 this.$el.find('.geometry-options').toggle();
                 e.preventDefault();
             },

@@ -21,7 +21,8 @@ require(['boot'], function () {
         // 'spec/views/main/create-layer-form-test.js',
 
         //lib:
-        'spec/lib/data-manager-test.js'
+        'spec/lib/data-manager-test.js',
+        'spec/lib/drawing-manager-test.js'
     ];
 
     require(specs, function () {
