@@ -440,12 +440,12 @@ ul {
   height: inherit;
 }
 
-.symbol-item:hover {
+.symbol-item a:hover {
   background: #EEE;
   color: #444;
 }
 
-.symbol-item a {
+.symbol-item a, .symbol-item > div {
   text-decoration: none;
   padding: 6px 32px;
   display: inline-block;

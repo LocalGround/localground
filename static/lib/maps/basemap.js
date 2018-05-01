@@ -22,9 +22,8 @@ define(["marionette",
             maxZoom: 22,
             mapID: 'map',
             disableStateMemory: false,
-            activeModel: null,
+            activeModel: null, //revisit this
             addMarkerClicked: false,
-            targetedModel: null,
             tileManager: null,
             userProfile: null,
             panorama: null,
@@ -46,7 +45,6 @@ define(["marionette",
                 //add event listeners:
                 this.listenTo(this.tilesets, 'reset', this.onShow);
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
-                this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
                 this.listenTo(this.app.vent, 'show-streetview', this.showStreetView);
                 this.listenTo(this.app.vent, 'hide-streetview', this.hideStreetView);
                 this.listenTo(this.app.vent, 'new-map-loaded', this.update);
@@ -94,11 +92,6 @@ define(["marionette",
                         mapTypeControl: true
                     });
                 }
-            },
-
-            activateMarker: function (model) {
-                this.addMarkerClicked = true;
-                this.targetedModel = model;
             },
 
             renderMap: function () {
@@ -204,9 +197,7 @@ define(["marionette",
 
             initDrawingManager: function () {
                 this.drawingManager = new DrawingManager({
-                    basemapView: this,
-                    map: this.map,
-                    app: this.app
+                    basemapView: this
                 });
             },
 

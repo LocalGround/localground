@@ -28,7 +28,7 @@ define(["jquery",
                 initialize: function (opts) {
                     _.extend(this, opts);
                     var templateHTML = `<div>
-                        No matching markers for rule: {{ rule }}
+                        No markers matching: {{ rule }}
                     </div>`
                     this.template = Handlebars.compile(templateHTML);
                 },

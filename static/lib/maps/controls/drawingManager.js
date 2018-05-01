@@ -4,19 +4,18 @@
   with the resulting geoJSON once the digitization process is complete.
 */
 define(["jquery",
-        "underscore",
         "marionette",
-        "lib/maps/controls/searchBox",
-        "lib/maps/controls/tileController",
         "lib/maps/controls/mouseMover",
     ],
-    function ($, _, Marionette, SearchBox, TileController, MouseMover) {
+    function ($, Marionette, MouseMover) {
 
         var DrawingManager = Marionette.View.extend({
 
             initialize: function (opts) {
-                //required opts: basemapView, map, app
-                _.extend(this, opts);
+                //required opts: basemapView, app
+                this.basemapView = opts.basemapView;
+                this.app = this.basemapView.app;
+                this.map = this.basemapView.map;
                 this.color = '#ed867d';
                 this.listenTo(this.app.vent, 'point-complete', this.pointComplete);
                 this.listenTo(this.app.vent, 'add-point', this.initPointMode);
@@ -24,6 +23,7 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'add-polyline', this.initPolylineMode);
                 this.listenTo(this.app.vent, 'add-polygon', this.initPolygonMode);
             },
+
             initDrawingManager: function (drawingMode) {
                 var polyOpts = {
                     strokeWeight: 2,
@@ -58,23 +58,28 @@ define(["jquery",
                     polygonOptions: polyOpts,
                     polylineOptions: polyOpts
                 });
+
                 google.maps.event.addListener(this.drawingManager, 'polygoncomplete', this.polygonComplete.bind(this));
                 google.maps.event.addListener(this.drawingManager, 'polylinecomplete', this.polylineComplete.bind(this));
                 google.maps.event.addListener(this.drawingManager, 'rectanglecomplete', this.rectangleComplete.bind(this));
                 this.drawingManager.setMap(this.map);
             },
+
             initPointMode: function (viewID, e) {
                 this.viewID = viewID;
                 const mm = new MouseMover(e, {app: this.app});
             },
+
             initRectangleMode: function(viewID) {
                 this.viewID = viewID;
                 this.initDrawingManager(google.maps.drawing.OverlayType.RECTANGLE);
             },
+
             initPolylineMode: function(viewID) {
                 this.viewID = viewID;
                 this.initDrawingManager(google.maps.drawing.OverlayType.POLYLINE);
             },
+
             initPolygonMode: function(viewID) {
                 this.viewID = viewID;
                 this.initDrawingManager(google.maps.drawing.OverlayType.POLYGON);
