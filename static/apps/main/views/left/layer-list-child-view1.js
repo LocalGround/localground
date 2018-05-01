@@ -90,7 +90,7 @@ define(["marionette",
 
             reRender: function () {
                 console.log('Symbols have been regenerated...');
-                //this.assignRecordsToSymbols();
+                this.assignRecordsToSymbols();
             },
             updateGroupBy: function () {
                 this.$el.find('.layer-style-by span').html(
