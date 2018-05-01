@@ -41,9 +41,9 @@ define(["marionette",
                 'click .rename-layer': 'editLayerName',
                 'click .edit-display-field': 'editDisplayField',
                 'click .add-record-container': 'displayGeometryOptions',
-                'click #select-point': 'selectPoint',
-                'click #select-polygon': 'selectPolygon',
-                'click #select-polyline': 'selectPolyline',
+                'click #select-point': 'initAddPoint',
+                'click #select-polygon': 'initAddPolygon',
+                'click #select-polyline': 'initAddPolyline',
                 'click .zoom-to-extents': 'zoomToExtents'
             },
 
@@ -370,21 +370,21 @@ define(["marionette",
 
             },
 
-            initDrawingManager: function (e, mode) {
+            notifyDrawingManager: function (e, mode) {
                 this.app.vent.trigger(mode, this.cid, e);
                 this.app.vent.trigger('hide-detail');
                 this.$el.find('.geometry-options').toggle();
                 e.preventDefault();
             },
 
-            selectPoint: function (e) {
-                this.initDrawingManager(e, 'add-point');
+            initAddPoint: function (e) {
+                this.notifyDrawingManager(e, 'add-point');
             },
-            selectPolygon: function(e) {
-                this.initDrawingManager(e, 'add-polygon');
+            initAddPolygon: function(e) {
+                this.notifyDrawingManager(e, 'add-polygon');
             },
-            selectPolyline: function(e) {
-                this.initDrawingManager(e, 'add-polyline');
+            initAddPolyline: function(e) {
+                this.notifyDrawingManager(e, 'add-polyline');
             },
 
             getMarkerOverlays: function () {

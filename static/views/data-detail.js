@@ -30,7 +30,6 @@ define([
             'click .rotate-left': 'rotatePhoto',
             'click .rotate-right': 'rotatePhoto',
             "click #delete-geometry": "deleteMarker",
-            "click #add-rectangle": "triggerRectangle",
             "click .streetview": 'showStreetView',
             "click .thumbnail-play-circle": 'playAudio',
             'click .circle': 'openExpanded',
@@ -39,9 +38,10 @@ define([
             // first, a trigger to display dropdown menu
             "click #add-geometry": "displayGeometryOptions",
             // add point, polyline, or polygon
-            'click #add-point': 'triggerMarker',
-            'click #add-polyline': 'triggerPolyline',
-            'click #add-polygon': 'triggerPolygon',
+            'click #add-point': 'initAddPoint',
+            'click #add-polyline': 'initAddPolyline',
+            'click #add-polygon': 'initAddPolygon',
+            "click #add-rectangle": "initAddRectangle",
             'click': 'hideGeometryOptions'
         },
 
@@ -57,36 +57,34 @@ define([
             };
         },
 
-        triggerMarker: function (e) {
+        notifyDrawingManager: function (e, mode) {
             if (this.$el.find('#drop-marker-message').get(0)) {
                 //button has already been clicked
                 return;
             }
-            //TODO: are messages needed for all of the geometry types:
             this.$el.find("#add-marker-button").css({
                 background: "#4e70d4",
                 color: "white"
             });
-            this.$el.find(".add-lat-lng").append("<p id='drop-marker-message'>click on the map to add location</p>");
+            this.$el.find(".add-lat-lng").append(
+                "<p id='drop-marker-message'>click on the map to add location</p>"
+            );
 
-            this.app.vent.trigger('add-point', this.cid, e);
-            this.hideGeometryOptions();
-        },
-
-        triggerPolyline: function(e) {
-            this.app.vent.trigger('add-polyline', this.cid);
+            this.app.vent.trigger(mode, this.cid, e);
             this.hideGeometryOptions();
             e.preventDefault();
         },
 
-        triggerPolygon: function(e) {
-            //this.app.vent.trigger("add-new-marker", this.model);
-            this.app.vent.trigger('add-polygon', this.cid);
-            this.hideGeometryOptions();
-            e.preventDefault();
+        initAddPoint: function (e) {
+            this.notifyDrawingManager(e, 'add-point');
         },
-
-        triggerRectangle: function () {
+        initAddPolygon: function(e) {
+            this.notifyDrawingManager(e, 'add-polygon');
+        },
+        initAddPolyline: function(e) {
+            this.notifyDrawingManager(e, 'add-polyline');
+        },
+        initAddRectangle: function () {
             $('body').css({ cursor: 'crosshair' });
             this.app.vent.trigger("add-rectangle", this.cid);
         },
