@@ -179,7 +179,7 @@ define(["marionette",
                     "owner": this.model.get('owner'),
                     'geometry': data.geoJSON,
                     "fillColor": '#ed867d'
-                }, { url: this.dataCollection.url });
+                }, { urlRoot: this.dataCollection.url });
                 recordModel.save(null, {
                     success: () => {
                         this.dataCollection.add(recordModel);

@@ -132,7 +132,11 @@ define([
             if (this.cid !== data.viewID) {
                 return;
             }
-            this.model.save({geometry: data.geoJSON}, {patch: true});
+            this.model.set('geometry', data.geoJSON);
+            this.model.save(null, {
+                patch: true,
+                success: this.render
+            });
         },
 
         templateHelpers: function () {

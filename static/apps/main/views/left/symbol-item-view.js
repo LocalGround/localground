@@ -89,22 +89,14 @@ define(["marionette",
 
             // this function only does something when adding or deleting entire markers:
             updateGeometry: function() {
-                try {
-                    console.log(JSON.stringify(this.model.get('geometry')));
-                }
-                catch (error) {
-                    console.log('its null');
-                }
 
-                console.trace();
-                console.log('updateGeometry', this);
-                if (this.model.get('geometry') === null) { // delete marker
-                    console.log('delete marker');
+                if (!this.model.get('geometry')) { // delete marker
                     this.overlay.destroy();
                     this.overlay = null;
-
-                } else if (this.overlay === null) { // create new marker
-                    console.log('create marker');
+                    return;
+                }
+                if (!this.overlay) { // create new overlay
+                    console.log(this.model.get("geometry"));
                     this.overlay = new MarkerOverlay({
                         model: this.model,
                         symbol: this.symbolModel,
