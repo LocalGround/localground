@@ -44,6 +44,13 @@ define ([
                 this.setCaption();
             },
 
+            onShow: function () {
+                setTimeout(() => {
+                    this.$el.find('#map-name').focus();
+                    this.$el.find('#map-name').select();
+                }, 50);
+            },
+
             saveMap: function () {
                 this.applyChanges()
                 if (!_.isEmpty(this.errors)) {

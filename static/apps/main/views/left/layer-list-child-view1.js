@@ -84,7 +84,6 @@ define(["marionette",
                     newMarkerType: this.newMarkerType
                 };
             },
-
             childView: SymbolView,
 
             childViewContainer: "#symbols-list",

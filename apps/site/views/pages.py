@@ -3,6 +3,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.template import TemplateDoesNotExist, RequestContext
 from django.shortcuts import render as direct_to_template, render_to_response
 from django.views.generic import TemplateView
+from localground.apps.site.models import Project
 
 
 def about_pages(request, page_name):
@@ -26,17 +27,28 @@ def style_guide_pages(request, page_name='banners'):
 
 
 class PublicView(TemplateView):
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            project = Project.objects.get(id=kwargs.get('project_id'))
+        except Project.DoesNotExist:
+            msg = 'Either project id={0} does not exist or you don\'t '
+            msg += 'have access to it.'
+            print msg.format(kwargs.get('project_id'))
+            return HttpResponseRedirect('/')
+        return super(PublicView, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, project_id, *args, **kwargs):
         from localground.apps.site.api.serializers import \
             ProjectDetailSerializer
-        from localground.apps.site.models import Project
         from rest_framework.renderers import JSONRenderer
 
         context = super(PublicView, self).get_context_data(
             *args, **kwargs)
 
+        project = Project.objects.get(id=project_id)
         serializer = ProjectDetailSerializer(
-            Project.objects.get(id=project_id),
+            project,
             context={'request': {}}
         )
         renderer = JSONRenderer()

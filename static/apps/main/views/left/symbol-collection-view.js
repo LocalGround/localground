@@ -23,6 +23,20 @@ define(["jquery",
                 }
                 this.model.set('active', false);
             },
+
+            emptyView: Marionette.ItemView.extend({
+                className: 'symbol-item marker-container',
+                initialize: function (opts) {
+                    _.extend(this, opts);
+                    var templateHTML = `<div>
+                        No matching markers for rule: {{ rule }}
+                    </div>`
+                    this.template = Handlebars.compile(templateHTML);
+                },
+                templateHelpers: function () {
+                    return this.parent.model.toJSON()
+                }
+            }),
             childViewContainer: '.symbol',
             childView: SymbolItemView,
             childViewOptions: function (model, index) {
@@ -98,7 +112,7 @@ define(["jquery",
             },
             showOverlays: function () {
                 this.children.each(view => {
-                    if (view.overlay !== null) {
+                    if (view.overlay) {
                         view.overlay.show();
                     }
                 })
@@ -106,7 +120,7 @@ define(["jquery",
 
             hideOverlays: function () {
                 this.children.each(view => {
-                    if (view.overlay !== null) {
+                    if (view.overlay) {
                         view.overlay.hide();
                     }
                 })
@@ -115,7 +129,7 @@ define(["jquery",
             deleteOverlays: function () {
                 console.log('delete overlays');
                 this.children.each(view => {
-                    if (view.overlay !== null) {
+                    if (view.overlay) {
                         view.overlay.remove();
                     }
                 })

@@ -173,6 +173,7 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
         self.assertEqual(rec.symbols, symbols)
         self.assertEqual(rec.dataset, self.dataset)
         self.assertEqual(rec.display_field, self.dataset.fields[0])
+        self.assertEqual(rec.metadata['isShowing'], True)
 
     def test_update_view_using_patch(self, **kwargs):
         response = self.client_user.patch(
@@ -303,6 +304,23 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
             '{0} > 3 and {0} < 6 and {1} = larry'.format(
                 f.col_name_db, self.dataset.fields[0].col_name_db
             ))
+
+    def toggle_layer_show_hide(self):
+        self.assertEqual(self.obj.metadata['isShowing'], True)
+        metadata = models.Layer.default_metadata
+        metadata['isShowing'] = False
+        response = self.client_user.patch(
+            self.url,
+            data=json.dumps({
+                'metadata': metadata
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.get('metadata')['isShowing'], False)
+        layer = models.Layer.objects.get(id=self.obj.id)
+        self.assertEqual(layer.metadata['isShowing'], False)
 
     def test_changing_field_name_doesnt_wreck_rules(self):
         f = self.create_field(

@@ -1,12 +1,13 @@
 define(["marionette",
         "handlebars",
+        "models/layer",
         "apps/main/views/left/layer-list-child-view1",
         "text!../../templates/left/layer-list.html",
         "apps/main/views/right/marker-style-view",
         "apps/main/views/right/symbol-style-menu-view",
         "apps/main/views/left/create-layer-form",
     ],
-    function (Marionette, Handlebars, LayerListChild,
+    function (Marionette, Handlebars, Layer, LayerListChild,
         LayerListTemplate, MarkerStyleView, SymbolStyleMenuView, CreateLayerForm) {
         'use strict';
         /**
@@ -65,7 +66,10 @@ define(["marionette",
             createNewLayer: function(e) {
                 var createLayerForm = new CreateLayerForm({
                     app: this.app,
-                    mode: 'createNewLayer'
+                    map: this.model,
+                    model: new Layer({
+                        map_id: this.model.id
+                    })
                 });
 
                 this.modal.update({
