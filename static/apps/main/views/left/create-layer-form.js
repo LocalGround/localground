@@ -12,13 +12,15 @@ define ([
                 _.extend(this, opts);
                 this.template = Handlebars.compile(NewLayerModalTemplate);
                 this.datasets = this.app.dataManager.getDatasets();
-                console.log(this.datasets[0].formID)
                 this.formData = {
-                    title: 'Untitled Layer',
+                    title: this.getDefaultLayerTitle(),
                     create_new_dataset: '',
                     dataset: this.datasets[0].formID,
                     datasets: this.datasets
                 };
+            },
+            events: {
+                "click input[type=radio]": "toggleCheckboxes"
             },
             errors: {},
             templateHelpers: function () {
@@ -26,8 +28,24 @@ define ([
                 return this.formData;
             },
 
-            events: {
-                "click input[type=radio]": "toggleCheckboxes"
+            getDefaultLayerTitle: function () {
+                const layers = this.map.get('layers');
+                try {
+                    const matchedTitles = layers.map(layer => {
+                        return layer.get('title');
+                    }).filter(title => {
+                        return /Untitled\sLayer\s*\d*/g.test(title);
+                    });
+                    const maxNumber = matchedTitles.map(title => {
+                        const a = /\d+/g.exec(title);
+                        return (a && a.length > 0) ? parseInt(a[0]) : 0;
+                    }).reduce((a, b) => {
+                        return Math.max(a, b);
+                    });
+                    return 'Untitled Layer ' + (maxNumber + 1);
+                } catch (e) {
+                    return 'Untitled Layer'
+                }
             },
 
             toggleCheckboxes: function (e) {
