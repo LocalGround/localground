@@ -76,6 +76,12 @@ define([
                        this.setMap = function(map) {
                             return;
                        } 
+                       this.setDrawingMode = function(arg) {
+                            return;
+                       }
+                       this.setOptions = function(arg) {
+                            return;
+                       }    
                     }
                 }
             };

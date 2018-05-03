@@ -114,6 +114,7 @@ define(["jquery",
                 }
                 //add last coordinate again:
                 coords.push([pathCoords[0].lng(), pathCoords[0].lat()]);
+
                 return { type: 'Polygon', coordinates: [coords] };
             },
 
