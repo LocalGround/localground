@@ -94,7 +94,7 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
                 layer = Layer.create(
                     last_updated_by=kwargs.get('last_updated_by'),
                     owner=kwargs.get('owner'),
-                    title=dataset.name + ' Layer',
+                    title='Layer {0}'.format(i),
                     styled_map=map,
                     project=map.project,
                     dataset=dataset,
@@ -110,6 +110,7 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
             layer = Layer.create(
                 last_updated_by=kwargs.get('last_updated_by'),
                 owner=kwargs.get('owner'),
+                title='Layer 1',
                 styled_map=map,
                 group_by='uniform',
                 symbols=[
