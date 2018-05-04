@@ -356,15 +356,12 @@ define(["marionette",
             },
 
             displayGeometryOptions: function(e) {
-                console.log('display goem opts');
-                var $el = $(e.target);
-                //this.$el.find('.add-record-container').css({background: '#bbbbbb'});
-                console.log(this.$el.find('.geometry-options').css('display'));
+                const target = this.$el.find('.add-record-container')[0];
+                
+                this.$el.find('.geometry-options').css({top: target.y -15, left: target.x - 200});
                 if (this.$el.find('.geometry-options').css('display') === "block") {
-                    console.log('hide');
                     this.$el.find('.geometry-options').css({display: 'none'})
                 } else {
-                    console.log('show');
                     this.$el.find('.geometry-options').css({display: 'block'});
                 }
 

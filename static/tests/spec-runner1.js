@@ -22,7 +22,8 @@ require(['boot'], function () {
 
         //lib:
         'spec/lib/data-manager-test.js',
-        'spec/lib/drawing-manager-test.js'
+        'spec/lib/drawing-manager-test.js',
+        'spec/lib/mouse-mover-test.js'
     ];
 
     require(specs, function () {

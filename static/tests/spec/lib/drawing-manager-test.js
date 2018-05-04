@@ -10,7 +10,7 @@ define([
         // carried out by the google maps api
         var initView = (scope) => {
             
-            // add spies for all relevant objects and initialize dataManager:
+            // add spies for all relevant objects and initialize DrawingManager:
             spyOn(DrawingManager.prototype, 'initialize').and.callThrough();
             spyOn(DrawingManager.prototype, 'initPolylineMode').and.callThrough();
             spyOn(DrawingManager.prototype, 'initPolygonMode').and.callThrough();
@@ -19,10 +19,8 @@ define([
             spyOn(DrawingManager.prototype, 'initDrawingManager').and.callThrough();
             spyOn(scope.app.vent, 'trigger').and.callThrough();
 
-            // 2) add dummy HTML elements:
-            scope.fixture = setFixtures('<div></div>');
-
-            // 3) initialize Toolbar:
+            
+            // 3) initialize:
             let basemapView = new BaseMapView( {
                 app: scope.app
             })

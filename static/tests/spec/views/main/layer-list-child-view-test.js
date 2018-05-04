@@ -143,12 +143,19 @@ define([
                 this.view.render();
                 expect(SymbolCollectionView.prototype.redrawOverlays).toHaveBeenCalledTimes(5);
                 this.view.$el.find('.layer-isShowing').prop('checked', false).trigger('change');
-                expect(this.view.$el.find('#symbols-list').css('display')).toEqual('none');
+                console.log(this.view.$el[0])
+                expect(this.view.$el[0]).toHaveClass('hide-layer');
                 expect(SymbolCollectionView.prototype.hideOverlays).toHaveBeenCalledTimes(5);
 
                 this.view.$el.find('.layer-isShowing').prop('checked', true).trigger('change');
-                expect(this.view.$el.find('#symbols-list').css('display')).toEqual('block');
+                expect(this.view.$el[0]).not.toHaveClass('hide-layer');
                 expect(SymbolCollectionView.prototype.redrawOverlays).toHaveBeenCalledTimes(10);
             });
+            it("clicking 'add-record' icon opens menu", function() {
+                expect(this.$el.find('.geometry-options').css('display')).toEqual('none');
+                this.$el.find('.add-record-container').trigger('click');
+                expect(this.$el.find('.geometry-options').css('display')).toEqual('block');
+
+            })
         });
     });
