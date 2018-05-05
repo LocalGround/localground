@@ -20,6 +20,9 @@ require(['boot'], function () {
         'spec/views/main/symbol-collection-view-test.js',
         // 'spec/views/main/create-layer-form-test.js',
 
+        // trouble mocking a Record to test the DataDetail View
+        //'spec/views/main/data-detail-test.js',
+
         //lib:
         'spec/lib/data-manager-test.js',
         'spec/lib/drawing-manager-test.js',

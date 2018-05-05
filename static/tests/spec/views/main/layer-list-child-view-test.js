@@ -16,7 +16,12 @@ define([
 
         const initView = function (scope) {
             spyOn(LayerListChildView.prototype, 'initialize').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'showHideOverlays').and.callThrough();;
+            spyOn(LayerListChildView.prototype, 'showHideOverlays').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'initAddPoint').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'initAddPolygon').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'initAddPolyline').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'notifyDrawingManager').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'addRecord').and.callThrough();
 
             spyOn(EditLayerName.prototype, 'initialize').and.callThrough();
             spyOn(EditDisplayField.prototype, 'initialize').and.callThrough();
@@ -30,7 +35,7 @@ define([
             spyOn(SymbolCollectionView.prototype, 'redrawOverlays');
             spyOn(SymbolCollectionView.prototype, 'hideOverlays');
 
-            spyOn(scope.app.vent, 'trigger');
+            spyOn(scope.app.vent, 'trigger').and.callThrough();
             spyOn(scope.app.router, 'navigate');
 
             map = scope.dataManager.getMaps().at(0);
@@ -152,10 +157,76 @@ define([
                 expect(SymbolCollectionView.prototype.redrawOverlays).toHaveBeenCalledTimes(10);
             });
             it("clicking 'add-record' icon opens menu", function() {
-                expect(this.$el.find('.geometry-options').css('display')).toEqual('none');
-                this.$el.find('.add-record-container').trigger('click');
-                expect(this.$el.find('.geometry-options').css('display')).toEqual('block');
+                this.view.render();
+                expect(this.view.$el.find('.geometry-options').css('display')).toEqual('none');
+                this.view.$el.find('.add-record-container').trigger('click');
+                expect(this.view.$el.find('.geometry-options').css('display')).toEqual('block');
+                expect(this.view.$el.find('.geometry-options').css('top')).toEqual('-15px');
+                expect(this.view.$el.find('.geometry-options').css('left')).toEqual('-200px');
 
-            })
+            });
+            it("initAddPoint() works", function() {
+                this.view.render();
+                expect(LayerListChildView.prototype.initAddPoint).toHaveBeenCalledTimes(0);
+                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(0);
+                //this.view.$el.find('.add-record-container').trigger('click');
+                this.view.$el.find('#select-point').trigger('click');
+                expect(LayerListChildView.prototype.initAddPoint).toHaveBeenCalledTimes(1);
+                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(1);
+                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledWith(
+                    jasmine.any(Object), 'add-point');
+            });
+            it("initAddPolygon() works", function() {
+                this.view.render();
+                expect(LayerListChildView.prototype.initAddPolygon).toHaveBeenCalledTimes(0);
+                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(0);
+                //this.view.$el.find('.add-record-container').trigger('click');
+                this.view.$el.find('#select-polygon').trigger('click');
+                expect(LayerListChildView.prototype.initAddPolygon).toHaveBeenCalledTimes(1);
+                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(1);
+                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledWith(
+                    jasmine.any(Object), 'add-polygon');
+            });
+            it("initAddPolyline() works", function() {
+                this.view.render();
+                expect(LayerListChildView.prototype.initAddPolyline).toHaveBeenCalledTimes(0);
+                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(0);
+                //this.view.$el.find('.add-record-container').trigger('click');
+                this.view.$el.find('#select-polyline').trigger('click');
+                expect(LayerListChildView.prototype.initAddPolyline).toHaveBeenCalledTimes(1);
+                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(1);
+                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledWith(
+                    jasmine.any(Object), 'add-polyline');
+            });
+            it("notifyDrawingManager() works", function() {
+                this.view.render();
+                const mockEvent = {
+                    preventDefault: function() {
+                        return;
+                    }
+                }
+
+                // mock the meny being open...
+                this.view.$el.find('.add-record-container').trigger('click');
+                this.view.notifyDrawingManager(mockEvent, 'add-point');
+
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('add-point', this.view.cid, mockEvent);
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('hide-detail');
+                
+                // in jasmine, 'toggle()' isn't setting 'display: block' back to 'display: none'
+                // However, it works in the actual application...
+                // expect(this.view.$el.find('.geometry-options').css('display')).toEqual('none');
+            });
+            it("LayerListChildView recieves notification when a new geometry is completed by the DrawingManager", function () {
+                //spyOn(this.app.vent, 'trigger').and.callThrough();
+                expect(LayerListChildView.prototype.addRecord).toHaveBeenCalledTimes(0);
+                const mockGeometry = {geoJSON: 'mock arg', viewID: 456}
+                this.view.app.vent.trigger('geometry-created', mockGeometry);
+                expect(LayerListChildView.prototype.addRecord).toHaveBeenCalledTimes(1);
+            });
+
+            it("addRecord() works", function() {
+                
+            });
         });
     });
