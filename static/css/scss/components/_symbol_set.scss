@@ -6,6 +6,11 @@
     display: inline-block;
     background-color: white;
     font-weight: 600;
+    width: 170px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
 }
 
 .symbol-wrapper {
@@ -92,5 +97,37 @@
         border-right: 3px solid #8bb8ed;
         border-bottom: 3px solid #8bb8ed;
     } 
+}
+
+.symbol-item {
+    // border-bottom: 1px solid #ebebeb;
+    font-size: 12px;
+    list-style: none;
+    background-color: white;
+    height: inherit;
+
+    a:hover {
+        background: #EEE;
+        color: #444;
+    }
+
+    a, >div {
+        text-decoration: none;
+        padding: 6px 32px;
+        display: inline-block;
+        width: 100%;
+    }
+    p {
+        display: inline-block;
+        margin-top: 3px;
+        vertical-align: middle;
+        width: 190px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    svg {
+        vertical-align: middle;
+    }
 }
 
