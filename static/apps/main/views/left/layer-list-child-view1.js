@@ -146,6 +146,9 @@ define(["marionette",
                         this.getUncategorizedSymbolModel()
                     );
                 }
+                if (!symbolView) {
+                    alert('missing!');
+                }
                 symbolView.model.addModel(recordModel);
                 symbolView.render();
             },
