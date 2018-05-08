@@ -125,17 +125,6 @@ define([
             this.listenTo(this.app.vent, 'geometry-created', this.saveGeoJSON);
         },
 
-        saveGeoJSON: function (data) {
-            if (this.cid !== data.viewID) {
-                return;
-            }
-            this.model.set('geometry', data.geoJSON);
-            this.model.save(null, {
-                patch: true,
-                success: this.render
-            });
-        },
-
         templateHelpers: function () {
             var lat, lng, paragraph, title;
             if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
@@ -219,14 +208,29 @@ define([
             this.oldWidth = $(window).width();
         },
 
-        deleteMarker: function () {
-            console.log('data detail deleteMarker()')
-            this.model.set('geometry', null);
-            //Backbone.Model.prototype.set.call(this.model, "geoometry", null);
-            this.commitForm();
-            this.model.save();
-            this.render();
+        saveGeoJSON: function (data) {
+            if (this.cid !== data.viewID) {
+                return;
+            }
+            this.model.set('geometry', data.geoJSON);
+            this.model.save(null, {
+                patch: true,
+                success: () => {
+                    this.commitForm() //ensures no data loss for partially committed form
+                    this.render()
+                }
+            });
+        },
 
+        deleteMarker: function () {
+            this.model.set('geometry', null);
+            this.model.save(null, {
+                patch: true,
+                success: () => {
+                    this.commitForm() //ensures no data loss for partially committed form
+                    this.render()
+                }
+            });
         },
 
         bindFields: function () {
