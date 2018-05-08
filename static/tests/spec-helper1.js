@@ -92,8 +92,8 @@ define([
                     "dataset": {
                         "id": 3,
                         "overlay_type": "dataset_3",
-                        "fields": this.dataset_3.get("fields"),
-                        "name": this.dataset_3.get("name")
+                        "fields": this.dataset_3.fields,
+                        "name": this.dataset_3.name
                     },
                     "group_by": "uniform",
                     "display_field": "square_feet",
@@ -149,8 +149,8 @@ define([
                     "dataset": {
                         "id": 2,
                         "overlay_type": "dataset_2",
-                        "fields": this.dataset_2.get("fields"),
-                        "name": this.dataset_2.get("name")
+                        "fields": this.dataset_2.fields,
+                        "name": this.dataset_2.name
                     },
                     "group_by": "height",
                     "display_field": "height",

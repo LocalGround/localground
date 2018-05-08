@@ -18,7 +18,7 @@ define(["models/base"], function (Base) {
             var model = data.model,
                 attachmentType = data.attachmentType,
                 attachmentID = data.attachmentID,
-                formID;
+                datasetID;
             if (!model) {
                 console.error("Association requires a 'model' argument.");
                 return false;
@@ -28,11 +28,9 @@ define(["models/base"], function (Base) {
                 return false;
             }
             //todo: API change needed to make the model.id param not "id" but object_id.
-			if (model.get("overlay_type") === "marker") {
-	            this.urlRoot = '/api/0/markers/' + model.id + '/' + attachmentType + '/';
-			} else if (model.get("overlay_type").indexOf("form_") != -1) {
-                formID = model.get("overlay_type").split("_")[1];
-                this.urlRoot = '/api/0/datasets/' + formID + '/data/' + model.id + "/" + attachmentType + '/';
+			if (model.get("overlay_type").indexOf("dataset_") != -1) {
+                datasetID = model.get("overlay_type").split("_")[1];
+                this.urlRoot = '/api/0/datasets/' + datasetID + '/data/' + model.id + "/" + attachmentType + '/';
 			}
             if (attachmentID) {
                 this.idAttribute = 'object_id';

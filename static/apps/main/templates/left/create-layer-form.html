@@ -17,7 +17,7 @@
         <label>Use existing project dataset</label>
     </div>
     <div class="row">
-        <select id="dataset-list">
+        <select id="dataset-list" {{#if create_new_dataset}}disabled="disabled"{{/if}}>
             {{#each datasets}}
                 <option value="{{this.formID}}" {{#ifequal this.formID dataset}}SELECTED{{/ifequal}}>{{this.title}}</option>
             {{/each}}

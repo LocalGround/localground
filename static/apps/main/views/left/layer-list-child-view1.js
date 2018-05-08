@@ -97,11 +97,19 @@ define(["marionette",
             childViewOptions: function (model, index) {
                 return {
                     app: this.app,
-                    //collection: this.collection,
+                    collection: model.getModels(),
                     layerId: this.model.id,
                     layer: this.model,
                     mapId: this.model.get('map_id')
                 };
+            },
+            addChild: function (symbolModel, ChildView, index) {
+                //if the symbol has no children, don't create the child
+                // view:
+                if (symbolModel.getModelsJSON().length > 0) {
+                    return Marionette.CollectionView.prototype.addChild.call(this, symbolModel, ChildView, index);
+                }
+                return null;
             },
             getUncategorizedSymbolModel: function () {
                 return this.symbolModels.findWhere({

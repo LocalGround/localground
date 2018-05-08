@@ -44,7 +44,7 @@ define ([
                     });
                     return 'Untitled Layer ' + (maxNumber + 1);
                 } catch (e) {
-                    return 'Untitled Layer'
+                    return 'Untitled Layer 1'
                 }
             },
 
@@ -78,7 +78,7 @@ define ([
                     this.model.set("create_new_dataset", true);
                     this.model.set('dataset', null);
                 } else {
-                    this.formData.dataset = this.$el.find('#dataset-list').val();
+                    this.formData.dataset = parseInt(this.$el.find('#dataset-list').val());
                     this.model.set("create_new_dataset", false);
                     this.model.set('dataset', this.formData.dataset);
                 }
@@ -90,7 +90,7 @@ define ([
                 this.setDataset();
             },
 
-            saveLayer: function() {
+            saveLayer: function () {
                 var that = this;
                 this.applyChanges();
                 if (Object.keys(this.errors).length > 0) {
@@ -99,17 +99,18 @@ define ([
                 }
                 this.model.save(null, {
                     dataType:"text",
-                    success: (model, response) => {
-                        //apply additional server-generated data to model:
-                        this.model.set(JSON.parse(response));
-                        this.app.dataManager.addLayerToMap(this.map, this.model);
-                        this.app.vent.trigger('close-modal');
-                    },
+                    success: this.handleSuccess.bind(this),
                     error: (model, response) => {
-                        //TODO: more robust error handling for server-side errors:
                         console.error(response.responseText);
                     }
                 });
+            },
+
+            handleSuccess: function (model, response) {
+                // apply additional server-generated data to model:
+                this.model.set(JSON.parse(response));
+                this.app.dataManager.addLayerToMap(this.map, this.model);
+                this.app.vent.trigger('close-modal');
             }
         });
         return NewLayer;

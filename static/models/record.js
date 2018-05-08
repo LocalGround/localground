@@ -3,15 +3,8 @@ define(["models/base",
 	    "models/association"],
     function (Base, _, Association) {
         "use strict";
-        /**
-         * A Backbone Model class for the Project datatype.
-         * @class Project
-         * @see <a href="//localground.org/api/0/projects/">//localground.org/api/0/projects/</a>
-         */
+
         var Record = Base.extend({
-            /*
-             TODO: strip out IDs from JSON, and stash JSON elsewhere.
-             */
             defaults: _.extend({}, Base.prototype.defaults, {
                 name: ""
             }),

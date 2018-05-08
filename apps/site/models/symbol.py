@@ -88,17 +88,17 @@ class Symbol(object):
         # normalize expressions:
         expressions = [n.strip() for n in re.split('(\s+or|and\s+)', rule)]
 
-        # tokenize each expression (split on spaces)
-        expression_token_list = [re.split('\s+', e) for e in expressions]
-
-        # iterate through tokens and replace the first token in each list
-        # (the column name) with col_name_db for relevant token sets:
-        for i, tokens in enumerate(expression_token_list):
+        # tokenize and validate each expression (split on spaces)
+        for i, e in enumerate(expressions):
+            tokens = re.split('("[^"]*"|\'[^\']*\'|[\S]+)+', e)
+            tokens = filter(
+                lambda x: x != '' and x != ' ', tokens)
             if tokens[0] not in ['and', 'or']:
                 if len(tokens) != 3:
                     raise exceptions.ValidationError(
                         'Symbol rule "{0}" is not valid.'.format(rule))
                 tokens[0] = crosswalk[tokens[0]]
+                # print tokens
             expressions[i] = ' '.join(tokens)
 
         # return the serialized rule:

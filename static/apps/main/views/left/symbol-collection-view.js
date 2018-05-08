@@ -15,28 +15,14 @@ define(["jquery",
          */
         var SymbolCollectionView =  Marionette.CompositeView.extend({
             initialize: function (opts) {
-                this.collection = this.model.getModels();
-                console.log(this.collection);
+                //this.collection = this.model.getModels();
+                //console.log(this.collection);
                 _.extend(this, opts);
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
                 this.model.set('active', false);
             },
-
-            emptyView: Marionette.ItemView.extend({
-                className: 'symbol-item marker-container',
-                initialize: function (opts) {
-                    _.extend(this, opts);
-                    var templateHTML = `<div>
-                        No matching markers for rule: {{ rule }}
-                    </div>`
-                    this.template = Handlebars.compile(templateHTML);
-                },
-                templateHelpers: function () {
-                    return this.parent.model.toJSON()
-                }
-            }),
             childViewContainer: '.symbol',
             childView: SymbolItemView,
             childViewOptions: function (model, index) {
