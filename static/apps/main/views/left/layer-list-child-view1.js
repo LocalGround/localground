@@ -53,6 +53,7 @@ define(["marionette",
                 this.symbolModels = this.collection;
                 this.modal = this.app.modal;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
+                this.listenTo(this.dataCollection, 'update-symbol-assignment', this.reAssignRecordToSymbols)
                 this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
                 if (!this.model || !this.collection || !this.dataCollection) {
                     console.error("model, collection, and dataCollection are required");
@@ -141,6 +142,23 @@ define(["marionette",
                 }
                 symbolView.model.addModel(recordModel);
                 //symbolView.render();
+            },
+            reAssignRecordToSymbols: function(recordModel) {
+                var matched = false;
+                const uncategorizedSymbol = this.getUncategorizedSymbolModel();
+                this.symbolModels.each(function (symbolModel) {
+                    if (symbolModel.contains(recordModel) 
+                        && !symbolModel.checkModel(recordModel)) {
+                            symbolModel.removeModel(recordModel);
+                    }
+                    if (symbolModel.checkModel(recordModel)) {
+                        symbolModel.addModel(recordModel);
+                        matched = true;
+                    }
+                    if (!matched) {
+                        uncategorizedSymbol.addModel(recordModel);
+                    }
+                })
             },
             addFakeModel: function () {
                 var categories = ['mural', 'sculpture', 'blah', undefined, null, '']

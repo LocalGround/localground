@@ -72,6 +72,13 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 model.set('display_name', model.get('display_name') || model.get('name'))
                 this.matchedModels.add(model)
             },
+            removeModel: function(model) {
+                console.log('remove model', model);
+                this.matchedModels.remove(model);
+            },
+            contains: function(model) {
+                return  this.matchedModels.contains(model);
+            },
             hasModels: function () {
                 return this.matchedModels.length > 0;
             },
