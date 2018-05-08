@@ -2,6 +2,7 @@ var rootDir = "../../";
 define([
     rootDir + "lib/data/dataManager",
     rootDir + "models/project",
+    rootDir + "models/map",
     rootDir + "collections/records",
     rootDir + "collections/photos",
     rootDir + "collections/audio",
@@ -12,7 +13,7 @@ define([
     rootDir + "collections/fields",
     "tests/spec-helper1"
 ],
-    function (DataManager, Project, Records, Photos, Audio, Videos, MapImages,
+    function (DataManager, Project, Map, Records, Photos, Audio, Videos, MapImages,
             Maps, TileSets, Fields) {
         'use strict';
         var initSpies = (that) => {
@@ -22,12 +23,151 @@ define([
             spyOn(DataManager.prototype, 'getMap').and.callThrough();
             spyOn(DataManager.prototype, 'setMapById').and.callThrough();
             spyOn(DataManager.prototype, 'addMap').and.callThrough();
+            spyOn(DataManager.prototype, 'addLayerToMap').and.callThrough();
             spyOn(DataManager.prototype, 'deleteCollection').and.callThrough();
             spyOn(DataManager.prototype, 'each').and.callThrough();
             spyOn(DataManager.prototype, 'getLookup').and.callThrough();
             spyOn(DataManager.prototype, 'getDatasets').and.callThrough();
             spyOn(DataManager.prototype, 'getMediaCollections').and.callThrough();
             spyOn(DataManager.prototype, 'getCollection').and.callThrough();
+
+            that.newMapJSON = {
+                "id": 99,
+                "overlay_type": "styled_map",
+                "owner": "vw",
+                "name": "test",
+                "caption": "",
+                "tags": [],
+                "url": "http://localhost:7777/api/0/maps/30/",
+                "project_id": 3,
+                "sharing_url": "http://localhost:7777/maps/d8d745097eca49a08c63561e25f9a753",
+                "center": {
+                    "type": "Point",
+                    "coordinates": [
+                        -122.35301597425223,
+                        37.94225327481787
+                    ]
+                },
+                "basemap": 10,
+                "zoom": 16,
+                "layers": [
+                    {
+                        "id": 49,
+                        "overlay_type": "layer",
+                        "owner": "vw",
+                        "title": "Untitled Layer 1",
+                        "dataset": {
+                            "fields": [
+                                {
+                                    "id": 40,
+                                    "key": "field_40",
+                                    "col_alias": "Name",
+                                    "col_name": "name",
+                                    "extras": null,
+                                    "ordering": 1,
+                                    "data_type": "text"
+                                },
+                                {
+                                    "id": 41,
+                                    "key": "field_41",
+                                    "col_alias": "Description",
+                                    "col_name": "description",
+                                    "extras": null,
+                                    "ordering": 2,
+                                    "data_type": "text"
+                                }
+                            ],
+                            "overlay_type": "dataset_18",
+                            "id": 18,
+                            "name": "1"
+                        },
+                        "group_by": "uniform",
+                        "display_field": "name",
+                        "ordering": 1,
+                        "map_id": 30,
+                        "symbols": [
+                            {
+                                "strokeWeight": 1,
+                                "strokeOpacity": 1,
+                                "height": 25,
+                                "shape": "circle",
+                                "fillOpacity": 1,
+                                "strokeColor": "#ffffff",
+                                "title": "Untitled Symbol",
+                                "isShowing": true,
+                                "rule": "*",
+                                "width": 25,
+                                "fillColor": "rgb(255, 127, 0)"
+                            },
+                            {
+                                "strokeWeight": 1,
+                                "strokeOpacity": 1,
+                                "height": 20,
+                                "shape": "circle",
+                                "fillOpacity": 1,
+                                "strokeColor": "#FFFFFF",
+                                "title": "Uncategorized",
+                                "isShowing": false,
+                                "rule": "¯\\_(ツ)_/¯",
+                                "width": 20,
+                                "fillColor": "#4e70d4"
+                            }
+                        ],
+                        "url": "http://localhost:7777/api/0/maps/30/layers/49"
+                    },
+                    {
+                        "id": 50,
+                        "overlay_type": "layer",
+                        "owner": "vw",
+                        "title": "Untitled Layer 2",
+                        "dataset": {
+                            "fields": [
+                                {
+                                    "id": 48,
+                                    "key": "field_48",
+                                    "col_alias": "Name",
+                                    "col_name": "name",
+                                    "extras": null,
+                                    "ordering": 1,
+                                    "data_type": "text"
+                                },
+                                {
+                                    "id": 49,
+                                    "key": "field_49",
+                                    "col_alias": "Description",
+                                    "col_name": "description",
+                                    "extras": null,
+                                    "ordering": 2,
+                                    "data_type": "text"
+                                }
+                            ],
+                            "overlay_type": "dataset_22",
+                            "id": 22,
+                            "name": "Untitled Dataset 6"
+                        },
+                        "group_by": "uniform",
+                        "display_field": "name",
+                        "ordering": 2,
+                        "map_id": 30,
+                        "symbols": [
+                            {
+                                "strokeWeight": 1,
+                                "strokeOpacity": 1,
+                                "height": 25,
+                                "shape": "circle",
+                                "fillOpacity": 1,
+                                "strokeColor": "#ffffff",
+                                "title": "Untitled Symbol",
+                                "isShowing": true,
+                                "rule": "*",
+                                "width": 25,
+                                "fillColor": "rgb(253, 191, 111)"
+                            }
+                        ]
+                    }
+                ],
+                "layers_url": "http://localhost:7777/api/0/maps/30/layers/"
+            };
         };
 
         describe("DataManager: Initialization Tests w/o model", function () {
@@ -169,7 +309,34 @@ define([
             });
 
             it("addMap works as expected", function () {
-                expect(1).toEqual(1);
+                expect(this.dataManager.getMaps().get(99)).toBeUndefined();
+                const newMap = new Map(this.newMapJSON);
+                expect(this.dataManager.getDatasets().length).toEqual(2);
+
+                //call function:
+                this.dataManager.addMap(newMap);
+
+                //new map should be added:
+                expect(this.dataManager.getMaps().get(99)).toBe(newMap);
+                //two new datasets should be added:
+                expect(this.dataManager.getDatasets().length).toEqual(4);
+            });
+
+            it("addLayerToMap works as expected", function () {
+                const map = this.dataManager.getMaps().get(3);
+                expect(map.get('layers').length).toEqual(2);
+                const newLayer = new Map(this.newMapJSON).get('layers').at(0);
+                expect(this.dataManager.getDatasets().length).toEqual(2);
+
+                //call function:
+                this.dataManager.addLayerToMap(map, newLayer);
+
+                //new layer should be added:
+                expect(map.get('layers').length).toEqual(3);
+
+                //new map should be added:
+                expect(this.dataManager.getDatasets().length).toEqual(3);
+
             });
         });
     });

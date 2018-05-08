@@ -81,7 +81,7 @@ define([
             this.vent = _.extend({}, Backbone.Events);
 
             this.getProjectJSON = () => {
-                return JSON.parse(JSON.stringify(projectJSON));
+                return JSON.parse(JSON.stringify(__projectJSON));
             };
             this.getLayers = (mapID) => {
                 return new Layers([ {
@@ -248,9 +248,8 @@ define([
                         }
                     ]
                 }
-        ], { projectID: projectJSON.id, mapID: mapID });
+        ], { projectID: __projectJSON.id, mapID: mapID });
             };
-
             this.dataManager = new DataManager({
                 projectJSON: this.getProjectJSON(),
                 vent: this.vent
