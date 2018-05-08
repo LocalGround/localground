@@ -76,7 +76,7 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 console.log('remove model', model);
                 this.matchedModels.remove(model);
             },
-            contains: function(model) {
+            containsRecord: function(model) {
                 return  this.matchedModels.contains(model);
             },
             hasModels: function () {

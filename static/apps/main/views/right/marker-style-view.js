@@ -291,7 +291,7 @@ define(["jquery",
             },
 
             contData: function() {
-                this.buildPalettes();
+                this.buildPalettes(this.model.get("metadata").buckets);
                 this.setSymbols(this.buildContinuousSymbols(this.getContInfo()));
             },
 
@@ -510,7 +510,7 @@ define(["jquery",
                         }
                         var buckets = parseFloat(this.$el.find("#bucket").val());
                         this.updateMetadata("buckets", buckets);
-                        this.buildPalettes();
+                        this.buildPalettes(this.model.get("metadata").buckets);
                         this.contData();
                        // that.render();
                        this.$el.find("#bucket").focus();
@@ -538,8 +538,7 @@ define(["jquery",
                 } else {
                     if (this.model.get('metadata').isContinuous) {
                         paletteList = contPalettes;
-                        console.log('metadata buckets: ', this.model.get("metadata").buckets);
-                        buckets = this.model.get("metadata").buckets + 1;
+                        buckets = count + 1;
                         console.log('buckets in color sequence: ', buckets)
                     } else {
                         paletteList = catPalettes;

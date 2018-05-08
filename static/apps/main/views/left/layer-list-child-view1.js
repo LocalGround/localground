@@ -49,7 +49,7 @@ define(["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this.model.toJSON());
+                console.log(this.model);
                 this.symbolModels = this.collection;
                 this.modal = this.app.modal;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
@@ -146,19 +146,61 @@ define(["marionette",
             reAssignRecordToSymbols: function(recordModel) {
                 var matched = false;
                 const uncategorizedSymbol = this.getUncategorizedSymbolModel();
+                console.log(this.symbolModels);
+                console.log(recordModel);
                 this.symbolModels.each(function (symbolModel) {
-                    if (symbolModel.contains(recordModel) 
+                    console.log(symbolModel);
+                    if (symbolModel.containsRecord(recordModel) 
                         && !symbolModel.checkModel(recordModel)) {
                             symbolModel.removeModel(recordModel);
                     }
                     if (symbolModel.checkModel(recordModel)) {
                         symbolModel.addModel(recordModel);
                         matched = true;
-                    }
-                    if (!matched) {
+                    } 
+                });
+                if (!matched) {
+                    if (!this.model.get('metadata').isContinuous) {
+                        console.log('create new Symbol');
+                        this.createNewSymbol(this.symbolModels, recordModel);
+                    } else {
+                        console.log('adding to uncategorized');
                         uncategorizedSymbol.addModel(recordModel);
                     }
-                })
+                }
+            },
+            createNewSymbol: function(symbolCollection, record) {
+                let symbol = new Symbol({
+                    "rule": this.model.get('metadata').currentProp + " = " + record.get(this.model.get('metadata').currentProp),
+                    "title": record.get(this.model.get('metadata').currentProp),
+                    "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
+                    "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
+                    "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
+                    "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
+                    "shape": this.model.get('metadata').shape,
+                    "fillColor": '#4286f4',
+                    "strokeColor": this.model.get("metadata").strokeColor,
+                    "isShowing": this.model.get("metadata").isShowing,
+                    "id": symbolCollection.length + 1,
+                    "instanceCount": 1
+                });
+                if (symbol.checkModel(record)) {
+                    console.log('symbol matched record');
+                    symbol.addModel(record);
+                }
+                
+                symbolCollection.add(symbol, { at: symbolCollection.length - 2 });
+                this.saveChanges();
+            },
+
+             // returns a default value if the input value from the dom is undefined
+            // needed because simply using '||' for defaults is buggy
+            defaultIfUndefined: function (domValue, defaultValue) {
+                if (domValue === undefined) {
+                    return defaultValue;
+                } else {
+                    return domValue;
+                }
             },
             addFakeModel: function () {
                 var categories = ['mural', 'sculpture', 'blah', undefined, null, '']
