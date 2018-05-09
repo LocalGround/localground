@@ -89,22 +89,30 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 return this.matchedModels.toJSON();
             }
         }, {
+            defaultIfUndefined: function (domValue, defaultValue) {
+                if (domValue === undefined) {
+                    return defaultValue;
+                } else {
+                    return domValue;
+                }
+            },
             UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
-            createSymbol: function (model, idCounter, paletteCounter) {
+            createSymbol: function (model, idCounter, paletteCounter, palette) {
+                console.log(model, idCounter, paletteCounter, palette);
                 //factory that creates new symbols:
                 return new Symbol({
-                    "rule": this.model.get('metadata').currentProp + " = " + item,
-                    "title": item,
-                    "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
-                    "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
-                    "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
-                    "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
-                    "shape": this.model.get('metadata').shape,
-                    "fillColor": "#" + this.selectedColorPalette[paletteCounter % 8],
-                    "strokeColor": this.model.get("metadata").strokeColor,
-                    "isShowing": this.model.get("metadata").isShowing,
+                    "rule": model.get('metadata').currentProp + " = WEEEEEE", // + item,
+                    "title": "WEEEEEE", //item,
+                    "fillOpacity": Symbol.defaultIfUndefined(parseFloat(model.get('metadata').fillOpacity), 1),
+                    "strokeWeight": Symbol.defaultIfUndefined(parseFloat(model.get('metadata').strokeWeight), 1),
+                    "strokeOpacity": Symbol.defaultIfUndefined(parseFloat(model.get('metadata').strokeOpacity), 1),
+                    "width": Symbol.defaultIfUndefined(parseFloat(model.get('metadata').width), 20),
+                    "shape": 'circle',
+                    "fillColor": "#" + palette[paletteCounter % 8],
+                    "strokeColor": model.get("metadata").strokeColor,
+                    "isShowing": model.get("metadata").isShowing,
                     "id": idCounter,
-                    "instanceCount": cat.instanceCount[item]
+                    "instanceCount": 5//cat.instanceCount[item]
                 });
             }
         });

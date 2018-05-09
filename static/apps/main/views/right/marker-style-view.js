@@ -358,11 +358,11 @@ define(["jquery",
                 this.layerDraft.continuous = new Symbols();
                 console.log(this.selectedColorPalette);
                 while (Math.round(cont.currentFloor) < cont.max) {
-                    
+
                     const next = cont.currentFloor + cont.segmentSize;
 
                     // the upper bound of the final bucket should be inclusive '<=' and not '<'
-                    // This is because the final upper bound is also the highest value in a given dataset, 
+                    // This is because the final upper bound is also the highest value in a given dataset,
                     // so it cannot be exluded. All other upper bounds are exlusive '<'
                     console.log('next: ', Math.round(next));
                     console.log('MAX: ', cont.max);
@@ -394,7 +394,9 @@ define(["jquery",
             buildCategoricalSymbols: function (cat) {
                 var idCounter = 1,
                 paletteCounter = 0;
-                this.layerDraft.categorical = new Symbols();
+                this.layerDraft.categorical = Symbols.buildCategoricalSymbolSet(
+                        cat, this.model, this.selectedColorPalette);
+                /*this.layerDraft.categorical = new Symbols();
                 cat.list.forEach((item) => {
                     this.layerDraft.categorical.add({
                         "rule": this.model.get('metadata').currentProp + " = " + item,
@@ -413,7 +415,7 @@ define(["jquery",
 
                     idCounter++;
                     paletteCounter++;
-                });
+                });*/
                 this.layerNoLongerNew();
                 return this.layerDraft.categorical;
             },
@@ -555,7 +557,7 @@ define(["jquery",
                 seq7 = palette(paletteList[6], buckets);
                 seq8 = palette(paletteList[7], buckets);
                 this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8];
-                
+
                 if (this.model.get('metadata').isContinuous) {
                     console.log(this.allColors);
                     this.allColors.forEach((seq, index) => {

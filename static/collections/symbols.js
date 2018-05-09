@@ -25,10 +25,10 @@ define(["underscore", "models/symbol", "collections/base"], function (_, Symbol,
             Base.prototype.reset.apply(this, arguments);
         }
     }, {
-        buildSymbolSet: function (cat, metadata) {
+        buildCategoricalSymbolSet: function (cat, model, palette) {
             const symbols = new Symbols();
             cat.list.forEach((item, index) => {
-                symbols.add(Symbol.createSymbol(metadata, (index + 1), index));
+                symbols.add(Symbol.createSymbol(model, (index + 1), index, palette));
             });
             return symbols;
         }
