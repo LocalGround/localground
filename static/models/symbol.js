@@ -82,7 +82,24 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 return this.matchedModels.toJSON();
             }
         }, {
-            UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯'
+            UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
+            createSymbol: function (model, idCounter, paletteCounter) {
+                //factory that creates new symbols:
+                return new Symbol({
+                    "rule": this.model.get('metadata').currentProp + " = " + item,
+                    "title": item,
+                    "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
+                    "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
+                    "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
+                    "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
+                    "shape": this.model.get('metadata').shape,
+                    "fillColor": "#" + this.selectedColorPalette[paletteCounter % 8],
+                    "strokeColor": this.model.get("metadata").strokeColor,
+                    "isShowing": this.model.get("metadata").isShowing,
+                    "id": idCounter,
+                    "instanceCount": cat.instanceCount[item]
+                });
+            }
         });
         return Symbol;
     });
