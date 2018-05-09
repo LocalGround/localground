@@ -15,14 +15,18 @@ define([
         var map, layer;
         let record;
 
-        const initView = function (scope) {
+        const initSpies = function (scope) {
             spyOn(DataDetail.prototype, 'initialize').and.callThrough();
             spyOn(DataDetail.prototype, 'displayGeometryOptions').and.callThrough();
+            spyOn(DataDetail.prototype, 'deleteMarker').and.callThrough();
             
 
             spyOn(scope.app.vent, 'trigger');
             spyOn(scope.app.router, 'navigate');
 
+        };
+
+        const initView = function (scope) {
             
             record = scope.getRecord();
 
@@ -31,7 +35,6 @@ define([
                 model: record
             });
         };
-
 
         describe("DataDetail: Tests", function(){
             beforeEach(function(){
@@ -42,13 +45,13 @@ define([
                 expect(this.view).toEqual(jasmine.any(DataDetail));
             });
 
-            it("displayGeometryOptions() works", function() {
+            it("deleteMarker() works", function() {
                 this.view.render();
-                expect(this.view.displayGeometryOptions).toHaveBeenCalledTimes(0);
-                this.view.$el.find('#add-geometry').trigger('click');
-                expect(this.view.displayGeometryOptions).toHaveBeenCalledTimes(1);
-                expect(this.view.$el.find('.add-marker-button').css('background')).toEqual('#bbbbbb');
-                expect(this.view.$el.find('.add-marker-button').css('display')).toEqual('block');
+                expect(DataDetail.prototype.deleteMarker).toHaveBeenCalledTimes(0);
+                this.view.$el.find('#delete-geometry').trigger('click');
+                expect(DataDetail.prototype.deleteMarker).toHaveBeenCalledTimes(1);
+                // expect(this.view.$el.find('.add-marker-button').css('background')).toEqual('#bbbbbb');
+                // expect(this.view.$el.find('.add-marker-button').css('display')).toEqual('block');
 
             });
 

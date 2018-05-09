@@ -21,7 +21,7 @@ require(['boot'], function () {
         // 'spec/views/main/create-layer-form-test.js',
 
         // trouble mocking a Record to test the DataDetail View
-        //'spec/views/main/data-detail-test.js',
+        'spec/views/main/data-detail-test.js',
 
         //lib:
         'spec/lib/data-manager-test.js',

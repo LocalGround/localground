@@ -105,16 +105,7 @@ define([
             };
 
             this.getRecord = (id=53) => {
-                const project = JSON.parse(JSON.stringify(projectJSON));
-                let records = project.datasets.dataset_3.data.filter((rec) => {
-                    return rec.id === id;
-                });
-                console.log(records);
-                console.log(this.dataManager.getCollection('dataset_3'));
-                let record = new Record(records[0]);
-                record.set('fields', this.dataManager.getCollection('dataset_3'));
-                console.log(record);
-                return record;
+                return this.dataset_3.get(id);
             };
             this.getLayers = (mapID) => {
                 return new Layers([ {
