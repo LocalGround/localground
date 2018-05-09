@@ -26,12 +26,15 @@ class RecordMixin(object):
     def get_geometry_dictionary(self, serializer):
         geom = serializer.validated_data.get('point')
 
-        # If method is PATCH and geom is None, don't clear out
+        # If method is PATCH and geom is undefined, don't clear out
         # existing geometry:
-        if self.request.method == 'PATCH' and geom is None:
-            return serializer.validated_data
+        if self.request.method == 'PATCH':
+            try:
+                serializer.validated_data['point']
+            except KeyError:
+                return serializer.validated_data
 
-        # Otherwise, overwrite:
+        # otherwise, overwrite:
         d = {}
         if geom:
             del serializer.validated_data['point']
