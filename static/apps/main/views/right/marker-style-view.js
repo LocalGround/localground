@@ -7,10 +7,11 @@ define(["jquery",
         "apps/main/views/symbols/symbol-selection-layout-view",
         "text!../../templates/right/marker-style1.html",
         "collections/symbols",
+        "lib/lgPalettes",
         'color-picker-eyecon',
-        "palette"
+        "palette", 
     ],
-    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, SymbolSelectionLayoutView, MarkerStyleTemplate, Symbols) {
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, SymbolSelectionLayoutView, MarkerStyleTemplate, Symbols, LGPalettes) {
         'use strict';
 
         /**
@@ -47,6 +48,8 @@ define(["jquery",
 
                 console.log(this.model);
 
+                this.lgPalettes = new LGPalettes();
+
                 // this is the new properties list; all properties in a single list
                 this.dataColumnsList = this.buildDataColumnsList();
 
@@ -73,7 +76,7 @@ define(["jquery",
                 } else if (this.model.get('group_by') === 'individual') {
                     this.createCorrectSymbols();
                 } else {
-                    this.buildPalettes(this.model.get('symbols').length);
+                    this.updatePalettes(this.model.get('symbols').length);
                     this.updateMapAndRender();
                 }
 
@@ -269,7 +272,6 @@ define(["jquery",
                 if (gb === 'uniform') {
                     this.uniformData();
                 } else if (gb === 'individual') {
-                    console.log('individual');
                     this.individualData();
                 } else {
                     this.model.get('metadata').currentProp = this.model.get('group_by');
@@ -291,15 +293,18 @@ define(["jquery",
             },
 
             contData: function() {
-                this.buildPalettes(this.model.get("metadata").buckets);
+                this.updatePalettes(this.model.get("metadata").buckets);
                 this.setSymbols(this.buildContinuousSymbols(this.getContInfo()));
             },
 
             catData: function() {
-                var catInfo = this.getCatInfo();
-                this.buildPalettes(catInfo.list.length);
+                let categoryList = this.getCatInfo();
+                this.updatePalettes(categoryList.length);
+                this.setSymbols(this.buildCategoricalSymbols(categoryList));
+            },
 
-                this.setSymbols(this.buildCategoricalSymbols(catInfo));
+            setPalettes: function(count) {
+
             },
 
             buildUniformSymbols: function (key) {
@@ -344,7 +349,6 @@ define(["jquery",
                     });
                 });
                 this.layerNoLongerNew();
-                console.log(this.layerDraft.individual);
                 return this.layerDraft.individual;
 
             },
@@ -356,7 +360,6 @@ define(["jquery",
                     this.model.set('symbols', this.layerDraft.continuous);
                 }
                 this.layerDraft.continuous = new Symbols();
-                console.log(this.selectedColorPalette);
                 while (Math.round(cont.currentFloor) < cont.max) {
 
                     const next = cont.currentFloor + cont.segmentSize;
@@ -364,10 +367,7 @@ define(["jquery",
                     // the upper bound of the final bucket should be inclusive '<=' and not '<'
                     // This is because the final upper bound is also the highest value in a given dataset,
                     // so it cannot be exluded. All other upper bounds are exlusive '<'
-                    console.log('next: ', Math.round(next));
-                    console.log('MAX: ', cont.max);
                     let lastRuleSymbol = !(Math.round(next) < cont.max) ? '=' : '';
-                    console.log(`loop ${counter}: ${selected} >= ${cont.currentFloor.toFixed(0)} and ${selected} <${lastRuleSymbol} ${(cont.currentFloor + cont.segmentSize).toFixed(0)}`);
                     this.layerDraft.continuous.add({
                         "rule": `${selected} >= ${cont.currentFloor.toFixed(0)} and ${selected} <${lastRuleSymbol} ${(cont.currentFloor + cont.segmentSize).toFixed(0)}`,
                         "title": "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
@@ -391,11 +391,9 @@ define(["jquery",
                 return this.layerDraft.continuous;
             },
 
-            buildCategoricalSymbols: function (cat) {
-                var idCounter = 1,
-                paletteCounter = 0;
+            buildCategoricalSymbols: function (categoryList) {
                 this.layerDraft.categorical = Symbols.buildCategoricalSymbolSet(
-                        cat, this.model, this.selectedColorPalette);
+                    categoryList, this.model, this.selectedColorPalette);
                 /*this.layerDraft.categorical = new Symbols();
                 cat.list.forEach((item) => {
                     this.layerDraft.categorical.add({
@@ -457,22 +455,16 @@ define(["jquery",
              * category/entry
             */
             getCatInfo: function () {
+                let categoryList = [];
                 var key = this.model.get('dataset').overlay_type,
-                cat = {
-                   list: [],
-                   instanceCount: {},
-                },
                 selected = this.model.get('metadata').currentProp,
                 collection = this.app.dataManager.getCollection(key);
                 collection.models.forEach(function(d) {
-                    if (!cat.list.includes(d.get(selected)) && d.get(selected)) {
-                        cat.list.push(d.get(selected));
-                        cat.instanceCount[d.get(selected)] = 1;
-                    } else {
-                        cat.instanceCount[d.get(selected)]++;
+                    if (!categoryList.includes(d.get(selected)) && d.get(selected)) {
+                        categoryList.push(d.get(selected));
                     }
                 });
-                return cat;
+                return categoryList;
             },
 
             setSymbols: function (symbs) {
@@ -512,7 +504,8 @@ define(["jquery",
                         }
                         var buckets = parseFloat(this.$el.find("#bucket").val());
                         this.updateMetadata("buckets", buckets);
-                        this.buildPalettes(this.model.get("metadata").buckets);
+
+                        this.updatePalettes(this.model.get("metadata").buckets);
                         this.contData();
                        // that.render();
                        this.$el.find("#bucket").focus();
@@ -521,6 +514,17 @@ define(["jquery",
                 );
             },
 
+            updatePalettes: function(itemCount) {
+                let symbolType = this.model.get("metadata").isContinuous ? 'continuous' : 'categorical';
+    
+                const paletteId = this.model.get("metadata").paletteId;
+
+                // update palette list and active palette
+                this.allColors = this.lgPalettes.getAllPalettes(itemCount, symbolType);
+                this.selectedColorPalette = this.lgPalettes.getPalette(paletteId, itemCount, symbolType);
+            },
+
+            /*
             buildPalettes: function (itemCount) {
                 let count = itemCount;
                 if (count > 8) { count = 8; }
@@ -568,6 +572,7 @@ define(["jquery",
                 this.selectedColorPalette = this.allColors[paletteId];
                 return this.selectedColorPalette;
             },
+            */
 
             /*updateMap: function () {
                 console.log('msv updateMap');
@@ -630,7 +635,7 @@ define(["jquery",
                 let i = 0,
                 that = this;
                 this.collection.each(function(symbol) {
-                    symbol.set('fillColor', "#" + that.selectedColorPalette[i]);
+                    symbol.set('fillColor', "#" + that.selectedColorPalette[i % 8]);
                     i++;
                 });
 
