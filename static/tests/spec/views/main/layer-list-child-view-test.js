@@ -8,9 +8,10 @@ define([
     rootDir + "apps/main/views/left/symbol-item-view",
     rootDir + "lib/maps/overlays/marker",
     rootDir + "lib/modals/modal",
+    rootDir + "models/record",
     "tests/spec-helper1"
 ],
-    function (Backbone, LayerListChildView, EditLayerName, EditDisplayField, SymbolCollectionView, SymbolItemView, MarkerOverlay, Modal) {
+    function (Backbone, LayerListChildView, EditLayerName, EditDisplayField, SymbolCollectionView, SymbolItemView, MarkerOverlay, Modal, Record) {
         'use strict';
         var map, layer;
 
@@ -27,6 +28,7 @@ define([
             spyOn(EditDisplayField.prototype, 'initialize').and.callThrough();
             spyOn(Modal.prototype, 'show').and.callThrough();
             spyOn(Modal.prototype, 'update').and.callThrough();
+            
             spyOn(MarkerOverlay.prototype, "initialize");
             spyOn(MarkerOverlay.prototype, "redraw");
 
@@ -34,6 +36,7 @@ define([
             spyOn(SymbolItemView.prototype, 'onDestroy');
             spyOn(SymbolCollectionView.prototype, 'redrawOverlays');
             spyOn(SymbolCollectionView.prototype, 'hideOverlays');
+            spyOn(Record.prototype, 'save');
 
             spyOn(scope.app.vent, 'trigger').and.callThrough();
             spyOn(scope.app.router, 'navigate');
@@ -226,7 +229,24 @@ define([
             });
 
             it("addRecord() works", function() {
-                
+                this.view.model.set('geometry', null);
+                // set view cid
+                this.view.cid  = 456;
+                const mockGeometry = {
+                    geoJSON: {
+                        "type": "Point",
+                        "coordinates": [
+                            -122.31663275419,
+                            38.10623915271
+                            ]
+                        }, 
+                    viewID: 456
+                };
+
+                // wasn't sure how to test the success callback from the save function
+                expect(Record.prototype.save).toHaveBeenCalledTimes(0);
+                this.view.addRecord(mockGeometry);
+                expect(Record.prototype.save).toHaveBeenCalledTimes(1);
             });
         });
     });
