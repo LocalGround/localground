@@ -206,7 +206,7 @@ define([
                     }
                 }
 
-                // mock the meny being open...
+                // mock the menu being open...
                 this.view.$el.find('.add-record-container').trigger('click');
                 this.view.notifyDrawingManager(mockEvent, 'add-point');
 
