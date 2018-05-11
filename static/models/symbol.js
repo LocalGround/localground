@@ -99,7 +99,7 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
             createCategoricalSymbol: function (category, layerModel, counter = 0, palette = ['fff']) {
                 //factory that creates new symbols:
                 return new Symbol({
-                    "rule": `${layerModel.get('metadata').currentProp} = ${category}`, // + item,
+                    "rule": `${layerModel.get('metadata').currentProp} = '${category}'`, // + item,
                     "title": category,
                     "fillOpacity": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').fillOpacity), 1),
                     "strokeWeight": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').strokeWeight), 1),
@@ -108,7 +108,7 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                     "shape": 'circle',
                     "fillColor": "#" + palette[counter % 8],
                     "strokeColor": layerModel.get("metadata").strokeColor,
-                    "isShowing": layerModel.get("metadata").isShowing//,
+                    "isShowing": layerModel.get("metadata").isShowing,
                     //"id": counter
                 });
             }

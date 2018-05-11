@@ -198,6 +198,7 @@ define(["marionette",
                 const category = record.get(this.model.get('metadata').currentProp);                
                 // Don't worry about giving it a fill color right now
                 // Once the new symbol is added, we will update the pallette for the entire symbol set
+                let symbolId = symbolCollection.length;
                 let symbol = Symbol.createCategoricalSymbol(category, this.model)
 
                 if (symbol.checkModel(record)) {
