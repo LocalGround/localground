@@ -69,7 +69,9 @@ class Symbol(object):
         return self._deserialize_field_names(layer)
 
     def _get_expressions(self, rule):
-        expressions = [n.strip() for n in re.split('(\s+or|and\s+)', rule)]
+        expressions = [
+            n.strip() for n in re.split('(\s+or\s+|\s+and\s+)', rule)]
+
         return filter(lambda e: e != 'or' and e != 'and', expressions)
 
     def _serialize_field_names(self, rule, layer):
@@ -86,14 +88,13 @@ class Symbol(object):
 
     def _do_substitutions(self, rule, layer, crosswalk):
         # normalize expressions:
-        expressions = [n.strip() for n in re.split('(\s+or|and\s+)', rule)]
-
-        # tokenize each expression (split on spaces)
-        expression_token_list = [re.split('\s+', e) for e in expressions]
-
-        # iterate through tokens and replace the first token in each list
-        # (the column name) with col_name_db for relevant token sets:
-        for i, tokens in enumerate(expression_token_list):
+        expressions = [
+            n.strip() for n in re.split('(\s+or\s+|\s+and\s+)', rule)]
+        # tokenize and validate each expression (split on spaces)
+        for i, e in enumerate(expressions):
+            tokens = re.split('("[^"]*"|\'[^\']*\'|[\S]+)+', e)
+            tokens = filter(
+                lambda x: x != '' and x != ' ', tokens)
             if tokens[0] not in ['and', 'or']:
                 if len(tokens) != 3:
                     raise exceptions.ValidationError(
@@ -108,7 +109,6 @@ class Symbol(object):
         expressions = self._get_expressions(rule)
         crosswalk = {}
         col_names = list(set([re.split('\s+', e)[0] for e in expressions]))
-        invalid_field_names = []
         for col_name in col_names:
             match = False
             for field in layer.dataset.fields:

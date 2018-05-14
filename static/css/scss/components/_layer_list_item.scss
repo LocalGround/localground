@@ -107,12 +107,12 @@
     background-color: white;
     height: inherit;
 
-    &:hover {
+    a:hover {
         background: #EEE;
         color: #444;
     }
 
-    a {
+    a, >div {
         text-decoration: none;
         padding: 6px 32px;
         display: inline-block;

@@ -440,12 +440,12 @@ ul {
   height: inherit;
 }
 
-.symbol-item:hover {
+.symbol-item a:hover {
   background: #EEE;
   color: #444;
 }
 
-.symbol-item a {
+.symbol-item a, .symbol-item > div {
   text-decoration: none;
   padding: 6px 32px;
   display: inline-block;
@@ -466,12 +466,6 @@ ul {
   font-size: 11px;
   margin-left: 20px;
   line-height: 15px;
-}
-
-.layer-datasource a {
-  text-decoration: underline;
-  color: #297CBB;
-  font-size: 11px;
 }
 
 .layer-style-by {
@@ -894,6 +888,10 @@ span.action.rounded:hover, a.action.rounded:hover {
   /*This CSS trick only works w/Chrome */
 }
 
+.form input:disabled, .form input[type="checkbox"]:disabled, .form label:disabled, .form-inline input:disabled, .form-inline input[type="checkbox"]:disabled, .form-inline label:disabled {
+  opacity: 0.4;
+}
+
 .form textarea, .form input[type="text"], .form input[type="number"], .form input[type="date"],
 .form input[type="password"], .form input[type="email"], .form select, .form-inline textarea, .form-inline input[type="text"], .form-inline input[type="number"], .form-inline input[type="date"],
 .form-inline input[type="password"], .form-inline input[type="email"], .form-inline select {
@@ -906,12 +904,6 @@ span.action.rounded:hover, a.action.rounded:hover {
   margin: 1px;
   width: 100%;
   border: solid 1px #ebecf2;
-}
-
-.form textarea:disabled, .form input[type="text"]:disabled, .form input[type="number"]:disabled, .form input[type="date"]:disabled,
-.form input[type="password"]:disabled, .form input[type="email"]:disabled, .form select:disabled, .form-inline textarea:disabled, .form-inline input[type="text"]:disabled, .form-inline input[type="number"]:disabled, .form-inline input[type="date"]:disabled,
-.form-inline input[type="password"]:disabled, .form-inline input[type="email"]:disabled, .form-inline select:disabled {
-  opacity: 0.4;
 }
 
 .form textarea, .form-inline textarea {
@@ -987,6 +979,10 @@ span.action.rounded:hover, a.action.rounded:hover {
 }
 
 .form .checkbox-list td, .form-inline .checkbox-list td {
+  font-size: 0.7em;
+}
+
+.form .checkbox-list:disabled td, .form-inline .checkbox-list:disabled td {
   font-size: 0.7em;
 }
 
@@ -1614,5 +1610,3 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
-
-/*# sourceMappingURL=main-new.css.map */

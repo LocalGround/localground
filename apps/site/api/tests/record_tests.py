@@ -503,6 +503,29 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         for key in new_data:
             self.assertEqual(response.data.get(key), new_data[key])
 
+    def test_patch_geometry_only(self):
+        record_with_geometry = self.create_record(
+            self.user, self.project, dataset=self.dataset, geoJSON=self.Point)
+        self.assertEqual(
+            json.loads(record_with_geometry.geometry.geojson),
+            self.Point
+        )
+        url = self.list_url + '%s/' % record_with_geometry.id
+        # How to clear out geometry via Python:
+        data = urllib.urlencode({
+            'geometry': ''
+        })
+        response = self.client_user.patch(
+            url,
+            data=data,
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        marker = models.Record.objects.get(id=record_with_geometry.id)
+        self.assertEqual(marker.geometry, None)
+        self.assertEqual(response.data['geometry'], None)
+
     def test_bad_json_update_fails(self, **kwargs):
         # 1. define a series of bad JSON dictionaries
         for d in [

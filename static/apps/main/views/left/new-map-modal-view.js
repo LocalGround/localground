@@ -33,11 +33,11 @@ define ([
 
             toggleCheckboxes: function (e) {
                 this.$el.find('#existing-datasets').parent().removeClass('error');
-                var $cb = this.$el.find('.checkbox-list');
+                var $cb = this.$el.find('.checkbox-list, .checkbox-list *');
                 if (e.target.id === 'new-dataset') {
-                    $cb.hide();
+                    $cb.attr("disabled", "disabled");
                 } else {
-                    $cb.show();
+                    $cb.removeAttr("disabled");
                 }
             },
             templateHelpers: function () {
@@ -93,7 +93,7 @@ define ([
 
             onShow: function () {
                 setTimeout(() => {
-                    this.$el.find('#map-name').focus();
+                    this.$el.find('#map-name').focus().select();
                 }, 50);
             },
 
