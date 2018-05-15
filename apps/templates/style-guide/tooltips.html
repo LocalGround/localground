@@ -1,7 +1,7 @@
 {% extends "style-guide/base.html" %}
 {% block title %}Tooltips{% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/tooltips/popper.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/popper.js@1.14.3/dist/umd/popper.js"></script>
     <script type="text/javascript" src="/static/external/tooltips/tooltip.js"></script>
 {% endblock %}
 
@@ -34,5 +34,55 @@
     </div>
 
     <pre class="prettyprint linenums" source-element="#tooltip-demo"></pre>
+</div>
+
+<div class="container">
+    <h2>Simple Modal: widgets/_popovers.scss</h2>
+    <div id="popover-demo">
+        <button id="show-popover-2" class="show button-secondary">Show Tooltip</button>
+        <div id="popover-2" class="popper" style="width: 400px;display: none;">
+            Here is some text!!!!!
+            <p class="thin">And additional text And additional text And additional text</p>
+            <p class="thin">And additional text</p>
+            <p class="thin">And additional text</p>
+            <p class="thin">And additional text</p>
+            <p class="thin">And additional text</p>
+            <div class="popper__arrow" y-arrow></div>
+        </div>
+        <script>
+
+            //popup.hide();
+            document.getElementById('show-popover-2').onclick = () => {
+                const popup = new Popper(
+                    document.getElementById('show-popover-2'),
+                    document.getElementById('popover-2'), {
+                    placement: 'right',
+                    onCreate: (data) => {
+                        console.log(data);
+                        //document.getElementById('popover-2').style.display = 'block';
+                    },
+                    modifiers: {
+                        flip: {
+                            behavior: ['left', 'right', 'top','bottom']
+                        },
+                        offset: {
+                            enabled: true,
+                            offset: '0,5'
+                        },
+                        preventOverflow: {
+                            boundariesElement: 'viewport'
+                        }
+                    }
+                });
+                document.getElementById('popover-2').style.display = 'block';
+            }
+
+            /*
+             * See documentation: https://popper.js.org/tooltip-examples.html
+             */
+        </script>
+    </div>
+
+    <pre class="prettyprint linenums" source-element="#popover-demo"></pre>
 </div>
 {% endblock %}
