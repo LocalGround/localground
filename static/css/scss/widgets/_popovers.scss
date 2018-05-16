@@ -1,4 +1,7 @@
 // main: ../main-new.scss
+$tipBackground: rgba(255, 255, 255, 1);
+$arrowBackground: #FFF;
+
 .link-anchor {
   position: relative;
   width: 0;
@@ -46,7 +49,7 @@ p.bold {
 .popper,
 .tooltip {
     position: absolute;
-    background: rgba(255, 255, 255, 0.8);
+    background: $tipBackground;
     color: black;
     width: 150px;
     border-radius: 3px;
@@ -72,7 +75,7 @@ p.bold {
 
 .tooltip .tooltip-arrow,
 .popper .popper__arrow {
-    border-color: #ccc;
+    border-color: $arrowBackground;
 }
 .style5 .tooltip .tooltip-arrow {
     border-color: #1E252B;

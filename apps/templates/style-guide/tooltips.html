@@ -12,19 +12,7 @@
         <button id="show-popover-1" class="show button-secondary">Show Tooltip</button>
         <script>
             new Tooltip(document.getElementById('show-popover-1'), {
-                placement: 'top',
-                title: 'Top'
-            })
-            new Tooltip(document.getElementById('show-popover-1'), {
-                placement: 'right',
-                title: 'Right'
-            })
-            new Tooltip(document.getElementById('show-popover-1'), {
-                placement: 'left',
-                title: 'Left'
-            })
-            new Tooltip(document.getElementById('show-popover-1'), {
-                placement: 'bottom',
+                placement: 'bottom', //top, left, right, bottom
                 title: 'Bottom'
             })
             /*
@@ -39,7 +27,7 @@
 <div class="container">
     <h2>Simple Modal: widgets/_popovers.scss</h2>
     <div id="popover-demo">
-        <button id="show-popover-2" class="show button-secondary">Show Tooltip</button>
+        <button id="show-popover-2" class="show button-primary">Show Tooltip</button>
         <div id="popover-2" class="popper" style="width: 150px;display: none;">
             Here is some text!!!!!
             <p class="thin">And additional text And additional text And additional text</p>
@@ -53,20 +41,14 @@
 
             //popup.hide();
             document.getElementById('show-popover-2').onclick = () => {
-                const popup = new Popper(
-                    document.getElementById('show-popover-2'),
-                    document.getElementById('popover-2'), {
-                    placement: 'right',
-                    onUpdate: (data) => {
-                        console.log(data);
-                    },
+                const btnEl = document.getElementById('show-popover-2');
+                const containerEl = document.getElementById('popover-2');
+                const popup = new Popper(btnEl, containerEl, {
+                    placement: 'left',
                     modifiers: {
-                        flip: {
-                            behavior: ['left', 'right']
-                        },
                         offset: {
                             enabled: true,
-                            offset: '0,5'
+                            offset: '0,-4'
                         },
                         preventOverflow: {
                             boundariesElement: 'viewport'

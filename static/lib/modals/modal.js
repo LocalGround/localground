@@ -25,8 +25,9 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 "modalBodyRegion": '.body'
             },
             events: {
-                'click .close': 'hide',
-                'click .close-modal': 'hide',
+                'click .modal': 'hideIfValid',
+                'click .close': 'hideIfValid',
+                'click .close-modal': 'hideIfValid',
                 'click .save-modal-form': 'saveFunction',
                 'click .delete-modal': 'deleteFunction'
             },
@@ -35,18 +36,15 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts = opts || {};
                 _.extend(this, opts);
                 this.saveFunction = function () {
+                    console.log('saving 1...');
                     opts.saveFunction();
                     this.render();
                 }
+                this.render();
                 if (!$(".modal").get(0)) {
-                    this.render();
-                    $('body').append(this.$el);
-                } else {
-                    this.$el = $('<div></div>').append($(".modal"));
                     $('body').append(this.$el);
                 }
                 this.attachEvents();
-                this.appendView();
             },
             templateHelpers: function () {
                 return {
@@ -70,7 +68,6 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             },
             attachEvents: function () {
                 if (this.app) {
-                    console.log('adding listener...');
                     this.listenTo(this.app.vent, 'update-modal-save-button', this.updateSaveButton);
                     this.listenTo(this.app.vent, 'close-modal', this.hide);
                 }
@@ -83,6 +80,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts.bodyClass = opts.bodyClass || null;
                 _.extend(this, opts);
                 this.saveFunction = function () {
+                    console.log('saving 2...');
                     opts.saveFunction();
                 };
                 this.attachEvents();
@@ -112,9 +110,24 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 this.$el.find('.modal').show();
                 this.$el.css('display', 'block');
             },
-            hide: function () {
+            hideIfValid (e) {
+                // hide if called by vent or if called by one of the
+                // following elements: 'modal' 'close', 'close-modal'
+                const classList = e.target.classList;
+                if (classList.contains('modal') ||
+                    classList.contains('close') ||
+                    classList.contains('close-modal')
+                ) {
+                    this.hide(e);
+                }
+
+            },
+            hide: function (e) {
                 this.$el.find('.modal').hide();
                 this.render();
+                if (e) {
+                    e.stopPropagation();
+                }
             }
         });
         return Modal;
