@@ -29,11 +29,6 @@ define([
             });
         };
         const initModalComplex = (scope) => {
-            scope.dummyView = new EditMapForm({
-                app: scope.app,
-                model: scope.map
-            });
-            scope.dummyView.render();
             scope.modal = new Modal({
                 app: scope.app,
                 width: '50vw',
@@ -46,6 +41,13 @@ define([
                 showDeleteButton: false,
                 title: 'My Title'
             });
+        };
+        const initDummyView = (scope) => {
+            scope.dummyView = new EditMapForm({
+                app: scope.app,
+                model: scope.map
+            });
+            scope.dummyView.render();
         };
 
         describe("Modal: Initialization Tests", function () {
@@ -92,7 +94,7 @@ define([
         describe("Modal: Renderer Tests", function () {
             beforeEach(function () {
                 initSpies(this);
-                initModalComplex(this);
+                initDummyView(this);
             });
             it("Renders controls successfully", function () {
                 initModalSimple(this);
@@ -114,13 +116,76 @@ define([
                 expect(this.fixture.find('.save-modal-form').html()).toEqual('Update');
                 expect(this.fixture).toContainElement('.close');
                 expect(this.fixture).toContainElement('.delete-modal');
+
+                //ensure that dummy view form is also in there:
+                expect(this.fixture.find('#map-name').val()).toEqual('Map 3');
+                expect(this.fixture.find('#map-caption').val()).toEqual('');
             });
+
+            /*
+            'click .save-modal-form': 'saveFunction'
+            */
+
+            it("listens for saveFunction click event", function () {
+                initModalSimple(this);
+                this.modal.update({
+                    view: this.dummyView,
+                    saveFunction: this.dummyView.saveMap.bind(this.dummyView),
+                })
+                this.fixture.append(this.modal.$el);
+
+                expect(EditMapForm.prototype.saveMap).toHaveBeenCalledTimes(0);
+                this.fixture.find('.save-modal-form').trigger('click');
+                expect(EditMapForm.prototype.saveMap).toHaveBeenCalledTimes(1);
+            });
+
+            it("listens for deleteFunction click event", function () {
+                initModalSimple(this);
+                this.modal.update({
+                    view: this.dummyView,
+                    showDeleteButton: true,
+                    deleteFunction: this.dummyView.saveMap.bind(this.dummyView),
+                    saveFunction: null // just in case
+                })
+                this.fixture.append(this.modal.$el);
+
+                expect(EditMapForm.prototype.saveMap).toHaveBeenCalledTimes(0);
+                this.fixture.find('.delete-modal').trigger('click');
+                expect(EditMapForm.prototype.saveMap).toHaveBeenCalledTimes(1);
+            });
+
+            it("listens for 3 close modal click events", function () {
+                initModalSimple(this);
+                this.modal.update({
+                    showDeleteButton: false
+                })
+                this.fixture.append(this.modal.$el);
+                expect(Modal.prototype.hide).toHaveBeenCalledTimes(0);
+                expect(Modal.prototype.hideIfValid).toHaveBeenCalledTimes(0);
+
+                //trigger click on background translucent div:
+                this.fixture.find('.modal').trigger('click');
+                expect(Modal.prototype.hide).toHaveBeenCalledTimes(1);
+                expect(Modal.prototype.hideIfValid).toHaveBeenCalledTimes(1);
+
+                //trigger click on "x":
+                this.fixture.find('.close').trigger('click');
+                expect(Modal.prototype.hide).toHaveBeenCalledTimes(2);
+                expect(Modal.prototype.hideIfValid).toHaveBeenCalledTimes(2);
+
+                //trigger click on Cancel button:
+                this.fixture.find('.close-modal').trigger('click');
+                expect(Modal.prototype.hide).toHaveBeenCalledTimes(3);
+                expect(Modal.prototype.hideIfValid).toHaveBeenCalledTimes(3);
+            });
+
         });
 
-        describe("Modal: Method Tests", function () {
+        describe("Modal: Method & Event Tests", function () {
             beforeEach(function () {
                 initSpies(this);
                 initModalComplex(this);
+                initDummyView(this);
             });
             it("update is successful", function () {
                 initModalSimple(this);
@@ -149,10 +214,6 @@ define([
                 expect(this.modal.showDeleteButton).toBeFalsy();
                 expect(this.modal.view).toEqual(this.dummyView);
                 expect(this.modal.title).toEqual('My Title');
-
-                expect(EditMapForm.prototype.saveMap).toHaveBeenCalledTimes(0);
-                this.fixture.find('.save-modal-form').trigger('click');
-                expect(EditMapForm.prototype.saveMap).toHaveBeenCalledTimes(1);
             });
         });
     });
