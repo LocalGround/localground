@@ -46,19 +46,17 @@
                     <div class="selected-palette-wrapper">
                         <a>
                             <ul class="selected-ul">
-                                {{#with selectedColorPalette}}
 
                                     <li class="selected-palette-list">
-                                        <ul class="palette-container" style="opacity: {{../metadata.fillOpacity}};">
-                                            {{#each this}}
-                                            <li class="palette-item" style= "background-color: #{{this}}">
+                                        <ul class="palette-container" style="opacity: {{metadata.fillOpacity}};">
+                                            {{#each paletteCounter}}
+                                            <li class="palette-item" style= "background-color: #{{lookup ../selectedColorPalette @index}}">
 
                                             </li>
                                             {{/each}}
                                         </ul>
                                     </li>
 
-                                {{/with}}
                             </ul>
                         <i class="fa fa-angle-down palette-icon"></i>
                         </a>
@@ -70,9 +68,9 @@
                         <a>
                             <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">
                                 <ul class="palette-container" value="{{@index}}">
-                                    {{#each this}}
-                                    <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">
-
+                                    {{#each ../paletteCounter}}
+                                    <li class="palette-item" value="{{@../index}}" index="{{@index}}" style= "background-color: #{{lookup ../this @index}}">
+                                        
                                     </li>
                                     {{/each}}
                                 </ul>

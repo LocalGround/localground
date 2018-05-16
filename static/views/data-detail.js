@@ -464,11 +464,14 @@ define([
             if (!confirm("Are you sure you want to delete this entry?")) {
                 return;
             }
+            console.log(this.model);
+            console.log(this.model.collection);
             this.model.destroy({
                 success: function () {
                     that.destroy();
                     //trigger an event that clears out the deleted model's detail:
                     that.app.vent.trigger('hide-detail');
+                    that.app.vent.trigger('record-has-been-delete');
                 }, error: function(){
                     alert("Entry has not been deleted");
                 }

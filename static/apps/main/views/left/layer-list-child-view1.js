@@ -56,6 +56,7 @@ define(["marionette",
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
                 this.listenTo(this.dataCollection, 'update-symbol-assignment', this.reAssignRecordToSymbols)
                 this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
+                this.listenTo(this.app.vent, 'record-has-been-delete', this.removeEmptySymbols);
                 if (!this.model || !this.collection || !this.dataCollection) {
                     console.error("model, collection, and dataCollection are required");
                     return;
@@ -66,7 +67,7 @@ define(["marionette",
                 this.assignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
 
-
+                this.removeEmptySymbols();
                 $('body').click($.proxy(this.hideLayerMenu, this));
             },
 
@@ -123,6 +124,7 @@ define(["marionette",
                         }
                     })
                     if (!matched) {
+                        
                         uncategorizedSymbol.addModel(recordModel);
                     }
                 });
@@ -145,8 +147,15 @@ define(["marionette",
                 //symbolView.render();
             },
             reAssignRecordToSymbols: function(recordModel) {
+                const gb = this.model.get('group_by');
+                if (gb === 'uniform' || gb === 'individual') {
+                    return;
+                }
                 var matched = false;
                 const uncategorizedSymbol = this.getUncategorizedSymbolModel();
+                const recordValIsEmpty = this.isEmpty(
+                    recordModel.get(this.model.get('metadata').currentProp)
+                );
                 this.symbolModels.each(function(symbolModel) {
                     if (symbolModel.containsRecord(recordModel) 
                         && !symbolModel.checkModel(recordModel)) {
@@ -159,16 +168,16 @@ define(["marionette",
                     
                 });
                 if (!matched) {
-                    if (!this.model.get('metadata').isContinuous) {
+                    if (!this.model.get('metadata').isContinuous && !recordValIsEmpty) {
                         this.createNewSymbol(this.symbolModels, recordModel);
                     } else {
                         uncategorizedSymbol.addModel(recordModel);
                     }
                 }
 
-                this.removeEmptySymbols(this.symbolModels);
+                this.removeEmptySymbols();
 
-                this.updatePalette(this.symbolModels);
+                //this.updatePalette(this.symbolModels);
                 this.saveChanges();
             },
 
@@ -186,20 +195,26 @@ define(["marionette",
                     }
                 });
             },
-
-            removeEmptySymbols: function(collection) {  
-                collection.each(function(symbol) {
+    
+            removeEmptySymbols: function() {  
+                this.symbolModels.each((symbol) => {
                     if (symbol.matchedModels.length === 0) {
-                        collection.remove(symbol);
+                        if (symbol.get('rule') !== '¯\\_(ツ)_/¯') {
+                            console.log('removing symbol: ', symbol)
+                            this.symbolModels.remove(symbol);
+                        }
                     }
                 });
             },
             createNewSymbol: function(symbolCollection, record) {
                 const category = record.get(this.model.get('metadata').currentProp);                
-                // Don't worry about giving it a fill color right now
-                // Once the new symbol is added, we will update the pallette for the entire symbol set
+                const paletteId = this.model.get('metadata').paletteId;
+                const lgPalettes = new LGPalettes();
+                const palette = lgPalettes.getPalette(paletteId, 8, 'categorical');
+                
+                const maxId = symbolCollection.maxId();
                 let symbolId = symbolCollection.length;
-                let symbol = Symbol.createCategoricalSymbol(category, this.model)
+                let symbol = Symbol.createCategoricalSymbol(category, this.model, maxId + 1, palette)
 
                 if (symbol.checkModel(record)) {
                     symbol.addModel(record);
@@ -218,6 +233,11 @@ define(["marionette",
                     return domValue;
                 }
             },
+
+            isEmpty(value){
+                return (value == null || value.length === 0);
+            },
+
             addFakeModel: function () {
                 var categories = ['mural', 'sculpture', 'blah', undefined, null, '']
                 var category = categories[ parseInt(Math.random() * 6) ]

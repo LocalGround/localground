@@ -132,6 +132,11 @@ define(["jquery",
             templateHelpers: function () {
                 var metadata = this.model.get("metadata"),
                     helpers;
+                console.log(this.selectedColorPalette)
+                console.log('symbols', this.model.get('symbols').models);
+                const symbols  = this.model.get('symbols').models;
+                let symbolCounter = symbols.length > 7 ? [0,1,2,3,4,5,6,7] : symbols;
+                console.log('allColors', this.allColors);
                 helpers = {
                     metadata: metadata,
                     groupBy: this.model.get('group_by'),
@@ -140,12 +145,32 @@ define(["jquery",
                     dataColumnsList: this.dataColumnsList, // new
                     isBasic: this.model.get('group_by') === 'uniform',
                     isIndividual: this.model.get('group_by') === 'individual',
-                    propCanBeCont: this.propCanBeCont()
+                    propCanBeCont: this.propCanBeCont(), 
+                    paletteCounter: this.colorPaletteAmount()
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
                 }
                 return helpers;
+            },
+
+            colorPaletteAmount: function() {
+                let numberOfSymbols = this.model.get('symbols').models.map((item, i) => {
+                    return i
+                });
+                console.log(numberOfSymbols);
+                if (!this.model.get('metadata').isContinuous) {
+                    console.log('is not continuous')
+                    if (numberOfSymbols.length > 9) {
+                        numberOfSymbols.length = 9;
+                    } 
+                } 
+
+                // remove that last symbol, which will always be the uncategorized symbol
+                numberOfSymbols.pop();
+                console.log(numberOfSymbols);
+                return numberOfSymbols;
+
             },
 
             events: {
@@ -331,18 +356,15 @@ define(["jquery",
                 this.layerDraft.individual = new Symbols();
                 let collection = this.app.dataManager.getCollection(key);
                 collection.forEach((item) => {
-                    const random_color = "#000000".replace(/0/g, function(){
-                        return (~~(Math.random()*16)).toString(16);
-                    });
                     this.layerDraft.individual.add({
-                        "rule": "id = " + item.id,
+                        "rule": `id = '${item.id}'`,
                         "title": item,
                         "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
                         "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
                         "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
                         "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
                         "shape": this.$el.find(".global-marker-shape").val(),
-                        "fillColor": random_color,
+                        "fillColor": '#ed867d',
                         "strokeColor": this.model.get("metadata").strokeColor,
                         "isShowing": this.model.get("metadata").isShowing,
                         "id": item.id,
@@ -635,7 +657,7 @@ define(["jquery",
                 let i = 0,
                 that = this;
                 this.collection.each(function(symbol) {
-                    symbol.set('fillColor', "#" + that.selectedColorPalette[i % 8]);
+                    symbol.set('fillColor', "#" + that.selectedColorPalette[i % that.selectedColorPalette.length]);
                     i++;
                 });
 
