@@ -99,7 +99,6 @@ define([
                 this.fixture.append(this.modal.$el);
                 this.modal.update({
                     width: '50vw',
-                    closeButtonText: 'Close',
                     saveButtonText: 'Update',
                     deleteButtonText: 'Remove',
                     printButtonText: 'Make Print',
@@ -109,9 +108,10 @@ define([
                     view: this.dummyView
                 })
                 expect(this.fixture).toContainElement('div.content');
-                console.log(this.fixture.find('div.content').css('width'));
+                expect(this.fixture.find('h1').html()).toEqual('My Title');
                 expect(this.fixture).toContainElement('div.body');
                 expect(this.fixture).toContainElement('.save-modal-form');
+                expect(this.fixture.find('.save-modal-form').html()).toEqual('Update');
                 expect(this.fixture).toContainElement('.close');
                 expect(this.fixture).toContainElement('.delete-modal');
             });
