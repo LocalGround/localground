@@ -1,10 +1,10 @@
-<div>
-    <header>
-        <span class="close right">&times;</span>
-        <h3>{{ title }}</h3>
-    </header>
-    <div class="body">
-        Here is a tooltip!
+<div class="popover">
+    <div class="popper" style="width: {{width}};height: {{height}};">
+        <header>
+            <span class="close right">&times;</span>
+            <h3>{{ title }}</h3>
+        </header>
+        <div class="body"></div>
+        <div class="popper__arrow" x-arrow></div>
     </div>
 </div>
-<div class="popper__arrow" x-arrow></div>

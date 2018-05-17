@@ -11,30 +11,30 @@ define([
             },
 
             events: {
-                'click .modal': 'hideIfValid',
+                'click .popover': 'hideIfValid',
                 'click .close': 'hideIfValid'
             },
             template: Handlebars.compile(PopoverTemplate),
-            className: 'popper',
             initialize: function (opts) {
                 this.validate(opts);
                 this.update(opts);
-                this.popper = new Popper(this.$source.get(0), this.$el.get(0), {
-                    placement: this.placement,
-                    modifiers: {
-                        offset: {
-                            enabled: true,
-                            offset: '0,-4'
-                        },
-                        preventOverflow: {
-                            boundariesElement: 'viewport'
+                this.popper = new Popper(
+                    this.$source.get(0),
+                    this.$el.find('.popper').get(0), {
+                        placement: this.placement,
+                        modifiers: {
+                            offset: {
+                                enabled: true,
+                                offset: '0,-4'
+                            },
+                            preventOverflow: {
+                                boundariesElement: 'viewport'
+                            }
                         }
-                    }
-                });
-                if (!$(".popper").get(0)) {
+                    });
+                if (!$(".popover").get(0)) {
                     $('body').append(this.$el);
                 }
-                this.show();
             },
 
             validate: function (opts) {
@@ -47,12 +47,10 @@ define([
             },
 
             update: function (opts) {
-                this.width = opts.width || '100px';
-                this.height = opts.height || '100px';
+                this.width = this.width || opts.width || '100px';
+                this.height = this.height || opts.height || '100px';
                 this.placement = opts.placement || 'left';
                 _.extend(this, opts);
-                this.$el.width(this.width);
-                this.$el.height(this.height);
                 this.render();
                 this.delegateEvents();
                 this.appendView();
@@ -67,27 +65,18 @@ define([
             },
             appendView: function () {
                 if (this.view) {
+                    console.log('showing...');
                     this.bodyRegion.show(this.view);
                 }
             },
-            setSize: function () {
-                this.$el.find('.content').css('width', this.width);
-                if (this.height) {
-                    this.$el.find('.body').css('height', this.height);
-                }
-            },
-            createModal: function () {
-                this.$el = $(this.template({ title: this.title }));
-                $('body').append(this.$el);
-            },
             show: function () {
-                this.$el.show();
+                this.$el.find('.popover').show();
             },
             hideIfValid (e) {
                 // hide if called by vent or if called by one of the
                 // following elements: 'modal' 'close', 'close-modal'
                 const classList = e.target.classList;
-                if (classList.contains('modal') ||
+                if (classList.contains('popover') ||
                     classList.contains('close')
                 ) {
                     this.hide(e);
@@ -95,7 +84,8 @@ define([
 
             },
             hide: function (e) {
-                this.$el.hide();
+                console.log('hiding...');
+                this.$el.find('.popover').hide();
                 //this.render();
                 if (e) {
                     e.stopPropagation();

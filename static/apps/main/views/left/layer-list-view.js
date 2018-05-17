@@ -141,6 +141,7 @@ define(["marionette",
                     width: '250px',
                     height: '150px'
                 });
+                menu.show();
 
             },
 

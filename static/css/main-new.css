@@ -1546,42 +1546,55 @@ span.action.rounded:hover, a.action.rounded:hover {
   display: block;
 }
 
-.link-anchor {
+.popover {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  /* A transparent div that covers everything */
+  background-color: transparent;
+}
+
+.popover .link-anchor {
   position: relative;
   width: 0;
   opacity: 0;
   transition: opacity .2s ease-in-out;
 }
 
-.anchor-wrapper {
+.popover .anchor-wrapper {
   border: none;
 }
 
-.anchor-wrapper:hover .link-anchor {
+.popover .anchor-wrapper:hover .link-anchor {
   opacity: 1;
 }
 
-section h1[id]:focus,
-section h2[id]:focus,
-section h3[id]:focus,
-section h4[id]:focus,
-section h5[id]:focus {
+.popover section h1[id]:focus,
+.popover section h2[id]:focus,
+.popover section h3[id]:focus,
+.popover section h4[id]:focus,
+.popover section h5[id]:focus {
   outline: 0;
 }
 
-p.thin {
+.popover p.thin {
   font-weight: 100;
   margin: 0;
   line-height: 1.2em;
 }
 
-p.bold {
+.popover p.bold {
   font-weight: 900;
   margin: 0;
   margin-top: -5px;
 }
 
-.rel {
+.popover .rel {
   width: 30%;
   margin: 0 auto;
   position: relative;
@@ -1592,11 +1605,11 @@ p.bold {
   border-width: medium;
 }
 
-.popper header {
+.popover .popper header {
   padding: 10px 8px;
 }
 
-.popper header h3 {
+.popover .popper header h3 {
   text-transform: uppercase;
   letter-spacing: .04em;
   font-size: 12px;
@@ -1604,7 +1617,7 @@ p.bold {
   margin: 0px;
 }
 
-.popper header .close {
+.popover .popper header .close {
   color: #888;
   float: right;
   font-size: 24px;
@@ -1612,8 +1625,8 @@ p.bold {
   cursor: pointer;
 }
 
-.popper,
-.tooltip {
+.popover .popper,
+.popover .tooltip {
   position: absolute;
   background: white;
   color: black;
@@ -1624,7 +1637,7 @@ p.bold {
   text-align: center;
 }
 
-.style5 .tooltip {
+.popover .style5 .tooltip {
   background: #1E252B;
   color: #FFFFFF;
   max-width: 200px;
@@ -1632,8 +1645,8 @@ p.bold {
   padding: .5em 1em;
 }
 
-.popper .popper__arrow,
-.tooltip .tooltip-arrow {
+.popover .popper .popper__arrow,
+.popover .tooltip .tooltip-arrow {
   width: 0;
   height: 0;
   border-style: solid;
@@ -1641,22 +1654,22 @@ p.bold {
   margin: 10px;
 }
 
-.tooltip .tooltip-arrow,
-.popper .popper__arrow {
+.popover .tooltip .tooltip-arrow,
+.popover .popper .popper__arrow {
   border-color: #CCC;
 }
 
-.style5 .tooltip .tooltip-arrow {
+.popover .style5 .tooltip .tooltip-arrow {
   border-color: #1E252B;
 }
 
-.popper[x-placement^="top"],
-.tooltip[x-placement^="top"] {
+.popover .popper[x-placement^="top"],
+.popover .tooltip[x-placement^="top"] {
   margin-bottom: 5px;
 }
 
-.popper[x-placement^="top"] .popper__arrow,
-.tooltip[x-placement^="top"] .tooltip-arrow {
+.popover .popper[x-placement^="top"] .popper__arrow,
+.popover .tooltip[x-placement^="top"] .tooltip-arrow {
   border-width: 10px 10px 0 10px;
   border-left-color: transparent;
   border-right-color: transparent;
@@ -1667,13 +1680,13 @@ p.bold {
   margin-bottom: 0;
 }
 
-.popper[x-placement^="bottom"],
-.tooltip[x-placement^="bottom"] {
+.popover .popper[x-placement^="bottom"],
+.popover .tooltip[x-placement^="bottom"] {
   margin-top: 10px;
 }
 
-.tooltip[x-placement^="bottom"] .tooltip-arrow,
-.popper[x-placement^="bottom"] .popper__arrow {
+.popover .tooltip[x-placement^="bottom"] .tooltip-arrow,
+.popover .popper[x-placement^="bottom"] .popper__arrow {
   border-width: 0 10px 10px 10px;
   border-left-color: transparent;
   border-right-color: transparent;
@@ -1684,13 +1697,13 @@ p.bold {
   margin-bottom: 0;
 }
 
-.tooltip[x-placement^="right"],
-.popper[x-placement^="right"] {
+.popover .tooltip[x-placement^="right"],
+.popover .popper[x-placement^="right"] {
   margin-left: 5px;
 }
 
-.popper[x-placement^="right"] .popper__arrow,
-.tooltip[x-placement^="right"] .tooltip-arrow {
+.popover .popper[x-placement^="right"] .popper__arrow,
+.popover .tooltip[x-placement^="right"] .tooltip-arrow {
   border-width: 10px 10px 10px 0;
   border-left-color: transparent;
   border-top-color: transparent;
@@ -1701,13 +1714,13 @@ p.bold {
   margin-right: 0;
 }
 
-.popper[x-placement^="left"],
-.tooltip[x-placement^="left"] {
+.popover .popper[x-placement^="left"],
+.popover .tooltip[x-placement^="left"] {
   margin-right: 10px;
 }
 
-.popper[x-placement^="left"] .popper__arrow,
-.tooltip[x-placement^="left"] .tooltip-arrow {
+.popover .popper[x-placement^="left"] .popper__arrow,
+.popover .tooltip[x-placement^="left"] .tooltip-arrow {
   border-width: 10px 0 10px 10px;
   border-top-color: transparent;
   border-right-color: transparent;
