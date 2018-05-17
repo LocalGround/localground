@@ -464,8 +464,6 @@ define([
             if (!confirm("Are you sure you want to delete this entry?")) {
                 return;
             }
-            console.log(this.model);
-            console.log(this.model.collection);
             this.model.destroy({
                 success: function () {
                     that.destroy();

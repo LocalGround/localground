@@ -50,7 +50,6 @@ define(["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this.model);
                 this.symbolModels = this.collection;
                 this.modal = this.app.modal;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
@@ -65,6 +64,7 @@ define(["marionette",
                 this.newMarkerType = 'point';
 
                 this.assignRecordsToSymbols();
+                this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
 
                 this.removeEmptySymbols();
@@ -112,25 +112,25 @@ define(["marionette",
                 });
             },
             assignRecordsToSymbols: function () {
-                const that = this;
+                // const that = this;
                 const uncategorizedSymbol = this.getUncategorizedSymbolModel();
 
-                this.dataCollection.each(function (recordModel) {
+                this.dataCollection.each((recordModel) => {
                     var matched = false;
-                    that.symbolModels.each(function (symbolModel) {
+                    this.symbolModels.each(function (symbolModel) {
+                        //console.log(symbolModel);
                         if (symbolModel.checkModel(recordModel)) {
                             symbolModel.addModel(recordModel);
                             matched = true;
                         }
                     })
                     if (!matched) {
-                        
+                        //this.reAssignRecordToSymbols(recordModel);
                         uncategorizedSymbol.addModel(recordModel);
                     }
                 });
             },
             assignRecordToSymbol: function (recordModel) {
-                console.log('add record to symbol');
                 var symbolView;
                 this.children.each(function (view) {
                     if (view.model.checkModel(recordModel)) {
@@ -146,6 +146,13 @@ define(["marionette",
                 symbolView.model.addModel(recordModel);
                 //symbolView.render();
             },
+
+            reAssignRecordsToSymbols: function() {
+                this.dataCollection.each((recordModel) => {
+                    this.reAssignRecordToSymbols(recordModel)
+                });
+            },
+
             reAssignRecordToSymbols: function(recordModel) {
                 const gb = this.model.get('group_by');
                 if (gb === 'uniform' || gb === 'individual') {
@@ -177,23 +184,7 @@ define(["marionette",
 
                 this.removeEmptySymbols();
 
-                //this.updatePalette(this.symbolModels);
                 this.saveChanges();
-            },
-
-            updatePalette: function(symbolCollection) {
-                const paletteId = this.model.get('metadata').paletteId;
-                
-                // don't count the uncategorized symbol
-                const symbolCount = symbolCollection.length  - 1;
-                const lgPalettes = new LGPalettes();
-                const palette = lgPalettes.getPalette(paletteId, symbolCount, 'categorical');
-
-                symbolCollection.each((symbol, i) => {
-                    if (symbol.get('rule') !== '¯\\_(ツ)_/¯') {
-                        symbol.set('fillColor', "#" + palette[i % 8]);
-                    }
-                });
             },
     
             removeEmptySymbols: function() {  
@@ -214,14 +205,13 @@ define(["marionette",
                 
                 const maxId = symbolCollection.maxId();
                 let symbolId = symbolCollection.length;
-                let symbol = Symbol.createCategoricalSymbol(category, this.model, maxId + 1, palette)
+                let symbol = Symbol.createCategoricalSymbol(category, this.model, maxId + 1, symbolCollection.length + 1, palette)
 
                 if (symbol.checkModel(record)) {
                     symbol.addModel(record);
                 }
-                
+                console.log('newSYMBOL: ', symbol);
                 symbolCollection.add(symbol, { at: symbolCollection.length - 1 });
-                console.log(symbolCollection);
             },
 
              // returns a default value if the input value from the dom is undefined
@@ -338,7 +328,6 @@ define(["marionette",
             },
 
             showLayerMenu: function(event) {
-                console.log('show layer menu');
                 const coords = {
                     x: "110px",
                     y: event.clientY
@@ -353,21 +342,16 @@ define(["marionette",
 
             hideLayerMenu: function(e) {
                 var $el = $(e.target);
-                console.log('hide: ', $el);
                 if ($el.hasClass('layer-menu') || $el.hasClass('add-record-container')) {
-                    console.log('return');
                     return
                 } else if (this.$el.find('.layer-menu').css('display') === 'block') {
                     this.$el.find('.layer-menu').toggle();
                 } else if (this.$el.find('.geometry-options').css('display') === 'block') {
-                    console.log('toggle geom dropdown');
                     this.$el.find('.geometry-options').toggle();
-                    //this.$el.find('.add-record-container').css({background: '#fafafc'});
                 }
             },
 
             editDisplayField: function() {
-                console.log(this.model);
 
                 var editDisplayFieldModal = new EditDisplayField({
                     app: this.app,
@@ -431,7 +415,6 @@ define(["marionette",
             },
 
             addCssToSelectedLayer: function(markerId) {
-                console.log('adding highlight class');
                 this.$el.find('#' + markerId).addClass('highlight');
             },
 

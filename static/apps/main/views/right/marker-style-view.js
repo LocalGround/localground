@@ -132,11 +132,8 @@ define(["jquery",
             templateHelpers: function () {
                 var metadata = this.model.get("metadata"),
                     helpers;
-                console.log(this.selectedColorPalette)
-                console.log('symbols', this.model.get('symbols').models);
                 const symbols  = this.model.get('symbols').models;
                 let symbolCounter = symbols.length > 7 ? [0,1,2,3,4,5,6,7] : symbols;
-                console.log('allColors', this.allColors);
                 helpers = {
                     metadata: metadata,
                     groupBy: this.model.get('group_by'),
@@ -158,9 +155,7 @@ define(["jquery",
                 let numberOfSymbols = this.model.get('symbols').models.map((item, i) => {
                     return i
                 });
-                console.log(numberOfSymbols);
                 if (!this.model.get('metadata').isContinuous) {
-                    console.log('is not continuous')
                     if (numberOfSymbols.length > 9) {
                         numberOfSymbols.length = 9;
                     } 
@@ -168,7 +163,6 @@ define(["jquery",
 
                 // remove that last symbol, which will always be the uncategorized symbol
                 numberOfSymbols.pop();
-                console.log(numberOfSymbols);
                 return numberOfSymbols;
 
             },

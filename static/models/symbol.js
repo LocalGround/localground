@@ -96,7 +96,7 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 }
             },
             UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
-            createCategoricalSymbol: function (category, layerModel, counter, palette) {
+            createCategoricalSymbol: function (category, layerModel, id, counter, palette) {
                 //factory that creates new symbols:
                 return new Symbol({
                     "rule": `${layerModel.get('metadata').currentProp} = '${category}'`, // + item,
@@ -109,7 +109,7 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                     "fillColor": "#" + palette[counter % palette.length],
                     "strokeColor": layerModel.get("metadata").strokeColor,
                     "isShowing": layerModel.get("metadata").isShowing,
-                    "id": counter
+                    "id": id
                 });
             }
         });
