@@ -1,6 +1,7 @@
 // main: ../main-new.scss
 $tipBackground: rgba(255, 255, 255, 1);
-$arrowBackground: #FFF;
+$arrowBackground: #CCC;
+$arrowSize: 10px;
 
 .link-anchor {
   position: relative;
@@ -11,6 +12,7 @@ $arrowBackground: #FFF;
 .anchor-wrapper {
   border: none;
 }
+
 .anchor-wrapper:hover .link-anchor {
   opacity: 1;
 }
@@ -46,6 +48,25 @@ p.bold {
     border-width: medium;
 }
 
+.popper {
+    header {
+        padding: 10px 8px;
+    }
+    header h3 {
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-size: 12px;
+        font-weight: 600;
+        margin: 0px;
+    }
+    header .close {
+        color: #888;
+        float: right;
+        font-size: 24px;
+        line-height: 12px;
+        cursor: pointer;
+    }
+}
 .popper,
 .tooltip {
     position: absolute;
@@ -70,7 +91,7 @@ p.bold {
     height: 0;
     border-style: solid;
     position: absolute;
-    margin: 5px;
+    margin: $arrowSize;
 }
 
 .tooltip .tooltip-arrow,
@@ -86,27 +107,27 @@ p.bold {
 }
 .popper[x-placement^="top"] .popper__arrow,
 .tooltip[x-placement^="top"] .tooltip-arrow {
-    border-width: 5px 5px 0 5px;
+    border-width: $arrowSize $arrowSize 0 $arrowSize;
     border-left-color: transparent;
     border-right-color: transparent;
     border-bottom-color: transparent;
-    bottom: -5px;
-    left: calc(50% - 5px);
+    bottom: $arrowSize;
+    left: calc(50% - $arrowSize);
     margin-top: 0;
     margin-bottom: 0;
 }
 .popper[x-placement^="bottom"],
 .tooltip[x-placement^="bottom"] {
-    margin-top: 5px;
+    margin-top: $arrowSize;
 }
 .tooltip[x-placement^="bottom"] .tooltip-arrow,
 .popper[x-placement^="bottom"] .popper__arrow {
-    border-width: 0 5px 5px 5px;
+    border-width: 0 $arrowSize $arrowSize $arrowSize;
     border-left-color: transparent;
     border-right-color: transparent;
     border-top-color: transparent;
-    top: -5px;
-    left: calc(50% - 5px);
+    top: -$arrowSize;
+    left: calc(50% - $arrowSize);
     margin-top: 0;
     margin-bottom: 0;
 }
@@ -116,27 +137,27 @@ p.bold {
 }
 .popper[x-placement^="right"] .popper__arrow,
 .tooltip[x-placement^="right"] .tooltip-arrow {
-    border-width: 5px 5px 5px 0;
+    border-width: $arrowSize $arrowSize $arrowSize 0;
     border-left-color: transparent;
     border-top-color: transparent;
     border-bottom-color: transparent;
-    left: -5px;
-    top: calc(50% - 5px);
+    left: -$arrowSize;
+    top: calc(50% - $arrowSize);
     margin-left: 0;
     margin-right: 0;
 }
 .popper[x-placement^="left"],
 .tooltip[x-placement^="left"] {
-    margin-right: 5px;
+    margin-right: $arrowSize;
 }
 .popper[x-placement^="left"] .popper__arrow,
 .tooltip[x-placement^="left"] .tooltip-arrow {
-    border-width: 5px 0 5px 5px;
+    border-width: $arrowSize 0 $arrowSize $arrowSize;
     border-top-color: transparent;
     border-right-color: transparent;
     border-bottom-color: transparent;
-    right: -5px;
-    top: calc(50% - 5px);
+    right: -$arrowSize;
+    top: calc(50% - $arrowSize);
     margin-left: 0;
     margin-right: 0;
 }

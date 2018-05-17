@@ -154,7 +154,7 @@ define([
                 expect(EditMapForm.prototype.saveMap).toHaveBeenCalledTimes(1);
             });
 
-            it("listens for 3 close modal click events", function () {
+            it("listens for 4 close modal events", function () {
                 initModalSimple(this);
                 this.modal.update({
                     showDeleteButton: false
@@ -176,6 +176,10 @@ define([
                 //trigger click on Cancel button:
                 this.fixture.find('.close-modal').trigger('click');
                 expect(Modal.prototype.hide).toHaveBeenCalledTimes(3);
+                expect(Modal.prototype.hideIfValid).toHaveBeenCalledTimes(3);
+
+                this.app.vent.trigger('close-modal');
+                expect(Modal.prototype.hide).toHaveBeenCalledTimes(4);
                 expect(Modal.prototype.hideIfValid).toHaveBeenCalledTimes(3);
             });
 

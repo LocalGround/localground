@@ -107,7 +107,12 @@ define(["jquery",
                     x: event.clientX,
                     y: event.clientY
                 };
-                this.app.vent.trigger('show-symbol-menu', this.model, coords, this.layerId);
+                this.app.vent.trigger('show-symbol-menu', {
+                    symbol: this.model,
+                    coords: coords,
+                    layerId: this.layerId,
+                    $source: this.$el.find('.symbol-header')//$(event.target).parent().parent()
+                });
             },
             showOverlays: function () {
                 this.children.each(view => {

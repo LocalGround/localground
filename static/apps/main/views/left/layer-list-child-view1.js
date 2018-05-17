@@ -255,7 +255,7 @@ define(["marionette",
                 }
             },
 
-            hideLayerMenu: function(e) {
+            /*hideLayerMenu: function(e) {
                 var $el = $(e.target);
                 console.log('hide: ', $el);
                 if ($el.hasClass('layer-menu') || $el.hasClass('add-record-container')) {
@@ -268,7 +268,7 @@ define(["marionette",
                     this.$el.find('.geometry-options').toggle();
                     //this.$el.find('.add-record-container').css({background: '#fafafc'});
                 }
-            },
+            },*/
 
             editDisplayField: function() {
                 console.log(this.model);
@@ -357,7 +357,7 @@ define(["marionette",
 
             displayGeometryOptions: function(e) {
                 const target = this.$el.find('.add-record-container')[0];
-                
+
                 this.$el.find('.geometry-options').css({top: target.y -15, left: target.x - 200});
                 if (this.$el.find('.geometry-options').css('display') === "block") {
                     this.$el.find('.geometry-options').css({display: 'none'})

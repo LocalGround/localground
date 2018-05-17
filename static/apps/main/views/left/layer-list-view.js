@@ -6,9 +6,11 @@ define(["marionette",
         "apps/main/views/right/marker-style-view",
         "apps/main/views/right/symbol-style-menu-view",
         "apps/main/views/left/create-layer-form",
+        "lib/popovers/popover"
     ],
     function (Marionette, Handlebars, Layer, LayerListChild,
-        LayerListTemplate, MarkerStyleView, SymbolStyleMenuView, CreateLayerForm) {
+        LayerListTemplate, MarkerStyleView, SymbolStyleMenuView, CreateLayerForm,
+        Popover) {
         'use strict';
         /**
          *  In this view, this.model = Map, this.collection = Layers
@@ -50,7 +52,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'show-style-menu', this.showStyleMenu);
                 this.listenTo(this.app.vent, 'show-symbol-menu', this.showSymbolMenu);
                 this.listenTo(this.app.vent, 'hide-style-menu', this.hideStyleMenu);
-                this.listenTo(this.app.vent, 'hide-symbol-style-menu', this.hideSymbolStyleMenu);
+                //this.listenTo(this.app.vent, 'hide-symbol-style-menu', this.hideSymbolStyleMenu);
             },
 
             events: {
@@ -118,32 +120,35 @@ define(["marionette",
             },
 
             // create the view that allows the user to edit *individual* symbol attributes
-            showSymbolMenu: function(symbol, coords, layerId) {
+            showSymbolMenu: function(opts) {
+                /*model: this.model,
+                coords: coords,
+                layerId: this.layerId,
+                $source*/
                 if (this.symbolMenu) {
                     console.log('destroying');
                     this.symbolMenu.destroy();
                 }
                 this.symbolMenu = new SymbolStyleMenuView({
                     app: this.app,
-                    layer: this.model.get('layers').get(layerId),
-                    model: symbol
+                    layer: this.model.get('layers').get(opts.layerId),
+                    model: opts.symbol
                 });
 
-                symbol.set('active', true);
-
-                $('.symbol-menu').append(this.symbolMenu.$el);
-                $('.symbol-menu').css({
-                    left: coords.x,
-                    top: coords.y
+                var menu = new Popover({
+                    $source: opts.$source,
+                    view: this.symbolMenu,
+                    width: '250px',
+                    height: '150px'
                 });
-                $('.symbol-menu').show();
+
             },
 
             hideSymbolStyleMenu: function(e, symbol) {
                 console.log('hide symbol menu');
                 var $el = $(e.target);
                 var parent = document.getElementById("style-by-menu");
-                $('.symbol-menu').hide();
+                //$('.symbol-menu').hide();
                 symbol.set('active', false);
             },
 

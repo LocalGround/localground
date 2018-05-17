@@ -1,13 +1,6 @@
-/**
- * Created by zmmachar on 12/17/14.
- */
 define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/modal.html"],
     function ($, _, Marionette, Handlebars, ModalTemplate) {
         'use strict';
-        /**
-         * The Printloader class handles loading data for the print generation form
-         * @class PrintLoader
-         */
         var Modal = Marionette.LayoutView.extend({
             view: null,
             title: null,
@@ -80,10 +73,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts.bodyClass = opts.bodyClass || null;
                 _.extend(this, opts);
                 this.saveFunction = function () {
-                    console.log('saving 2...');
                     opts.saveFunction();
                 };
-                this.attachEvents();
                 this.render();
                 this.delegateEvents();
                 this.appendView();
