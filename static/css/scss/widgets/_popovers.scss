@@ -2,6 +2,7 @@
 $tipBackground: rgba(255, 255, 255, 1);
 $arrowBackground: #CCC;
 $arrowSize: 10px;
+$arrowIndent: 8px;
 .popover {
     display: none;
     position: fixed;
@@ -156,6 +157,18 @@ $arrowSize: 10px;
         top: calc(50% - $arrowSize);
         margin-left: 0;
         margin-right: 0;
+    }
+
+    .popper .popper__arrow::after {
+        border-style: solid;
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        top: -$arrowSize;
+        left: -$arrowIndent;
+        border-color: transparent #FFF transparent transparent;
+        border-width: $arrowSize;
     }
     .popper[x-placement^="left"],
     .tooltip[x-placement^="left"] {

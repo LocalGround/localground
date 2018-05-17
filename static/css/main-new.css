@@ -1714,6 +1714,18 @@ span.action.rounded:hover, a.action.rounded:hover {
   margin-right: 0;
 }
 
+.popover .popper .popper__arrow::after {
+  border-style: solid;
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: -10px;
+  left: -8px;
+  border-color: transparent #FFF transparent transparent;
+  border-width: 10px;
+}
+
 .popover .popper[x-placement^="left"],
 .popover .tooltip[x-placement^="left"] {
   margin-right: 10px;
