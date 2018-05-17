@@ -6,9 +6,10 @@ define(["marionette",
         "apps/main/views/left/symbol-collection-view",
         "apps/main/views/left/edit-layer-name-modal-view",
         "apps/main/views/left/edit-display-field-modal-view",
-        "lib/maps/overlays/icon"
+        "lib/maps/controls/mouseMover"
     ],
-    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record, SymbolView, EditLayerName, EditDisplayField, Icon) {
+    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record,
+            SymbolView, EditLayerName, EditDisplayField, MouseMover) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -40,12 +41,9 @@ define(["marionette",
                 'click .rename-layer': 'editLayerName',
                 'click .edit-display-field': 'editDisplayField',
                 'click .add-record-container': 'displayGeometryOptions',
-                'click #select-point': 'selectPoint',
-                'click #select-polygon': 'selectPolygon',
-                'click #select-polyline': 'selectPolyline',
-                'click .add-record': 'addPoint',
-                'click .add-polyline_svg': 'addPolyline',
-                'click .add-polygon_svg': 'addPolygon',
+                'click #select-point': 'initAddPoint',
+                'click #select-polygon': 'initAddPolygon',
+                'click #select-polyline': 'initAddPolyline',
                 'click .zoom-to-extents': 'zoomToExtents'
             },
 
@@ -55,6 +53,7 @@ define(["marionette",
                 this.symbolModels = this.collection;
                 this.modal = this.app.modal;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
+                this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
                 if (!this.model || !this.collection || !this.dataCollection) {
                     console.error("model, collection, and dataCollection are required");
                     return;
@@ -83,6 +82,7 @@ define(["marionette",
                 };
             },
             childView: SymbolView,
+
             childViewContainer: "#symbols-list",
 
             reRender: function () {
@@ -134,6 +134,7 @@ define(["marionette",
                 });
             },
             assignRecordToSymbol: function (recordModel) {
+                console.log('add record to symbol');
                 var symbolView;
                 this.children.each(function (view) {
                     if (view.model.checkModel(recordModel)) {
@@ -150,7 +151,7 @@ define(["marionette",
                     alert('missing!');
                 }
                 symbolView.model.addModel(recordModel);
-                symbolView.render();
+                //symbolView.render();
             },
             addFakeModel: function () {
                 var categories = ['mural', 'sculpture', 'blah', undefined, null, '']
@@ -172,17 +173,31 @@ define(["marionette",
                 this.dataCollection.add(recordModel);
             },
 
-            addRecord: function() {
-                let recordModel = new Record({
+            addRecord: function (data) {
+                if (this.cid !== data.viewID) {
+                    return;
+                }
+
+                const recordModel = new Record({
                     'overlay_type': this.model.get('dataset').overlay_type,
                     "project_id": this.app.dataManager.getProject().id,
                     "form": this.model.get('dataset'),
+                    "fields": this.model.get('dataset').fields,
                     "owner": this.model.get('owner'),
-                    'geometry': null,
+                    'geometry': data.geoJSON,
                     "fillColor": '#ed867d'
+                }, { urlRoot: this.dataCollection.url });
+                recordModel.save(null, {
+                    success: () => {
+                        this.dataCollection.add(recordModel);
+                        var mapID = this.app.dataManager.getMap().id,
+                            layerID = this.model.id,
+                            overlay_type = this.model.get('dataset').overlay_type,
+                            recID = recordModel.id,
+                            route = `${mapID}/layers/${layerID}/${overlay_type}/${recID}`;
+                        this.app.router.navigate("//" + route);
+                    }
                 });
-                this.dataCollection.add(recordModel);
-                return recordModel;
             },
 
             // triggered from the router
@@ -214,7 +229,6 @@ define(["marionette",
             },
 
             editLayerName: function() {
-                console.log('edit layer name');
 
                 var editLayerNameModal = new EditLayerName({
                     app: this.app,
@@ -353,93 +367,32 @@ define(["marionette",
             },
 
             displayGeometryOptions: function(e) {
-                console.log('display goem opts');
-                var $el = $(e.target);
-                //this.$el.find('.add-record-container').css({background: '#bbbbbb'});
-                console.log(this.$el.find('.geometry-options').css('display'));
+                const target = this.$el.find('.add-record-container')[0];
+                
+                this.$el.find('.geometry-options').css({top: target.y -15, left: target.x - 200});
                 if (this.$el.find('.geometry-options').css('display') === "block") {
-                    console.log('hide');
                     this.$el.find('.geometry-options').css({display: 'none'})
                 } else {
-                    console.log('show');
                     this.$el.find('.geometry-options').css({display: 'block'});
                 }
 
             },
 
-            selectPoint: function(e) {
-                var that = this, MouseMover, $follower, mm;
-                MouseMover = function ($follower) {
-
-                    this.generateIcon = function () {
-                        var template, shape;
-                        template = Handlebars.compile('<svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
-                            '    <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
-                            '</svg>');
-                        shape = that.model.get("overlay_type");
-                        // If clicking an add new and click on marker, there is no overlay_type found
-                        //*
-                        // If outside, then save the model
-                        // and add it to the end of the list so the marker
-                        // so that new markers can be added seamlessly
-                        if (shape.indexOf("form_") != -1) {
-                            shape = "marker";
-                        }
-                        //*/
-                        else {
-                            //console.log("The current form of adding marker on empty form is buggy");
-                        }
-                        that.icon = new Icon({
-                            shape: shape,
-                            strokeWeight: 6,
-                            fillColor: that.model.collection.fillColor,
-                            width: that.model.collection.size,
-                            height: that.model.collection.size
-                        }).generateGoogleIcon();
-                        that.icon.width *= 1.5;
-                        that.icon.height *= 1.5;
-                        $follower.html(template(that.icon));
-                        $follower.show();
-                    };
-                    this.start = function () {
-                        this.generateIcon();
-                        $(window).bind('mousemove', this.mouseListener);
-                    };
-                    this.stop = function (event) {
-                        $(window).unbind('mousemove');
-                        $follower.remove();
-                        that.app.vent.trigger("place-marker", {
-                            x: event.clientX,
-                            y: event.clientY
-                        });
-                    };
-                    this.mouseListener = function (event) {
-                        $follower.css({
-                            top: event.clientY - that.icon.height * 3 / 4 + 4,
-                            left: event.clientX - that.icon.width * 3 / 4
-                        });
-                    };
-                };
-                //Instantiate Class and Add UI Event Handlers:
-                $follower = $('<div id="follower"></div>');
-                $('body').append($follower);
-                mm = new MouseMover($follower);
-                $(window).mousemove(mm.start.bind(mm));
-                $follower.click(mm.stop);
-
-                this.app.vent.trigger("add-new-marker", this.addRecord());
+            notifyDrawingManager: function (e, mode) {
+                this.app.vent.trigger(mode, this.cid, e);
+                this.app.vent.trigger('hide-detail');
                 this.$el.find('.geometry-options').toggle();
                 e.preventDefault();
             },
-            selectPolygon: function(e) {
-                this.app.vent.trigger('add-polygon', this.addRecord());
-                this.$el.find('.geometry-options').toggle();
-                e.preventDefault();
+
+            initAddPoint: function (e) {
+                this.notifyDrawingManager(e, 'add-point');
             },
-            selectPolyline: function(e) {
-                this.app.vent.trigger('add-polyline', this.addRecord());
-                this.$el.find('.geometry-options').toggle();
-                e.preventDefault();
+            initAddPolygon: function(e) {
+                this.notifyDrawingManager(e, 'add-polygon');
+            },
+            initAddPolyline: function(e) {
+                this.notifyDrawingManager(e, 'add-polyline');
             },
 
             getMarkerOverlays: function () {
@@ -465,8 +418,6 @@ define(["marionette",
             },
 
             saveChanges: function() {
-                console.log(this.model.toJSON());
-                //return;
                 this.model.save();
             }
         });

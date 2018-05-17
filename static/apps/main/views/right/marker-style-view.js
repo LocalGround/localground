@@ -356,9 +356,20 @@ define(["jquery",
                     this.model.set('symbols', this.layerDraft.continuous);
                 }
                 this.layerDraft.continuous = new Symbols();
-                while (cont.currentFloor < cont.max) {
+                console.log(this.selectedColorPalette);
+                while (Math.round(cont.currentFloor) < cont.max) {
+                    
+                    const next = cont.currentFloor + cont.segmentSize;
+
+                    // the upper bound of the final bucket should be inclusive '<=' and not '<'
+                    // This is because the final upper bound is also the highest value in a given dataset, 
+                    // so it cannot be exluded. All other upper bounds are exlusive '<'
+                    console.log('next: ', Math.round(next));
+                    console.log('MAX: ', cont.max);
+                    let lastRuleSymbol = !(Math.round(next) < cont.max) ? '=' : '';
+                    console.log(`loop ${counter}: ${selected} >= ${cont.currentFloor.toFixed(0)} and ${selected} <${lastRuleSymbol} ${(cont.currentFloor + cont.segmentSize).toFixed(0)}`);
                     this.layerDraft.continuous.add({
-                        "rule": selected + " >= " + cont.currentFloor.toFixed(0) + " and " + selected + " < " + (cont.currentFloor + cont.segmentSize).toFixed(0),
+                        "rule": `${selected} >= ${cont.currentFloor.toFixed(0)} and ${selected} <${lastRuleSymbol} ${(cont.currentFloor + cont.segmentSize).toFixed(0)}`,
                         "title": "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
                         "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
                         "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
@@ -370,8 +381,9 @@ define(["jquery",
                         "isShowing": this.model.get("metadata").isShowing,
                         "id": (counter + 1)
                     });
+                    console.log(this.selectedColorPalette[counter]);
                     counter++;
-                    cont.currentFloor = Math.round((cont.currentFloor + cont.segmentSize)*100)/100;
+                    cont.currentFloor = next;
                 }
                 console.log(cont.currentFloor);
                 console.log(this.layerDraft.continuous);
@@ -493,6 +505,9 @@ define(["jquery",
                 this.delayExecution(
                     "bucketTimer",
                     () => {
+                        if (this.$el.find("#bucket").val() > 8) {
+                            this.$el.find("#bucket").val(8);
+                        }
                         var buckets = parseFloat(this.$el.find("#bucket").val());
                         this.updateMetadata("buckets", buckets);
                         this.buildPalettes();
@@ -500,7 +515,7 @@ define(["jquery",
                        // that.render();
                        this.$el.find("#bucket").focus();
                     },
-                    500 //experiment with how many milliseconds to delay
+                    300 //experiment with how many milliseconds to delay
                 );
             },
 
@@ -509,8 +524,8 @@ define(["jquery",
                 if (count > 8) { count = 8; }
 
                 let seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8;
-                const catPalettes = ['cb-Accent', 'cb-Dark2', 'cb-Paired', 'cb-Pastel1', 'cb-Set1', 'cb-Set2', 'cb-Set3'];
-                const contPalettes = ['cb-Blues', 'cb-Oranges', 'cb-Greys', 'cb-YlGn', 'cb-RdYlBu', 'tol-dv', 'cb-Purples'];
+                const catPalettes = ['cb-Accent', 'cb-Dark2', 'cb-Paired', 'cb-Pastel1', 'cb-Set1', 'cb-Set2', 'cb-Set3', 'tol-rainbow'];
+                const contPalettes = ['cb-Blues', 'cb-Oranges', 'cb-Greys', 'cb-YlGn', 'cb-RdYlBu', 'tol-dv', 'cb-Purples', 'cb-RdPu'];
                 const paletteId = this.model.get("metadata").paletteId || 0;
 
                 let paletteList, buckets;
@@ -523,7 +538,9 @@ define(["jquery",
                 } else {
                     if (this.model.get('metadata').isContinuous) {
                         paletteList = contPalettes;
-                        buckets = this.model.get("metadata").buckets;
+                        console.log('metadata buckets: ', this.model.get("metadata").buckets);
+                        buckets = this.model.get("metadata").buckets + 1;
+                        console.log('buckets in color sequence: ', buckets)
                     } else {
                         paletteList = catPalettes;
                         buckets = count;
@@ -537,7 +554,16 @@ define(["jquery",
                 seq5 = palette(paletteList[4], buckets);
                 seq6 = palette(paletteList[5], buckets);
                 seq7 = palette(paletteList[6], buckets);
+                seq8 = palette(paletteList[7], buckets);
                 this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8];
+                
+                if (this.model.get('metadata').isContinuous) {
+                    console.log(this.allColors);
+                    this.allColors.forEach((seq, index) => {
+                        console.log('seq ', index, seq);
+                        seq.shift();
+                    });
+                }
                 this.selectedColorPalette = this.allColors[paletteId];
                 return this.selectedColorPalette;
             },

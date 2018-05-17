@@ -19,8 +19,13 @@ require(['boot'], function () {
         'spec/views/main/layer-list-child-view-test.js',
         'spec/views/main/symbol-collection-view-test.js',
 
+        // trouble mocking a Record to test the DataDetail View
+        'spec/views/main/data-detail-test.js',
+
         //lib:
-        'spec/lib/data-manager-test.js'
+        'spec/lib/data-manager-test.js',
+        'spec/lib/drawing-manager-test.js',
+        'spec/lib/mouse-mover-test.js'
     ];
 
     require(specs, function () {

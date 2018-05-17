@@ -10,22 +10,14 @@ define(["models/base",
             }),
             viewSchema: null,
             initialize: function (data, opts) {
+                opts = opts || {};
+                if (opts.urlRoot) {
+                    this.urlRoot = opts.urlRoot;
+                }
                 Base.prototype.initialize.apply(this, arguments);
                 if (opts) {
                     this.viewSchema = this._generateSchema(opts.updateMetadata, false);
                 }
-            },
-            url: function () {
-
-                var base =
-                    _.result(this, 'urlRoot') ||
-                    _.result(this.collection, 'url') || urlError(),
-                    url;
-                if (this.isNew()) {
-                    return base + '.json';
-                }
-                url = base.replace(/([^\/])$/, '$1/') + encodeURIComponent(this.id) + '/.json';
-                return url;
             },
 
             toTemplateJSON: function () {

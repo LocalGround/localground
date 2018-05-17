@@ -15,14 +15,29 @@ define(["jquery",
          */
         var SymbolCollectionView =  Marionette.CompositeView.extend({
             initialize: function (opts) {
-                //this.collection = this.model.getModels();
-                //console.log(this.collection);
+
+                this.collection = this.model.getModels();
+
                 _.extend(this, opts);
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
                 this.model.set('active', false);
             },
+
+            emptyView: Marionette.ItemView.extend({
+                className: 'symbol-item marker-container',
+                initialize: function (opts) {
+                    _.extend(this, opts);
+                    var templateHTML = `<div>
+                        No markers matching: {{ rule }}
+                    </div>`
+                    this.template = Handlebars.compile(templateHTML);
+                },
+                templateHelpers: function () {
+                    return this.parent.model.toJSON()
+                }
+            }),
             childViewContainer: '.symbol',
             childView: SymbolItemView,
             childViewOptions: function (model, index) {
@@ -68,14 +83,14 @@ define(["jquery",
             template: Handlebars.compile(LayerItemTemplate),
             tagName: "div",
             templateHelpers: function () {
-                const rule = this.model.get('rule')
+                const title = this.model.get('title')
                 name = this.collection.name;
                 return {
                     empty: this.model.getModelsJSON().length === 0,
                     name: name,
                     icon: this.model.get('icon'),
                     markerList: this.model.getModelsJSON(),
-                    property: rule === '*' ? 'all ' + name : rule,
+                    property: title === '*' ? 'all ' + name : title,
                     isChecked: this.model.get("isShowing"),
                     layer_id: this.layerId,
                     map_id: this.mapId,

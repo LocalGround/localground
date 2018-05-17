@@ -433,35 +433,6 @@ ul {
   border-bottom: 1px solid #e8e8e8;
 }
 
-.symbol-item {
-  font-size: 12px;
-  list-style: none;
-  background-color: white;
-  height: inherit;
-}
-
-.symbol-item:hover {
-  background: #EEE;
-  color: #444;
-}
-
-.symbol-item a {
-  text-decoration: none;
-  padding: 6px 32px;
-  display: inline-block;
-  width: 100%;
-}
-
-.symbol-item p {
-  display: inline-block;
-  margin-top: 3px;
-  vertical-align: middle;
-}
-
-.symbol-item svg {
-  vertical-align: middle;
-}
-
 .layer-datasource {
   font-size: 11px;
   margin-left: 20px;
@@ -491,6 +462,11 @@ ul {
   display: inline-block;
   background-color: white;
   font-weight: 600;
+  width: 170px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
 .symbol-wrapper {
@@ -584,6 +560,39 @@ i.fa.fa.fa-question-circle {
   color: #CCC;
   vertical-align: bottom;
   padding: 0px 5px 0px 2px;
+}
+
+.symbol-item {
+  font-size: 12px;
+  list-style: none;
+  background-color: white;
+  height: inherit;
+}
+
+.symbol-item a:hover {
+  background: #EEE;
+  color: #444;
+}
+
+.symbol-item a, .symbol-item > div {
+  text-decoration: none;
+  padding: 6px 32px;
+  display: inline-block;
+  width: 100%;
+}
+
+.symbol-item p {
+  display: inline-block;
+  margin-top: 3px;
+  vertical-align: middle;
+  width: 190px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.symbol-item svg {
+  vertical-align: middle;
 }
 
 .style-by-menu {

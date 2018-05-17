@@ -13,12 +13,11 @@ define([
     "text!../templates/map-image-detail.html",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
-    "lib/maps/overlays/icon",
     "lib/parallax",
     "touchPunch"
 ], function ($, _, Backbone, Handlebars, Marionette, DataForm, Photos, Audio, Videos,
         PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
-        MapImageTemplate, AudioPlayer, Carousel, Icon, MoveItItem, TouchPunch) {
+        MapImageTemplate, AudioPlayer, Carousel, MouseMover, MoveItItem, TouchPunch) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -31,7 +30,6 @@ define([
             'click .rotate-left': 'rotatePhoto',
             'click .rotate-right': 'rotatePhoto',
             "click #delete-geometry": "deleteMarker",
-            "click #add-rectangle": "activateRectangleTrigger",
             "click .streetview": 'showStreetView',
             "click .thumbnail-play-circle": 'playAudio',
             'click .circle': 'openExpanded',
@@ -40,34 +38,58 @@ define([
             // first, a trigger to display dropdown menu
             "click #add-geometry": "displayGeometryOptions",
             // add point, polyline, or polygon
-            'click #add-point': 'activateMarkerTrigger',
-            'click #add-polyline': 'triggerPolyline',
-            'click #add-polygon': 'triggerPolygon',
+            'click #add-point': 'initAddPoint',
+            'click #add-polyline': 'initAddPolyline',
+            'click #add-polygon': 'initAddPolygon',
+            "click #add-rectangle": "initAddRectangle",
             'click': 'hideGeometryOptions'
         },
 
         displayGeometryOptions: function(e) {
+            console.log('displayGeometryOptions');
             this.$el.find('.add-marker-button').css({background: '#bbbbbb'});
             this.$el.find('.geometry-options').css({display: 'block'});
         },
 
         hideGeometryOptions: function(e) {
+            console.log('hide gemotry options');
             if (e && !$(e.target).hasClass('add-marker-button')) {
+                //console.log('hide gemotry options internal');
                 this.$el.find('.add-marker-button').css({background: '#fafafc'});
                 this.$el.find('.geometry-options').css({display: 'none'});
             };
         },
 
-        triggerPolyline: function(e) {
-            this.app.vent.trigger('add-polyline', this.model);
-            this.hideGeometryOptions();
+        notifyDrawingManager: function (e, mode) {
+            if (this.$el.find('#drop-marker-message').get(0)) {
+                //button has already been clicked
+                return;
+            }
+            
+            this.$el.find(".add-lat-lng").append(
+                "<p id='drop-marker-message'>click on the map to add location</p>"
+            );
+
+            this.app.vent.trigger(mode, this.cid, e);
+
+            // the geometryOptions menu closes on its own because hideGeometryOptions()
+            // is triggered by a click event anywhere on the view.
+            //this.hideGeometryOptions();
             e.preventDefault();
         },
-        triggerPolygon: function(e) {
-            //this.app.vent.trigger("add-new-marker", this.model);
-            this.app.vent.trigger('add-polygon', this.model);
-            this.hideGeometryOptions();
-            e.preventDefault();
+
+        initAddPoint: function (e) {
+            this.notifyDrawingManager(e, 'add-point');
+        },
+        initAddPolygon: function(e) {
+            this.notifyDrawingManager(e, 'add-polygon');
+        },
+        initAddPolyline: function(e) {
+            this.notifyDrawingManager(e, 'add-polyline');
+        },
+        initAddRectangle: function () {
+            $('body').css({ cursor: 'crosshair' });
+            this.app.vent.trigger("add-rectangle", this.cid);
         },
 
         getTemplate: function () {
@@ -92,7 +114,6 @@ define([
             this.expanded = false;
             this.clickNum = 1;
             _.extend(this, opts);
-            console.log('data detail initialized', this);
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
@@ -104,6 +125,7 @@ define([
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
             this.listenTo(this.app.vent, 'streetview-hidden', this.updateStreetViewButton);
             this.listenTo(this.app.vent, 'rerender-data-detail', this.render);
+            this.listenTo(this.app.vent, 'geometry-created', this.saveGeoJSON);
         },
 
         templateHelpers: function () {
@@ -189,94 +211,29 @@ define([
             this.oldWidth = $(window).width();
         },
 
-        activateRectangleTrigger: function () {
-            $('body').css({ cursor: 'crosshair' });
-            this.app.vent.trigger("add-new-marker", this.model);
-            this.app.vent.trigger("add-rectangle", this.model);
-        },
-
-        activateMarkerTrigger: function () {
-            if (this.$el.find('#drop-marker-message').get(0)) {
-                //button has already been clicked
+        saveGeoJSON: function (data) {
+            if (this.cid !== data.viewID) {
                 return;
             }
-            this.$el.find("#add-marker-button").css({
-                background: "#4e70d4",
-                color: "white"
+            this.model.set('geometry', data.geoJSON);
+            this.model.save(null, {
+                patch: true,
+                success: () => {
+                    this.commitForm() //ensures no data loss for partially committed form
+                    this.render()
+                }
             });
-            this.$el.find(".add-lat-lng").append("<p id='drop-marker-message'>click on the map to add location</p>");
-            //Define Class:
-            var that = this, MouseMover, $follower, mm;
-            MouseMover = function ($follower) {
-
-                this.generateIcon = function () {
-                    var template, shape;
-                    template = Handlebars.compile('<svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
-                        '    <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
-                        '</svg>');
-                    shape = that.model.get("overlay_type");
-                    // If clicking an add new and click on marker, there is no overlay_type found
-                    //*
-                    // If outside, then save the model
-                    // and add it to the end of the list so the marker
-                    // so that new markers can be added seamlessly
-                    if (shape.indexOf("form_") != -1) {
-                        shape = "marker";
-                    }
-                    //*/
-                    else {
-                        //console.log("The current form of adding marker on empty form is buggy");
-                    }
-                    that.icon = new Icon({
-                        shape: shape,
-                        strokeWeight: 6,
-                        fillColor: that.model.collection.fillColor,
-                        width: that.model.collection.size,
-                        height: that.model.collection.size
-                    }).generateGoogleIcon();
-                    that.icon.width *= 1.5;
-                    that.icon.height *= 1.5;
-                    $follower.html(template(that.icon));
-                    $follower.show();
-                };
-                this.start = function () {
-                    this.generateIcon();
-                    $(window).bind('mousemove', this.mouseListener);
-                };
-                this.stop = function (event) {
-                    $(window).unbind('mousemove');
-                    $follower.remove();
-                    that.app.vent.trigger("place-marker", {
-                        x: event.clientX,
-                        y: event.clientY
-                    });
-                };
-                this.mouseListener = function (event) {
-                    $follower.css({
-                        top: event.clientY - that.icon.height * 3 / 4 + 4,
-                        left: event.clientX - that.icon.width * 3 / 4
-                    });
-                };
-            };
-
-            //Instantiate Class and Add UI Event Handlers:
-            $follower = $('<div id="follower"></div>');
-            $('body').append($follower);
-            mm = new MouseMover($follower);
-            $(window).mousemove(mm.start.bind(mm));
-            $follower.click(mm.stop);
-            this.app.vent.trigger("add-new-marker", this.model);
-            this.hideGeometryOptions();
         },
 
         deleteMarker: function () {
-            console.log('data detail deleteMarker()')
             this.model.set('geometry', null);
-            //Backbone.Model.prototype.set.call(this.model, "geoometry", null);
-            this.commitForm();
-            this.model.save();
-            this.render();
-
+            this.model.save(null, {
+                patch: true,
+                success: () => {
+                    this.commitForm() //ensures no data loss for partially committed form
+                    this.render()
+                }
+            });
         },
 
         bindFields: function () {
@@ -424,12 +381,6 @@ define([
         },
 
         onRender: function () {
-            try {
-                console.log(this.model.get('geometry').toString());
-            }
-            catch (error) {
-                console.log('its null');
-            }
             if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {
@@ -493,7 +444,6 @@ define([
         saveModel: function () {
             var that = this,
                 isNew = this.model.get("id") ? false : true;
-            console.log(isNew);
             this.commitForm();
             this.model.save(null, {
                 success: function (model, response) {
@@ -518,6 +468,7 @@ define([
             }
             this.model.destroy({
                 success: function () {
+                    that.destroy();
                     //trigger an event that clears out the deleted model's detail:
                     that.app.vent.trigger('hide-detail');
                 }, error: function(){

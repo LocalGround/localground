@@ -6,10 +6,11 @@ define([
         "marionette",
         "lib/data/dataManager",
         "collections/layers",
+        "models/record",
         "lib/appUtilities",
         "apps/main/router",
         "lib/modals/modal"
-    ], function ($, _, Backbone, Marionette, DataManager, Layers, appUtilities, Router,
+    ], function ($, _, Backbone, Marionette, DataManager, Layers, Record, appUtilities, Router,
             Modal) {
         'use strict';
         afterEach(function () {
@@ -64,6 +65,25 @@ define([
                 },
                 Point: function () {
                     return;
+                },
+                drawing: {
+                    OverlayType: {
+                        POLYLINE: 'polyline',
+                        POLYGON: 'polygon',
+                        RECTANGLE: 'rectangle',
+                        POINT: 'point'
+                    },
+                    DrawingManager: function(opts) {
+                       this.setMap = function(map) {
+                            return;
+                       } 
+                       this.setDrawingMode = function(arg) {
+                            return;
+                       }
+                       this.setOptions = function(arg) {
+                            return;
+                       }    
+                    }
                 }
             };
             var $map_container = $('<div id="map_canvas"></div>');
@@ -82,6 +102,10 @@ define([
 
             this.getProjectJSON = () => {
                 return JSON.parse(JSON.stringify(__projectJSON));
+            };
+
+            this.getRecord = (id=53) => {
+                return this.dataset_3.get(id);
             };
             this.getLayers = (mapID) => {
                 return new Layers([ {
