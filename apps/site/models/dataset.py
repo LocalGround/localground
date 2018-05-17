@@ -24,10 +24,26 @@ class Dataset(NamedMixin, ProjectMixin, BaseAudit):
         return self.name
 
     @classmethod
+    def _generate_name(cls, project):
+        import re
+        datasets = cls.objects.filter(project=project)
+        try:
+            names = map(lambda dataset: dataset.name, datasets)
+            matched = filter(lambda x: x.find('Dataset') != -1, names)
+            numbers = map(lambda x: re.findall(r'(\d+)', x), matched)
+            numbers = reduce(lambda x, y: x + y, numbers)
+            numbers = map(lambda x: int(x), numbers)
+            number = max(*numbers)
+            return 'Untitled Dataset {0}'.format(number + 1)
+        except Exception:
+            return 'Untitled Dataset 1'
+
+    @classmethod
     def create(cls, **kwargs):
-        dataset = Dataset.objects.create(
+        dataset = cls.objects.create(
             owner=kwargs.get('owner'),
-            name=kwargs.get('name', 'Untitled Dataset'),
+            name=kwargs.get('name', cls._generate_name(
+                kwargs.get('project'))),
             last_updated_by=kwargs.get('last_updated_by'),
             project=kwargs.get('project')
         )

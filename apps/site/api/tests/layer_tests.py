@@ -284,7 +284,7 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
         self.assertEqual(f.col_name, 'worm_count')
         self.assertEqual(f.col_name_db, 'field_{0}'.format(f.id))
         symbol = models.Symbol.SIMPLE.to_dict()
-        rule = '{0} > 3 and {0} < 6 and {1} = larry'.format(
+        rule = '{0} > 3 and {0} < 6 and {1} = \'larry rules!\''.format(
             f.col_name, self.dataset.fields[0].col_name
         )
         symbol['rule'] = rule
@@ -301,7 +301,7 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
         layer = models.Layer.objects.get(id=self.obj.id)
         self.assertEqual(
             layer.symbols[0]['rule'],
-            '{0} > 3 and {0} < 6 and {1} = larry'.format(
+            '{0} > 3 and {0} < 6 and {1} = \'larry rules!\''.format(
                 f.col_name_db, self.dataset.fields[0].col_name_db
             ))
 

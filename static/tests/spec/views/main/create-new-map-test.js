@@ -56,6 +56,25 @@ define([
             });
         });
 
+        describe("CreateMapForm: Naming Increments", function () {
+
+            it("should increment the map name to 'Untitled Map 1'", function () {
+                const maps = this.app.dataManager.getMaps();
+                maps.at(0).set('name', 'Untitled Map');
+                initView(this);
+                this.view.render();
+                expect(this.view.$el.find('#map-name').val()).toEqual('Untitled Map 1');
+            });
+
+            it("should increment the map name to 'Untitled Map 105'", function () {
+                const maps = this.app.dataManager.getMaps();
+                maps.at(0).set('name', 'Untitled Map 104');
+                initView(this);
+                this.view.render();
+                expect(this.view.$el.find('#map-name').val()).toEqual('Untitled Map 105');
+            });
+        });
+
         describe("CreateMapForm: renderer & user events", function () {
             beforeEach(function () {
                 initView(this);
@@ -67,12 +86,12 @@ define([
 
                 //user asks for a map with a new dataset:
                 this.view.$el.find('#new-dataset').trigger('click');
-                expect(this.view.$el.find('.checkbox-list').css('display')).toEqual('none');
+                expect(this.view.$el.find('.checkbox-list').attr('disabled')).toEqual('disabled');
                 expect(this.view.toggleCheckboxes).toHaveBeenCalledTimes(1);
 
                 //user asks for a map with one or more existing datasets:
                 this.view.$el.find('#existing-datasets').trigger('click');
-                expect(this.view.$el.find('.checkbox-list').css('display')).toEqual('block');
+                expect(this.view.$el.find('.checkbox-list').attr('disabled')).toBeUndefined();
                 expect(this.view.toggleCheckboxes).toHaveBeenCalledTimes(2);
             });
 

@@ -43,7 +43,6 @@ class Layer(BaseAudit):
             from localground.apps.site.models import Dataset
             dataset = Dataset.create(
                 owner=kwargs.get('owner'),
-                name='Untitled Dataset',
                 last_updated_by=kwargs.get('last_updated_by'),
                 project=kwargs.get('project')
             )

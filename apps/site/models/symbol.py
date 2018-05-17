@@ -100,6 +100,7 @@ class Symbol(object):
                     raise exceptions.ValidationError(
                         'Symbol rule "{0}" is not valid.'.format(rule))
                 tokens[0] = crosswalk[tokens[0]]
+                # print tokens
             expressions[i] = ' '.join(tokens)
 
         # return the serialized rule:

@@ -1,5 +1,8 @@
 {{#if isIndividual}}
     <a model-id="{{id}}" id="{{id}}" href="#/{{map_id}}/layers/{{layer_id}}/{{dataset.overlay_type}}/{{id}}" class="ind-symbol {{#if active }}highlight{{/if}}">
+        {{#unless geomType}}
+            <i class="fa fa fa-question-circle"></i>
+        {{/unless}}
         {{#ifequal geomType "Point"}}
         <svg viewBox="{{ icon.viewBox }}" width="20" height="20">
             <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
@@ -39,13 +42,16 @@
         {{/ifequal}}
         <p>
             {{display_name}}
-            {{#ifequal display_name ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
+            {{#ifequal display_name ""}}Untitled{{/ifequal}}
 
         </p>
         <p class="symbol-edit"><i class="fa fa-pencil" aria-hidden="true"></i></p>
     </a>
 {{else}}
     <a model-id="{{id}}" id="{{id}}" href="#/{{map_id}}/layers/{{layer_id}}/{{dataset.overlay_type}}/{{id}}" {{#if active }}class="highlight"{{/if}}>
+        {{#unless geomType}}
+        <i class="fa fa fa-question-circle"></i>
+        {{/unless}}
         {{#ifequal geomType "Point"}}
         <svg viewBox="{{ icon.viewBox }}" width="23" height="23">
             <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
@@ -85,7 +91,7 @@
         {{/ifequal}}
         <p>
             {{display_name}}
-            {{#ifequal display_name ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
+            {{#ifequal display_name ""}}Untitled{{/ifequal}}
         </p>
     </a>
 </div>

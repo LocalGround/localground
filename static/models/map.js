@@ -20,7 +20,6 @@ define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
             BaseItem.prototype.initialize.apply(this, arguments);
             var panelStyles = this.get("panel_styles");
             if (!_.isUndefined(panelStyles) && _.isString(panelStyles)) {
-                console.log("serialize");
                 this.set("panel_styles", JSON.parse(panelStyles));
             }
             if (data && data.layers) {
@@ -34,7 +33,6 @@ define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
         },
 
         getLayers: function () {
-            console.log('getLayers', this.get('layers'));
             if (this.get("layers")) {
                 if (!(this.get("layers") instanceof Layers)) {
                     this.set("layers", new Layers(this.get("layers"), {mapID: this.id}));

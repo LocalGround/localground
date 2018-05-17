@@ -6,10 +6,11 @@ define(["underscore", "marionette", "models/project",
                 Records, Fields, TileSets, Maps) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
-            __dataDictionary: {},
             template: false,
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.__dataDictionary = {};
+
                 if (typeof this.projectJSON === 'undefined') {
                     window.location = '/';
                     return false;

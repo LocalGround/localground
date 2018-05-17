@@ -1,6 +1,6 @@
 <div class="form">
     <div class="row {{#if errors.name}} error{{/if}}">
-        <label>Map Name</label>
+        <label>Map name</label>
         <input id="map-name" type="text" value="{{name}}"
             placeholder="name of your map">
         {{#if errors.name}}
@@ -8,9 +8,9 @@
         {{/if}}
     </div>
     <div class="row">
-        <label>caption</label>
+        <label>Description</label>
         <textarea id="map-caption" value=""
-            placeholder="Add a caption to help people understand your map">{{caption}}</textarea>
+            placeholder="Add a description to help people understand your map">{{caption}}</textarea>
     </div>
     <div class="row">
         <input type="radio" name="choose-dataset" id="new-dataset" {{create}}>
