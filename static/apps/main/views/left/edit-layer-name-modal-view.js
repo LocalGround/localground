@@ -25,17 +25,13 @@ define ([
 
             saveLayer: function() {
                 this.error = null;
-                console.log('new layer modal, save!', this);
                 const layer_title = this.$el.find('#layer-title').val();
-                console.log('layer_title', layer_title);
                 if (layer_title.length > 0) {
                     
                     this.model.set('title', layer_title);
                 } else {
-                    console.log('setting error message');
                     this.error = "A valid layer name is required";
                 }
-                console.log('error', this.error);
                 if (this.error) {
                     this.render();
                     return;
