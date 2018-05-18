@@ -2,7 +2,7 @@
     <div class="popper" style="width: {{width}};height: {{height}};">
         <header>
             <span class="close right">&times;</span>
-            <h3>{{ title }}</h3>
+            {{#if title }}<h3>{{ title }}</h3>{{/if}}
         </header>
         <div class="body"></div>
         <div class="popper__arrow" x-arrow></div>

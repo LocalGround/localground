@@ -16,16 +16,22 @@ define([
             },
             template: Handlebars.compile(PopoverTemplate),
             initialize: function (opts) {
-                this.validate(opts);
-                this.update(opts);
+                _.extend(this, opts);
+            },
+
+            createPopper: function () {
                 this.popper = new Popper(
-                    this.$source.get(0),
-                    this.$el.find('.popper').get(0), {
+                    this.$source,
+                    this.$el.find('.popper'), {
                         placement: this.placement,
                         modifiers: {
+                            onUpdate: (data) => {
+                                console.log(data);
+                            },
+                            removeOnDestroy: true,
                             offset: {
                                 enabled: true,
-                                offset: '0,-4'
+                                offset: this.offsetY + ',' + this.offsetX
                             },
                             preventOverflow: {
                                 boundariesElement: 'viewport'
@@ -49,10 +55,14 @@ define([
             update: function (opts) {
                 this.width = this.width || opts.width || '100px';
                 this.height = this.height || opts.height || '100px';
-                this.placement = opts.placement || 'left';
+                this.offsetX = this.offsetX || opts.offsetX || '-5px';
+                this.offsetY = this.offsetY || opts.offsetY || '0px';
+                this.placement = opts.placement || 'right';
                 _.extend(this, opts);
+                this.validate(opts);
                 this.render();
                 this.delegateEvents();
+                this.createPopper();
                 this.appendView();
             },
 
@@ -60,12 +70,11 @@ define([
                 return {
                     width: this.width,
                     height: this.height,
-                    title: 'Symbol Properties'
+                    title: this.title
                 };
             },
             appendView: function () {
                 if (this.view) {
-                    console.log('showing...');
                     this.bodyRegion.show(this.view);
                 }
             },
@@ -84,13 +93,12 @@ define([
 
             },
             hide: function (e) {
-                console.log('hiding...');
                 this.$el.find('.popover').hide();
-                //this.render();
+                this.popper.destroy();
                 if (e) {
                     e.stopPropagation();
                 }
-                this.destroy();
+                //this.destroy();
             }
         });
         return Popover;

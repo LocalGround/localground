@@ -6,10 +6,10 @@ define(["marionette",
         "apps/main/views/left/symbol-collection-view",
         "apps/main/views/left/edit-layer-name-modal-view",
         "apps/main/views/left/edit-display-field-modal-view",
-        "lib/maps/controls/mouseMover"
+        "apps/main/views/right/marker-style-view"
     ],
     function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record,
-            SymbolView, EditLayerName, EditDisplayField, MouseMover) {
+            SymbolView, EditLayerName, EditDisplayField, MarkerStyleView) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -49,6 +49,7 @@ define(["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.popover = this.app.popover;
                 console.log(this.model.toJSON());
                 this.symbolModels = this.collection;
                 this.modal = this.app.modal;
@@ -221,11 +222,19 @@ define(["marionette",
                 this.render();
             },
             showStyleByMenu: function (event) {
-                const coords = {
-                    x: event.clientX,
-                    y: event.clientY
-                }
-                this.app.vent.trigger('show-style-menu', this.model, coords);
+                this.popover.update({
+                    $source: this.$el.find('.layer-style-by'),
+                    view: new MarkerStyleView({
+                        app: this.app,
+                        model: this.model
+                    }),
+                    placement: 'right',
+                    offsetX: '5px',
+                    width: '350px',
+                    height: '300px',
+                    title: 'Layer Properties'
+                });
+                this.popover.show();
             },
 
             editLayerName: function() {
@@ -265,21 +274,6 @@ define(["marionette",
                     event.stopPropagation();
                 }
             },
-
-            /*hideLayerMenu: function(e) {
-                var $el = $(e.target);
-                console.log('hide: ', $el);
-                if ($el.hasClass('layer-menu') || $el.hasClass('add-record-container')) {
-                    console.log('return');
-                    return
-                } else if (this.$el.find('.layer-menu').css('display') === 'block') {
-                    this.$el.find('.layer-menu').toggle();
-                } else if (this.$el.find('.geometry-options').css('display') === 'block') {
-                    console.log('toggle geom dropdown');
-                    this.$el.find('.geometry-options').toggle();
-                    //this.$el.find('.add-record-container').css({background: '#fafafc'});
-                }
-            },*/
 
             editDisplayField: function() {
                 console.log(this.model);

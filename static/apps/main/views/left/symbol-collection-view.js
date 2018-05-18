@@ -4,9 +4,11 @@ define(["jquery",
         "text!../../templates/left/symbol-set.html",
         "collections/records",
         "collections/symbols",
-        "apps/main/views/left/symbol-item-view"
+        "apps/main/views/left/symbol-item-view",
+        "apps/main/views/right/symbol-style-menu-view"
     ],
-    function ($, Marionette, Handlebars, LayerItemTemplate, Records, Symbols, SymbolItemView) {
+    function ($, Marionette, Handlebars, LayerItemTemplate, Records,
+            Symbols, SymbolItemView, SymbolStyleMenuView) {
         'use strict';
         /**
          * In this view, this.model = Symbol, this.collection = matching Records
@@ -17,8 +19,8 @@ define(["jquery",
             initialize: function (opts) {
 
                 this.collection = this.model.getModels();
-
                 _.extend(this, opts);
+                this.popover = this.app.popover;
                 if (this.model.get('isShowing')) {
                     this.showOverlays();
                 }
@@ -38,6 +40,15 @@ define(["jquery",
                     return this.parent.model.toJSON()
                 }
             }),
+            renderSVG: function () {
+                const icon = this.model.get('icon');
+                return `<svg viewBox="${icon.viewBox}" width="23" height="23">
+                    <path fill="${icon.fillColor}" stroke-linejoin="round"
+                        stroke-linecap="round" paint-order="stroke"
+                        stroke-width="2" stroke="#e7e7e7" d="${icon.path}">
+                    </path>
+                </svg>`
+            },
             childViewContainer: '.symbol',
             childView: SymbolItemView,
             childViewOptions: function (model, index) {
@@ -95,27 +106,40 @@ define(["jquery",
                     layer_id: this.layerId,
                     map_id: this.mapId,
                     dataset: this.layer.get('dataset'),
-                    isIndividual: this.layer.get('group_by') === 'individual'
+                    isIndividual: this.layer.get('group_by') === 'individual',
+                    svgIcon: this.renderSVG()
                 }
             },
 
             saveAndRender: function () {
                 this.layer.save();
-                this.render();
+                // doing a partial re-render so that the style popover doesn't
+                // get blown away:
+                // 1. re-render all child views:
+                this._renderChildren();
+                // 2. partial update of parent SVG:
+                this.$el.find('svg').replaceWith(this.renderSVG());
+                this.$el.find('.symbol-wrapper').css(
+                    'background', this.model.get('icon').fillColor);
             },
 
             showSymbolEditMenu: function (event) {
-                const coords = {
-                    x: event.clientX,
-                    y: event.clientY
-                };
-                this.app.vent.trigger('show-symbol-menu', {
-                    symbol: this.model,
-                    coords: coords,
-                    layerId: this.layerId,
-                    $source: this.$el.find('.symbol-header')//$(event.target).parent().parent()
+                this.symbolMenu = new SymbolStyleMenuView({
+                    app: this.app,
+                    layer: this.layer,
+                    model: this.model
                 });
+                this.popover.update({
+                    $source: this.$el.find('.symbol-header'),
+                    view: this.symbolMenu,
+                    placement: 'right',
+                    width: '250px',
+                    height: '150px',
+                    title: 'Symbol Properties'
+                });
+                this.popover.show();
             },
+
             showOverlays: function () {
                 this.children.each(view => {
                     if (view.overlay) {
