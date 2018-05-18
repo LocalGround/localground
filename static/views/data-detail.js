@@ -46,18 +46,18 @@ define([
         },
 
         displayGeometryOptions: function(e) {
-            console.log('displayGeometryOptions');
-            this.$el.find('.add-marker-button').css({background: '#bbbbbb'});
-            this.$el.find('.geometry-options').css({display: 'block'});
-        },
-
-        hideGeometryOptions: function(e) {
-            console.log('hide gemotry options');
-            if (e && !$(e.target).hasClass('add-marker-button')) {
-                //console.log('hide gemotry options internal');
-                this.$el.find('.add-marker-button').css({background: '#fafafc'});
-                this.$el.find('.geometry-options').css({display: 'none'});
-            };
+            this.popover.update({
+                $source: e.target,
+                view: new AddMarkerMenu({
+                    app: this.app,
+                    model: this.model,
+                    dataCollection: this.dataCollection
+                }),
+                placement: 'bottom',
+                width: '120px',
+                height: '106px'
+            });
+            this.popover.show();
         },
 
         notifyDrawingManager: function (e, mode) {
@@ -65,7 +65,7 @@ define([
                 //button has already been clicked
                 return;
             }
-            
+
             this.$el.find(".add-lat-lng").append(
                 "<p id='drop-marker-message'>click on the map to add location</p>"
             );

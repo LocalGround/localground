@@ -17,20 +17,19 @@ define([
             template: Handlebars.compile(PopoverTemplate),
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.listenTo(this.app.vent, 'hide-popover', this.hide)
             },
             onRender: function () {
                 $('body').append(this.$el);
             },
 
             createPopper: function () {
+                console.log(this.offsetY + ',' + this.offsetX);
                 this.popper = new Popper(
                     this.$source,
                     this.$el.find('.popper'), {
                         placement: this.placement,
                         modifiers: {
-                            onUpdate: (data) => {
-                                console.log(data);
-                            },
                             removeOnDestroy: true,
                             offset: {
                                 enabled: true,
@@ -40,7 +39,8 @@ define([
                                 boundariesElement: 'viewport'
                             }
                         }
-                    });
+                    }
+                );
             },
 
             validate: function (opts) {
@@ -52,22 +52,13 @@ define([
                 }
             },
 
-            resetProperties: function () {
-                this.title = null;
-                this.width = '100px';
-                this.height = '100px';
-                this.offsetX = '-5px';
-                this.offsetY = '0px';
-                this.placement = 'right';
-                this.view = null;
-                this.$source = null;
-            },
-
             templateHelpers: function () {
                 return {
                     width: this.width,
                     height: this.height,
-                    title: this.title
+                    title: this.title,
+                    vertical: this.placement === 'top' || this.placement === 'bottom',
+                    horizontal: this.placement === 'left' || this.placement === 'right'
                 };
             },
             appendView: function () {
@@ -98,6 +89,17 @@ define([
                 }
                 //$('body').remove(this.$el);
                 //this.destroy();
+            },
+
+            resetProperties: function () {
+                this.title = null;
+                this.width = '100px';
+                this.height = '100px';
+                this.offsetX = '0px';
+                this.offsetY = '0px';
+                this.placement = 'right';
+                this.view = null;
+                this.$source = null;
             },
 
             update: function (opts) {

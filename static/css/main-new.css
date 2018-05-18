@@ -718,34 +718,35 @@ i.fa.fa.fa-question-circle {
   outline: none;
 }
 
-.geometry-options {
-  position: absolute;
-  margin-top: -30px;
-}
-
 .geometry-list-wrapper {
-  display: block;
-  width: 180px;
-  background: #fafafc;
-  margin: 0 auto;
-  position: absolute;
-  left: 110px;
-  box-shadow: 1;
-  box-shadow: 1px 2px 4px 0px;
-  border-radius: 6px 6px 8px 8px;
+  text-align: left;
+  margin-top: 6px;
 }
 
-#add-polygon, #add-polyline, #add-point {
+.geometry-list-wrapper > div {
   display: block;
   margin: 0px 0px;
-  padding: 3px 2px;
-  line-height: 26px;
+  padding: 3px 6px;
   font-size: 12px;
-  border-top: 1px solid #e4e5eb;
+  cursor: pointer;
 }
 
-#add-polygon:hover, #add-polyline:hover, #add-point:hover {
-  background-color: #EEE;
+.geometry-list-wrapper > div svg {
+  vertical-align: middle;
+}
+
+.geometry-list-wrapper > div:hover {
+  background-color: #7b9be1;
+  color: white;
+}
+
+.geometry-list-wrapper > div:hover span {
+  color: white;
+}
+
+.geometry-list-wrapper > div:hover svg, .geometry-list-wrapper > div:hover circle, .geometry-list-wrapper > div:hover g {
+  fill: #fff;
+  stroke: #fff;
 }
 
 .dropdown-svg:hover {

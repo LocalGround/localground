@@ -5,11 +5,11 @@ define(["marionette",
         "models/record",
         "apps/main/views/left/symbol-collection-view",
         "apps/main/views/left/edit-layer-menu",
-        "apps/main/views/right/marker-style-view"
+        "apps/main/views/right/marker-style-view",
+        "apps/main/views/left/add-marker-menu"
     ],
     function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record,
-            SymbolView, EditLayerMenu,
-            MarkerStyleView) {
+            SymbolView, EditLayerMenu, MarkerStyleView, AddMarkerMenu) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -146,33 +146,6 @@ define(["marionette",
                 //symbolView.render();
             },
 
-            addRecord: function (data) {
-                if (this.cid !== data.viewID) {
-                    return;
-                }
-
-                const recordModel = new Record({
-                    'overlay_type': this.model.get('dataset').overlay_type,
-                    "project_id": this.app.dataManager.getProject().id,
-                    "form": this.model.get('dataset'),
-                    "fields": this.model.get('dataset').fields,
-                    "owner": this.model.get('owner'),
-                    'geometry': data.geoJSON,
-                    "fillColor": '#ed867d'
-                }, { urlRoot: this.dataCollection.url });
-                recordModel.save(null, {
-                    success: () => {
-                        this.dataCollection.add(recordModel);
-                        var mapID = this.app.dataManager.getMap().id,
-                            layerID = this.model.id,
-                            overlay_type = this.model.get('dataset').overlay_type,
-                            recID = recordModel.id,
-                            route = `${mapID}/layers/${layerID}/${overlay_type}/${recID}`;
-                        this.app.router.navigate("//" + route);
-                    }
-                });
-            },
-
             // triggered from the router
             checkSelectedItem: function(layerId) {
                 this.$el.attr('id', this.model.id);
@@ -210,11 +183,25 @@ define(["marionette",
                         children: this.children
                     }),
                     placement: 'bottom',
-                    offsetX: '5px',
                     width: '180px',
                     height: '130px'
                 });
                 this.popover.show();
+            },
+
+            displayGeometryOptions: function(e) {
+                this.popover.update({
+                    $source: e.target,
+                    view: new AddMarkerMenu({
+                        app: this.app,
+                        model: this.model,
+                    }),
+                    placement: 'bottom',
+                    width: '120px',
+                    height: '106px'
+                });
+                this.popover.show();
+
             },
 
             // This function gets triggered both by user events and by onRender, so we manage
@@ -278,35 +265,33 @@ define(["marionette",
                 }
             },
 
-            displayGeometryOptions: function(e) {
-                const target = this.$el.find('.add-record-container')[0];
 
-                this.$el.find('.geometry-options').css({top: target.y -15, left: target.x - 200});
-                if (this.$el.find('.geometry-options').css('display') === "block") {
-                    this.$el.find('.geometry-options').css({display: 'none'})
-                } else {
-                    this.$el.find('.geometry-options').css({display: 'block'});
+            addRecord: function (data) {
+                alert(data);
+                if (this.cid !== data.viewID) {
+                    return;
                 }
 
-            },
-
-            notifyDrawingManager: function (e, mode) {
-                this.app.vent.trigger(mode, this.cid, e);
-                this.app.vent.trigger('hide-detail');
-                this.$el.find('.geometry-options').toggle();
-                e.preventDefault();
-            },
-
-            initAddPoint: function (e) {
-                this.notifyDrawingManager(e, 'add-point');
-            },
-
-            initAddPolygon: function(e) {
-                this.notifyDrawingManager(e, 'add-polygon');
-            },
-
-            initAddPolyline: function(e) {
-                this.notifyDrawingManager(e, 'add-polyline');
+                const recordModel = new Record({
+                    'overlay_type': this.model.get('dataset').overlay_type,
+                    "project_id": this.app.dataManager.getProject().id,
+                    "form": this.model.get('dataset'),
+                    "fields": this.model.get('dataset').fields,
+                    "owner": this.model.get('owner'),
+                    'geometry': data.geoJSON,
+                    "fillColor": '#ed867d'
+                }, { urlRoot: this.dataCollection.url });
+                recordModel.save(null, {
+                    success: () => {
+                        this.dataCollection.add(recordModel);
+                        var mapID = this.app.dataManager.getMap().id,
+                            layerID = this.model.id,
+                            overlay_type = this.model.get('dataset').overlay_type,
+                            recID = recordModel.id,
+                            route = `${mapID}/layers/${layerID}/${overlay_type}/${recID}`;
+                        this.app.router.navigate("//" + route);
+                    }
+                });
             },
 
             saveChanges: function() {
