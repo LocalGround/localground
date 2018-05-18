@@ -51,11 +51,6 @@ define(["underscore",
                 this.model.destroy();
             },
 
-            updateTitle: function (title) {
-                this.model.set("title", title);
-                this.render();
-            },
-
             editDisplayField: function() {
                 const editDisplayFieldModal = new EditDisplayField({
                     app: this.app,
@@ -84,6 +79,7 @@ define(["underscore",
                 }
                 return [];
             },
+
             getBounds: function () {
                 var bounds = new google.maps.LatLngBounds();
                 this.getMarkerOverlays().forEach(overlay => {
@@ -91,6 +87,7 @@ define(["underscore",
                 })
                 return bounds;
             },
+
             zoomToExtents: function (e) {
                 var bounds = this.getBounds();
                 if (!bounds.isEmpty()) {

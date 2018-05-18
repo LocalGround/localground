@@ -195,6 +195,7 @@ define(["marionette",
                     view: new AddMarkerMenu({
                         app: this.app,
                         model: this.model,
+                        parent: this
                     }),
                     placement: 'bottom',
                     width: '120px',
@@ -267,7 +268,7 @@ define(["marionette",
 
 
             addRecord: function (data) {
-                alert(data);
+                console.log(this.cid, data.viewID)
                 if (this.cid !== data.viewID) {
                     return;
                 }

@@ -13,11 +13,12 @@ define([
     "text!../templates/map-image-detail.html",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
+    "apps/main/views/left/add-marker-menu",
     "lib/parallax",
     "touchPunch"
 ], function ($, _, Backbone, Handlebars, Marionette, DataForm, Photos, Audio, Videos,
         PhotoTemplate, AudioTemplate, VideoTemplate, SiteTemplate,
-        MapImageTemplate, AudioPlayer, Carousel, MouseMover, MoveItItem, TouchPunch) {
+        MapImageTemplate, AudioPlayer, Carousel, AddMarkerMenu, MoveItItem, TouchPunch) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -33,63 +34,7 @@ define([
             "click .streetview": 'showStreetView',
             "click .thumbnail-play-circle": 'playAudio',
             'click .circle': 'openExpanded',
-
-            // add event listeners for various geometry requests
-            // first, a trigger to display dropdown menu
-            "click #add-geometry": "displayGeometryOptions",
-            // add point, polyline, or polygon
-            'click #add-point': 'initAddPoint',
-            'click #add-polyline': 'initAddPolyline',
-            'click #add-polygon': 'initAddPolygon',
-            "click #add-rectangle": "initAddRectangle",
-            'click': 'hideGeometryOptions'
-        },
-
-        displayGeometryOptions: function(e) {
-            this.popover.update({
-                $source: e.target,
-                view: new AddMarkerMenu({
-                    app: this.app,
-                    model: this.model,
-                    dataCollection: this.dataCollection
-                }),
-                placement: 'bottom',
-                width: '120px',
-                height: '106px'
-            });
-            this.popover.show();
-        },
-
-        notifyDrawingManager: function (e, mode) {
-            if (this.$el.find('#drop-marker-message').get(0)) {
-                //button has already been clicked
-                return;
-            }
-
-            this.$el.find(".add-lat-lng").append(
-                "<p id='drop-marker-message'>click on the map to add location</p>"
-            );
-
-            this.app.vent.trigger(mode, this.cid, e);
-
-            // the geometryOptions menu closes on its own because hideGeometryOptions()
-            // is triggered by a click event anywhere on the view.
-            //this.hideGeometryOptions();
-            e.preventDefault();
-        },
-
-        initAddPoint: function (e) {
-            this.notifyDrawingManager(e, 'add-point');
-        },
-        initAddPolygon: function(e) {
-            this.notifyDrawingManager(e, 'add-polygon');
-        },
-        initAddPolyline: function(e) {
-            this.notifyDrawingManager(e, 'add-polyline');
-        },
-        initAddRectangle: function () {
-            $('body').css({ cursor: 'crosshair' });
-            this.app.vent.trigger("add-rectangle", this.cid);
+            "click #add-geometry": "displayGeometryOptions"
         },
 
         getTemplate: function () {
@@ -114,6 +59,7 @@ define([
             this.expanded = false;
             this.clickNum = 1;
             _.extend(this, opts);
+            this.popover = this.app.popover;
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
@@ -165,6 +111,21 @@ define([
                 hasPhotos: this.getPhotos().length,
                 video_photo_count: this.getVideos().length + this.getPhotos().length
             };
+        },
+
+        displayGeometryOptions: function(e) {
+            this.popover.update({
+                $source: e.target,
+                view: new AddMarkerMenu({
+                    app: this.app,
+                    model: this.model,
+                    parent: this
+                }),
+                placement: 'bottom',
+                width: '120px',
+                height: '106px'
+            });
+            this.popover.show();
         },
 
         openExpanded: function (event) {
