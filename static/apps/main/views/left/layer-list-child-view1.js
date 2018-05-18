@@ -4,12 +4,12 @@ define(["marionette",
         "models/symbol",
         "models/record",
         "apps/main/views/left/symbol-collection-view",
-        "apps/main/views/left/edit-layer-name-modal-view",
-        "apps/main/views/left/edit-display-field-modal-view",
+        "apps/main/views/left/edit-layer-menu",
         "apps/main/views/right/marker-style-view"
     ],
     function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record,
-            SymbolView, EditLayerName, EditDisplayField, MarkerStyleView) {
+            SymbolView, EditLayerMenu,
+            MarkerStyleView) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -32,27 +32,21 @@ define(["marionette",
             events: {
                 //edit event here, pass the this.model to the right panel
                 'click #fakeadd': 'addFakeModel',
-                'click .delete-layer' : 'deleteLayer',
                 'change .layer-isShowing': 'showHideOverlays',
                 'click #layer-style-by': 'showStyleByMenu',
                 'click .collapse': 'collapseSymbols',
-                'click .layer-name': 'editLayerName',
                 'click .open-layer-menu': 'showLayerMenu',
-                'click .rename-layer': 'editLayerName',
-                'click .edit-display-field': 'editDisplayField',
                 'click .add-record-container': 'displayGeometryOptions',
                 'click #select-point': 'initAddPoint',
                 'click #select-polygon': 'initAddPolygon',
                 'click #select-polyline': 'initAddPolyline',
-                'click .zoom-to-extents': 'zoomToExtents'
             },
 
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.popover = this.app.popover;
-                console.log(this.model.toJSON());
-                this.symbolModels = this.collection;
                 this.modal = this.app.modal;
+                this.symbolModels = this.collection;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
                 this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
                 if (!this.model || !this.collection || !this.dataCollection) {
@@ -65,8 +59,6 @@ define(["marionette",
                 this.assignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
 
-
-                $('body').click($.proxy(this.hideLayerMenu, this));
             },
 
             onRender: function() {
@@ -210,12 +202,6 @@ define(["marionette",
                 }
 
             },
-            deleteLayer: function () {
-                if (!confirm("Are you sure you want to delete this layer?")) {
-                    return;
-                }
-                this.model.destroy();
-            },
 
             updateTitle: function (title) {
                 this.model.set("title", title);
@@ -237,66 +223,20 @@ define(["marionette",
                 this.popover.show();
             },
 
-            editLayerName: function() {
-
-                var editLayerNameModal = new EditLayerName({
-                    app: this.app,
-                    model: this.model
-                });
-
-                this.modal.update({
-                    app: this.app,
-                    class: "edit-layer-name",
-                    view: editLayerNameModal,
-                    title: 'Edit Layer Name',
-                    width: 400,
-                    //height: 200,
-                    saveButtonText: "Save",
-                    closeButtonText: "Cancel",
-                    showSaveButton: true,
-                    saveFunction: editLayerNameModal.saveLayer.bind(editLayerNameModal),
-                    showDeleteButton: false
-                });
-                this.modal.show();
-
-            },
-
             showLayerMenu: function(event) {
-                console.log('show layer menu');
-                const coords = {
-                    x: "110px",
-                    y: event.clientY
-                }
-                this.$el.find('.layer-menu').css({top: event.clientY - 30, left: "110px"});
-                this.$el.find('.layer-menu').toggle();
-
-                if (event) {
-                    event.stopPropagation();
-                }
-            },
-
-            editDisplayField: function() {
-                console.log(this.model);
-
-                var editDisplayFieldModal = new EditDisplayField({
-                    app: this.app,
-                    model: this.model
+                this.popover.update({
+                    $source: event.target,
+                    view: new EditLayerMenu({
+                        app: this.app,
+                        model: this.model,
+                        children: this.children
+                    }),
+                    placement: 'bottom',
+                    offsetX: '5px',
+                    width: '150px',
+                    height: '100px'
                 });
-
-                this.modal.update({
-                    app: this.app,
-                    class: "edit-display-field",
-                    view: editDisplayFieldModal,
-                    title: 'Display Field',
-                    width: 400,
-                    //height: 200,
-                    saveButtonText: "Save",
-                    closeButtonText: "Cancel",
-                    showSaveButton: true,
-                    saveFunction: editDisplayFieldModal.saveLayer.bind(editDisplayFieldModal),
-                    showDeleteButton: false
-                });
-                this.modal.show();
+                this.popover.show();
             },
 
             // This function gets triggered both by user events and by onRender, so we manage
@@ -387,28 +327,6 @@ define(["marionette",
             },
             initAddPolyline: function(e) {
                 this.notifyDrawingManager(e, 'add-polyline');
-            },
-
-            getMarkerOverlays: function () {
-                const markerOverlays = this.children.map(view => view.getMarkerOverlays());
-                if (markerOverlays.length > 0) {
-                    return markerOverlays.reduce((a, b) => a.concat(b));
-                }
-                return [];
-            },
-            getBounds: function () {
-                var bounds = new google.maps.LatLngBounds();
-                this.getMarkerOverlays().forEach(overlay => {
-                    bounds.union(overlay.getBounds());
-                })
-                return bounds;
-            },
-            zoomToExtents: function (e) {
-                var bounds = this.getBounds();
-                if (!bounds.isEmpty()) {
-                    this.app.map.fitBounds(bounds);
-                }
-                if (e) { e.preventDefault(); }
             },
 
             saveChanges: function() {
