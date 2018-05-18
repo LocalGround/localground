@@ -135,6 +135,7 @@ define(["jquery",
                     placement: 'right',
                     width: '250px',
                     height: '150px',
+                    offsetX: '-30px',
                     title: 'Symbol Properties'
                 });
                 this.popover.show();

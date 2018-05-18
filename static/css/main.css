@@ -287,15 +287,9 @@ nav .selected{
 /*                                          DROPDOWN MENUS                                       */
 /****************************************************************************************/
 .dropdown-menu {
-    width: 140px;
-    position: absolute;
+    margin-top: 10px;
+    width: auto;
     background-color: white;
-    padding: 6px 0;
-    border-radius:3px;
-    border:1px solid #e4e5eb;
-    margin-top:4px;
-    z-index:100;
-    box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
 }
 
 .dropdown-menu > a {

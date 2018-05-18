@@ -18,6 +18,9 @@ define([
             initialize: function (opts) {
                 _.extend(this, opts);
             },
+            onRender: function () {
+                $('body').append(this.$el);
+            },
 
             createPopper: function () {
                 this.popper = new Popper(
@@ -38,32 +41,26 @@ define([
                             }
                         }
                     });
-                if (!$(".popover").get(0)) {
-                    $('body').append(this.$el);
-                }
             },
 
             validate: function (opts) {
                 if (!opts.$source) {
                     throw '$source element is required';
                 }
-                if (!opts.$content && !opts.view) {
+                if (!opts.view) {
                     throw 'either a $content element or a view is required';
                 }
             },
 
-            update: function (opts) {
-                this.width = this.width || opts.width || '100px';
-                this.height = this.height || opts.height || '100px';
-                this.offsetX = this.offsetX || opts.offsetX || '-5px';
-                this.offsetY = this.offsetY || opts.offsetY || '0px';
-                this.placement = opts.placement || 'right';
-                _.extend(this, opts);
-                this.validate(opts);
-                this.render();
-                this.delegateEvents();
-                this.createPopper();
-                this.appendView();
+            resetProperties: function () {
+                this.title = null;
+                this.width = '100px';
+                this.height = '100px';
+                this.offsetX = '-5px';
+                this.offsetY = '0px';
+                this.placement = 'right';
+                this.view = null;
+                this.$source = null;
             },
 
             templateHelpers: function () {
@@ -75,6 +72,7 @@ define([
             },
             appendView: function () {
                 if (this.view) {
+                    this.view.render();
                     this.bodyRegion.show(this.view);
                 }
             },
@@ -98,8 +96,22 @@ define([
                 if (e) {
                     e.stopPropagation();
                 }
+                //$('body').remove(this.$el);
                 //this.destroy();
-            }
+            },
+
+            update: function (opts) {
+                this.resetProperties();
+                _.extend(this, opts);
+                this.validate(opts);
+                this.render();
+                this.delegateEvents();
+                this.appendView();
+                // setTimeout(() => {
+                //     alert(this.$el.outerHeight())
+                // }, 500);
+                this.createPopper();
+            },
         });
         return Popover;
     });

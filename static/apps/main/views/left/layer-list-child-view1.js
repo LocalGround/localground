@@ -211,8 +211,8 @@ define(["marionette",
                     }),
                     placement: 'bottom',
                     offsetX: '5px',
-                    width: '150px',
-                    height: '100px'
+                    width: '180px',
+                    height: '130px'
                 });
                 this.popover.show();
             },

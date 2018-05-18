@@ -1120,14 +1120,7 @@ span.action.rounded:hover, a.action.rounded:hover {
 
 .dropdown-menu {
   width: auto;
-  min-width: 170px;
-  position: absolute;
   background-color: white;
-  border-radius: 3px;
-  border: 1px solid #e4e5eb;
-  margin-top: 4px;
-  z-index: 100;
-  box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
 }
 
 .dropdown-menu .divider {
@@ -1140,6 +1133,7 @@ span.action.rounded:hover, a.action.rounded:hover {
 }
 
 .dropdown-menu ul li {
+  text-align: left;
   display: block;
   text-transform: none;
   line-height: 100%;
@@ -1161,7 +1155,7 @@ span.action.rounded:hover, a.action.rounded:hover {
 .modal {
   display: none;
   position: fixed;
-  z-index: 1000;
+  z-index: 20000;
   left: 0;
   top: 0;
   width: 100%;
@@ -1630,7 +1624,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   width: 150px;
   border-radius: 3px;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-  padding: 5px;
+  /*padding: 5px;*/
   text-align: center;
 }
 
@@ -1694,6 +1688,18 @@ span.action.rounded:hover, a.action.rounded:hover {
   margin-bottom: 0;
 }
 
+.popover .popper[x-placement^="bottom"] .popper__arrow::after {
+  border-style: solid;
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: -8px;
+  left: calc(50% - 10px);
+  border-color: transparent transparent #FFF transparent;
+  border-width: 10px;
+}
+
 .popover .tooltip[x-placement^="right"],
 .popover .popper[x-placement^="right"] {
   margin-left: 5px;
@@ -1711,7 +1717,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   margin-right: 0;
 }
 
-.popover .popper .popper__arrow::after {
+.popover .popper[x-placement^="right"] .popper__arrow::after {
   border-style: solid;
   content: '';
   position: absolute;
