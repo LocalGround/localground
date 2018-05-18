@@ -31,7 +31,6 @@ define(["marionette",
             },
             events: {
                 //edit event here, pass the this.model to the right panel
-                'click #fakeadd': 'addFakeModel',
                 'change .layer-isShowing': 'showHideOverlays',
                 'click #layer-style-by': 'showStyleByMenu',
                 'click .collapse': 'collapseSymbols',
@@ -146,25 +145,6 @@ define(["marionette",
                 symbolView.model.addModel(recordModel);
                 //symbolView.render();
             },
-            addFakeModel: function () {
-                var categories = ['mural', 'sculpture', 'blah', undefined, null, '']
-                var category = categories[ parseInt(Math.random() * 6) ]
-                var id = parseInt(Math.random()* 1000)
-                var recordModel = new Record({
-                    'id': id,
-                    'col1': category,
-                    'desc': `Marker ${id}: (${category})`,
-                    'display_name': `Marker ${id}: (${category})`,
-                    'geometry': {
-                        'type': 'Point',
-                        'coordinates': [
-                            -122 + Math.random(),
-                            37 + Math.random()
-                        ]
-                    }
-                });
-                this.dataCollection.add(recordModel);
-            },
 
             addRecord: function (data) {
                 if (this.cid !== data.viewID) {
@@ -196,11 +176,9 @@ define(["marionette",
             // triggered from the router
             checkSelectedItem: function(layerId) {
                 this.$el.attr('id', this.model.id);
-
                 if (this.$el.find('input').prop('checked', false)) {
                     this.$el.find('input').click();
                 }
-
             },
 
             updateTitle: function (title) {
@@ -322,9 +300,11 @@ define(["marionette",
             initAddPoint: function (e) {
                 this.notifyDrawingManager(e, 'add-point');
             },
+
             initAddPolygon: function(e) {
                 this.notifyDrawingManager(e, 'add-polygon');
             },
+
             initAddPolyline: function(e) {
                 this.notifyDrawingManager(e, 'add-polyline');
             },
