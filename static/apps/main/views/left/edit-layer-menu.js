@@ -49,6 +49,7 @@ define(["underscore",
                     return;
                 }
                 this.model.destroy();
+                this.app.vent.trigger('hide-popover');
             },
 
             editDisplayField: function() {

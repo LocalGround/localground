@@ -44,12 +44,8 @@
                 const btnEl = document.getElementById('show-popover-2');
                 const containerEl = document.getElementById('popover-2');
                 const popup = new Popper(btnEl, containerEl, {
-                    placement: 'left',
+                    placement: 'bottom',
                     modifiers: {
-                        offset: {
-                            enabled: true,
-                            offset: '0,-4'
-                        },
                         preventOverflow: {
                             boundariesElement: 'viewport'
                         }

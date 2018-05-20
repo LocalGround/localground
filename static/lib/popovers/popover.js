@@ -31,10 +31,22 @@ define([
                         placement: this.placement,
                         modifiers: {
                             removeOnDestroy: true,
+                            onUpdate: function (data) {
+                                // for whatever reason, dynamic tip positioning
+                                // adjustments don't work if this is commented out.
+                                console.log(data);
+                            },
+                            /*flip: {
+                                enabled: true,
+                                behavior: ['left', 'bottom', 'top']
+                            },
+                            keepTogether: {
+                                enabled: true
+                            },
                             offset: {
                                 enabled: true,
                                 offset: this.offsetY + ',' + this.offsetX
-                            },
+                            },*/
                             preventOverflow: {
                                 boundariesElement: 'viewport'
                             }

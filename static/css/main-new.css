@@ -1547,46 +1547,45 @@ span.action.rounded:hover, a.action.rounded:hover {
   width: 100%;
   height: 100%;
   overflow: auto;
-  /* A transparent div that covers everything */
   background-color: transparent;
 }
 
-.popover .link-anchor {
+.link-anchor {
   position: relative;
   width: 0;
   opacity: 0;
   transition: opacity .2s ease-in-out;
 }
 
-.popover .anchor-wrapper {
+.anchor-wrapper {
   border: none;
 }
 
-.popover .anchor-wrapper:hover .link-anchor {
+.anchor-wrapper:hover .link-anchor {
   opacity: 1;
 }
 
-.popover section h1[id]:focus,
-.popover section h2[id]:focus,
-.popover section h3[id]:focus,
-.popover section h4[id]:focus,
-.popover section h5[id]:focus {
+section h1[id]:focus,
+section h2[id]:focus,
+section h3[id]:focus,
+section h4[id]:focus,
+section h5[id]:focus {
   outline: 0;
 }
 
-.popover p.thin {
+p.thin {
   font-weight: 100;
   margin: 0;
   line-height: 1.2em;
 }
 
-.popover p.bold {
+p.bold {
   font-weight: 900;
   margin: 0;
   margin-top: -5px;
 }
 
-.popover .rel {
+.rel {
   width: 30%;
   margin: 0 auto;
   position: relative;
@@ -1597,11 +1596,11 @@ span.action.rounded:hover, a.action.rounded:hover {
   border-width: medium;
 }
 
-.popover .popper header {
+.popper header {
   padding: 10px 8px;
 }
 
-.popover .popper header h3 {
+.popper header h3 {
   text-transform: uppercase;
   letter-spacing: .04em;
   font-size: 12px;
@@ -1609,7 +1608,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   margin: 0px;
 }
 
-.popover .popper header .close {
+.popper header .close {
   color: #888;
   float: right;
   font-size: 24px;
@@ -1617,8 +1616,8 @@ span.action.rounded:hover, a.action.rounded:hover {
   cursor: pointer;
 }
 
-.popover .popper,
-.popover .tooltip {
+.popper,
+.tooltip {
   position: absolute;
   background: white;
   color: black;
@@ -1629,7 +1628,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   text-align: center;
 }
 
-.popover .style5 .tooltip {
+.style5 .tooltip {
   background: #1E252B;
   color: #FFFFFF;
   max-width: 200px;
@@ -1637,8 +1636,8 @@ span.action.rounded:hover, a.action.rounded:hover {
   padding: .5em 1em;
 }
 
-.popover .popper .popper__arrow,
-.popover .tooltip .tooltip-arrow {
+.popper .popper__arrow,
+.tooltip .tooltip-arrow {
   width: 0;
   height: 0;
   border-style: solid;
@@ -1646,50 +1645,62 @@ span.action.rounded:hover, a.action.rounded:hover {
   margin: 10px;
 }
 
-.popover .tooltip .tooltip-arrow,
-.popover .popper .popper__arrow {
+.tooltip .tooltip-arrow,
+.popper .popper__arrow {
   border-color: #CCC;
 }
 
-.popover .style5 .tooltip .tooltip-arrow {
+.style5 .tooltip .tooltip-arrow {
   border-color: #1E252B;
 }
 
-.popover .popper[x-placement^="top"],
-.popover .tooltip[x-placement^="top"] {
+.popper[x-placement^="top"],
+.tooltip[x-placement^="top"] {
   margin-bottom: 5px;
 }
 
-.popover .popper[x-placement^="top"] .popper__arrow,
-.popover .tooltip[x-placement^="top"] .tooltip-arrow {
+.popper[x-placement^="top"] .popper__arrow,
+.tooltip[x-placement^="top"] .tooltip-arrow {
   border-width: 10px 10px 0 10px;
   border-left-color: transparent;
   border-right-color: transparent;
   border-bottom-color: transparent;
-  bottom: 10px;
-  left: calc(50% - $arrowSize);
-  margin-top: 0;
-  margin-bottom: 0;
+  bottom: -20px;
 }
 
-.popover .popper[x-placement^="bottom"],
-.popover .tooltip[x-placement^="bottom"] {
+.popper[x-placement^="top"] .popper__arrow::after {
+  border-style: solid;
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-width: 10px 10px 0 10px;
+  border-top-color: white;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  bottom: 2px;
+  left: -10px;
+}
+
+.popper[x-placement^="bottom"],
+.tooltip[x-placement^="bottom"] {
   margin-top: 10px;
 }
 
-.popover .tooltip[x-placement^="bottom"] .tooltip-arrow,
-.popover .popper[x-placement^="bottom"] .popper__arrow {
+.tooltip[x-placement^="bottom"] .tooltip-arrow,
+.popper[x-placement^="bottom"] .popper__arrow {
   border-width: 0 10px 10px 10px;
   border-left-color: transparent;
   border-right-color: transparent;
   border-top-color: transparent;
   top: -10px;
-  left: calc(50% - $arrowSize);
+  left: calc(50% - 10px);
   margin-top: 0;
   margin-bottom: 0;
 }
 
-.popover .popper[x-placement^="bottom"] .popper__arrow::after {
+.popper[x-placement^="bottom"] .popper__arrow::after {
   border-style: solid;
   content: '';
   position: absolute;
@@ -1701,24 +1712,24 @@ span.action.rounded:hover, a.action.rounded:hover {
   border-width: 10px;
 }
 
-.popover .tooltip[x-placement^="right"],
-.popover .popper[x-placement^="right"] {
+.tooltip[x-placement^="right"],
+.popper[x-placement^="right"] {
   margin-left: 5px;
 }
 
-.popover .popper[x-placement^="right"] .popper__arrow,
-.popover .tooltip[x-placement^="right"] .tooltip-arrow {
+.popper[x-placement^="right"] .popper__arrow,
+.tooltip[x-placement^="right"] .tooltip-arrow {
   border-width: 10px 10px 10px 0;
   border-left-color: transparent;
   border-top-color: transparent;
   border-bottom-color: transparent;
   left: -10px;
-  top: calc(50% - $arrowSize);
+  top: calc(50% - 10px);
   margin-left: 0;
   margin-right: 0;
 }
 
-.popover .popper[x-placement^="right"] .popper__arrow::after {
+.popper[x-placement^="right"] .popper__arrow::after {
   border-style: solid;
   content: '';
   position: absolute;
@@ -1730,19 +1741,19 @@ span.action.rounded:hover, a.action.rounded:hover {
   border-width: 10px;
 }
 
-.popover .popper[x-placement^="left"],
-.popover .tooltip[x-placement^="left"] {
+.popper[x-placement^="left"],
+.tooltip[x-placement^="left"] {
   margin-right: 10px;
 }
 
-.popover .popper[x-placement^="left"] .popper__arrow,
-.popover .tooltip[x-placement^="left"] .tooltip-arrow {
+.popper[x-placement^="left"] .popper__arrow,
+.tooltip[x-placement^="left"] .tooltip-arrow {
   border-width: 10px 0 10px 10px;
   border-top-color: transparent;
   border-right-color: transparent;
   border-bottom-color: transparent;
   right: -10px;
-  top: calc(50% - $arrowSize);
+  top: calc(50% - 10px);
   margin-left: 0;
   margin-right: 0;
 }
