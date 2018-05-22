@@ -15,17 +15,6 @@
     <div id="map-menu" class="breadcrumb-hover">
         <span class="current">{{ map.name }}</span>
         <i class="fa fa-angle-down"></i>
-
-        <div id="map-list" class="dropdown-menu" style="display: none;">
-            <ul>
-                {{#each mapList}}
-                <li><a href="#/{{this.id}}">{{ this.name }}</a></li>
-                {{/each}}
-                <li class="divider add-map">
-                    <a href="#/{{this.id}}"><i class="fa fa-plus"></i> Add Map</a>
-                </li>
-            </ul>
-        </div>
     </div>
     {{/if}}
 

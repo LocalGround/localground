@@ -18,18 +18,25 @@ define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
         urlRoot: "/api/0/maps/",
         initialize: function (data, opts) {
             BaseItem.prototype.initialize.apply(this, arguments);
-            var panelStyles = this.get("panel_styles");
-            if (!_.isUndefined(panelStyles) && _.isString(panelStyles)) {
-                this.set("panel_styles", JSON.parse(panelStyles));
-            }
-            if (data && data.layers) {
-                this.set("layers", new Layers(data.layers, {mapID: this.id}));
-            }
 		},
         defaults: function () {
             return _.extend({}, BaseItem.prototype.defaults, {
                 checked: false
             });
+        },
+        set: function (attributes, options) {
+            if (attributes.layers) {
+                if (!(this.get("layers") instanceof Layers)) {
+                    this.set("layers", new Layers(attributes.layers, {mapID: attributes.id}));
+                } else {
+                    this.get("layers").reset(attributes.layers)
+                }
+                delete attributes.layers;
+            }
+            if (!_.isUndefined(attributes.panelStyles) && _.isString(attributes.panelStyles) {
+                this.set("panel_styles", JSON.parse(attributes.panelStyles));
+            }
+            return Backbone.Model.prototype.set.call(this, attributes, options);
         },
 
         getLayers: function () {

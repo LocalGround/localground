@@ -22,13 +22,23 @@ define([
             onRender: function () {
                 $('body').append(this.$el);
             },
-
+            setHeight: function () {
+                console.log(this.$el.find('.popper .body').height() + 5);
+                this.$el.find('.popper .body').css(
+                    'height', this.$el.find('.popper .body').height() + 5)
+            },
             createPopper: function () {
-                console.log(this.offsetY + ',' + this.offsetX);
+                this.setHeight();
                 this.popper = new Popper(
                     this.$source,
                     this.$el.find('.popper'), {
                         placement: this.placement,
+                        onCreate: (data) => {
+                            console.log('creating:', data);
+                        },
+                        /*onUpdate: (data) => {
+                            console.log('updating:', data);
+                        },*/
                         modifiers: {
                             removeOnDestroy: true,
                             onUpdate: function (data) {
@@ -36,19 +46,12 @@ define([
                                 // adjustments don't work if this is commented out.
                                 console.log(data);
                             },
-                            /*flip: {
-                                enabled: true,
-                                behavior: ['left', 'bottom', 'top']
-                            },
-                            keepTogether: {
-                                enabled: true
+                            preventOverflow: {
+                                boundariesElement: 'viewport'
                             },
                             offset: {
                                 enabled: true,
                                 offset: this.offsetY + ',' + this.offsetX
-                            },*/
-                            preventOverflow: {
-                                boundariesElement: 'viewport'
                             }
                         }
                     }
@@ -66,6 +69,7 @@ define([
 
             templateHelpers: function () {
                 return {
+                    includeArrow: this.includeArrow,
                     width: this.width,
                     height: this.height,
                     title: this.title,
@@ -96,11 +100,10 @@ define([
             hide: function (e) {
                 this.$el.find('.popover').hide();
                 this.popper.destroy();
+                this.popper = null;
                 if (e) {
                     e.stopPropagation();
                 }
-                //$('body').remove(this.$el);
-                //this.destroy();
             },
 
             resetProperties: function () {
@@ -115,17 +118,26 @@ define([
             },
 
             update: function (opts) {
+                this.includeArrow = true;
                 this.resetProperties();
                 _.extend(this, opts);
                 this.validate(opts);
                 this.render();
                 this.delegateEvents();
                 this.appendView();
-                // setTimeout(() => {
-                //     alert(this.$el.outerHeight())
-                // }, 500);
+                this.show();
                 this.createPopper();
             },
+
+            redraw: function (opts) {
+                if (!this.popper) {
+                    return;
+                }
+                this.hide();
+                _.extend(this, opts);
+                this.show();
+                this.createPopper();
+            }
         });
         return Popover;
     });

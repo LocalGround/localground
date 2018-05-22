@@ -171,7 +171,6 @@ define(["marionette",
                     height: '300px',
                     title: 'Layer Properties'
                 });
-                this.popover.show();
             },
 
             showLayerMenu: function(event) {
@@ -186,7 +185,6 @@ define(["marionette",
                     width: '180px',
                     height: '130px'
                 });
-                this.popover.show();
             },
 
             displayGeometryOptions: function(e) {
@@ -201,7 +199,6 @@ define(["marionette",
                     width: '120px',
                     height: '106px'
                 });
-                this.popover.show();
 
             },
 

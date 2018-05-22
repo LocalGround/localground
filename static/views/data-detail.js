@@ -122,10 +122,11 @@ define([
                     parent: this
                 }),
                 placement: 'bottom',
-                width: '120px',
-                height: '106px'
+                width: '178px',
+                height: '106px',
+                offsetX: '-5px',
+                //includeArrow: false
             });
-            this.popover.show();
         },
 
         openExpanded: function (event) {

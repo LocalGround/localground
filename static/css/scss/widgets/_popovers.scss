@@ -1,6 +1,6 @@
 // main: ../main-new.scss
 $tipBackground: rgba(255, 255, 255, 1);
-$arrowBackground: #CCC;
+$arrowBackground: rgba(0, 0, 0, 0.1);
 $arrowSize: 10px;
 $arrowIndent: 8px;
 .popover {
@@ -30,37 +30,6 @@ $arrowIndent: 8px;
   opacity: 1;
 }
 
-section h1[id]:focus,
-section h2[id]:focus,
-section h3[id]:focus,
-section h4[id]:focus,
-section h5[id]:focus {
-  outline: 0;
-}
-
-p.thin {
-    font-weight: 100;
-    margin: 0;
-    line-height: 1.2em;
-}
-
-p.bold {
-    font-weight: 900;
-    margin: 0;
-    margin-top: -5px;
-}
-
-.rel {
-    width: 30%;
-    margin: 0 auto;
-    position: relative;
-    text-align: center;
-    padding: 20px;
-    border-style: dotted;
-    border-color: white;
-    border-width: medium;
-}
-
 .popper {
     header {
         padding: 10px 8px;
@@ -86,18 +55,12 @@ p.bold {
     background: $tipBackground;
     color: black;
     width: 150px;
-    border-radius: 3px;
-    box-shadow: 0 0 2px rgba(0,0,0,0.5);
-    padding: 0px 0px 10px 0px;
+    border-radius: 2px;
+    box-shadow: 0 0 2px rgba(0,0,0,0.4);
+    padding: 0px 0px 0px 0px;
     text-align: center;
 }
-.style5 .tooltip {
-    background: #1E252B;
-    color: #FFFFFF;
-    max-width: 200px;
-    width: auto;
-    padding: .5em 1em;
-}
+
 .popper .popper__arrow,
 .tooltip .tooltip-arrow {
     width: 0;

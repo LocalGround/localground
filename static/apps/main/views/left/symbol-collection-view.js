@@ -138,7 +138,6 @@ define(["jquery",
                     offsetX: '-30px',
                     title: 'Symbol Properties'
                 });
-                this.popover.show();
             },
 
             showOverlays: function () {

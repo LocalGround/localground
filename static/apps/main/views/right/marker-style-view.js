@@ -358,11 +358,11 @@ define(["jquery",
                 this.layerDraft.continuous = new Symbols();
                 console.log(this.selectedColorPalette);
                 while (Math.round(cont.currentFloor) < cont.max) {
-                    
+
                     const next = cont.currentFloor + cont.segmentSize;
 
                     // the upper bound of the final bucket should be inclusive '<=' and not '<'
-                    // This is because the final upper bound is also the highest value in a given dataset, 
+                    // This is because the final upper bound is also the highest value in a given dataset,
                     // so it cannot be exluded. All other upper bounds are exlusive '<'
                     console.log('next: ', Math.round(next));
                     console.log('MAX: ', cont.max);
@@ -556,7 +556,7 @@ define(["jquery",
                 seq7 = palette(paletteList[6], buckets);
                 seq8 = palette(paletteList[7], buckets);
                 this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8];
-                
+
                 if (this.model.get('metadata').isContinuous) {
                     console.log(this.allColors);
                     this.allColors.forEach((seq, index) => {

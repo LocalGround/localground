@@ -1,6 +1,6 @@
 <div class="popover">
     <!-- div class="popper" style="width: {{width}};height: {{height}};" -->
-    <div class="popper" style="width: {{width}}">
+    <div class="popper" style="width: {{width}};">
         {{#if title }}
         <header>
             <span class="close right">&times;</span>
@@ -8,6 +8,8 @@
         </header>
         {{/if}}
         <div class="body"></div>
-        <div class="popper__arrow" x-arrow></div>
+        {{#if includeArrow }}
+            <div class="popper__arrow" x-arrow></div>
+        {{/if}}
     </div>
 </div>
