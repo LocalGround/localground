@@ -33,8 +33,11 @@ class Dataset(NamedMixin, ProjectMixin, BaseAudit):
             numbers = map(lambda x: re.findall(r'(\d+)', x), matched)
             numbers = reduce(lambda x, y: x + y, numbers)
             numbers = map(lambda x: int(x), numbers)
-            number = max(*numbers)
-            return 'Untitled Dataset {0}'.format(number + 1)
+            try:
+                number = max(*numbers) + 1
+            except Exception:
+                number = 2
+            return 'Untitled Dataset {0}'.format(number)
         except Exception:
             return 'Untitled Dataset 1'
 
