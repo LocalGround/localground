@@ -21,7 +21,9 @@ define(["marionette",
             notifyDrawingManager: function (e, mode) {
                 this.app.vent.trigger('hide-popover');
                 this.app.vent.trigger(mode, this.parent.cid, e);
-                e.preventDefault();
+                if (e) {
+                    e.preventDefault();
+                }
             },
 
             initAddPoint: function (e) {

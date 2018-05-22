@@ -95,7 +95,9 @@ define([
             hide: function (e) {
                 this.$el.find('.popover').hide();
                 this.removeHeight();
-                this.popper.destroy();
+                if (this.popper) {
+                    this.popper.destroy();
+                }
                 this.popper = null;
                 if (e) {
                     e.stopPropagation();

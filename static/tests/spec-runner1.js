@@ -6,6 +6,7 @@ require(['boot'], function () {
     'use strict';
     var specs = [
         //views:
+        'spec/views/main/add-marker-menu-test.js',
         'spec/views/main/main-app-test.js',
         'spec/views/main/breadcrumbs-test.js',
         'spec/views/main/map-menu-test.js',
