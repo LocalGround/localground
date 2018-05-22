@@ -8,6 +8,7 @@ require(['boot'], function () {
         //views:
         'spec/views/main/main-app-test.js',
         'spec/views/main/breadcrumbs-test.js',
+        'spec/views/main/map-menu-test.js',
         'spec/views/main/create-new-map-test.js',
         'spec/views/main/create-layer-form-test.js',
         'spec/views/main/map-title-view-test.js',

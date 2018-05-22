@@ -611,6 +611,10 @@ i.fa.fa.fa-question-circle {
   background: white;
 }
 
+.marker-style {
+  padding: 0px 10px 5px 10px;
+}
+
 .marker-style .form-inline .row {
   position: relative;
   display: flex;
@@ -1592,7 +1596,8 @@ span.action.rounded:hover, a.action.rounded:hover {
   color: black;
   width: 150px;
   border-radius: 2px;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+  /*box-shadow: 0 0 2px rgba(0,0,0,0.4);*/
+  box-shadow: 1px 1px 16px 1px rgba(0, 0, 0, 0.2);
   padding: 0px 0px 0px 0px;
   text-align: center;
 }

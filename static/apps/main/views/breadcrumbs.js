@@ -25,9 +25,9 @@ define([
             this.modal = this.app.modal;
             this.popover = this.app.popover;
         },
-        /*collectionEvents: {
+        collectionEvents: {
             update: 'render',
-        },*/
+        },
         templateHelpers: function () {
             return {
                 name: this.model.get("name"),
