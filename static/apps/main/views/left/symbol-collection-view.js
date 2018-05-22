@@ -134,7 +134,6 @@ define(["jquery",
                     view: this.symbolMenu,
                     placement: 'right',
                     width: '250px',
-                    height: '150px',
                     offsetX: '-30px',
                     title: 'Symbol Properties'
                 });

@@ -13,7 +13,7 @@ define(["jquery",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "update-opacity", this.updateSymbolOpacity);
-                this.render();
+                //this.render();
             },
             template: Handlebars.compile(MarkerStyleChildTemplate),
             events: {
@@ -25,7 +25,6 @@ define(["jquery",
             },*/
 
             tagName: "div",
-            className: "table-row",
             templateHelpers: function () {
                 return {
                     groupBy: this.groupBy,

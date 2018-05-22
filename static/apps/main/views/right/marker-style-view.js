@@ -224,8 +224,9 @@ define(["jquery",
 
                 this.model.set('group_by', $(e.target).val() || this.$el.find("#data-type-select").val());
                 this.model.get('metadata').isContinuous = false;
-
                 this.createCorrectSymbols();
+                //to resize the popover menu:
+                this.app.popover.redraw();
             },
 
             // New method (03/2018) - builds list of ALL data columns, not split into categorical or continuous

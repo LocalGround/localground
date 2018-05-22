@@ -26,14 +26,17 @@ define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
         },
         set: function (attributes, options) {
             if (attributes.layers) {
+                /* modify the layers collection if it is null or if
+                 * its length has been changed.
+                 */
                 if (!(this.get("layers") instanceof Layers)) {
                     this.set("layers", new Layers(attributes.layers, {mapID: attributes.id}));
-                } else {
+                } else if (this.get("layers").length != attributes.layers.length) {
                     this.get("layers").reset(attributes.layers)
                 }
                 delete attributes.layers;
             }
-            if (!_.isUndefined(attributes.panelStyles) && _.isString(attributes.panelStyles) {
+            if (!_.isUndefined(attributes.panelStyles) && _.isString(attributes.panelStyles)) {
                 this.set("panel_styles", JSON.parse(attributes.panelStyles));
             }
             return Backbone.Model.prototype.set.call(this, attributes, options);

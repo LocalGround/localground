@@ -168,7 +168,6 @@ define(["marionette",
                     placement: 'right',
                     offsetX: '5px',
                     width: '350px',
-                    height: '300px',
                     title: 'Layer Properties'
                 });
             },
@@ -182,8 +181,7 @@ define(["marionette",
                         children: this.children
                     }),
                     placement: 'bottom',
-                    width: '180px',
-                    height: '130px'
+                    width: '180px'
                 });
             },
 
@@ -196,8 +194,7 @@ define(["marionette",
                         parent: this
                     }),
                     placement: 'bottom',
-                    width: '120px',
-                    height: '106px'
+                    width: '120px'
                 });
 
             },

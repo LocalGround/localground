@@ -1,0 +1,8 @@
+<ul>
+    {{#each mapList}}
+    <li><a href="#/{{this.id}}">{{ this.name }}</a></li>
+    {{/each}}
+    <li class="divider add-map">
+        <a href="#/{{this.id}}"><i class="fa fa-plus"></i> Add Map</a>
+    </li>
+</ul>

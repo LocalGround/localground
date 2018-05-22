@@ -22,8 +22,10 @@ define([
             onRender: function () {
                 $('body').append(this.$el);
             },
+            removeHeight: function () {
+                this.$el.find('.popper .body').removeAttr('style');
+            },
             setHeight: function () {
-                console.log(this.$el.find('.popper .body').height() + 5);
                 this.$el.find('.popper .body').css(
                     'height', this.$el.find('.popper .body').height() + 5)
             },
@@ -33,12 +35,6 @@ define([
                     this.$source,
                     this.$el.find('.popper'), {
                         placement: this.placement,
-                        onCreate: (data) => {
-                            console.log('creating:', data);
-                        },
-                        /*onUpdate: (data) => {
-                            console.log('updating:', data);
-                        },*/
                         modifiers: {
                             removeOnDestroy: true,
                             onUpdate: function (data) {
@@ -71,7 +67,6 @@ define([
                 return {
                     includeArrow: this.includeArrow,
                     width: this.width,
-                    height: this.height,
                     title: this.title,
                     vertical: this.placement === 'top' || this.placement === 'bottom',
                     horizontal: this.placement === 'left' || this.placement === 'right'
@@ -99,6 +94,7 @@ define([
             },
             hide: function (e) {
                 this.$el.find('.popover').hide();
+                this.removeHeight();
                 this.popper.destroy();
                 this.popper = null;
                 if (e) {
@@ -109,7 +105,6 @@ define([
             resetProperties: function () {
                 this.title = null;
                 this.width = '100px';
-                this.height = '100px';
                 this.offsetX = '0px';
                 this.offsetY = '0px';
                 this.placement = 'right';
@@ -136,6 +131,7 @@ define([
                 this.hide();
                 _.extend(this, opts);
                 this.show();
+                this.bodyRegion.show(this.view);
                 this.createPopper();
             }
         });
