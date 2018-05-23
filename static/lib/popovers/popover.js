@@ -28,7 +28,13 @@ define([
                     'height', this.$el.find('.popper .body').height() + 5)
             },
             _createPopper: function () {
+                // add the view to the body and set the height before creating
+                // the popper object:
+                this._destroyPopper();
+                this._show();
                 this._setHeight();
+
+                // create popper:
                 this.popper = new Popper(
                     this.$source,
                     this.$el.find('.popper'), {
@@ -54,10 +60,10 @@ define([
 
             _validate: function (opts) {
                 if (!opts.$source) {
-                    throw '$source element is required';
+                    throw new Error('$source element is required');
                 }
                 if (!opts.view) {
-                    throw 'either a $content element or a view is required';
+                    throw new Error('a view is required');
                 }
             },
             _appendView: function () {
@@ -86,6 +92,7 @@ define([
                 this.placement = 'right';
                 this.view = null;
                 this.$source = null;
+                this.includeArrow = true;
             },
 
             onRender: function () {
@@ -102,31 +109,32 @@ define([
                 };
             },
 
-            show: function () {
+            _show: function () {
                 this.$el.find('.popover').show();
             },
 
-            hide: function (e) {
-                this.$el.find('.popover').hide();
+            _destroyPopper: function () {
                 this._removeHeight();
                 if (this.popper) {
                     this.popper.destroy();
                 }
                 this.popper = null;
+            },
+
+            hide: function (e) {
+                this._destroyPopper();
+                this.$el.find('.popover').hide();
                 if (e) {
                     e.stopPropagation();
                 }
             },
 
             update: function (opts) {
-                this.includeArrow = true;
                 this._resetProperties();
                 _.extend(this, opts);
                 this._validate(opts);
                 this.render();
-                this.delegateEvents();
                 this._appendView();
-                this.show();
                 this._createPopper();
             },
 
@@ -134,10 +142,7 @@ define([
                 if (!this.popper) {
                     return;
                 }
-                this.hide();
                 _.extend(this, opts);
-                this.show();
-                this.bodyRegion.show(this.view);
                 this._createPopper();
             }
         });
