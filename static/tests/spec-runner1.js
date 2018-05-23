@@ -30,7 +30,11 @@ require(['boot'], function () {
         'spec/lib/drawing-manager-test.js',
         'spec/lib/mouse-mover-test.js',
         'spec/lib/modal-test.js',
-        'spec/lib/popover-test.js'
+        'spec/lib/popover-test.js',
+
+        // models
+        'spec/models/symbol-test.js'
+
     ];
 
     require(specs, function () {

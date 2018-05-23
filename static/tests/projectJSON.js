@@ -692,8 +692,8 @@ var __projectJSON = {
             "attached_videos_ids": null,
             "attached_map_images_ids": null,
             "height": 21,
-            "display_name": "Oooaaak",
-            "type": "Oooaaak",
+            "display_name": "Oak",
+            "type": "Oak",
             "deciduousconifer": "Deciduous"
           },
           {

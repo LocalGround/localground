@@ -46,7 +46,7 @@ define([
             it("should initialize correctly", function () {
                 expect(this.view.initialize).toHaveBeenCalledTimes(1);
                 expect(this.view.model).toEqual(map);
-                expect(this.view.collection.length).toEqual(2);
+                expect(this.view.collection.length).toEqual(3);
             });
         });
 

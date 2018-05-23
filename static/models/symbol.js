@@ -72,6 +72,12 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 model.set('display_name', model.get('display_name') || model.get('name'))
                 this.matchedModels.add(model)
             },
+            removeModel: function(model) {
+                this.matchedModels.remove(model);
+            },
+            containsRecord: function(model) {
+                return  this.matchedModels.contains(model);
+            },
             hasModels: function () {
                 return this.matchedModels.length > 0;
             },
@@ -82,7 +88,32 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 return this.matchedModels.toJSON();
             }
         }, {
-            UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯'
+            // returns a default value if the input value from the dom is undefined
+            // needed because simply using '||' for defaults is buggy
+            defaultIfUndefined: function (value, defaultValue) {
+                if (value === undefined || value === null || value === '') {
+                    return defaultValue;
+                } else {
+                    return value;
+                }
+            },
+            UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
+            createCategoricalSymbol: function (category, layerModel, id, counter, palette) {
+                //factory that creates new symbols:
+                return new Symbol({
+                    "rule": `${layerModel.get('metadata').currentProp} = '${category}'`, // + item,
+                    "title": category,
+                    "fillOpacity": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').fillOpacity), 1),
+                    "strokeWeight": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').strokeWeight), 1),
+                    "strokeOpacity": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').strokeOpacity), 1),
+                    "width": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').width), 20),
+                    "shape": 'circle',
+                    "fillColor": "#" + palette[counter % palette.length],
+                    "strokeColor": layerModel.get("metadata").strokeColor,
+                    "isShowing": layerModel.get("metadata").isShowing,
+                    "id": id
+                });
+            }
         });
         return Symbol;
     });
