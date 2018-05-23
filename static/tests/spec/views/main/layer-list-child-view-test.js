@@ -9,28 +9,35 @@ define([
     rootDir + "lib/maps/overlays/marker",
     rootDir + "lib/modals/modal",
     rootDir + "models/record",
+    rootDir + "lib/popovers/popover",
+    rootDir + "apps/main/views/left/add-marker-menu",
+    rootDir + "apps/main/views/left/edit-layer-menu",
     "tests/spec-helper1"
 ],
-    function (Backbone, LayerListChildView, EditLayerName, EditDisplayField, SymbolCollectionView, SymbolItemView, MarkerOverlay, Modal, Record) {
+    function (Backbone, LayerListChildView, EditLayerName, EditDisplayField,
+                SymbolCollectionView, SymbolItemView, MarkerOverlay, Modal, Record,
+                Popover, AddMarkerMenu, EditLayerMenu) {
         'use strict';
         var map, layer;
 
         const initView = function (scope) {
             spyOn(LayerListChildView.prototype, 'initialize').and.callThrough();
             spyOn(LayerListChildView.prototype, 'showHideOverlays').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'initAddPoint').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'initAddPolygon').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'initAddPolyline').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'notifyDrawingManager').and.callThrough();
             spyOn(LayerListChildView.prototype, 'addRecord').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'showLayerMenu').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'displayGeometryOptions').and.callThrough();
 
+            spyOn(EditLayerMenu.prototype, 'initialize').and.callThrough();
             spyOn(EditLayerName.prototype, 'initialize').and.callThrough();
             spyOn(EditDisplayField.prototype, 'initialize').and.callThrough();
             spyOn(Modal.prototype, 'show').and.callThrough();
             spyOn(Modal.prototype, 'update').and.callThrough();
-            
+
             spyOn(MarkerOverlay.prototype, "initialize");
             spyOn(MarkerOverlay.prototype, "redraw");
+
+            spyOn(Popover.prototype, 'update').and.callThrough();
+            spyOn(AddMarkerMenu.prototype, 'initialize').and.callThrough();
 
             // prevent these from being called
             spyOn(SymbolItemView.prototype, 'onDestroy');
@@ -39,7 +46,6 @@ define([
             spyOn(Record.prototype, 'save');
 
             spyOn(scope.app.vent, 'trigger').and.callThrough();
-            spyOn(scope.app.router, 'navigate');
 
             map = scope.dataManager.getMaps().at(0);
 
@@ -73,10 +79,28 @@ define([
 
             it("should show layer menu when clicked", function () {
                 this.view.render();
-                expect(this.view.$el.find('.layer-menu').css('display')).toEqual('none');
-                this.view.$el.find('.open-layer-menu').trigger('click');
-                expect(this.view.$el.find('.layer-menu').css('display')).toEqual('block');
+                expect(Popover.prototype.update).toHaveBeenCalledTimes(0);
+                expect(EditLayerMenu.prototype.initialize).toHaveBeenCalledTimes(0);
+                expect(LayerListChildView.prototype.showLayerMenu).toHaveBeenCalledTimes(0);
 
+                this.view.$el.find('.open-layer-menu').trigger('click');
+                expect(Popover.prototype.update).toHaveBeenCalledTimes(1);
+                expect(EditLayerMenu.prototype.initialize).toHaveBeenCalledTimes(1);
+                expect(LayerListChildView.prototype.showLayerMenu).toHaveBeenCalledTimes(1);
+            });
+
+
+            it("displayGeometryOptions() works", function() {
+                this.view.render();
+
+                expect(Popover.prototype.update).toHaveBeenCalledTimes(0);
+                expect(AddMarkerMenu.prototype.initialize).toHaveBeenCalledTimes(0);
+                expect(LayerListChildView.prototype.displayGeometryOptions).toHaveBeenCalledTimes(0);
+
+                this.view.$el.find('.add-record-container').trigger('click');
+                expect(Popover.prototype.update).toHaveBeenCalledTimes(1);
+                expect(AddMarkerMenu.prototype.initialize).toHaveBeenCalledTimes(1);
+                expect(LayerListChildView.prototype.displayGeometryOptions).toHaveBeenCalledTimes(1);
             });
 
             it("clicking '.rename-layer' should open 'layer edit' modal", function () {
@@ -168,58 +192,7 @@ define([
                 expect(this.view.$el.find('.geometry-options').css('left')).toEqual('-200px');
 
             });
-            it("initAddPoint() works", function() {
-                this.view.render();
-                expect(LayerListChildView.prototype.initAddPoint).toHaveBeenCalledTimes(0);
-                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(0);
-                //this.view.$el.find('.add-record-container').trigger('click');
-                this.view.$el.find('#select-point').trigger('click');
-                expect(LayerListChildView.prototype.initAddPoint).toHaveBeenCalledTimes(1);
-                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(1);
-                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledWith(
-                    jasmine.any(Object), 'add-point');
-            });
-            it("initAddPolygon() works", function() {
-                this.view.render();
-                expect(LayerListChildView.prototype.initAddPolygon).toHaveBeenCalledTimes(0);
-                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(0);
-                //this.view.$el.find('.add-record-container').trigger('click');
-                this.view.$el.find('#select-polygon').trigger('click');
-                expect(LayerListChildView.prototype.initAddPolygon).toHaveBeenCalledTimes(1);
-                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(1);
-                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledWith(
-                    jasmine.any(Object), 'add-polygon');
-            });
-            it("initAddPolyline() works", function() {
-                this.view.render();
-                expect(LayerListChildView.prototype.initAddPolyline).toHaveBeenCalledTimes(0);
-                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(0);
-                //this.view.$el.find('.add-record-container').trigger('click');
-                this.view.$el.find('#select-polyline').trigger('click');
-                expect(LayerListChildView.prototype.initAddPolyline).toHaveBeenCalledTimes(1);
-                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledTimes(1);
-                expect(LayerListChildView.prototype.notifyDrawingManager).toHaveBeenCalledWith(
-                    jasmine.any(Object), 'add-polyline');
-            });
-            it("notifyDrawingManager() works", function() {
-                this.view.render();
-                const mockEvent = {
-                    preventDefault: function() {
-                        return;
-                    }
-                }
 
-                // mock the menu being open...
-                this.view.$el.find('.add-record-container').trigger('click');
-                this.view.notifyDrawingManager(mockEvent, 'add-point');
-
-                expect(this.app.vent.trigger).toHaveBeenCalledWith('add-point', this.view.cid, mockEvent);
-                expect(this.app.vent.trigger).toHaveBeenCalledWith('hide-detail');
-                
-                // in jasmine, 'toggle()' isn't setting 'display: block' back to 'display: none'
-                // However, it works in the actual application...
-                // expect(this.view.$el.find('.geometry-options').css('display')).toEqual('none');
-            });
             it("LayerListChildView recieves notification when a new geometry is completed by the DrawingManager", function () {
                 //spyOn(this.app.vent, 'trigger').and.callThrough();
                 expect(LayerListChildView.prototype.addRecord).toHaveBeenCalledTimes(0);
@@ -239,7 +212,7 @@ define([
                             -122.31663275419,
                             38.10623915271
                             ]
-                        }, 
+                        },
                     viewID: 456
                 };
 

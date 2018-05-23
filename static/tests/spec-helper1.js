@@ -27,7 +27,16 @@ define([
                     trigger: function () {},
                     clearListeners: function () {}
                 },
-                LatLngBounds: function () {},
+                LatLngBounds: function () {
+                    return {
+                        union: function (a) {
+                            return a;
+                        },
+                        isEmpty: function () {
+                            return true;
+                        }
+                    }
+                },
                 LatLng: function (lat, lng) {
                     return [lat, lng];
                 },
