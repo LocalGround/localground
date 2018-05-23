@@ -4,13 +4,13 @@ define(["marionette",
         "models/symbol",
         "models/record",
         "apps/main/views/left/symbol-collection-view",
-        "apps/main/views/left/edit-layer-name-modal-view",
-        "apps/main/views/left/edit-display-field-modal-view",
-        "lib/maps/controls/mouseMover",
-        "lib/lgPalettes",
+        "apps/main/views/left/edit-layer-menu",
+        "apps/main/views/right/marker-style-view",
+        "apps/main/views/left/add-marker-menu",
+        "lib/lgPalettes"
     ],
     function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record,
-            SymbolView, EditLayerName, EditDisplayField, MouseMover, LGPalettes) {
+            SymbolView, EditLayerMenu, MarkerStyleView, AddMarkerMenu, LGPalettes) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -32,26 +32,21 @@ define(["marionette",
             },
             events: {
                 //edit event here, pass the this.model to the right panel
-                'click #fakeadd': 'addFakeModel',
-                'click .delete-layer' : 'deleteLayer',
                 'change .layer-isShowing': 'showHideOverlays',
                 'click #layer-style-by': 'showStyleByMenu',
                 'click .collapse': 'collapseSymbols',
-                'click .layer-name': 'editLayerName',
                 'click .open-layer-menu': 'showLayerMenu',
-                'click .rename-layer': 'editLayerName',
-                'click .edit-display-field': 'editDisplayField',
                 'click .add-record-container': 'displayGeometryOptions',
                 'click #select-point': 'initAddPoint',
                 'click #select-polygon': 'initAddPolygon',
                 'click #select-polyline': 'initAddPolyline',
-                'click .zoom-to-extents': 'zoomToExtents'
             },
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.symbolModels = this.collection;
+                this.popover = this.app.popover;
                 this.modal = this.app.modal;
+                this.symbolModels = this.collection;
                 this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
                 this.listenTo(this.dataCollection, 'update-symbol-assignment', this.reAssignRecordToSymbols)
                 this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
@@ -66,9 +61,6 @@ define(["marionette",
                 this.assignRecordsToSymbols();
                 this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
-
-                this.removeEmptySymbols();
-                $('body').click($.proxy(this.hideLayerMenu, this));
             },
 
             onRender: function() {
@@ -175,7 +167,7 @@ define(["marionette",
                     recordModel.get(this.model.get('metadata').currentProp)
                 );
                 this.symbolModels.each(function(symbolModel) {
-                    if (symbolModel.containsRecord(recordModel) 
+                    if (symbolModel.containsRecord(recordModel)
                         && !symbolModel.checkModel(recordModel)) {
                             symbolModel.removeModel(recordModel);
                     }
@@ -183,7 +175,7 @@ define(["marionette",
                         symbolModel.addModel(recordModel);
                         matched = true;
                     }
-                    
+
                 });
                 if (!matched) {
                     if (!this.model.get('metadata').isContinuous && !recordValIsEmpty) {
@@ -197,8 +189,8 @@ define(["marionette",
 
                 this.saveChanges();
             },
-    
-            removeEmptySymbols: function() {  
+
+            removeEmptySymbols: function() {
                 this.symbolModels.each((symbol) => {
                     if (symbol.matchedModels.length === 0) {
                         if (symbol.get('rule') !== '¯\\_(ツ)_/¯') {
@@ -209,11 +201,11 @@ define(["marionette",
                 });
             },
             createNewSymbol: function(symbolCollection, record) {
-                const category = record.get(this.model.get('metadata').currentProp);                
+                const category = record.get(this.model.get('metadata').currentProp);
                 const paletteId = this.model.get('metadata').paletteId;
                 const lgPalettes = new LGPalettes();
                 const palette = lgPalettes.getPalette(paletteId, 8, 'categorical');
-                
+
                 const maxId = symbolCollection.maxId();
                 const symbolId = symbolCollection.length;
                 let symbol = Symbol.createCategoricalSymbol(category, this.model, maxId + 1, symbolCollection.length + 1, palette)
@@ -263,6 +255,7 @@ define(["marionette",
                     'geometry': data.geoJSON,
                     "fillColor": '#ed867d'
                 }, { urlRoot: this.dataCollection.url });
+
                 recordModel.save(null, {
                     success: () => {
                         this.dataCollection.add(recordModel);
@@ -279,17 +272,9 @@ define(["marionette",
             // triggered from the router
             checkSelectedItem: function(layerId) {
                 this.$el.attr('id', this.model.id);
-
                 if (this.$el.find('input').prop('checked', false)) {
                     this.$el.find('input').click();
                 }
-
-            },
-            deleteLayer: function () {
-                if (!confirm("Are you sure you want to delete this layer?")) {
-                    return;
-                }
-                this.model.destroy();
             },
 
             updateTitle: function (title) {
@@ -297,82 +282,45 @@ define(["marionette",
                 this.render();
             },
             showStyleByMenu: function (event) {
-                const coords = {
-                    x: event.clientX,
-                    y: event.clientY
-                }
-                this.app.vent.trigger('show-style-menu', this.model, coords);
-            },
-
-            editLayerName: function() {
-
-                var editLayerNameModal = new EditLayerName({
-                    app: this.app,
-                    model: this.model
+                this.popover.update({
+                    $source: this.$el.find('.layer-style-by'),
+                    view: new MarkerStyleView({
+                        app: this.app,
+                        model: this.model
+                    }),
+                    placement: 'right',
+                    offsetX: '5px',
+                    width: '350px',
+                    title: 'Layer Properties'
                 });
-
-                this.modal.update({
-                    app: this.app,
-                    class: "edit-layer-name",
-                    view: editLayerNameModal,
-                    title: 'Edit Layer Name',
-                    width: 400,
-                    //height: 200,
-                    saveButtonText: "Save",
-                    closeButtonText: "Cancel",
-                    showSaveButton: true,
-                    saveFunction: editLayerNameModal.saveLayer.bind(editLayerNameModal),
-                    showDeleteButton: false
-                });
-                this.modal.show();
-
             },
 
             showLayerMenu: function(event) {
-                const coords = {
-                    x: "110px",
-                    y: event.clientY
-                }
-                this.$el.find('.layer-menu').css({top: event.clientY - 30, left: "110px"});
-                this.$el.find('.layer-menu').toggle();
 
-                if (event) {
-                    event.stopPropagation();
-                }
+                this.popover.update({
+                    $source: event.target,
+                    view: new EditLayerMenu({
+                        app: this.app,
+                        model: this.model,
+                        children: this.children
+                    }),
+                    placement: 'bottom',
+                    width: '180px'
+                });
             },
 
-            hideLayerMenu: function(e) {
-                var $el = $(e.target);
-                if ($el.hasClass('layer-menu') || $el.hasClass('add-record-container')) {
-                    return
-                } else if (this.$el.find('.layer-menu').css('display') === 'block') {
-                    this.$el.find('.layer-menu').toggle();
-                } else if (this.$el.find('.geometry-options').css('display') === 'block') {
-                    this.$el.find('.geometry-options').toggle();
-                }
-            },
-
-            editDisplayField: function() {
-
-                var editDisplayFieldModal = new EditDisplayField({
-                    app: this.app,
-                    model: this.model
+            displayGeometryOptions: function(e) {
+                this.popover.update({
+                    $source: e.target,
+                    view: new AddMarkerMenu({
+                        app: this.app,
+                        model: this.model,
+                        parent: this
+                    }),
+                    placement: 'bottom',
+                    width: '120px'
                 });
 
-                this.modal.update({
-                    app: this.app,
-                    class: "edit-display-field",
-                    view: editDisplayFieldModal,
-                    title: 'Display Field',
-                    width: 400,
-                    //height: 200,
-                    saveButtonText: "Save",
-                    closeButtonText: "Cancel",
-                    showSaveButton: true,
-                    saveFunction: editDisplayFieldModal.saveLayer.bind(editDisplayFieldModal),
-                    showDeleteButton: false
-                });
-                this.modal.show();
             },
 
             // This function gets triggered both by user events and by onRender, so we manage
@@ -435,55 +383,33 @@ define(["marionette",
                 }
             },
 
-            displayGeometryOptions: function(e) {
-                const target = this.$el.find('.add-record-container')[0];
-                
-                this.$el.find('.geometry-options').css({top: target.y -15, left: target.x - 200});
-                if (this.$el.find('.geometry-options').css('display') === "block") {
-                    this.$el.find('.geometry-options').css({display: 'none'})
-                } else {
-                    this.$el.find('.geometry-options').css({display: 'block'});
+
+            addRecord: function (data) {
+                console.log(this.cid, data.viewID)
+                if (this.cid !== data.viewID) {
+                    return;
                 }
 
-            },
-
-            notifyDrawingManager: function (e, mode) {
-                this.app.vent.trigger(mode, this.cid, e);
-                this.app.vent.trigger('hide-detail');
-                this.$el.find('.geometry-options').toggle();
-                e.preventDefault();
-            },
-
-            initAddPoint: function (e) {
-                this.notifyDrawingManager(e, 'add-point');
-            },
-            initAddPolygon: function(e) {
-                this.notifyDrawingManager(e, 'add-polygon');
-            },
-            initAddPolyline: function(e) {
-                this.notifyDrawingManager(e, 'add-polyline');
-            },
-
-            getMarkerOverlays: function () {
-                const markerOverlays = this.children.map(view => view.getMarkerOverlays());
-                if (markerOverlays.length > 0) {
-                    return markerOverlays.reduce((a, b) => a.concat(b));
-                }
-                return [];
-            },
-            getBounds: function () {
-                var bounds = new google.maps.LatLngBounds();
-                this.getMarkerOverlays().forEach(overlay => {
-                    bounds.union(overlay.getBounds());
-                })
-                return bounds;
-            },
-            zoomToExtents: function (e) {
-                var bounds = this.getBounds();
-                if (!bounds.isEmpty()) {
-                    this.app.map.fitBounds(bounds);
-                }
-                if (e) { e.preventDefault(); }
+                const recordModel = new Record({
+                    'overlay_type': this.model.get('dataset').overlay_type,
+                    "project_id": this.app.dataManager.getProject().id,
+                    "form": this.model.get('dataset'),
+                    "fields": this.model.get('dataset').fields,
+                    "owner": this.model.get('owner'),
+                    'geometry': data.geoJSON,
+                    "fillColor": '#ed867d'
+                }, { urlRoot: this.dataCollection.url });
+                recordModel.save(null, {
+                    success: () => {
+                        this.dataCollection.add(recordModel);
+                        var mapID = this.app.dataManager.getMap().id,
+                            layerID = this.model.id,
+                            overlay_type = this.model.get('dataset').overlay_type,
+                            recID = recordModel.id,
+                            route = `${mapID}/layers/${layerID}/${overlay_type}/${recID}`;
+                        this.app.router.navigate("//" + route);
+                    }
+                });
             },
 
             saveChanges: function() {

@@ -13,74 +13,46 @@ define([
     "models/map",
     "views/generate-print",
     "apps/main/views/left/new-map-modal-view",
+    "apps/main/views/map-menu",
     "text!../templates/breadcrumbs.html"
 ], function (_, Handlebars, Marionette, Map, PrintLayoutView,
-        CreateMapForm, BreadcrumbsTemplate) {
+        CreateMapForm, MapMenu, BreadcrumbsTemplate) {
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
         template: Handlebars.compile(BreadcrumbsTemplate),
         initialize: function (opts) {
             _.extend(this, opts);
             this.modal = this.app.modal;
+            this.popover = this.app.popover;
         },
         collectionEvents: {
             update: 'render',
-            add: 'render'
         },
         templateHelpers: function () {
             return {
-                mapList: this.collection.toJSON(),
                 name: this.model.get("name"),
                 map: this.activeMap ? this.activeMap.toJSON() : null
             };
         },
-
         events: {
-            'click': 'hideMapList',
             'click #print-button': 'showPrintModal',
-            'click #map-menu': 'toggleMapList',
-            'click .add-map': "showAddMapModal"
+            'click #map-menu': 'showMapMenu',
+        },
+        onRender: function () {
+            console.log('rendering breadcrumbs...');
         },
 
-        showAddMapModal: function (e) {
-            var latLng = this.app.basemapView.getCenter();
-            var createMapModel = new CreateMapForm({
-                app: this.app,
-                model: new Map({
-                    center: {
-                        "type": "Point",
-                        "coordinates": [ latLng.lng(), latLng.lat() ]
-                    },
-                    basemap: this.app.basemapView.getMapTypeId(),
-                    zoom: this.app.basemapView.getZoom(),
-                    project_id: this.app.getProjectID()
-                })
+        showMapMenu: function(e) {
+            this.popover.update({
+                $source: e.target,
+                view: new MapMenu({
+                    app: this.app,
+                    activeMap: this.activeMap,
+                    collection: this.collection
+                }),
+                placement: 'bottom',
+                width: '150px'
             });
-
-            this.modal.update({
-                class: "add-map",
-                view: createMapModel,
-                title: 'New Map',
-                width: 400,
-                saveButtonText: "Create Map",
-                closeButtonText: "Cancel",
-                showSaveButton: true,
-                saveFunction: createMapModel.saveMap.bind(createMapModel),
-                showDeleteButton: false
-            });
-            this.modal.show();
-            if (e) { e.preventDefault(); }
-        },
-
-        toggleMapList: function(e) {
-            this.$el.find('#map-list').toggle();
-            if (e) {
-                e.stopPropagation();
-            }
-        },
-
-        hideMapList: function (e) {
-            this.$el.find('#map-list').hide();
         },
 
         //TODO: come back to this. Where does the print button go?

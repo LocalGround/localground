@@ -29,7 +29,6 @@ define(["jquery",
             },*/
 
             tagName: "div",
-            className: "table-row",
             templateHelpers: function () {
                 return {
                     groupBy: this.groupBy,

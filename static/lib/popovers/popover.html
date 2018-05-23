@@ -1,0 +1,14 @@
+<div class="popover">
+    <div class="popper" style="width: {{width}};">
+        {{#if title }}
+        <header>
+            <span class="close right">&times;</span>
+            <h3>{{ title }}</h3>
+        </header>
+        {{/if}}
+        <div class="body"></div>
+        {{#if includeArrow }}
+            <div class="popper__arrow" x-arrow></div>
+        {{/if}}
+    </div>
+</div>

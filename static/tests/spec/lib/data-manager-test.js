@@ -317,14 +317,15 @@ define([
                 this.dataManager.addMap(newMap);
 
                 //new map should be added:
-                expect(this.dataManager.getMaps().get(99)).toBe(newMap);
+                expect(this.dataManager.getMaps().get(99).id).toEqual(newMap.id);
                 //two new datasets should be added:
                 expect(this.dataManager.getDatasets().length).toEqual(4);
             });
 
             it("addLayerToMap works as expected", function () {
                 const map = this.dataManager.getMaps().get(3);
-                expect(map.get('layers').length).toEqual(2);
+                expect(map.get('layers').length).toEqual(3);
+                expect(this.dataManager.getDatasets().length).toEqual(2);
                 const newLayer = new Map(this.newMapJSON).get('layers').at(0);
                 expect(this.dataManager.getDatasets().length).toEqual(2);
 
@@ -332,7 +333,7 @@ define([
                 this.dataManager.addLayerToMap(map, newLayer);
 
                 //new layer should be added:
-                expect(map.get('layers').length).toEqual(3);
+                expect(map.get('layers').length).toEqual(4);
 
                 //new map should be added:
                 expect(this.dataManager.getDatasets().length).toEqual(3);

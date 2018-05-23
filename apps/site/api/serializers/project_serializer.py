@@ -97,7 +97,7 @@ class ProjectDetailSerializer(ProjectSerializer):
         return self.serialize_list(
             models.StyledMap,
             MapSerializerList,
-            models.StyledMap.objects.filter(project=obj)
+            models.StyledMap.objects.filter(project=obj).order_by('name')
         )
 
     def get_datasets(self, obj):

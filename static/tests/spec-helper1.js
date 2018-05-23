@@ -9,9 +9,10 @@ define([
         "models/record",
         "lib/appUtilities",
         "apps/main/router",
-        "lib/modals/modal"
+        "lib/modals/modal",
+        "lib/popovers/popover"
     ], function ($, _, Backbone, Marionette, DataManager, Layers, Record, appUtilities, Router,
-            Modal) {
+            Modal, Popover) {
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker, .modal, #map_canvas').remove();
@@ -26,7 +27,16 @@ define([
                     trigger: function () {},
                     clearListeners: function () {}
                 },
-                LatLngBounds: function () {},
+                LatLngBounds: function () {
+                    return {
+                        union: function (a) {
+                            return a;
+                        },
+                        isEmpty: function () {
+                            return true;
+                        }
+                    }
+                },
                 LatLng: function (lat, lng) {
                     return [lat, lng];
                 },
@@ -76,13 +86,13 @@ define([
                     DrawingManager: function(opts) {
                        this.setMap = function(map) {
                             return;
-                       } 
+                       }
                        this.setDrawingMode = function(arg) {
                             return;
                        }
                        this.setOptions = function(arg) {
                             return;
-                       }    
+                       }
                     }
                 }
             };
@@ -416,7 +426,6 @@ define([
                 username: "Tester",
                 vent: this.vent,
                 dataManager: this.dataManager,
-                modal: new Modal(),
                 basemapView: {
                     getCenter: function () {
                         return {
@@ -435,6 +444,12 @@ define([
                 start: function (options) {
                     Backbone.history.start();
                 }
+            });
+            this.app.modal = new Modal({
+                app: this.app
+            });
+            this.app.popover = new Popover({
+                app: this.app
             });
 
         });

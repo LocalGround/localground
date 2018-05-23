@@ -129,6 +129,7 @@ define ([
                 });
             },
             displayMap: function () {
+                this.app.popover.hide();
                 this.app.dataManager.addMap(this.model);
                 this.app.vent.trigger('close-modal');
                 this.app.router.navigate('//' + this.model.id);

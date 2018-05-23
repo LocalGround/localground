@@ -170,6 +170,7 @@ define(["underscore", "marionette", "models/project",
                 if (!this.hasCollection(dataset.overlay_type)) {
                     this.__addDataset(dataset);
                 }
+                console.log(map.get('layers'))
                 map.get('layers').add(layer);
             },
             destroyMap: function (map) {

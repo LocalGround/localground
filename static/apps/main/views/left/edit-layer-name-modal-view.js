@@ -13,7 +13,7 @@ define ([
                 _.extend(this, opts);
                 this.template = Handlebars.compile(EditLayerModalTemplate);
             },
-            
+
             error: null,
             templateHelpers: function () {
 
@@ -27,7 +27,7 @@ define ([
                 this.error = null;
                 const layer_title = this.$el.find('#layer-title').val();
                 if (layer_title.length > 0) {
-                    
+
                     this.model.set('title', layer_title);
                 } else {
                     this.error = "A valid layer name is required";
@@ -51,6 +51,11 @@ define ([
                     }
                 });
 
+            },
+            onShow: function () {
+                setTimeout(() => {
+                    this.$el.find('#layer-title').focus().select();
+                }, 50);
             },
 
             updateModal: function (errorMessage) {

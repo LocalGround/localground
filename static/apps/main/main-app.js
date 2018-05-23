@@ -3,6 +3,7 @@ define([
     "backbone",
     "apps/main/router",
     "lib/modals/modal",
+    "lib/popovers/popover",
     "apps/main/views/breadcrumbs",
     "lib/maps/basemap",
     "lib/data/dataManager",
@@ -10,7 +11,7 @@ define([
     "views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, Modal, BreadCrumb, Basemap,
+], function (Marionette, Backbone, Router, Modal, Popover, BreadCrumb, Basemap,
              DataManager, LeftPanel, DataDetail, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
@@ -49,6 +50,9 @@ define([
                 projectJSON: options.projectJSON
             });
             this.modal = new Modal({
+                app: this
+            });
+            this.popover = new Popover({
                 app: this
             });
             this.showBasemap();

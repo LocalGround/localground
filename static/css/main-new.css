@@ -480,17 +480,14 @@ ul {
   border-right: 3px solid white;
 }
 
-.symbol-edit {
+.symbol-edit, .symbol-display {
   padding-top: 8px;
-  padding-right: 10px;
+  padding-right: 6px;
   float: right;
-  display: none;
 }
 
-.symbol-display {
-  padding-top: 8px;
-  padding-right: 10px;
-  float: right;
+.symbol-edit {
+  display: none;
 }
 
 .symbol-display.fa-eye {
@@ -640,6 +637,10 @@ i.fa.fa.fa-question-circle {
   background: white;
 }
 
+.marker-style {
+  padding: 0px 10px 5px 10px;
+}
+
 .marker-style .form-inline .row {
   position: relative;
   display: flex;
@@ -747,34 +748,35 @@ i.fa.fa.fa-question-circle {
   outline: none;
 }
 
-.geometry-options {
-  position: absolute;
-  margin-top: -30px;
-}
-
 .geometry-list-wrapper {
-  display: block;
-  width: 180px;
-  background: #fafafc;
-  margin: 0 auto;
-  position: absolute;
-  left: 110px;
-  box-shadow: 1;
-  box-shadow: 1px 2px 4px 0px;
-  border-radius: 6px 6px 8px 8px;
+  text-align: left;
+  margin-top: 6px;
 }
 
-#add-polygon, #add-polyline, #add-point {
+.geometry-list-wrapper > div {
   display: block;
   margin: 0px 0px;
-  padding: 3px 2px;
-  line-height: 26px;
+  padding: 3px 6px;
   font-size: 12px;
-  border-top: 1px solid #e4e5eb;
+  cursor: pointer;
 }
 
-#add-polygon:hover, #add-polyline:hover, #add-point:hover {
-  background-color: #EEE;
+.geometry-list-wrapper > div svg {
+  vertical-align: middle;
+}
+
+.geometry-list-wrapper > div:hover {
+  background-color: #7b9be1;
+  color: white;
+}
+
+.geometry-list-wrapper > div:hover span {
+  color: white;
+}
+
+.geometry-list-wrapper > div:hover svg, .geometry-list-wrapper > div:hover circle, .geometry-list-wrapper > div:hover g {
+  fill: #fff;
+  stroke: #fff;
 }
 
 .dropdown-svg:hover {
@@ -1149,14 +1151,7 @@ span.action.rounded:hover, a.action.rounded:hover {
 
 .dropdown-menu {
   width: auto;
-  min-width: 170px;
-  position: absolute;
   background-color: white;
-  border-radius: 3px;
-  border: 1px solid #e4e5eb;
-  margin-top: 4px;
-  z-index: 100;
-  box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
 }
 
 .dropdown-menu .divider {
@@ -1169,6 +1164,7 @@ span.action.rounded:hover, a.action.rounded:hover {
 }
 
 .dropdown-menu ul li {
+  text-align: left;
   display: block;
   text-transform: none;
   line-height: 100%;
@@ -1190,7 +1186,7 @@ span.action.rounded:hover, a.action.rounded:hover {
 .modal {
   display: none;
   position: fixed;
-  z-index: 1000;
+  z-index: 20000;
   left: 0;
   top: 0;
   width: 100%;
@@ -1570,6 +1566,188 @@ span.action.rounded:hover, a.action.rounded:hover {
 
 .modal.show {
   display: block;
+}
+
+.popover {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: transparent;
+}
+
+.link-anchor {
+  position: relative;
+  width: 0;
+  opacity: 0;
+  transition: opacity .2s ease-in-out;
+}
+
+.anchor-wrapper {
+  border: none;
+}
+
+.anchor-wrapper:hover .link-anchor {
+  opacity: 1;
+}
+
+.popper header {
+  padding: 10px 8px;
+}
+
+.popper header h3 {
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0px;
+}
+
+.popper header .close {
+  color: #888;
+  float: right;
+  font-size: 24px;
+  line-height: 12px;
+  cursor: pointer;
+}
+
+.popper,
+.tooltip {
+  position: absolute;
+  background: white;
+  color: black;
+  width: 150px;
+  border-radius: 2px;
+  /*box-shadow: 0 0 2px rgba(0,0,0,0.4);*/
+  box-shadow: 1px 1px 16px 1px rgba(0, 0, 0, 0.2);
+  padding: 0px 0px 0px 0px;
+  text-align: center;
+}
+
+.popper .popper__arrow,
+.tooltip .tooltip-arrow {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  position: absolute;
+  margin: 10px;
+}
+
+.tooltip .tooltip-arrow,
+.popper .popper__arrow {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.style5 .tooltip .tooltip-arrow {
+  border-color: #1E252B;
+}
+
+.popper[x-placement^="top"],
+.tooltip[x-placement^="top"] {
+  margin-bottom: 5px;
+}
+
+.popper[x-placement^="top"] .popper__arrow,
+.tooltip[x-placement^="top"] .tooltip-arrow {
+  border-width: 10px 10px 0 10px;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  bottom: -20px;
+}
+
+.popper[x-placement^="top"] .popper__arrow::after {
+  border-style: solid;
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-width: 10px 10px 0 10px;
+  border-top-color: white;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  bottom: 2px;
+  left: -10px;
+}
+
+.popper[x-placement^="bottom"],
+.tooltip[x-placement^="bottom"] {
+  margin-top: 10px;
+}
+
+.tooltip[x-placement^="bottom"] .tooltip-arrow,
+.popper[x-placement^="bottom"] .popper__arrow {
+  border-width: 0 10px 10px 10px;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  top: -10px;
+  left: calc(50% - 10px);
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.popper[x-placement^="bottom"] .popper__arrow::after {
+  border-style: solid;
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: -8px;
+  left: calc(50% - 10px);
+  border-color: transparent transparent #FFF transparent;
+  border-width: 10px;
+}
+
+.tooltip[x-placement^="right"],
+.popper[x-placement^="right"] {
+  margin-left: 5px;
+}
+
+.popper[x-placement^="right"] .popper__arrow,
+.tooltip[x-placement^="right"] .tooltip-arrow {
+  border-width: 10px 10px 10px 0;
+  border-left-color: transparent;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  left: -10px;
+  top: calc(50% - 10px);
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.popper[x-placement^="right"] .popper__arrow::after {
+  border-style: solid;
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: -10px;
+  left: -8px;
+  border-color: transparent #FFF transparent transparent;
+  border-width: 10px;
+}
+
+.popper[x-placement^="left"],
+.tooltip[x-placement^="left"] {
+  margin-right: 10px;
+}
+
+.popper[x-placement^="left"] .popper__arrow,
+.tooltip[x-placement^="left"] .tooltip-arrow {
+  border-width: 10px 0 10px 10px;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  right: -10px;
+  top: calc(50% - 10px);
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .right {

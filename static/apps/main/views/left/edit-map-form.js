@@ -57,7 +57,11 @@ define ([
                     this.render();
                     return;
                 }
-                this.model.save(null, {
+                this.model.save({
+                    name: this.model.get('name'),
+                    caption: this.model.get('caption')
+                }, {
+                    patch: true,
                     success: this.updateMapName.bind(this),
                     failure: this.handleServerError.bind(this)
                 });

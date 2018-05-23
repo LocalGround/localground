@@ -287,15 +287,9 @@ nav .selected{
 /*                                          DROPDOWN MENUS                                       */
 /****************************************************************************************/
 .dropdown-menu {
-    width: 140px;
-    position: absolute;
+    margin-top: 10px;
+    width: auto;
     background-color: white;
-    padding: 6px 0;
-    border-radius:3px;
-    border:1px solid #e4e5eb;
-    margin-top:4px;
-    z-index:100;
-    box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
 }
 
 .dropdown-menu > a {
@@ -1448,12 +1442,15 @@ tbody .failure-message, tbody .success-message {
     overflow-y: auto;
     width:400px;
     height:100%;
+    box-shadow: -3px 1px 10px 0px rgba(0, 0, 0, 0.2);
+    z-index: 40;
 }
 
 .both #left-panel, .left #left-panel {
     order: 0;
     /*border-right: 1px solid #e4e5eb;*/
-    box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
+    /*box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);*/
+    box-shadow: 3px 1px 10px 0px rgba(0, 0, 0, 0.2);
     width: 280px;
     background-color: #f7f7f7;
     z-index: 40;

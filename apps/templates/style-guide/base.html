@@ -9,6 +9,7 @@
         <!-- link rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tranquil-heart.css" -->
         <link rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow.css">
         <link rel="stylesheet" type="text/css" href="/static/css/main-new.css">
+        {% block styles %}{% endblock %}
         <style>
             .linenums li {
                 list-style-type: decimal;
@@ -37,6 +38,7 @@
                 PR.prettyPrint()
             }
         </script>
+        {% block scripts %}{% endblock %}
     </head>
     <body class="light-gray">
         <div class="style-guide">

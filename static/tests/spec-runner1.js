@@ -6,8 +6,11 @@ require(['boot'], function () {
     'use strict';
     var specs = [
         //views:
+        'spec/views/main/add-marker-menu-test.js',
+        'spec/views/main/edit-layer-menu-test.js',
         'spec/views/main/main-app-test.js',
         'spec/views/main/breadcrumbs-test.js',
+        'spec/views/main/map-menu-test.js',
         'spec/views/main/create-new-map-test.js',
         'spec/views/main/create-layer-form-test.js',
         'spec/views/main/map-title-view-test.js',
@@ -26,9 +29,12 @@ require(['boot'], function () {
         'spec/lib/data-manager-test.js',
         'spec/lib/drawing-manager-test.js',
         'spec/lib/mouse-mover-test.js',
+        'spec/lib/modal-test.js',
+        'spec/lib/popover-test.js',
 
         // models
         'spec/models/symbol-test.js'
+
     ];
 
     require(specs, function () {

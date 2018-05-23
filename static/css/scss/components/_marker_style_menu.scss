@@ -1,3 +1,4 @@
+// main: ../main-new.scss
 .style-by-menu {
     position: absolute;
     // background: white;
@@ -22,7 +23,9 @@
 // .form-inline .row > .msv-label {
 //     flex: 0 0 85px;
 // }
-
+.marker-style {
+    padding: 0px 10px 5px 10px;
+}
 .marker-style .form-inline .row {
     position: relative;
     display: flex;
