@@ -812,27 +812,6 @@ p.coords {
     width:120px;
 }
 
-#add-media-button {
-    border: medium none;
-    font-size: 3em;
-    border-color: #e7e7e7;
-    color: #e4e5eb;
-    background-color: rgba(255,255,255,0);
-    -o-transition: .5s;
-    -ms-transition: .5s;
-    -moz-transition: .5s;
-    -webkit-transition: .5s;
-    margin-top: 30px;
-}
-
-#add-media-button:hover{
-  color:#555555;
-}
-
-#add-media-button .fa {
-    font-size: 32px;
-}
-
 #upload-media-button {
     border: medium none;
     font-size: 3em;

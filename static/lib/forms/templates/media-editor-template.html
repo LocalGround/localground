@@ -1,7 +1,12 @@
 <h2 style="margin:20px 30px 0px 0px;">Add Media{{ selected_photo }}</h2>
 <div class="attached-media-container">
     <div class="upload-spot" id="left-panel-upload">
-        <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>
+        <button id="add-media-button" class="click-to-open" data-modal="modal-add-media">
+            <p>Add Media</p>
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            <i class="fa fa-headphones" aria-hidden="true"></i>
+            <i class="fa fa-images" aria-hidden="true"></i>
+        </button>
     </div>
     {{#each media.photos.data}}
         <div class="attached-container photo-attached">
