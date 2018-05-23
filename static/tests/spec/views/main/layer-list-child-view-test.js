@@ -103,59 +103,6 @@ define([
                 expect(LayerListChildView.prototype.displayGeometryOptions).toHaveBeenCalledTimes(1);
             });
 
-            it("clicking '.rename-layer' should open 'layer edit' modal", function () {
-                this.view.render();
-                expect(Modal.prototype.update).toHaveBeenCalledTimes(0);
-                expect(Modal.prototype.show).toHaveBeenCalledTimes(0);
-                expect(EditLayerName.prototype.initialize).toHaveBeenCalledTimes(0);
-                this.view.$el.find('.open-layer-menu').trigger('click');
-                this.view.$el.find('.rename-layer').trigger('click');
-                expect(Modal.prototype.update).toHaveBeenCalledTimes(1);
-                expect(Modal.prototype.show).toHaveBeenCalledTimes(1);
-                expect(EditLayerName.prototype.initialize).toHaveBeenCalledTimes(1);
-            });
-            it("EditLayerName modal renames modal", function () {
-                this.view.render();
-
-                this.view.$el.find('.open-layer-menu').trigger('click');
-                this.view.$el.find('.rename-layer').trigger('click');
-
-                expect(this.view.modal.$el.find('#layer-title').val()).toEqual('Trees Layer');
-
-
-                this.view.modal.$el.find('#layer-title').val('Edited Trees Layer');
-                this.view.modal.$el.find('.save-modal-form').trigger('click');
-
-                // Check that both the model and the dom were updated
-                expect(this.view.model.get('title')).toEqual('Edited Trees Layer');
-                expect(this.view.$el.find('.layer-name').text()).toEqual('Edited Trees Layer');
-            });
-
-            it("clicking '.rename-layer' should open 'edit display field' modal", function () {
-                this.view.render();
-                expect(Modal.prototype.update).toHaveBeenCalledTimes(0);
-                expect(Modal.prototype.show).toHaveBeenCalledTimes(0);
-                expect(EditDisplayField.prototype.initialize).toHaveBeenCalledTimes(0);
-                this.view.$el.find('.open-layer-menu').trigger('click');
-                this.view.$el.find('.edit-display-field').trigger('click');
-                expect(Modal.prototype.update).toHaveBeenCalledTimes(1);
-                expect(Modal.prototype.show).toHaveBeenCalledTimes(1);
-                expect(EditDisplayField.prototype.initialize).toHaveBeenCalledTimes(1);
-            });
-            it("EditDisplayField modal updates layer's 'display_field'", function() {
-                this.view.render();
-
-                this.view.$el.find('.open-layer-menu').trigger('click');
-                this.view.$el.find('.edit-display-field').trigger('click');
-
-                expect(this.view.model.get('display_field')).toEqual('height');
-                expect(this.view.modal.$el.find('#display-field').val()).toEqual('height');
-                this.view.modal.$el.find('#display-field').val('type');
-                expect(this.view.modal.$el.find('#display-field').val()).toEqual('type');
-
-                this.view.modal.$el.find('.save-modal-form').trigger('click');
-                expect(this.view.model.get('display_field')).toEqual('type');
-            });
             it(".collapse button hides and shows the Symbol Items", function() {
                 this.view.render();
                 expect(this.view.$el.find('.collapse')).toHaveClass('fa-caret-down');
@@ -182,15 +129,6 @@ define([
                 this.view.$el.find('.layer-isShowing').prop('checked', true).trigger('change');
                 expect(this.view.$el[0]).not.toHaveClass('hide-layer');
                 expect(SymbolCollectionView.prototype.redrawOverlays).toHaveBeenCalledTimes(10);
-            });
-            it("clicking 'add-record' icon opens menu", function() {
-                this.view.render();
-                expect(this.view.$el.find('.geometry-options').css('display')).toEqual('none');
-                this.view.$el.find('.add-record-container').trigger('click');
-                expect(this.view.$el.find('.geometry-options').css('display')).toEqual('block');
-                expect(this.view.$el.find('.geometry-options').css('top')).toEqual('-15px');
-                expect(this.view.$el.find('.geometry-options').css('left')).toEqual('-200px');
-
             });
 
             it("LayerListChildView recieves notification when a new geometry is completed by the DrawingManager", function () {
