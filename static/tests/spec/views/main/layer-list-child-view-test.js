@@ -37,6 +37,9 @@ define([
             spyOn(EditLayerMenu.prototype, 'initialize').and.callThrough();
             spyOn(EditLayerName.prototype, 'initialize').and.callThrough();
             spyOn(EditDisplayField.prototype, 'initialize').and.callThrough();
+
+            spyOn(Record.prototype, "save");
+
             spyOn(Modal.prototype, 'show').and.callThrough();
             spyOn(Modal.prototype, 'update').and.callThrough();
 
@@ -144,6 +147,7 @@ define([
                 expect(this.view.$el.find('.collapse')).toHaveClass('fa-caret-down');
                 expect(this.view.$el.find('.symbol-item').css('display')).toEqual('block');
             });
+
             it("Layer checkbox hides and shows Layer content and icons", function() {
                 this.view.render();
                 expect(SymbolCollectionView.prototype.redrawOverlays).toHaveBeenCalledTimes(5);
@@ -156,16 +160,6 @@ define([
                 expect(this.view.$el[0]).not.toHaveClass('hide-layer');
                 expect(SymbolCollectionView.prototype.redrawOverlays).toHaveBeenCalledTimes(10);
 
-                // mock the meny being open...
-                this.view.$el.find('.add-record-container').trigger('click');
-                this.view.notifyDrawingManager(mockEvent, 'add-point');
-
-                expect(this.app.vent.trigger).toHaveBeenCalledWith('add-point', this.view.cid, mockEvent);
-                expect(this.app.vent.trigger).toHaveBeenCalledWith('hide-detail');
-
-                // in jasmine, 'toggle()' isn't setting 'display: block' back to 'display: none'
-                // However, it works in the actual application...
-                // expect(this.view.$el.find('.geometry-options').css('display')).toEqual('none');
             });
 
             it("LayerListChildView recieves notification when a new geometry is completed by the DrawingManager", function () {
@@ -197,7 +191,7 @@ define([
                 this.view.addRecord(mockGeometry);
                 expect(Record.prototype.save).toHaveBeenCalledTimes(1);
             });
-          
+
             it("reAssignRecordToSymbols() assigns continuous symbols to 'uncategorized' if no category matches", function() {
 
                 const highestSymbol = this.view.collection.models[this.view.collection.models.length-2];

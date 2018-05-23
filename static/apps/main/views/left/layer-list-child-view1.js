@@ -167,7 +167,7 @@ define(["marionette",
                     recordModel.get(this.model.get('metadata').currentProp)
                 );
                 this.symbolModels.each(function(symbolModel) {
-                    if (symbolModel.containsRecord(recordModel) 
+                    if (symbolModel.containsRecord(recordModel)
                         && !symbolModel.checkModel(recordModel)) {
                             symbolModel.removeModel(recordModel);
                     }
@@ -175,7 +175,7 @@ define(["marionette",
                         symbolModel.addModel(recordModel);
                         matched = true;
                     }
-                    
+
                 });
                 if (!matched) {
                     if (!this.model.get('metadata').isContinuous && !recordValIsEmpty) {
@@ -189,8 +189,8 @@ define(["marionette",
 
                 this.saveChanges();
             },
-    
-            removeEmptySymbols: function() {  
+
+            removeEmptySymbols: function() {
                 this.symbolModels.each((symbol) => {
                     if (symbol.matchedModels.length === 0) {
                         if (symbol.get('rule') !== '¯\\_(ツ)_/¯') {
@@ -201,11 +201,11 @@ define(["marionette",
                 });
             },
             createNewSymbol: function(symbolCollection, record) {
-                const category = record.get(this.model.get('metadata').currentProp);                
+                const category = record.get(this.model.get('metadata').currentProp);
                 const paletteId = this.model.get('metadata').paletteId;
                 const lgPalettes = new LGPalettes();
                 const palette = lgPalettes.getPalette(paletteId, 8, 'categorical');
-                
+
                 const maxId = symbolCollection.maxId();
                 const symbolId = symbolCollection.length;
                 let symbol = Symbol.createCategoricalSymbol(category, this.model, maxId + 1, symbolCollection.length + 1, palette)
@@ -255,6 +255,7 @@ define(["marionette",
                     'geometry': data.geoJSON,
                     "fillColor": '#ed867d'
                 }, { urlRoot: this.dataCollection.url });
+
                 recordModel.save(null, {
                     success: () => {
                         this.dataCollection.add(recordModel);
