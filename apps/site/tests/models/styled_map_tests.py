@@ -127,7 +127,7 @@ class StyledMapTests(
 
         # ensure that the Layer and the Dataset no longer exist:
         self.assertEqual(
-            Dataset.objects.get(id=new_dataset_id).name, 'Untitled Dataset 1')
+            Dataset.objects.get(id=new_dataset_id).name, 'Untitled Dataset 2')
 
     def test_create_map_existing_dataset(self, **kwargs):
         f1 = self.create_dataset_with_fields()

@@ -81,7 +81,7 @@ class LayerModelTests(BaseAuditAbstractModelClassTest, test.TestCase):
         )
         self.assertEqual(num_datasets + 1, len(Dataset.objects.all()))
         dataset = Dataset.objects.all()[len(Dataset.objects.all()) - 1]
-        self.assertEqual(dataset.name, 'Untitled Dataset 1')
+        self.assertEqual(dataset.name, 'Untitled Dataset 2')
         layer = Layer.create(
             last_updated_by=kwargs.get('last_updated_by'),
             owner=kwargs.get('owner'),
