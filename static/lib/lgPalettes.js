@@ -6,7 +6,7 @@ define(["palette"
        
         var lgPalettes = function () {
 
-            this.getAllPalettes = function(itemCount = 8, symbolType) {
+            this.getAllPalettes = function(itemCount, symbolType) {
                 let count = itemCount;
                 if (count > 8) { count = 8; }
 

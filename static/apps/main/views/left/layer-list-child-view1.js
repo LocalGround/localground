@@ -204,7 +204,7 @@ define(["marionette",
                 const palette = lgPalettes.getPalette(paletteId, 8, 'categorical');
                 
                 const maxId = symbolCollection.maxId();
-                let symbolId = symbolCollection.length;
+                const symbolId = symbolCollection.length;
                 let symbol = Symbol.createCategoricalSymbol(category, this.model, maxId + 1, symbolCollection.length + 1, palette)
 
                 if (symbol.checkModel(record)) {
@@ -212,16 +212,6 @@ define(["marionette",
                 }
                 console.log('newSYMBOL: ', symbol);
                 symbolCollection.add(symbol, { at: symbolCollection.length - 1 });
-            },
-
-             // returns a default value if the input value from the dom is undefined
-            // needed because simply using '||' for defaults is buggy
-            defaultIfUndefined: function (domValue, defaultValue) {
-                if (domValue === undefined) {
-                    return defaultValue;
-                } else {
-                    return domValue;
-                }
             },
 
             isEmpty(value){

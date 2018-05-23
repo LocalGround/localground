@@ -88,11 +88,13 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 return this.matchedModels.toJSON();
             }
         }, {
-            defaultIfUndefined: function (domValue, defaultValue) {
-                if (domValue === undefined) {
+            // returns a default value if the input value from the dom is undefined
+            // needed because simply using '||' for defaults is buggy
+            defaultIfUndefined: function (value, defaultValue) {
+                if (value === undefined || value === null || value === '') {
                     return defaultValue;
                 } else {
-                    return domValue;
+                    return value;
                 }
             },
             UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
