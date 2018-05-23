@@ -94,7 +94,7 @@ class LayerModelTests(BaseAuditAbstractModelClassTest, test.TestCase):
             ordering=1
         )
         dataset = Dataset.objects.all()[len(Dataset.objects.all()) - 1]
-        self.assertEqual(dataset.name, 'Untitled Dataset 2')
+        self.assertEqual(dataset.name, 'Untitled Dataset 3')
 
     def test_uses_existing_dataset_if_defined(self):
         kwargs = self.get_map_kwargs()
