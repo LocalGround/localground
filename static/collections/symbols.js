@@ -23,6 +23,20 @@ define(["underscore", "models/symbol", "collections/base"], function (_, Symbol,
                 }).toJSON());
             }
             Base.prototype.reset.apply(this, arguments);
+        },
+        maxId: function() {
+            let symbolIds = this.models.map(symbol => symbol.get('id'));
+            console.log(symbolIds)
+            console.log(...symbolIds)
+            return Math.max(...this.models.map(symbol => symbol.get('id')))
+        }
+    }, {
+        buildCategoricalSymbolSet: function (categoryList, layerModel, palette) {
+            const symbols = new Symbols();
+            categoryList.forEach((category, index) => {
+                symbols.add(Symbol.createCategoricalSymbol(category, layerModel, index, palette));
+            });
+            return symbols;
         }
     });
     return Symbols;

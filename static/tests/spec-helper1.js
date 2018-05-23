@@ -254,7 +254,7 @@ define([
                             "fillOpacity": 1,
                             "title": "between 64 and 85",
                             "strokeWeight": 1,
-                            "rule": "height >= 64 and height < 85",
+                            "rule": "height >= 64 and height <= 85",
                             "isShowing": true,
                             "strokeOpacity": 1,
                             "height": 20,
@@ -281,6 +281,128 @@ define([
                             "fillColor": "#undefined"
                         }
                     ]
+                },
+                {
+                    "id": 64,
+                    "overlay_type": "layer",
+                    "owner": "riley",
+                    "title": "Tree Type Layer",
+                    "dataset": {
+                        "id": 2,
+                        "overlay_type": "dataset_2",
+                        "fields": this.dataset_2.get("fields"),
+                        "name": this.dataset_2.get("name")
+                    },
+                    "group_by": "type",
+                    "display_field": "type",
+                    "ordering": 3,
+                    "metadata": {
+                        "fillOpacity": 1,
+                        "currentProp": "type",
+                        "strokeWeight": 1,
+                        "buckets": 4,
+                        "isShowing": true,
+                        "strokeOpacity": 1,
+                        "width": 20,
+                        "shape": "circle",
+                        "isContinuous": false,
+                        "strokeColor": "#ffffff",
+                        "paletteId": 0,
+                        "fillColor": "#4e70d4"
+                    },
+                    "map_id": 22,
+                    "symbols": [
+                        {
+                            "fillOpacity": 1,
+                            "title": "maple",
+                            "strokeWeight": 1,
+                            "rule": "type = 'maple'",
+                            "isShowing": true,
+                            "strokeOpacity": 1,
+                            "height": 20,
+                            "width": 20,
+                            "shape": "circle",
+                            "fillColor": "#eff3ff",
+                            "strokeColor": "#ffffff",
+                            "id": 1,
+                            "paletteId": 0
+                        },
+                        {
+                            "fillOpacity": 1,
+                            "title": "oak",
+                            "strokeWeight": 1,
+                            "rule": "type = 'oak'",
+                            "isShowing": true,
+                            "strokeOpacity": 1,
+                            "height": 20,
+                            "width": 20,
+                            "shape": "circle",
+                            "fillColor": "#bdd7e7",
+                            "strokeColor": "#ffffff",
+                            "id": 2,
+                            "paletteId": 0
+                        },
+                        {
+                            "fillOpacity": 1,
+                            "title": "spruce",
+                            "strokeWeight": 1,
+                            "rule": "type = 'spruce'",
+                            "isShowing": true,
+                            "strokeOpacity": 1,
+                            "height": 20,
+                            "width": 20,
+                            "shape": "circle",
+                            "fillColor": "#6baed6",
+                            "strokeColor": "#ffffff",
+                            "id": 3,
+                            "paletteId": 0
+                        },
+                        {
+                            "fillOpacity": 1,
+                            "title": "pine",
+                            "strokeWeight": 1,
+                            "rule": "type = 'pine'",
+                            "isShowing": true,
+                            "strokeOpacity": 1,
+                            "height": 20,
+                            "width": 20,
+                            "shape": "circle",
+                            "fillColor": "#2171b5",
+                            "strokeColor": "#ffffff",
+                            "id": 4,
+                            "paletteId": 0
+                        },
+                        {
+                            "fillOpacity": 1,
+                            "title": "hickory",
+                            "strokeWeight": 1,
+                            "rule": "type = 'hickory'",
+                            "isShowing": true,
+                            "strokeOpacity": 1,
+                            "height": 20,
+                            "width": 20,
+                            "shape": "circle",
+                            "fillColor": "#2171b5",
+                            "strokeColor": "#ffffff",
+                            "id": 5,
+                            "paletteId": 0
+                        },
+                        {
+                            "fillOpacity": 1,
+                            "title": "Uncategorized",
+                            "strokeWeight": 1,
+                            "isShowing": false,
+                            "rule": "¯\\_(ツ)_/¯",
+                            "height": 20,
+                            "width": 20,
+                            "shape": "circle",
+                            "strokeOpacity": 1,
+                            "strokeColor": "#FFFFFF",
+                            "paletteId": 0,
+                            "id": 6,
+                            "fillColor": "#ffffff"
+                        }
+                    ]
                 }
         ], { projectID: __projectJSON.id, mapID: mapID });
             };
@@ -296,7 +418,7 @@ define([
             this.dataset_3 = this.dataManager.getCollection('dataset_3');
             this.map = this.dataManager.getMaps().get(3);
             this.map.set('layers', this.getLayers(this.map.id));
-            //console.log(this.map);
+            this.categoricalLayer = this.getLayers(this.map.id).get(64)
 
             //spoof the main-app for child view testing
             this.app = _.extend({}, appUtilities);
