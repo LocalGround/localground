@@ -11,26 +11,24 @@ define([
             },
 
             events: {
-                'click .popover': 'hideIfValid',
-                'click .close': 'hideIfValid'
+                'click .popover': '_hideIfValid',
+                'click .close': '_hideIfValid'
             },
+
             template: Handlebars.compile(PopoverTemplate),
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, 'hide-popover', this.hide)
             },
-            onRender: function () {
-                $('body').append(this.$el);
-            },
-            removeHeight: function () {
+            _removeHeight: function () {
                 this.$el.find('.popper .body').removeAttr('style');
             },
-            setHeight: function () {
+            _setHeight: function () {
                 this.$el.find('.popper .body').css(
                     'height', this.$el.find('.popper .body').height() + 5)
             },
-            createPopper: function () {
-                this.setHeight();
+            _createPopper: function () {
+                this._setHeight();
                 this.popper = new Popper(
                     this.$source,
                     this.$el.find('.popper'), {
@@ -54,13 +52,44 @@ define([
                 );
             },
 
-            validate: function (opts) {
+            _validate: function (opts) {
                 if (!opts.$source) {
                     throw '$source element is required';
                 }
                 if (!opts.view) {
                     throw 'either a $content element or a view is required';
                 }
+            },
+            _appendView: function () {
+                if (this.view) {
+                    this.view.render();
+                    this.bodyRegion.show(this.view);
+                }
+            },
+            _hideIfValid (e) {
+                // hide if called by vent or if called by one of the
+                // following elements: 'modal' 'close', 'close-modal'
+                const classList = e.target.classList;
+                if (classList.contains('popover') ||
+                    classList.contains('close')
+                ) {
+                    this.hide(e);
+                }
+
+            },
+
+            _resetProperties: function () {
+                this.title = null;
+                this.width = '100px';
+                this.offsetX = '0px';
+                this.offsetY = '0px';
+                this.placement = 'right';
+                this.view = null;
+                this.$source = null;
+            },
+
+            onRender: function () {
+                $('body').append(this.$el);
             },
 
             templateHelpers: function () {
@@ -72,29 +101,14 @@ define([
                     horizontal: this.placement === 'left' || this.placement === 'right'
                 };
             },
-            appendView: function () {
-                if (this.view) {
-                    this.view.render();
-                    this.bodyRegion.show(this.view);
-                }
-            },
+
             show: function () {
                 this.$el.find('.popover').show();
             },
-            hideIfValid (e) {
-                // hide if called by vent or if called by one of the
-                // following elements: 'modal' 'close', 'close-modal'
-                const classList = e.target.classList;
-                if (classList.contains('popover') ||
-                    classList.contains('close')
-                ) {
-                    this.hide(e);
-                }
 
-            },
             hide: function (e) {
                 this.$el.find('.popover').hide();
-                this.removeHeight();
+                this._removeHeight();
                 if (this.popper) {
                     this.popper.destroy();
                 }
@@ -104,26 +118,16 @@ define([
                 }
             },
 
-            resetProperties: function () {
-                this.title = null;
-                this.width = '100px';
-                this.offsetX = '0px';
-                this.offsetY = '0px';
-                this.placement = 'right';
-                this.view = null;
-                this.$source = null;
-            },
-
             update: function (opts) {
                 this.includeArrow = true;
-                this.resetProperties();
+                this._resetProperties();
                 _.extend(this, opts);
-                this.validate(opts);
+                this._validate(opts);
                 this.render();
                 this.delegateEvents();
-                this.appendView();
+                this._appendView();
                 this.show();
-                this.createPopper();
+                this._createPopper();
             },
 
             redraw: function (opts) {
@@ -134,7 +138,7 @@ define([
                 _.extend(this, opts);
                 this.show();
                 this.bodyRegion.show(this.view);
-                this.createPopper();
+                this._createPopper();
             }
         });
         return Popover;
