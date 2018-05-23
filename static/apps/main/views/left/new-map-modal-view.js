@@ -15,7 +15,7 @@ define ([
 
                 const datasets = this.app.dataManager.getDatasets();
                 this.formData = {
-                    name: 'Untitled Map',
+                    name: this.getDefaultMapTitle(),
                     caption: '',
                     create: '',
                     existing: 'checked',
@@ -24,6 +24,26 @@ define ([
                         return dataset;
                     })
                 };
+            },
+
+            getDefaultMapTitle: function () {
+                const maps = this.app.dataManager.getMaps();
+                try {
+                    const maxNumber = maps.map(map => {
+                        return map.get('name');
+                    }).filter(name => {
+                        return /Untitled\sMap\s*\d*/g.test(name);
+                    }).map(name => {
+                        const a = /\d+/g.exec(name);
+                        return (a && a.length > 0) ? parseInt(a[0]) : 0;
+                    }).reduce((a, b) => {
+                        return Math.max(a, b);
+                    });
+                    //console.log(maxNumber);
+                    return 'Untitled Map ' + (maxNumber + 1);
+                } catch (e) {
+                    return 'Untitled Map'
+                }
             },
 
             events: {

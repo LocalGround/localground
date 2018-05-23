@@ -470,7 +470,7 @@ ul {
 }
 
 .symbol-wrapper {
-  padding-left: 12px;
+  padding-left: 4px;
 }
 
 .symbol-header {
@@ -579,6 +579,13 @@ ul {
 .symbol-highlight .symbol {
   border-right: 3px solid #8bb8ed;
   border-bottom: 3px solid #8bb8ed;
+}
+
+i.fa.fa.fa-question-circle {
+  font-size: 19px;
+  color: #CCC;
+  vertical-align: bottom;
+  padding: 0px 5px 0px 2px;
 }
 
 .symbol-item {
@@ -1645,4 +1652,3 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
-/*# sourceMappingURL=main-new.css.map */

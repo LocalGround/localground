@@ -413,7 +413,7 @@ define(["jquery",
                 /*this.layerDraft.categorical = new Symbols();
                 cat.list.forEach((item) => {
                     this.layerDraft.categorical.add({
-                        "rule": this.model.get('metadata').currentProp + " = " + item,
+                        "rule": this.model.get('metadata').currentProp + " = '" + item + "'",
                         "title": item,
                         "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
                         "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),

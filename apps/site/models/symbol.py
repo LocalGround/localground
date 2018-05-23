@@ -69,7 +69,9 @@ class Symbol(object):
         return self._deserialize_field_names(layer)
 
     def _get_expressions(self, rule):
-        expressions = [n.strip() for n in re.split('(\s+or|and\s+)', rule)]
+        expressions = [
+            n.strip() for n in re.split('(\s+or\s+|\s+and\s+)', rule)]
+
         return filter(lambda e: e != 'or' and e != 'and', expressions)
 
     def _serialize_field_names(self, rule, layer):
@@ -86,8 +88,8 @@ class Symbol(object):
 
     def _do_substitutions(self, rule, layer, crosswalk):
         # normalize expressions:
-        expressions = [n.strip() for n in re.split('(\s+or|and\s+)', rule)]
-
+        expressions = [
+            n.strip() for n in re.split('(\s+or\s+|\s+and\s+)', rule)]
         # tokenize and validate each expression (split on spaces)
         for i, e in enumerate(expressions):
             tokens = re.split('("[^"]*"|\'[^\']*\'|[\S]+)+', e)
@@ -108,7 +110,6 @@ class Symbol(object):
         expressions = self._get_expressions(rule)
         crosswalk = {}
         col_names = list(set([re.split('\s+', e)[0] for e in expressions]))
-        invalid_field_names = []
         for col_name in col_names:
             match = False
             for field in layer.dataset.fields:

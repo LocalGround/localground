@@ -15,15 +15,15 @@
 
 .symbol-wrapper {
     // border-bottom: 1px solid #ebebeb;
-    padding-left: 12px;
+    padding-left: 4px;
 }
 
 .symbol-header {
     background: white;
-    // border-top: 1px solid #ebebeb;    
+    // border-top: 1px solid #ebebeb;
     padding: 0px 7px;
-    border-top: 3px solid white; 
-    border-right: 3px solid white; 
+    border-top: 3px solid white;
+    border-right: 3px solid white;
 }
 
 .symbol-edit {
@@ -49,7 +49,7 @@
 .symbol-header:hover .symbol-display {
     display: inline;
     cursor: pointer;
-    
+
 }
 
 .ind-symbol:hover .symbol-edit,
@@ -116,11 +116,18 @@
     .symbol-header {
         border-top: 3px solid #8bb8ed;
         border-right: 3px solid #8bb8ed;
-    } 
+    }
     .symbol {
         border-right: 3px solid #8bb8ed;
         border-bottom: 3px solid #8bb8ed;
-    } 
+    }
+}
+
+i.fa.fa.fa-question-circle {
+    font-size: 19px;
+    color: #CCC;
+    vertical-align: bottom;
+    padding: 0px 5px 0px 2px;
 }
 
 .symbol-item {
@@ -154,4 +161,3 @@
         vertical-align: middle;
     }
 }
-

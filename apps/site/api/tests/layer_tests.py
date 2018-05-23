@@ -284,7 +284,7 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
         self.assertEqual(f.col_name, 'worm_count')
         self.assertEqual(f.col_name_db, 'field_{0}'.format(f.id))
         symbol = models.Symbol.SIMPLE.to_dict()
-        rule = '{0} > 3 and {0} < 6 and {1} = larry'.format(
+        rule = '{0} > 3 and {0} < 6 and {1} = \'larry rules!\''.format(
             f.col_name, self.dataset.fields[0].col_name
         )
         symbol['rule'] = rule
@@ -301,7 +301,7 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
         layer = models.Layer.objects.get(id=self.obj.id)
         self.assertEqual(
             layer.symbols[0]['rule'],
-            '{0} > 3 and {0} < 6 and {1} = larry'.format(
+            '{0} > 3 and {0} < 6 and {1} = \'larry rules!\''.format(
                 f.col_name_db, self.dataset.fields[0].col_name_db
             ))
 
@@ -359,6 +359,24 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
             'worm_1_count > 3 and worm_1_count < 6 and name = larry'
         )
 
+    def test_field_names_or_values_can_contain_and_or(self):
+        symbol = models.Symbol.SIMPLE.to_dict()
+        for rule in [
+                'name = Oregon',
+                "name = oregon and name = 'and'",
+                ]:
+            symbol['rule'] = rule
+            response = self.client_user.patch(
+                self.url,
+                data=json.dumps({
+                    'symbols': [symbol]
+                }),
+                HTTP_X_CSRFTOKEN=self.csrf_token,
+                content_type="application/json"
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertTrue(isinstance(response.data['symbols'], list))
+
     def test_bad_symbol_rules_rejected(self):
         f = self.create_field(
                 self.dataset, name='Worm Count',
@@ -370,11 +388,14 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
         for rule in [
                 '{0} > 3 and {0} < 6 and name = larry'.format('blah'),
                 'name =',
+                'state = Oregon',  # invalid column name
+                'state = oregon and name = and',  # invalid column name
                 'dasjdad das dadad dasd',
                 'worm_count = 5 and x =',
                 'worm_count > 5 and1 worm_count < 10'
                 ]:
             symbol['rule'] = rule
+            # print rule
             response = self.client_user.patch(
                 self.url,
                 data=json.dumps({
@@ -383,6 +404,5 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
                 HTTP_X_CSRFTOKEN=self.csrf_token,
                 content_type="application/json"
             )
-            # print response.data
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             self.assertTrue(isinstance(response.data['symbols'], list))

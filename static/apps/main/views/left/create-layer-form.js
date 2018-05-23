@@ -12,13 +12,15 @@ define ([
                 _.extend(this, opts);
                 this.template = Handlebars.compile(NewLayerModalTemplate);
                 this.datasets = this.app.dataManager.getDatasets();
-                console.log(this.datasets[0].formID)
                 this.formData = {
-                    title: 'Untitled Layer',
+                    title: this.getDefaultLayerTitle(),
                     create_new_dataset: '',
                     dataset: this.datasets[0].formID,
                     datasets: this.datasets
                 };
+            },
+            events: {
+                "click input[type=radio]": "toggleCheckboxes"
             },
             errors: {},
             templateHelpers: function () {
@@ -26,8 +28,24 @@ define ([
                 return this.formData;
             },
 
-            events: {
-                "click input[type=radio]": "toggleCheckboxes"
+            getDefaultLayerTitle: function () {
+                const layers = this.map.get('layers');
+                try {
+                    const matchedTitles = layers.map(layer => {
+                        return layer.get('title');
+                    }).filter(title => {
+                        return /Untitled\sLayer\s*\d*/g.test(title);
+                    });
+                    const maxNumber = matchedTitles.map(title => {
+                        const a = /\d+/g.exec(title);
+                        return (a && a.length > 0) ? parseInt(a[0]) : 0;
+                    }).reduce((a, b) => {
+                        return Math.max(a, b);
+                    });
+                    return 'Untitled Layer ' + (maxNumber + 1);
+                } catch (e) {
+                    return 'Untitled Layer 1'
+                }
             },
 
             toggleCheckboxes: function (e) {
@@ -60,7 +78,7 @@ define ([
                     this.model.set("create_new_dataset", true);
                     this.model.set('dataset', null);
                 } else {
-                    this.formData.dataset = this.$el.find('#dataset-list').val();
+                    this.formData.dataset = parseInt(this.$el.find('#dataset-list').val());
                     this.model.set("create_new_dataset", false);
                     this.model.set('dataset', this.formData.dataset);
                 }
@@ -72,7 +90,7 @@ define ([
                 this.setDataset();
             },
 
-            saveLayer: function() {
+            saveLayer: function () {
                 var that = this;
                 this.applyChanges();
                 if (Object.keys(this.errors).length > 0) {
@@ -81,17 +99,18 @@ define ([
                 }
                 this.model.save(null, {
                     dataType:"text",
-                    success: (model, response) => {
-                        //apply additional server-generated data to model:
-                        this.model.set(JSON.parse(response));
-                        this.app.dataManager.addLayerToMap(this.map, this.model);
-                        this.app.vent.trigger('close-modal');
-                    },
+                    success: this.handleSuccess.bind(this),
                     error: (model, response) => {
-                        //TODO: more robust error handling for server-side errors:
                         console.error(response.responseText);
                     }
                 });
+            },
+
+            handleSuccess: function (model, response) {
+                // apply additional server-generated data to model:
+                this.model.set(JSON.parse(response));
+                this.app.dataManager.addLayerToMap(this.map, this.model);
+                this.app.vent.trigger('close-modal');
             }
         });
         return NewLayer;

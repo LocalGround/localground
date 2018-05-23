@@ -41,7 +41,7 @@ define([
             spyOn(scope.app.vent, 'trigger').and.callThrough();
             spyOn(scope.app.router, 'navigate');
         };
- 
+
         const initContinuousLayerView = function(scope) {
             map = scope.dataManager.getMaps().at(0);
 
@@ -234,7 +234,7 @@ define([
 
                 expect(this.app.vent.trigger).toHaveBeenCalledWith('add-point', this.view.cid, mockEvent);
                 expect(this.app.vent.trigger).toHaveBeenCalledWith('hide-detail');
-                
+
                 // in jasmine, 'toggle()' isn't setting 'display: block' back to 'display: none'
                 // However, it works in the actual application...
                 // expect(this.view.$el.find('.geometry-options').css('display')).toEqual('none');
@@ -301,17 +301,17 @@ define([
             it("reassignRecordToSymbols() deletes an unneeded symbol when a record is updated and no longer matches", function() {
                 /*
                 In this test, there is a symbol for records where 'type' equals 'hickory, and a single matching record.
-                We update the matching record from 'hickory' to 'oak' and check to make sure that the record is 
-                is now matched to the 'oak' symbol. We also check that the 'hickory' symbol has been deleted 
+                We update the matching record from 'hickory' to 'oak' and check to make sure that the record is
+                is now matched to the 'oak' symbol. We also check that the 'hickory' symbol has been deleted
                 (since it no longer has any matching records).
                 This test implicitly tests the removeEmptySymbols() function.
                 */
-                
+
                 let record = this.view.dataCollection.get({'id': 50});
                 const hickorySymbol = this.view.collection.where({'rule': "type = 'hickory'"})[0];
                 const oakSymbol = this.view.collection.where({'rule': "type = 'oak'"})[0];
                 expect(this.view.collection.where({'rule': "type = 'hickory'"}).length).toEqual(1);
-                
+
                 expect(this.view.collection.length).toEqual(6);
                 expect(record.get('type')).toEqual('Hickory');
                 expect(LayerListChildView.prototype.reAssignRecordToSymbols).toHaveBeenCalledTimes(0);
@@ -329,7 +329,7 @@ define([
             });
             it("removeEmptySymbols() gets called upon initialization of LayerListChildView", function() {
                 expect(LayerListChildView.prototype.removeEmptySymbols).toHaveBeenCalledTimes(1);
-                
+
             });
 
             it("reAssignRecordsToSymbols() gets called upon initialization of LayerListChildView", function() {

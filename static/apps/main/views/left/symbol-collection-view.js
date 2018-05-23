@@ -15,7 +15,9 @@ define(["jquery",
          */
         var SymbolCollectionView =  Marionette.CompositeView.extend({
             initialize: function (opts) {
+
                 this.collection = this.model.getModels();
+
                 _.extend(this, opts);
                 if (this.model.get('isShowing')) {
                     this.showOverlays();

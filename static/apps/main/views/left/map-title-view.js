@@ -26,7 +26,7 @@ define(["marionette",
                 })
                 this.modal.update({
                     view: editMapForm,
-                    title: 'Edit Map',
+                    title: 'Edit Map Name and Description',
                     width: 400,
                     saveButtonText: "Save",
                     closeButtonText: "Cancel",

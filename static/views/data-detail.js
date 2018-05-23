@@ -46,12 +46,15 @@ define([
         },
 
         displayGeometryOptions: function(e) {
+            console.log('displayGeometryOptions');
             this.$el.find('.add-marker-button').css({background: '#bbbbbb'});
             this.$el.find('.geometry-options').css({display: 'block'});
         },
 
         hideGeometryOptions: function(e) {
+            console.log('hide gemotry options');
             if (e && !$(e.target).hasClass('add-marker-button')) {
+                //console.log('hide gemotry options internal');
                 this.$el.find('.add-marker-button').css({background: '#fafafc'});
                 this.$el.find('.geometry-options').css({display: 'none'});
             };
@@ -62,16 +65,16 @@ define([
                 //button has already been clicked
                 return;
             }
-            this.$el.find("#add-marker-button").css({
-                background: "#4e70d4",
-                color: "white"
-            });
+            
             this.$el.find(".add-lat-lng").append(
                 "<p id='drop-marker-message'>click on the map to add location</p>"
             );
 
             this.app.vent.trigger(mode, this.cid, e);
-            this.hideGeometryOptions();
+
+            // the geometryOptions menu closes on its own because hideGeometryOptions()
+            // is triggered by a click event anywhere on the view.
+            //this.hideGeometryOptions();
             e.preventDefault();
         },
 

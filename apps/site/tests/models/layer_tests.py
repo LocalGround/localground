@@ -80,6 +80,21 @@ class LayerModelTests(BaseAuditAbstractModelClassTest, test.TestCase):
             ordering=1
         )
         self.assertEqual(num_datasets + 1, len(Dataset.objects.all()))
+        dataset = Dataset.objects.all()[len(Dataset.objects.all()) - 1]
+        self.assertEqual(dataset.name, 'Untitled Dataset 1')
+        layer = Layer.create(
+            last_updated_by=kwargs.get('last_updated_by'),
+            owner=kwargs.get('owner'),
+            styled_map=map,
+            group_by='uniform',
+            symbols=[
+                Symbol.SIMPLE.to_dict()
+            ],
+            project=map.project,
+            ordering=1
+        )
+        dataset = Dataset.objects.all()[len(Dataset.objects.all()) - 1]
+        self.assertEqual(dataset.name, 'Untitled Dataset 2')
 
     def test_uses_existing_dataset_if_defined(self):
         kwargs = self.get_map_kwargs()

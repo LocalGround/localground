@@ -1,5 +1,5 @@
 
-var projectJSON = {
+var __projectJSON = {
     "url": "\/api\/0\/projects\/3\/",
     "id": 3,
     "name": "My Second Project (#3)",
