@@ -449,7 +449,8 @@ define([
                 success: function (model, response) {
                     that.app.vent.trigger('success-message', "The form was saved successfully");
                     if (!isNew) {
-                        model.trigger('saved');
+                        model.trigger('saved', model);
+                        model.trigger('update-symbol-assignment', model)
                     } else {
                         model.collection.add(model);
                     }
@@ -471,6 +472,7 @@ define([
                     that.destroy();
                     //trigger an event that clears out the deleted model's detail:
                     that.app.vent.trigger('hide-detail');
+                    that.app.vent.trigger('record-has-been-delete');
                 }, error: function(){
                     alert("Entry has not been deleted");
                 }

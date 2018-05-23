@@ -7,10 +7,11 @@ define(["jquery",
         "apps/main/views/symbols/symbol-selection-layout-view",
         "text!../../templates/right/marker-style1.html",
         "collections/symbols",
+        "lib/lgPalettes",
         'color-picker-eyecon',
-        "palette"
+        "palette", 
     ],
-    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, SymbolSelectionLayoutView, MarkerStyleTemplate, Symbols) {
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, SymbolSelectionLayoutView, MarkerStyleTemplate, Symbols, LGPalettes) {
         'use strict';
 
         /**
@@ -47,6 +48,8 @@ define(["jquery",
 
                 console.log(this.model);
 
+                this.lgPalettes = new LGPalettes();
+
                 // this is the new properties list; all properties in a single list
                 this.dataColumnsList = this.buildDataColumnsList();
 
@@ -73,7 +76,7 @@ define(["jquery",
                 } else if (this.model.get('group_by') === 'individual') {
                     this.createCorrectSymbols();
                 } else {
-                    this.buildPalettes(this.model.get('symbols').length);
+                    this.updatePalettes(this.model.get('symbols').length);
                     this.updateMapAndRender();
                 }
 
@@ -129,6 +132,8 @@ define(["jquery",
             templateHelpers: function () {
                 var metadata = this.model.get("metadata"),
                     helpers;
+                const symbols  = this.model.get('symbols').models;
+                let symbolCounter = symbols.length > 7 ? [0,1,2,3,4,5,6,7] : symbols;
                 helpers = {
                     metadata: metadata,
                     groupBy: this.model.get('group_by'),
@@ -137,12 +142,29 @@ define(["jquery",
                     dataColumnsList: this.dataColumnsList, // new
                     isBasic: this.model.get('group_by') === 'uniform',
                     isIndividual: this.model.get('group_by') === 'individual',
-                    propCanBeCont: this.propCanBeCont()
+                    propCanBeCont: this.propCanBeCont(), 
+                    paletteCounter: this.colorPaletteAmount()
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
                 }
                 return helpers;
+            },
+
+            colorPaletteAmount: function() {
+                let numberOfSymbols = this.model.get('symbols').models.map((item, i) => {
+                    return i
+                });
+                if (!this.model.get('metadata').isContinuous) {
+                    if (numberOfSymbols.length > 9) {
+                        numberOfSymbols.length = 9;
+                    } 
+                } 
+
+                // remove that last symbol, which will always be the uncategorized symbol
+                numberOfSymbols.pop();
+                return numberOfSymbols;
+
             },
 
             events: {
@@ -269,7 +291,6 @@ define(["jquery",
                 if (gb === 'uniform') {
                     this.uniformData();
                 } else if (gb === 'individual') {
-                    console.log('individual');
                     this.individualData();
                 } else {
                     this.model.get('metadata').currentProp = this.model.get('group_by');
@@ -291,15 +312,18 @@ define(["jquery",
             },
 
             contData: function() {
-                this.buildPalettes();
+                this.updatePalettes(this.model.get("metadata").buckets);
                 this.setSymbols(this.buildContinuousSymbols(this.getContInfo()));
             },
 
             catData: function() {
-                var catInfo = this.getCatInfo();
-                this.buildPalettes(catInfo.list.length);
+                let categoryList = this.getCatInfo();
+                this.updatePalettes(categoryList.length);
+                this.setSymbols(this.buildCategoricalSymbols(categoryList));
+            },
 
-                this.setSymbols(this.buildCategoricalSymbols(catInfo));
+            setPalettes: function(count) {
+
             },
 
             buildUniformSymbols: function (key) {
@@ -326,25 +350,21 @@ define(["jquery",
                 this.layerDraft.individual = new Symbols();
                 let collection = this.app.dataManager.getCollection(key);
                 collection.forEach((item) => {
-                    const random_color = "#000000".replace(/0/g, function(){
-                        return (~~(Math.random()*16)).toString(16);
-                    });
                     this.layerDraft.individual.add({
-                        "rule": "id = " + item.id,
+                        "rule": `id = '${item.id}'`,
                         "title": item,
                         "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
                         "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
                         "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
                         "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
                         "shape": this.$el.find(".global-marker-shape").val(),
-                        "fillColor": random_color,
+                        "fillColor": '#ed867d',
                         "strokeColor": this.model.get("metadata").strokeColor,
                         "isShowing": this.model.get("metadata").isShowing,
                         "id": item.id,
                     });
                 });
                 this.layerNoLongerNew();
-                console.log(this.layerDraft.individual);
                 return this.layerDraft.individual;
 
             },
@@ -356,18 +376,14 @@ define(["jquery",
                     this.model.set('symbols', this.layerDraft.continuous);
                 }
                 this.layerDraft.continuous = new Symbols();
-                console.log(this.selectedColorPalette);
                 while (Math.round(cont.currentFloor) < cont.max) {
-                    
+
                     const next = cont.currentFloor + cont.segmentSize;
 
                     // the upper bound of the final bucket should be inclusive '<=' and not '<'
-                    // This is because the final upper bound is also the highest value in a given dataset, 
+                    // This is because the final upper bound is also the highest value in a given dataset,
                     // so it cannot be exluded. All other upper bounds are exlusive '<'
-                    console.log('next: ', Math.round(next));
-                    console.log('MAX: ', cont.max);
                     let lastRuleSymbol = !(Math.round(next) < cont.max) ? '=' : '';
-                    console.log(`loop ${counter}: ${selected} >= ${cont.currentFloor.toFixed(0)} and ${selected} <${lastRuleSymbol} ${(cont.currentFloor + cont.segmentSize).toFixed(0)}`);
                     this.layerDraft.continuous.add({
                         "rule": `${selected} >= ${cont.currentFloor.toFixed(0)} and ${selected} <${lastRuleSymbol} ${(cont.currentFloor + cont.segmentSize).toFixed(0)}`,
                         "title": "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
@@ -391,10 +407,10 @@ define(["jquery",
                 return this.layerDraft.continuous;
             },
 
-            buildCategoricalSymbols: function (cat) {
-                var idCounter = 1,
-                paletteCounter = 0;
-                this.layerDraft.categorical = new Symbols();
+            buildCategoricalSymbols: function (categoryList) {
+                this.layerDraft.categorical = Symbols.buildCategoricalSymbolSet(
+                    categoryList, this.model, this.selectedColorPalette);
+                /*this.layerDraft.categorical = new Symbols();
                 cat.list.forEach((item) => {
                     this.layerDraft.categorical.add({
                         "rule": this.model.get('metadata').currentProp + " = '" + item + "'",
@@ -413,7 +429,7 @@ define(["jquery",
 
                     idCounter++;
                     paletteCounter++;
-                });
+                });*/
                 this.layerNoLongerNew();
                 return this.layerDraft.categorical;
             },
@@ -455,22 +471,16 @@ define(["jquery",
              * category/entry
             */
             getCatInfo: function () {
+                let categoryList = [];
                 var key = this.model.get('dataset').overlay_type,
-                cat = {
-                   list: [],
-                   instanceCount: {},
-                },
                 selected = this.model.get('metadata').currentProp,
                 collection = this.app.dataManager.getCollection(key);
                 collection.models.forEach(function(d) {
-                    if (!cat.list.includes(d.get(selected)) && d.get(selected)) {
-                        cat.list.push(d.get(selected));
-                        cat.instanceCount[d.get(selected)] = 1;
-                    } else {
-                        cat.instanceCount[d.get(selected)]++;
+                    if (!categoryList.includes(d.get(selected)) && d.get(selected)) {
+                        categoryList.push(d.get(selected));
                     }
                 });
-                return cat;
+                return categoryList;
             },
 
             setSymbols: function (symbs) {
@@ -510,7 +520,8 @@ define(["jquery",
                         }
                         var buckets = parseFloat(this.$el.find("#bucket").val());
                         this.updateMetadata("buckets", buckets);
-                        this.buildPalettes();
+
+                        this.updatePalettes(this.model.get("metadata").buckets);
                         this.contData();
                        // that.render();
                        this.$el.find("#bucket").focus();
@@ -519,6 +530,17 @@ define(["jquery",
                 );
             },
 
+            updatePalettes: function(itemCount) {
+                let symbolType = this.model.get("metadata").isContinuous ? 'continuous' : 'categorical';
+    
+                const paletteId = this.model.get("metadata").paletteId;
+
+                // update palette list and active palette
+                this.allColors = this.lgPalettes.getAllPalettes(itemCount, symbolType);
+                this.selectedColorPalette = this.lgPalettes.getPalette(paletteId, itemCount, symbolType);
+            },
+
+            /*
             buildPalettes: function (itemCount) {
                 let count = itemCount;
                 if (count > 8) { count = 8; }
@@ -538,8 +560,7 @@ define(["jquery",
                 } else {
                     if (this.model.get('metadata').isContinuous) {
                         paletteList = contPalettes;
-                        console.log('metadata buckets: ', this.model.get("metadata").buckets);
-                        buckets = this.model.get("metadata").buckets + 1;
+                        buckets = count + 1;
                         console.log('buckets in color sequence: ', buckets)
                     } else {
                         paletteList = catPalettes;
@@ -556,7 +577,7 @@ define(["jquery",
                 seq7 = palette(paletteList[6], buckets);
                 seq8 = palette(paletteList[7], buckets);
                 this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8];
-                
+
                 if (this.model.get('metadata').isContinuous) {
                     console.log(this.allColors);
                     this.allColors.forEach((seq, index) => {
@@ -567,6 +588,7 @@ define(["jquery",
                 this.selectedColorPalette = this.allColors[paletteId];
                 return this.selectedColorPalette;
             },
+            */
 
             /*updateMap: function () {
                 console.log('msv updateMap');
@@ -629,7 +651,7 @@ define(["jquery",
                 let i = 0,
                 that = this;
                 this.collection.each(function(symbol) {
-                    symbol.set('fillColor', "#" + that.selectedColorPalette[i]);
+                    symbol.set('fillColor', "#" + that.selectedColorPalette[i % that.selectedColorPalette.length]);
                     i++;
                 });
 

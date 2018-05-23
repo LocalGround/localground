@@ -105,12 +105,9 @@ define(["marionette",
                     top: coords.y
                 });
                 $('.style-by-menu').show();
-                console.log('showing menu');
-
             },
 
             hideStyleMenu: function(e){
-                console.log('hide menu');
                 var $el = $(e.target);
                 var parent = document.getElementById("style-by-menu");
 

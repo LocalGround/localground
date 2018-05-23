@@ -52,6 +52,13 @@
 
 }
 
+.ind-symbol:hover .symbol-edit,
+.ind-symbol:hover .symbol-display {
+    display: inline;
+    cursor: pointer;
+    
+}
+
 .half-opac .fa-eye,
 .half-opac .fa-eye-slash,
 .half-opac .sort-by,
@@ -61,12 +68,29 @@
 }
 
 .ind-symbol {
+    box-sizing: border-box;
+    padding: 0px 32px;
     svg {
         vertical-align: middle;
     }
     .symbol-edit {
-        vertical-align: text-bottom;
+        width: auto;
+        font-size: 16px;
+        padding: 0;
+        padding-top: 5px;
     }
+}
+
+.ind-symbol_text {
+    font-size: 12px;
+    padding: 4px 0px;
+    display: inline-block;
+    font-weight: 600;
+    width: 170px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
 }
 
 .symbol-header {
@@ -124,7 +148,7 @@ i.fa.fa.fa-question-circle {
         display: inline-block;
         width: 100%;
     }
-    p {
+    .reg-symbol_text {
         display: inline-block;
         margin-top: 3px;
         vertical-align: middle;
