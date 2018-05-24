@@ -34,7 +34,7 @@ define(["underscore", "models/symbol", "collections/base"], function (_, Symbol,
         buildCategoricalSymbolSet: function (categoryList, layerModel, palette) {
             const symbols = new Symbols();
             categoryList.forEach((category, index) => {
-                symbols.add(Symbol.createCategoricalSymbol(category, layerModel, index, palette));
+                symbols.add(Symbol.createCategoricalSymbol(category, layerModel, index, index, palette));
             });
             return symbols;
         }

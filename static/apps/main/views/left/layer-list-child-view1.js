@@ -61,6 +61,8 @@ define(["marionette",
                 this.assignRecordsToSymbols();
                 this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
+
+                this.removeEmptySymbols();
             },
 
             onRender: function() {
