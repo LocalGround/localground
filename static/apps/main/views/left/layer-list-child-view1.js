@@ -6,11 +6,10 @@ define(["marionette",
         "apps/main/views/left/symbol-collection-view",
         "apps/main/views/left/edit-layer-menu",
         "apps/main/views/right/marker-style-view",
-        "apps/main/views/left/add-marker-menu",
-        "lib/lgPalettes"
+        "apps/main/views/left/add-marker-menu"
     ],
     function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record,
-            SymbolView, EditLayerMenu, MarkerStyleView, AddMarkerMenu, LGPalettes) {
+            SymbolView, EditLayerMenu, MarkerStyleView, AddMarkerMenu) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -37,9 +36,6 @@ define(["marionette",
                 'click .collapse': 'collapseSymbols',
                 'click .open-layer-menu': 'showLayerMenu',
                 'click .add-record-container': 'displayGeometryOptions',
-                'click #select-point': 'initAddPoint',
-                'click #select-polygon': 'initAddPolygon',
-                'click #select-polyline': 'initAddPolyline',
             },
 
             initialize: function (opts) {
@@ -101,55 +97,39 @@ define(["marionette",
                 };
             },
             addChild: function (symbolModel, ChildView, index) {
-                //if the symbol has no children, don't create the child
-                // view:
-                if (symbolModel.getModelsJSON().length > 0) {
-                    return Marionette.CollectionView.prototype.addChild.call(this, symbolModel, ChildView, index);
+                //don't create the child view for uncategorized w/no children:
+                if (!symbolModel.hasModels() && symbolModel.isUncategorized()) {
+                    return null;
                 }
-                return null;
+                return Marionette.CollectionView.prototype.addChild.call(this, symbolModel, ChildView, index);
             },
             getUncategorizedSymbolModel: function () {
                 return this.symbolModels.findWhere({
                     rule: Symbol.UNCATEGORIZED_SYMBOL_RULE
                 });
             },
-            assignRecordsToSymbols: function () {
-                // const that = this;
-                const uncategorizedSymbol = this.getUncategorizedSymbolModel();
+            createUncategorizedSymbolModel: function () {
+                const symbol = new Symbol({
+                    rule: Symbol.UNCATEGORIZED_SYMBOL_RULE,
+                    title: 'Uncategorized'
+                });
+                this.symbolModels.push(symbol);
+                return symbol;
+            },
 
+            assignRecordsToSymbols: function () {
                 this.dataCollection.each((recordModel) => {
                     var matched = false;
                     this.symbolModels.each(function (symbolModel) {
-                        //console.log(symbolModel);
                         if (symbolModel.checkModel(recordModel)) {
                             symbolModel.addModel(recordModel);
                             matched = true;
                         }
                     })
                     if (!matched) {
-                        //this.reAssignRecordToSymbols(recordModel);
-                        uncategorizedSymbol.addModel(recordModel);
+                        this.handleUnmatchedRecord(recordModel);
                     }
                 });
-            },
-            assignRecordToSymbol: function (recordModel) {
-                var symbolView;
-                this.children.each(function (view) {
-                    if (view.model.checkModel(recordModel)) {
-                        symbolView = view;
-                        return;
-                    }
-                })
-                if (!symbolView) {
-                    symbolView = this.children.findByModel(
-                        this.getUncategorizedSymbolModel()
-                    );
-                }
-                if (!symbolView) {
-                    alert('missing!');
-                }
-                symbolView.model.addModel(recordModel);
-                //symbolView.render();
             },
 
             reAssignRecordsToSymbols: function() {
@@ -159,12 +139,10 @@ define(["marionette",
             },
 
             reAssignRecordToSymbols: function(recordModel) {
-                const gb = this.model.get('group_by');
-                if (gb === 'uniform' || gb === 'individual') {
+                if (this.model.isUniform() || this.model.isContinuous()) {
                     return;
                 }
                 var matched = false;
-                const uncategorizedSymbol = this.getUncategorizedSymbolModel();
                 const recordValIsEmpty = this.isEmpty(
                     recordModel.get(this.model.get('metadata').currentProp)
                 );
@@ -177,98 +155,66 @@ define(["marionette",
                         symbolModel.addModel(recordModel);
                         matched = true;
                     }
-
                 });
                 if (!matched) {
                     if (!this.model.get('metadata').isContinuous && !recordValIsEmpty) {
-                        this.createNewSymbol(this.symbolModels, recordModel);
+                        this.symbolModels.appendNewSymbol({
+                            recordModel: recordModel,
+                            layerModel: this.model,
+                            metadata: this.model.get('metadata')
+                        });
                     } else {
-                        uncategorizedSymbol.addModel(recordModel);
+                        this.handleUnmatchedRecord(recordModel);
                     }
                 }
-
                 this.removeEmptySymbols();
-
                 this.saveChanges();
+            },
+            handleUnmatchedRecord: function (recordModel) {
+                let uncategorizedSymbol = this.getUncategorizedSymbolModel();
+                if (!uncategorizedSymbol) {
+                    uncategorizedSymbol = this.createUncategorizedSymbolModel();
+                    uncategorizedSymbol.addModel(recordModel);
+                    try {
+                        this.addChild(uncategorizedSymbol, this.childView, this.collection.length);
+                    } catch (e) {
+                        //view not rendered yet.
+                    }
+                }
+            },
+            assignRecordToSymbol: function (recordModel) {
+                let symbolModel, symbolView;
+                this.children.each(function (view) {
+                    if (view.model.checkModel(recordModel)) {
+                        symbolModel = view.model
+                        return;
+                    }
+                })
+                if (symbolModel) {
+                    symbolModel.addModel(recordModel);
+                    return;
+                }
+                this.handleUnmatchedRecord(recordModel);
             },
 
             removeEmptySymbols: function() {
                 this.symbolModels.each((symbol) => {
-                    if (symbol.matchedModels.length === 0) {
-                        if (symbol.get('rule') !== '¯\\_(ツ)_/¯') {
-                            console.log('removing symbol: ', symbol)
-                            this.symbolModels.remove(symbol);
-                        }
+                    if (!symbol.hasModels() && symbol.isUncategorized()) {
+                        this.symbolModels.remove(symbol);
                     }
                 });
-            },
-            createNewSymbol: function(symbolCollection, record) {
-                const category = record.get(this.model.get('metadata').currentProp);
-                const paletteId = this.model.get('metadata').paletteId;
-                const lgPalettes = new LGPalettes();
-                const palette = lgPalettes.getPalette(paletteId, 8, 'categorical');
-
-                const maxId = symbolCollection.maxId();
-                const symbolId = symbolCollection.length;
-                let symbol = Symbol.createCategoricalSymbol(category, this.model, maxId + 1, symbolCollection.length + 1, palette)
-
-                if (symbol.checkModel(record)) {
-                    symbol.addModel(record);
+                if (!this.model.isCategorical()) {
+                    return;
                 }
-                console.log('newSYMBOL: ', symbol);
-                symbolCollection.add(symbol, { at: symbolCollection.length - 1 });
+                this.symbolModels.each((symbol) => {
+                    if (!symbol.hasModels()) {
+                        this.symbolModels.remove(symbol);
+                    }
+                });
             },
 
             isEmpty(value){
                 return (value == null || value.length === 0);
-            },
-
-            addFakeModel: function () {
-                var categories = ['mural', 'sculpture', 'blah', undefined, null, '']
-                var category = categories[ parseInt(Math.random() * 6) ]
-                var id = parseInt(Math.random()* 1000)
-                var recordModel = new Record({
-                    'id': id,
-                    'col1': category,
-                    'desc': `Marker ${id}: (${category})`,
-                    'display_name': `Marker ${id}: (${category})`,
-                    'geometry': {
-                        'type': 'Point',
-                        'coordinates': [
-                            -122 + Math.random(),
-                            37 + Math.random()
-                        ]
-                    }
-                });
-                this.dataCollection.add(recordModel);
-            },
-
-            addRecord: function (data) {
-                if (this.cid !== data.viewID) {
-                    return;
-                }
-
-                const recordModel = new Record({
-                    'overlay_type': this.model.get('dataset').overlay_type,
-                    "project_id": this.app.dataManager.getProject().id,
-                    "form": this.model.get('dataset'),
-                    "fields": this.model.get('dataset').fields,
-                    "owner": this.model.get('owner'),
-                    'geometry': data.geoJSON,
-                    "fillColor": '#ed867d'
-                }, { urlRoot: this.dataCollection.url });
-
-                recordModel.save(null, {
-                    success: () => {
-                        this.dataCollection.add(recordModel);
-                        var mapID = this.app.dataManager.getMap().id,
-                            layerID = this.model.id,
-                            overlay_type = this.model.get('dataset').overlay_type,
-                            recID = recordModel.id,
-                            route = `${mapID}/layers/${layerID}/${overlay_type}/${recID}`;
-                        this.app.router.navigate("//" + route);
-                    }
-                });
             },
 
             // triggered from the router
@@ -298,7 +244,6 @@ define(["marionette",
             },
 
             showLayerMenu: function(event) {
-
                 this.popover.update({
                     $source: event.target,
                     view: new EditLayerMenu({
@@ -353,14 +298,8 @@ define(["marionette",
                 })
                 if (isShowing) {
                     this.$el.removeClass('hide-layer');
-                    // this.$el.find('#symbols-list').show();
-                    // this.$el.find('.lc-2').show();
-                    // this.$el.find('.lc-3').show();
                 } else {
                     this.$el.addClass('hide-layer');
-                    // this.$el.find('#symbols-list').hide()
-                    // this.$el.find('.lc-2').hide();
-                    // this.$el.find('.lc-3').hide();
                 }
                 this.saveChanges();
             },
@@ -385,9 +324,7 @@ define(["marionette",
                 }
             },
 
-
             addRecord: function (data) {
-                console.log(this.cid, data.viewID)
                 if (this.cid !== data.viewID) {
                     return;
                 }

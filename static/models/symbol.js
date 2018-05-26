@@ -19,7 +19,7 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 strokeWeight: 1,
                 strokeOpacity: 1,
                 shape: "circle",
-                isShowing: false
+                isShowing: true
             },
             initialize: function (data, opts) {
                 _.extend(this, opts);
@@ -77,6 +77,9 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
             },
             containsRecord: function(model) {
                 return  this.matchedModels.contains(model);
+            },
+            isUncategorized: function () {
+                return this.get('rule') === Symbol.UNCATEGORIZED_SYMBOL_RULE;
             },
             hasModels: function () {
                 return this.matchedModels.length > 0;

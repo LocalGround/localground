@@ -33,6 +33,22 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
                 console.warn("Layer Model Warning: without the map_id, the layer can't be saved to database");
             }
 		},
+        isCategorical: function () {
+            return !(this.isIndividual() && this.isUniform() && this.isContinuous());
+        },
+        isContinuous: function () {
+            return this.get('metadata').isContinuous;
+        },
+        isUniform: function () {
+            return this.get('group_by') === 'uniform';
+        },
+        isIndividual: function () {
+            return this.get('group_by') === 'individual';
+        },
+        const gb = this.model.get('group_by');
+        if (gb === 'uniform' || gb === 'individual') {
+            return;
+        }
         url: function () {
             let baseURL =  Base.prototype.url.apply(this, arguments);
             if (baseURL.indexOf('.json') === -1) {

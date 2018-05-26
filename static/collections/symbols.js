@@ -1,4 +1,5 @@
-define(["underscore", "models/symbol", "collections/base"], function (_, Symbol, Base) {
+define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
+    function (_, Symbol, Base, LGPalettes) {
     "use strict";
     /**
      * Note: There is no "Symbols" API Endpoint. This is just a convenience function
@@ -13,22 +14,23 @@ define(["underscore", "models/symbol", "collections/base"], function (_, Symbol,
             _.extend(this, opts);
             Base.prototype.initialize.apply(this, recs, opts);
         },
-        reset: function (models, options) {
-            //add an uncategorized symbol:
-            const uncategorizedSymbol = _.findWhere(models, {rule: this.UNCATEGORIZED_SYMBOL_RULE});
-            if (!uncategorizedSymbol) {
-                models.push(new Symbol({
-                    rule: this.UNCATEGORIZED_SYMBOL_RULE,
-                    title: 'Uncategorized'
-                }).toJSON());
-            }
-            Base.prototype.reset.apply(this, arguments);
-        },
         maxId: function() {
             let symbolIds = this.models.map(symbol => symbol.get('id'));
-            console.log(symbolIds)
-            console.log(...symbolIds)
+            //console.log(symbolIds)
+            //console.log(...symbolIds)
             return Math.max(...this.models.map(symbol => symbol.get('id')))
+        },
+        appendNewSymbol: function (opts) {
+            const recordModel = opts.recordModel;
+            const category = recordModel.get(opts.metadata.currentProp);
+            const lgPalettes = new LGPalettes();
+            const palette = lgPalettes.getPalette(opts.metadata.paletteId, 8, 'categorical');
+            const symbol = Symbol.createCategoricalSymbol(
+                category, opts.layerModel, this.maxId() + 1,
+                this.length, palette
+            );
+            symbol.addModel(recordModel);
+            this.add(symbol);
         }
     }, {
         buildCategoricalSymbolSet: function (categoryList, layerModel, palette) {
