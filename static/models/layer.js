@@ -45,10 +45,6 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
         isIndividual: function () {
             return this.get('group_by') === 'individual';
         },
-        const gb = this.model.get('group_by');
-        if (gb === 'uniform' || gb === 'individual') {
-            return;
-        }
         url: function () {
             let baseURL =  Base.prototype.url.apply(this, arguments);
             if (baseURL.indexOf('.json') === -1) {

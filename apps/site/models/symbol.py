@@ -7,7 +7,7 @@ class Symbol(object):
 
     @classproperty
     def SIMPLE(cls):
-        return Symbol()
+        return Symbol(title='All items')
     CIRCLE = 'circle'
 
     def get_random_color(self):
