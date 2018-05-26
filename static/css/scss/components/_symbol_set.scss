@@ -26,12 +26,12 @@
     border-right: 3px solid white;
 }
 
-.symbol-edit, .symbol-display {
+.symbol-edit, .symbol-display, .symbol-edit-individual {
     padding-top: 8px;
     padding-right: 6px;
     float: right;
 }
-.symbol-edit {
+.symbol-edit, .symbol-edit-individual {
     display: none;
 }
 .symbol-display.fa-eye {
@@ -48,11 +48,11 @@
 
 }
 
-.ind-symbol:hover .symbol-edit,
+.ind-symbol:hover .symbol-edit-individual,
 .ind-symbol:hover .symbol-display {
     display: inline;
     cursor: pointer;
-    
+
 }
 
 .half-opac .fa-eye,
@@ -69,7 +69,7 @@
     svg {
         vertical-align: middle;
     }
-    .symbol-edit {
+    .symbol-edit-individual {
         width: auto;
         font-size: 16px;
         padding: 0;

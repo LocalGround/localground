@@ -1,9 +1,10 @@
 define(["marionette",
         "handlebars",
         "lib/maps/overlays/marker",
+        "apps/main/views/right/symbol-style-menu-view",
         "text!../../templates/left/symbol-item-view.html"
     ],
-    function (Marionette, Handlebars, MarkerOverlay, SymbolItemTemplate) {
+    function (Marionette, Handlebars, MarkerOverlay, SymbolStyleMenuView, SymbolItemTemplate) {
         'use strict';
         /**
          * model --> Record
@@ -13,6 +14,7 @@ define(["marionette",
                 _.extend(this, opts);
                 this.symbolModel = this.parent.model;
                 this.overlay = null;
+                this.popover = this.app.popover;
                 this.route = this.parent.mapId + '/layers/' + this.parent.layerId + '/' + this.parent.layer.get('dataset').overlay_type + '/' + this.model.id;
                 if (this.model.get('geometry') != null) {
                     this.overlay = new MarkerOverlay({
@@ -33,7 +35,9 @@ define(["marionette",
                 'change:geometry': 'updateGeometry',
                 'change': 'render'
             },
-
+            events: {
+                'click .symbol-edit-individual': 'showSymbolEditMenu'
+            },
             template: Handlebars.compile(SymbolItemTemplate),
             tagName: "li",
             className: "symbol-item marker-container",
@@ -67,6 +71,21 @@ define(["marionette",
                     }
                 }
             },
+
+            showSymbolEditMenu: function (event) {
+                this.popover.update({
+                    $source: this.$el.find('.ind-symbol'),
+                    view: new SymbolStyleMenuView({
+                        app: this.app,
+                        model: this.symbolModel
+                    }),
+                    placement: 'right',
+                    offsetX: '5px',
+                    width: '350px',
+                    title: 'Symbol Properties'
+                });
+            },
+
             makeActive: function (e) {
                 var activeItem = this.app.selectedItemView;
                 if (activeItem && !activeItem.isDestroyed) {

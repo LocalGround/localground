@@ -34,7 +34,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             }
 		},
         isCategorical: function () {
-            return !(this.isIndividual() && this.isUniform() && this.isContinuous());
+            return !(this.isIndividual() || this.isUniform() || this.isContinuous());
         },
         isContinuous: function () {
             return this.get('metadata').isContinuous;

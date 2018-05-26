@@ -43,10 +43,6 @@ define(["marionette",
                 this.popover = this.app.popover;
                 this.modal = this.app.modal;
                 this.symbolModels = this.collection;
-                this.listenTo(this.dataCollection, 'add', this.assignRecordToSymbol)
-                this.listenTo(this.dataCollection, 'update-symbol-assignment', this.reAssignRecordToSymbols)
-                this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
-                this.listenTo(this.app.vent, 'record-has-been-delete', this.removeEmptySymbols);
                 if (!this.model || !this.collection || !this.dataCollection) {
                     console.error("model, collection, and dataCollection are required");
                     return;
@@ -57,8 +53,19 @@ define(["marionette",
                 this.assignRecordsToSymbols();
                 this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
-
                 this.removeEmptySymbols();
+
+                this.attachRecordEventHandlers();
+            },
+            attachRecordEventHandlers: function () {
+                this.listenTo(this.dataCollection, 'add',
+                    this.assignRecordToSymbol)
+                this.listenTo(this.dataCollection, 'update-symbol-assignment',
+                    this.reAssignRecordToSymbols)
+                this.listenTo(this.app.vent, 'geometry-created',
+                    this.addRecord);
+                this.listenTo(this.app.vent, 'record-has-been-delete',
+                    this.removeEmptySymbols);
             },
 
             onRender: function() {
@@ -131,15 +138,29 @@ define(["marionette",
                     }
                 });
             },
+            assignRecordToSymbol: function (recordModel) {
+                let symbolModel;
+                this.children.each(function (view) {
+                    if (view.model.checkModel(recordModel)) {
+                        symbolModel = view.model
+                        return;
+                    }
+                });
+                if (symbolModel) {
+                    symbolModel.addModel(recordModel);
+                } else {
+                    this.handleUnmatchedRecord(recordModel);
+                }
+            },
 
             reAssignRecordsToSymbols: function() {
                 this.dataCollection.each((recordModel) => {
-                    this.reAssignRecordToSymbols(recordModel)
+                    this.reAssignRecordToSymbols(recordModel);
                 });
             },
 
             reAssignRecordToSymbols: function(recordModel) {
-                if (this.model.isUniform() || this.model.isContinuous()) {
+                if (this.model.isUniform() || this.model.isIndividual()) {
                     return;
                 }
                 var matched = false;
@@ -172,37 +193,30 @@ define(["marionette",
             },
             handleUnmatchedRecord: function (recordModel) {
                 let uncategorizedSymbol = this.getUncategorizedSymbolModel();
-                if (!uncategorizedSymbol) {
-                    uncategorizedSymbol = this.createUncategorizedSymbolModel();
+                if (uncategorizedSymbol) {
                     uncategorizedSymbol.addModel(recordModel);
-                    try {
-                        this.addChild(uncategorizedSymbol, this.childView, this.collection.length);
-                    } catch (e) {
-                        //view not rendered yet.
-                    }
-                }
-            },
-            assignRecordToSymbol: function (recordModel) {
-                let symbolModel, symbolView;
-                this.children.each(function (view) {
-                    if (view.model.checkModel(recordModel)) {
-                        symbolModel = view.model
-                        return;
-                    }
-                })
-                if (symbolModel) {
-                    symbolModel.addModel(recordModel);
                     return;
                 }
-                this.handleUnmatchedRecord(recordModel);
+                // otherwise, create a new uncategorized model and add it
+                // to the child views:
+                uncategorizedSymbol = this.createUncategorizedSymbolModel();
+                uncategorizedSymbol.addModel(recordModel);
+                try {
+                    this.addChild(uncategorizedSymbol, this.childView, this.collection.length);
+                } catch (e) {
+                    console.warn('silent error (view not rendered yet)');
+                }
             },
-
-            removeEmptySymbols: function() {
+            removeEmptyUncategorizedSymbol: function () {
                 this.symbolModels.each((symbol) => {
                     if (!symbol.hasModels() && symbol.isUncategorized()) {
                         this.symbolModels.remove(symbol);
                     }
                 });
+            },
+
+            removeEmptySymbols: function() {
+                this.removeEmptyUncategorizedSymbol();
                 if (!this.model.isCategorical()) {
                     return;
                 }

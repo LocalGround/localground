@@ -480,13 +480,13 @@ ul {
   border-right: 3px solid white;
 }
 
-.symbol-edit, .symbol-display {
+.symbol-edit, .symbol-display, .symbol-edit-individual {
   padding-top: 8px;
   padding-right: 6px;
   float: right;
 }
 
-.symbol-edit {
+.symbol-edit, .symbol-edit-individual {
   display: none;
 }
 
@@ -504,7 +504,7 @@ ul {
   cursor: pointer;
 }
 
-.ind-symbol:hover .symbol-edit,
+.ind-symbol:hover .symbol-edit-individual,
 .ind-symbol:hover .symbol-display {
   display: inline;
   cursor: pointer;
@@ -527,7 +527,7 @@ ul {
   vertical-align: middle;
 }
 
-.ind-symbol .symbol-edit {
+.ind-symbol .symbol-edit-individual {
   width: auto;
   font-size: 16px;
   padding: 0;

@@ -9,7 +9,7 @@ define(["jquery",
         "collections/symbols",
         "lib/lgPalettes",
         'color-picker-eyecon',
-        "palette", 
+        "palette",
     ],
     function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, SymbolSelectionLayoutView, MarkerStyleTemplate, Symbols, LGPalettes) {
         'use strict';
@@ -142,7 +142,7 @@ define(["jquery",
                     dataColumnsList: this.dataColumnsList, // new
                     isBasic: this.model.get('group_by') === 'uniform',
                     isIndividual: this.model.get('group_by') === 'individual',
-                    propCanBeCont: this.propCanBeCont(), 
+                    propCanBeCont: this.propCanBeCont(),
                     paletteCounter: this.colorPaletteAmount()
                 };
                 if (this.fields) {
@@ -158,8 +158,8 @@ define(["jquery",
                 if (!this.model.get('metadata').isContinuous) {
                     if (numberOfSymbols.length > 9) {
                         numberOfSymbols.length = 9;
-                    } 
-                } 
+                    }
+                }
 
                 // remove that last symbol, which will always be the uncategorized symbol
                 numberOfSymbols.pop();
@@ -352,7 +352,7 @@ define(["jquery",
                 let collection = this.app.dataManager.getCollection(key);
                 collection.forEach((item) => {
                     this.layerDraft.individual.add({
-                        "rule": `id = '${item.id}'`,
+                        "rule": `id = ${item.id}`,
                         "title": item,
                         "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
                         "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
@@ -533,7 +533,7 @@ define(["jquery",
 
             updatePalettes: function(itemCount) {
                 let symbolType = this.model.get("metadata").isContinuous ? 'continuous' : 'categorical';
-    
+
                 const paletteId = this.model.get("metadata").paletteId;
 
                 // update palette list and active palette
