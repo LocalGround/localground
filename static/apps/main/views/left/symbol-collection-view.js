@@ -135,7 +135,7 @@ define(["jquery",
                     placement: 'right',
                     width: '250px',
                     offsetX: '-30px',
-                    title: 'Symbol Properties'
+                    title: '    '
                 });
             },
 

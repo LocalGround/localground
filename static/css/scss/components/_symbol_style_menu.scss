@@ -1,36 +1,110 @@
-.symbol-style-menu {
-    background: white;
+// .symbol-style-menu {
+//     background: white;
+//     font-size: 12px;
+
+//     input {
+//         width: 32px;
+//         border-style: solid;
+//         border-width: 1px;
+//         border-color: #ebecf2;
+//     }
+//     h3 {
+//         padding: 5px 10px;
+//     }
+
+//     &>div {
+//         padding: 8px;
+//         display: flex;
+//     }
+// }
+
+// .symbol-style-menu_close {
+//     top: 3;
+//     right: 3;
+//     position: absolute;
+//     cursor: pointer;
+// }
+
+// .symbol-style-menu_label {
+//     width: 100px;
+// }
+
+// .style_attr {
+//     text-align: left;
+//     margin-left: auto;
+//     padding-left: 6px;
+// }
+
+.style-menu {
     font-size: 12px;
-
-    input {
-        width: 32px;
-        border-style: solid;
-        border-width: 1px;
-        border-color: #ebecf2;
-    }
-    h3 {
-        padding: 5px 10px;
-    }
-
-    &>div {
-        padding: 8px;
-        display: flex;
-    }
-}
-
-.symbol-style-menu_close {
-    top: 3;
-    right: 3;
-    position: absolute;
-    cursor: pointer;
-}
-
-.symbol-style-menu_label {
-    width: 100px;
-}
-
-.style_attr {
     text-align: left;
-    margin-left: auto;
-    padding-left: 6px;
+    padding: 0px 15px;
+
+    .symbol-title-input {
+        width: 100%;
+        padding: 4px 6px;
+        border-radius: 2px;
+        font-size: 14px;
+        box-sizing: border-box;
+        width: 100%;
+        border: solid 1px #ebecf2;
+    }
+    .symbol-info {
+        font-size: 10px;
+        margin-left: 4px;
+    }
+
+    .style-menu_row {
+        padding: 6px 0px;
+    }
+    .style-menu_block {
+        height: 20px;
+        width: 50px;
+        border-top: 1px solid #d8d8d8;
+        border-bottom: 1px solid #d8d8d8;
+        padding: 0;
+        margin: 0;
+    }
+    .style_attr:first-child .style-menu_block {
+        border: 1px solid #d8d8d8;
+    }
+    .style_attr:last-child .style-menu_block {
+        border: 1px solid #d8d8d8;
+    }
+
+    .style-menu_block input {
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        border: none;
+    }
+
+    .style-menu_inner-row {
+        display: inline-flex;
+    }
+
+    .style-menu_shape-inner-row {
+        margin: 0 auto;
+        width: 100%;
+        display: flex;
+        justify-content: space-evenly;
+    }
+    .style-menu_input-descr {
+        text-align: center;
+    }
+
+    .style-menu_shape {
+        color: #dbdbdb;
+    }
+
+    .style-menu_shape-wrapper {
+        border: 2px solid white;
+        padding: 2px;
+        border-radius: 3px;
+        width: 30px;
+        text-align: center;
+    }
+    .style-menu_shape-wrapper:hover {
+        border: 2px solid #9db1ea;
+    }
 }

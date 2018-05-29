@@ -87,7 +87,7 @@ define(["marionette",
                 this.assignRecordsToSymbols();
             },
             updateGroupBy: function () {
-                this.$el.find('.layer-style-by span').html(
+                this.$el.find('#layer-style-by').html(
                     this.model.get('group_by')
                 );
             },
@@ -139,7 +139,7 @@ define(["marionette",
                         symbolView = view;
                         return;
                     }
-                })
+                });
                 if (!symbolView) {
                     symbolView = this.children.findByModel(
                         this.getUncategorizedSymbolModel()

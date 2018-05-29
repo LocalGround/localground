@@ -211,6 +211,14 @@ define([
 
 
             });
+
+            it("'styled by: ' text updates when the Layer's 'group_by' attribute changes", function() {
+                this.view.render();
+                expect(this.view.model.get('group_by')).toEqual('height');
+                expect(this.view.$el.find('#layer-style-by').text()).toEqual('height');
+                this.view.model.set('group_by', 'individual');
+                expect(this.view.$el.find('#layer-style-by').text()).toEqual('individual');
+            });
         });
         describe("LayerListChildView, categorical: ", function () {
             beforeEach(function () {
