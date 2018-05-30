@@ -1,6 +1,7 @@
 define(["marionette",
         "handlebars",
         "text!../../templates/left/layer-item.html",
+        "collections/symbols",
         "models/symbol",
         "models/record",
         "apps/main/views/left/symbol-collection-view",
@@ -8,7 +9,7 @@ define(["marionette",
         "apps/main/views/right/marker-style-view",
         "apps/main/views/left/add-marker-menu"
     ],
-    function (Marionette, Handlebars, LayerItemTemplate, Symbol, Record,
+    function (Marionette, Handlebars, LayerItemTemplate, Symbols, Symbol, Record,
             SymbolView, EditLayerMenu, MarkerStyleView, AddMarkerMenu) {
         'use strict';
         /**
@@ -59,7 +60,7 @@ define(["marionette",
             },
             attachRecordEventHandlers: function () {
                 this.listenTo(this.dataCollection, 'add',
-                    this.assignRecordToSymbol)
+                    this.reRenderOrAssignRecordToSymbol)
                 this.listenTo(this.dataCollection, 'update-symbol-assignment',
                     this.reAssignRecordToSymbols)
                 this.listenTo(this.app.vent, 'geometry-created',
@@ -78,10 +79,38 @@ define(["marionette",
                     project: this.app.dataManager.getProject(),
                     name: this.dataCollection.name,
                     isChecked: this.model.get("metadata").isShowing,
-                    newMarkerType: this.newMarkerType
+                    hasData: !this.isEmpty()
                 };
             },
-            childView: SymbolView,
+            getChildView: function () {
+                return SymbolView;
+            },
+            isEmpty: function (options) {
+                //override native Marionette isEmpty method:
+                return this.dataCollection.length === 0;
+            },
+            emptyViewOptions: function () {
+                return {
+                    app: this.app,
+                    parent: this
+                };
+            },
+
+            getEmptyView: function () {
+                return Marionette.ItemView.extend({
+                    className: 'symbol-item marker-container',
+                    initialize: function (opts) {
+                        _.extend(this, opts);
+                        var templateHTML = `<div>
+                            'Dataset Empty!!!'
+                        </div>`
+                        this.template = Handlebars.compile(templateHTML);
+                    },
+                    templateHelpers: function () {
+                        return this.parent.model.toJSON()
+                    }
+                });
+            },
 
             childViewContainer: "#symbols-list",
 
@@ -138,7 +167,15 @@ define(["marionette",
                     }
                 });
             },
+            reRenderOrAssignRecordToSymbol: function (recordModel) {
+                console.log(this.dataCollection.length);
+                if (this.dataCollection.length === 1) {
+                    this.render();
+                }
+                this.assignRecordToSymbol(recordModel);
+            },
             assignRecordToSymbol: function (recordModel) {
+                console.log(this.model.toJSON());
                 let symbolModel;
                 this.children.each(function (view) {
                     if (view.model.checkModel(recordModel)) {
@@ -216,6 +253,34 @@ define(["marionette",
             },
 
             removeEmptySymbols: function() {
+                if (this.isEmpty()) {
+                    //render EmptyChildView view:
+                    //make uniform:
+                    this.model.set('group_by', 'uniform');
+                    this.model.set('symbols', new Symbols([{
+                            "rule": "*",
+                            "title": name,
+                            "shape": 'circle',
+                            "fillOpacity": Symbol.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
+                            "strokeWeight": Symbol.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
+                            "strokeOpacity": Symbol.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
+                            "strokeColor": this.model.get("metadata").strokeColor,
+                            'width': Symbol.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
+                            "isShowing": this.model.get("metadata").isShowing,
+                            "id": 1
+                        }]));
+                    this.model.save();
+                    this.render();
+                    /*var that = this;
+                    console.log(1, this.model.toJSON());
+                    this.model.save(null, {
+                        success: function () {
+                            console.log(2, that.model.toJSON());
+                            that.render();
+                        }
+                    })*/
+                    return;
+                }
                 this.removeEmptyUncategorizedSymbol();
                 if (!this.model.isCategorical()) {
                     return;
@@ -225,10 +290,6 @@ define(["marionette",
                         this.symbolModels.remove(symbol);
                     }
                 });
-            },
-
-            isEmpty(value){
-                return (value == null || value.length === 0);
             },
 
             // triggered from the router
@@ -289,6 +350,9 @@ define(["marionette",
             // If it is triggered by an event, there is only 1 argument.
             // If it is triggered from onRender, there are 2 args, and arg1 is null.
             showHideOverlays: function (event, state) {
+                if (this.isEmpty()) {
+                    return;
+                }
                 let isShowing;
                 if (arguments.length === 1) {
                     isShowing = this.$el.find('input').prop('checked');

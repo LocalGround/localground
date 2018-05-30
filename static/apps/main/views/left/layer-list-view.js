@@ -30,15 +30,15 @@ define(["marionette",
                 this.app = opts.app;
                 this.model = opts.model;
                 this.modal = this.app.modal;
+                this.symbols =
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
                 this.listenTo(this.app.vent, 'add-css-to-selected-layer', this.addCssToSelectedLayer);
             },
 
             childViewOptions: function (model, index) {
-                var dm = this.app.dataManager;
+                const dm = this.app.dataManager;
                 return {
                     app: this.app,
-                    //collection: new Symbols(model.get('symbols')),
                     collection: model.get('symbols'),
                     dataCollection: dm.getCollection(model.get('dataset').overlay_type)
                 };

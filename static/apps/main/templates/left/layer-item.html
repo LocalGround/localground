@@ -1,5 +1,4 @@
 <div class="layer-container">
-    <!-- <button id="fakeadd">Fake Add</button> -->
     <div class='layer-column' id='layer{{id}}'>
         <input class='layer-isShowing' id='cb{{id}}' type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} />
         <p class="layer-name">{{ title }}</p>
@@ -7,7 +6,7 @@
         <span class="open-layer-menu">
             <i class="fa fa-ellipsis-v fa-lg"></i>
         </span>
-        <img src="/static/assets/record-add-icon.svg" type="image/svg+xml" alt="add record" class="add-record-container"></img>        
+        <img src="/static/assets/record-add-icon.svg" type="image/svg+xml" alt="add record" class="add-record-container"></img>
     </div>
     <div class="layer-column">
         <p class="layer-datasource">
@@ -15,12 +14,14 @@
             <a href="/data/{{project.id}}/#/table/{{dataset.overlay_type}}" target="_blank">{{name}}</a>
         </p>
     </div>
+    {{#if hasData}}
     <div class="layer-column lc-3">
         <span class="collapse-wrapper">
             <i class="fa fa-caret-down fa-lg collapse"></i>
         </span>
         <a><p class="layer-style-by" id="layer-style-by">styled by: {{group_by}}</p></a>
     </div>
+    {{/if}}
     <div id="symbols-list">
         {{#each dataList}}
         <li class="list-item">
