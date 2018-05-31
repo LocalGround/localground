@@ -109,3 +109,14 @@
 #bucket {
     width: 40px;
 }
+
+.example-markers {
+    display: inline-flex;
+    width: 100%;
+    // justify-content: space-evenly;
+    justify-content: center;
+}
+
+.example-marker-wrapper {
+    padding: 2px;
+}

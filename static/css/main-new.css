@@ -694,6 +694,16 @@ i.fa.fa.fa-question-circle {
   width: 40px;
 }
 
+.example-markers {
+  display: inline-flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.example-marker-wrapper {
+  padding: 2px;
+}
+
 .style-menu {
   font-size: 12px;
   text-align: left;

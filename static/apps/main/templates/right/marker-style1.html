@@ -87,6 +87,16 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <label>Marker</label>
+            <div class="example-markers">
+                {{#each paletteCounter}}
+                <div class="example-marker-wrapper">
+                    <i class="fa fa-2x fa-circle" style="color: #{{lookup ../selectedColorPalette @index}}"></i>
+                </div>
+                {{/each}}
+            </div>
+        </div>
     
     
         {{/unless}}
