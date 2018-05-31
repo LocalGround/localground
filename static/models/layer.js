@@ -78,14 +78,14 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             const collection = new Symbols(symbols.map((symbolJSON, i) => {
                 symbolJSON.id = symbolJSON.id || (i + 1);
                 return symbolJSON;
-            }))
+            }), {layerModel: this})
             this.set('symbols', collection);
         },
         replaceSymbols: function (symbols) {
             const collection = new Symbols(symbols.map((symbolJSON, i) => {
                 symbolJSON.id = symbolJSON.id || (i + 1);
                 return symbolJSON;
-            }))
+            }), {layerModel: this})
             this.get('symbols').set(symbols.toJSON());
         },
         applyDefaults: function () {
@@ -139,7 +139,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
                 this.set('group_by', 'uniform');
                 this.replaceSymbols(new Symbols([
                     Symbol.createUniformSymbol(this.get('metadata'))
-                ]));
+                ]), {layerModel: this});
                 //this.save();
                 console.log(this.get('symbols').toJSON());
             }

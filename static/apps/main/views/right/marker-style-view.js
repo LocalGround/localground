@@ -348,13 +348,13 @@ define(["jquery",
                     'width': this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
                     "isShowing": this.model.get("metadata").isShowing,
                     "id": 1
-                }]);
+                }], {layerModel: this.model});
                 this.layerNoLongerNew();
                 return this.layerDraft.uniform;
             },
 
             buildIndividualSymbols: function(key) {
-                this.layerDraft.individual = new Symbols();
+                this.layerDraft.individual = new Symbols(null, {layerModel: this.model});
                 let collection = this.app.dataManager.getCollection(key);
                 collection.forEach((item) => {
                     this.layerDraft.individual.add({
@@ -382,7 +382,7 @@ define(["jquery",
                 if (!this.layerDraft.continuous === null) {
                     this.model.set('symbols', this.layerDraft.continuous);
                 }
-                this.layerDraft.continuous = new Symbols();
+                this.layerDraft.continuous = new Symbols(null, {layerModel: this.model});
                 while (Math.round(cont.currentFloor) < cont.max) {
 
                     const next = cont.currentFloor + cont.segmentSize;

@@ -1,10 +1,10 @@
-define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/maps/overlays/icon'],
+define(['backbone', 'underscore', 'collections/records',
+        'lib/sqlParser', 'lib/maps/overlays/icon'],
     function (Backbone, _, Records, SqlParser, Icon) {
         'use strict';
         /**
-         * The top-level view class that harnesses all of the map editor
-         * functionality. Also coordinates event triggers across all of
-         * the constituent views.
+         * Handles the rendering and sorting of records into
+         * their corresponding associations
          * @class Symbol
          */
         var Symbol = Backbone.Model.extend({
@@ -103,6 +103,7 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                     return value;
                 }
             },
+            UNCATEGORIZED_SYMBOL_COLOR: '#BBB',
             UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
             createCategoricalSymbol: function (category, layerModel, id, counter, palette) {
                 //factory that creates new symbols:
@@ -120,31 +121,35 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                     "id": id
                 });
             },
-            createUncategorizedSymbol: function () {
-                return new Symbol({
-                    rule: Symbol.UNCATEGORIZED_SYMBOL_RULE,
-                    title: 'Other / No value'
-                });
+            getDefaultMetadataProperties: function (layerMetadata) {
+                if (!layerMetadata) {
+                    return {};
+                }
+                return {
+                    'shape': 'circle',
+                    'fillOpacity': Symbol.defaultIfUndefined(parseFloat(layerMetadata.fillOpacity), 1),
+                    'strokeWeight': Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeWeight), 1),
+                    'strokeOpacity': Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeOpacity), 1),
+                    'strokeColor': layerMetadata.strokeColor,
+                    'width': Symbol.defaultIfUndefined(parseFloat(layerMetadata.width), 20),
+                    'isShowing': layerMetadata.isShowing
+                };
+            },
+            createUncategorizedSymbol: function (layerMetadata) {
+                const props = _.extend({
+                    'rule': Symbol.UNCATEGORIZED_SYMBOL_RULE,
+                    'title': 'Other / No value',
+                    'fillColor': Symbol.UNCATEGORIZED_SYMBOL_COLOR
+                }, Symbol.getDefaultMetadataProperties(layerMetadata));
+                return new Symbol(props);
             },
             createUniformSymbol: function (layerMetadata) {
-                if (!layerMetadata) {
-                    return new Symbol({
-                        "rule": "*",
-                        "title": 'All Items'
-                    });
-                }
-                return new Symbol({
-                    "rule": "*",
-                    "title": 'All Items',
-                    "shape": 'circle',
-                    "fillOpacity": Symbol.defaultIfUndefined(parseFloat(layerMetadata.fillOpacity), 1),
-                    "strokeWeight": Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeWeight), 1),
-                    "strokeOpacity": Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeOpacity), 1),
-                    "strokeColor": layerMetadata.strokeColor,
-                    'width': Symbol.defaultIfUndefined(parseFloat(layerMetadata.width), 20),
-                    "isShowing": layerMetadata.isShowing,
-                    "id": 1
-                })
+                const props = _.extend({
+                    'rule': "*",
+                    'title': 'All Items',
+                    'id': 1
+                }, Symbol.getDefaultMetadataProperties(layerMetadata));
+                return new Symbol(props);
             }
         });
         return Symbol;

@@ -11,6 +11,9 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
         key: 'symbols',
         initialize: function (recs, opts) {
             _.extend(this, opts);
+            if (!this.layerModel) {
+                throw Exception('A layerModel must be defined.')
+            }
             Base.prototype.initialize.apply(this, recs, opts);
         },
         maxId: function() {
@@ -48,7 +51,7 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             });
         },
         createUncategorizedSymbol: function () {
-            const uncategorizedSymbol = Symbol.createUncategorizedSymbol();
+            const uncategorizedSymbol = Symbol.createUncategorizedSymbol(this.layerModel.get('metadata'));
             this.add(uncategorizedSymbol);
             return uncategorizedSymbol;
         },
@@ -73,7 +76,7 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
         }
     }, {
         buildCategoricalSymbolSet: function (categoryList, layerModel, palette) {
-            const symbols = new Symbols();
+            const symbols = new Symbols(null, {layerModel: layerModel});
             categoryList.forEach((category, index) => {
                 symbols.add(Symbol.createCategoricalSymbol(category, layerModel, index, index, palette));
             });
