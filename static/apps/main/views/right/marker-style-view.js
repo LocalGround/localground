@@ -69,15 +69,21 @@ define(["jquery",
 
                 // don't recreate symbols if they already exist
                 // this is so existing unique individual attributes aren't overwritten by global ones
-                if (this.model.get('newLayer') === true) {
+                /*if (this.model.get('newLayer') === true) {
                     this.createCorrectSymbols();
-                } else if (this.model.get('group_by') === 'uniform') {
+                } else
+                if (this.model.get('group_by') === 'uniform') {
                     this.createCorrectSymbols();
                 } else if (this.model.get('group_by') === 'individual') {
                     this.createCorrectSymbols();
                 } else {
+
                     this.updatePalettes(this.model.get('symbols').length);
                     this.updateMapAndRender();
+                }*/
+                if (this.model.isCategorical()) {
+                    this.updatePalettes(this.model.get('symbols').length);
+                    this.render();
                 }
 
                 $('body').click($.proxy(this.hideColorRamp, this));

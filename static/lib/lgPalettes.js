@@ -3,7 +3,7 @@ define(["palette"
     function () {
         'use strict';
 
-       
+
         var lgPalettes = function () {
 
             this.getAllPalettes = function(itemCount, symbolType) {
@@ -16,7 +16,7 @@ define(["palette"
 
                 let paletteList, buckets;
 
-                
+
                 if (symbolType === 'uniform') {
                     buckets = count;
                     paletteList = catPalettes;
