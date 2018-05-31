@@ -7,7 +7,6 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
      * Attributes: id, name, caption, overlay_type, tags, owner, slug, access, symbols
      */
     var Layer = Base.extend({
-        UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
         defaults: _.extend({}, Base.prototype.defaults, {
             isVisible: false,
             metadata: {
@@ -63,25 +62,23 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
                 key = null;
             }
 
-              //call default save functionality:
-              Base.prototype.set.apply(this, arguments);
+            //call default save functionality:
+            Base.prototype.set.apply(this, arguments);
 
-              //build symbols collection if it doesn't already exist:
-              if (!this.get("symbols") && symbols) {
-                  const collection = new Symbols(symbols.map((symbolJSON, i) => {
-                      symbolJSON.id = symbolJSON.id || (i + 1);
-                      return symbolJSON;
-                  }))
-                  let uncategorizedSymbol = collection.findWhere({ rule: this.UNCATEGORIZED_SYMBOL_RULE });
-                  if (!uncategorizedSymbol) {
-                      uncategorizedSymbol = new Symbol({
-                          rule: this.UNCATEGORIZED_SYMBOL_RULE,
-                          title: 'Uncategorized'
-                      });
-                      collection.add(uncategorizedSymbol);
-                  }
-                  this.set("symbols", collection);
-              }
+            //build symbols collection if it doesn't already exist:
+            if (!this.get("symbols") && symbols) {
+                this.setSymbols(symbols);
+            }
+        },
+        getSymbols: function () {
+            return this.get('symbols');
+        },
+        setSymbols: function (symbols) {
+            const collection = new Symbols(symbols.map((symbolJSON, i) => {
+                symbolJSON.id = symbolJSON.id || (i + 1);
+                return symbolJSON;
+            }))
+            this.set('symbols', collection);
         },
         applyDefaults: function () {
             var currentMetadata = _.clone(this.get("metadata")),
@@ -100,6 +97,38 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             this.get("symbols").each(function (symbol) {
                 symbol.isShowingOnMap = true;
             });
+        },
+
+        isEmpty: function (options) {
+            try {
+                const numRecords = this.getSymbols().map(n => {
+                    return n.isEmpty()
+                }).reduce((a, b) => {
+                    return a && b;
+                });
+                return numRecords === 0;
+            } catch (e) {
+                console.warn(e);
+                return true;
+            }
+        },
+        removeEmptySymbols: function() {
+            const symbols = this.getSymbols();
+            if (!this.isContinuous()) {
+                symbols.each(symbol => {
+                    if (!symbol.hasModels()) {
+                        console.log('removing...');
+                        symbols.remove(symbol);
+                    }
+                });
+            }
+            if (this.isEmpty()) {
+                console.log('creating new symbol');
+                this.set('group_by', 'uniform');
+                this.set('symbols', new Symbols([
+                    Symbol.createUniformSymbol(this.get('metadata'))
+                ]));
+            }
         },
         toJSON: function () {
             var json = Base.prototype.toJSON.call(this);

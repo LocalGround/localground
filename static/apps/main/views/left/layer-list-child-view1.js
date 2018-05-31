@@ -23,7 +23,8 @@ define(["marionette",
          // layerListView
         var LayerListChild =  Marionette.CompositeView.extend({
             collectionEvents: {
-                'reset': 'reRender'
+                'reset': 'reRender',
+                'remove': 'reRenderIfEmpty'
             },
             modelEvents: {
                 'change:group_by': 'updateGroupBy',
@@ -51,22 +52,18 @@ define(["marionette",
 
                 this.newMarkerType = 'point';
 
-                this.assignRecordsToSymbols();
+                this.symbolModels.assignRecords(this.dataCollection);
                 this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
-                this.removeEmptySymbols();
+                this.model.removeEmptySymbols();
 
                 this.attachRecordEventHandlers();
             },
             attachRecordEventHandlers: function () {
-                this.listenTo(this.dataCollection, 'add',
-                    this.reRenderOrAssignRecordToSymbol)
-                this.listenTo(this.dataCollection, 'update-symbol-assignment',
-                    this.reAssignRecordToSymbols)
-                this.listenTo(this.app.vent, 'geometry-created',
-                    this.addRecord);
-                this.listenTo(this.app.vent, 'record-has-been-delete',
-                    this.removeEmptySymbols);
+                this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol)
+                this.listenTo(this.dataCollection, 'update-symbol-assignment', this.reAssignRecordToSymbols)
+                this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
+                this.listenTo(this.app.vent, 'record-has-been-deleted', this.removeEmptySymbols);
             },
 
             onRender: function() {
@@ -82,9 +79,7 @@ define(["marionette",
                     hasData: !this.isEmpty()
                 };
             },
-            getChildView: function () {
-                return SymbolView;
-            },
+            childView: SymbolView,
             isEmpty: function (options) {
                 //override native Marionette isEmpty method:
                 return this.dataCollection.length === 0;
@@ -116,7 +111,13 @@ define(["marionette",
 
             reRender: function () {
                 console.log('Symbols have been regenerated...');
-                this.assignRecordsToSymbols();
+                this.symbolModels.assignRecords(this.dataCollection);
+            },
+            reRenderIfEmpty: function () {
+                console.log('Symbol has been removed');
+                if (this.model.isEmpty()) {
+                    this.render();
+                }
             },
             updateGroupBy: function () {
                 this.$el.find('.layer-style-by span').html(
@@ -139,54 +140,17 @@ define(["marionette",
                 }
                 return Marionette.CollectionView.prototype.addChild.call(this, symbolModel, ChildView, index);
             },
-            getUncategorizedSymbolModel: function () {
-                return this.symbolModels.findWhere({
-                    rule: Symbol.UNCATEGORIZED_SYMBOL_RULE
-                });
-            },
-            createUncategorizedSymbolModel: function () {
-                const symbol = new Symbol({
-                    rule: Symbol.UNCATEGORIZED_SYMBOL_RULE,
-                    title: 'Uncategorized'
-                });
-                this.symbolModels.push(symbol);
-                return symbol;
-            },
-
-            assignRecordsToSymbols: function () {
-                this.dataCollection.each((recordModel) => {
-                    var matched = false;
-                    this.symbolModels.each(function (symbolModel) {
-                        if (symbolModel.checkModel(recordModel)) {
-                            symbolModel.addModel(recordModel);
-                            matched = true;
-                        }
-                    })
-                    if (!matched) {
-                        this.handleUnmatchedRecord(recordModel);
-                    }
-                });
+            removeEmptySymbols: function () {
+                this.model.removeEmptySymbols();
             },
             reRenderOrAssignRecordToSymbol: function (recordModel) {
-                console.log(this.dataCollection.length);
+                const symbol = this.symbolModels.assignRecord(recordModel);
                 if (this.dataCollection.length === 1) {
                     this.render();
+                    return;
                 }
-                this.assignRecordToSymbol(recordModel);
-            },
-            assignRecordToSymbol: function (recordModel) {
-                console.log(this.model.toJSON());
-                let symbolModel;
-                this.children.each(function (view) {
-                    if (view.model.checkModel(recordModel)) {
-                        symbolModel = view.model
-                        return;
-                    }
-                });
-                if (symbolModel) {
-                    symbolModel.addModel(recordModel);
-                } else {
-                    this.handleUnmatchedRecord(recordModel);
+                if (symbol.matchedModels.length === 1) {
+                    this.addChild(symbol, this.childView, this.symbolModels.length);
                 }
             },
 
@@ -225,73 +189,9 @@ define(["marionette",
                         this.handleUnmatchedRecord(recordModel);
                     }
                 }
-                this.removeEmptySymbols();
+                this.model.removeEmptySymbols();
                 this.saveChanges();
             },
-            handleUnmatchedRecord: function (recordModel) {
-                let uncategorizedSymbol = this.getUncategorizedSymbolModel();
-                if (uncategorizedSymbol) {
-                    uncategorizedSymbol.addModel(recordModel);
-                    return;
-                }
-                // otherwise, create a new uncategorized model and add it
-                // to the child views:
-                uncategorizedSymbol = this.createUncategorizedSymbolModel();
-                uncategorizedSymbol.addModel(recordModel);
-                try {
-                    this.addChild(uncategorizedSymbol, this.childView, this.collection.length);
-                } catch (e) {
-                    console.warn('silent error (view not rendered yet)');
-                }
-            },
-            removeEmptyUncategorizedSymbol: function () {
-                this.symbolModels.each((symbol) => {
-                    if (!symbol.hasModels() && symbol.isUncategorized()) {
-                        this.symbolModels.remove(symbol);
-                    }
-                });
-            },
-
-            removeEmptySymbols: function() {
-                if (this.isEmpty()) {
-                    //render EmptyChildView view:
-                    //make uniform:
-                    this.model.set('group_by', 'uniform');
-                    this.model.set('symbols', new Symbols([{
-                            "rule": "*",
-                            "title": name,
-                            "shape": 'circle',
-                            "fillOpacity": Symbol.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
-                            "strokeWeight": Symbol.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
-                            "strokeOpacity": Symbol.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
-                            "strokeColor": this.model.get("metadata").strokeColor,
-                            'width': Symbol.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
-                            "isShowing": this.model.get("metadata").isShowing,
-                            "id": 1
-                        }]));
-                    this.model.save();
-                    this.render();
-                    /*var that = this;
-                    console.log(1, this.model.toJSON());
-                    this.model.save(null, {
-                        success: function () {
-                            console.log(2, that.model.toJSON());
-                            that.render();
-                        }
-                    })*/
-                    return;
-                }
-                this.removeEmptyUncategorizedSymbol();
-                if (!this.model.isCategorical()) {
-                    return;
-                }
-                this.symbolModels.each((symbol) => {
-                    if (!symbol.hasModels()) {
-                        this.symbolModels.remove(symbol);
-                    }
-                });
-            },
-
             // triggered from the router
             checkSelectedItem: function(layerId) {
                 this.$el.attr('id', this.model.id);

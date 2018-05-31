@@ -72,6 +72,9 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                 model.set('display_name', model.get('display_name') || model.get('name'))
                 this.matchedModels.add(model)
             },
+            isEmpty: function () {
+                this.matchedModels.length === 0;
+            },
             removeModel: function(model) {
                 this.matchedModels.remove(model);
             },
@@ -116,6 +119,32 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                     "isShowing": layerModel.get("metadata").isShowing,
                     "id": id
                 });
+            },
+            createUncategorizedSymbol: function () {
+                return new Symbol({
+                    rule: Symbol.UNCATEGORIZED_SYMBOL_RULE,
+                    title: 'Other / No value'
+                });
+            },
+            createUniformSymbol: function (layerMetadata) {
+                if (!layerMetadata) {
+                    return new Symbol({
+                        "rule": "*",
+                        "title": 'All Items'
+                    });
+                }
+                return new Symbol({
+                    "rule": "*",
+                    "title": 'All Items',
+                    "shape": 'circle',
+                    "fillOpacity": Symbol.defaultIfUndefined(parseFloat(layerMetadata.fillOpacity), 1),
+                    "strokeWeight": Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeWeight), 1),
+                    "strokeOpacity": Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeOpacity), 1),
+                    "strokeColor": layerMetadata.strokeColor,
+                    'width': Symbol.defaultIfUndefined(parseFloat(layerMetadata.width), 20),
+                    "isShowing": layerMetadata.isShowing,
+                    "id": 1
+                })
             }
         });
         return Symbol;

@@ -434,7 +434,7 @@ define([
                     that.destroy();
                     //trigger an event that clears out the deleted model's detail:
                     that.app.vent.trigger('hide-detail');
-                    that.app.vent.trigger('record-has-been-delete');
+                    that.app.vent.trigger('record-has-been-deleted');
                 }, error: function(){
                     alert("Entry has not been deleted");
                 }

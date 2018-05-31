@@ -9,16 +9,53 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
         model: Symbol,
         name: 'Symbols',
         key: 'symbols',
-        UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
         initialize: function (recs, opts) {
             _.extend(this, opts);
             Base.prototype.initialize.apply(this, recs, opts);
         },
         maxId: function() {
             let symbolIds = this.models.map(symbol => symbol.get('id'));
-            //console.log(symbolIds)
-            //console.log(...symbolIds)
             return Math.max(...this.models.map(symbol => symbol.get('id')))
+        },
+        assignRecords: function (records) {
+            records.each(record => {
+                this.assignRecord(record);
+            });
+        },
+        assignRecord: function (record) {
+            let matchedSymbol;
+            this.each(symbol => {
+                if (symbol.checkModel(record)) {
+                    matchedSymbol = symbol;
+                    symbol.addModel(record);
+                }
+            })
+            if (!matchedSymbol) {
+                matchedSymbol = this.handleUnmatchedRecord(record);
+            }
+            return matchedSymbol;
+        },
+        handleUnmatchedRecord: function (recordModel) {
+            const uncategorizedSymbol = this.getOrCreateUncategorizedSymbolModel();
+            uncategorizedSymbol.addModel(recordModel);
+            return uncategorizedSymbol;
+        },
+        getUncategorizedSymbol: function () {
+            return this.findWhere({
+                rule: Symbol.UNCATEGORIZED_SYMBOL_RULE
+            });
+        },
+        createUncategorizedSymbol: function () {
+            const uncategorizedSymbol = Symbol.createUncategorizedSymbol();
+            this.add(uncategorizedSymbol);
+            return uncategorizedSymbol;
+        },
+        getOrCreateUncategorizedSymbolModel: function () {
+            const uncategorizedSymbol = this.getUncategorizedSymbol();
+            if (!uncategorizedSymbol) {
+                return this.createUncategorizedSymbol();
+            }
+            return uncategorizedSymbol;
         },
         appendNewSymbol: function (opts) {
             const recordModel = opts.recordModel;
