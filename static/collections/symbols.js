@@ -30,9 +30,11 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
                     symbol.addModel(record);
                 }
             })
+            console.log(console.log(this.toJSON()))
             if (!matchedSymbol) {
                 matchedSymbol = this.handleUnmatchedRecord(record);
             }
+            console.log(console.log(this.toJSON()))
             return matchedSymbol;
         },
         handleUnmatchedRecord: function (recordModel) {

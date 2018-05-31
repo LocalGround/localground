@@ -24,7 +24,7 @@ define(["marionette",
         var LayerListChild =  Marionette.CompositeView.extend({
             collectionEvents: {
                 'reset': 'reRender',
-                'remove': 'reRenderIfEmpty'
+                //'remove': 'reRenderIfEmpty'
             },
             modelEvents: {
                 'change:group_by': 'updateGroupBy',
@@ -53,7 +53,7 @@ define(["marionette",
                 this.newMarkerType = 'point';
 
                 this.symbolModels.assignRecords(this.dataCollection);
-                this.reAssignRecordsToSymbols();
+                //this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
                 this.model.removeEmptySymbols();
 
@@ -82,6 +82,7 @@ define(["marionette",
             childView: SymbolView,
             isEmpty: function (options) {
                 //override native Marionette isEmpty method:
+                console.log('isEmpty:', this.dataCollection.length === 0)
                 return this.dataCollection.length === 0;
             },
             emptyViewOptions: function () {
@@ -116,6 +117,7 @@ define(["marionette",
             reRenderIfEmpty: function () {
                 console.log('Symbol has been removed');
                 if (this.model.isEmpty()) {
+                    console.log('rendering...');
                     this.render();
                 }
             },
@@ -134,14 +136,17 @@ define(["marionette",
                 };
             },
             addChild: function (symbolModel, ChildView, index) {
-                //don't create the child view for uncategorized w/no children:
-                if (!symbolModel.hasModels() && symbolModel.isUncategorized()) {
+                // unless the model is continuous, don't display empty
+                // symbols:
+                if (!symbolModel.hasModels() && !this.model.isContinuous()) {
                     return null;
                 }
                 return Marionette.CollectionView.prototype.addChild.call(this, symbolModel, ChildView, index);
             },
             removeEmptySymbols: function () {
                 this.model.removeEmptySymbols();
+                const mapID = this.app.dataManager.getMap().id;
+                this.app.router.navigate("//" + mapID);
             },
             reRenderOrAssignRecordToSymbol: function (recordModel) {
                 const symbol = this.symbolModels.assignRecord(recordModel);
@@ -154,7 +159,7 @@ define(["marionette",
                 }
             },
 
-            reAssignRecordsToSymbols: function() {
+            /*reAssignRecordsToSymbols: function() {
                 this.dataCollection.each((recordModel) => {
                     this.reAssignRecordToSymbols(recordModel);
                 });
@@ -191,7 +196,7 @@ define(["marionette",
                 }
                 this.model.removeEmptySymbols();
                 this.saveChanges();
-            },
+            },*/
             // triggered from the router
             checkSelectedItem: function(layerId) {
                 this.$el.attr('id', this.model.id);

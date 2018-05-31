@@ -52,6 +52,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             return baseURL;
         },
         set: function(key, val, options) {
+            console.log('setting...', key, val, options);
             //save symbols to a temporary variable:
             var symbols;
             if (typeof key === 'object' && key.symbols) {
@@ -80,6 +81,13 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             }))
             this.set('symbols', collection);
         },
+        replaceSymbols: function (symbols) {
+            const collection = new Symbols(symbols.map((symbolJSON, i) => {
+                symbolJSON.id = symbolJSON.id || (i + 1);
+                return symbolJSON;
+            }))
+            this.get('symbols').set(symbols.toJSON());
+        },
         applyDefaults: function () {
             var currentMetadata = _.clone(this.get("metadata")),
                 defaults = _.clone(this.defaults.metadata);
@@ -100,6 +108,9 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
         },
 
         isEmpty: function (options) {
+            if (this.getSymbols().length === 0) {
+                return true;
+            }
             try {
                 const numRecords = this.getSymbols().map(n => {
                     return n.isEmpty()
@@ -113,6 +124,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             }
         },
         removeEmptySymbols: function() {
+            console.log('removeEmptySymbols');
             const symbols = this.getSymbols();
             if (!this.isContinuous()) {
                 symbols.each(symbol => {
@@ -123,11 +135,13 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
                 });
             }
             if (this.isEmpty()) {
-                console.log('creating new symbol');
+                console.log('creating new symbol...');
                 this.set('group_by', 'uniform');
-                this.set('symbols', new Symbols([
+                this.replaceSymbols(new Symbols([
                     Symbol.createUniformSymbol(this.get('metadata'))
                 ]));
+                //this.save();
+                console.log(this.get('symbols').toJSON());
             }
         },
         toJSON: function () {
