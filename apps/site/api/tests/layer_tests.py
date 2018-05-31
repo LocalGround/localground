@@ -80,7 +80,7 @@ class ApiLayerListTest(ViewMixinAPI, test.TestCase):
             self.assertEqual(results['group_by'], 'uniform')
             self.assertEqual(len(results['symbols']), 1)
             self.assertEqual(
-                results['symbols'][0]['title'], 'Untitled Symbol')
+                results['symbols'][0]['title'], 'All items')
 
     def test_create_layer_using_post(self, **kwargs):
         self._test_save_layer_post(
@@ -363,6 +363,7 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
         symbol = models.Symbol.SIMPLE.to_dict()
         for rule in [
                 'name = Oregon',
+                'id = 5',
                 "name = oregon and name = 'and'",
                 ]:
             symbol['rule'] = rule

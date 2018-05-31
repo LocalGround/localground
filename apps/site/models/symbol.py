@@ -108,7 +108,7 @@ class Symbol(object):
 
     def _generate_serialization_crosswalk(self, rule, layer):
         expressions = self._get_expressions(rule)
-        crosswalk = {}
+        crosswalk = {'id': 'id'}
         col_names = list(set([re.split('\s+', e)[0] for e in expressions]))
         for col_name in col_names:
             match = False
