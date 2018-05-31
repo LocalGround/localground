@@ -32,7 +32,7 @@
                 <label {{#unless propCanBeCont}}class="disabled"{{/unless}}>Continuous</label><br>
             </div>
         </div>
-        <div class="row" id="bucket-row">
+        <div class="row {{#unless metadata.isContinuous}}disabled{{/unless}}" id="bucket-row">
             <label class="msv-label"># of data buckets:</label>
             <select id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="8" {{#unless metadata.isContinuous}}disabled="disabled"{{/unless}}>
                 <option value="2" {{#ifequal metadata.buckets 2}}SELECTED{{/ifequal}}>2</option>
