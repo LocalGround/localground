@@ -3,17 +3,27 @@
         <div>
             <span class="symbol-info">category: {{title}}</span>
         </div>
-        <input type="text" placeholder={{title}} class='symbol-title-input'>
+        <input type="text" placeholder="{{title}}" class='symbol-title-input'>
     </div>
 
     <div class="style-menu_row">
         <div class="symbol-style-menu_label">Marker Fill: </div>
         <div class="style-menu_shape-inner-row">
-           <div class="style-menu_shape-wrapper"><i class="fa fa-2x fa-map-marker style-menu_shape"></i></div>
-           <div class="style-menu_shape-wrapper"><i class="fa fa-2x fa-circle style-menu_shape"></i></div>
-           <div class="style-menu_shape-wrapper"><i class="fa fa-2x fa-square style-menu_shape"></i></div>
-           <div class="style-menu_shape-wrapper"><i class="fa fa-2x fa-star style-menu_shape"></i></div>
-           <div class="style-menu_shape-wrapper"><i class="fa fa-2x fa-diamond style-menu_shape"></i></div>
+           <div class="style-menu_shape-wrapper {{#ifequal shape 'pin'}} selected-shape {{/ifequal}}" data-shape="pin">
+                <i class="fa fa-2x fa-map-marker style-menu_shape"></i>
+            </div>
+           <div class="style-menu_shape-wrapper {{#ifequal shape 'circle'}} selected-shape {{/ifequal}}" data-shape="circle">
+                <i class="fa fa-2x fa-circle style-menu_shape"></i>
+            </div>
+           <div class="style-menu_shape-wrapper  {{#ifequal shape 'square'}} selected-shape {{/ifequal}}" data-shape="square">
+                <i class="fa fa-2x fa-square style-menu_shape"></i>
+            </div>
+           <div class="style-menu_shape-wrapper  {{#ifequal shape 'star'}} selected-shape {{/ifequal}}" data-shape="star">
+                <i class="fa fa-2x fa-star style-menu_shape"></i>
+            </div>
+           <div class="style-menu_shape-wrapper  {{#ifequal shape 'diamond'}} selected-shape {{/ifequal}}" data-shape="diamond">
+               <i class="fa fa-2x fa-diamond style-menu_shape"></i>
+            </div>
         </div>
     </div>
             

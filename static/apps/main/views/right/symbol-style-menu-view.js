@@ -22,7 +22,9 @@ define(["jquery",
                 'change #marker-width': 'updateSize',
                 'change #marker-opacity': 'updateOpacity',
                 'change #stroke-weight': 'updateStrokeWidth',
-                'change #stroke-opacity': 'updateStrokeOpacity'
+                'change #stroke-opacity': 'updateStrokeOpacity',
+                'click .style-menu_shape-wrapper': 'updateShape',
+                'focusout .symbol-title-input': 'updateSymbolTitle'
             },
             /*modelEvents: {
                 'change': 'updateLayerSymbols'
@@ -35,7 +37,8 @@ define(["jquery",
                     icons: IconLookup.getIcons(),
                     fillOpacity: this.model.get("fillOpacity"),
                     id: "cp" + this.model.get('id'),
-                    metadata: this.model
+                    metadata: this.model,
+                    shape: this.model.get('shape')
                 };
             },
             onRender: function () {
@@ -88,16 +91,26 @@ define(["jquery",
                 });
                 $(".colorpicker:last-child").addClass('marker-stroke-color-picker');
             },
+
+            updateSymbolTitle: function(e) {
+                console.log(e);
+                console.log(this.$el.find('.symbol-title-input').val());
+                this.model.set('title', this.$el.find('.symbol-title-input').val());
+                this.render();
+            },
             updateFillColor: function (hex) {
                 this.model.set("fillColor", hex);
-                $('#fill-color-picker').css('color', hex);
+                $('#fill-color-picker').css('background', hex);
             },
             updateStrokeColor: function (hex) {
                 this.model.set("strokeColor", hex);
-                $('#stroke-color-picker').css('color', hex);
+                $('#stroke-color-picker').css('background', hex);
             },
-            updateShape: function () {
-                this.model.set("shape", this.$el.find('.marker-shape').val());
+           
+            updateShape: function (e) {
+                const shape = e.currentTarget.dataset.shape;
+                this.model.set('shape', shape);
+                this.render();
             },
             updateLayerSymbols: function () {
                 //this.layer.setSymbol(this.model);

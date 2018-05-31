@@ -171,7 +171,7 @@ define(["jquery",
                 'change #data-type-select': 'selectGroupBy',
                 'change #bucket': 'updateBuckets',
                 'change #palette-opacity': 'updatePaletteOpacity',
-                'change .global-marker-shape': 'updateGlobalShape',
+                'click .style-menu_shape-wrapper': 'updateGlobalShape',
                 'change #marker-width': 'updateWidth',
                 'change #stroke-weight': 'updateStrokeWeight',
                 'change #stroke-color': 'updateStrokeColor',
@@ -513,22 +513,26 @@ define(["jquery",
             },
 
             updateBuckets: function (e) {
-                this.delayExecution(
-                    "bucketTimer",
-                    () => {
-                        if (this.$el.find("#bucket").val() > 8) {
-                            this.$el.find("#bucket").val(8);
-                        }
-                        var buckets = parseFloat(this.$el.find("#bucket").val());
-                        this.updateMetadata("buckets", buckets);
+                // this.delayExecution(
+                //     "bucketTimer",
+                //     () => {
+                //         if (this.$el.find("#bucket").val() > 8) {
+                //             this.$el.find("#bucket").val(8);
+                //         }
+                //         var buckets = parseFloat(this.$el.find("#bucket").val());
+                //         this.updateMetadata("buckets", buckets);
 
-                        this.updatePalettes(this.model.get("metadata").buckets);
-                        this.contData();
-                       // that.render();
-                       this.$el.find("#bucket").focus();
-                    },
-                    300 //experiment with how many milliseconds to delay
-                );
+                //         this.updatePalettes(this.model.get("metadata").buckets);
+                //         this.contData();
+                //        // that.render();
+                //        this.$el.find("#bucket").focus();
+                //     },
+                //     300 //experiment with how many milliseconds to delay
+                // );
+                var buckets = parseInt(e.target.value);
+                this.updateMetadata("buckets", buckets);
+                this.updatePalettes(this.model.get("metadata").buckets);
+                this.contData();
             },
 
             updatePalettes: function(itemCount) {
@@ -603,15 +607,20 @@ define(["jquery",
                 let opacity = parseFloat(this.$el.find("#palette-opacity").val());
                 if (opacity > 1) {
                     opacity = 1;
+                    this.$el.find('#palette-opacity').val(opacity);
                 } else if (opacity < 0 ) {
                     opacity = 0;
+                    this.$el.find('#palette-opacity').val(opacity);
                 }
                 this.updateMetadata("fillOpacity", opacity);
             },
 
             updateGlobalShape: function(e) {
-                const shape = $(e.target).val();
+                
+                const shape = e.currentTarget.dataset.shape;
+                console.log('update shape,', shape);
                 this.updateMetadata("shape", shape);
+                this.render();
             },
 
             updateWidth: function(e) {
@@ -620,7 +629,11 @@ define(["jquery",
             },
 
             updateStrokeWeight: function(e) {
-                const strokeWeight = parseFloat($(e.target).val());
+                let strokeWeight = parseFloat($(e.target).val());
+                if (strokeWeight < 0) {
+                    strokeWeight = 0;
+                    this.$el.find('#stroke-weight').val(strokeWeight);
+                }
                 this.updateMetadata("strokeWeight", strokeWeight);
             },
 
@@ -632,11 +645,13 @@ define(["jquery",
 
             updateStrokeOpacity: function(e) {
                 let opacity = parseFloat($(e.target).val());
-                    if (opacity > 1) {
-                        opacity = 1;
-                    } else if (opacity < 0 ) {
-                        opacity = 0;
-                    }
+                if (opacity > 1) {
+                    opacity = 1;
+                    this.$el.find('#stroke-opacity').val(opacity);
+                } else if (opacity < 0 ) {
+                    opacity = 0;
+                    this.$el.find('#stroke-opacity').val(opacity);
+                }
                 this.updateMetadata("strokeOpacity", opacity);
             },
 
@@ -670,6 +685,7 @@ define(["jquery",
 
             //convenience function
             updateMetadata: function(newKey, newValue) {
+                console.log('updateMetadata()', newValue);
                 let localMeta = this.model.get("metadata") || {};
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta);

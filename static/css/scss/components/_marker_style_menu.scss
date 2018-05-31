@@ -25,6 +25,36 @@
 // }
 .marker-style {
     padding: 0px 10px 5px 10px;
+    font-size: 12px;
+
+    // .marker-style_row {
+    //     padding: 6px 0px;
+    // }
+    // .marker-style_label {
+    //     font-size: 12px;
+    // }
+    // .marker-style_shape-inner-row {
+    //     margin: 0 auto;
+    //     width: 100%;
+    //     display: flex;
+    //     justify-content: space-evenly;
+    // }
+    // .marker-style_shape-wrapper {
+    //     border: 2px solid white;
+    //     padding: 2px;
+    //     border-radius: 3px;
+    //     width: 30px;
+    //     text-align: center;
+    // }
+    // .marker-style_shape-wrapper.selected-shape {
+    //     border: 2px solid #dbdbdb;
+    // }
+    // .marker-style_shape-wrapper:hover {
+    //     border: 2px solid #8bb8ed;
+    // }
+    // .marker-style_shape {
+    //     color: #dbdbdb;
+    // }
 }
 .marker-style .form-inline .row {
     position: relative;
@@ -74,4 +104,8 @@
     box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
     display: none;
     top: 1px;
+}
+
+#bucket {
+    width: 40px;
 }

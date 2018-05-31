@@ -292,7 +292,7 @@ define(["marionette",
                     }),
                     placement: 'right',
                     offsetX: '5px',
-                    width: '350px',
+                    width: '220px',
                     title: 'Layer Properties'
                 });
             },
