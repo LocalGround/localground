@@ -111,6 +111,7 @@ define(['backbone', 'underscore', 'collections/records',
                 }
                 return {
                     'shape': 'circle',
+                    'fillColor': Symbol.defaultIfUndefined(parseFloat(layerMetadata.fillColor), 1),
                     'fillOpacity': Symbol.defaultIfUndefined(parseFloat(layerMetadata.fillOpacity), 1),
                     'strokeWeight': Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeWeight), 1),
                     'strokeOpacity': Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeOpacity), 1),
@@ -119,52 +120,55 @@ define(['backbone', 'underscore', 'collections/records',
                     'isShowing': layerMetadata.isShowing
                 };
             },
-            createCategoricalSymbol: function (layerModel, value, counter) {
+            createCategoricalSymbol: function (opts) {
                 //factory that creates new symbols:
-                const lgPalettes = new LGPalettes();
-                counter = counter || layerModel.getSymbols().length;
+                const layerModel = opts.layerModel;
+                const value = opts.category;
+                const id = opts.id;
+                const fillColor = opts.fillColor;
                 const metadata = layerModel.get('metadata');
                 const prop = metadata.currentProp;
-                const palette = lgPalettes.getPalette(metadata.paletteId, 8, 'categorical');
-                const props = _.extend({
-                    'rule': `${prop} = '${value}'`,
-                    'title': value,
-                    'fillColor': "#" + palette[counter % palette.length],
-                    'id': counter + 1
-                }, Symbol._getDefaultMetadataProperties(metadata));
+                const props = _.extend(
+                    Symbol._getDefaultMetadataProperties(metadata), {
+                        'rule': `${prop} = '${value}'`,
+                        'title': value,
+                        'id': id,
+                        'fillColor': fillColor
+                    });
                 return new Symbol(props);
             },
-            createIndividualSymbol: function (layerModel, value) {
+            createIndividualSymbol: function (layerModel, value, id) {
                 //factory that creates new symbols:
                 const metadata = layerModel.get('metadata');
-                const counter = layerModel.getSymbols().length;
-                const props = _.extend({
-                    'rule': `id = ${value}`,
-                    'title': value,
-                    'id': counter + 1
-                }, Symbol._getDefaultMetadataProperties(metadata));
+                //const counter = layerModel.getSymbols().length;
+                const props = _.extend(
+                    Symbol._getDefaultMetadataProperties(metadata), {
+                        'rule': `id = ${value}`,
+                        'title': value,
+                        'id': id
+                    });
                 return new Symbol(props);
             },
-            createUncategorizedSymbol: function (layerModel) {
+            createUncategorizedSymbol: function (layerModel, id) {
                 const metadata = layerModel.get('metadata');
-                const counter = layerModel.getSymbols().length;
+                //const counter = layerModel.getSymbols().length;
                 const props = _.extend(
                     Symbol._getDefaultMetadataProperties(metadata), {
                     'rule': Symbol.UNCATEGORIZED_SYMBOL_RULE,
                     'title': 'Other / No value',
                     'fillColor': Symbol.UNCATEGORIZED_SYMBOL_COLOR,
-                    'id': counter + 2
+                    'id': id
                 });
                 console.log(props);
                 return new Symbol(props);
             },
-            createUniformSymbol: function (layerModel) {
+            createUniformSymbol: function (layerModel, id) {
                 const metadata = layerModel.get('metadata');
                 const props = _.extend(
                     Symbol._getDefaultMetadataProperties(metadata), {
                     'rule': "*",
                     'title': 'All Items',
-                    'id': 1
+                    'id': id
                 });
                 return new Symbol(props);
             }
