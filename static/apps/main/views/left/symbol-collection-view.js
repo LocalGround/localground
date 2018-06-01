@@ -156,7 +156,6 @@ define(["jquery",
             },
 
             deleteOverlays: function () {
-                console.log('delete overlays');
                 this.children.each(view => {
                     if (view.overlay) {
                         view.overlay.remove();

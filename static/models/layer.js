@@ -123,27 +123,6 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
                 return true;
             }
         },
-        removeEmptySymbols: function() {
-            console.log('removeEmptySymbols');
-            const symbols = this.getSymbols();
-            if (!this.isContinuous()) {
-                symbols.each(symbol => {
-                    if (!symbol.hasModels()) {
-                        console.log('removing...');
-                        symbols.remove(symbol);
-                    }
-                });
-            }
-            if (this.isEmpty()) {
-                console.log('creating new symbol...');
-                this.set('group_by', 'uniform');
-                this.replaceSymbols(new Symbols([
-                    Symbol.createUniformSymbol(this.get('metadata'))
-                ]), {layerModel: this});
-                //this.save();
-                console.log(this.get('symbols').toJSON());
-            }
-        },
         toJSON: function () {
             var json = Base.prototype.toJSON.call(this);
             if (this.get("symbols")) {

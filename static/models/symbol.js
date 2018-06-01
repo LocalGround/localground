@@ -1,6 +1,6 @@
 define(['backbone', 'underscore', 'collections/records',
-        'lib/sqlParser', 'lib/maps/overlays/icon'],
-    function (Backbone, _, Records, SqlParser, Icon) {
+        'lib/sqlParser', 'lib/maps/overlays/icon', 'lib/lgPalettes'],
+    function (Backbone, _, Records, SqlParser, Icon, LGPalettes) {
         'use strict';
         /**
          * Handles the rendering and sorting of records into
@@ -105,23 +105,8 @@ define(['backbone', 'underscore', 'collections/records',
             },
             UNCATEGORIZED_SYMBOL_COLOR: '#BBB',
             UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
-            createCategoricalSymbol: function (category, layerModel, id, counter, palette) {
-                //factory that creates new symbols:
-                return new Symbol({
-                    "rule": `${layerModel.get('metadata').currentProp} = '${category}'`, // + item,
-                    "title": category,
-                    "fillOpacity": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').fillOpacity), 1),
-                    "strokeWeight": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').strokeWeight), 1),
-                    "strokeOpacity": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').strokeOpacity), 1),
-                    "width": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').width), 20),
-                    "shape": 'circle',
-                    "fillColor": "#" + palette[counter % palette.length],
-                    "strokeColor": layerModel.get("metadata").strokeColor,
-                    "isShowing": layerModel.get("metadata").isShowing,
-                    "id": id
-                });
-            },
-            getDefaultMetadataProperties: function (layerMetadata) {
+
+            _getDefaultMetadataProperties: function (layerMetadata) {
                 if (!layerMetadata) {
                     return {};
                 }
@@ -135,20 +120,52 @@ define(['backbone', 'underscore', 'collections/records',
                     'isShowing': layerMetadata.isShowing
                 };
             },
-            createUncategorizedSymbol: function (layerMetadata) {
+            createCategoricalSymbol: function (layerModel, value, counter) {
+                //factory that creates new symbols:
+                const lgPalettes = new LGPalettes();
+                counter = counter || layerModel.getSymbols().length;
+                const metadata = layerModel.get('metadata');
+                const prop = metadata.currentProp;
+                const palette = lgPalettes.getPalette(metadata.paletteId, 8, 'categorical');
                 const props = _.extend({
-                    'rule': Symbol.UNCATEGORIZED_SYMBOL_RULE,
-                    'title': 'Other / No value',
-                    'fillColor': Symbol.UNCATEGORIZED_SYMBOL_COLOR
-                }, Symbol.getDefaultMetadataProperties(layerMetadata));
+                    'rule': `${prop} = '${value}'`,
+                    'title': value,
+                    'fillColor': "#" + palette[counter % palette.length],
+                    'id': counter + 1
+                }, Symbol._getDefaultMetadataProperties(metadata));
                 return new Symbol(props);
             },
-            createUniformSymbol: function (layerMetadata) {
+            createIndividualSymbol: function (layerModel, value) {
+                //factory that creates new symbols:
+                const metadata = layerModel.get('metadata');
+                const counter = layerModel.getSymbols().length;
                 const props = _.extend({
+                    'rule': `id = ${value}`,
+                    'title': value,
+                    'id': counter + 1
+                }, Symbol._getDefaultMetadataProperties(metadata));
+                return new Symbol(props);
+            },
+            createUncategorizedSymbol: function (layerModel) {
+                const metadata = layerModel.get('metadata');
+                const counter = layerModel.getSymbols().length;
+                const props = _.extend(
+                    Symbol._getDefaultMetadataProperties(metadata), {
+                    'rule': Symbol.UNCATEGORIZED_SYMBOL_RULE,
+                    'title': 'Other / No value',
+                    'fillColor': Symbol.UNCATEGORIZED_SYMBOL_COLOR,
+                    'id': counter + 1
+                });
+                return new Symbol(props);
+            },
+            createUniformSymbol: function (layerModel) {
+                const metadata = layerModel.get('metadata');
+                const props = _.extend(
+                    Symbol._getDefaultMetadataProperties(metadata), {
                     'rule': "*",
                     'title': 'All Items',
                     'id': 1
-                }, Symbol.getDefaultMetadataProperties(layerMetadata));
+                });
                 return new Symbol(props);
             }
         });

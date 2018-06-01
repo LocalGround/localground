@@ -55,13 +55,13 @@ define(["marionette",
                 this.symbolModels.assignRecords(this.dataCollection);
                 //this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
-                this.model.removeEmptySymbols();
+                //this.model.removeEmptySymbols();
 
                 this.attachRecordEventHandlers();
             },
             attachRecordEventHandlers: function () {
-                this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol)
-                this.listenTo(this.dataCollection, 'update-symbol-assignment', this.reAssignRecordToSymbols)
+                this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol);
+                this.listenTo(this.dataCollection, 'update-symbol-assignment', this.reRenderOrReassignRecordToSymbol);
                 this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
                 this.listenTo(this.app.vent, 'record-has-been-deleted', this.removeEmptySymbols);
             },
@@ -82,7 +82,6 @@ define(["marionette",
             childView: SymbolView,
             isEmpty: function (options) {
                 //override native Marionette isEmpty method:
-                console.log('isEmpty:', this.dataCollection.length === 0)
                 return this.dataCollection.length === 0;
             },
             emptyViewOptions: function () {
@@ -111,13 +110,10 @@ define(["marionette",
             childViewContainer: "#symbols-list",
 
             reRender: function () {
-                console.log('Symbols have been regenerated...');
                 this.symbolModels.assignRecords(this.dataCollection);
             },
             reRenderIfEmpty: function () {
-                console.log('Symbol has been removed');
                 if (this.model.isEmpty()) {
-                    console.log('rendering...');
                     this.render();
                 }
             },
@@ -158,46 +154,17 @@ define(["marionette",
                     this.addChild(symbol, this.childView, this.symbolModels.length);
                 }
             },
-
-            /*reAssignRecordsToSymbols: function() {
-                this.dataCollection.each((recordModel) => {
-                    this.reAssignRecordToSymbols(recordModel);
-                });
-            },
-
-            reAssignRecordToSymbols: function(recordModel) {
-                if (this.model.isUniform() || this.model.isIndividual()) {
+            reRenderOrReassignRecordToSymbol: function (recordModel) {
+                const symbol = this.symbolModels.reassignRecord(recordModel);
+                if (this.dataCollection.length === 1) {
+                    this.render();
                     return;
                 }
-                var matched = false;
-                const recordValIsEmpty = this.isEmpty(
-                    recordModel.get(this.model.get('metadata').currentProp)
-                );
-                this.symbolModels.each(function(symbolModel) {
-                    if (symbolModel.containsRecord(recordModel)
-                        && !symbolModel.checkModel(recordModel)) {
-                            symbolModel.removeModel(recordModel);
-                    }
-                    if (symbolModel.checkModel(recordModel)) {
-                        symbolModel.addModel(recordModel);
-                        matched = true;
-                    }
-                });
-                if (!matched) {
-                    if (!this.model.get('metadata').isContinuous && !recordValIsEmpty) {
-                        this.symbolModels.appendNewSymbol({
-                            recordModel: recordModel,
-                            layerModel: this.model,
-                            metadata: this.model.get('metadata')
-                        });
-                    } else {
-                        this.handleUnmatchedRecord(recordModel);
-                    }
-                }
-                this.model.removeEmptySymbols();
-                this.saveChanges();
-            },*/
-            // triggered from the router
+                /*if (symbol.matchedModels.length === 1) {
+                    this.addChild(symbol, this.childView, this.symbolModels.length);
+                }*/
+            },
+
             checkSelectedItem: function(layerId) {
                 this.$el.attr('id', this.model.id);
                 if (this.$el.find('input').prop('checked', false)) {

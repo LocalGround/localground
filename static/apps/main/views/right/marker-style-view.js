@@ -69,7 +69,7 @@ define(["jquery",
 
                 // don't recreate symbols if they already exist
                 // this is so existing unique individual attributes aren't overwritten by global ones
-                /*if (this.model.get('newLayer') === true) {
+                if (this.model.get('newLayer') === true) {
                     this.createCorrectSymbols();
                 } else
                 if (this.model.get('group_by') === 'uniform') {
@@ -77,14 +77,15 @@ define(["jquery",
                 } else if (this.model.get('group_by') === 'individual') {
                     this.createCorrectSymbols();
                 } else {
-
+                    this.createCorrectSymbols();
                     this.updatePalettes(this.model.get('symbols').length);
                     this.updateMapAndRender();
-                }*/
-                if (this.model.isCategorical()) {
+                }
+                /*if (this.model.isCategorical()) {
+                    console.log('is categorical...', this.model.get('symbols').length)
                     this.updatePalettes(this.model.get('symbols').length);
                     this.render();
-                }
+                }*/
 
                 $('body').click($.proxy(this.hideColorRamp, this));
 
@@ -325,6 +326,7 @@ define(["jquery",
 
             catData: function() {
                 let categoryList = this.getCatInfo();
+                console.log()
                 this.updatePalettes(categoryList.length);
                 this.setSymbols(this.buildCategoricalSymbols(categoryList));
             },
@@ -404,12 +406,9 @@ define(["jquery",
                         "isShowing": this.model.get("metadata").isShowing,
                         "id": (counter + 1)
                     });
-                    console.log(this.selectedColorPalette[counter]);
                     counter++;
                     cont.currentFloor = next;
                 }
-                console.log(cont.currentFloor);
-                console.log(this.layerDraft.continuous);
                 this.layerNoLongerNew();
                 return this.layerDraft.continuous;
             },
@@ -491,6 +490,7 @@ define(["jquery",
             },
 
             setSymbols: function (symbs) {
+                console.log(symbs.toJSON());
                 this.collection.reset(symbs.toJSON())
                 this.render();
             },
@@ -538,6 +538,7 @@ define(["jquery",
             },
 
             updatePalettes: function(itemCount) {
+                console.log(itemCount);
                 let symbolType = this.model.get("metadata").isContinuous ? 'continuous' : 'categorical';
 
                 const paletteId = this.model.get("metadata").paletteId;

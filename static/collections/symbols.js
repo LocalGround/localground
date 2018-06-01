@@ -20,65 +20,109 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             let symbolIds = this.models.map(symbol => symbol.get('id'));
             return Math.max(...this.models.map(symbol => symbol.get('id')))
         },
-        assignRecords: function (records) {
-            records.each(record => {
-                this.assignRecord(record);
+        removeEmpty: function() {
+            if (!this.layerModel.isContinuous()) {
+                this.each(symbol => {
+                    if (!symbol.hasModels()) {
+                        this.remove(symbol);
+                    }
+                });
+            }
+            if (this.layerModel.isEmpty()) {
+                this.set('group_by', 'uniform');
+                this.replaceSymbols(new Symbols([
+                    Symbol.createUniformSymbol(this)
+                ]), {layerModel: this.layerModel});
+            }
+        },
+
+        removeStaleMatches: function (record) {
+            this.each(symbol => {
+                if (symbol.containsRecord(record) && !symbol.checkModel(record)) {
+                    symbol.removeModel(record);
+                }
             });
         },
-        assignRecord: function (record) {
+
+        updateIfApplicable: function (record) {
+            let matchedSymbol;
+            let count = 0;
+            this.each(symbol => {
+                count += (symbol.containsRecord(record) || symbol.checkModel(record) ? 1 : 0);
+            });
+            this.each(symbol => {
+                if (symbol.containsRecord(record) &&
+                    !symbol.checkModel(record) &&
+                    symbol.matchedModels.length === 1 &&
+                    count === 1) {
+                    matchedSymbol = symbol;
+                    const prop = this.layerModel.get('metadata').currentProp
+                    const value = record.get(prop);
+                    symbol.set({
+                        'rule': `${prop} = '${value}'`,
+                        'title': value
+                    });
+                }
+            });
+            return matchedSymbol;
+        },
+        assignToExistingSymbol: function (record) {
             let matchedSymbol;
             this.each(symbol => {
                 if (symbol.checkModel(record)) {
                     matchedSymbol = symbol;
-                    symbol.addModel(record);
+                    matchedSymbol.addModel(record);
                 }
             })
-            console.log(console.log(this.toJSON()))
-            if (!matchedSymbol) {
-                matchedSymbol = this.handleUnmatchedRecord(record);
-            }
-            console.log(console.log(this.toJSON()))
             return matchedSymbol;
         },
-        handleUnmatchedRecord: function (recordModel) {
-            const uncategorizedSymbol = this.getOrCreateUncategorizedSymbolModel();
-            uncategorizedSymbol.addModel(recordModel);
-            return uncategorizedSymbol;
-        },
-        getUncategorizedSymbol: function () {
-            return this.findWhere({
-                rule: Symbol.UNCATEGORIZED_SYMBOL_RULE
-            });
-        },
-        createUncategorizedSymbol: function () {
-            const uncategorizedSymbol = Symbol.createUncategorizedSymbol(this.layerModel.get('metadata'));
-            this.add(uncategorizedSymbol);
-            return uncategorizedSymbol;
-        },
-        getOrCreateUncategorizedSymbolModel: function () {
-            const uncategorizedSymbol = this.getUncategorizedSymbol();
-            if (!uncategorizedSymbol) {
-                return this.createUncategorizedSymbol();
+        assignToNewSymbol: function (record) {
+            let matchedSymbol;
+            const metadata = this.layerModel.get('metadata');
+            const value = record.get(metadata.currentProp);
+            if (this.layerModel.isIndividual()){
+                matchedSymbol = Symbol.createIndividualSymbol(this.layerModel, value);
+            } else if (this.layerModel.isCategorical() && value)  {
+                matchedSymbol = Symbol.createCategoricalSymbol(
+                    this.layerModel, value, this.layerModel.getSymbols().length + 1);
+            } else {
+                matchedSymbol = Symbol.createUncategorizedSymbol(this.layerModel)
             }
-            return uncategorizedSymbol;
+            matchedSymbol.addModel(record);
+            this.add(matchedSymbol);
+            return matchedSymbol;
         },
-        appendNewSymbol: function (opts) {
-            const recordModel = opts.recordModel;
-            const category = recordModel.get(opts.metadata.currentProp);
-            const lgPalettes = new LGPalettes();
-            const palette = lgPalettes.getPalette(opts.metadata.paletteId, 8, 'categorical');
-            const symbol = Symbol.createCategoricalSymbol(
-                category, opts.layerModel, this.maxId() + 1,
-                this.length, palette
-            );
-            symbol.addModel(recordModel);
-            this.add(symbol);
-        }
+        assignRecords: function (records) {
+            records.each(record => {
+                this.assignRecord(record);
+            });
+            this.removeEmpty();
+        },
+        assignRecord: function (record) {
+            let matchedSymbol = this.assignToExistingSymbol(record);
+            return matchedSymbol || this.assignToNewSymbol(record);
+        },
+        reassignRecord: function (record) {
+            //first try updating current symbol:
+            let matchedSymbol = this.updateIfApplicable(record);
+            if (matchedSymbol) {
+                return matchedSymbol;
+            }
+            //then try assigning to existing symbol:
+            matchedSymbol = this.assignToExistingSymbol(record);
+            //if neither of those work:
+            matchedSymbol = matchedSymbol || this.assignToNewSymbol(record);
+            this.removeStaleMatches(record);
+            this.removeEmpty();
+            return matchedSymbol;
+        },
     }, {
         buildCategoricalSymbolSet: function (categoryList, layerModel, palette) {
             const symbols = new Symbols(null, {layerModel: layerModel});
-            categoryList.forEach((category, index) => {
-                symbols.add(Symbol.createCategoricalSymbol(category, layerModel, index, index, palette));
+            categoryList.forEach((value, index) => {
+                symbols.add(Symbol.createCategoricalSymbol(
+                    layerModel, value, index
+                ));
             });
             return symbols;
         }
