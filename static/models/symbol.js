@@ -137,7 +137,11 @@ define(['backbone', 'underscore', 'collections/records',
                     });
                 return new Symbol(props);
             },
-            createIndividualSymbol: function (layerModel, value, id) {
+            createIndividualSymbol: function (opts) {
+                const layerModel = opts.layerModel;
+                const value = opts.category;
+                const id = opts.id;
+                const fillColor = opts.fillColor;
                 //factory that creates new symbols:
                 const metadata = layerModel.get('metadata');
                 //const counter = layerModel.getSymbols().length;
@@ -145,11 +149,14 @@ define(['backbone', 'underscore', 'collections/records',
                     Symbol._getDefaultMetadataProperties(metadata), {
                         'rule': `id = ${value}`,
                         'title': value,
-                        'id': id
+                        'id': id,
+                        'fillColor': fillColor
                     });
                 return new Symbol(props);
             },
-            createUncategorizedSymbol: function (layerModel, id) {
+            createUncategorizedSymbol: function (opts) {
+                const layerModel = opts.layerModel;
+                const id = opts.id
                 const metadata = layerModel.get('metadata');
                 //const counter = layerModel.getSymbols().length;
                 const props = _.extend(
@@ -159,7 +166,6 @@ define(['backbone', 'underscore', 'collections/records',
                     'fillColor': Symbol.UNCATEGORIZED_SYMBOL_COLOR,
                     'id': id
                 });
-                console.log(props);
                 return new Symbol(props);
             },
             createUniformSymbol: function (layerModel, id) {

@@ -110,7 +110,12 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             const value = record.get(metadata.currentProp);
 
             if (this.layerModel.isIndividual()){
-                matchedSymbol = Symbol.createIndividualSymbol(this.layerModel, value, id);
+                matchedSymbol = Symbol.createIndividualSymbol({
+                    layerModel: this.layerModel,
+                    category: value,
+                    id: this.getNextId(),
+                    fillColor: this.getNextColor()
+                });
             } else if (this.layerModel.isCategorical() && value)  {
                 matchedSymbol = Symbol.createCategoricalSymbol({
                     layerModel: this.layerModel,
@@ -119,20 +124,21 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
                     fillColor: this.getNextColor()
                 });
             } else {
-                matchedSymbol = this.getOrCreateUncategorizedSymbol(
-                    this.layerModel, this.getNextId())
+                matchedSymbol = this.getOrCreateUncategorizedSymbol()
             }
             matchedSymbol.addModel(record);
             this.add(matchedSymbol);
             return matchedSymbol;
         },
-        getOrCreateUncategorizedSymbol: function (layerModel, id) {
+        getOrCreateUncategorizedSymbol: function () {
             const existingSymbol = this.findWhere({
                 rule: Symbol.UNCATEGORIZED_SYMBOL_RULE
             });
             if (!existingSymbol) {
-                return Symbol.createUncategorizedSymbol(
-                    this.layerModel, this.getNextId())
+                return Symbol.createUncategorizedSymbol({
+                    layerModel: this.layerModel,
+                    id: this.getNextId()
+                })
             }
             return existingSymbol;
         },

@@ -374,6 +374,7 @@ define(["jquery",
                         "id": item.id,
                     });
                 });
+                this.updateMetadata('fillColor', '#ed867d');
                 this.layerNoLongerNew();
                 return this.layerDraft.individual;
 
