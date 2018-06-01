@@ -116,6 +116,8 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
                     id: this.getNextId(),
                     fillColor: this.getNextColor()
                 });
+                matchedSymbol.addModel(record);
+                this.add(matchedSymbol);
             } else if (this.layerModel.isCategorical() && value)  {
                 matchedSymbol = Symbol.createCategoricalSymbol({
                     layerModel: this.layerModel,
@@ -123,11 +125,20 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
                     id: this.getNextId(),
                     fillColor: this.getNextColor()
                 });
+                matchedSymbol.addModel(record);
+                const uncategorized = this.findWhere({
+                    rule: Symbol.UNCATEGORIZED_SYMBOL_RULE
+                })
+                if (uncategorized) {
+                    this.add(matchedSymbol, {at: this.length - 1});
+                } else {
+                    this.add(matchedSymbol);
+                }
             } else {
                 matchedSymbol = this.getOrCreateUncategorizedSymbol()
+                matchedSymbol.addModel(record);
+                this.add(matchedSymbol);
             }
-            matchedSymbol.addModel(record);
-            this.add(matchedSymbol);
             return matchedSymbol;
         },
         getOrCreateUncategorizedSymbol: function () {
@@ -171,12 +182,14 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
     }, {
         buildCategoricalSymbolSet: function (categoryList, layerModel, palette) {
             const symbols = new Symbols(null, {layerModel: layerModel});
+            //const palette = symbols.getPalette();
             categoryList.forEach((value, index) => {
+                console.log(categoryList, value, index);
                 symbols.add(Symbol.createCategoricalSymbol({
-                    layerModel: this.layerModel,
+                    layerModel: layerModel,
                     category: value,
-                    id: this.getNextId(),
-                    fillColor: this.getNextColor()
+                    id: (index + 1),
+                    fillColor: '#' + palette[index % palette.length]
                 }));
             });
             return symbols;
