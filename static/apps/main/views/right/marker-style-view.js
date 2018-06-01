@@ -357,6 +357,7 @@ define(["jquery",
 
             buildIndividualSymbols: function(key) {
                 this.layerDraft.individual = new Symbols(null, {layerModel: this.model});
+                //this.model.get('metadata').fillColor = '#ed867d';
                 let collection = this.app.dataManager.getCollection(key);
                 collection.forEach((item) => {
                     this.layerDraft.individual.add({

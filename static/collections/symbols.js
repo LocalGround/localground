@@ -95,6 +95,7 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             }
             matchedSymbol.addModel(record);
             this.add(matchedSymbol);
+            console.log(matchedSymbol);
             return matchedSymbol;
         },
         assignRecords: function (records) {

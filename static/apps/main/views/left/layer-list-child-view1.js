@@ -150,9 +150,9 @@ define(["marionette",
                     this.render();
                     return;
                 }
-                if (symbol.matchedModels.length === 1) {
+                /*if (symbol.matchedModels.length === 1) {
                     this.addChild(symbol, this.childView, this.symbolModels.length);
-                }
+                }*/
             },
             reRenderOrReassignRecordToSymbol: function (recordModel) {
                 const symbol = this.symbolModels.reassignRecord(recordModel);
@@ -290,6 +290,7 @@ define(["marionette",
                 }, { urlRoot: this.dataCollection.url });
                 recordModel.save(null, {
                     success: () => {
+                        console.log(recordModel.id);
                         this.dataCollection.add(recordModel);
                         var mapID = this.app.dataManager.getMap().id,
                             layerID = this.model.id,

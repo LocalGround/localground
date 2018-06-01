@@ -153,8 +153,9 @@ define(['backbone', 'underscore', 'collections/records',
                     'rule': Symbol.UNCATEGORIZED_SYMBOL_RULE,
                     'title': 'Other / No value',
                     'fillColor': Symbol.UNCATEGORIZED_SYMBOL_COLOR,
-                    'id': counter + 1
+                    'id': counter + 2
                 });
+                console.log(props);
                 return new Symbol(props);
             },
             createUniformSymbol: function (layerModel) {
