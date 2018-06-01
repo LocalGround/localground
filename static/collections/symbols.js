@@ -12,7 +12,7 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
         initialize: function (recs, opts) {
             _.extend(this, opts);
             if (!this.layerModel) {
-                throw Exception('A layerModel must be defined.')
+                throw Error('A layerModel must be defined.')
             }
             Base.prototype.initialize.apply(this, recs, opts);
         },
@@ -29,10 +29,10 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
                 });
             }
             if (this.layerModel.isEmpty()) {
-                this.set('group_by', 'uniform');
-                this.replaceSymbols(new Symbols([
-                    Symbol.createUniformSymbol(this)
-                ]), {layerModel: this.layerModel});
+                this.layerModel.set('group_by', 'uniform');
+                this.set([
+                    Symbol.createUniformSymbol(this.layerModel)
+                ]);
             }
         },
 
@@ -43,18 +43,22 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
                 }
             });
         },
-
-        updateIfApplicable: function (record) {
-            let matchedSymbol;
+        getNumMatches: function (record) {
             let count = 0;
             this.each(symbol => {
                 count += (symbol.containsRecord(record) || symbol.checkModel(record) ? 1 : 0);
             });
+            return count;
+        },
+
+        updateIfApplicable: function (record) {
+            let matchedSymbol;
+
             this.each(symbol => {
                 if (symbol.containsRecord(record) &&
                     !symbol.checkModel(record) &&
                     symbol.matchedModels.length === 1 &&
-                    count === 1) {
+                    this.getNumMatches(record) === 1) {
                     matchedSymbol = symbol;
                     const prop = this.layerModel.get('metadata').currentProp
                     const value = record.get(prop);
@@ -80,6 +84,7 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             let matchedSymbol;
             const metadata = this.layerModel.get('metadata');
             const value = record.get(metadata.currentProp);
+
             if (this.layerModel.isIndividual()){
                 matchedSymbol = Symbol.createIndividualSymbol(this.layerModel, value);
             } else if (this.layerModel.isCategorical() && value)  {
@@ -108,9 +113,11 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             if (matchedSymbol) {
                 return matchedSymbol;
             }
+
             //then try assigning to existing symbol:
             matchedSymbol = this.assignToExistingSymbol(record);
-            //if neither of those work:
+
+            //if neither of those work, create a new symbol:
             matchedSymbol = matchedSymbol || this.assignToNewSymbol(record);
             this.removeStaleMatches(record);
             this.removeEmpty();

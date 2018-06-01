@@ -24,12 +24,11 @@ define(['backbone', 'underscore', 'collections/records',
             initialize: function (data, opts) {
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);
-
                 if (_.isUndefined(this.get("rule"))) {
-                    throw new Error("rule must be defined");
+                    throw "rule must be defined";
                 }
                 if (_.isUndefined(this.get("title"))) {
-                    throw new Error("title must be defined");
+                    throw "title must be defined";
                 }
                 this.matchedModels = new Records(null, {
                     url: '-1',

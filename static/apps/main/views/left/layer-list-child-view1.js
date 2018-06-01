@@ -140,7 +140,7 @@ define(["marionette",
                 return Marionette.CollectionView.prototype.addChild.call(this, symbolModel, ChildView, index);
             },
             removeEmptySymbols: function () {
-                this.model.removeEmptySymbols();
+                this.symbolModels.removeEmpty();
                 const mapID = this.app.dataManager.getMap().id;
                 this.app.router.navigate("//" + mapID);
             },
