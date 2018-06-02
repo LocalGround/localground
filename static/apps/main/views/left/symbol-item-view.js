@@ -127,6 +127,9 @@ define(["marionette",
                 }
             },
 
+            onRender: function () {
+                console.log(this.parent.model.get('title'), ':', this.model.id);
+            },
             onDestroy: function () {
                 console.log('destroying symbol-item-view');
                 if (this.overlay != null) {

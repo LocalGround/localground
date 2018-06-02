@@ -1,4 +1,4 @@
-define(["jquery", "lib/sqlParser", "tests/spec-helper"], function ($, SQLParser) {
+define(["jquery", "lib/sqlParser", "tests/spec-helper1"], function ($, SQLParser) {
     'use strict';
     var valid_statements = [
             'where a = 3',

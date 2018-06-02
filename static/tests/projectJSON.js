@@ -61,9 +61,7 @@ var __projectJSON = {
             "name": "",
             "caption": null,
             "overlay_type": "dataset_3",
-            "tags": [
-
-            ],
+            "tags": ["animal", "cat", "cute", "tag1"],
             "owner": "riley",
             "project_id": 3,
             "geometry": {
@@ -93,9 +91,7 @@ var __projectJSON = {
             "name": "",
             "caption": null,
             "overlay_type": "dataset_3",
-            "tags": [
-
-            ],
+            "tags": ["animal", "dog"],
             "owner": "riley",
             "project_id": 3,
             "geometry": {
@@ -155,9 +151,7 @@ var __projectJSON = {
             "name": "",
             "caption": null,
             "overlay_type": "dataset_3",
-            "tags": [
-
-            ],
+            "tags": ["animal", "amphibian", "cute", "frog"],
             "owner": "riley",
             "project_id": 3,
             "geometry": {

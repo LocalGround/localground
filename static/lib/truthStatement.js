@@ -122,7 +122,7 @@ define(["jquery"], function ($) {
             if (typeof modelVal === 'undefined' || modelVal == null) {
                 return false;
             }
-            
+
             modelVal = this.convertType(modelVal);
             if (this.operator == '=') {
                 returnVal = modelVal == this.val;
@@ -198,5 +198,3 @@ define(["jquery"], function ($) {
 
     return TruthStatement;
 });
-
-

@@ -83,6 +83,14 @@ define(['backbone', 'underscore', 'collections/records',
             isUncategorized: function () {
                 return this.get('rule') === Symbol.UNCATEGORIZED_SYMBOL_RULE;
             },
+            isUpdateCandidate: function (record) {
+                return (
+                    !this.isUncategorized() &&
+                    this.containsRecord(record) &&
+                    !this.checkModel(record) &&
+                    this.matchedModels.length === 1
+                );
+            },
             hasModels: function () {
                 return this.matchedModels.length > 0;
             },

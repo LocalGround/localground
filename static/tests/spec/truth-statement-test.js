@@ -1,4 +1,4 @@
-define(["jquery", "lib/truthStatement", "tests/spec-helper"], function ($, TruthStatement) {
+define(["jquery", "lib/truthStatement", "tests/spec-helper1"], function ($, TruthStatement) {
     'use strict';
     var valid_statements = [
             'a = 3',
@@ -136,60 +136,60 @@ define(["jquery", "lib/truthStatement", "tests/spec-helper"], function ($, Truth
     });
 
     describe("TruthStatement: Model comparison tests", function () {
-        var s1 = new TruthStatement("id = 1", "and"),
-            s2 = new TruthStatement("name = 'dog'", "and"),
-            match_dictionary = {
-                "tags contains animal": 3,
-                "tags contains 'animal'": 3,
-                "tags startswith animal": 3,
-                "tags startswith 'animal'": 3,
-                "tags endswith 'dog'": 1,
-                "name = dog": 1,
-                "name = 'dog'": 1,
-                "name = 'Dog'": 1,
-                "name in ('Dog', 'Cat')": 2,
-                "name in (dog, cat)": 2,
-                "name in (dog1, cat)": 1,
-                "name in dog, cat, Frog": 3, //note: parenthesis, single quotes, case sensitivity optional
-                "name like '%o%": 2,
-                "name like '%o%'": 2,
-                "name like 'd%": 1,
-                "name like '%g'": 2,
-                "id in (1,2,3)": 3,
-                "id in ('1', '2', '3')": 3, //even if user is confused about the datatype.
-                "id <> 1": 2,
-                "id != 2": 2,
-                "id < 4": 3,
-                "id <= 3": 3,
-                "id >= 4": 0,
-                "id > 2": 1,
-                "id = 2": 1,
-                "*": 3
-            },
-            s = new TruthStatement(),
-            key = null,
-            matches = 0;
+        const s1 = new TruthStatement("id = 1", "and");
+        const s2 = new TruthStatement("name = 'dog'", "and");
+        const match_dictionary = [
+            {whereClause: "tags contains animal", count: 3},
+            {whereClause: "tags contains 'animal'", count: 3},
+            {whereClause: "tags startswith animal", count: 3},
+            {whereClause: "tags startswith 'animal'", count: 3},
+            {whereClause: "tags endswith 'dog'", count: 1},
+            {whereClause: "name = dog", count: 1},
+            {whereClause: "name = 'dog'", count: 1},
+            {whereClause: "name = 'Dog'", count: 1},
+            {whereClause: "name in ('Dog', 'Cat')", count: 2},
+            {whereClause: "name in (dog, cat)", count: 2},
+            {whereClause: "name in (dog1, cat)", count: 1},
+            {whereClause: "name in dog, cat, Frog", count: 3}, //note: parenthesis, single quotes, case sensitivity optional
+            {whereClause: "name like '%o%", count: 2},
+            {whereClause: "name like '%o%'", count: 2},
+            {whereClause: "name like 'd%", count: 1},
+            {whereClause: "name like '%g'", count: 2},
+            {whereClause: "id in (1,2,3)", count: 3},
+            {whereClause: "id in ('1', '2', '3')", count: 3}, //even if user is confused about the datatype.
+            {whereClause: "id <> 1", count: 2},
+            {whereClause: "id != 2", count: 2},
+            {whereClause: "id < 4", count: 3},
+            {whereClause: "id <= 3", count: 3},
+            {whereClause: "id >= 4", count: 0},
+            {whereClause: "id > 2", count: 1},
+            {whereClause: "id = 2", count: 1},
+            {whereClause: "*", count: 3}
+        ];
+        const s = new TruthStatement();
+        let key = null;
+        let matches = 0;
 
         it("Successfully converts model value to comparison value", function () {
             var key1 = s1.key,
                 key2 = s2.key,
-                photo = this.photos.get(1),
-                modelVal1 = photo.get(key1),
-                modelVal2 = photo.get(key2),
+                record = this.dataset_3.get(1),
+                modelVal1 = this.dataset_3.get(key1),
+                modelVal2 = this.dataset_3.get(key2),
                 convertedVal1 = s1.convertType(modelVal1),
                 convertedVal2 = s2.convertType(modelVal2);
             expect(typeof modelVal1).toEqual(typeof convertedVal1);
             expect(typeof modelVal2).toEqual(typeof convertedVal2);
         });
 
-        it("Photos do not match queries which are untrue", function () {
+        it("Records do not match queries which are untrue", function () {
             var that = this;
             //valid_statements are valid, but not true:
             $.each(valid_statements, function () {
                 var whereClause = this,
                     s = new TruthStatement(whereClause, "and"),
                     matches = 0;
-                that.photos.each(function (model) {
+                that.dataset_3.each(function (model) {
                     if (s.truthTest(model)) {
                         ++matches;
                     }
@@ -198,18 +198,19 @@ define(["jquery", "lib/truthStatement", "tests/spec-helper"], function ($, Truth
             });
         });
 
-        for (key in match_dictionary) {
-            it(match_dictionary[key] + " photo(s) match query \"" + key + "\"", function () {
-                s.parseStatement(key, "and");
-                matches = 0;
-                this.photos.each(function (model) {
+        match_dictionary.forEach(function(item) {
+            it(item.count + " records(s) match query \"" + item.whereClause + "\"", function() {
+                const s = new TruthStatement(item.whereClause, "and");
+                let matches = 0;
+                this.dataset_3.each(function (model) {
                     if (s.truthTest(model)) {
                         ++matches;
                     }
                 });
-                expect(matches).toEqual(match_dictionary[key]);
+                expect(matches).toEqual(item.count);
             });
-        }
+        });
     });
+
 
 });
