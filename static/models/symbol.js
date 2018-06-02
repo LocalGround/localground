@@ -133,6 +133,8 @@ define(['backbone', 'underscore', 'collections/records',
                     return value;
                 }
             },
+            UNIFORM_SYMBOL_COLOR: '#4e70d4',
+            INDIVIDUAL_SYMBOL_COLOR: '#ed867d',
             UNCATEGORIZED_SYMBOL_COLOR: '#BBB',
             UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
 
@@ -140,9 +142,9 @@ define(['backbone', 'underscore', 'collections/records',
                 if (!layerMetadata) {
                     return {};
                 }
-                return {
+                const defaults = {
                     'shape': 'circle',
-                    'fillColor': Symbol.defaultIfUndefined(parseFloat(layerMetadata.fillColor), 1),
+                    'fillColor': layerMetadata.fillColor,
                     'fillOpacity': Symbol.defaultIfUndefined(parseFloat(layerMetadata.fillOpacity), 1),
                     'strokeWeight': Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeWeight), 1),
                     'strokeOpacity': Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeOpacity), 1),
@@ -150,6 +152,8 @@ define(['backbone', 'underscore', 'collections/records',
                     'width': Symbol.defaultIfUndefined(parseFloat(layerMetadata.width), 20),
                     'isShowing': layerMetadata.isShowing
                 };
+                console.log(defaults);
+                return defaults;
             },
             createCategoricalSymbol: function (opts) {
                 //factory that creates new symbols:

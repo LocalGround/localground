@@ -7,11 +7,13 @@ define(["jquery",
         "apps/main/views/symbols/symbol-selection-layout-view",
         "text!../../templates/right/marker-style1.html",
         "collections/symbols",
+        "models/symbol",
         "lib/lgPalettes",
         'color-picker-eyecon',
         "palette",
     ],
-    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView, SymbolSelectionLayoutView, MarkerStyleTemplate, Symbols, LGPalettes) {
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleChildView,
+            SymbolSelectionLayoutView, MarkerStyleTemplate, Symbols, Symbol, LGPalettes) {
         'use strict';
 
         /**
@@ -177,9 +179,9 @@ define(["jquery",
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
                     dataColumnsList: this.dataColumnsList, // new
-                    isBasic: this.model.get('group_by') === 'uniform',
-                    isIndividual: this.model.get('group_by') === 'individual',
-                    uniformOrInd: this.model.get('group_by') === 'uniform' || this.model.get('group_by') === 'individual',
+                    isBasic: this.model.isUniform(),
+                    isIndividual: this.model.isIndividual(),
+                    uniformOrInd: this.model.isUniform() || this.model.isIndividual(),
                     propCanBeCont: this.propCanBeCont(),
                     paletteCounter: this.colorPaletteAmount()
                 };
@@ -249,10 +251,10 @@ define(["jquery",
             },
 
             propCanBeCont: function() {
-                if (this.model.get('group_by') === 'uniform') {
+                if (this.model.isUniform()) {
                     return false;
                 }
-                if (this.model.get('group_by') === 'individual') {
+                if (this.model.isIndividual()) {
                     return false;
                 }
                 let currentProp = this.dataColumnsList.find((item) => {
@@ -335,18 +337,14 @@ define(["jquery",
             },
 
             createCorrectSymbols: function () {
-                const gb = this.model.get('group_by');
-                if (gb === 'uniform') {
+                if (this.model.isUniform()) {
                     this.uniformData();
-                } else if (gb === 'individual') {
+                } else if (this.model.isIndividual()) {
                     this.individualData();
+                } else if (this.model.isContinuous()) {
+                    this.contData();
                 } else {
-                    this.model.get('metadata').currentProp = this.model.get('group_by');
-                    if (this.model.get('metadata').isContinuous) {
-                        this.contData();
-                    } else {
-                        this.catData();
-                    }
+                    this.catData();
                 }
 
             },
@@ -371,50 +369,27 @@ define(["jquery",
                 this.setSymbols(this.buildCategoricalSymbols(categoryList));
             },
 
-            setPalettes: function(count) {
-
-            },
-
             buildUniformSymbols: function (key) {
                 name = this.app.dataManager.getCollection(key).getTitle();
-
-                this.layerDraft.uniform = new Symbols([{
-                    "rule": "*",
-                    "title": name,
-                    "shape": this.$el.find(".global-marker-shape").val(),
-                    "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
-                    "fillColor": this.model.get("metadata").fillColor,
-                    "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
-                    "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
-                    "strokeColor": this.model.get("metadata").strokeColor,
-                    'width': this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
-                    "isShowing": this.model.get("metadata").isShowing,
-                    "id": 1
-                }], {layerModel: this.model});
+                this.updateMetadata('fillColor', Symbol.UNIFORM_SYMBOL_COLOR)
+                this.layerDraft.uniform = Symbol.createUniformSymbol(this.model, 1);
                 this.layerNoLongerNew();
                 return this.layerDraft.uniform;
             },
 
             buildIndividualSymbols: function(key) {
                 this.layerDraft.individual = new Symbols(null, {layerModel: this.model});
-                //this.model.get('metadata').fillColor = '#ed867d';
+                this.updateMetadata('fillColor', Symbol.INDIVIDUAL_SYMBOL_COLOR)
                 let collection = this.app.dataManager.getCollection(key);
-                collection.forEach((item) => {
-                    this.layerDraft.individual.add({
-                        "rule": `id = ${item.id}`,
-                        "title": item,
-                        "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
-                        "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
-                        "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
-                        "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
-                        "shape": this.$el.find(".global-marker-shape").val(),
-                        "fillColor": this.model.get('metadata').fillColor,
-                        "strokeColor": this.model.get("metadata").strokeColor,
-                        "isShowing": this.model.get("metadata").isShowing,
-                        "id": item.id,
+                collection.forEach((item, index) => {
+                    const symbol = Symbol.createIndividualSymbol({
+                        layerModel: this.model,
+                        category: item.id,
+                        id: (index + 1),
+                        fillColor: Symbol.INDIVIDUAL_SYMBOL_COLOR
                     });
+                    this.layerDraft.individual.add(symbol);
                 });
-                this.updateMetadata('fillColor', '#ed867d');
                 this.layerNoLongerNew();
                 return this.layerDraft.individual;
 
@@ -458,26 +433,6 @@ define(["jquery",
             buildCategoricalSymbols: function (categoryList) {
                 this.layerDraft.categorical = Symbols.buildCategoricalSymbolSet(
                     categoryList, this.model);
-                /*this.layerDraft.categorical = new Symbols();
-                cat.list.forEach((item) => {
-                    this.layerDraft.categorical.add({
-                        "rule": this.model.get('metadata').currentProp + " = '" + item + "'",
-                        "title": item,
-                        "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
-                        "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
-                        "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
-                        "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
-                        "shape": this.$el.find(".global-marker-shape").val(),
-                        "fillColor": "#" + this.selectedColorPalette[paletteCounter % 8],
-                        "strokeColor": this.model.get("metadata").strokeColor,
-                        "isShowing": this.model.get("metadata").isShowing,
-                        "id": idCounter,
-                        "instanceCount": cat.instanceCount[item]
-                    });
-
-                    idCounter++;
-                    paletteCounter++;
-                });*/
                 this.layerNoLongerNew();
                 return this.layerDraft.categorical;
             },
@@ -532,7 +487,6 @@ define(["jquery",
             },
 
             setSymbols: function (symbs) {
-                console.log(symbs.toJSON());
                 this.collection.reset(symbs.toJSON())
                 this.render();
             },
@@ -584,7 +538,6 @@ define(["jquery",
             },
 
             updatePalettes: function(itemCount) {
-                console.log(itemCount);
                 let symbolType = this.model.get("metadata").isContinuous ? 'continuous' : 'categorical';
 
                 const paletteId = this.model.get("metadata").paletteId;
@@ -593,64 +546,6 @@ define(["jquery",
                 this.allColors = this.lgPalettes.getAllPalettes(itemCount, symbolType);
                 this.selectedColorPalette = this.lgPalettes.getPalette(paletteId, itemCount, symbolType);
             },
-
-            /*
-            buildPalettes: function (itemCount) {
-                let count = itemCount;
-                if (count > 8) { count = 8; }
-
-                let seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8;
-                const catPalettes = ['cb-Accent', 'cb-Dark2', 'cb-Paired', 'cb-Pastel1', 'cb-Set1', 'cb-Set2', 'cb-Set3', 'tol-rainbow'];
-                const contPalettes = ['cb-Blues', 'cb-Oranges', 'cb-Greys', 'cb-YlGn', 'cb-RdYlBu', 'tol-dv', 'cb-Purples', 'cb-RdPu'];
-                const paletteId = this.model.get("metadata").paletteId || 0;
-
-                let paletteList, buckets;
-                const gb = this.model.get('group_by');
-                if (gb === 'uniform') {
-                    buckets = count;
-                    paletteList = catPalettes;
-                } else if (gb === 'individual') {
-                    console.log('individual');
-                } else {
-                    if (this.model.get('metadata').isContinuous) {
-                        paletteList = contPalettes;
-                        buckets = count + 1;
-                        console.log('buckets in color sequence: ', buckets)
-                    } else {
-                        paletteList = catPalettes;
-                        buckets = count;
-                    }
-                }
-
-                seq1 = palette(paletteList[0], buckets);
-                seq2 = palette(paletteList[1], buckets);
-                seq3 = palette(paletteList[2], buckets);
-                seq4 = palette(paletteList[3], buckets);
-                seq5 = palette(paletteList[4], buckets);
-                seq6 = palette(paletteList[5], buckets);
-                seq7 = palette(paletteList[6], buckets);
-                seq8 = palette(paletteList[7], buckets);
-                this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6, seq7, seq8];
-
-                if (this.model.get('metadata').isContinuous) {
-                    console.log(this.allColors);
-                    this.allColors.forEach((seq, index) => {
-                        console.log('seq ', index, seq);
-                        seq.shift();
-                    });
-                }
-                this.selectedColorPalette = this.allColors[paletteId];
-                return this.selectedColorPalette;
-            },
-            */
-
-            /*updateMap: function () {
-                console.log('msv updateMap');
-                var that = this;
-                this.delayExecution("mapTimer", function () {
-                    that.model.trigger('rebuild-markers', that.model)
-                }, 250);
-            },*/
 
             updatePaletteOpacity: function() {
                 let opacity = parseFloat(this.$el.find("#palette-opacity").val());
