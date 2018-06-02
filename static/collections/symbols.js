@@ -60,9 +60,9 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             }
         },
 
-        removeStaleMatches: function (record) {
+        removeStaleMatches: function (record, matchSymbol) {
             this.each(symbol => {
-                if (symbol.isRemovalCandidate(record)) {
+                if (symbol.isRemovalCandidate(record) & symbol !== matchSymbol) {
                     symbol.removeModel(record);
                 }
             });
@@ -87,7 +87,7 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             const value = record.get(prop);
             let matchedSymbol;
             this.each(symbol => {
-                if (symbol.isUpdateCandidate(record)
+                if (symbol.isUpdateCandidate(record, value)
                     && this.getNumMatches(record) === 1) {
                     console.log('updateIfApplicable');
                     matchedSymbol = symbol;
@@ -189,7 +189,7 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             symbol = this.assignRecord(record);
 
             // 3. remove stale matches:
-            this.removeStaleMatches(record);
+            this.removeStaleMatches(record, symbol);
             this.removeEmpty();
 
             // 4. return matched symbol:

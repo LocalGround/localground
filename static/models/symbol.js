@@ -83,9 +83,14 @@ define(['backbone', 'underscore', 'collections/records',
             isUncategorized: function () {
                 return this.get('rule') === Symbol.UNCATEGORIZED_SYMBOL_RULE;
             },
-            isUpdateCandidate: function (record) {
+            isUpdateCandidate: function (record, value) {
+                if (this.isUncategorized()) {
+                    return false;
+                }
+                if (!(value || value === 0 || value === false)) {
+                    return false;
+                }
                 return (
-                    !this.isUncategorized() &&
                     this.containsRecord(record) &&
                     !this.checkModel(record) &&
                     this.matchedModels.length === 1
