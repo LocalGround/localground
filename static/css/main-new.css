@@ -704,6 +704,14 @@ i.fa.fa.fa-question-circle {
   padding: 2px;
 }
 
+.style-options {
+  margin-top: 18px;
+}
+
+.marker-style-extra {
+  display: none;
+}
+
 .style-menu {
   font-size: 12px;
   text-align: left;

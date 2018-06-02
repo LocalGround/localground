@@ -2,7 +2,7 @@
     <form class="form">
         <div class="color-properties row">
 
-            <label>Style:</label>
+            <label>Style:  {{uniformOrInd}}</label>
             <select name="place-properties" id="data-type-select" class="marker-style-select">
 
                 <option value="uniform" {{#ifequal groupBy "uniform"}} SELECTED {{/ifequal}}>Uniform</option>
@@ -21,8 +21,19 @@
             </select>
         </div>
 
-{{#unless isBasic}}
-        {{#unless isIndividual}}
+    <p>{{uniformOrInd}}</p>
+    {{#if uniformOrInd}}
+        <div class="row">
+            <label>Marker</label>
+            <div class="example-markers">
+                <div class="example-marker-wrapper">
+                    <i class="fa fa-2x fa-circle" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                </div>
+                <i class="fa fa-lg fa-paint-brush style-options"></i>
+            </div>
+            
+        </div>
+    {{else}}
         <div class="row">
             <label class="msv-label">Group by:</label>
             <div>
@@ -95,13 +106,15 @@
                     <i class="fa fa-2x fa-circle" style="color: #{{lookup ../selectedColorPalette @index}}"></i>
                 </div>
                 {{/each}}
+                <i class="fa fa-lg fa-paint-brush style-options"></i>
             </div>
+            
         </div>
     
-    
-        {{/unless}}
+    {{/if}}
     </form>
-    <div>
+    <div class='marker-style-extra'>
+        <hr>
         <div class="style-menu_row">
             <div class="style-menu_label">Marker Fill: </div>
             <div class="style-menu_shape-inner-row">
@@ -131,12 +144,13 @@
                     </div>
                     <div class="style-menu_input-descr">Size</div>
                 </div>
-    
+                {{#if uniformOrInd}}
                 <div class="style_attr">
                     <div class="style-menu_block jscolor" id="fill-color-picker" style="padding:0; background: {{metadata.fillColor}}; opacity: {{metadata.fillOpacity}};">
                     </div>
                     <div class="style-menu_input-descr">Color</div>
                 </div>
+                {{/if}}
     
                 <div class="style_attr">
                     <div class="style-menu_block">
@@ -170,8 +184,7 @@
         </div>
     </div>
         
-{{/unless}}
-    </form>
+
 </div>
 <div style="display: none">
     <table class="symbols-table">

@@ -86,25 +86,55 @@ define(["jquery",
             },
 
             onRender: function () {
-                var that = this,
-                    color = this.model.get('fillColor');
-                $(".marker-style-color-picker").remove();
-                this.$el.find('#stroke-color-picker').ColorPicker({
+                var that = this;
+                let strokeColor = this.model.get('metadata').strokeColor;
+                let fillColor = this.model.get('metadata').fillColor;
+                console.log(strokeColor, fillColor)
 
+                $(".layer-fill-color-picker").remove();
+                this.$el.find('#fill-color-picker').ColorPicker({
+                    color: fillColor,
                     onShow: function (colpkr) {
-                        $(colpkr).fadeIn(500);
+                        $(colpkr).fadeIn(200);
                         return false;
                     },
                     onHide: function (colpkr) {
-                        that.updateStrokeColor(color);
-                        $(colpkr).fadeOut(500);
+                        console.log('onHide()', that.model.get('metadata').fillColor, fillColor);
+                        if(that.model.get('metadata').fillColor !== fillColor) {
+                            console.log('onHide() condition passed', fillColor)
+                            that.updateFillColor(fillColor);
+                        }
+                        $(colpkr).fadeOut(200);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
-                        color = "#" + hex;
+                        console.log(hex);
+                        fillColor = "#" + hex;
                     }
                 });
-                $(".colorpicker:last-child").addClass('marker-style-color-picker');
+                $(".colorpicker:last-child").addClass('layer-fill-color-picker');
+
+
+                $(".layer-stroke-color-picker").remove();
+                this.$el.find('#stroke-color-picker').ColorPicker({
+                    color: strokeColor,
+                    onShow: function (colpkr) {
+                        $(colpkr).fadeIn(200);
+                        return false;
+                    },
+                    onHide: function (colpkr) {
+                        if(that.model.get('metadata').strokeColor !== strokeColor) {
+                            console.log('onHide', strokeColor)
+                            that.updateStrokeColor(strokeColor);
+                        }
+                        $(colpkr).fadeOut(200);
+                        return false;
+                    },
+                    onChange: function (hsb, hex, rgb) {
+                        strokeColor = "#" + hex;
+                    }
+                });
+                $(".colorpicker:last-child").addClass('layer-stroke-color-picker');
             },
 
             hideColorRamp: function (e) {
@@ -142,6 +172,7 @@ define(["jquery",
                     dataColumnsList: this.dataColumnsList, // new
                     isBasic: this.model.get('group_by') === 'uniform',
                     isIndividual: this.model.get('group_by') === 'individual',
+                    uniformOrInd: this.model.get('group_by') === 'uniform' || this.model.get('group_by') === 'individual',
                     propCanBeCont: this.propCanBeCont(), 
                     paletteCounter: this.colorPaletteAmount()
                 };
@@ -181,12 +212,21 @@ define(["jquery",
                 'click .palette-list *': 'selectPalette',
                 'click #global-symbol': 'showSymbols',
                 'click .style-by-menu_close': 'hideStyleMenu',
-                "click #cat-radio": "toggleContCat",
-                "click #cont-radio": "toggleContCat"
+                'click #cat-radio': 'toggleContCat',
+                'click #cont-radio': 'toggleContCat',
+                'click .style-options': 'toggleStyleOptions'
             },
 
             modelEvents: {
                 'change:symbols': 'saveChanges'
+            },
+
+            toggleStyleOptions: function(e) {
+                if (this.$el.find('.marker-style-extra').css('display') === 'none') {
+                    this.$el.find('.marker-style-extra').css('display', 'block');
+                } else {
+                    this.$el.find('.marker-style-extra').css('display', 'none');
+                }
             },
 
             toggleContCat: function (e) {
@@ -335,7 +375,7 @@ define(["jquery",
                     "title": name,
                     "shape": this.$el.find(".global-marker-shape").val(),
                     "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
-                  //  "fillColor": "#60c7cc",
+                    "fillColor": this.model.get("metadata").fillColor,
                     "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
                     "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
                     "strokeColor": this.model.get("metadata").strokeColor,
@@ -359,7 +399,7 @@ define(["jquery",
                         "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
                         "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
                         "shape": this.$el.find(".global-marker-shape").val(),
-                        "fillColor": '#ed867d',
+                        "fillColor": this.model.get('metadata').fillColor,
                         "strokeColor": this.model.get("metadata").strokeColor,
                         "isShowing": this.model.get("metadata").isShowing,
                         "id": item.id,
@@ -635,6 +675,14 @@ define(["jquery",
                     this.$el.find('#stroke-weight').val(strokeWeight);
                 }
                 this.updateMetadata("strokeWeight", strokeWeight);
+            },
+
+            // triggered from colorPicker
+            updateFillColor: function(hex) {
+                console.log('updateFillColor', hex);
+                this.updateMetadata("fillColor", hex);
+                this.$el.find('#fill-color-picker').css('background-color', hex);
+                this.$el.find('#example-marker_single').css('color', hex);
             },
 
             // triggered from colorPicker

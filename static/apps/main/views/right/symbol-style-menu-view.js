@@ -93,14 +93,17 @@ define(["jquery",
             },
 
             updateSymbolTitle: function(e) {
-                console.log(e);
-                console.log(this.$el.find('.symbol-title-input').val());
                 this.model.set('title', this.$el.find('.symbol-title-input').val());
                 this.render();
             },
-            updateFillColor: function (hex) {
-                this.model.set("fillColor", hex);
+            updateFillColor: function (hex) {                
+                if (this.layer.get('group_by') === 'uniform') {
+                    let md = this.layer.get('metadata');
+                    md.fillColor = hex
+                    this.layer.set('metadata', md);
+                }
                 $('#fill-color-picker').css('background', hex);
+                this.model.set("fillColor", hex);
             },
             updateStrokeColor: function (hex) {
                 this.model.set("strokeColor", hex);

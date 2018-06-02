@@ -32,7 +32,7 @@ define([
                 // the popper object:
                 this._destroyPopper();
                 this._show();
-                this._setHeight();
+                //this._setHeight();
 
                 // create popper:
                 this.popper = new Popper(
