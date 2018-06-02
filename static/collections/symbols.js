@@ -62,7 +62,7 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
 
         removeStaleMatches: function (record) {
             this.each(symbol => {
-                if (symbol.containsRecord(record) && !symbol.checkModel(record)) {
+                if (symbol.isRemovalCandidate(record)) {
                     symbol.removeModel(record);
                 }
             });
@@ -74,22 +74,21 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             });
             return count;
         },
-        hasValue: function (record) {
+        /*hasValue: function (record) {
             const prop = this.layerModel.get('metadata').currentProp
             const value = record.get(prop);
             if (value && value !== 0) {
                 return true;
             }
             return false;
-        },
+        },*/
         updateIfApplicable: function (record) {
             const prop = this.layerModel.get('metadata').currentProp
             const value = record.get(prop);
             let matchedSymbol;
             this.each(symbol => {
                 if (symbol.isUpdateCandidate(record)
-                    && this.getNumMatches(record) === 1
-                    && this.hasValue(record)) {
+                    && this.getNumMatches(record) === 1) {
                     console.log('updateIfApplicable');
                     matchedSymbol = symbol;
                     symbol.set({
@@ -126,6 +125,7 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
                 });
                 matchedSymbol.addModel(record);
                 this.add(matchedSymbol);
+
             } else if (this.layerModel.isCategorical() && value) {
                 console.log('creating new categorical symbol');
                 matchedSymbol = Symbol.createCategoricalSymbol({
@@ -140,14 +140,12 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
                 } else {
                     this.add(matchedSymbol);
                 }
+
             } else {
                 matchedSymbol = this.getUncategorizedSymbol();
                 if (matchedSymbol) {
-                    console.log(matchedSymbol)
-                    console.log(matchedSymbol.matchedModels)
                     console.log('adding to existing uncategorized symbol');
                     matchedSymbol.addModel(record);
-                    console.log(matchedSymbol.matchedModels)
                 } else {
                     console.log('adding to new uncategorized symbol');
                     matchedSymbol = Symbol.createUncategorizedSymbol({
@@ -172,28 +170,35 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             this.removeEmpty();
         },
         assignRecord: function (record) {
-            let matchedSymbol = this.assignToExistingSymbol(record);
-            return matchedSymbol || this.assignToNewSymbol(record);
+            // add to symbol in the following order:
+            //   a) append to existing symbol
+            //   b) else create new symbol
+            return (
+                this.assignToExistingSymbol(record) ||
+                this.assignToNewSymbol(record)
+            );
         },
         reassignRecord: function (record) {
-            //first try updating current symbol:
-            let matchedSymbol = this.updateIfApplicable(record);
-            if (matchedSymbol) {
-                return matchedSymbol;
+            // 1. try and update if applicable:
+            let symbol = this.updateIfApplicable(record);
+            if (symbol) {
+                return symbol;
             }
 
-            //then try assigning to existing symbol:
-            matchedSymbol = this.assignToExistingSymbol(record);
+            // 2. else assign record to new or existing symbol:
+            symbol = this.assignRecord(record);
 
-            //if neither of those work, create a new symbol:
-            matchedSymbol = matchedSymbol || this.assignToNewSymbol(record);
+            // 3. remove stale matches:
             this.removeStaleMatches(record);
             this.removeEmpty();
-            return matchedSymbol;
+
+            // 4. return matched symbol:
+            return symbol;
         },
     }, {
-        buildCategoricalSymbolSet: function (categoryList, layerModel, palette) {
+        buildCategoricalSymbolSet: function (categoryList, layerModel) {
             const symbols = new Symbols(null, {layerModel: layerModel});
+            const palette = symbols.getPalette();
             categoryList.forEach((value, index) => {
                 symbols.add(Symbol.createCategoricalSymbol({
                     layerModel: layerModel,

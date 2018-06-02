@@ -91,6 +91,30 @@ define(['backbone', 'underscore', 'collections/records',
                     this.matchedModels.length === 1
                 );
             },
+            isRemovalCandidate: function (record) {
+                // returns true if the symbol contains the record and either:
+                //  a) the record doesn't match or
+                //  b) it's an uncategorized symbol with only one record:
+
+                const result = (
+                    this.containsRecord(record) && (
+                        !this.checkModel(record) || (
+                            this.isUncategorized() &&
+                            this.matchedModels.length <= 1
+                        )
+                    )
+                );
+
+                console.log('------------------------');
+                console.log(this.get('title').toUpperCase());
+                console.log('contains record:', this.containsRecord(record));
+                console.log('does not match:', !this.checkModel(record));
+                console.log('isUncategorized:', this.isUncategorized());
+                console.log('len:', this.matchedModels.length);
+                console.log('result:', result);
+                console.log('------------------------');
+                return result;
+            },
             hasModels: function () {
                 return this.matchedModels.length > 0;
             },

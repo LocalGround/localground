@@ -80,7 +80,7 @@ define(["jquery",
                 return events;
             },
             onRender: function() {
-                console.log('redrawing', this.model.toJSON())
+                //console.log('redrawing', this.model.toJSON())
                 if(!this.model.get('isShowing')) {
                     this.$el.addClass('half-opac');
                 }

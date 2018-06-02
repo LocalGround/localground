@@ -417,7 +417,7 @@ define(["jquery",
 
             buildCategoricalSymbols: function (categoryList) {
                 this.layerDraft.categorical = Symbols.buildCategoricalSymbolSet(
-                    categoryList, this.model, this.selectedColorPalette);
+                    categoryList, this.model);
                 /*this.layerDraft.categorical = new Symbols();
                 cat.list.forEach((item) => {
                     this.layerDraft.categorical.add({
@@ -658,13 +658,13 @@ define(["jquery",
             },
 
             updatePalette: function() {
-                let i = 0,
-                that = this;
-                this.collection.each(function(symbol) {
-                    symbol.set('fillColor', "#" + that.selectedColorPalette[i % that.selectedColorPalette.length]);
-                    i++;
+                const palette = this.selectedColorPalette;
+                this.collection.each((symbol, i) => {
+                    if (symbol.isUncategorized()) {
+                        return;
+                    }
+                    symbol.set('fillColor', "#" + palette[i % palette.length]);
                 });
-
                 this.updateMapAndRender();
             },
 

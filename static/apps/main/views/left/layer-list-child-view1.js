@@ -141,8 +141,8 @@ define(["marionette",
             },
             removeEmptySymbols: function () {
                 this.symbolModels.removeEmpty();
-                const mapID = this.app.dataManager.getMap().id;
-                this.app.router.navigate("//" + mapID);
+                //const mapID = this.app.dataManager.getMap().id;
+                //this.app.router.navigate("//" + mapID);
             },
             reRenderOrAssignRecordToSymbol: function (recordModel) {
                 const symbol = this.symbolModels.assignRecord(recordModel);
@@ -150,9 +150,6 @@ define(["marionette",
                     this.render();
                     return;
                 }
-                /*if (symbol.matchedModels.length === 1) {
-                    this.addChild(symbol, this.childView, this.symbolModels.length);
-                }*/
             },
             reRenderOrReassignRecordToSymbol: function (recordModel) {
                 const symbol = this.symbolModels.reassignRecord(recordModel);
@@ -160,9 +157,6 @@ define(["marionette",
                     this.render();
                     return;
                 }
-                /*if (symbol.matchedModels.length === 1) {
-                    this.addChild(symbol, this.childView, this.symbolModels.length);
-                }*/
             },
 
             checkSelectedItem: function(layerId) {
