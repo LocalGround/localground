@@ -1,8 +1,8 @@
 <div class="marker-style" id="visual-marker-style">
-    <form class="form-inline">
+    <form class="form">
         <div class="color-properties row">
 
-            <label>Style:</label>
+            <label>Style:  {{uniformOrInd}}</label>
             <select name="place-properties" id="data-type-select" class="marker-style-select">
 
                 <option value="uniform" {{#ifequal groupBy "uniform"}} SELECTED {{/ifequal}}>Uniform</option>
@@ -21,8 +21,19 @@
             </select>
         </div>
 
-{{#unless isBasic}}
-        {{#unless isIndividual}}
+    <p>{{uniformOrInd}}</p>
+    {{#if uniformOrInd}}
+        <div class="row">
+            <label>Marker</label>
+            <div class="example-markers">
+                <div class="example-marker-wrapper">
+                    <i class="fa fa-2x fa-circle" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                </div>
+                <i class="fa fa-lg fa-paint-brush style-options"></i>
+            </div>
+            
+        </div>
+    {{else}}
         <div class="row">
             <label class="msv-label">Group by:</label>
             <div>
@@ -32,9 +43,17 @@
                 <label {{#unless propCanBeCont}}class="disabled"{{/unless}}>Continuous</label><br>
             </div>
         </div>
-        <div class="row" id="bucket-row">
-            <label class="msv-label">Buckets:</label>
-            <input id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="9" {{#unless metadata.isContinuous}}disabled="disabled"{{/unless}}>
+        <div class="row {{#unless metadata.isContinuous}}disabled{{/unless}}" id="bucket-row">
+            <label class="msv-label"># of data buckets:</label>
+            <select id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="8" {{#unless metadata.isContinuous}}disabled="disabled"{{/unless}}>
+                <option value="2" {{#ifequal metadata.buckets 2}}SELECTED{{/ifequal}}>2</option>
+                <option value="3" {{#ifequal metadata.buckets 3}}SELECTED{{/ifequal}}>3</option>
+                <option value="4" {{#ifequal metadata.buckets 4}}SELECTED{{/ifequal}}>4</option>
+                <option value="5" {{#ifequal metadata.buckets 5}}SELECTED{{/ifequal}}>5</option>
+                <option value="6" {{#ifequal metadata.buckets 6}}SELECTED{{/ifequal}}>6</option>
+                <option value="7" {{#ifequal metadata.buckets 7}}SELECTED{{/ifequal}}>7</option>
+                <option value="8" {{#ifequal metadata.buckets 8}}SELECTED{{/ifequal}}>8</option>
+            </select>
         </div>
         <div class="palette-container row">
             <label class="msv-label">Color Ramp:</label>
@@ -46,7 +65,7 @@
                             <ul class="selected-ul">
 
                                     <li class="selected-palette-list">
-                                        <ul class="palette-container" style="opacity: {{metadata.fillOpacity}};">
+                                        <ul class="palette-container">
                                             {{#each paletteCounter}}
                                             <li class="palette-item" style= "background-color: #{{lookup ../selectedColorPalette @index}}">
 
@@ -79,22 +98,93 @@
                 </div>
             </div>
         </div>
-        {{/unless}}
         <div class="row">
-            <label class="msv-label">Marker Fill: </label>
-            <input id="marker-width" type="number" value="{{metadata.width}}">
-            <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">
-        </div>
-        <div class="row">
-            <label class="msv-label">Marker Stroke: </label>
-            <input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}">
-            <div id="stroke-color-picker" class="marker-icon jscolor stroke-color" style="padding:0; background-color: {{metadata.strokeColor}} " aria-hidden="true">
+            <label>Marker</label>
+            <div class="example-markers">
+                {{#each paletteCounter}}
+                <div class="example-marker-wrapper">
+                    <i class="fa fa-2x fa-circle" style="color: #{{lookup ../selectedColorPalette @index}}"></i>
+                </div>
+                {{/each}}
+                <i class="fa fa-lg fa-paint-brush style-options"></i>
             </div>
-            </span>
-            <input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1">
+            
         </div>
-{{/unless}}
+    
+    {{/if}}
     </form>
+    <div class='marker-style-extra'>
+        <hr>
+        <div class="style-menu_row">
+            <div class="style-menu_label">Marker Fill: </div>
+            <div class="style-menu_shape-inner-row">
+                <div class="style-menu_shape-wrapper {{#ifequal metadata.shape 'pin'}} selected-shape {{/ifequal}}" data-shape="pin">
+                    <i class="fa fa-2x fa-map-marker style-menu_shape"></i>
+                </div>
+                <div class="style-menu_shape-wrapper {{#ifequal metadata.shape 'circle'}} selected-shape {{/ifequal}}" data-shape="circle">
+                    <i class="fa fa-2x fa-circle style-menu_shape"></i>
+                </div>
+                <div class="style-menu_shape-wrapper  {{#ifequal metadata.shape 'square'}} selected-shape {{/ifequal}}" data-shape="square">
+                    <i class="fa fa-2x fa-square style-menu_shape"></i>
+                </div>
+                <div class="style-menu_shape-wrapper  {{#ifequal metadata.shape 'star'}} selected-shape {{/ifequal}}" data-shape="star">
+                    <i class="fa fa-2x fa-star style-menu_shape"></i>
+                </div>
+                <div class="style-menu_shape-wrapper  {{#ifequal metadata.shape 'diamond'}} selected-shape {{/ifequal}}" data-shape="diamond">
+                    <i class="fa fa-2x fa-diamond style-menu_shape"></i>
+                </div>
+            </div>
+        </div>
+        <div class="style-menu_row">
+            <div class="symbol-style-menu_label">Marker Fill: </div>
+            <div class="style-menu_inner-row">
+                <div class="style_attr">
+                    <div class="style-menu_block">
+                        <input id="marker-width" type="number" value="{{metadata.width}}">
+                    </div>
+                    <div class="style-menu_input-descr">Size</div>
+                </div>
+                {{#if uniformOrInd}}
+                <div class="style_attr">
+                    <div class="style-menu_block jscolor" id="fill-color-picker" style="padding:0; background: {{metadata.fillColor}}; opacity: {{metadata.fillOpacity}};">
+                    </div>
+                    <div class="style-menu_input-descr">Color</div>
+                </div>
+                {{/if}}
+    
+                <div class="style_attr">
+                    <div class="style-menu_block">
+                        <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">
+                    </div>
+                    <div class="style-menu_input-descr">Opacity</div>
+                </div>
+            </div>
+        </div>
+         <div class="style-menu_row">
+        <div class="symbol-style-menu_label">Marker Outline: </div>
+        <div class="style-menu_inner-row">
+            <div class="style_attr">
+                <div class="style-menu_block">
+                    <input id="stroke-weight" type="number" value="{{metadata.strokeWeight}}">
+                </div>
+                <div class="style-menu_input-descr">Width</div>
+            </div>
+
+            <div class="style_attr">
+                <div class="style-menu_block jscolor" id="stroke-color-picker" style="padding:0; background: {{metadata.strokeColor}}; opacity: {{metadata.fillOpacity}};">
+                </div>
+                <div class="style-menu_input-descr">Color</div>
+            </div>
+            <div class="style_attr">
+                <div class="style-menu_block">
+                    <input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1">
+                </div>
+                <div class="style-menu_input-descr">Opacity</div>
+            </div>
+        </div>
+    </div>
+        
+
 </div>
 <div style="display: none">
     <table class="symbols-table">

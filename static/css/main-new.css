@@ -184,10 +184,6 @@ ul {
   min-height: 400px;
 }
 
-.row > label {
-  margin-right: 20px;
-}
-
 .style-guide {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -449,6 +445,7 @@ ul {
 
 .layer-style-by span {
   color: inherit;
+  font-weight: bold;
 }
 
 .layer-style-by:hover {
@@ -639,6 +636,7 @@ i.fa.fa.fa-question-circle {
 
 .marker-style {
   padding: 0px 10px 5px 10px;
+  font-size: 12px;
 }
 
 .marker-style .form-inline .row {
@@ -692,42 +690,110 @@ i.fa.fa.fa-question-circle {
   top: 1px;
 }
 
-.symbol-style-menu {
-  background: white;
+#bucket {
+  width: 40px;
+}
+
+.example-markers {
+  display: inline-flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.example-marker-wrapper {
+  padding: 2px;
+}
+
+.style-options {
+  margin-top: 18px;
+}
+
+.marker-style-extra {
+  display: none;
+}
+
+.style-menu {
   font-size: 12px;
-}
-
-.symbol-style-menu input {
-  width: 32px;
-  border-style: solid;
-  border-width: 1px;
-  border-color: #ebecf2;
-}
-
-.symbol-style-menu h3 {
-  padding: 5px 10px;
-}
-
-.symbol-style-menu > div {
-  padding: 8px;
-  display: flex;
-}
-
-.symbol-style-menu_close {
-  top: 3;
-  right: 3;
-  position: absolute;
-  cursor: pointer;
-}
-
-.symbol-style-menu_label {
-  width: 100px;
-}
-
-.style_attr {
   text-align: left;
-  margin-left: auto;
-  padding-left: 6px;
+  padding: 0px 15px;
+}
+
+.symbol-title-input {
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: 2px;
+  font-size: 14px;
+  box-sizing: border-box;
+  width: 100%;
+  border: solid 1px #ebecf2;
+}
+
+.symbol-info {
+  font-size: 10px;
+  margin-left: 4px;
+}
+
+.style-menu_row {
+  padding: 6px 0px;
+}
+
+.style-menu_block {
+  height: 20px;
+  width: 50px;
+  border-top: 1px solid #d8d8d8;
+  border-bottom: 1px solid #d8d8d8;
+  padding: 0;
+  margin: 0;
+}
+
+.style_attr:first-child .style-menu_block {
+  border: 1px solid #d8d8d8;
+}
+
+.style_attr:last-child .style-menu_block {
+  border: 1px solid #d8d8d8;
+}
+
+.style-menu_block input {
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  border: none;
+}
+
+.style-menu_inner-row {
+  display: inline-flex;
+}
+
+.style-menu_shape-inner-row {
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.style-menu_input-descr {
+  text-align: center;
+}
+
+.style-menu_shape {
+  color: #dbdbdb;
+}
+
+.style-menu_shape-wrapper {
+  border: 2px solid white;
+  padding: 2px;
+  border-radius: 3px;
+  width: 30px;
+  text-align: center;
+}
+
+.style-menu_shape-wrapper.selected-shape {
+  border: 2px solid #dbdbdb;
+}
+
+.style-menu_shape-wrapper:hover {
+  border: 2px solid #8bb8ed;
 }
 
 /********** for dragging/dropping pins on map ********************/
@@ -1001,7 +1067,7 @@ span.action.rounded:hover, a.action.rounded:hover {
 }
 
 .form .row label, .form .row p, .form-inline .row label, .form-inline .row p {
-  /*padding: 8px;*/
+  padding: 8px;
   font-weight: 400;
   color: #666;
   font-size: 12px;
@@ -1625,7 +1691,6 @@ span.action.rounded:hover, a.action.rounded:hover {
   /*box-shadow: 0 0 2px rgba(0,0,0,0.4);*/
   box-shadow: 1px 1px 16px 1px rgba(0, 0, 0, 0.2);
   padding: 0px 0px 0px 0px;
-  text-align: center;
 }
 
 .popper .popper__arrow,
@@ -1830,3 +1895,4 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
+/*# sourceMappingURL=main-new.css.map */

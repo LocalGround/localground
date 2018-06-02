@@ -118,7 +118,7 @@ define(["marionette",
                 }
             },
             updateGroupBy: function () {
-                this.$el.find('.layer-style-by span').html(
+                this.$el.find('#layer-style-by').html(
                     this.model.get('group_by')
                 );
             },
@@ -179,7 +179,7 @@ define(["marionette",
                     }),
                     placement: 'right',
                     offsetX: '5px',
-                    width: '350px',
+                    width: '220px',
                     title: 'Layer Properties'
                 });
             },

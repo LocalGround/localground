@@ -93,25 +93,55 @@ define(["jquery",
             },
 
             onRender: function () {
-                var that = this,
-                    color = this.model.get('fillColor');
-                $(".marker-style-color-picker").remove();
-                this.$el.find('#stroke-color-picker').ColorPicker({
+                var that = this;
+                let strokeColor = this.model.get('metadata').strokeColor;
+                let fillColor = this.model.get('metadata').fillColor;
+                console.log(strokeColor, fillColor)
 
+                $(".layer-fill-color-picker").remove();
+                this.$el.find('#fill-color-picker').ColorPicker({
+                    color: fillColor,
                     onShow: function (colpkr) {
-                        $(colpkr).fadeIn(500);
+                        $(colpkr).fadeIn(200);
                         return false;
                     },
                     onHide: function (colpkr) {
-                        that.updateStrokeColor(color);
-                        $(colpkr).fadeOut(500);
+                        console.log('onHide()', that.model.get('metadata').fillColor, fillColor);
+                        if(that.model.get('metadata').fillColor !== fillColor) {
+                            console.log('onHide() condition passed', fillColor)
+                            that.updateFillColor(fillColor);
+                        }
+                        $(colpkr).fadeOut(200);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
-                        color = "#" + hex;
+                        console.log(hex);
+                        fillColor = "#" + hex;
                     }
                 });
-                $(".colorpicker:last-child").addClass('marker-style-color-picker');
+                $(".colorpicker:last-child").addClass('layer-fill-color-picker');
+
+
+                $(".layer-stroke-color-picker").remove();
+                this.$el.find('#stroke-color-picker').ColorPicker({
+                    color: strokeColor,
+                    onShow: function (colpkr) {
+                        $(colpkr).fadeIn(200);
+                        return false;
+                    },
+                    onHide: function (colpkr) {
+                        if(that.model.get('metadata').strokeColor !== strokeColor) {
+                            console.log('onHide', strokeColor)
+                            that.updateStrokeColor(strokeColor);
+                        }
+                        $(colpkr).fadeOut(200);
+                        return false;
+                    },
+                    onChange: function (hsb, hex, rgb) {
+                        strokeColor = "#" + hex;
+                    }
+                });
+                $(".colorpicker:last-child").addClass('layer-stroke-color-picker');
             },
 
             hideColorRamp: function (e) {
@@ -149,6 +179,7 @@ define(["jquery",
                     dataColumnsList: this.dataColumnsList, // new
                     isBasic: this.model.get('group_by') === 'uniform',
                     isIndividual: this.model.get('group_by') === 'individual',
+                    uniformOrInd: this.model.get('group_by') === 'uniform' || this.model.get('group_by') === 'individual',
                     propCanBeCont: this.propCanBeCont(),
                     paletteCounter: this.colorPaletteAmount()
                 };
@@ -178,7 +209,7 @@ define(["jquery",
                 'change #data-type-select': 'selectGroupBy',
                 'change #bucket': 'updateBuckets',
                 'change #palette-opacity': 'updatePaletteOpacity',
-                'change .global-marker-shape': 'updateGlobalShape',
+                'click .style-menu_shape-wrapper': 'updateGlobalShape',
                 'change #marker-width': 'updateWidth',
                 'change #stroke-weight': 'updateStrokeWeight',
                 'change #stroke-color': 'updateStrokeColor',
@@ -188,12 +219,21 @@ define(["jquery",
                 'click .palette-list *': 'selectPalette',
                 'click #global-symbol': 'showSymbols',
                 'click .style-by-menu_close': 'hideStyleMenu',
-                "click #cat-radio": "toggleContCat",
-                "click #cont-radio": "toggleContCat"
+                'click #cat-radio': 'toggleContCat',
+                'click #cont-radio': 'toggleContCat',
+                'click .style-options': 'toggleStyleOptions'
             },
 
             modelEvents: {
                 'change:symbols': 'saveChanges'
+            },
+
+            toggleStyleOptions: function(e) {
+                if (this.$el.find('.marker-style-extra').css('display') === 'none') {
+                    this.$el.find('.marker-style-extra').css('display', 'block');
+                } else {
+                    this.$el.find('.marker-style-extra').css('display', 'none');
+                }
             },
 
             toggleContCat: function (e) {
@@ -343,7 +383,7 @@ define(["jquery",
                     "title": name,
                     "shape": this.$el.find(".global-marker-shape").val(),
                     "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
-                  //  "fillColor": "#60c7cc",
+                    "fillColor": this.model.get("metadata").fillColor,
                     "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
                     "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
                     "strokeColor": this.model.get("metadata").strokeColor,
@@ -368,7 +408,7 @@ define(["jquery",
                         "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
                         "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
                         "shape": this.$el.find(".global-marker-shape").val(),
-                        "fillColor": '#ed867d',
+                        "fillColor": this.model.get('metadata').fillColor,
                         "strokeColor": this.model.get("metadata").strokeColor,
                         "isShowing": this.model.get("metadata").isShowing,
                         "id": item.id,
@@ -521,22 +561,26 @@ define(["jquery",
             },
 
             updateBuckets: function (e) {
-                this.delayExecution(
-                    "bucketTimer",
-                    () => {
-                        if (this.$el.find("#bucket").val() > 8) {
-                            this.$el.find("#bucket").val(8);
-                        }
-                        var buckets = parseFloat(this.$el.find("#bucket").val());
-                        this.updateMetadata("buckets", buckets);
+                // this.delayExecution(
+                //     "bucketTimer",
+                //     () => {
+                //         if (this.$el.find("#bucket").val() > 8) {
+                //             this.$el.find("#bucket").val(8);
+                //         }
+                //         var buckets = parseFloat(this.$el.find("#bucket").val());
+                //         this.updateMetadata("buckets", buckets);
 
-                        this.updatePalettes(this.model.get("metadata").buckets);
-                        this.contData();
-                       // that.render();
-                       this.$el.find("#bucket").focus();
-                    },
-                    300 //experiment with how many milliseconds to delay
-                );
+                //         this.updatePalettes(this.model.get("metadata").buckets);
+                //         this.contData();
+                //        // that.render();
+                //        this.$el.find("#bucket").focus();
+                //     },
+                //     300 //experiment with how many milliseconds to delay
+                // );
+                var buckets = parseInt(e.target.value);
+                this.updateMetadata("buckets", buckets);
+                this.updatePalettes(this.model.get("metadata").buckets);
+                this.contData();
             },
 
             updatePalettes: function(itemCount) {
@@ -612,15 +656,20 @@ define(["jquery",
                 let opacity = parseFloat(this.$el.find("#palette-opacity").val());
                 if (opacity > 1) {
                     opacity = 1;
+                    this.$el.find('#palette-opacity').val(opacity);
                 } else if (opacity < 0 ) {
                     opacity = 0;
+                    this.$el.find('#palette-opacity').val(opacity);
                 }
                 this.updateMetadata("fillOpacity", opacity);
             },
 
             updateGlobalShape: function(e) {
-                const shape = $(e.target).val();
+
+                const shape = e.currentTarget.dataset.shape;
+                console.log('update shape,', shape);
                 this.updateMetadata("shape", shape);
+                this.render();
             },
 
             updateWidth: function(e) {
@@ -629,8 +678,20 @@ define(["jquery",
             },
 
             updateStrokeWeight: function(e) {
-                const strokeWeight = parseFloat($(e.target).val());
+                let strokeWeight = parseFloat($(e.target).val());
+                if (strokeWeight < 0) {
+                    strokeWeight = 0;
+                    this.$el.find('#stroke-weight').val(strokeWeight);
+                }
                 this.updateMetadata("strokeWeight", strokeWeight);
+            },
+
+            // triggered from colorPicker
+            updateFillColor: function(hex) {
+                console.log('updateFillColor', hex);
+                this.updateMetadata("fillColor", hex);
+                this.$el.find('#fill-color-picker').css('background-color', hex);
+                this.$el.find('#example-marker_single').css('color', hex);
             },
 
             // triggered from colorPicker
@@ -641,11 +702,13 @@ define(["jquery",
 
             updateStrokeOpacity: function(e) {
                 let opacity = parseFloat($(e.target).val());
-                    if (opacity > 1) {
-                        opacity = 1;
-                    } else if (opacity < 0 ) {
-                        opacity = 0;
-                    }
+                if (opacity > 1) {
+                    opacity = 1;
+                    this.$el.find('#stroke-opacity').val(opacity);
+                } else if (opacity < 0 ) {
+                    opacity = 0;
+                    this.$el.find('#stroke-opacity').val(opacity);
+                }
                 this.updateMetadata("strokeOpacity", opacity);
             },
 
@@ -679,6 +742,7 @@ define(["jquery",
 
             //convenience function
             updateMetadata: function(newKey, newValue) {
+                console.log('updateMetadata()', newValue);
                 let localMeta = this.model.get("metadata") || {};
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta);

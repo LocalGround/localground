@@ -18,7 +18,7 @@ define([
             this.redraw();
             //listen to all of these Symbol change events and re-render:
             ['fillColor', 'strokeColor', 'shape', 'width',
-            'fillOpacity', 'strokeWeight'].forEach(attr => {
+            'fillOpacity', 'strokeWeight', 'strokeOpacity'].forEach(attr => {
                 this.listenTo(this.symbol, `change:${attr}`, this.redraw);
             });
         },

@@ -134,9 +134,9 @@ define(["jquery",
                     $source: this.$el.find('.symbol-header'),
                     view: this.symbolMenu,
                     placement: 'right',
-                    width: '250px',
+                    width: '220px',
                     offsetX: '-30px',
-                    title: 'Symbol Properties'
+                    title: '    '
                 });
             },
 

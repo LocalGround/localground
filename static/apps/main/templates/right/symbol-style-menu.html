@@ -1,49 +1,80 @@
-<div class="symbol-style-menu">
-    <div>
-        <span class="symbol-style-menu_label">Marker Fill: </span>
-        <span class="style_attr">
-            <input id="marker-width" type="number" value="{{width}}">
-        </span>
-        <span class="style_attr">
-                <i class="fa fa-circle marker-icon jscolor" id="fill-color-picker" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>
-        </span>
-        <span class="style_attr">
-            <input id="marker-opacity" type="number" value="{{fillOpacity}}" min="0.0" max="1.0" step=".1">
-        </span>
+<div class="style-menu">
+    <div class="style-menu_row">
+        <div>
+            <span class="symbol-info">category: {{title}}</span>
+        </div>
+        <input type="text" placeholder="{{title}}" class='symbol-title-input'>
     </div>
-    <div>
-        <span class="symbol-style-menu_label">Marker Stroke: </span>
-        <span class="style_attr">
-            <input id="stroke-weight" type="number" value="{{strokeWeight}}">
-        </span>
-        <span class="style_attr">
-            <i id="stroke-color-picker" class="fa fa-circle-o marker-icon jscolor" style="padding:0; color: {{strokeColor}} " aria-hidden="true">
-            </i>
-        </span>
-        <span class="style_attr">
-            <input id="stroke-opacity" type="number" value="{{strokeOpacity}}" min="0.0" max="1.0" step=".1">
-        </span>
+
+    <div class="style-menu_row">
+        <div class="symbol-style-menu_label">Marker Fill: </div>
+        <div class="style-menu_shape-inner-row">
+           <div class="style-menu_shape-wrapper {{#ifequal shape 'pin'}} selected-shape {{/ifequal}}" data-shape="pin">
+                <i class="fa fa-2x fa-map-marker style-menu_shape"></i>
+            </div>
+           <div class="style-menu_shape-wrapper {{#ifequal shape 'circle'}} selected-shape {{/ifequal}}" data-shape="circle">
+                <i class="fa fa-2x fa-circle style-menu_shape"></i>
+            </div>
+           <div class="style-menu_shape-wrapper  {{#ifequal shape 'square'}} selected-shape {{/ifequal}}" data-shape="square">
+                <i class="fa fa-2x fa-square style-menu_shape"></i>
+            </div>
+           <div class="style-menu_shape-wrapper  {{#ifequal shape 'star'}} selected-shape {{/ifequal}}" data-shape="star">
+                <i class="fa fa-2x fa-star style-menu_shape"></i>
+            </div>
+           <div class="style-menu_shape-wrapper  {{#ifequal shape 'diamond'}} selected-shape {{/ifequal}}" data-shape="diamond">
+               <i class="fa fa-2x fa-diamond style-menu_shape"></i>
+            </div>
+        </div>
+    </div>
+            
+    <div class="style-menu_row">
+        <div class="symbol-style-menu_label">Marker Fill: </div>
+        <div class="style-menu_inner-row">
+            <div class="style_attr">
+                <div class="style-menu_block">
+                    <input id="marker-width" type="number" value="{{width}}">
+                </div>
+                <div class="style-menu_input-descr">Size</div>
+            </div>
+
+            <div class="style_attr">
+                <div class="style-menu_block jscolor" id="fill-color-picker" style="padding:0; background: {{fillColor}}; opacity: {{fillOpacity}};">
+                </div>
+                <div class="style-menu_input-descr">Color</div>
+            </div>
+
+            <div class="style_attr">
+                <div class="style-menu_block">
+                    <input id="marker-opacity" type="number" value="{{fillOpacity}}" min="0.0" max="1.0" step=".1">
+                </div>
+                <div class="style-menu_input-descr">Opacity</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="style-menu_row">
+        <div class="symbol-style-menu_label">Marker Outline: </div>
+        <div class="style-menu_inner-row">
+            <div class="style_attr">
+                <div class="style-menu_block">
+                    <input id="stroke-weight" type="number" value="{{strokeWeight}}">
+                </div>
+                <div class="style-menu_input-descr">Width</div>
+            </div>
+
+            <div class="style_attr">
+                <div class="style-menu_block jscolor" id="stroke-color-picker" style="padding:0; background: {{strokeColor}}; opacity: {{fillOpacity}};">
+                </div>
+                <div class="style-menu_input-descr">Color</div>
+            </div>
+            <div class="style_attr">
+                <div class="style-menu_block">
+                    <input id="stroke-opacity" type="number" value="{{strokeOpacity}}" min="0.0" max="1.0" step=".1">
+                </div>
+                <div class="style-menu_input-descr">Opacity</div>
+            </div>
+        </div>
 
     </div>
-    <div>
-        <span class="symbol-style-menu_label">Marker Shape</span>
-        <span class="style_attr">
-            <span id="global-symbol-dropdown" class="global-symbol-dropdown"></span>
-            <span class="selected-symbol-div" id="global-symbol">
-                <i class="fa fa-circle fa-fw" aria-hidden="true"></i>
-                <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>
-            </span>
-        </span>
-    </div>
 </div>
-
-<!-- <div><i class="fa fa-circle marker-icon jscolor" id="{{id}}" style="padding:0; color: {{fillColor}}; opacity: {{fillOpacity}};" aria-hidden="true"></i>{{ color }}</td>
-<div class="title-td">{{ title }}
-    <div id="ind-symbol-dropdown" class="ind-symbol-dropdown"></div>
-</div>
-<div>
-    <div class="selected-symbol-div">
-        <i class="fa fa-circle fa-fw" aria-hidden="true"></i>
-        <i class="fa fa-angle-down fa-fw" aria-hidden="true" style="float: right"></i>
-    </div>
-</div> -->

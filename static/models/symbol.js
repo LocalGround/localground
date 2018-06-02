@@ -46,7 +46,10 @@ define(['backbone', 'underscore', 'collections/records',
                     if ([
                         'fillColor', 'strokeColor', 'shape',
                         'fillOpacity', 'width', 'strokeWeight'].indexOf(key) !== -1) {
-                        this.get('icon')[key] = val;
+                        //dynamically update the icon:
+                        const properties = this.toJSON();
+                        properties[key] = val;
+                        this.attributes['icon'] = new Icon(properties);
                     }
                 }
                 Backbone.Model.prototype.set.apply(this, arguments);
@@ -109,15 +112,6 @@ define(['backbone', 'underscore', 'collections/records',
                         )
                     )
                 );
-
-                console.log('------------------------');
-                console.log(this.get('title').toUpperCase());
-                console.log('contains record:', this.containsRecord(record));
-                console.log('does not match:', !this.checkModel(record));
-                console.log('isUncategorized:', this.isUncategorized());
-                console.log('len:', this.matchedModels.length);
-                console.log('result:', result);
-                console.log('------------------------');
                 return result;
             },
             hasModels: function () {
