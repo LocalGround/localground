@@ -199,8 +199,8 @@ define(["jquery",
                 if (this.collection.hasUncategorizedSymbol()) {
                     --numSymbols;
                 }
-                if (numSymbols > this.selectedColorPalette.length) {
-                    numSymbols = this.selectedColorPalette.length;
+                if (numSymbols > 8) {
+                    numSymbols = 8;
                 }
                 return new Array(numSymbols).fill(1);
             },
