@@ -260,6 +260,7 @@ define(["jquery",
                 let currentProp = this.dataColumnsList.find((item) => {
                     return (item.value === this.model.get('metadata').currentProp)
                 });
+                console.log('Current Prop Type:', currentProp);
                 if (currentProp.type === 'integer' || currentProp.type === 'rating') {
                     return true;
                 } else {
@@ -294,6 +295,7 @@ define(["jquery",
             selectGroupBy: function (e) {
 
                 this.model.set('group_by', $(e.target).val() || this.$el.find("#data-type-select").val());
+                this.updateMetadata('currentProp', this.model.get('group_by'));
                 this.model.get('metadata').isContinuous = false;
                 this.createCorrectSymbols();
                 //to resize the popover menu:

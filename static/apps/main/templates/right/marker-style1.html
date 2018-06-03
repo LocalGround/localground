@@ -31,7 +31,7 @@
                 </div>
                 <i class="fa fa-lg fa-paint-brush style-options"></i>
             </div>
-            
+
         </div>
     {{else}}
         <div class="row">
@@ -87,7 +87,7 @@
                                 <ul class="palette-container" value="{{@index}}">
                                     {{#each ../paletteCounter}}
                                     <li class="palette-item" value="{{@../index}}" index="{{@index}}" style= "background-color: #{{lookup ../this @index}}">
-                                        
+
                                     </li>
                                     {{/each}}
                                 </ul>
@@ -108,15 +108,15 @@
                 {{/each}}
                 <i class="fa fa-lg fa-paint-brush style-options"></i>
             </div>
-            
+
         </div>
-    
+
     {{/if}}
     </form>
     <div class='marker-style-extra'>
         <hr>
         <div class="style-menu_row">
-            <div class="style-menu_label">Marker Fill: </div>
+            <div class="style-menu_label">Marker Fill 123: </div>
             <div class="style-menu_shape-inner-row">
                 <div class="style-menu_shape-wrapper {{#ifequal metadata.shape 'pin'}} selected-shape {{/ifequal}}" data-shape="pin">
                     <i class="fa fa-2x fa-map-marker style-menu_shape"></i>
@@ -127,11 +127,11 @@
                 <div class="style-menu_shape-wrapper  {{#ifequal metadata.shape 'square'}} selected-shape {{/ifequal}}" data-shape="square">
                     <i class="fa fa-2x fa-square style-menu_shape"></i>
                 </div>
-                <div class="style-menu_shape-wrapper  {{#ifequal metadata.shape 'star'}} selected-shape {{/ifequal}}" data-shape="star">
-                    <i class="fa fa-2x fa-star style-menu_shape"></i>
+                <div class="style-menu_shape-wrapper  {{#ifequal metadata.shape 'plus'}} selected-shape {{/ifequal}}" data-shape="plus">
+                    <i class="fa fa-2x fa-plus style-menu_shape"></i>
                 </div>
-                <div class="style-menu_shape-wrapper  {{#ifequal metadata.shape 'diamond'}} selected-shape {{/ifequal}}" data-shape="diamond">
-                    <i class="fa fa-2x fa-diamond style-menu_shape"></i>
+                <div class="style-menu_shape-wrapper  {{#ifequal metadata.shape 'cross'}} selected-shape {{/ifequal}}" data-shape="cross">
+                    <i class="fa fa-2x fa-times style-menu_shape"></i>
                 </div>
             </div>
         </div>
@@ -151,7 +151,7 @@
                     <div class="style-menu_input-descr">Color</div>
                 </div>
                 {{/if}}
-    
+
                 <div class="style_attr">
                     <div class="style-menu_block">
                         <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">
@@ -183,7 +183,7 @@
             </div>
         </div>
     </div>
-        
+
 
 </div>
 <div style="display: none">
