@@ -25,6 +25,7 @@ define(["jquery",
         var MarkerStyleView = Marionette.CompositeView.extend({
             allColors: [],
             selectedColorPalette: null,
+            showStyleOptions: false,
             layerDraft: {
                 continuous: null,
                 categorical: null,
@@ -83,7 +84,7 @@ define(["jquery",
                     this.updatePalettes(this.model.get('symbols').length);
                     this.updateMapAndRender();
                 }*/
-                if (this.model.isCategorical()) {
+                if (this.model.isCategorical() || this.model.isContinuous()) {
                     console.log('is categorical...', this.model.get('symbols').length)
                     this.updatePalettes(this.model.get('symbols').length);
                     this.render();
@@ -183,7 +184,9 @@ define(["jquery",
                     isIndividual: this.model.isIndividual(),
                     uniformOrInd: this.model.isUniform() || this.model.isIndividual(),
                     propCanBeCont: this.propCanBeCont(),
-                    paletteCounter: this.colorPaletteAmount()
+                    paletteCounter: this.colorPaletteAmount(),
+                    previewSVGs: this.collection.toSVGList(),
+                    showStyleOptions: this.showStyleOptions
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
@@ -191,20 +194,17 @@ define(["jquery",
                 return helpers;
             },
 
-            colorPaletteAmount: function() {
-                let numberOfSymbols = this.model.get('symbols').models.map((item, i) => {
-                    return i
-                });
-                if (!this.model.get('metadata').isContinuous) {
-                    if (numberOfSymbols.length > 9) {
-                        numberOfSymbols.length = 9;
-                    }
+            colorPaletteAmount: function () {
+                let numSymbols = this.collection.length;
+                if (this.collection.hasUncategorizedSymbol()) {
+                    --numSymbols;
                 }
-
-                // remove that last symbol, which will always be the uncategorized symbol
-                numberOfSymbols.pop();
-                return numberOfSymbols;
-
+                if (numSymbols > 8) {
+                    numSymbols = 8;
+                }
+                const arr = new Array(numSymbols);
+                arr.fill(1); //just needs some dummy value
+                return arr;
             },
 
             events: {
@@ -232,8 +232,10 @@ define(["jquery",
 
             toggleStyleOptions: function(e) {
                 if (this.$el.find('.marker-style-extra').css('display') === 'none') {
+                    this.showStyleOptions = true;
                     this.$el.find('.marker-style-extra').css('display', 'block');
                 } else {
+                    this.showStyleOptions = false;
                     this.$el.find('.marker-style-extra').css('display', 'none');
                 }
             },

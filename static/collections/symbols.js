@@ -163,6 +163,9 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
                 rule: Symbol.UNCATEGORIZED_SYMBOL_RULE
             })
         },
+        hasUncategorizedSymbol: function () {
+            return this.getUncategorizedSymbol()
+        },
         assignRecords: function (records) {
             records.each(record => {
                 this.assignRecord(record);
@@ -195,6 +198,9 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             // 4. return matched symbol:
             return symbol;
         },
+        toSVGList: function () {
+            return this.map(item => item.toSVG())
+        }
     }, {
         buildCategoricalSymbolSet: function (categoryList, layerModel) {
             const symbols = new Symbols(null, {layerModel: layerModel});

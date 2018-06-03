@@ -101,9 +101,9 @@
         <div class="row">
             <label>Marker</label>
             <div class="example-markers">
-                {{#each paletteCounter}}
+                {{#each previewSVGs}}
                 <div class="example-marker-wrapper">
-                    <i class="fa fa-2x fa-circle" style="color: #{{lookup ../selectedColorPalette @index}}"></i>
+                    {{{this}}}
                 </div>
                 {{/each}}
                 <i class="fa fa-lg fa-paint-brush style-options"></i>
@@ -113,12 +113,12 @@
 
     {{/if}}
     </form>
-    <div class='marker-style-extra'>
+    <div class='marker-style-extra' {{#if showStyleOptions}}style="display:block;"{{/if}}>
         <hr>
         <div class="style-menu_row">
-            <div class="style-menu_label">Marker Fill 123: </div>
+            <div class="style-menu_label">Marker Fill: </div>
             <div class="style-menu_shape-inner-row">
-                <div class="style-menu_shape-wrapper {{#ifequal metadata.shape 'pin'}} selected-shape {{/ifequal}}" data-shape="pin">
+                <div class="style-menu_shape-wrapper {{#ifequal metadata.shape 'marker'}} selected-shape {{/ifequal}}" data-shape="marker">
                     <i class="fa fa-2x fa-map-marker style-menu_shape"></i>
                 </div>
                 <div class="style-menu_shape-wrapper {{#ifequal metadata.shape 'circle'}} selected-shape {{/ifequal}}" data-shape="circle">

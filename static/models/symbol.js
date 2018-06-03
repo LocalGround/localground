@@ -62,6 +62,15 @@ define(['backbone', 'underscore', 'collections/records',
                 delete json.icon;
                 return json;
             },
+            toSVG: function () {
+                const icon = this.get('icon');
+                return `<svg viewBox="${icon.viewBox}" width="23" height="23">
+                    <path fill="${icon.fillColor}" stroke-linejoin="round"
+                        stroke-linecap="round" paint-order="stroke"
+                        stroke-width="2" stroke="#e7e7e7" d="${icon.path}">
+                    </path>
+                </svg>`
+            },
             getSymbolJSON: function () {
                 var symbol = this.clone();
                 delete symbol.attributes.icon;

@@ -40,15 +40,6 @@ define(["jquery",
                     return this.parent.model.toJSON()
                 }
             }),
-            renderSVG: function () {
-                const icon = this.model.get('icon');
-                return `<svg viewBox="${icon.viewBox}" width="23" height="23">
-                    <path fill="${icon.fillColor}" stroke-linejoin="round"
-                        stroke-linecap="round" paint-order="stroke"
-                        stroke-width="2" stroke="#e7e7e7" d="${icon.path}">
-                    </path>
-                </svg>`
-            },
             childViewContainer: '.symbol',
             childView: SymbolItemView,
             childViewOptions: function (model, index) {
@@ -108,7 +99,7 @@ define(["jquery",
                     map_id: this.mapId,
                     dataset: this.layer.get('dataset'),
                     isIndividual: this.layer.get('group_by') === 'individual',
-                    svgIcon: this.renderSVG()
+                    svgIcon: this.model.toSVG()
                 }
             },
 
@@ -119,7 +110,7 @@ define(["jquery",
                 // 1. re-render all child views:
                 this._renderChildren();
                 // 2. partial update of parent SVG:
-                this.$el.find('svg').replaceWith(this.renderSVG());
+                this.$el.find('svg').replaceWith(this.model.toSVG());
                 this.$el.find('.symbol-wrapper').css(
                     'background', this.model.get('icon').fillColor);
             },

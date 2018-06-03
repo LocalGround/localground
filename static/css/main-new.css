@@ -695,13 +695,16 @@ i.fa.fa.fa-question-circle {
 }
 
 .example-markers {
+  /*
   display: inline-flex;
-  width: 100%;
   justify-content: center;
+  */
+  width: 100%;
 }
 
 .example-marker-wrapper {
-  padding: 2px;
+  margin: -2px;
+  display: inline-block;
 }
 
 .style-options {

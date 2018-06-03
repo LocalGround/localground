@@ -149,9 +149,9 @@ define(["jquery", "underscore", "marionette", "handlebars",
             updateCircles: function () {
                 var $items = this.$el.find('.show-slide'),
                     $clicked = $($items[this.counter]);
-                $items.removeClass("fa-circle");
-                $items.not($clicked).addClass("fa-circle-o");
-                $clicked.addClass("fa-circle");
+                $items.removeClass("fas");
+                $items.not($clicked).addClass("far");
+                $clicked.addClass("fas");
             },
 
             jump: function (e) {
