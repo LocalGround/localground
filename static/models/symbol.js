@@ -165,7 +165,6 @@ define(['backbone', 'underscore', 'collections/records',
                 return defaults;
             },
             createCategoricalSymbol: function (opts) {
-                //factory that creates new symbols:
                 const layerModel = opts.layerModel;
                 const value = opts.category;
                 const id = opts.id;
@@ -178,6 +177,17 @@ define(['backbone', 'underscore', 'collections/records',
                         'title': value,
                         'id': id,
                         'fillColor': fillColor
+                    });
+                return new Symbol(props);
+            },
+            createContinuousSymbol: function (opts) {
+                const metadata = opts.layerModel.get('metadata');
+                const props = _.extend(
+                    Symbol._getDefaultMetadataProperties(metadata), {
+                        'rule': opts.rule,
+                        'title': opts.title,
+                        'id': opts.id,
+                        'fillColor': opts.fillColor
                     });
                 return new Symbol(props);
             },

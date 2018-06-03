@@ -66,9 +66,9 @@ define(["jquery",
                 //this.collection = new Symbols(this.model.get("symbols"));
                 this.collection = this.model.get('symbols');
 
-                if (!this.model.get('metadata').isContinuous) {
+                /*if (!this.model.get('metadata').isContinuous) {
                     this.model.get('metadata').isContinuous = false;
-                }
+                }*/
 
                 // don't recreate symbols if they already exist
                 // this is so existing unique individual attributes aren't overwritten by global ones
@@ -199,12 +199,10 @@ define(["jquery",
                 if (this.collection.hasUncategorizedSymbol()) {
                     --numSymbols;
                 }
-                if (numSymbols > 8) {
-                    numSymbols = 8;
+                if (numSymbols > this.selectedColorPalette.length) {
+                    numSymbols = this.selectedColorPalette.length;
                 }
-                const arr = new Array(numSymbols);
-                arr.fill(1); //just needs some dummy value
-                return arr;
+                return new Array(numSymbols).fill(1);
             },
 
             events: {
@@ -414,19 +412,13 @@ define(["jquery",
                     // This is because the final upper bound is also the highest value in a given dataset,
                     // so it cannot be exluded. All other upper bounds are exlusive '<'
                     let lastRuleSymbol = !(Math.round(next) < cont.max) ? '=' : '';
-                    this.layerDraft.continuous.add({
-                        "rule": `${selected} >= ${cont.currentFloor.toFixed(0)} and ${selected} <${lastRuleSymbol} ${(cont.currentFloor + cont.segmentSize).toFixed(0)}`,
-                        "title": "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
-                        "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
-                        "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
-                        "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
-                        "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
-                        "shape": this.$el.find(".global-marker-shape").val(),
-                        "fillColor": "#" + this.selectedColorPalette[counter],
-                        "strokeColor": this.model.get("metadata").strokeColor,
-                        "isShowing": this.model.get("metadata").isShowing,
-                        "id": (counter + 1)
-                    });
+                    this.layerDraft.continuous.add(Symbol.createContinuousSymbol({
+                        layerModel: this.model,
+                        rule: `${selected} >= ${cont.currentFloor.toFixed(0)} and ${selected} <${lastRuleSymbol} ${(cont.currentFloor + cont.segmentSize).toFixed(0)}`,
+                        title: "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
+                        fillColor: '#' + this.selectedColorPalette[counter],
+                        id: (counter + 1)
+                    }));
                     counter++;
                     cont.currentFloor = next;
                 }
@@ -542,7 +534,7 @@ define(["jquery",
             },
 
             updatePalettes: function(itemCount) {
-                let symbolType = this.model.get("metadata").isContinuous ? 'continuous' : 'categorical';
+                let symbolType = this.model.isContinuous() ? 'continuous' : 'categorical';
 
                 const paletteId = this.model.get("metadata").paletteId;
 
