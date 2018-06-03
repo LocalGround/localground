@@ -24,7 +24,8 @@ define(["jquery",
                 'change #stroke-weight': 'updateStrokeWidth',
                 'change #stroke-opacity': 'updateStrokeOpacity',
                 'click .style-menu_shape-wrapper': 'updateShape',
-                'focusout .symbol-title-input': 'updateSymbolTitle'
+                'focusout .symbol-title-input': 'updateSymbolTitle',
+                'click .symbol-title-input': 'selectText'
             },
             /*modelEvents: {
                 'change': 'updateLayerSymbols'
@@ -96,7 +97,11 @@ define(["jquery",
                 this.model.set('title', this.$el.find('.symbol-title-input').val());
                 this.render();
             },
-            updateFillColor: function (hex) {                
+            selectText: function (e) {
+                console.log(e);
+                $(e.target).select();
+            },
+            updateFillColor: function (hex) {
                 if (this.layer.get('group_by') === 'uniform') {
                     let md = this.layer.get('metadata');
                     md.fillColor = hex
@@ -109,7 +114,7 @@ define(["jquery",
                 this.model.set("strokeColor", hex);
                 $('#stroke-color-picker').css('background', hex);
             },
-           
+
             updateShape: function (e) {
                 const shape = e.currentTarget.dataset.shape;
                 this.model.set('shape', shape);

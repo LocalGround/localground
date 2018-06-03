@@ -30,8 +30,6 @@ define(["marionette",
                 var dataset = this.$el.find(".selected-data-source").val();
                 this.model.set("dataset", dataset);
             },
-
-
             updateTitle: function () {
                 var title = this.$el.find('.layer-title').val();
                 this.model.set("title", title);
