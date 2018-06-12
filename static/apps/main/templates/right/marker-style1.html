@@ -21,7 +21,6 @@
             </select>
         </div>
 
-    <p>{{uniformOrInd}}</p>
     {{#if uniformOrInd}}
         <div class="row">
             <label>Marker</label>
@@ -113,7 +112,7 @@
     
     {{/if}}
     </form>
-    <div class='marker-style-extra'>
+    <div class='marker-style-extra' style="display: {{#if extraOptions}} block {{else}} none {{/if}}">
         <hr>
         <div class="style-menu_row">
             <div class="style-menu_label">Marker Fill: </div>

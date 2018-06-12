@@ -53,6 +53,9 @@ define(["jquery",
                 // this is the new properties list; all properties in a single list
                 this.dataColumnsList = this.buildDataColumnsList();
 
+                // whether or not the 'extra style options' menu is opened up
+                this.extraOptions = false;
+
 
                 // (03/2018: If we add the ability to change a layer's dataset,
                 // we need to reset the layer type to 'uniform' in the case where because
@@ -89,7 +92,6 @@ define(["jquery",
                 var that = this;
                 let strokeColor = this.model.get('metadata').strokeColor;
                 let fillColor = this.model.get('metadata').fillColor;
-                console.log(strokeColor, fillColor)
 
                 $(".layer-fill-color-picker").remove();
                 this.$el.find('#fill-color-picker').ColorPicker({
@@ -99,16 +101,13 @@ define(["jquery",
                         return false;
                     },
                     onHide: function (colpkr) {
-                        console.log('onHide()', that.model.get('metadata').fillColor, fillColor);
                         if(that.model.get('metadata').fillColor !== fillColor) {
-                            console.log('onHide() condition passed', fillColor)
                             that.updateFillColor(fillColor);
                         }
                         $(colpkr).fadeOut(200);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
-                        console.log(hex);
                         fillColor = "#" + hex;
                     }
                 });
@@ -124,7 +123,6 @@ define(["jquery",
                     },
                     onHide: function (colpkr) {
                         if(that.model.get('metadata').strokeColor !== strokeColor) {
-                            console.log('onHide', strokeColor)
                             that.updateStrokeColor(strokeColor);
                         }
                         $(colpkr).fadeOut(200);
@@ -174,7 +172,8 @@ define(["jquery",
                     isIndividual: this.model.get('group_by') === 'individual',
                     uniformOrInd: this.model.get('group_by') === 'uniform' || this.model.get('group_by') === 'individual',
                     propCanBeCont: this.propCanBeCont(), 
-                    paletteCounter: this.colorPaletteAmount()
+                    paletteCounter: this.colorPaletteAmount(),
+                    extraOptions: this.extraOptions
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
@@ -224,8 +223,10 @@ define(["jquery",
             toggleStyleOptions: function(e) {
                 if (this.$el.find('.marker-style-extra').css('display') === 'none') {
                     this.$el.find('.marker-style-extra').css('display', 'block');
+                    this.extraOptions = true;
                 } else {
                     this.$el.find('.marker-style-extra').css('display', 'none');
+                    this.extraOptions = false;
                 }
             },
 
@@ -369,11 +370,10 @@ define(["jquery",
 
             buildUniformSymbols: function (key) {
                 name = this.app.dataManager.getCollection(key).getTitle();
-
                 this.layerDraft.uniform = new Symbols([{
                     "rule": "*",
                     "title": name,
-                    "shape": this.$el.find(".global-marker-shape").val(),
+                    "shape": this.defaultIfUndefined(this.$el.find(".global-marker-shape").val(), this.model.get('metadata').shape),
                     "fillOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').fillOpacity), 1),
                     "fillColor": this.model.get("metadata").fillColor,
                     "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
@@ -398,7 +398,7 @@ define(["jquery",
                         "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
                         "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
                         "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
-                        "shape": this.$el.find(".global-marker-shape").val(),
+                        "shape": this.defaultIfUndefined(this.$el.find(".global-marker-shape").val(), this.model.get('metadata').shape),
                         "fillColor": this.model.get('metadata').fillColor,
                         "strokeColor": this.model.get("metadata").strokeColor,
                         "isShowing": this.model.get("metadata").isShowing,
@@ -432,13 +432,12 @@ define(["jquery",
                         "strokeWeight": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeWeight), 1),
                         "strokeOpacity": this.defaultIfUndefined(parseFloat(this.model.get('metadata').strokeOpacity), 1),
                         "width": this.defaultIfUndefined(parseFloat(this.model.get('metadata').width), 20),
-                        "shape": this.$el.find(".global-marker-shape").val(),
+                        "shape": this.defaultIfUndefined(this.$el.find(".global-marker-shape").val(), this.model.get('metadata').shape),
                         "fillColor": "#" + this.selectedColorPalette[counter],
                         "strokeColor": this.model.get("metadata").strokeColor,
                         "isShowing": this.model.get("metadata").isShowing,
                         "id": (counter + 1)
                     });
-                    console.log(this.selectedColorPalette[counter]);
                     counter++;
                     cont.currentFloor = next;
                 }
@@ -482,7 +481,6 @@ define(["jquery",
                     buckets = this.model.get("metadata").buckets,
                     key = this.model.get('dataset').overlay_type,
                     collection = this.app.dataManager.getCollection(key);
-                    console.log(collection);
                 this.continuousData = [];
                 collection.models.forEach((d) => {
 
@@ -490,7 +488,6 @@ define(["jquery",
                     // e.g. simply doing "if (d.get(selected)) {...}" will miss 0s
                     if (typeof d.get(selected) === 'number') {
 
-                        console.log(d.get(selected));
                         this.continuousData.push(d.get(selected));
                     }
                 });
@@ -502,7 +499,6 @@ define(["jquery",
                 cont.range = cont.max - cont.min;
                 cont.segmentSize = cont.range / buckets;
                 cont.currentFloor = cont.min;
-                console.log(cont);
                 return cont;
             },
 
@@ -656,9 +652,7 @@ define(["jquery",
             },
 
             updateGlobalShape: function(e) {
-                
                 const shape = e.currentTarget.dataset.shape;
-                console.log('update shape,', shape);
                 this.updateMetadata("shape", shape);
                 this.render();
             },
@@ -679,7 +673,6 @@ define(["jquery",
 
             // triggered from colorPicker
             updateFillColor: function(hex) {
-                console.log('updateFillColor', hex);
                 this.updateMetadata("fillColor", hex);
                 this.$el.find('#fill-color-picker').css('background-color', hex);
                 this.$el.find('#example-marker_single').css('color', hex);
@@ -733,7 +726,6 @@ define(["jquery",
 
             //convenience function
             updateMetadata: function(newKey, newValue) {
-                console.log('updateMetadata()', newValue);
                 let localMeta = this.model.get("metadata") || {};
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta);
@@ -747,11 +739,11 @@ define(["jquery",
 
             // returns a default value if the input value from the dom is undefined
             // needed because simply using '||' for defaults is buggy
-            defaultIfUndefined: function (domValue, defaultValue) {
-                if (domValue === undefined) {
+            defaultIfUndefined: function (value, defaultValue) {
+                if (value === undefined) {
                     return defaultValue;
                 } else {
-                    return domValue;
+                    return value;
                 }
             },
 

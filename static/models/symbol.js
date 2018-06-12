@@ -107,7 +107,7 @@ define(['backbone', 'underscore', 'collections/records', 'lib/sqlParser', 'lib/m
                     "strokeWeight": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').strokeWeight), 1),
                     "strokeOpacity": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').strokeOpacity), 1),
                     "width": Symbol.defaultIfUndefined(parseFloat(layerModel.get('metadata').width), 20),
-                    "shape": 'circle',
+                    "shape": Symbol.defaultIfUndefined(layerModel.get('metadata').shape, 'circle'),
                     "fillColor": "#" + palette[counter % palette.length],
                     "strokeColor": layerModel.get("metadata").strokeColor,
                     "isShowing": layerModel.get("metadata").isShowing,
