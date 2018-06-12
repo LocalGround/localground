@@ -58,7 +58,7 @@ var __projectJSON = {
           {
             "url": "http:\/\/localhost:7777\/api\/0\/datasets\/3\/data\/51",
             "id": 51,
-            "name": "",
+            "name": "dog",
             "caption": null,
             "overlay_type": "dataset_3",
             "tags": ["animal", "cat", "cute", "tag1"],
@@ -88,7 +88,7 @@ var __projectJSON = {
           {
             "url": "http:\/\/localhost:7777\/api\/0\/datasets\/3\/data\/52",
             "id": 52,
-            "name": "",
+            "name": "cat",
             "caption": null,
             "overlay_type": "dataset_3",
             "tags": ["animal", "dog"],
@@ -148,7 +148,7 @@ var __projectJSON = {
           {
             "url": "http:\/\/localhost:7777\/api\/0\/datasets\/3\/data\/53",
             "id": 53,
-            "name": "",
+            "name": "Frog",
             "caption": null,
             "overlay_type": "dataset_3",
             "tags": ["animal", "amphibian", "cute", "frog"],

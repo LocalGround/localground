@@ -155,16 +155,16 @@ define(["jquery", "lib/truthStatement", "tests/spec-helper1"], function ($, Trut
             {whereClause: "name like '%o%'", count: 2},
             {whereClause: "name like 'd%", count: 1},
             {whereClause: "name like '%g'", count: 2},
-            {whereClause: "id in (1,2,3)", count: 3},
-            {whereClause: "id in ('1', '2', '3')", count: 3}, //even if user is confused about the datatype.
-            {whereClause: "id <> 1", count: 2},
-            {whereClause: "id != 2", count: 2},
-            {whereClause: "id < 4", count: 3},
-            {whereClause: "id <= 3", count: 3},
-            {whereClause: "id >= 4", count: 0},
-            {whereClause: "id > 2", count: 1},
-            {whereClause: "id = 2", count: 1},
-            {whereClause: "*", count: 3}
+            {whereClause: "id in (51,52,53)", count: 3},
+            {whereClause: "id in ('51', '52', '53')", count: 3}, //even if user is confused about the datatype.
+            {whereClause: "id <> 51", count: 4},
+            {whereClause: "id != 52", count: 4},
+            {whereClause: "id < 54", count: 3},
+            {whereClause: "id <= 53", count: 3},
+            {whereClause: "id >= 54", count: 2},
+            {whereClause: "id > 52", count: 3},
+            {whereClause: "id = 52", count: 1},
+            {whereClause: "*", count: 5}
         ];
         const s = new TruthStatement();
         let key = null;
@@ -207,6 +207,7 @@ define(["jquery", "lib/truthStatement", "tests/spec-helper1"], function ($, Trut
                         ++matches;
                     }
                 });
+                //console.log(matches === item.count, item.whereClause, matches, item.count);
                 expect(matches).toEqual(item.count);
             });
         });
