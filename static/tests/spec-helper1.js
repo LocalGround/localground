@@ -419,7 +419,7 @@ define([
             this.map = this.dataManager.getMaps().get(3);
             this.map.set('layers', this.getLayers(this.map.id));
             this.categoricalLayer = this.getLayers(this.map.id).get(64)
-
+            this.layer = this.categoricalLayer;
             //spoof the main-app for child view testing
             this.app = _.extend({}, appUtilities);
             _.extend(this.app, {

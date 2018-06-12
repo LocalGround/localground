@@ -25,7 +25,6 @@ define(["jquery",
         var MarkerStyleView = Marionette.CompositeView.extend({
             allColors: [],
             selectedColorPalette: null,
-            showStyleOptions: false,
             layerDraft: {
                 continuous: null,
                 categorical: null,
@@ -55,6 +54,9 @@ define(["jquery",
 
                 // this is the new properties list; all properties in a single list
                 this.dataColumnsList = this.buildDataColumnsList();
+
+                // whether or not the 'extra style options' menu is opened up
+                this.extraOptions = false;
 
 
                 // (03/2018: If we add the ability to change a layer's dataset,
@@ -99,7 +101,6 @@ define(["jquery",
                 var that = this;
                 let strokeColor = this.model.get('metadata').strokeColor;
                 let fillColor = this.model.get('metadata').fillColor;
-                console.log(strokeColor, fillColor)
 
                 $(".layer-fill-color-picker").remove();
                 this.$el.find('#fill-color-picker').ColorPicker({
@@ -109,16 +110,13 @@ define(["jquery",
                         return false;
                     },
                     onHide: function (colpkr) {
-                        console.log('onHide()', that.model.get('metadata').fillColor, fillColor);
                         if(that.model.get('metadata').fillColor !== fillColor) {
-                            console.log('onHide() condition passed', fillColor)
                             that.updateFillColor(fillColor);
                         }
                         $(colpkr).fadeOut(200);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
-                        console.log(hex);
                         fillColor = "#" + hex;
                     }
                 });
@@ -134,7 +132,6 @@ define(["jquery",
                     },
                     onHide: function (colpkr) {
                         if(that.model.get('metadata').strokeColor !== strokeColor) {
-                            console.log('onHide', strokeColor)
                             that.updateStrokeColor(strokeColor);
                         }
                         $(colpkr).fadeOut(200);
@@ -186,7 +183,7 @@ define(["jquery",
                     propCanBeCont: this.propCanBeCont(),
                     paletteCounter: this.colorPaletteAmount(),
                     previewSVGs: this.collection.toSVGList(),
-                    showStyleOptions: this.showStyleOptions
+                    extraOptions: this.extraOptions
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
@@ -230,11 +227,11 @@ define(["jquery",
 
             toggleStyleOptions: function(e) {
                 if (this.$el.find('.marker-style-extra').css('display') === 'none') {
-                    this.showStyleOptions = true;
                     this.$el.find('.marker-style-extra').css('display', 'block');
+                    this.extraOptions = true;
                 } else {
-                    this.showStyleOptions = false;
                     this.$el.find('.marker-style-extra').css('display', 'none');
+                    this.extraOptions = false;
                 }
             },
 
@@ -440,7 +437,6 @@ define(["jquery",
                     buckets = this.model.get("metadata").buckets,
                     key = this.model.get('dataset').overlay_type,
                     collection = this.app.dataManager.getCollection(key);
-                    console.log(collection);
                 this.continuousData = [];
                 collection.models.forEach((d) => {
 
@@ -448,7 +444,6 @@ define(["jquery",
                     // e.g. simply doing "if (d.get(selected)) {...}" will miss 0s
                     if (typeof d.get(selected) === 'number') {
 
-                        console.log(d.get(selected));
                         this.continuousData.push(d.get(selected));
                     }
                 });
@@ -460,7 +455,6 @@ define(["jquery",
                 cont.range = cont.max - cont.min;
                 cont.segmentSize = cont.range / buckets;
                 cont.currentFloor = cont.min;
-                console.log(cont);
                 return cont;
             },
 
@@ -556,9 +550,7 @@ define(["jquery",
             },
 
             updateGlobalShape: function(e) {
-
                 const shape = e.currentTarget.dataset.shape;
-                console.log('update shape,', shape);
                 this.updateMetadata("shape", shape);
                 this.render();
             },
@@ -579,7 +571,6 @@ define(["jquery",
 
             // triggered from colorPicker
             updateFillColor: function(hex) {
-                console.log('updateFillColor', hex);
                 this.updateMetadata("fillColor", hex);
                 this.$el.find('#fill-color-picker').css('background-color', hex);
                 this.$el.find('#example-marker_single').css('color', hex);
@@ -633,7 +624,6 @@ define(["jquery",
 
             //convenience function
             updateMetadata: function(newKey, newValue) {
-                console.log('updateMetadata()', newValue);
                 let localMeta = this.model.get("metadata") || {};
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta);
@@ -647,11 +637,11 @@ define(["jquery",
 
             // returns a default value if the input value from the dom is undefined
             // needed because simply using '||' for defaults is buggy
-            defaultIfUndefined: function (domValue, defaultValue) {
-                if (domValue === undefined) {
+            defaultIfUndefined: function (value, defaultValue) {
+                if (value === undefined) {
                     return defaultValue;
                 } else {
-                    return domValue;
+                    return value;
                 }
             },
 

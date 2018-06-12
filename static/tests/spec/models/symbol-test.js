@@ -7,11 +7,27 @@ define([
 ],
     function (Layer, Symbol, Symbols, LGPalettes) {
         'use strict';
-            const initModel = function (scope) {
-                //workaround to test model w/nested JSON:
-                var json = scope.layer.toJSON();
-                json.symbols = JSON.parse(json.symbols);
-                symbol = new Symbol(json);
+            const initModels = function (scope) {
+                scope.uniform = new Symbol({
+                    "title": "Uniform Symbol",
+                    "rule": "*",
+                    "id": 1
+                });
+                scope.categorical = new Symbol({
+                    "title": "Uniform Symbol",
+                    "rule": "*",
+                    "id": 1
+                });
+                scope.continuous = new Symbol({
+                    "title": "Uniform Symbol",
+                    "rule": "*",
+                    "id": 1
+                });
+                scope.individual = new Symbol({
+                    "title": "Uniform Symbol",
+                    "rule": "*",
+                    "id": 1
+                });
             };
             const initSpies = function () {
                 spyOn(Symbol.prototype, 'initialize').and.callThrough();
@@ -46,8 +62,24 @@ define([
                 expect(Symbol.defaultIfUndefined('', 999)).toEqual(999);
             });
 
-
         });
-
-        
+        describe("SymbolModel initialization:", function () {
+            beforeEach(function () {
+                initSpies();
+                initModels(this);
+            });
+            it("initializes defaults", function () {
+                expect(this.uniform.defaults).toEqual({
+                    fillOpacity: 1,
+                    width: 20,
+                    height: 20,
+                    fillColor: "#4e70d4",
+                    strokeColor: "#FFFFFF",
+                    strokeWeight: 1,
+                    strokeOpacity: 1,
+                    shape: "circle",
+                    isShowing: true
+                });
+            });
+        });
     });
