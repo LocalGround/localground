@@ -11,7 +11,6 @@ define(["marionette",
          */
         var SymbolItemView =  Marionette.ItemView.extend({
             initialize: function (opts) {
-                console.log('initializing symbol-item-view');
                 _.extend(this, opts);
                 this.symbolModel = this.parent.model;
                 this.overlay = null;
@@ -45,7 +44,6 @@ define(["marionette",
             templateHelpers: function () {
                 const display_name = this.model.get(this.parent.layer.get("display_field"));
                 const svg = this.getSVG();
-                console.log(svg);
                 return {
                     active: this.active,
                     layer_id: this.parent.layerId,

@@ -27,11 +27,11 @@ define(["marionette",
             childView: LayerEntryView,
 
             toggleLegend: function () {
-                //console.log("toggle legend", $('#legend').css('height'));
-                if ($('#legend').css('height') == '20px') {
-                    $('#legend').css({'height': 'auto', 'min-width': 'auto'});
+                const $legend = $('#legend');
+                if ($legend.css('height') == '20px') {
+                    $legend.css({'height': 'auto'}); //, 'min-width': 'auto'});
                 } else {
-                    $('#legend').css({'height': '20px', 'width': '90px'});
+                    $legend.css({'height': '20px'}); //, 'width': '90px'});
                 }
             },
             onRender: function () {
