@@ -56,19 +56,6 @@ define([
             return "view";
         },
 
-        getSlugFromLocalStorage: function () {
-            if (this.fetchErrors) {
-                alert("map slug must be included");
-            }
-            this.fetchErrors = true;
-            var newSlug = this.restoreState("presentation").slug;
-            if (newSlug !== this.slug) {
-                this.router.navigate("//" + newSlug);
-            } else {
-                alert("map slug must be included");
-            }
-        },
-
         loadRegions: function () {
             this.showMapTitle();
             this.showBasemap();
@@ -146,11 +133,8 @@ define([
             });
         },
         showMediaDetail: function (opts) {
-            console.log(opts);
             const collection = this.dataManager.getCollection(opts.dataType);
-            console.log(collection);
             const model = collection.get(opts.id);
-            console.log(model);
             if (opts.dataType.indexOf("dataset_") != -1) {
                 if (!model.get("children")) {
                     model.fetch({"reset": true});
@@ -168,10 +152,8 @@ define([
                 panelStyles: this.model.get('panel_styles')
             });
 
-
             var paragraph = this.model.get('panel_styles').paragraph;
             if (paragraph && $(window).width() >= 900) {
-                console.log(paragraph.color);
                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
             }
 

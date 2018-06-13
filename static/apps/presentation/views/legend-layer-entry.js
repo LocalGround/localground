@@ -15,7 +15,6 @@ define(['marionette',
             childViewOptions: function () {
                 return {
                     app: this.app,
-                    dataCollection: this.dataCollection,
                     isShowing: this.model.get("metadata").isShowing,
                     symbolCount: this.collection.length
                 };

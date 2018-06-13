@@ -11,8 +11,6 @@ define(["marionette",
             template: Handlebars.compile(LegendTemplate),
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this.collection);
-                console.log("Layer List Manager Called");
             },
             events: {
                 'click .legend-top': 'toggleLegend',
@@ -29,7 +27,7 @@ define(["marionette",
             childView: LayerEntryView,
 
             toggleLegend: function () {
-                console.log("toggle legend", $('#legend').css('height'));
+                //console.log("toggle legend", $('#legend').css('height'));
                 if ($('#legend').css('height') == '20px') {
                     $('#legend').css({'height': 'auto', 'min-width': 'auto'});
                 } else {

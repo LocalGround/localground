@@ -28,7 +28,6 @@ define(['marionette',
             },
 
             initialize: function (opts) {
-                console.log("making marker overlays...");
                 $.extend(this, opts);
                 this.collection = opts.collection;
                 this.opts = opts;
@@ -78,7 +77,7 @@ define(['marionette',
             },
 
             showAll: function () {
-                console.log("Show All Being Called...")
+                //console.log("Show All Being Called...")
                 this.children.each(function (overlay) {
                     overlay.show();
                 });
