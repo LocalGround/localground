@@ -151,7 +151,7 @@ define([
             });
 
             it("getSymbolsJSON returns the correct JSON (removing the unserializable icon)", function () {
-                expect(layer.getSymbolsJSON()).toEqual([  
+                expect(layer.getSymbolsJSON()).toEqual([
                 {
                     "rule": "test_integer >= 4 and test_integer <= 7",
                     "title":"between 4 and 7",
@@ -212,7 +212,7 @@ define([
                 });
                 layer.setSymbol(newSymbol);
                 expect(layer.getSymbols().length).toEqual(3);
-                expect(layer.getSymbol(1).getSymbolJSON()).toEqual(newSymbol.getSymbolJSON());
+                expect(layer.getSymbol(1).toJSON()).toEqual(newSymbol.toJSON());
                 expect(layer.getSymbol(1)).toEqual(layer.getSymbols().at(0));
                 expect(layer.getSymbol(2)).toEqual(layer.getSymbols().at(1));
                 expect(layer.getSymbol(3)).toEqual(layer.getSymbols().at(2));
@@ -229,7 +229,7 @@ define([
                 expect(layer.getSymbol(2)).toEqual(layer.getSymbols().at(1));
                 expect(layer.getSymbol(3)).toEqual(layer.getSymbols().at(2));
                 expect(layer.getSymbol(80)).toEqual(layer.getSymbols().at(3));
-                expect(layer.getSymbol(80).getSymbolJSON()).toEqual(newSymbol.getSymbolJSON());
+                expect(layer.getSymbol(80).toJSON()).toEqual(newSymbol.toJSON());
             });
 
             it("showSybols() and hideSymbols() shows and hides all symbols", function () {

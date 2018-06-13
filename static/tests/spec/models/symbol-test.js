@@ -3,9 +3,9 @@ define([
     rootDir + 'models/layer',
     rootDir + 'models/symbol',
     rootDir + 'collections/symbols',
-    rootDir + 'lib/lgPalettes'
+    rootDir + 'lib/maps/overlays/icon'
 ],
-    function (Layer, Symbol, Symbols, LGPalettes) {
+    function (Layer, Symbol, Symbols, Icon) {
         'use strict';
             const initModels = function (scope) {
                 scope.uniform = new Symbol({
@@ -30,14 +30,27 @@ define([
                     rule: 'id = 106',
                     id: 1,
                 });
+                scope.uncategorized = new Symbol({
+                    title: 'Other / No value',
+                    rule: Symbol.UNCATEGORIZED_SYMBOL_RULE,
+                    id: 1,
+                });
             };
             const initSpies = function () {
                 spyOn(Symbol.prototype, 'initialize').and.callThrough();
+                spyOn(Icon.prototype, 'initialize').and.callThrough();
             };
 
-        describe('SymbolModel static methods:', function () {
+        describe('SymbolModel static methods and properties:', function () {
             beforeEach(function () {
                 initSpies();
+            });
+
+            it('Has requisite static properties', function () {
+                expect(Symbol.UNIFORM_SYMBOL_COLOR).toEqual('#4e70d4');
+                expect(Symbol.INDIVIDUAL_SYMBOL_COLOR).toEqual('#ed867d');
+                expect(Symbol.UNCATEGORIZED_SYMBOL_COLOR).toEqual('#BBB');
+                expect(Symbol.UNCATEGORIZED_SYMBOL_RULE).toEqual('¯\\_(ツ)_/¯');
             });
 
             it('createCategoricalSymbol() works', function () {
@@ -153,5 +166,150 @@ define([
                 expect(this.continuous.defaults).toEqual(defaults);
                 expect(this.individual.defaults).toEqual(defaults);
             });
+
+            it('initialize() works', function () {
+                expect(1).toEqual(0);
+            });
         });
+
+        describe('SymbolModel instance methods:', function () {
+            beforeEach(function () {
+                initModels(this);
+                initSpies();
+            });
+
+            it('set() regenerates Icon for select properties', function () {
+                //expect(1).toEqual(0);
+                expect(Icon.prototype.initialize).toHaveBeenCalledTimes(0);
+                expect(this.uniform.get('icon')).toBeDefined();
+                this.uniform.set('fillColor', '#CCC');
+                this.uniform.set('strokeColor', '#EEE');
+                this.uniform.set('shape', 'pin');
+                this.uniform.set('fillOpacity', 0.8);
+                this.uniform.set('strokeOpacity', 0.9);
+                this.uniform.set('width', 50);
+                this.uniform.set('strokeWeight', 3);
+                expect(Icon.prototype.initialize).toHaveBeenCalledTimes(7);
+                this.uniform.set('title', 'My New Title');
+                expect(Icon.prototype.initialize).toHaveBeenCalledTimes(7);
+                expect(this.uniform.get('icon').toJSON()).toEqual({
+                    fillColor: '#CCC',
+                    fillOpacity: 0.8,
+                    strokeColor: '#EEE',
+                    strokeWeight: 3,
+                    strokeOpacity: 0.9,
+                    path: 'M14,7.5c0,3.5899-2.9101,6.5-6.5,6.5S1,11.0899,1,7.5S3.9101,1,7.5,1S14,3.9101,14,7.5z',
+                    markerSize: 50,
+                    scale: 10/3.0,
+                    viewBox: '-1.5 -1.5 18 18',
+                    width: 50,
+                    height: 50
+                });
+            });
+
+            it('setHeight() works', function () {
+                expect(this.uniform.get('width')).toEqual(20);
+                expect(this.uniform.get('height')).toEqual(20);
+                this.uniform.set('width', 50);
+                expect(this.uniform.get('width')).toEqual(50);
+                expect(this.uniform.get('height')).toEqual(50);
+            });
+
+            it('toJSON() removes the "icon" property', function () {
+                expect(this.uniform.get('icon')).toBeDefined();
+                const json = this.uniform.toJSON();
+                expect(json['rule']).toBeDefined();
+                expect(json['title']).toBeDefined();
+                expect(json['icon']).not.toBeDefined();
+            });
+
+            it('toSVG() works', function () {
+                this.uniform.set('fillColor', '#CCC');
+                this.uniform.set('strokeColor', '#EEE');
+                this.uniform.set('shape', 'pin');
+                this.uniform.set('fillOpacity', 0.8);
+                this.uniform.set('strokeOpacity', 0.9);
+                this.uniform.set('width', 50);
+                this.uniform.set('strokeWeight', 3);
+                expect(this.uniform.toSVG()).toEqual(`<svg viewBox="-1.5 -1.5 18 18" width="23" height="23">
+                    <path fill="#CCC" stroke-linejoin="round"
+                        stroke-linecap="round" paint-order="stroke"
+                        stroke-width="3" stroke="#EEE" d="M14,7.5c0,3.5899-2.9101,6.5-6.5,6.5S1,11.0899,1,7.5S3.9101,1,7.5,1S14,3.9101,14,7.5z">
+                    </path>
+                </svg>`);
+            });
+
+            it('checkModel() works', function () {
+                const record = this.dataset_2.at(0);
+                expect(this.categorical.checkModel(record)).toBeFalsy();
+                record.set('type', 'maple');
+                expect(this.categorical.checkModel(record)).toBeTruthy();
+            });
+
+            it('addModel() works', function () {
+                const record = this.dataset_2.at(0);
+                expect(this.categorical.getModels().length).toEqual(0);
+                this.categorical.addModel(record);
+                expect(this.categorical.getModels().length).toEqual(1);
+            });
+
+            it('isEmpty() works', function () {
+                const record = this.dataset_2.at(0);
+                expect(this.categorical.isEmpty()).toBeTruthy();
+                this.categorical.addModel(record);
+                expect(this.categorical.isEmpty()).toBeFalsy();
+            });
+
+            it('removeModel() works', function () {
+                const record = this.dataset_2.at(0);
+                expect(this.categorical.getModels().length).toEqual(0);
+                this.categorical.addModel(record);
+                expect(this.categorical.containsRecord(record)).toBeTruthy();
+                this.categorical.removeModel(record);
+                expect(this.categorical.containsRecord(record)).toBeFalsy();
+            });
+
+            it('isUncategorized() works', function () {
+                expect(this.categorical.isUncategorized()).toBeFalsy();
+                expect(this.continuous.isUncategorized()).toBeFalsy();
+                expect(this.uniform.isUncategorized()).toBeFalsy();
+                expect(this.individual.isUncategorized()).toBeFalsy();
+                expect(this.uncategorized.isUncategorized()).toBeTruthy();
+            });
+
+            it('isRemovalCandidate() works', function () {
+                expect(1).toEqual(0);
+                /*
+                isRemovalCandidate: function (record) {
+                    // returns true if the symbol contains the record and either:
+                    //  a) the record doesn't match or
+                    //  b) it's an uncategorized symbol with only one record:
+
+                    const result = (
+                        this.containsRecord(record) && (
+                            !this.checkModel(record) || (
+                                this.isUncategorized() &&
+                                this.matchedModels.length <= 1
+                            )
+                        )
+                    );
+                    return result;
+                }
+                */
+            });
+
+            it('hasModels() works', function () {
+                expect(1).toEqual(0);
+            });
+
+            it('getModels() works', function () {
+                expect(1).toEqual(0);
+            });
+
+            it('getModelsJSON() works', function () {
+                expect(1).toEqual(0);
+            });
+
+
+        })
     });

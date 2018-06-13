@@ -44,8 +44,8 @@ define(['backbone', 'underscore', 'collections/records',
             set: function(key, val, options) {
                 if (this.get('icon')) {
                     if ([
-                        'fillColor', 'strokeColor', 'shape',
-                        'fillOpacity', 'width', 'strokeWeight'].indexOf(key) !== -1) {
+                        'fillColor', 'strokeColor', 'shape', 'fillOpacity',
+                        'strokeOpacity', 'width', 'strokeWeight'].indexOf(key) !== -1) {
                         //dynamically update the icon:
                         const properties = this.toJSON();
                         properties[key] = val;
@@ -71,11 +71,6 @@ define(['backbone', 'underscore', 'collections/records',
                     </path>
                 </svg>`
             },
-            getSymbolJSON: function () {
-                var symbol = this.clone();
-                delete symbol.attributes.icon;
-                return symbol.toJSON();
-            },
             checkModel: function (model) {
                 return this.sqlParser.checkModel(model);
             },
@@ -84,7 +79,7 @@ define(['backbone', 'underscore', 'collections/records',
                 this.matchedModels.add(model)
             },
             isEmpty: function () {
-                this.matchedModels.length === 0;
+                return this.matchedModels.length === 0;
             },
             removeModel: function(model) {
                 this.matchedModels.remove(model);
