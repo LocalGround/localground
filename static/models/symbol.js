@@ -161,7 +161,6 @@ define(['backbone', 'underscore', 'collections/records',
                     'width': Symbol.defaultIfUndefined(parseFloat(layerMetadata.width), 20),
                     'isShowing': layerMetadata.isShowing
                 };
-                console.log(defaults);
                 return defaults;
             },
             createCategoricalSymbol: function (opts) {
@@ -193,12 +192,10 @@ define(['backbone', 'underscore', 'collections/records',
             },
             createIndividualSymbol: function (opts) {
                 const layerModel = opts.layerModel;
-                const value = opts.category;
+                const value = opts.title || opts.category.toString();
                 const id = opts.id;
                 const fillColor = opts.fillColor;
-                //factory that creates new symbols:
                 const metadata = layerModel.get('metadata');
-                //const counter = layerModel.getSymbols().length;
                 const props = _.extend(
                     Symbol._getDefaultMetadataProperties(metadata), {
                         'rule': `id = ${value}`,

@@ -42,7 +42,7 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
                     return '#' + palette[(index + 1) % 8];
                 }
             }
-            return palette[0];
+            return '#' + palette[0];
         },
         removeEmpty: function() {
             if (!this.layerModel.isContinuous()) {
