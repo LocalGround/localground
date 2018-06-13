@@ -1,7 +1,6 @@
 <div {{#unless isIndividual}}
 <div class="symbol-wrapper" style="background:{{ icon.fillColor }}">
     <div class="symbol-header">
-    <!-- div class="symbol-header" {{#if empty}}style="display: none;"{{/if}} -->
         {{{svgIcon}}}
         <span class="sort-by">{{property}}</span>
         {{#if isChecked}}<i class="fa fa-eye symbol-display"></i>{{else}}<i class="fa fa-eye-slash symbol-display"></i>{{/if}}
