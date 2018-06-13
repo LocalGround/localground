@@ -15,6 +15,20 @@ define(['marionette',
                 'change .cb-symbol': 'showHide'
             },
 
+            initialize: function (opts) {
+                _.extend(this, opts);
+                this.template = Handlebars.compile(SymbolTemplate);
+                this.markerOverlays = new MarkerOverlays({
+                    model: this.model,
+                    collection: this.model.getModels(),
+                    map: this.app.model,
+                    app: this.app,
+                    iconOpts: this.model.toJSON(),
+                    isShowing: this.getIsShowing()
+                });
+                this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
+            },
+
             showHide: function (e) {
                 var isChecked = $(e.target).prop('checked');
                 if (isChecked) {
@@ -45,27 +59,12 @@ define(['marionette',
                     svg: this.model.toSVG()
                 };
             },
+
             getIsShowing: function () {
                 return this.model.get('isShowing');
             },
 
-            initialize: function (opts) {
-                _.extend(this, opts);
-                this.template = Handlebars.compile(SymbolTemplate);
-
-                this.markerOverlays = new MarkerOverlays({
-                    model: this.model,
-                    collection: this.model.getModels(),
-                    map: this.app.model,
-                    app: this.app,
-                    iconOpts: this.model.toJSON(),
-                    isShowing: this.getIsShowing()
-                });
-
-                this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
-            },
-
-            onRender: function(){
+            drawOverlays: function () {
                 if (this.getIsShowing()) {
                     this.show();
                 }

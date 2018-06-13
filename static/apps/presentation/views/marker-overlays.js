@@ -77,6 +77,7 @@ define(['marionette',
             },
 
             showAll: function () {
+                return;
                 //console.log("Show All Being Called...")
                 this.children.each(function (overlay) {
                     overlay.show();

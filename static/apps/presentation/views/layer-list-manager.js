@@ -33,7 +33,19 @@ define(["marionette",
                 } else {
                     $('#legend').css({'height': '20px', 'width': '90px'});
                 }
+            },
+            onRender: function () {
+                this.drawOverlays();
+            },
+            drawOverlays: function () {
+                //draw map overlays in reverse order so they draw on
+                //top of each other correctly:
 
+                //NOTE: Alternatively, you can set the z-index of each marker
+                for (let i = this.collection.length - 1; i >= 0; i--) {
+                    const childView = this.children.findByModel(this.collection.at(i));
+                    childView.drawOverlays();
+                }
             }
         });
         return LayerListManager;

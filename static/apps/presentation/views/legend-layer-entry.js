@@ -23,6 +23,14 @@ define(['marionette',
                 _.extend(this, opts);
                 this.collection.assignRecords(this.dataCollection);
                 this.template = Handlebars.compile(LayerTemplate);
+            },
+            drawOverlays: function () {
+                //draw map overlays in reverse order so they draw on
+                //top of each other correctly:
+                for (let i = this.collection.length - 1; i >= 0; i--) {
+                    const childView = this.children.findByModel(this.collection.at(i));
+                    childView.drawOverlays();
+                }
             }
 
         });
