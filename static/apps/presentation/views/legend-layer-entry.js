@@ -15,14 +15,14 @@ define(['marionette',
             childViewOptions: function () {
                 return {
                     app: this.app,
-                    dataset: this.model.get("dataset"),
+                    dataCollection: this.dataCollection,
                     isShowing: this.model.get("metadata").isShowing,
                     symbolCount: this.collection.length
                 };
             },
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.collection = new Symbols(this.model.get("symbols"));
+                this.collection.assignRecords(this.dataCollection);
                 this.template = Handlebars.compile(LayerTemplate);
             }
 

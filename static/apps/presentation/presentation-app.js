@@ -27,6 +27,21 @@ define([
         screenType: "presentation",
         showLeft: false,
         mode: "view",
+        initialize: function (options) {
+            options = options || {};
+            Marionette.Application.prototype.initialize.apply(this, [options]);
+            this.selectedProjectID = this.projectID = options.projectJSON.id;
+            this.dataManager = new DataManager({
+                vent: this.vent,
+                projectJSON: options.projectJSON
+            });
+            this.model = this.dataManager.getMapBySlug(options.mapJSON.slug);
+
+            this.loadRegions();
+
+            this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
+            this.addMessageListeners();
+        },
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
@@ -34,42 +49,10 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
-
-            //map slug needs to be in the url:
-            var slug = Backbone.history.getFragment();
-            /*if (slug === "") {
-                alert("map slug must be included");
-                return;
-            }*/
-            this.fetchMap(slug);
-            this.listenTo(this.vent, 'fetch-map', this.fetchMap);
-            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
-            this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
-            this.addMessageListeners();
         },
         fetchErrors: false,
         getMode: function () {
             return "view";
-        },
-
-        fetchMap: function (slug) {
-            this.slug = slug;
-            this.model = new Map();
-            this.model.getMapBySlug({
-                slug: this.slug,
-                successCallback: this.getData.bind(this),
-                errorCallback: this.getSlugFromLocalStorage.bind(this)
-            });
-        },
-
-        getData: function () {
-            this.saveState("presentation", {slug: this.slug });
-            this.setProjectID(this.model.get("project_id"));
-            this.dataManager = new DataManager({
-                vent: this.vent,
-                projectJSON: projectJSON
-            });
-            console.log(this.model.get("panel_styles").display_legend);
         },
 
         getSlugFromLocalStorage: function () {
@@ -93,7 +76,6 @@ define([
             } else {
                 this.showLegend();
             }
-        //    $('#marker-detail-panel').addClass('parallax').attr('data-scroll-speed', '1');
         },
 
         showBasemap: function () {
@@ -134,10 +116,7 @@ define([
         instantiateLegendView: function () {
             this.legendView = new LegendView({
                 app: this,
-                collection: new Layers(
-                    this.model.get("layers"),
-                    { mapID: this.model.get("id") }
-                ),
+                collection: this.model.getLayers(),
                 model: this.model
             });
             this.legendRegion.show(this.legendView);

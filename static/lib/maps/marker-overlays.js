@@ -25,7 +25,7 @@ define(['marionette',
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.opts = opts;
-                this.map = this.app.getMap();
+                //this.map = this.app.getMap();
                 this.childViewOptions = {
                     symbol: this.model,
                     app: this.app,

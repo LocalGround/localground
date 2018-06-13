@@ -1,12 +1,13 @@
 var configPath = (configPath || '') + 'require-config';
 require([configPath], function () {
     'use strict';
-    require(["jquery", "apps/presentation/presentation-app"], function ($, PresentationApp) {
+    require(["jquery", "apps/presentation/presentation-app"], function ($, App) {
         $(function () {
-            var presentationApp = new PresentationApp();
-            presentationApp.start();
+            var app = new App({
+                projectJSON: projectJSON,
+                mapJSON: mapJSON
+            });
+            app.start();
         });
     });
 });
-
-

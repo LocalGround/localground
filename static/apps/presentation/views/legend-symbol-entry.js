@@ -46,7 +46,8 @@ define(['marionette',
                         height: this.model.get("height") * scale,
                         strokeWeight: this.model.get("strokeWeight"),
                         count: this.symbolCount,
-                        isShowing: this.getIsShowing()
+                        isShowing: this.getIsShowing(),
+                        svg: this.model.toSVG()
                     };
                 return template_items;
             },
@@ -58,20 +59,12 @@ define(['marionette',
                 _.extend(this, opts);
                 var that = this, matchedCollection;
                 this.template = Handlebars.compile(SymbolTemplate);
-                this.data = this.app.dataManager.getCollection(this.dataset.overlay_type);
-                matchedCollection = new this.data.constructor(null, {
-                    url: "dummy",
-                    projectID: that.app.getProjectID()
-                });
 
-                this.data.each(function (model) {
-                    if (that.model.checkModel(model)) {
-                        matchedCollection.add(model);
-                    }
-                });
-
+                console.log(this.model.getModels());
                 this.markerOverlays = new OverlayListView({
-                    collection: matchedCollection,
+                    model: this.model,
+                    collection: this.model.getModels(),
+                    map: this.app.model,
                     app: this.app,
                     iconOpts: this.model.toJSON(),
                     isShowing: this.getIsShowing()

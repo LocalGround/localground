@@ -146,6 +146,11 @@ define(["underscore", "marionette", "models/project",
             getMap: function () {
                 return this.map;
             },
+            getMapBySlug: function (slug) {
+                return this.__maps.findWhere({
+                    slug: slug
+                });
+            },
             setMapById: function (mapID) {
                 this.map = this.__maps.get(mapID);
             },

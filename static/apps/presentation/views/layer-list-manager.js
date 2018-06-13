@@ -11,15 +11,19 @@ define(["marionette",
             template: Handlebars.compile(LegendTemplate),
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this.collection);
                 console.log("Layer List Manager Called");
             },
             events: {
                 'click .legend-top': 'toggleLegend',
                 'click this': 'toggleLegend'
             },
-            childViewOptions: function () {
+            childViewOptions: function (model, index) {
+                const dm = this.app.dataManager;
                 return {
-                    app: this.app
+                    app: this.app,
+                    collection: model.get('symbols'),
+                    dataCollection: dm.getCollection(model.get('dataset').overlay_type)
                 };
             },
             childView: LayerEntryView,
@@ -31,7 +35,7 @@ define(["marionette",
                 } else {
                     $('#legend').css({'height': '20px', 'width': '90px'});
                 }
-                
+
             }
         });
         return LayerListManager;
