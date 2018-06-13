@@ -5,7 +5,7 @@ define(['marionette',
         'lib/maps/marker-overlays',
         'text!../templates/legend-symbol-item.html'
     ],
-    function (Marionette, _, $, Handlebars, OverlayListView, SymbolTemplate) {
+    function (Marionette, _, $, Handlebars, MarkerOverlays, SymbolTemplate) {
         'use strict';
 
         var LegendSymbolEntry = Marionette.ItemView.extend({
@@ -39,29 +39,21 @@ define(['marionette',
             },
 
             templateHelpers: function () {
-                var width = 25,
-                    scale = width / this.model.get("width"),
-                    template_items = {
-                        width: width,
-                        height: this.model.get("height") * scale,
-                        strokeWeight: this.model.get("strokeWeight"),
-                        count: this.symbolCount,
-                        isShowing: this.getIsShowing(),
-                        svg: this.model.toSVG()
-                    };
-                return template_items;
+                return {
+                    count: this.symbolCount,
+                    isShowing: this.getIsShowing(),
+                    svg: this.model.toSVG()
+                };
             },
             getIsShowing: function () {
-                return this.model.get('isShowing') || this.isShowing || false;
+                return this.model.get('isShowing');
             },
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                var that = this, matchedCollection;
                 this.template = Handlebars.compile(SymbolTemplate);
 
-                console.log(this.model.getModels());
-                this.markerOverlays = new OverlayListView({
+                this.markerOverlays = new MarkerOverlays({
                     model: this.model,
                     collection: this.model.getModels(),
                     map: this.app.model,

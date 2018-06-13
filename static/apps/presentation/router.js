@@ -7,7 +7,7 @@ define([
     "use strict";
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
-            ':screenType/:dataType/:id': 'dataDetail',
+            ':dataType/:id': 'dataDetail',
             //'/^[\w-]+/': 'fetchMap'//,
             //new RegExp('^([\w-]+)'): 'fetchMap',
             ':slug': 'fetchMap'

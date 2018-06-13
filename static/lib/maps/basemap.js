@@ -226,6 +226,7 @@ define(["marionette",
                 });
                 google.maps.event.addListener(this.map, "idle", function () {
                     that.saveState();
+                    that.app.vent.trigger('map-loaded');
                 });
                 google.maps.event.addListener(this.map, 'zoom_changed', function () {
                     that.saveState();

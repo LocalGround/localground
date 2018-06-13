@@ -67,7 +67,7 @@ define(['backbone', 'underscore', 'collections/records',
                 return `<svg viewBox="${icon.viewBox}" width="23" height="23">
                     <path fill="${icon.fillColor}" stroke-linejoin="round"
                         stroke-linecap="round" paint-order="stroke"
-                        stroke-width="2" stroke="#e7e7e7" d="${icon.path}">
+                        stroke-width="${icon.strokeWeight}" stroke="${icon.strokeColor}" d="${icon.path}">
                     </path>
                 </svg>`
             },

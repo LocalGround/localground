@@ -40,6 +40,7 @@ define([
             this.loadRegions();
 
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
+            this.listenToOnce(this.vent, 'map-loaded', this.initLegend);
             this.addMessageListeners();
         },
         start: function (options) {
@@ -71,11 +72,6 @@ define([
         loadRegions: function () {
             this.showMapTitle();
             this.showBasemap();
-            if (this.model.get("panel_styles").display_legend === false) {
-                this.hideLegend();
-            } else {
-                this.showLegend();
-            }
         },
 
         showBasemap: function () {
@@ -101,11 +97,16 @@ define([
                     position: google.maps.ControlPosition.LEFT_BOTTOM
                 }
             });
-            setTimeout(function () {
-                $("#map").css({"position": "fixed",
-            'z-index': '0'});
-            }, 500);
             this.mapRegion.show(this.basemapView);
+        },
+
+        initLegend: function () {
+            $("#map").css({"position": "fixed", 'z-index': '0'});
+            if (this.model.get("panel_styles").display_legend === false) {
+                this.hideLegend();
+            } else {
+                this.showLegend();
+            }
         },
 
         showMapTitle: function () {
@@ -145,8 +146,11 @@ define([
             });
         },
         showMediaDetail: function (opts) {
-            var collection = this.dataManager.getCollection(opts.dataType),
-                model = collection.get(opts.id);
+            console.log(opts);
+            const collection = this.dataManager.getCollection(opts.dataType);
+            console.log(collection);
+            const model = collection.get(opts.id);
+            console.log(model);
             if (opts.dataType.indexOf("dataset_") != -1) {
                 if (!model.get("children")) {
                     model.fetch({"reset": true});
