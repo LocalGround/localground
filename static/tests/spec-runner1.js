@@ -35,6 +35,7 @@ require(['boot'], function () {
         'spec/truth-statement-test.js',
 
         // models
+        'spec/models/layer-test.js',
         'spec/models/symbol-test.js'
 
     ];
