@@ -299,17 +299,28 @@ define([
             });
 
             it('hasModels() works', function () {
-                expect(1).toEqual(0);
+                const record = this.dataset_2.at(0);
+                this.categorical.addModel(record);
+                expect(this.categorical.getModels().length).toEqual(1);
+                expect(this.categorical.hasModels()).toBeTruthy();
             });
 
             it('getModels() works', function () {
-                expect(1).toEqual(0);
+                const record = this.dataset_2.at(0);
+                this.categorical.addModel(record);
+                expect(this.categorical.getModels()).toEqual(
+                    this.categorical.matchedModels
+                );
+                expect(this.categorical.getModels().length).toEqual(1);
             });
 
             it('getModelsJSON() works', function () {
-                expect(1).toEqual(0);
+                const record = this.dataset_2.at(0);
+                this.categorical.addModel(record);
+                expect(this.categorical.getModelsJSON()).toEqual([
+                    record.toJSON()
+                ]);
             });
-
 
         })
     });
