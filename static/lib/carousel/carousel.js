@@ -15,13 +15,16 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 "click .show-slide": "jump",
                 "click .close": "closeCarousel",
                 'mouseover .carouselbox': 'showArrows',
-                'mouseout .carouselbox': 'hideArrows'
+                'mouseout .carouselbox': 'hideArrows',
+                'click .photo': 'showFullScreen',
+                'click .close-fullscreen': 'exitFullScreen'
             },
             counter: 0,
             className: "active-slide",
             childViewContainer: ".carousel-content",
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.fullScreen = false;
                 if (this.mode == "photos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
                 } else if (this.mode == "videos") {
@@ -63,7 +66,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     app: this.app,
                     num_children: this.collection.length,
                     parent: this,
-                    panelStyles: this.panelStyles
+                    panelStyles: this.panelStyles,
+                    fullScreen: this.fullScreen
                 };
             },
             getChildView: function () {
@@ -79,13 +83,15 @@ define(["jquery", "underscore", "marionette", "handlebars",
                         }
                     },
                     templateHelpers: function () {
+                        console.log('template helpers', this.fullScreen, parent.fullScreen);
                         var paragraph;
                         if (this.panelStyles) {
                             paragraph = this.panelStyles.paragraph;
                         }
                         return {
                             num_children: this.num_children,
-                            paragraph: paragraph
+                            paragraph: paragraph,
+                            fullScreen: this.fullScreen
                         };
                     },
                     tagName: "li",
@@ -111,7 +117,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 return {
                     num_children: this.collection.length,
                     isSpreadsheet: this.app.screenType === "spreadsheet",
-                    paragraph: paragraph
+                    paragraph: paragraph,
+                    fullScreen: this.fullScreen
                 };
             },
 
@@ -158,6 +165,31 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 this.resetCurrentFrame();
                 this.counter = parseInt($(e.target).attr("data-index"), 10);
                 this.navigate();
+            },
+            showFullScreen: function(e) {
+                if (this.$el.hasClass('fullScreen')) {
+                    return;
+                }
+                console.log('clicked photo, show fullScreen');
+                console.log(this.$el.find('.carousel'));
+                this.hideArrows();
+                this.fullScreen = true;
+                this.$el.find('.close-fullscreen').show();
+                this.children.each(function(child) {
+                    child.fullScreen = true;
+                    child.render();
+                });
+                //this.render();
+                this.$el.addClass('fullScreen');
+            },
+            exitFullScreen: function() {
+                this.fullScreen = false;
+                this.$el.find('.close-fullscreen').hide();
+                this.children.each(function(child) {
+                    child.fullScreen = false;
+                    child.render();
+                });
+                this.$el.removeClass('fullScreen');
             }
         });
         return Carousel;

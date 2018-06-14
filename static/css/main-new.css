@@ -157,6 +157,7 @@ ul {
   display: flex;
   position: absolute;
   width: 100%;
+  border-top: 1px solid #dcdcdc;
 }
 
 .print-layout-left {
@@ -869,9 +870,62 @@ i.fa.fa.fa-question-circle {
   margin-bottom: 30px;
 }
 
+.fullScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.fullScreen .carouselbox {
+  position: initial;
+}
+
+.fullScreen .circle-buttons {
+  position: absolute;
+  bottom: 45px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fullScreen .next, .fullScreen .prev {
+  height: 100vh;
+  top: 0;
+  transform: translateY(48%);
+}
+
+.fullScreen .photo {
+  height: 100%;
+  width: 100%;
+  max-width: 85vw;
+  max-height: 85vh;
+  margin: 0 auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.close-fullscreen {
+  display: none;
+  position: absolute;
+  color: #eee;
+  z-index: 3;
+  margin: 15px;
+  right: 0;
+}
+
+.show-slide {
+  color: #999;
+}
+
 .breadcrumb {
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 transparent, 0 2px 4px -1px transparent;
-  z-index: 2;
   position: absolute;
   width: 100%;
   min-height: 44px;
