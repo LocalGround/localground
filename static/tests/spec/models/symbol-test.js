@@ -98,7 +98,7 @@ define([
                 expect(symbol.get('fillColor')).toEqual('#CCCCCC');
                 expect(symbol.get('fillOpacity')).toEqual(1);
                 expect(symbol.get('rule')).toEqual('id = 555');
-                expect(symbol.get('title')).toEqual('555');
+                expect(symbol.get('title').toString()).toEqual('555');
             });
 
             it('createIndividualSymbol() works (override title)', function () {
@@ -167,8 +167,16 @@ define([
                 expect(this.individual.defaults).toEqual(defaults);
             });
 
-            it('initialize() works', function () {
-                expect(1).toEqual(0);
+            it('initialize() throws error if no title', function () {
+                expect(() => {
+                    const s = new Symbol({rule: '*', id: 1});
+                }).toThrow('title must be defined');
+            });
+
+            it('initialize() throws error if no rule', function () {
+                expect(() => {
+                    const s = new Symbol({title: 'Murals', id: 1});
+                }).toThrow('rule must be defined');
             });
         });
 
@@ -255,6 +263,7 @@ define([
 
             it('isEmpty() works', function () {
                 const record = this.dataset_2.at(0);
+                record.set('type', 'maple');
                 expect(this.categorical.isEmpty()).toBeTruthy();
                 this.categorical.addModel(record);
                 expect(this.categorical.isEmpty()).toBeFalsy();
@@ -277,25 +286,46 @@ define([
                 expect(this.uncategorized.isUncategorized()).toBeTruthy();
             });
 
-            it('isRemovalCandidate() works', function () {
-                expect(1).toEqual(0);
-                /*
-                isRemovalCandidate: function (record) {
-                    // returns true if the symbol contains the record and either:
-                    //  a) the record doesn't match or
-                    //  b) it's an uncategorized symbol with only one record:
+            it('isRemovalCandidate() works for categorical', function () {
+                const record = this.dataset_2.at(0);
+                const record1 = this.dataset_2.at(1);
+                expect(this.categorical.isRemovalCandidate(record)).toBeFalsy();
+                this.categorical.addModel(record);
+                expect(this.categorical.isRemovalCandidate(record)).toBeTruthy();
+                record.set('type', 'maple');
+                expect(this.categorical.isRemovalCandidate(record)).toBeFalsy();
+            });
 
-                    const result = (
-                        this.containsRecord(record) && (
-                            !this.checkModel(record) || (
-                                this.isUncategorized() &&
-                                this.matchedModels.length <= 1
-                            )
-                        )
-                    );
-                    return result;
-                }
-                */
+            it('isRemovalCandidate() works for uncategorized #1', function () {
+                const record = this.dataset_2.at(0);
+                const record1 = this.dataset_2.at(1);
+                const record2 = this.dataset_2.at(2);
+                //removal candidate if contains the record and the record does
+                //not match the criteria
+                expect(this.uncategorized.isRemovalCandidate(record)).toBeFalsy();
+                this.uncategorized.addModel(record);
+                expect(this.uncategorized.matchedModels.length).toEqual(1);
+                expect(this.uncategorized.isRemovalCandidate(record)).toBeTruthy();
+            });
+
+            it('isRemovalCandidate() works for uncategorized #2', function () {
+                const record = this.dataset_2.at(0);
+                record.set('type', 'maple');
+                //not a removal candidate if contains the record match the criteria
+                expect(this.uncategorized.isRemovalCandidate(record)).toBeFalsy();
+                this.uncategorized.addModel(record);
+                expect(this.uncategorized.matchedModels.length).toEqual(1);
+                expect(this.uncategorized.isRemovalCandidate(record)).toBeTruthy();
+            });
+
+            it('isRemovalCandidate() works for uncategorized #3', function () {
+                const record = this.dataset_2.at(0);
+                const record1 = this.dataset_2.at(1);
+                const record2 = this.dataset_2.at(2);
+                this.uncategorized.addModel(record1);
+                this.uncategorized.addModel(record2);
+                //not a removal candidate if more than one record in symbol
+                expect(this.uncategorized.isRemovalCandidate(record2)).toBeTruthy();
             });
 
             it('hasModels() works', function () {

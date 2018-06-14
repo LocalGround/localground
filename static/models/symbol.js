@@ -187,7 +187,7 @@ define(['backbone', 'underscore', 'collections/records',
             },
             createIndividualSymbol: function (opts) {
                 const layerModel = opts.layerModel;
-                const value = opts.title || opts.category.toString();
+                const value = opts.title || opts.category || 'Untitled';
                 const id = opts.id;
                 const fillColor = opts.fillColor;
                 const metadata = layerModel.get('metadata');
