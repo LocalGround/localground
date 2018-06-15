@@ -12,9 +12,9 @@ define([
             spyOn(Symbols.prototype, 'removeEmpty').and.callThrough();
             spyOn(Symbols.prototype, '__removeStaleMatches').and.callThrough();
             spyOn(Symbols.prototype, '__getNumMatches').and.callThrough();
-            spyOn(Symbols.prototype, 'updateIfApplicable').and.callThrough();
-            spyOn(Symbols.prototype, 'assignToExistingSymbol').and.callThrough();
-            spyOn(Symbols.prototype, 'assignToNewSymbol').and.callThrough();
+            spyOn(Symbols.prototype, '__updateIfApplicable').and.callThrough();
+            spyOn(Symbols.prototype, '__assignToExistingSymbol').and.callThrough();
+            spyOn(Symbols.prototype, '__assignToNewSymbol').and.callThrough();
             spyOn(Symbols.prototype, 'getUncategorizedSymbol').and.callThrough();
             spyOn(Symbols.prototype, 'hasUncategorizedSymbol').and.callThrough();
             spyOn(Symbols.prototype, 'assignRecords').and.callThrough();
@@ -102,15 +102,44 @@ define([
                 expect(symbol.getModels().length).toEqual(1);
             });
             it('__getNumMatches() works', function () {
-                expect(1).toEqual(0);
+                const symbols = this.categoricalLayer.getSymbols();
+                const records = this.dataManager.getCollection(
+                    this.categoricalLayer.get('dataset').overlay_type
+                )
+                const record = records.at(0);
+                expect(symbols.__getNumMatches(record)).toEqual(1);
             });
-            it('updateIfApplicable() works', function () {
-                expect(1).toEqual(0);
+            it('__updateIfApplicable(record) works', function () {
+                //Make sure that if there is only 1 record in a symbol and the
+                //record changes, modify the symbol:
+                const symbols = this.categoricalLayer.getSymbols();
+                const records = this.dataManager.getCollection(
+                    this.categoricalLayer.get('dataset').overlay_type
+                )
+                symbols.assignRecords(records);
+                const symbolCandidate = symbols.at(2); //symbol w/only 1 record
+                const record = symbolCandidate.getModels().at(0);
+                expect(symbolCandidate.get('rule')).toEqual('type = \'spruce\'');
+                expect(symbolCandidate.get('title')).toEqual('spruce');
+                record.set('type', 'redwood');
+                symbols.__updateIfApplicable(record);
+                expect(symbolCandidate.get('rule')).toEqual('type = \'redwood\'');
+                expect(symbolCandidate.get('title')).toEqual('redwood');
             });
-            it('assignToExistingSymbol() works', function () {
-                expect(1).toEqual(0);
+            it('__assignToExistingSymbol(record) / assignRecord(record) works', function () {
+                const symbols = this.categoricalLayer.getSymbols();
+                const records = this.dataManager.getCollection(
+                    this.categoricalLayer.get('dataset').overlay_type
+                )
+                symbols.assignRecords(records);
+                const symbol = symbols.findWhere({ rule: 'type = \'oak\''});
+                const record = records.at(0);
+                expect(symbol.getModels().length).toEqual(7);
+                record.set('type', 'Oak');
+                symbols.assignRecord(record);
+                expect(symbol.getModels().length).toEqual(8);
             });
-            it('assignToNewSymbol() works', function () {
+            it('__assignToNewSymbol(record) / assignRecord(record) works', function () {
                 expect(1).toEqual(0);
             });
             it('getUncategorizedSymbol() works', function () {

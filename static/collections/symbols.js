@@ -61,14 +61,14 @@ define(["underscore", "models/symbol", "collections/base"],
             }
             return false;
         },*/
-        updateIfApplicable: function (record) {
+        __updateIfApplicable: function (record) {
             const prop = this.layerModel.get('metadata').currentProp
             const value = record.get(prop);
             let matchedSymbol;
             this.each(symbol => {
                 if (symbol.isUpdateCandidate(record, value)
                     && this.__getNumMatches(record) === 1) {
-                    console.log('updateIfApplicable');
+                    console.log('__updateIfApplicable');
                     matchedSymbol = symbol;
                     symbol.set({
                         'rule': `${prop} = '${value}'`,
@@ -78,18 +78,21 @@ define(["underscore", "models/symbol", "collections/base"],
             });
             return matchedSymbol;
         },
-        assignToExistingSymbol: function (record) {
+        __assignToExistingSymbol: function (record) {
             let matchedSymbol;
             this.each(symbol => {
                 if (symbol.checkModel(record)) {
-                    console.log('assignToExistingSymbol');
+                    console.log('__assignToExistingSymbol');
                     matchedSymbol = symbol;
                     matchedSymbol.addModel(record);
                 }
             })
             return matchedSymbol;
         },
-        assignToNewSymbol: function (record) {
+        __assignToNewSymbol: function (record) {
+            // Note: new continuous symbols don't get created, and instead
+            //       get binned into uncategorized.
+            //       new categorical and 'individual' symbols do ge created
             let matchedSymbol;
             const metadata = this.layerModel.get('metadata');
             const value = record.get(metadata.currentProp);
@@ -164,13 +167,13 @@ define(["underscore", "models/symbol", "collections/base"],
             //   a) append to existing symbol
             //   b) else create new symbol
             return (
-                this.assignToExistingSymbol(record) ||
-                this.assignToNewSymbol(record)
+                this.__assignToExistingSymbol(record) ||
+                this.__assignToNewSymbol(record)
             );
         },
         reassignRecord: function (record) {
             // 1. try and update if applicable:
-            let symbol = this.updateIfApplicable(record);
+            let symbol = this.__updateIfApplicable(record);
             if (symbol) {
                 return symbol;
             }
