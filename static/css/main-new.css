@@ -456,11 +456,12 @@ ul {
 .sort-by {
   font-size: 12px;
   font-weight: 600;
-  width: 170px;
+  max-width: 158px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
+  display: inline-block;
 }
 
 .count {
@@ -909,6 +910,16 @@ i.fa.fa.fa-question-circle {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+.fullScreen .carousel-caption {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .close-fullscreen {

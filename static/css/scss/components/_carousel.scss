@@ -35,6 +35,15 @@
         top: 50%;
         transform: translate(-50%, -50%);
     }
+    .carousel-caption {
+        position: absolute;
+        bottom: 24px;
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
 }
 
 .close-fullscreen {
