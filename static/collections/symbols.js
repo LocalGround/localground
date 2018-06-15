@@ -39,14 +39,14 @@ define(["underscore", "models/symbol", "collections/base"],
             }
         },
 
-        removeStaleMatches: function (record, matchSymbol) {
+        __removeStaleMatches: function (record, matchSymbol) {
             this.each(symbol => {
-                if (symbol.isRemovalCandidate(record) & symbol !== matchSymbol) {
+                if (symbol.isRemovalCandidate(record) && symbol !== matchSymbol) {
                     symbol.removeModel(record);
                 }
             });
         },
-        getNumMatches: function (record) {
+        __getNumMatches: function (record) {
             let count = 0;
             this.each(symbol => {
                 count += (symbol.containsRecord(record) || symbol.checkModel(record) ? 1 : 0);
@@ -67,7 +67,7 @@ define(["underscore", "models/symbol", "collections/base"],
             let matchedSymbol;
             this.each(symbol => {
                 if (symbol.isUpdateCandidate(record, value)
-                    && this.getNumMatches(record) === 1) {
+                    && this.__getNumMatches(record) === 1) {
                     console.log('updateIfApplicable');
                     matchedSymbol = symbol;
                     symbol.set({
@@ -100,7 +100,7 @@ define(["underscore", "models/symbol", "collections/base"],
                     layerModel: this.layerModel,
                     category: value,
                     id: this.getNextId(),
-                    fillColor: this.getNextColor()
+                    fillColor: this.layerModel.getNextColor()
                 });
                 matchedSymbol.addModel(record);
                 this.add(matchedSymbol);
@@ -111,7 +111,7 @@ define(["underscore", "models/symbol", "collections/base"],
                     layerModel: this.layerModel,
                     category: value,
                     id: this.getNextId(),
-                    fillColor: this.getNextColor()
+                    fillColor: this.layerModel.getNextColor()
                 });
                 matchedSymbol.addModel(record);
                 if (this.getUncategorizedSymbol()) {
@@ -179,7 +179,7 @@ define(["underscore", "models/symbol", "collections/base"],
             symbol = this.assignRecord(record);
 
             // 3. remove stale matches:
-            this.removeStaleMatches(record, symbol);
+            this.__removeStaleMatches(record, symbol);
             this.removeEmpty();
 
             // 4. return matched symbol:

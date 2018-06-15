@@ -59,7 +59,7 @@ define([
                     layerModel: layerModel,
                     category: 'cottonwood',
                     id: layerModel.getSymbols().getNextId(),
-                    fillColor: layerModel.getSymbols().getNextColor()
+                    fillColor: layerModel.getNextColor()
                 });
                 expect(symbol.get('fillColor')).toEqual('#ff0029');
                 expect(symbol.get('fillOpacity')).toEqual(1);
@@ -78,7 +78,7 @@ define([
                     layerModel: layerModel,
                     rule: 'height >= 86 and height <= 100',
                     title: 'between 86 and 100',
-                    fillColor: layerModel.getSymbols().getNextColor(),
+                    fillColor: layerModel.getNextColor(),
                     id: layerModel.getSymbols().getNextId()
                 });
                 expect(symbol.get('fillColor')).toEqual('#08519c');

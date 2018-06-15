@@ -10,8 +10,8 @@ define([
             spyOn(Symbols.prototype, 'initialize').and.callThrough();
             spyOn(Symbols.prototype, 'getNextId').and.callThrough();
             spyOn(Symbols.prototype, 'removeEmpty').and.callThrough();
-            spyOn(Symbols.prototype, 'removeStaleMatches').and.callThrough();
-            spyOn(Symbols.prototype, 'getNumMatches').and.callThrough();
+            spyOn(Symbols.prototype, '__removeStaleMatches').and.callThrough();
+            spyOn(Symbols.prototype, '__getNumMatches').and.callThrough();
             spyOn(Symbols.prototype, 'updateIfApplicable').and.callThrough();
             spyOn(Symbols.prototype, 'assignToExistingSymbol').and.callThrough();
             spyOn(Symbols.prototype, 'assignToNewSymbol').and.callThrough();
@@ -87,10 +87,21 @@ define([
                 expect(this.categoricalLayer.isUniform()).toBeTruthy();
 
             });
-            it('removeStaleMatches() works', function () {
-                expect(1).toEqual(0);
+            it('__removeStaleMatches(record, symbol) works', function () {
+                const symbols = this.categoricalLayer.getSymbols();
+                const symbol = symbols.at(0);
+                const records = this.dataManager.getCollection(
+                    this.categoricalLayer.get('dataset').overlay_type
+                )
+                expect(this.categoricalLayer.isEmpty()).toBeTruthy();
+                symbols.assignRecords(records);
+                const record = symbol.getModels().at(0);
+                expect(symbol.getModels().length).toEqual(2);
+                record.set('type', 'peach tree');
+                symbols.__removeStaleMatches(record);
+                expect(symbol.getModels().length).toEqual(1);
             });
-            it('getNumMatches() works', function () {
+            it('__getNumMatches() works', function () {
                 expect(1).toEqual(0);
             });
             it('updateIfApplicable() works', function () {
