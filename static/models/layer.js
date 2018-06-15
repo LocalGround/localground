@@ -25,7 +25,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
         basic: false,
         initialize: function (data, opts) {
 			Base.prototype.initialize.apply(this, arguments);
-            this.applyDefaults();
+            //this.applyDefaults();
             if (data.map_id) {
                 this.urlRoot = "/api/0/maps/" + data.map_id + "/layers";
             } else {
@@ -67,6 +67,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             Base.prototype.set.apply(this, arguments);
 
             //build symbols collection if it doesn't already exist:
+            //if (!this.get("symbols") && symbols) {
             if (!this.get("symbols") && symbols) {
                 this.setSymbols(symbols);
             }
@@ -81,43 +82,23 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             }), {layerModel: this})
             this.set('symbols', collection);
         },
-        replaceSymbols: function (symbols) {
-            const collection = new Symbols(symbols.map((symbolJSON, i) => {
-                symbolJSON.id = symbolJSON.id || (i + 1);
-                return symbolJSON;
-            }), {layerModel: this})
-            this.get('symbols').set(symbols.toJSON());
-        },
-        applyDefaults: function () {
+        /*applyDefaults: function () {
             var currentMetadata = _.clone(this.get("metadata")),
                 defaults = _.clone(this.defaults.metadata);
             _.extend(defaults, currentMetadata);
             this.set("metadata", defaults);
-        },
-        //kill this hideSymbols method?
-        hideSymbols: function () {
-            this.get("symbols").each(function (symbol) {
-                symbol.isShowingOnMap = false;
-            });
-        },
-        //kill this showSymbols method?
-        showSymbols: function () {
-            this.get("symbols").each(function (symbol) {
-                symbol.isShowingOnMap = true;
-            });
-        },
+        },*/
 
         isEmpty: function (options) {
             if (this.getSymbols().length === 0) {
                 return true;
             }
             try {
-                const numRecords = this.getSymbols().map(n => {
+                return this.getSymbols().map(n => {
                     return n.isEmpty()
                 }).reduce((a, b) => {
                     return a && b;
                 });
-                return numRecords === 0;
             } catch (e) {
                 console.warn(e);
                 return true;

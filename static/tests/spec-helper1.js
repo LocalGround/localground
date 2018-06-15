@@ -414,7 +414,7 @@ define([
                         "fields": this.dataset_2.fields,
                         "name": this.dataset_2.name
                     },
-                    "group_by": "uniform",
+                    "group_by": "individual",
                     "display_field": "deciduousconifer",
                     "ordering": 1,
                     "metadata": {

@@ -16,10 +16,7 @@ define([
             spyOn(Layer.prototype, 'set').and.callThrough();
             spyOn(Layer.prototype, 'getSymbols').and.callThrough();
             spyOn(Layer.prototype, 'setSymbols').and.callThrough();
-            spyOn(Layer.prototype, 'replaceSymbols').and.callThrough();
-            spyOn(Layer.prototype, 'applyDefaults').and.callThrough();
-            spyOn(Layer.prototype, 'hideSymbols').and.callThrough();
-            spyOn(Layer.prototype, 'showSymbols').and.callThrough();
+            //spyOn(Layer.prototype, 'applyDefaults').and.callThrough();
             spyOn(Layer.prototype, 'isEmpty').and.callThrough();
             spyOn(Layer.prototype, 'toJSON').and.callThrough();
         };
@@ -104,20 +101,6 @@ define([
                 expect(this.layer.getSymbols().at(1).get("rule")).toBe("b = 5");
             });
 
-            it("showSymbols() and hideSymbols() shows and hides all symbols", function () {
-                this.layer.getSymbols().each(function (symbol) {
-                    expect(symbol.isShowingOnMap).toBeFalsy();
-                });
-                this.layer.showSymbols();
-                this.layer.getSymbols().each(function (symbol) {
-                    expect(symbol.isShowingOnMap).toBeTruthy();
-                });
-                this.layer.hideSymbols();
-                this.layer.getSymbols().each(function (symbol) {
-                    expect(symbol.isShowingOnMap).toBeFalsy();
-                });
-            });
-
             it("serializes nested JSON correctly for API POST / PUT / PATCH", function () {
                 var json = this.layer.toJSON();
                 expect(json.symbols).toEqual(JSON.stringify(this.layer.getSymbols().toJSON()));
@@ -125,50 +108,59 @@ define([
                 expect(json.filters).toEqual(JSON.stringify(this.layer.get("filters")));
             });
 
-            it('initialize() works', function () {
-                expect(1).toEqual(0);
-            });
             it('isCategorical() works', function () {
-                expect(1).toEqual(0);
+                expect(this.uniformLayer.isCategorical()).toBeFalsy();
+                expect(this.continuousLayer.isCategorical()).toBeFalsy();
+                expect(this.categoricalLayer.isCategorical()).toBeTruthy();
+                expect(this.individualLayer.isCategorical()).toBeFalsy();
             });
             it('isContinuous() works', function () {
-                expect(1).toEqual(0);
+                expect(this.uniformLayer.isContinuous()).toBeFalsy();
+                expect(this.continuousLayer.isContinuous()).toBeTruthy();
+                expect(this.categoricalLayer.isContinuous()).toBeFalsy();
+                expect(this.individualLayer.isContinuous()).toBeFalsy();
             });
             it('isUniform() works', function () {
-                expect(1).toEqual(0);
+                expect(this.uniformLayer.isUniform()).toBeTruthy();
+                expect(this.continuousLayer.isUniform()).toBeFalsy();
+                expect(this.categoricalLayer.isUniform()).toBeFalsy();
+                expect(this.individualLayer.isUniform()).toBeFalsy();
             });
             it('isIndividual() works', function () {
-                expect(1).toEqual(0);
+                expect(this.uniformLayer.isIndividual()).toBeFalsy();
+                expect(this.continuousLayer.isIndividual()).toBeFalsy();
+                expect(this.categoricalLayer.isIndividual()).toBeFalsy();
+                expect(this.individualLayer.isIndividual()).toBeTruthy();
             });
-            it('url() works', function () {
-                expect(1).toEqual(0);
-            });
-            it('set() works', function () {
-                expect(1).toEqual(0);
-            });
+
             it('getSymbols() works', function () {
-                expect(1).toEqual(0);
+                expect(this.categoricalLayer.get('symbols')).toEqual(
+                    this.categoricalLayer.getSymbols()
+                );
             });
-            it('setSymbols() works', function () {
-                expect(1).toEqual(0);
-            });
-            it('replaceSymbols() works', function () {
-                expect(1).toEqual(0);
-            });
-            it('applyDefaults() works', function () {
-                expect(1).toEqual(0);
-            });
-            it('hideSymbols() works', function () {
-                expect(1).toEqual(0);
-            });
-            it('showSymbols() works', function () {
-                expect(1).toEqual(0);
-            });
+            /*it('applyDefaults() works', function () {
+                expect(this.categoricalLayer.get('metadata')).not.toEqual(
+                    this.categoricalLayer.defaults.metadata
+                );
+                this.categoricalLayer.applyDefaults();
+                expect(this.categoricalLayer.get('metadata')).toEqual(
+                    this.categoricalLayer.defaults.metadata
+                );
+            });*/
             it('isEmpty() works', function () {
-                expect(1).toEqual(0);
+                const symbols = this.categoricalLayer.getSymbols();
+                const records = this.dataManager.getCollection(
+                    this.layer.get('dataset').overlay_type
+                )
+                expect(this.categoricalLayer.isEmpty()).toBeTruthy();
+                symbols.assignRecords(records);
+                expect(this.categoricalLayer.isEmpty()).toBeFalsy();
             });
-            it('toJSON() works', function () {
-                expect(1).toEqual(0);
+            it('toJSON() stringifies Objects', function () {
+                const json = this.individualLayer.toJSON()
+                expect(json.metadata).toEqual('{"strokeWeight":1,"buckets":4,"isShowing":true,"strokeOpacity":1,"width":20,"shape":"circle","fillOpacity":1,"strokeColor":"#ffffff","paletteId":0,"fillColor":"#4e70d4"}');
+                expect(json.filters).toBeUndefined();
+                expect(json.symbols).toEqual('[{"fillOpacity":1,"title":"Tree #36","strokeWeight":1,"isShowing":true,"strokeOpacity":1,"height":30,"width":30,"shape":"circle","rule":"id = 36","strokeColor":"#ffffff","id":1,"fillColor":"#ffdd33"}]');
             });
         });
     });
