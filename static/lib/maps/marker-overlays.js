@@ -26,13 +26,6 @@ define(['marionette',
                 _.extend(this, opts);
                 this.opts = opts;
                 this.map = this.app.getMap();
-                this.childViewOptions = {
-                    symbol: this.model,
-                    app: this.app,
-                    isShowing: this.isShowing,
-                    displayOverlay: this.displayOverlays
-                };
-
                 this.render();
 
                 google.maps.event.addListenerOnce(this.map, 'idle', function () {
@@ -40,6 +33,17 @@ define(['marionette',
                         this.showAll();
                     }
                 }.bind(this));
+            },
+
+            childViewOptions: function (model, index) {
+                return {
+                    map: this.map,
+                    symbol: this.model,
+                    app: this.app,
+                    isShowing: this.isShowing,
+                    displayOverlay: this.displayOverlays,
+                    route: model.get('overlay_type') + '/' + model.id
+                };
             },
 
             geometryUpdated: function (model) {

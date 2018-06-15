@@ -12,7 +12,7 @@ define(["jquery"], function ($) {
         this.url = opts.url.split('{z}')[0].split('//')[1];
         this.tileSize = new google.maps.Size(256, 256);
         this.getTile = function (coord, zoom) {
-            var url = '//' + ['', 'a.', 'b.'][parseInt(Math.random() * 3, 10)] + this.url;
+            var url = 'http://' + ['', 'a.', 'b.'][parseInt(Math.random() * 3, 10)] + this.url;
             return $('<div></div>').css({
                 'width': '256px',
                 'height': '256px',

@@ -5,7 +5,7 @@ define(['marionette',
         'lib/maps/marker-overlays',
         'text!../templates/legend-symbol-item.html'
     ],
-    function (Marionette, _, $, Handlebars, OverlayListView, SymbolTemplate) {
+    function (Marionette, _, $, Handlebars, MarkerOverlays, SymbolTemplate) {
         'use strict';
 
         var LegendSymbolEntry = Marionette.ItemView.extend({
@@ -13,6 +13,20 @@ define(['marionette',
 
             events: {
                 'change .cb-symbol': 'showHide'
+            },
+
+            initialize: function (opts) {
+                _.extend(this, opts);
+                this.template = Handlebars.compile(SymbolTemplate);
+                this.markerOverlays = new MarkerOverlays({
+                    model: this.model,
+                    collection: this.model.getModels(),
+                    map: this.app.model,
+                    app: this.app,
+                    iconOpts: this.model.toJSON(),
+                    isShowing: this.getIsShowing()
+                });
+                this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
             },
 
             showHide: function (e) {
@@ -39,48 +53,18 @@ define(['marionette',
             },
 
             templateHelpers: function () {
-                var width = 25,
-                    scale = width / this.model.get("width"),
-                    template_items = {
-                        width: width,
-                        height: this.model.get("height") * scale,
-                        strokeWeight: this.model.get("strokeWeight"),
-                        count: this.symbolCount,
-                        isShowing: this.getIsShowing()
-                    };
-                return template_items;
+                return {
+                    count: this.symbolCount,
+                    isShowing: this.getIsShowing(),
+                    svg: this.model.toSVG()
+                };
             },
+
             getIsShowing: function () {
-                return this.model.get('isShowing') || this.isShowing || false;
+                return this.model.get('isShowing');
             },
 
-            initialize: function (opts) {
-                _.extend(this, opts);
-                var that = this, matchedCollection;
-                this.template = Handlebars.compile(SymbolTemplate);
-                this.data = this.app.dataManager.getCollection(this.dataset.overlay_type);
-                matchedCollection = new this.data.constructor(null, {
-                    url: "dummy",
-                    projectID: that.app.getProjectID()
-                });
-
-                this.data.each(function (model) {
-                    if (that.model.checkModel(model)) {
-                        matchedCollection.add(model);
-                    }
-                });
-
-                this.markerOverlays = new OverlayListView({
-                    collection: matchedCollection,
-                    app: this.app,
-                    iconOpts: this.model.toJSON(),
-                    isShowing: this.getIsShowing()
-                });
-
-                this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
-            },
-
-            onRender: function(){
+            drawOverlays: function () {
                 if (this.getIsShowing()) {
                     this.show();
                 }

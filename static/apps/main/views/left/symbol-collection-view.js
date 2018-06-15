@@ -111,7 +111,7 @@ define(["jquery",
                 // 1. re-render all child views:
                 this._renderChildren();
                 // 2. partial update of parent SVG:
-                this.$el.find('svg').replaceWith(this.model.toSVG());
+                this.$el.find('.symbol-header > svg').replaceWith(this.model.toSVG());
                 this.$el.find('.symbol-wrapper').css(
                     'background', this.model.get('icon').fillColor);
             },

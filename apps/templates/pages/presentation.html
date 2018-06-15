@@ -3,13 +3,13 @@
     <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-8">
     <title>Local Ground Map Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <link rel=stylesheet type="text/css" href="/static/css/style.css" />
     <link rel=stylesheet type="text/css" href="/static/css/map-presentation.css" />
     <link rel=stylesheet type="text/css" href="/static/css/main.css" />
     <script>
         var projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
-        console.log(projectJSON);
+        var mapJSON = {% autoescape off %}{{map}}{% endautoescape %};
     </script>
 </head>
 <body>

@@ -19,10 +19,10 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
         },
         getViewBox: function () {
             //console.log(this.strokeWeight, this.baseWidth, this.baseHeight, this.strokeWeight);
-            return (-1 * this.strokeWeight) + ' ' +
-                    (-1 * this.strokeWeight) + ' ' +
-                    (this.baseWidth + this.strokeWeight + 2) + ' ' +
-                    (this.baseHeight + this.strokeWeight + 2);
+            return (-0.5 * this.strokeWeight) + ' ' +
+                    (-0.5 * this.strokeWeight) + ' ' +
+                    (this.baseWidth + this.strokeWeight) + ' ' +
+                    (this.baseHeight + this.strokeWeight);
         },
         getScale: function () {
             var scale = this.width / this.baseWidth;

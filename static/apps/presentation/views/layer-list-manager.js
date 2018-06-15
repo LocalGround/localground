@@ -11,27 +11,41 @@ define(["marionette",
             template: Handlebars.compile(LegendTemplate),
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log("Layer List Manager Called");
             },
             events: {
                 'click .legend-top': 'toggleLegend',
                 'click this': 'toggleLegend'
             },
-            childViewOptions: function () {
+            childViewOptions: function (model, index) {
+                const dm = this.app.dataManager;
                 return {
-                    app: this.app
+                    app: this.app,
+                    collection: model.get('symbols'),
+                    dataCollection: dm.getCollection(model.get('dataset').overlay_type)
                 };
             },
             childView: LayerEntryView,
 
             toggleLegend: function () {
-                console.log("toggle legend", $('#legend').css('height'));
-                if ($('#legend').css('height') == '20px') {
-                    $('#legend').css({'height': 'auto', 'min-width': 'auto'});
+                const $legend = $('#legend');
+                if ($legend.css('height') == '20px') {
+                    $legend.css({'height': 'auto'}); //, 'min-width': 'auto'});
                 } else {
-                    $('#legend').css({'height': '20px', 'width': '90px'});
+                    $legend.css({'height': '20px'}); //, 'width': '90px'});
                 }
-                
+            },
+            onRender: function () {
+                this.drawOverlays();
+            },
+            drawOverlays: function () {
+                //draw map overlays in reverse order so they draw on
+                //top of each other correctly:
+
+                //NOTE: Alternatively, you can set the z-index of each marker
+                for (let i = this.collection.length - 1; i >= 0; i--) {
+                    const childView = this.children.findByModel(this.collection.at(i));
+                    childView.drawOverlays();
+                }
             }
         });
         return LayerListManager;

@@ -54,7 +54,7 @@ define([
                     this._overlay.active = false;
                     this._overlay.redraw();
                 }
-                
+
             }
         }
 

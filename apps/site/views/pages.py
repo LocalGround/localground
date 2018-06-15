@@ -3,7 +3,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.template import TemplateDoesNotExist, RequestContext
 from django.shortcuts import render as direct_to_template, render_to_response
 from django.views.generic import TemplateView
-from localground.apps.site.models import Project
+from localground.apps.site.models import Project, StyledMap
 
 
 def about_pages(request, page_name):
@@ -30,20 +30,58 @@ class PublicView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         try:
+            map = StyledMap.objects.get(slug=kwargs.get('map_slug'))
+        except StyledMap.DoesNotExist:
+            msg = 'Either map slug={0} does not exist or you don\'t '
+            msg += 'have access to it.'
+            print msg.format(kwargs.get('map_slug'))
+            return HttpResponseRedirect('/')
+        return super(PublicView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, map_slug, *args, **kwargs):
+        from localground.apps.site.api.serializers import \
+            ProjectDetailSerializer, MapSerializerDetail
+        from rest_framework.renderers import JSONRenderer
+
+        context = super(PublicView, self).get_context_data(
+            *args, **kwargs)
+
+        map = StyledMap.objects.get(slug=map_slug)
+        project = map.project
+        renderer = JSONRenderer()
+
+        projectJSON = ProjectDetailSerializer(
+            project, context={'request': {}}).data
+
+        mapJSON = MapSerializerDetail(map, context={'request': {}}).data
+
+        context.update({
+            'project': renderer.render(projectJSON),
+            'map': renderer.render(mapJSON)
+        })
+        return context
+
+
+class MainView(TemplateView):
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated():
+            return HttpResponseRedirect('/accounts/login/')
+        try:
             project = Project.objects.get(id=kwargs.get('project_id'))
         except Project.DoesNotExist:
             msg = 'Either project id={0} does not exist or you don\'t '
             msg += 'have access to it.'
             print msg.format(kwargs.get('project_id'))
             return HttpResponseRedirect('/')
-        return super(PublicView, self).dispatch(request, *args, **kwargs)
+        return super(MainView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, project_id, *args, **kwargs):
         from localground.apps.site.api.serializers import \
             ProjectDetailSerializer
         from rest_framework.renderers import JSONRenderer
 
-        context = super(PublicView, self).get_context_data(
+        context = super(MainView, self).get_context_data(
             *args, **kwargs)
 
         project = Project.objects.get(id=project_id)
@@ -54,11 +92,3 @@ class PublicView(TemplateView):
         renderer = JSONRenderer()
         context.update({'project': renderer.render(serializer.data)})
         return context
-
-
-class MainView(PublicView):
-    # if not logged in, redirect to login screen:
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated():
-            return HttpResponseRedirect('/accounts/login/')
-        return super(MainView, self).dispatch(request, *args, **kwargs)
