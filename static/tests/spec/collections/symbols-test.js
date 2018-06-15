@@ -2,9 +2,10 @@ var rootDir = "../../";
 define([
     rootDir + "models/layer",
     rootDir + "models/symbol",
+    rootDir + "models/record",
     rootDir + "collections/symbols"
 ],
-    function (Layer, Symbol, Symbols) {
+    function (Layer, Symbol, Record, Symbols) {
         'use strict';
         const initSpies = function () {
             spyOn(Symbols.prototype, 'initialize').and.callThrough();
@@ -139,7 +140,45 @@ define([
                 symbols.assignRecord(record);
                 expect(symbol.getModels().length).toEqual(8);
             });
-            it('__assignToNewSymbol(record) / assignRecord(record) works', function () {
+            it('Categorical: __assignToNewSymbol(record) / assignRecord(record) works', function () {
+                const symbols = this.categoricalLayer.getSymbols();
+                const records = this.dataManager.getCollection(
+                    this.categoricalLayer.get('dataset').overlay_type
+                )
+                const record = records.at(0);
+                symbols.assignRecords(records);
+                expect(symbols.findWhere({ rule: 'type = \'ABCDEFG\''})).toBeUndefined();
+                record.set('type', 'ABCDEFG');
+                expect(symbols.length).toEqual(6);
+                symbols.assignRecord(record);
+                expect(symbols.length).toEqual(7);
+                const symbol = symbols.findWhere({ rule: 'type = \'ABCDEFG\''});
+                expect(symbol).toEqual(symbols.at(5));
+            });
+            it('Individual: __assignToNewSymbol(record) / assignRecord(record) works', function () {
+                const symbols = this.individualLayer.getSymbols();
+                const records = this.dataManager.getCollection(
+                    this.individualLayer.get('dataset').overlay_type
+                )
+                const record = new Record({id: 777, type: 'ABCDEFG'});
+                symbols.assignRecords(records);
+                expect(symbols.length).toEqual(18);
+                expect(symbols.findWhere({ rule: 'id =777'})).toBeUndefined();
+                records.add(record);
+                symbols.assignRecord(record);
+                console.log(symbols.findWhere({ rule: 'id =777'}));
+                console.log(symbols.toJSON().map(item => item.rule));
+                //expect(symbols.findWhere({ rule: 'id =777'})).toEqual(symbols.at(17));
+                expect(symbols.length).toEqual(19);
+                /*expect(symbols.findWhere({ rule: 'type = \'ABCDEFG\''})).toBeUndefined();
+                record.set('type', 'ABCDEFG');
+                expect(symbols.length).toEqual(6);
+                symbols.assignRecord(record);
+                expect(symbols.length).toEqual(7);
+                const symbol = symbols.findWhere({ rule: 'type = \'ABCDEFG\''});
+                expect(symbol).toEqual(symbols.at(5));*/
+            });
+            it('Continuous: __assignToNewSymbol(record) / assignRecord(record) works', function () {
                 expect(1).toEqual(0);
             });
             it('getUncategorizedSymbol() works', function () {
