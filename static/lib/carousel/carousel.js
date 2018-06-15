@@ -25,9 +25,9 @@ define(["jquery", "underscore", "marionette", "handlebars",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.fullScreen = false;
-                if (this.mode == "photos") {
+                if (this.mode === "photos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
-                } else if (this.mode == "videos") {
+                } else if (this.mode === "videos") {
                     this.template = Handlebars.compile(CarouselContainerTemplate);
                 } else {
                     this.template = Handlebars.compile(CarouselContainerAudioTemplate);
@@ -70,20 +70,21 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     fullScreen: this.fullScreen
                 };
             },
-            getChildView: function () {
+            getChildView: function (model) {
+                //console.log(model.get("overlay_type"));
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        if (this.model.get("overlay_type") == "photo") {
+                        if (model.get("overlay_type") == "photo") {
                             this.template = Handlebars.compile(PhotoItemTemplate);
-                        } else if (this.model.get("overlay_type") == "video") {
+                        } else if (model.get("overlay_type") == "video") {
                             this.template = Handlebars.compile(VideoItemTemplate);
-                        } else if (this.model.get("overlay_type") == "audio"){
+                        } else if (model.get("overlay_type") == "audio"){
                             this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
                         }
                     },
                     templateHelpers: function () {
-                        console.log('template helpers', this.fullScreen, parent.fullScreen);
+                        //console.log('template helpers', this.fullScreen, parent.fullScreen);
                         var paragraph;
                         if (this.panelStyles) {
                             paragraph = this.panelStyles.paragraph;
