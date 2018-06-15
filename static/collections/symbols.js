@@ -1,5 +1,5 @@
-define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
-    function (_, Symbol, Base, LGPalettes) {
+define(["underscore", "models/symbol", "collections/base"],
+    function (_, Symbol, Base) {
     "use strict";
     /**
      * Note: There is no "Symbols" API Endpoint. This is just a convenience function
@@ -10,39 +10,18 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
         name: 'Symbols',
         key: 'symbols',
         initialize: function (recs, opts) {
-            this.lgPalettes = new LGPalettes();
             _.extend(this, opts);
             if (!this.layerModel) {
                 throw Error('A layerModel must be defined.')
             }
             Base.prototype.initialize.apply(this, recs, opts);
         },
-        getPalette: function () {
-            const metadata = this.layerModel.get('metadata');
-            if (this.layerModel.isCategorical()) {
-                return this.lgPalettes.getPalette(metadata.paletteId, 8, 'categorical');
-            } else if (this.layerModel.isContinuous()) {
-                return this.lgPalettes.getPalette(metadata.paletteId, 8, 'continuous');
-            }
-            return;
-        },
         getNextId: function() {
             let symbolIds = this.models.map(symbol => symbol.get('id'));
+            if (symbolIds.length === 0) {
+                return 1;
+            }
             return Math.max(...this.models.map(symbol => symbol.get('id'))) + 1
-        },
-        getNextColor: function () {
-            if (this.layerModel.isUniform() || this.layerModel.isIndividual() || this.length === 0) {
-                return this.layerModel.get('metadata').fillColor;
-            }
-            const palette = this.getPalette();
-            for (let i = this.length - 1; i >= 0; i--) {
-                const fillColor = this.at(i).get('fillColor').replace('#', '');
-                const index = palette.indexOf(fillColor);
-                if (index > -1) {
-                    return '#' + palette[(index + 1) % 8];
-                }
-            }
-            return '#' + palette[0];
         },
         removeEmpty: function() {
             if (!this.layerModel.isContinuous()) {
@@ -158,6 +137,14 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
             }
             return matchedSymbol;
         },
+        getUniformSymbol: function () {
+            return this.findWhere({
+                rule: Symbol.UNIFORM_SYMBOL_RULE
+            })
+        },
+        hasUniformSymbol: function () {
+            return this.getUniformSymbol()
+        },
         getUncategorizedSymbol: function () {
             return this.findWhere({
                 rule: Symbol.UNCATEGORIZED_SYMBOL_RULE
@@ -204,7 +191,7 @@ define(["underscore", "models/symbol", "collections/base", "lib/lgPalettes"],
     }, {
         buildCategoricalSymbolSet: function (categoryList, layerModel) {
             const symbols = new Symbols(null, {layerModel: layerModel});
-            const palette = symbols.getPalette();
+            const palette = layerModel.getPalette();
             categoryList.forEach((value, index) => {
                 symbols.add(Symbol.createCategoricalSymbol({
                     layerModel: layerModel,

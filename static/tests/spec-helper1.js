@@ -278,7 +278,7 @@ define([
                             "strokeColor": "#FFFFFF",
                             "paletteId": 0,
                             "id": 5,
-                            "fillColor": "#undefined"
+                            "fillColor": "#CCCCCC"
                         }
                     ]
                 },

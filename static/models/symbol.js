@@ -138,6 +138,7 @@ define(['backbone', 'underscore', 'collections/records',
                 }
             },
             UNIFORM_SYMBOL_COLOR: '#4e70d4',
+            UNIFORM_SYMBOL_RULE: '*',
             INDIVIDUAL_SYMBOL_COLOR: '#ed867d',
             UNCATEGORIZED_SYMBOL_COLOR: '#BBB',
             UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',

@@ -147,6 +147,57 @@ define([
                     this.categoricalLayer.defaults.metadata
                 );
             });*/
+
+            it('getNextColor() works', function () {
+                // should pick first color since none of the existing colors
+                // are in the current palette:
+                let palette = this.continuousLayer.getPalette();
+                expect(this.continuousLayer.getSymbols().length).toEqual(5);
+                expect(this.continuousLayer.getNextColor()).toEqual('#' + palette[6]);
+
+                // if it gets to the end of the palette, make sure it wraps to
+                // around to the beginning again:
+                palette = this.categoricalLayer.getPalette();
+                this.categoricalLayer.setSymbols([
+                    { title: 'cat', rule: 'type = \'cat\'', fillColor: '#' + palette[0] },
+                    { title: 'dog', rule: 'type = \'dog\'', fillColor: '#' + palette[1] },
+                    { title: 'bird', rule: 'type = \'bird\'', fillColor: '#' + palette[2] },
+                    { title: 'pig', rule: 'type = \'pig\'', fillColor: '#' + palette[3] },
+                    { title: 'chicken', rule: 'type = \'chicken\'', fillColor: '#' + palette[4] },
+                    { title: 'lamb', rule: 'type = \'lamb\'', fillColor: '#' + palette[5] },
+                    { title: 'monkey', rule: 'type = \'monkey\'', fillColor: '#' + palette[6] },
+                    { title: 'fish', rule: 'type = \'fish\'', fillColor: '#' + palette[7] }
+                ]);
+                expect(this.categoricalLayer.getNextColor()).toEqual('#' + palette[0]);
+
+                this.categoricalLayer.setSymbols([
+                    { title: 'cat', rule: 'type = \'cat\'', fillColor: '#' + palette[0] },
+                    { title: 'dog', rule: 'type = \'dog\'', fillColor: '#' + palette[1] },
+                    { title: 'bird', rule: 'type = \'bird\'', fillColor: '#' + palette[2] },
+                    { title: 'fish', rule: 'type = \'fish\'', fillColor: '#' + palette[3] }
+                ]);
+                expect(this.categoricalLayer.getNextColor()).toEqual('#' + palette[4]);
+
+                // mess with some colors, and make sure it picks up where at
+                // the get color in the palette:
+                const symbols = this.categoricalLayer.getSymbols();
+                symbols.at(2).set('fillColor', 'blue');
+                symbols.at(3).set('fillColor', 'red');
+                expect(this.categoricalLayer.getNextColor()).toEqual('#' + palette[2]);
+            });
+
+            it('getPalette() works for categorical', function () {
+                expect(this.categoricalLayer.get('metadata').paletteId).toEqual(0);
+                expect(this.categoricalLayer.getPalette()).toEqual([ 'ff0029', '377eb8', '66a61e', '984ea3', '00d2d5', 'ff7f00', 'af8d00', '7f80cd' ]);
+                this.categoricalLayer.get('metadata').paletteId = 2;
+                expect(this.categoricalLayer.getPalette()).toEqual([ 'a6cee3', '1f78b4', 'b2df8a', '33a02c', 'fb9a99', 'e31a1c', 'fdbf6f', 'ff7f00' ]);
+            });
+            it('getPalette() works for continuous', function () {
+                expect(this.continuousLayer.get('metadata').paletteId).toEqual(0);
+                expect(this.continuousLayer.getPalette()).toEqual([ 'deebf7', 'c6dbef', '9ecae1', '6baed6', '4292c6', '2171b5', '08519c', '08306b' ]);
+                this.continuousLayer.get('metadata').paletteId = 4;
+                expect(this.continuousLayer.getPalette()).toEqual([ 'f46d43', 'fdae61', 'fee090', 'ffffbf', 'e0f3f8', 'abd9e9', '74add1', '4575b4' ]);
+            });
             it('isEmpty() works', function () {
                 const symbols = this.categoricalLayer.getSymbols();
                 const records = this.dataManager.getCollection(
