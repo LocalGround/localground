@@ -167,15 +167,14 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 this.counter = parseInt($(e.target).attr("data-index"), 10);
                 this.navigate();
             },
-            showFullScreen: function(e) {
+            showFullScreen: function() {
                 if (this.$el.hasClass('fullScreen')) {
                     return;
                 }
-                console.log('clicked photo, show fullScreen');
-                console.log(this.$el.find('.carousel'));
                 this.hideArrows();
                 this.fullScreen = true;
                 this.$el.find('.close-fullscreen').show();
+                
                 this.children.each(function(child) {
                     child.fullScreen = true;
                     child.render();
