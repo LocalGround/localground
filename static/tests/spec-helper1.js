@@ -413,7 +413,7 @@ define([
 
             this.photos = this.dataManager.getCollection('photos');
             this.photo = this.photos.at(0);
-            this.photos = this.dataManager.getCollection('audio');
+            this.audio = this.dataManager.getCollection('audio');
             this.dataset_2 = this.dataManager.getCollection('dataset_2');
             this.dataset_3 = this.dataManager.getCollection('dataset_3');
             this.map = this.dataManager.getMaps().get(3);
