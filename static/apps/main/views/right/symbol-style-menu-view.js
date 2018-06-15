@@ -12,6 +12,7 @@ define(["jquery",
         var MarkerStyleChildView = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this.model);
                 this.render();
             },
             template: Handlebars.compile(SymbolStyleMenu),
@@ -39,7 +40,9 @@ define(["jquery",
                     fillOpacity: this.model.get("fillOpacity"),
                     id: "cp" + this.model.get('id'),
                     metadata: this.model,
-                    shape: this.model.get('shape')
+                    shape: this.model.get('shape'),
+                    count: this.collection.length,
+                    items: this.collection.length === 1 ? 'item' : 'items'
                 };
             },
             onRender: function () {
