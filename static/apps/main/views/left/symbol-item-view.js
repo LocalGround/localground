@@ -61,6 +61,11 @@ define(["marionette",
             },
             getSVG: function () {
                 const icon = this.symbolModel.get('icon');
+                console.log(this.model);
+                // const geomType = this.model.get('geometry') ? this.model.get('geometry').type : 'Point';
+                if (this.model.get('geometry') === null) {
+                    return;
+                }
                 const geomType = this.model.get('geometry').type;
                 if (geomType === 'Point') {
                     return this.symbolModel.toSVG();
