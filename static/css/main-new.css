@@ -470,7 +470,7 @@ ul {
 }
 
 .symbol-wrapper {
-  padding-left: 4px;
+  padding-left: 7px;
 }
 
 .symbol-header {
@@ -478,6 +478,7 @@ ul {
   padding: 0px 7px;
   border-top: 3px solid white;
   border-right: 3px solid white;
+  height: 28px;
 }
 
 .symbol-edit, .symbol-display, .symbol-edit-individual {
