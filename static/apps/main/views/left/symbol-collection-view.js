@@ -100,7 +100,8 @@ define(["jquery",
                     dataset: this.layer.get('dataset'),
                     isIndividual: this.layer.get('group_by') === 'individual',
                     svgIcon: this.model.toSVG(),
-                    count: this.collection.length
+                    count: this.collection.length,
+                    notCollapsed: !this.layer.get('metadata').collapsed
                 }
             },
 

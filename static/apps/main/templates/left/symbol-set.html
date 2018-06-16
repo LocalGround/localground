@@ -2,7 +2,7 @@
     <div class="symbol-wrapper" style="background:{{ icon.fillColor }}">
         <div class="symbol-header">
         <!-- div class="symbol-header" {{#if empty}}style="display: none;"{{/if}} -->
-            <span class='symbol-level-svg'>{{{svgIcon}}}</span>
+            <span class='symbol-level-svg' {{#if notCollapsed}}style='display: none;'{{/if}}>{{{svgIcon}}}</span>
             <span class="sort-by">{{property}}</span><span class="count">({{count}})</span>
             {{#if isChecked}}<i class="fa fa-eye symbol-display"></i>{{else}}<i class="fa fa-eye-slash symbol-display"></i>{{/if}}
             <p class="symbol-edit"><i class="fa fa-pencil-alt" aria-hidden="true"></i></p>
