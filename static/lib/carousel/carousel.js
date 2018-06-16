@@ -179,7 +179,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     child.fullScreen = true;
                     child.render();
                 });
-                //this.render();
                 this.$el.addClass('fullScreen');
             },
             exitFullScreen: function() {
