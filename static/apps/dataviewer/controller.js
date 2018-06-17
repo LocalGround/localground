@@ -53,7 +53,7 @@ define([
             }
 
             detailView = new DataDetail({
-                model: this.app.dataManager.getModel(dataType, parseInt(id)),
+                model: model,
                 app: this.app
             });
 
