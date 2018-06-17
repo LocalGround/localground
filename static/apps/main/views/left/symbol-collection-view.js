@@ -99,7 +99,8 @@ define(["jquery",
                     map_id: this.mapId,
                     dataset: this.layer.get('dataset'),
                     isIndividual: this.layer.get('group_by') === 'individual',
-                    svgIcon: this.model.toSVG()
+                    svgIcon: this.model.toSVG(),
+                    count: this.collection.length
                 }
             },
 
@@ -119,7 +120,8 @@ define(["jquery",
                 this.symbolMenu = new SymbolStyleMenuView({
                     app: this.app,
                     layer: this.layer,
-                    model: this.model
+                    model: this.model,
+                    collection: this.collection
                 });
                 this.popover.update({
                     $source: this.$el.find('.symbol-header'),

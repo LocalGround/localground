@@ -25,6 +25,7 @@ define(["marionette",
                 };
             },
             childView: LayerEntryView,
+            childViewContainer: '.legend-layers',
 
             toggleLegend: function () {
                 const $legend = $('#legend');

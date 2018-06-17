@@ -111,9 +111,8 @@
 }
 
 .example-markers {
-    display: inline-flex;
-    width: 100%;
-    // justify-content: space-evenly;
+    display: flex;
+    flex-flow: row wrap;
     justify-content: center;
 }
 

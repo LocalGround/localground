@@ -1,4 +1,10 @@
-<div class="photo" style="background: url('{{this.path_medium}}');"></div>
+<div class="photo {{fullScreen}}"
+    {{#if fullScreen}}
+        style="background: url('{{this.path_large}}');"
+    {{else}}
+        style="background: url('{{this.path_medium}}');"
+    {{/if}}>
+</div>
 <div class="carousel-caption-wrapper">
     <p class="carousel-caption" style="color: {{paragraph.color}}; font-family: {{paragraph.font}}">{{this.caption }}</p>
 <div>

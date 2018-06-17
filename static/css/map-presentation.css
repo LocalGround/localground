@@ -656,7 +656,6 @@ Separate Mobile CSS
     padding: 10px 20px;
     transition: 0.5s;
     overflow-y: hidden;
-
    /* min-height: 200px;*/
 }
 
@@ -671,6 +670,11 @@ Separate Mobile CSS
 .legend-toggle {
     margin-top: 4px;
     float: right;
+}
+
+.legend-layers {
+    overflow-y: scroll;
+    max-height: 85vh;
 }
 
 #presentation-title {

@@ -1,16 +1,19 @@
 // main: ../main-new.scss
 .sort-by {
     font-size: 12px;
-    padding: 8px 0px;
-    /* margin: 10px 0px; */
-    display: inline-block;
-    background-color: white;
     font-weight: 600;
-    width: 170px;
+    max-width: 158px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
+    display: inline-block;
+}
+.count {
+    font-size: 12px;
+    color: #949393;
+    font-weight: 600;
+    margin-left: 4px;   
 }
 
 .symbol-wrapper {
