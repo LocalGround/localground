@@ -27,7 +27,8 @@ server {
 ## Listen on IPv4 and IPv6
     listen 80 default_server;
     listen [::]:80 default_server;
-
+    server_name $domain;
+    
 ## Redirect all HTTP requests to HTTPS with a 301 Moved Permanently response.
     return 301 https://\$host\$request_uri;
 }
@@ -36,7 +37,8 @@ server {
 ## Listen on IPv4 and IPv6
     listen 443 ssl http2 default_server;
     listen [::]:443 ssl http2 default_server;
-
+    server_name $domain;
+    
 ## Logs
     access_log   /var/log/nginx/$domain.access.log;
     error_log    /var/log/nginx/$domain.error.log;
