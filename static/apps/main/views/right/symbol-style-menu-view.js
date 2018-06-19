@@ -34,6 +34,7 @@ define(["jquery",
 
             tagName: "div",
             templateHelpers: function () {
+                const len = (this.collection) ? this.collection.length : 1;
                 return {
                     groupBy: this.groupBy,
                     icons: IconLookup.getIcons(),
@@ -41,8 +42,8 @@ define(["jquery",
                     id: "cp" + this.model.get('id'),
                     metadata: this.model,
                     shape: this.model.get('shape'),
-                    count: this.collection.length,
-                    items: this.collection.length === 1 ? 'item' : 'items'
+                    count: len,
+                    items: len === 1 ? 'item' : 'items'
                 };
             },
             onRender: function () {
