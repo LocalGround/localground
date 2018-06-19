@@ -2,32 +2,33 @@
 <html lang="en">
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> {% block title %} Local Ground{% endblock %}</title>
-
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <!--link href="/static/css/static-pages.css" rel="stylesheet"-->
+    {% block css_links %}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <link rel=stylesheet type="text/css" href="/static/css/main.css" />
     <link rel=stylesheet type="text/css" href="/static/css/index-style.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/main-new.css" />
+    {% endblock %}
     {% block extra_css_links %}{% endblock %}
     <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+
 </head>
 
 <body>
-    {% block top_menu %} 
-        {% include "base/top_nav.html" %} 
+    {% block top_menu %}
+        {% include "base/top_nav.html" %}
     {% endblock %}
-    {% block graphic_bar %} 
+    {% block graphic_bar %}
         <div class="article-title">
             <div class="container-center article ">
                 <h1>{% block h1 %}{% endblock %} </h1>
             </div>
         </div>
     {% endblock %}
-    
+
     <div class="main-content">
-        {% block content %} 
-            Hello Cynthia!
-        {% endblock %}
+        {% block content %}{% endblock %}
     </div>
 
     {% block login_footer %}
