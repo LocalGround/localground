@@ -1116,11 +1116,12 @@ span.action.rounded:hover, a.action.rounded:hover {
 
 .form input[type="checkbox"]:before, .form-inline input[type="checkbox"]:before {
   content: '\f096';
-  font-family: 'FontAwesome';
+  font-family: 'Font Awesome\ 5 Free';
   color: #555;
   font-size: 20px;
   vertical-align: middle;
   color: #999;
+  font-weight: 900;
   display: inline-block;
   width: 18px;
 }
@@ -1963,4 +1964,3 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
-/*# sourceMappingURL=main-new.css.map */
