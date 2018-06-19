@@ -120,7 +120,8 @@ define(["marionette",
                     $source: this.$el.find('.ind-symbol'),
                     view: new SymbolStyleMenuView({
                         app: this.app,
-                        model: this.symbolModel
+                        model: this.symbolModel,
+                        layer: this.parent.layer
                     }),
                     placement: 'right',
                     offsetX: '5px',
