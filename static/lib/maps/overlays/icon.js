@@ -44,8 +44,6 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
                 path: this.path,
                 markerSize: this.width,
                 scale: this.getScale(),
-                url: this.url,
-                //size: new google.maps.Size(this.width, this.height),
                 viewBox: this.getViewBox(),
                 width: this.width,
                 height: this.height

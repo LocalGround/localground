@@ -653,14 +653,16 @@ Separate Mobile CSS
     box-shadow: 3px 3px 1px 1px rgba(53, 76, 122, 0.06);
     border-radius: 6px;
     width: 180px;
-    padding: 10px 20px;
-    transition: 0.5s;
+    padding: 10px 0px 10px 10px;
+    transition: 0.2s;
     overflow-y: hidden;
+    max-height: calc(100vh - 20px);
    /* min-height: 200px;*/
 }
 
 .legend-top {
-    margin-bottom: 22px;
+    margin-bottom: 12px;
+    padding-right: 10px;
 }
 
 .legend-top-text {
@@ -675,6 +677,7 @@ Separate Mobile CSS
 .legend-layers {
     overflow-y: scroll;
     max-height: 85vh;
+    padding-right: 15px;
 }
 
 #presentation-title {

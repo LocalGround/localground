@@ -92,7 +92,8 @@ define([
         },
 
         initLegend: function () {
-            $("#map").css({"position": "fixed", 'z-index': '0'});
+            //SV: this line breaks the centering:
+            //$("#map").css({"position": "fixed", 'z-index': '0'});
             if (this.model.get("panel_styles").display_legend === false) {
                 this.hideLegend();
             } else {
@@ -132,9 +133,6 @@ define([
             }
             this.container.$el.removeClass("left none");
             this.container.$el.addClass(className);
-            this.basemapView.redraw({
-                time: 500
-            });
         },
         showMediaDetail: function (opts) {
             const dm = this.dataManager;

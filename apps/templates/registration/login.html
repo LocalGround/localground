@@ -1,6 +1,6 @@
-{% extends "base/base.html" %} 
+{% extends "base/base.html" %}
 
-{% block title %} Sign In {% endblock %} 
+{% block title %} Sign In {% endblock %}
 {% block h1 %} Sign In {% endblock %}
 
 {% block content %}
@@ -17,8 +17,10 @@
                     <label></label>
                     <div class="input">
                         <input type="hidden" name="next" value="/" />
-                        <button type="submit" class="button-primary">Sign In</button>
-                        <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"><span id="google-button"></span></a>    
+                        <button type="submit" class="button button-primary">Sign In</button>
+                        {% comment %}
+                        <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"><span id="google-button"></span></a>
+                        {% endcomment %}
                     </div>
                 </div>
             </fieldset>

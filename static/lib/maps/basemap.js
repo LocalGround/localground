@@ -119,9 +119,6 @@ define(["marionette",
 
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.mapID),
                     mapOptions);
-                //setTimeout(function () {
-                //    $("#map").css({"position": "fixed"});
-                //s}, 500);
                 this.initTileManager();
                 this.initDrawingManager();
             },
@@ -219,6 +216,7 @@ define(["marionette",
 
             addEventHandlers: function () {
                 //add notifications:
+                console.log('adding event handlers....');
                 var that = this;
                 google.maps.event.addListener(this.map, "maptypeid_changed", function () {
                     that.app.vent.trigger('map-tiles-changed');
@@ -231,19 +229,26 @@ define(["marionette",
                 google.maps.event.addListener(this.map, 'zoom_changed', function () {
                     that.saveState();
                 });
-
-                //todo: possibly move to a layout module?
-                $(window).off('resize');
-                $(window).on('resize', function () {
-                    console.log('map resized');
+                google.maps.event.addDomListener($('#map').get(0), 'resize', function() {
+                    google.maps.event.trigger(that.map, 'resize');
+                    const center = that.getCenterFromState();
+                    if (center) {
+                        that.map.setCenter(center);
+                    }
                 });
             },
-            redraw: function (opts) {
-                var that = this,
-                    time = (opts && opts.time) ? opts.time : 50;
-                setTimeout(function () {
-                    google.maps.event.trigger(that.map, 'resize');
-                }, time);
+            getCenterFromState: function () {
+                try {
+                    const state = that.app.restoreState("basemap");
+                    console.log('recenter', state.center);
+                    return new google.maps.LatLng(
+                        state.center[1],
+                        state.center[0]
+                    );
+                } catch (e) {
+                    console.warn('No center found from state');
+                    return null;
+                }
             },
             getZoom: function () {
                 return this.map.getZoom();

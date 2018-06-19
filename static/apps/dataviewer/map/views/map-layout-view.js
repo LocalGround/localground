@@ -76,8 +76,6 @@ define(["marionette",
                 }
                 this.$el.removeClass("left right none both");
                 this.$el.addClass(className);
-                //wait 'til CSS animation completes before redrawing map
-                setTimeout(this.basemapView.redraw, 220);
             },
 
             hideDetail: function () {
