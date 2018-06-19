@@ -45,13 +45,14 @@ define(["jquery",
             childViewOptions: function (model, index) {
                 return {
                     app: this.app,
-                    parent: this
+                    parent: this,
+                    symbolModel: this.model
                 };
             },
             events: {
                 //edit event here, pass the this.model to the right panel
                 'click .layer-delete' : 'deleteLayer',
-                'click .symbol-edit': 'showSymbolEditMenu',
+                'click .symbol-header .symbol-edit': 'showSymbolEditMenu',
                 'click .symbol-display': 'showHideOverlays',
                 'mouseenter .symbol-edit': 'highlightSymbolContent',
                 'mouseleave .symbol-edit': 'unHighlightSymbolContent'
@@ -100,7 +101,8 @@ define(["jquery",
                     dataset: this.layer.get('dataset'),
                     isIndividual: this.layer.get('group_by') === 'individual',
                     svgIcon: this.model.toSVG(),
-                    count: this.collection.length
+                    count: this.collection ? this.collection.length : 1,
+                    notCollapsed: !this.layer.get('metadata').collapsed
                 }
             },
 

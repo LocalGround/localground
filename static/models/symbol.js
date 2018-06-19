@@ -195,7 +195,7 @@ define(['backbone', 'underscore', 'collections/records',
                 const props = _.extend(
                     Symbol._getDefaultMetadataProperties(metadata), {
                         'rule': `id = ${value}`,
-                        'title': value || 'unititled',
+                        'title': value || 'Untitled',
                         'id': id,
                         'fillColor': fillColor
                     });

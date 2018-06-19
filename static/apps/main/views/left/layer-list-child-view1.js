@@ -76,7 +76,8 @@ define(["marionette",
                     project: this.app.dataManager.getProject(),
                     name: this.dataCollection.name,
                     isChecked: this.model.get("metadata").isShowing,
-                    hasData: !this.isEmpty()
+                    hasData: !this.isEmpty(),
+                    isIndividual: this.model.isIndividual()
                 };
             },
             childView: SymbolView,
@@ -121,6 +122,11 @@ define(["marionette",
                 this.$el.find('#layer-style-by').html(
                     this.model.get('group_by')
                 );
+                if (this.model.isIndividual()) {
+                    this.$el.find('.collapse-wrapper').css('display', 'none');
+                } else {
+                    this.$el.find('.collapse-wrapper').css('display', 'inline');
+                }
             },
             childViewOptions: function (model, index) {
                 return {
@@ -259,12 +265,14 @@ define(["marionette",
                     this.$el.find('.symbol-item').css('display', 'block');
                     this.$el.find('.collapse').removeClass('fa-caret-up');
                     this.$el.find('.collapse').addClass('fa-caret-down');
+                    this.$el.find('.symbol-level-svg').hide();
                 } else {
                     this.model.get('metadata').collapsed = true;
                     this.$el.find('.symbol').css('height', 0);
                     this.$el.find('.symbol-item').css('display', 'none');
                     this.$el.find('.collapse').removeClass('fa-caret-down');
                     this.$el.find('.collapse').addClass('fa-caret-up');
+                    this.$el.find('.symbol-level-svg').show();
                 }
             },
 

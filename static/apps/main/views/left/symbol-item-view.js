@@ -36,7 +36,7 @@ define(["marionette",
                 'change': 'render'
             },
             events: {
-                'click .symbol-edit-individual': 'showSymbolEditMenu'
+                'click .ind-symbol .symbol-edit': 'showSymbolEditMenu'
             },
             template: Handlebars.compile(SymbolItemTemplate),
             tagName: "li",
@@ -52,7 +52,7 @@ define(["marionette",
                     rule: this.symbolModel.get('rule'),
                     icon: this.symbolModel.get('icon'),
                     svg: svg,
-                    isIndividual: this.parent.layer.get('group_by') === 'individual',
+                    isIndividual: this.parent.layer.isIndividual(),
                     width: this.symbolModel.get('width'),
                     height: this.symbolModel.get('height'),
                     display_name: display_name === undefined ? "" : display_name,
@@ -61,12 +61,10 @@ define(["marionette",
             },
             getSVG: function () {
                 const icon = this.symbolModel.get('icon');
-                const geometry = this.model.get('geometry');
-                if (!geometry) {
-                    return null;
+                if (this.model.get('geometry') === null) {
+                    return;
                 }
-
-                const geomType = geometry.type;
+                const geomType = this.model.get('geometry').type;
                 if (geomType === 'Point') {
                     return this.symbolModel.toSVG();
                 } else if (geomType === 'LineString') {
@@ -116,18 +114,20 @@ define(["marionette",
                 }
             },
 
-            showSymbolEditMenu: function (event) {
+            showSymbolEditMenu: function (e) {
                 this.popover.update({
                     $source: this.$el.find('.ind-symbol'),
                     view: new SymbolStyleMenuView({
                         app: this.app,
-                        model: this.symbolModel
+                        model: this.symbolModel,
+                        layer: this.parent.layer
                     }),
                     placement: 'right',
                     offsetX: '5px',
-                    width: '350px',
-                    title: 'Symbol Properties'
+                    width: '220px',
+                    title: '    '
                 });
+                e.stopImmediatePropagation();
             },
 
             makeActive: function (e) {
