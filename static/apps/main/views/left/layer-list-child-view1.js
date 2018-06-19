@@ -122,6 +122,11 @@ define(["marionette",
                 this.$el.find('#layer-style-by').html(
                     this.model.get('group_by')
                 );
+                if (this.model.isIndividual()) {
+                    this.$el.find('.collapse-wrapper').css('display', 'none');
+                } else {
+                    this.$el.find('.collapse-wrapper').css('display', 'inline');
+                }
             },
             childViewOptions: function (model, index) {
                 return {

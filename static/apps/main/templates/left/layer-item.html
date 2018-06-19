@@ -16,11 +16,9 @@
     </div>
     {{#if hasData}}
     <div class="layer-column lc-3">
-        {{#unless isIndividual}}
-        <span class="collapse-wrapper">
+        <span class="collapse-wrapper" style="display:{{#if isIndividual}} none {{else}} inline {{/if}} ">
             <i class="fa fa-caret-down fa-lg collapse"></i>
         </span>
-        {{/unless}}
         <a class="layer-style-by"><span >styled by: </span><span id="layer-style-by">{{group_by}}</span></a>
     </div>
     {{/if}}
