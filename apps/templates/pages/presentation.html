@@ -7,6 +7,7 @@
     <link rel=stylesheet type="text/css" href="/static/css/style.css" />
     <link rel=stylesheet type="text/css" href="/static/css/map-presentation.css" />
     <link rel=stylesheet type="text/css" href="/static/css/main.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/main-new.css" />
     <script>
         var projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
         var mapJSON = {% autoescape off %}{{map}}{% endautoescape %};
@@ -14,16 +15,16 @@
 </head>
 <body>
     <div class="main-panel presentation-main-panel none">
+            <div id="presentation-title" ></div>
         <div id="map-panel">
             <div id="map"></div>
         </div>
         <div id="marker-detail-panel" class="side-panel">
             <!-- Marker list goes here -->
         </div>
-
+        <div id="legend" style="display:none;" ></div>
     </div>
-    <div id="presentation-title" ></div>
-    <div id="legend" style="display:none;" ></div>
+    
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places"></script>
     {% if DEBUG %}

@@ -31,11 +31,16 @@ require(['boot'], function () {
         'spec/lib/mouse-mover-test.js',
         'spec/lib/modal-test.js',
         'spec/lib/popover-test.js',
+        'spec/lib/carousel-test.js',
         'spec/sql-parser-test.js',
         'spec/truth-statement-test.js',
 
         // models
-        'spec/models/symbol-test.js'
+        'spec/models/layer-test.js',
+        'spec/models/symbol-test.js',
+
+        // collections
+        'spec/collections/symbols-test.js'
 
     ];
 

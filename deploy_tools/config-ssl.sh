@@ -70,7 +70,7 @@ if [ "$development" = false ] ; then
 
 	## Generate TLS cert.
 	echo -e $"CONFIG: Now installing Let's Encrypt TLS certificate." | tee -a "$log_file"
-	certbot certonly --agree-tos --no-eff-email -m $emailaddr --standalone -d $domain || { echo 'cerbot failed' ; exit 1; }
+	certbot --authenticator nginx --installer nginx --agree-tos --no-eff-email -m $emailaddr -d $domain || { echo 'cerbot failed' ; exit 1; }
 	echo -e $"✓ SUCCESS: Installed Let's Encrypt TLS certificate! \n" | tee -a "$log_file"
 
 	## Set locations to variables

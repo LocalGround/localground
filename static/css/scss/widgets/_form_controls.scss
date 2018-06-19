@@ -17,7 +17,7 @@
         width: 100%;
         border: solid 1px #ebecf2;
     }
-    
+
     textarea {
         height: 75px;
     }
@@ -48,11 +48,12 @@
     /*This CSS trick only works w/Chrome */
     input[type="checkbox"]:before {
         content: '\f096';
-        font-family: 'FontAwesome';
+        font-family: 'Font Awesome\ 5 Free';
         color: #555;
         font-size: 20px;
         vertical-align: middle;
         color: #999;
+        font-weight: 900;
         display: inline-block;
         width: 18px;
     }

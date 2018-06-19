@@ -159,19 +159,6 @@ define([
                             "strokeColor": "#ffffff",
                             "id": 1,
                             "fillColor": "#ffdd33"
-                        },
-                        {
-                            "fillOpacity": 1,
-                            "title": "Uncategorized",
-                            "strokeWeight": 1,
-                            "isShowing": false,
-                            "rule": "¯\\_(ツ)_/¯",
-                            "height": 20,
-                            "width": 20,
-                            "shape": "circle",
-                            "strokeOpacity": 1,
-                            "strokeColor": "#FFFFFF",
-                            "fillColor": "#4e70d4"
                         }
                     ]
                 },
@@ -278,7 +265,7 @@ define([
                             "strokeColor": "#FFFFFF",
                             "paletteId": 0,
                             "id": 5,
-                            "fillColor": "#undefined"
+                            "fillColor": "#CCCCCC"
                         }
                     ]
                 },
@@ -403,6 +390,49 @@ define([
                             "fillColor": "#ffffff"
                         }
                     ]
+                }, {
+                    "id": 65,
+                    "overlay_type": "layer",
+                    "owner": "riley",
+                    "title": "Trees - Individual",
+                    "dataset": {
+                        "id": 3,
+                        "overlay_type": "dataset_2",
+                        "fields": this.dataset_2.fields,
+                        "name": this.dataset_2.name
+                    },
+                    "group_by": "individual",
+                    "display_field": "deciduousconifer",
+                    "ordering": 1,
+                    "metadata": {
+                        "strokeWeight": 1,
+                        "buckets": 4,
+                        "isShowing": true,
+                        "strokeOpacity": 1,
+                        "width": 20,
+                        "shape": "circle",
+                        "fillOpacity": 1,
+                        "strokeColor": "#ffffff",
+                        "paletteId": 0,
+                        "fillColor": "#4e70d4"
+                    },
+                    "map_id": 22,
+                    "symbols": [
+                        {
+                            "fillOpacity": 1,
+                            "title": "Tree #36",
+                            "strokeWeight": 1,
+                            "isShowing": true,
+                            "strokeOpacity": 1,
+                            "height": 30,
+                            "width": 30,
+                            "shape": "circle",
+                            "rule": "id = 36",
+                            "strokeColor": "#ffffff",
+                            "id": 1,
+                            "fillColor": "#ffdd33"
+                        }
+                    ]
                 }
         ], { projectID: __projectJSON.id, mapID: mapID });
             };
@@ -413,12 +443,15 @@ define([
 
             this.photos = this.dataManager.getCollection('photos');
             this.photo = this.photos.at(0);
-            this.photos = this.dataManager.getCollection('audio');
+            this.audio = this.dataManager.getCollection('audio');
             this.dataset_2 = this.dataManager.getCollection('dataset_2');
             this.dataset_3 = this.dataManager.getCollection('dataset_3');
             this.map = this.dataManager.getMaps().get(3);
             this.map.set('layers', this.getLayers(this.map.id));
-            this.categoricalLayer = this.getLayers(this.map.id).get(64)
+            this.uniformLayer = this.getLayers(this.map.id).get(62);
+            this.continuousLayer = this.getLayers(this.map.id).get(63);
+            this.categoricalLayer = this.getLayers(this.map.id).get(64);
+            this.individualLayer = this.getLayers(this.map.id).get(65);
             this.layer = this.categoricalLayer;
             //spoof the main-app for child view testing
             this.app = _.extend({}, appUtilities);

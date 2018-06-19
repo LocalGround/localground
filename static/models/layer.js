@@ -1,4 +1,5 @@
-define(["models/base", "models/symbol", "collections/symbols"], function (Base, Symbol, Symbols) {
+define(["models/base", "models/symbol", "collections/symbols", "lib/lgPalettes"],
+        function (Base, Symbol, Symbols, LGPalettes) {
     "use strict";
     /**
      * A Backbone Model class for the Photo datatype.
@@ -25,7 +26,8 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
         basic: false,
         initialize: function (data, opts) {
 			Base.prototype.initialize.apply(this, arguments);
-            this.applyDefaults();
+            //this.applyDefaults();
+            this.lgPalettes = new LGPalettes();
             if (data.map_id) {
                 this.urlRoot = "/api/0/maps/" + data.map_id + "/layers";
             } else {
@@ -67,6 +69,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             Base.prototype.set.apply(this, arguments);
 
             //build symbols collection if it doesn't already exist:
+            //if (!this.get("symbols") && symbols) {
             if (!this.get("symbols") && symbols) {
                 this.setSymbols(symbols);
             }
@@ -74,50 +77,61 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
         getSymbols: function () {
             return this.get('symbols');
         },
-        setSymbols: function (symbols) {
-            const collection = new Symbols(symbols.map((symbolJSON, i) => {
-                symbolJSON.id = symbolJSON.id || (i + 1);
-                return symbolJSON;
-            }), {layerModel: this})
-            this.set('symbols', collection);
+        setSymbols: function (symbolJSON) {
+            // assign ids (only if missing):
+            symbolJSON = symbolJSON.map((item, i) => {
+                item.id = item.id || (i + 1);
+                return item;
+            });
+            const symbolCollection = this.get('symbols');
+            if (symbolCollection) {
+                symbolCollection.reset(symbolJSON)
+            } else {
+                this.set('symbols', new Symbols(symbolJSON, {layerModel: this}));
+            }
         },
-        replaceSymbols: function (symbols) {
-            const collection = new Symbols(symbols.map((symbolJSON, i) => {
-                symbolJSON.id = symbolJSON.id || (i + 1);
-                return symbolJSON;
-            }), {layerModel: this})
-            this.get('symbols').set(symbols.toJSON());
+        getPalette: function () {
+            const paletteId = this.get('metadata').paletteId;
+            if (this.isCategorical()) {
+                return this.lgPalettes.getPalette(paletteId, 8, 'categorical');
+            } else if (this.isContinuous()) {
+                return this.lgPalettes.getPalette(paletteId, 8, 'continuous');
+            }
+            return;
         },
-        applyDefaults: function () {
+
+        getNextColor: function () {
+            if (this.isUniform() || this.isIndividual() || this.getSymbols().length === 0) {
+                return this.get('metadata').fillColor;
+            }
+            const palette = this.getPalette();
+            const symbols = this.getSymbols();
+            for (let i = symbols.length - 1; i >= 0; i--) {
+                const fillColor = symbols.at(i).get('fillColor').replace('#', '');
+                const index = palette.indexOf(fillColor);
+                if (index > -1) {
+                    return '#' + palette[(index + 1) % 8];
+                }
+            }
+            return '#' + palette[0];
+        },
+        /*applyDefaults: function () {
             var currentMetadata = _.clone(this.get("metadata")),
                 defaults = _.clone(this.defaults.metadata);
             _.extend(defaults, currentMetadata);
             this.set("metadata", defaults);
-        },
-        //kill this hideSymbols method?
-        hideSymbols: function () {
-            this.get("symbols").each(function (symbol) {
-                symbol.isShowingOnMap = false;
-            });
-        },
-        //kill this showSymbols method?
-        showSymbols: function () {
-            this.get("symbols").each(function (symbol) {
-                symbol.isShowingOnMap = true;
-            });
-        },
+        },*/
 
         isEmpty: function (options) {
             if (this.getSymbols().length === 0) {
                 return true;
             }
             try {
-                const numRecords = this.getSymbols().map(n => {
+                return this.getSymbols().map(n => {
                     return n.isEmpty()
                 }).reduce((a, b) => {
                     return a && b;
                 });
-                return numRecords === 0;
             } catch (e) {
                 console.warn(e);
                 return true;

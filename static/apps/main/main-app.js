@@ -162,7 +162,6 @@ define([
             this.container.$el.removeClass("left right none both");
             this.container.$el.addClass(className);
             //wait 'til CSS animation completes before redrawing map
-            setTimeout(this.basemapView.redraw, 220);
         },
 
         showModal: function (opts) {

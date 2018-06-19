@@ -300,7 +300,7 @@ define([
                 panelStyles = this.panelStyles;
             }
             if (photos.length > 0 || videos.length > 0) {
-                console.log("Finding carousel photos / videos")
+                console.log("Finding carousel photos / videos", photos);
                 genericList = [];
                 genericList = genericList.concat(photos.toJSON());
                 genericList = genericList.concat(videos.toJSON());

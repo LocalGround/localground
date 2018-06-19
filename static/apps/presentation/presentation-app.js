@@ -10,10 +10,11 @@ define([
     "apps/presentation/views/layer-list-manager",
     "apps/presentation/views/map-header",
     "views/data-detail",
+    "lib/popovers/popover",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, Basemap, DataManager, Map, Layers,
-             LegendView, MapHeaderView, DataDetail, appUtilities) {
+             LegendView, MapHeaderView, DataDetail, Popover, appUtilities) {
     "use strict";
     var PresentationApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -34,6 +35,9 @@ define([
             this.dataManager = new DataManager({
                 vent: this.vent,
                 projectJSON: options.projectJSON
+            });
+            this.popover = new Popover({
+                app: this
             });
             this.model = this.dataManager.getMapBySlug(options.mapJSON.slug);
 
@@ -88,7 +92,8 @@ define([
         },
 
         initLegend: function () {
-            $("#map").css({"position": "fixed", 'z-index': '0'});
+            //SV: this line breaks the centering:
+            //$("#map").css({"position": "fixed", 'z-index': '0'});
             if (this.model.get("panel_styles").display_legend === false) {
                 this.hideLegend();
             } else {
@@ -128,27 +133,21 @@ define([
             }
             this.container.$el.removeClass("left none");
             this.container.$el.addClass(className);
-            this.basemapView.redraw({
-                time: 500
-            });
         },
         showMediaDetail: function (opts) {
-            const collection = this.dataManager.getCollection(opts.dataType);
-            const model = collection.get(opts.id);
+            const dm = this.dataManager;
+            const recordModel = dm.getModel(opts.dataType, parseInt(opts.id));
+            recordModel.set("active", true);
+
             if (opts.dataType.indexOf("dataset_") != -1) {
-                if (!model.get("children")) {
-                    model.fetch({"reset": true});
+                if (!recordModel.get("children")) {
+                    recordModel.fetch({"reset": true});
                 }
             }
-            if (opts.dataType.indexOf("dataset_") != -1) {
-                model.set("fields", collection.fields.toJSON());
-            }
-            model.set("active", true);
-            this.vent.trigger('highlight-marker', model);
-            this.detailView = new DataDetail({
-                model: model,
+
+            const detailView = new DataDetail({
+                model: recordModel,
                 app: this,
-                dataType: opts.dataType,
                 panelStyles: this.model.get('panel_styles')
             });
 
@@ -157,7 +156,7 @@ define([
                $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
             }
 
-            this.sideRegion.show(this.detailView);
+            this.sideRegion.show(detailView);
             this.unhideDetail();
         },
 

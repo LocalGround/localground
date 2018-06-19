@@ -157,6 +157,7 @@ ul {
   display: flex;
   position: absolute;
   width: 100%;
+  border-top: 1px solid #dcdcdc;
 }
 
 .print-layout-left {
@@ -459,11 +460,12 @@ ul {
 .sort-by {
   font-size: 12px;
   font-weight: 600;
-  width: 170px;
+  max-width: 158px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
+  display: inline-block;
 }
 
 .count {
@@ -881,9 +883,72 @@ i.fa.fa.fa-question-circle {
   margin-bottom: 30px;
 }
 
+.fullScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.fullScreen .carouselbox {
+  position: initial;
+}
+
+.fullScreen .circle-buttons {
+  position: absolute;
+  bottom: 45px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fullScreen .next, .fullScreen .prev {
+  height: 100vh;
+  top: 0;
+  transform: translateY(48%);
+}
+
+.fullScreen .photo {
+  height: 100%;
+  width: 100%;
+  max-width: 85vw;
+  max-height: 80vh;
+  margin: 0 auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.fullScreen .carousel-caption {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.close-fullscreen {
+  display: none;
+  position: absolute;
+  color: #eee;
+  z-index: 3;
+  margin: 15px;
+  right: 0;
+}
+
+.show-slide {
+  color: #999;
+}
+
 .breadcrumb {
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 transparent, 0 2px 4px -1px transparent;
-  z-index: 2;
   position: absolute;
   width: 100%;
   min-height: 44px;
@@ -1063,11 +1128,12 @@ span.action.rounded:hover, a.action.rounded:hover {
 
 .form input[type="checkbox"]:before, .form-inline input[type="checkbox"]:before {
   content: '\f096';
-  font-family: 'FontAwesome';
+  font-family: 'Font Awesome\ 5 Free';
   color: #555;
   font-size: 20px;
   vertical-align: middle;
   color: #999;
+  font-weight: 900;
   display: inline-block;
   width: 18px;
 }
@@ -1910,4 +1976,3 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
-/*# sourceMappingURL=main-new.css.map */

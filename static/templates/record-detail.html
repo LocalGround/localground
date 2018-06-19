@@ -98,13 +98,18 @@
             {{/if}}
         </div>
         {{#if fields }}
-            <div class="section">
+            <div class="section description">
+                {{#if description}}
+                    <p>{{ description }}</p>
+                {{/if}}
                 <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
                 {{#each fields}}
+                    {{#ifnotequal this.col_name "description"}}
                     <tr>
                         <td>{{ this.col_alias }}:</td>
                         <td>{{ this.val }}</td>
                     </tr>
+                    {{/ifnotequal}}
                 {{/each}}
                 {{#if tags}}
                     <tr>

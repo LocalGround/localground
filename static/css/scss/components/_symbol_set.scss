@@ -2,11 +2,12 @@
 .sort-by {
     font-size: 12px;
     font-weight: 600;
-    width: 170px;
+    max-width: 158px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
+    display: inline-block;
 }
 .count {
     font-size: 12px;

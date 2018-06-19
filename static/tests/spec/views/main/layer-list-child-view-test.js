@@ -10,6 +10,7 @@ define([
     rootDir + "lib/modals/modal",
 
     rootDir + "models/record",
+    rootDir + "collections/symbols",
     rootDir + "lib/popovers/popover",
     rootDir + "apps/main/views/left/add-marker-menu",
     rootDir + "apps/main/views/left/edit-layer-menu",
@@ -17,7 +18,7 @@ define([
 ],
     function (Backbone, LayerListChildView, EditLayerName, EditDisplayField,
                 SymbolCollectionView, SymbolItemView, MarkerOverlay, Modal, Record,
-                Popover, AddMarkerMenu, EditLayerMenu) {
+                Symbols, Popover, AddMarkerMenu, EditLayerMenu) {
 
         'use strict';
         var map;
@@ -26,13 +27,24 @@ define([
             spyOn(LayerListChildView.prototype, 'initialize').and.callThrough();
             spyOn(LayerListChildView.prototype, 'showHideOverlays').and.callThrough();
             spyOn(LayerListChildView.prototype, 'addRecord').and.callThrough();
-
             spyOn(LayerListChildView.prototype, 'showLayerMenu').and.callThrough();
             spyOn(LayerListChildView.prototype, 'displayGeometryOptions').and.callThrough();
-
-            spyOn(LayerListChildView.prototype, 'reAssignRecordsToSymbols');
-            spyOn(LayerListChildView.prototype, 'reAssignRecordToSymbols').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'onRender').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'reRender').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'reRenderIfEmpty').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'updateGroupBy').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'childViewOptions').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'addChild').and.callThrough();
             spyOn(LayerListChildView.prototype, 'removeEmptySymbols').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'reRenderOrAssignRecordToSymbol').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'reRenderOrReassignRecordToSymbol').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'checkSelectedItem').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'updateTitle').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'showStyleByMenu').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'addCssToSelectedLayer').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'collapseSymbols').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'saveChanges').and.callThrough();
+
 
             spyOn(EditLayerMenu.prototype, 'initialize').and.callThrough();
             spyOn(EditLayerName.prototype, 'initialize').and.callThrough();
@@ -231,94 +243,85 @@ define([
                 initSpies(this);
                 initCategoricalLayerView(this);
             });
-            it("reassignRecordToSymbols() creates a new symbol when needed", function() {
-                /*
-                In this test, there is neither a symbol nor a record where 'type' equals 'magnolia'.
-                We select a record and update its type to 'magnolia' and then test that a corresponding symbol has been created.
-                This test implicitly tests the createNewSymbol() function.
-                */
-                let record = this.view.dataCollection.get({'id': 10});
-                const pineSymbol = this.view.collection.where({'rule': "type = 'pine'"})[0];
 
-                expect(this.view.collection.where({'rule': "type = 'magnolia'"}).length).toEqual(0);
-                expect(this.view.collection.length).toEqual(6);
-                expect(record.get('type')).toEqual('Pine');
-                expect(LayerListChildView.prototype.reAssignRecordToSymbols).toHaveBeenCalledTimes(0);
-                expect(pineSymbol.matchedModels.length).toEqual(2);
+            // it("createNewSymbol() works", function() {
+            //
+            //     expect(this.view.collection.where({'rule': "type = 'mahogany'"}).length).toEqual(0);
+            //
+            //     const initialSymbolCount = this.view.collection.models.length;
+            //     let record = this.view.dataCollection.get({'id': 50});
+            //     record.set('type', 'mahogany');
+            //     this.view.createNewSymbol(this.view.collection, record);
+            //
+            //     // the newest symbol always gets inserted at the end of the list, but before the final (uncategorized) symbol. Therefore, length - 2.
+            //     const newSymbol = this.view.collection.models[this.view.collection.models.length-2];
+            //
+            //     expect(newSymbol.get('rule')).toEqual("type = 'mahogany'");
+            //     expect(this.view.collection.models.length).toEqual(initialSymbolCount + 1);
+            //
+            // });
+        });
 
-                record.set('type', 'magnolia');
-                record.trigger('update-symbol-assignment', record);
-
-                const magnoliaSymbol = this.view.collection.where({'rule': "type = 'magnolia'"})[0];
-
-                expect(LayerListChildView.prototype.reAssignRecordToSymbols).toHaveBeenCalledTimes(1);
-                expect(this.view.collection.length).toEqual(7);
-                expect(this.view.collection.where({'rule': "type = 'magnolia'"}).length).toEqual(1);
-                expect(pineSymbol.matchedModels.length).toEqual(1);
-                expect(magnoliaSymbol.matchedModels.length).toEqual(1);
-            });
-            it("reassignRecordToSymbols() deletes an unneeded symbol when a record is updated and no longer matches", function() {
-                /*
-                In this test, there is a symbol for records where 'type' equals 'hickory, and a single matching record.
-                We update the matching record from 'hickory' to 'oak' and check to make sure that the record is
-                is now matched to the 'oak' symbol. We also check that the 'hickory' symbol has been deleted
-                (since it no longer has any matching records).
-                This test implicitly tests the removeEmptySymbols() function.
-                */
-
-                let record = this.view.dataCollection.get({'id': 50});
-                const hickorySymbol = this.view.collection.where({'rule': "type = 'hickory'"})[0];
-                const oakSymbol = this.view.collection.where({'rule': "type = 'oak'"})[0];
-                expect(this.view.collection.where({'rule': "type = 'hickory'"}).length).toEqual(1);
-
-                expect(this.view.collection.length).toEqual(6);
-                expect(record.get('type')).toEqual('Hickory');
-                expect(LayerListChildView.prototype.reAssignRecordToSymbols).toHaveBeenCalledTimes(0);
-                expect(hickorySymbol.matchedModels.length).toEqual(1);
-                expect(oakSymbol.matchedModels.length).toEqual(7);
-
-                record.set('type', 'oak');
-                record.trigger('update-symbol-assignment', record);
-
-                expect(LayerListChildView.prototype.reAssignRecordToSymbols).toHaveBeenCalledTimes(1);
-                expect(this.view.collection.length).toEqual(5);
-                expect(this.view.collection.where({'rule': "type = 'hickory'"}).length).toEqual(0);
-                expect(hickorySymbol.matchedModels.length).toEqual(0);
-                expect(oakSymbol.matchedModels.length).toEqual(8);
-            });
-            it("removeEmptySymbols() gets called upon initialization of LayerListChildView", function() {
-                expect(LayerListChildView.prototype.removeEmptySymbols).toHaveBeenCalledTimes(1);
-
+        describe('LayerListChildView: instance methods work', function () {
+            beforeEach(function () {
+                initSpies(this);
+                initCategoricalLayerView(this);
             });
 
-            it("reAssignRecordsToSymbols() gets called upon initialization of LayerListChildView", function() {
-                expect(LayerListChildView.prototype.reAssignRecordsToSymbols).toHaveBeenCalledTimes(1);
+            it('onRender() works', function () {
+                expect(LayerListChildView.prototype.showHideOverlays).toHaveBeenCalledTimes(0);
+                this.view.render();
+                expect(LayerListChildView.prototype.showHideOverlays).toHaveBeenCalledTimes(1);
+
             });
-
-            it("isEmpty() convenience function works", function() {
-                expect(this.view.isEmpty('')).toEqual(true);
-                expect(this.view.isEmpty("")).toEqual(true);
-                expect(this.view.isEmpty(undefined)).toEqual(true);
-                expect(this.view.isEmpty(null)).toEqual(true);
-                expect(this.view.isEmpty(0)).toEqual(false);
-                expect(this.view.isEmpty('text')).toEqual(false);
+            it('reRender() works', function () {
+                spyOn(Symbols.prototype, 'assignRecords').and.callThrough();
+                expect(Symbols.prototype.assignRecords).toHaveBeenCalledTimes(0);
+                this.view.reRender();
+                expect(Symbols.prototype.assignRecords).toHaveBeenCalledTimes(1);
+                expect(Symbols.prototype.assignRecords).toHaveBeenCalledWith(this.view.dataCollection);
             });
-
-            it("createNewSymbol() works", function() {
-
-                expect(this.view.collection.where({'rule': "type = 'mahogany'"}).length).toEqual(0);
-
-                const initialSymbolCount = this.view.collection.models.length;
-                let record = this.view.dataCollection.get({'id': 50});
-                record.set('type', 'mahogany');
-                this.view.createNewSymbol(this.view.collection, record);
-
-                // the newest symbol always gets inserted at the end of the list, but before the final (uncategorized) symbol. Therefore, length - 2.
-                const newSymbol = this.view.collection.models[this.view.collection.models.length-2];
-
-                expect(newSymbol.get('rule')).toEqual("type = 'mahogany'");
-                expect(this.view.collection.models.length).toEqual(initialSymbolCount + 1);
-
+            it('reRenderIfEmpty() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('updateGroupBy() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('childViewOptions() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('addChild() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('removeEmptySymbols() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('reRenderOrAssignRecordToSymbol() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('reRenderOrReassignRecordToSymbol() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('checkSelectedItem() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('updateTitle() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('showStyleByMenu() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('displayGeometryOptions() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('addCssToSelectedLayer() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('collapseSymbols() works', function () {
+                expect(1).toEqual(0);
+            });
+            it('saveChanges() works', function () {
+                expect(1).toEqual(0);
             });
         });
     });

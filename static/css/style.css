@@ -230,13 +230,16 @@
     background: white;
 }
 
+.section.description {
+    margin: 20px 5px 0px 10px;
+}
+
 table.preview-properties {
     border: 1px solid #e4e5eb;
     margin: 20px 40px;
     font-weight: 600;
     font-size: 12px;
     padding: 10px;
-    margin-top: 60px;
     margin-bottom: 40px;
     width: calc(100% - 80px);
 }
