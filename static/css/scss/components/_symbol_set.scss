@@ -16,23 +16,26 @@
 }
 
 .symbol-wrapper {
-    // border-bottom: 1px solid #ebebeb;
-    padding-left: 7px;
+    padding-left: 5px;
+    border-bottom: 1px solid #e8e8e8;
 }
 
 .symbol-header {
     background: white;
     // border-top: 1px solid #ebebeb;
-    padding: 0px 7px;
+    background: white;
+    padding: 0px 7px 0px 23px;
     border-top: 3px solid white;
     border-right: 3px solid white;
-    height: 28px;
+    height: 23px;
+    line-height: 28px;
 }
 
 .symbol-edit, .symbol-display, .symbol-edit-individual {
-    padding-top: 8px;
+    padding-top: 6px;
     padding-right: 6px;
     float: right;
+    font-size: 16px;
 }
 .symbol-edit, .symbol-edit-individual {
     display: none;
@@ -45,7 +48,8 @@
 }
 
 .symbol-header:hover .symbol-edit,
-.symbol-header:hover .symbol-display {
+.symbol-header:hover .symbol-display,
+.symbol-item:hover .symbol-edit {
     display: inline;
     cursor: pointer;
 
@@ -85,7 +89,7 @@
     padding: 4px 0px;
     display: inline-block;
     font-weight: 600;
-    width: 170px;
+    width: 160px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -101,6 +105,8 @@
 .symbol {
     border-left: 1px solid #e4e5eb;
     border-bottom: 3px solid white;
+    padding-bottom: 7px;
+    background: white;
 
     .highlight {
         background: rgb(123, 155, 225);
@@ -143,7 +149,7 @@ i.fa.fa.fa-question-circle {
 
     a, >div {
         text-decoration: none;
-        padding: 6px 32px;
+        padding: 2px 32px 2px 34px;
         display: inline-block;
         width: 100%;
     }

@@ -76,7 +76,8 @@ define(["marionette",
                     project: this.app.dataManager.getProject(),
                     name: this.dataCollection.name,
                     isChecked: this.model.get("metadata").isShowing,
-                    hasData: !this.isEmpty()
+                    hasData: !this.isEmpty(),
+                    isIndividual: this.model.isIndividual()
                 };
             },
             childView: SymbolView,

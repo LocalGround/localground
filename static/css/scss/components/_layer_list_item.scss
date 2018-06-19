@@ -65,6 +65,8 @@
     .lc-3 {
         padding-bottom: 14px;
         border-bottom: 1px solid #e8e8e8;
+        position: relative;
+        height: 15px;
     }
     .geometry-list-wrapper {
         left: 200px;
@@ -113,6 +115,8 @@
     display: inline;
     color: #8bb8ed;
     font-weight: bold;
+    position: absolute;
+    left: 26px;
     span {
         color: inherit;
         font-weight: bold;
