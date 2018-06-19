@@ -141,11 +141,13 @@ define([
                 expect(this.view.$el.find('.collapse')).toHaveClass('fa-caret-up');
                 expect(this.view.$el.find('.symbol').css('height')).toEqual('0px');
                 expect(this.view.$el.find('.symbol-item').css('display')).toEqual('none');
+                expect(this.view.$el.find('.symbol-level-svg').css('display')).toEqual('inline');
 
                 this.view.$el.find('.collapse').trigger('click');
 
                 expect(this.view.$el.find('.collapse')).toHaveClass('fa-caret-down');
                 expect(this.view.$el.find('.symbol-item').css('display')).toEqual('block');
+                expect(this.view.$el.find('.symbol-level-svg').css('display')).toEqual('none');
             });
 
             it("Layer checkbox hides and shows Layer content and icons", function() {
@@ -216,8 +218,12 @@ define([
                 this.view.render();
                 expect(this.view.model.get('group_by')).toEqual('height');
                 expect(this.view.$el.find('#layer-style-by').text()).toEqual('height');
+                expect(this.view.$el.find('.collapse-wrapper').css('display')).toEqual('inline');
+
                 this.view.model.set('group_by', 'individual');
+
                 expect(this.view.$el.find('#layer-style-by').text()).toEqual('individual');
+                expect(this.view.$el.find('.collapse-wrapper').css('display')).toEqual('none');
             });
         });
         describe("LayerListChildView, categorical: ", function () {
