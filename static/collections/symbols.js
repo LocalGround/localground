@@ -172,6 +172,15 @@ define(["underscore", "models/symbol", "collections/base"],
             );
         },
         reassignRecord: function (record) {
+            /*
+            The purpose of this method is to rebin a record that has been
+            edited. 4 scenarios:
+              1. symbol gets updated (for categorical)
+              2. record gets reassigned
+              ...and...
+              3. record gets removed from old symbol
+              4. old symbol gets destroyed if it's empty (for categorical)
+            */
             // 1. try and update if applicable:
             let symbol = this.__updateIfApplicable(record);
             if (symbol) {

@@ -166,38 +166,71 @@ define([
                 expect(symbols.findWhere({ rule: 'id =777'})).toBeUndefined();
                 records.add(record);
                 symbols.assignRecord(record);
-                console.log(symbols.findWhere({ rule: 'id =777'}));
-                console.log(symbols.toJSON().map(item => item.rule));
-                //expect(symbols.findWhere({ rule: 'id =777'})).toEqual(symbols.at(17));
                 expect(symbols.length).toEqual(19);
-                /*expect(symbols.findWhere({ rule: 'type = \'ABCDEFG\''})).toBeUndefined();
-                record.set('type', 'ABCDEFG');
-                expect(symbols.length).toEqual(6);
-                symbols.assignRecord(record);
-                expect(symbols.length).toEqual(7);
-                const symbol = symbols.findWhere({ rule: 'type = \'ABCDEFG\''});
-                expect(symbol).toEqual(symbols.at(5));*/
             });
             it('Continuous: __assignToNewSymbol(record) / assignRecord(record) works', function () {
-                expect(1).toEqual(0);
+                const symbols = this.continuousLayer.getSymbols();
+                const records = this.dataManager.getCollection(
+                    this.continuousLayer.get('dataset').overlay_type
+                );
+                expect(symbols.length).toEqual(5);
+                expect(symbols.findWhere({ rule: 'height = 999'})).toBeUndefined();
+                const record = new Record({id: 777, rule: 'height = 999'});
+                records.add(record);
+                symbols.assignRecord(record);
+                //note: it shouldn't create a new symbol, but instead be filed into uncategorized.
+                expect(symbols.length).toEqual(5);
+                expect(symbols.at(4).isUncategorized()).toBeTruthy();
             });
             it('getUncategorizedSymbol() works', function () {
-                expect(1).toEqual(0);
+                const symbols = this.continuousLayer.getSymbols();
+                expect(symbols.getUncategorizedSymbol().isUncategorized()).toBeTruthy();
             });
             it('hasUncategorizedSymbol() works', function () {
-                expect(1).toEqual(0);
+                let symbols = this.continuousLayer.getSymbols();
+                expect(symbols.hasUncategorizedSymbol()).toBeTruthy();
+                symbols = this.categoricalLayer.getSymbols();
+                expect(symbols.hasUncategorizedSymbol()).toBeTruthy();
+                symbols = this.individualLayer.getSymbols();
+                expect(symbols.hasUncategorizedSymbol()).toBeFalsy();
+                symbols = this.uniformLayer.getSymbols();
+                expect(symbols.hasUncategorizedSymbol()).toBeFalsy();
             });
             it('assignRecords() works', function () {
-                expect(1).toEqual(0);
-            });
-            it('assignRecord() works', function () {
-                expect(1).toEqual(0);
+                expect(Symbols.prototype.assignRecord).toHaveBeenCalledTimes(0);
+                let symbols = this.continuousLayer.getSymbols();
+                const records = this.dataManager.getCollection(
+                    this.continuousLayer.get('dataset').overlay_type
+                );
+                symbols.assignRecords(records);
+                expect(Symbols.prototype.assignRecord).toHaveBeenCalledTimes(18);
             });
             it('reassignRecord() works', function () {
-                expect(1).toEqual(0);
+                const symbols = this.categoricalLayer.getSymbols();
+                const symbol = symbols.at(0);
+                const records = this.dataManager.getCollection(
+                    this.categoricalLayer.get('dataset').overlay_type
+                )
+                symbols.assignRecords(records);
+                const record = symbol.getModels().at(0);
+                expect(symbol.getModels().length).toEqual(2);
+                record.set('type', 'peach tree');
+                expect(Symbols.prototype.__updateIfApplicable).toHaveBeenCalledTimes(0);
+                expect(Symbols.prototype.assignRecord).toHaveBeenCalledTimes(18);
+                expect(Symbols.prototype.__removeStaleMatches).toHaveBeenCalledTimes(0);
+                expect(Symbols.prototype.removeEmpty).toHaveBeenCalledTimes(1);
+                symbols.reassignRecord(record);
+                expect(symbol.getModels().length).toEqual(1);
+
+                expect(Symbols.prototype.__updateIfApplicable).toHaveBeenCalledTimes(1);
+                expect(Symbols.prototype.assignRecord).toHaveBeenCalledTimes(19);
+                expect(Symbols.prototype.__removeStaleMatches).toHaveBeenCalledTimes(1);
+                expect(Symbols.prototype.removeEmpty).toHaveBeenCalledTimes(2);
             });
             it('toSVGList() works', function () {
-                expect(1).toEqual(0);
+                const symbols = this.categoricalLayer.getSymbols();
+                expect(symbols.toSVGList().length).toEqual(6);
+                expect(symbols.toSVGList()[0]).toEqual(symbols.at(0).toSVG());
             });
         });
     });

@@ -159,19 +159,6 @@ define([
                             "strokeColor": "#ffffff",
                             "id": 1,
                             "fillColor": "#ffdd33"
-                        },
-                        {
-                            "fillOpacity": 1,
-                            "title": "Uncategorized",
-                            "strokeWeight": 1,
-                            "isShowing": false,
-                            "rule": "¯\\_(ツ)_/¯",
-                            "height": 20,
-                            "width": 20,
-                            "shape": "circle",
-                            "strokeOpacity": 1,
-                            "strokeColor": "#FFFFFF",
-                            "fillColor": "#4e70d4"
                         }
                     ]
                 },
