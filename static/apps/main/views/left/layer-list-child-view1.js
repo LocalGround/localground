@@ -34,7 +34,7 @@ define(["marionette",
             events: {
                 //edit event here, pass the this.model to the right panel
                 'change .layer-isShowing': 'showHideOverlays',
-                'click #layer-style-by': 'showStyleByMenu',
+                'click .layer-style-by': 'showStyleByMenu',
                 'click .collapse': 'collapseSymbols',
                 'click .open-layer-menu': 'showLayerMenu',
                 'click .add-record-container': 'displayGeometryOptions',
@@ -177,6 +177,7 @@ define(["marionette",
                 this.render();
             },
             showStyleByMenu: function (event) {
+                console.log('showStyleByMenu()');
                 this.popover.update({
                     $source: this.$el.find('.layer-style-by'),
                     view: new MarkerStyleView({

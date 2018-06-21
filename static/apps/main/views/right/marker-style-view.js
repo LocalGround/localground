@@ -266,7 +266,7 @@ define(["jquery",
 
             },
 
-            // don't think this is being used anymore
+            // two second timeout appears to be necessary
             saveChanges: function() {
                 var that = this;
                 setTimeout(function() {
@@ -337,6 +337,7 @@ define(["jquery",
 
             createCorrectSymbols: function () {
                 if (this.model.isUniform()) {
+                    console.log('doing uniform');
                     this.uniformData();
                 } else if (this.model.isIndividual()) {
                     this.individualData();
@@ -373,6 +374,7 @@ define(["jquery",
                 this.updateMetadata('fillColor', Symbol.UNIFORM_SYMBOL_COLOR)
                 this.layerDraft.uniform = Symbol.createUniformSymbol(this.model, 1);
                 this.layerNoLongerNew();
+                console.log(this.layerDraft.uniform);
                 return this.layerDraft.uniform;
             },
 
@@ -390,6 +392,7 @@ define(["jquery",
                     this.layerDraft.individual.add(symbol);
                 });
                 this.layerNoLongerNew();
+                console.log(this.layerDraft.individual);
                 return this.layerDraft.individual;
 
             },
@@ -479,6 +482,7 @@ define(["jquery",
             setSymbols: function (symbs) {
                 this.collection.reset(symbs.toJSON())
                 this.render();
+                this.saveChanges();
             },
 
             updateMapAndRender: function () {
