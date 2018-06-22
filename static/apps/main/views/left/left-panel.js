@@ -86,11 +86,14 @@ define(["underscore",
             },
 
             scrollToLayer: function (layerModel) {
-                const domID = 'layer' + layerModel.id;
-                const $domElement = $('#' + domID);
-                this.layers.$el.animate({
-                    scrollTop: $domElement.offset().top - 110
-                });
+                setTimeout(() => {
+                    const $domElement = $('#' + 'layer' + layerModel.id);
+                    const layerHeight = $domElement.parent().parent().height();
+                    const panelHeight = this.layers.$el.find('.layers').height();
+                    this.layers.$el.animate({
+                        scrollTop: panelHeight - layerHeight
+                    });
+                }, 200);
             },
         });
         return LeftPanelLayout;

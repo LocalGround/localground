@@ -5,10 +5,10 @@ define([
 ],
     function (MouseMover, Icon) {
         'use strict';
-        // note: these tests mock a significant amount of the functionality 
+        // note: these tests mock a significant amount of the functionality
         // carried out by the google maps api
         var initMouseMover = (scope) => {
-            
+
             // add spies for all relevant objects and initialize MouseMover:
             spyOn(scope.app.vent, 'trigger');
 
@@ -22,12 +22,12 @@ define([
                 clientY: 101,
                 clientX: 333
             }
-            
+
             scope.mm = new MouseMover(mockEvent, {
                 app: scope.app
             });
 
-            
+
         };
 
         describe("MouseMover: Initialization Tests", function () {
@@ -45,19 +45,21 @@ define([
                 expect(this.mm.size).toEqual(35);
                 expect(this.mm.color).toEqual('#ed867d');
             });
-            it("generateIcon() works ", function () {  
+            it("generateIcon() works ", function () {
                 expect($('html')).not.toContainElement('svg');
                 this.mm.generateIcon();
-                
+
                 expect(this.mm.icon.width).toEqual(35);
                 expect(this.mm.icon.strokeWeight).toEqual(6);
                 expect(this.mm.icon.fillColor).toEqual('#ed867d');
-                
+
                 expect($('#follower')).toContainElement('svg');
             });
 
             it("start() works", function() {
-                this.mm.start();
+                expect(() => {
+                    this.mm.start();
+                }).not.toThrow();
             });
             it("stop() works", function() {
                 this.mm.stop({
@@ -80,5 +82,5 @@ define([
                 expect($('#follower').css('left')).toEqual(233 - 35 * 3 / 4 + 'px');
             });
 
-        }); 
+        });
     });

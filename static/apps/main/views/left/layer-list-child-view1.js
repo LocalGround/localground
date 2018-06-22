@@ -266,7 +266,6 @@ define(["marionette",
             collapseSymbols: function () {
                 if (this.model.get('metadata').collapsed === true) {
                     this.model.get('metadata').collapsed = false
-                    //this.$el.find('.symbol').css('height', 'auto');
                     this.$el.find('.symbol, .symbol-item').css('display', 'block');
                     this.$el.find('.collapse').removeClass('fa-angle-right');
                     this.$el.find('.collapse').addClass('fa-angle-down');
@@ -274,7 +273,6 @@ define(["marionette",
                 } else {
                     this.model.get('metadata').collapsed = true;
                     this.$el.find('.symbol, .symbol-item').css('display', 'none');
-                    //this.$el.find('.symbol-item').css('display', 'none');
                     this.$el.find('.collapse').removeClass('fa-angle-down');
                     this.$el.find('.collapse').addClass('fa-angle-right');
                     this.$el.find('.symbol-level-svg').show();
