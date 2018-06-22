@@ -89,6 +89,7 @@ define(["jquery",
             templateHelpers: function () {
                 const title = this.model.get('title')
                 name = this.collection.name;
+                console.log('notCollapsed', !this.layer.get('metadata').collapsed);
                 return {
                     empty: this.model.getModelsJSON().length === 0,
                     name: name,
@@ -113,7 +114,7 @@ define(["jquery",
                 // 1. re-render all child views:
                 this._renderChildren();
                 // 2. partial update of parent SVG:
-                this.$el.find('.symbol-level-svg').replaceWith(this.model.toSVG());
+                this.$el.find('.symbol-level-svg').html(this.model.toSVG());
                 this.$el.find('.symbol-header > svg').replaceWith(this.model.toSVG());
                 this.$el.find('.symbol-wrapper').css(
                     'background', this.model.get('icon').fillColor);

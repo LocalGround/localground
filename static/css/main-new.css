@@ -470,7 +470,7 @@ ul {
 }
 
 .hide-layer .lc-2, .hide-layer .lc-3,
-.hide-layer #symbols-list {
+.hide-layer #symbols-list, .hide-layer .no-symbols-found {
   display: none;
 }
 

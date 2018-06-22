@@ -126,7 +126,7 @@
 }
 .hide-layer {
     .lc-2, .lc-3,
-    #symbols-list {
+    #symbols-list, .no-symbols-found {
         display: none;
     }
     &:last-child {

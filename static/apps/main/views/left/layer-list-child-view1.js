@@ -228,15 +228,21 @@ define(["marionette",
             // If it is triggered by an event, there is only 1 argument.
             // If it is triggered from onRender, there are 2 args, and arg1 is null.
             showHideOverlays: function (event, state) {
-                if (this.isEmpty()) {
-                    return;
-                }
                 let isShowing;
                 if (arguments.length === 1) {
                     isShowing = this.$el.find('input').prop('checked');
                     this.model.get("metadata").isShowing = isShowing;
                 } else {
                     isShowing = state;
+                }
+                if (isShowing) {
+                    this.$el.removeClass('hide-layer');
+                } else {
+                    this.$el.addClass('hide-layer');
+                }
+                this.saveChanges();
+                if (this.isEmpty()) {
+                    return;
                 }
                 this.children.each(function(childView) {
                     if (isShowing) {
@@ -250,14 +256,7 @@ define(["marionette",
                         // but when we are hiding at the layer level, we always hide all child symbols
                         childView.hideOverlays();
                     }
-
-                })
-                if (isShowing) {
-                    this.$el.removeClass('hide-layer');
-                } else {
-                    this.$el.addClass('hide-layer');
-                }
-                this.saveChanges();
+                });
             },
 
             addCssToSelectedLayer: function(markerId) {
