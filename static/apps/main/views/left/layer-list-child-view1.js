@@ -34,7 +34,7 @@ define(["marionette",
             events: {
                 //edit event here, pass the this.model to the right panel
                 'change .layer-isShowing': 'showHideOverlays',
-                'click #layer-style-by': 'showStyleByMenu',
+                'click .layer-style-by': 'showStyleByMenu',
                 'click .collapse': 'collapseSymbols',
                 'click .open-layer-menu': 'showLayerMenu',
                 'click .add-record-container': 'displayGeometryOptions',
@@ -72,9 +72,10 @@ define(["marionette",
 
             template: Handlebars.compile(LayerItemTemplate),
             templateHelpers: function () {
+                //console.log('rendering...');
                 return {
                     project: this.app.dataManager.getProject(),
-                    name: this.dataCollection.name,
+                    name: this.dataCollection.name.toLowerCase(),
                     isChecked: this.model.get("metadata").isShowing,
                     hasData: !this.isEmpty(),
                     isIndividual: this.model.isIndividual()
@@ -125,7 +126,7 @@ define(["marionette",
                 }
             },
             updateGroupBy: function () {
-                this.$el.find('#layer-style-by').html(
+                this.$el.find('.layer-style-by').html(
                     this.model.get('group_by')
                 );
                 if (this.model.isIndividual()) {
@@ -182,7 +183,7 @@ define(["marionette",
                 this.model.set("title", title);
                 this.render();
             },
-            showStyleByMenu: function (event) {
+            showStyleByMenu: function (e) {
                 this.popover.update({
                     $source: this.$el.find('.layer-style-by'),
                     view: new MarkerStyleView({
@@ -194,6 +195,9 @@ define(["marionette",
                     width: '220px',
                     title: 'Layer Properties'
                 });
+                if (e) {
+                    e.preventDefault();
+                }
             },
 
             showLayerMenu: function(event) {

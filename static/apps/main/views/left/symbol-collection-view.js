@@ -31,9 +31,7 @@ define(["jquery",
                 className: 'symbol-item marker-container',
                 initialize: function (opts) {
                     _.extend(this, opts);
-                    var templateHTML = `<div>
-                        No markers matching: {{ rule }}
-                    </div>`
+                    var templateHTML = `<div>No matches</div>`
                     this.template = Handlebars.compile(templateHTML);
                 },
                 templateHelpers: function () {

@@ -3,19 +3,22 @@
     background: white;
     /*border-bottom: 1px solid #e4e5eb;
     padding-bottom: 12px;*/
-
+    .symbols {
+        border-bottom: 1px solid #e8e8e8;
+    }
     .layer-header {
         background: #f7f7f7;
         padding: 10px 0px 7px 0px;
         border-bottom: 1px solid #e8e8e8;
 
         .layer-column {
-            padding: 0px 10px;
+            padding: 0px 0px 0px 10px;
         }
         .add-record-container {
             float: right;
             cursor: pointer;
-            margin-top: -3px;
+            /*margin-top: -3px;*/
+            height: 20px;
         }
         .left-geometry-button {
             float: right;
@@ -78,8 +81,12 @@
         }
         .open-layer-menu {
             float: right;
-            padding: 2px 7px;
+            padding: 2px 8px 2px 6px;
             cursor: pointer;
+
+            .fa-ellipsis-v {
+                color: #999;
+            }
         }
         .layer-menu {
             -webkit-touch-callout: none;
@@ -123,10 +130,29 @@
             color: $warn-text;
         }
     }
+    .layer-metadata {
+        margin: 9px 0px 12px 9px;
+        td {
+            line-height: 13px;
+            padding-right: 4px;
+        }
+        a {
+            color: #4691e8;
+            font-weight: 600;
+        }
+        .fa {
+            font-size: 1.6em;
+            color: #999;
+        }
+    }
 }
 .hide-layer {
     .lc-2, .lc-3,
-    #symbols-list, .no-symbols-found {
+    //#symbols-list,
+    .no-symbols-found,
+    .add-record-container,
+    .open-layer-menu,
+    .layer-details {
         display: none;
     }
     &:last-child {
