@@ -457,19 +457,6 @@ ul {
   line-height: 15px;
 }
 
-.layer-container .hide-layer .lc-2, .layer-container .hide-layer .lc-3,
-.layer-container .hide-layer #symbols-list {
-  display: none;
-}
-
-.layer-container .hide-layer .layer-container {
-  padding-bottom: 12px;
-}
-
-.layer-container .hide-layer:last-child {
-  border-bottom: 1px solid #e8e8e8;
-}
-
 .layer-container .no-symbols-found {
   padding: 0px;
   background: #fff3cd;
@@ -479,6 +466,19 @@ ul {
   margin: 30px 10px;
   text-align: center;
   color: #856404;
+}
+
+.hide-layer .lc-2, .hide-layer .lc-3,
+.hide-layer #symbols-list {
+  display: none;
+}
+
+.hide-layer .layer-container {
+  padding-bottom: 12px;
+}
+
+.hide-layer:last-child {
+  border-bottom: 1px solid #e8e8e8;
 }
 
 .sort-by {

@@ -113,20 +113,6 @@
         }
     }
 
-    .hide-layer {
-        .lc-2, .lc-3,
-        #symbols-list {
-            display: none;
-        }
-
-        .layer-container {
-            padding-bottom: 12px;
-        }
-        &:last-child {
-            border-bottom: 1px solid #e8e8e8;
-        }
-    }
-
     .no-symbols-found {
         padding: 0px;
         background: $warn-background;
@@ -135,5 +121,18 @@
             text-align: center;
             color: $warn-text;
         }
+    }
+}
+.hide-layer {
+    .lc-2, .lc-3,
+    #symbols-list {
+        display: none;
+    }
+
+    .layer-container {
+        padding-bottom: 12px;
+    }
+    &:last-child {
+        border-bottom: 1px solid #e8e8e8;
     }
 }
