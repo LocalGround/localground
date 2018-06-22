@@ -1,7 +1,8 @@
 // main: ../main-new.scss
 .layer-container {
     background: white;
-    border-bottom: 1px solid #e4e5eb;
+    /*border-bottom: 1px solid #e4e5eb;
+    padding-bottom: 12px;*/
 
     .layer-header {
         background: #f7f7f7;
@@ -127,10 +128,6 @@
     .lc-2, .lc-3,
     #symbols-list {
         display: none;
-    }
-
-    .layer-container {
-        padding-bottom: 12px;
     }
     &:last-child {
         border-bottom: 1px solid #e8e8e8;
