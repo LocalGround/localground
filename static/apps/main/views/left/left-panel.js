@@ -4,12 +4,9 @@ define(["underscore",
         "handlebars",
         "apps/main/views/left/map-title-view",
         "apps/main/views/left/layer-list-view",
-        "apps/main/views/left/skin-view",
-        "apps/main/views/left/panel-styles-view",
         "text!../../templates/left/left-panel-layout.html"
     ],
-    function (_, $, Marionette, Handlebars, MapTitleView, LayerListView,
-                SkinView, PanelStylesView, LeftPanelLayoutTemplate) {
+    function (_, $, Marionette, Handlebars, MapTitleView, LayerListView, LeftPanelLayoutTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var LeftPanelLayout = Marionette.LayoutView.extend({
@@ -27,13 +24,9 @@ define(["underscore",
 
             regions: {
                 menu: "#map_title",
-                layers: "#layers_region",
-                skins: "#map_skin_region",
-                styles: "#global_style_region"
+                layers: "#layers_region"
             },
             onRender: function () {
-                console.log('rendering left panel view...')
-
                 this.menu.show(new MapTitleView({
                     app: this.app,
                     model: this.model
@@ -43,14 +36,6 @@ define(["underscore",
                     model: this.model,
                     collection: this.model.getLayers()
                 }));
-                /*this.styles.show(new PanelStylesView({
-                    app: this.app,
-                    model: this.model
-                }));
-                this.skins.show(new SkinView({
-                    app: this.app
-                }));*/
-
             },
 
             saveMap: function () {
@@ -59,7 +44,7 @@ define(["underscore",
                 this.model.set("basemap", this.app.getMapTypeId());
                 this.model.save({
                     error: function () {
-                        console.log('error');
+                        console.error('error');
                     },
                     success: function () {
                         console.log('success');
@@ -86,14 +71,12 @@ define(["underscore",
             },
 
             scrollToLayer: function (layerModel) {
-                setTimeout(() => {
-                    const $domElement = $('#' + 'layer' + layerModel.id);
-                    const layerHeight = $domElement.parent().parent().height();
-                    const panelHeight = this.layers.$el.find('.layers').height();
-                    this.layers.$el.animate({
-                        scrollTop: panelHeight - layerHeight
-                    });
-                }, 200);
+                const $domElement = $('#' + 'layer' + layerModel.id);
+                const layerHeight = $domElement.parent().parent().height();
+                const panelHeight = this.layers.$el.find('.layers').height();
+                this.layers.$el.animate({
+                    scrollTop: panelHeight - layerHeight
+                });
             },
         });
         return LeftPanelLayout;

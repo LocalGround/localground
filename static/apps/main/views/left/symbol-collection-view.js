@@ -72,7 +72,6 @@ define(["jquery",
                 return events;
             },
             onRender: function() {
-                //console.log('redrawing', this.model.toJSON())
                 if(!this.model.get('isShowing')) {
                     this.$el.addClass('half-opac');
                 }
@@ -89,7 +88,7 @@ define(["jquery",
             templateHelpers: function () {
                 const title = this.model.get('title')
                 name = this.collection.name;
-                console.log('notCollapsed', !this.layer.get('metadata').collapsed);
+                //console.log('notCollapsed', !this.layer.get('metadata').collapsed);
                 return {
                     empty: this.model.getModelsJSON().length === 0,
                     name: name,
