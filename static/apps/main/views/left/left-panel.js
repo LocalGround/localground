@@ -17,9 +17,9 @@ define(["underscore",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.listenTo(this.app.vent, 'new-layer-added', this.scrollToLayer);
             },
             events: {
-                'click #new-layer-options a' : 'createNewLayer',
                 'click .map-save' : 'saveMap',
                 'click #map-delete': 'deleteMap',
                 'click .show-hide': 'toggleList'
@@ -83,7 +83,15 @@ define(["underscore",
                 }
                 e.srcElement.classList.toggle('hide');
                 e.srcElement.classList.toggle('show');
-            }
+            },
+
+            scrollToLayer: function (layerModel) {
+                const domID = 'layer' + layerModel.id;
+                const $domElement = $('#' + domID);
+                this.layers.$el.animate({
+                    scrollTop: $domElement.offset().top - 110
+                });
+            },
         });
         return LeftPanelLayout;
     });

@@ -1,127 +1,139 @@
 // main: ../main-new.scss
 .layer-container {
-    background: #f7f7f7;
-    padding-top: 10px;
-    border-top: 1px solid #e4e5eb;
-    .layer-name {
-        cursor: pointer;
-        font-weight: 600;
-        display: inline;
-        font-size: 13px;
-        margin-left: 4px;
-    }
-    .open-layer-menu {
-        float: right;
-        padding: 2px 7px;
-        cursor: pointer;
-    }
-    .layer-menu {
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-         -khtml-user-select: none;
-           -moz-user-select: none;
-            -ms-user-select: none;
-                user-select: none;
-    }
+    background: white;
+    border-bottom: 1px solid #e4e5eb;
 
-    .layer-column {
-        padding: 0px 10px;
-    }
-    .add-record-container {
-        float: right;
-        cursor: pointer;
-        margin-top: -3px;
-    }
-    .left-geometry-button {
-        float: right;
-        padding: 4px 4px 1px 4px;
-        border: 1px solid #dadada;
-        border-radius: 4px;
-        &:hover {
-            background: #f1f1f1;
+    .layer-header {
+        background: #f7f7f7;
+        padding: 10px 0px 7px 0px;
+        border-bottom: 1px solid #e8e8e8;
+
+        .layer-column {
+            padding: 0px 10px;
+        }
+        .add-record-container {
+            float: right;
+            cursor: pointer;
+            margin-top: -3px;
+        }
+        .left-geometry-button {
+            float: right;
+            padding: 4px 4px 1px 4px;
+            border: 1px solid #dadada;
+            border-radius: 4px;
+            &:hover {
+                background: #f1f1f1;
+            }
+        }
+        .add-record {
+            margin-top: 5px;
+            margin-right: 5px;
+        }
+
+        #select-point, #select-polygon,
+        #select-polyline {
+            display: block;
+            margin: 0px 0px;
+            padding: 3px 2px;
+            line-height: 26px;
+            font-size: 12px;
+            border-top: 1px solid #e4e5eb;
+            &:hover {
+                background-color: #EEE;
+            }
+        }
+        .add-polygon_svg, .add-polyline_svg {
+            margin-right: 5px;
+        }
+
+        .lc-3 {
+            position: relative;
+        }
+        .geometry-list-wrapper {
+            left: 200px;
+        }
+        .geometry-options {
+            margin-top: 0px;
+        }
+
+        .layer-name {
+            cursor: pointer;
+            font-weight: 600;
+            display: inline;
+            font-size: 13px;
+            margin-left: 4px;
+        }
+
+        .collapse-wrapper {
+            line-height: 17px;
+            vertical-align: text-bottom;
+        }
+
+        .collapse {
+            color: #777;
+            .symbol-item {
+                display: none;
+            }
+        }
+        .open-layer-menu {
+            float: right;
+            padding: 2px 7px;
+            cursor: pointer;
+        }
+        .layer-menu {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+             -khtml-user-select: none;
+               -moz-user-select: none;
+                -ms-user-select: none;
+                    user-select: none;
+        }
+        .layer-style-by {
+            font-size: 11px;
+            margin-left: 4px;
+            display: inline;
+            color: #8bb8ed;
+            font-weight: 600;
+            position: absolute;
+            left: 26px;
+            span {
+                color: inherit;
+                font-weight: 600;
+            }
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        .layer-datasource {
+            font-size: 11px;
+            margin-left: 20px;
+            line-height: 15px;
+
         }
     }
-    .add-record {
-        margin-top: 5px;
-        margin-right: 5px;
-    }
 
-    #select-point, #select-polygon,
-    #select-polyline {
-        display: block;
-        margin: 0px 0px;
-        padding: 3px 2px;
-        line-height: 26px;
-        font-size: 12px;
-        border-top: 1px solid #e4e5eb;
-        &:hover {
-            background-color: #EEE;
+    .hide-layer {
+        .lc-2, .lc-3,
+        #symbols-list {
+            display: none;
+        }
+
+        .layer-container {
+            padding-bottom: 12px;
+        }
+        &:last-child {
+            border-bottom: 1px solid #e8e8e8;
         }
     }
-    .add-polygon_svg, .add-polyline_svg {
-        margin-right: 5px;
-    }
 
-    .lc-3 {
-        padding-bottom: 14px;
-        border-bottom: 1px solid #e8e8e8;
-        position: relative;
-        height: 15px;
-    }
-    .geometry-list-wrapper {
-        left: 200px;
-    }
-    .geometry-options {
-        margin-top: 0px;
-    }
-
-}
-
-.collapse-wrapper {
-    line-height: 17px;
-    vertical-align: text-bottom;
-}
-
-.collapse {
-    .symbol-item {
-        display: none;
-    }
-}
-
-.hide-layer {
-    .lc-2, .lc-3,
-    #symbols-list {
-        display: none;
-    }
-
-    .layer-container {
-        padding-bottom: 12px;
-    }
-    &:last-child {
-        border-bottom: 1px solid #e8e8e8;
-    }
-}
-
-.layer-datasource {
-    font-size: 11px;
-    margin-left: 20px;
-    line-height: 15px;
-
-}
-
-.layer-style-by {
-    font-size: 11px;
-    margin-left: 4px;
-    display: inline;
-    color: #8bb8ed;
-    font-weight: 600;
-    position: absolute;
-    left: 26px;
-    span {
-        color: inherit;
-        font-weight: 600;
-    }
-    &:hover {
-        text-decoration: underline;
+    .no-symbols-found {
+        padding: 0px;
+        background: $warn-background;
+        >div {
+            margin: 30px 10px;
+            text-align: center;
+            color: $warn-text;
+        }
     }
 }

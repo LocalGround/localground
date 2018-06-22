@@ -17,12 +17,6 @@
     display: flex;
 }
 
-.left-wrapper {
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: calc(100vh - 154px);
-}
-
 .end-section {
     position: relative;
     font-size: 12px;

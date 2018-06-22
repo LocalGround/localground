@@ -97,13 +97,19 @@ define(["marionette",
                     className: 'symbol-item marker-container',
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        var templateHTML = `<div>
-                            'Dataset Empty!!!'
+                        var templateHTML = `<div class="no-symbols-found">
+                            <div>
+                            Add places to this dataset by <br>
+                            placing markers on the map.
+                            <div>
                         </div>`
                         this.template = Handlebars.compile(templateHTML);
+                        //this.template = Handlebars.compile(LayerItemTemplate);
                     },
                     templateHelpers: function () {
-                        return this.parent.model.toJSON()
+                        const d = this.parent.model.toJSON();
+                        d.hasData = false;
+                        return d;
                     }
                 });
             },
@@ -261,17 +267,17 @@ define(["marionette",
             collapseSymbols: function () {
                 if (this.model.get('metadata').collapsed === true) {
                     this.model.get('metadata').collapsed = false
-                    this.$el.find('.symbol').css('height', 'auto');
-                    this.$el.find('.symbol-item').css('display', 'block');
-                    this.$el.find('.collapse').removeClass('fa-caret-up');
-                    this.$el.find('.collapse').addClass('fa-caret-down');
+                    //this.$el.find('.symbol').css('height', 'auto');
+                    this.$el.find('.symbol, .symbol-item').css('display', 'block');
+                    this.$el.find('.collapse').removeClass('fa-angle-right');
+                    this.$el.find('.collapse').addClass('fa-angle-down');
                     this.$el.find('.symbol-level-svg').hide();
                 } else {
                     this.model.get('metadata').collapsed = true;
-                    this.$el.find('.symbol').css('height', 0);
-                    this.$el.find('.symbol-item').css('display', 'none');
-                    this.$el.find('.collapse').removeClass('fa-caret-down');
-                    this.$el.find('.collapse').addClass('fa-caret-up');
+                    this.$el.find('.symbol, .symbol-item').css('display', 'none');
+                    //this.$el.find('.symbol-item').css('display', 'none');
+                    this.$el.find('.collapse').removeClass('fa-angle-down');
+                    this.$el.find('.collapse').addClass('fa-angle-right');
                     this.$el.find('.symbol-level-svg').show();
                 }
             },

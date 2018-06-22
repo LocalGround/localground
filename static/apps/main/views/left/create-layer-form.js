@@ -111,6 +111,7 @@ define ([
                 this.model.set(JSON.parse(response));
                 this.app.dataManager.addLayerToMap(this.map, this.model);
                 this.app.vent.trigger('close-modal');
+                this.app.vent.trigger('new-layer-added', this.model);
             }
         });
         return NewLayer;
