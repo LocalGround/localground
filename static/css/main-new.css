@@ -947,6 +947,41 @@ i.fa.fa.fa-question-circle {
   color: #999;
 }
 
+@media (min-width: 901px) {
+  #legend {
+    height: auto;
+    width: auto;
+    min-width: 260px;
+  }
+}
+
+.legend-show_symbol {
+  display: none;
+}
+
+.half-opac {
+  opacity: 0.5;
+}
+
+.symbol-entry {
+  display: grid;
+  grid-template-columns: 36px auto 22px;
+  align-items: center;
+}
+
+.symbol-entry:hover {
+  background: #f0f1f5;
+}
+
+.symbol-entry p {
+  display: inline-block;
+  padding: 0px 4px 0px 10px;
+}
+
+.symbol-entry:hover .legend-show_symbol {
+  display: inline-block;
+}
+
 .breadcrumb {
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 transparent, 0 2px 4px -1px transparent;
   position: absolute;
@@ -1976,3 +2011,4 @@ nav.toolbar-main .nav {
   width: 100vw;
   height: 80px;
 }
+/*# sourceMappingURL=main-new.css.map */

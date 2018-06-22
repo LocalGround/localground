@@ -8,6 +8,7 @@ define(['marionette',
     function (Marionette, _, Handlebars, Symbols, LegendSymbolEntry, LayerTemplate) {
         'use strict';
 
+        // in this view, the model is a layer, and each childview is a symbol
         var LegendLayerEntry = Marionette.CompositeView.extend({
             childView: LegendSymbolEntry,
             className: "layer-entry",
@@ -24,6 +25,32 @@ define(['marionette',
                 this.collection.assignRecords(this.dataCollection);
                 this.template = Handlebars.compile(LayerTemplate);
             },
+
+            templateHelpers: function () {
+                return {
+                    isShowing: true
+                };
+            },
+
+            events: {
+                'change .cb-symbol': 'showHideLayer'
+            },
+
+            showHideLayer: function(e) {
+                var isChecked = $(e.target).prop('checked');
+                if (isChecked) {
+                    this.children.each((symbol) => {
+                        symbol.markerOverlays.showAll();
+                    });
+                    this.$el.find('.symbol-container').show();
+                } else {
+                    this.children.each((symbol) => {
+                        symbol.markerOverlays.hideAll();
+                    });
+                    this.$el.find('.symbol-container').hide();
+                }
+            },
+
             drawOverlays: function () {
                 //draw map overlays in reverse order so they draw on
                 //top of each other correctly:

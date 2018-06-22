@@ -1,4 +1,7 @@
 <ul class="list-indent-simple">
-    <li>{{ title }}</li>
+    <li>
+        <input class="cb-symbol" type="checkbox" {{#if isShowing}}checked{{/if}} />
+        <span>{{ title }}</span>
+    </li>
 </ul>
 <ul class="symbol-container list-indent-simple"></ul>
