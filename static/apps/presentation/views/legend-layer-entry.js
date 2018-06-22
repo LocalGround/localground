@@ -33,7 +33,29 @@ define(['marionette',
             },
 
             events: {
-                'change .cb-symbol': 'showHideLayer'
+                'change .cb-symbol': 'showHideLayer',
+                'click .collapse': 'collapseSymbols'
+            },
+
+            collapseSymbols: function () {
+                if (this.$el.find('.collapse').hasClass('fa-angle-right')) {
+                    this.$el.find('.presentation-records_wrapper').css('display', 'block');
+                    
+                    this.$el.find('.collapse').removeClass('fa-angle-right');
+                    this.$el.find('.collapse').addClass('fa-angle-down');
+
+                    this.$el.find('.symbol-entry-header').addClass('legend-symbol_expanded');
+                    this.$el.find('.symbol-entry-header').removeClass('legend-symbol_collapsed');
+                    //this.$el.find('.legend-symbol_svg').hide();
+                } else {
+                    this.$el.find('.presentation-records_wrapper').css('display', 'none');
+                    this.$el.find('.collapse').removeClass('fa-angle-down');
+                    this.$el.find('.collapse').addClass('fa-angle-right');
+
+                    this.$el.find('.symbol-entry-header').removeClass('legend-symbol_expanded');
+                    this.$el.find('.symbol-entry-header').addClass('legend-symbol_collapsed');
+                    //this.$el.find('.legend-symbol_svg').show();
+                }
             },
 
             showHideLayer: function(e) {

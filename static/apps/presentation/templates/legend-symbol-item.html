@@ -2,11 +2,22 @@
     <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
           stroke-width="{{ strokeWeight }}" stroke="{{ icon.strokeColor }}" d="{{ icon.path }}"></path>
 </svg -->
-{{{svg}}}
-<!-- If there is more than one unique item inside the group, give a title
-     Otherwise If there's only 1 symbol, then don't show this section
--->
-{{#compare count 1 operator=">"}}
-    <p>{{ title }}</p>
-{{/compare}}
-<i class="fa fa-eye legend-show_symbol"></i>
+<div class="symbol-entry-header legend-symbol_expanded">
+
+    <span class="legend-symbol_svg">{{{svg}}}</span>
+    <!-- If there is more than one unique item inside the group, give a title
+        Otherwise If there's only 1 symbol, then don't show this section
+    -->
+    {{#compare count 1 operator=">"}}
+        <p>{{ title }}</p>
+    {{/compare}}
+    <i class="fa fa-eye legend-show_symbol"></i>
+</div>
+<ul class="presentation-records_wrapper">
+    {{#each records}}
+    <li class="presentation-record_item"> 
+        {{{this.svg}}} 
+        <span>{{this.displayText}}</span>
+    </li>
+    {{/each}}
+</ul>

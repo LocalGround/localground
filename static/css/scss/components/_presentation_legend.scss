@@ -6,15 +6,18 @@
     }
 }
 
-.legend-show_symbol {
+.legend-show_symbol.fa-eye {
     display: none;
+}
+.legend-show_symbol.fa-eye-slash {
+    display: inline;
 }
 
 .half-opac {
     opacity: 0.5;
 }
 
-.symbol-entry {
+.symbol-entry-header {
     display: grid;
     grid-template-columns: 36px auto 22px;
     align-items: center;
@@ -31,4 +34,28 @@
         display: inline-block;
     }
 
+}
+
+.legend-symbol_expanded {
+    display: grid;
+    grid-template-columns: auto 22px;
+
+    .legend-symbol_svg {
+        display: none;
+    }
+}
+
+.legend-symbol_collapsed {
+    display: grid;
+    grid-template-columns: 38px auto 22px;
+
+    .legend-symbol_svg {
+        display: inline-block;
+    }
+}
+
+
+
+.presentation-record_item {
+    padding-left: 8px;
 }

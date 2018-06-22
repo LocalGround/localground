@@ -955,31 +955,57 @@ i.fa.fa.fa-question-circle {
   }
 }
 
-.legend-show_symbol {
+.legend-show_symbol.fa-eye {
   display: none;
+}
+
+.legend-show_symbol.fa-eye-slash {
+  display: inline;
 }
 
 .half-opac {
   opacity: 0.5;
 }
 
-.symbol-entry {
+.symbol-entry-header {
   display: grid;
   grid-template-columns: 36px auto 22px;
   align-items: center;
 }
 
-.symbol-entry:hover {
+.symbol-entry-header:hover {
   background: #f0f1f5;
 }
 
-.symbol-entry p {
+.symbol-entry-header p {
   display: inline-block;
   padding: 0px 4px 0px 10px;
 }
 
-.symbol-entry:hover .legend-show_symbol {
+.symbol-entry-header:hover .legend-show_symbol {
   display: inline-block;
+}
+
+.legend-symbol_expanded {
+  display: grid;
+  grid-template-columns: auto 22px;
+}
+
+.legend-symbol_expanded .legend-symbol_svg {
+  display: none;
+}
+
+.legend-symbol_collapsed {
+  display: grid;
+  grid-template-columns: 38px auto 22px;
+}
+
+.legend-symbol_collapsed .legend-symbol_svg {
+  display: inline-block;
+}
+
+.presentation-record_item {
+  padding-left: 8px;
 }
 
 .breadcrumb {
