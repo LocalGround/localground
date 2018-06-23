@@ -15,9 +15,17 @@
 </div>
 <ul class="presentation-records_wrapper">
     {{#each records}}
-    <li class="presentation-record_item"> 
-        {{{this.svg}}} 
-        <span>{{this.displayText}}</span>
-    </li>
+    <a href="{{url}}">
+        <li class="presentation-record_item">
+            <span class="legend-record_icon">
+                {{#if this.svg}} 
+                    {{{this.svg}}} 
+                {{else}}
+                    <i class="fa fa-question-circle"></i>
+                {{/if}}
+            </span>
+            <span>{{this.displayText}}</span>
+        </li>
+    </a>
     {{/each}}
 </ul>

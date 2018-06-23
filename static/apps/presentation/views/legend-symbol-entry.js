@@ -64,11 +64,18 @@ define(['marionette',
                 let recordInfoList = [];
                 
                 collection.each((record) => {
+                    // href="#/3/layers/8/dataset_4/85"
                     console.log('INFO: ', record);
                     console.log('DISPLAY FIELD', this.model.layerModel.get('display_field'));
+
+                    // const mapId = this.model.layerModel.get('map_id');
+                    // const layerId = this.model.layerModel.id;
+                    const dataset = this.model.layerModel.get('dataset').overlay_type;
+                    const recordId = record.id;
+
                     recordInfoList.push({
                         displayText: record.get(this.model.layerModel.get('display_field')) || 'Untitled',
-                        id: record.id,
+                        url: `#/${dataset}/${recordId}`,
                         svg: this.getSVG(record, this.model)
                     });
                 });
