@@ -23,8 +23,7 @@ define(["marionette",
          // layerListView
         var LayerListChild =  Marionette.CompositeView.extend({
             collectionEvents: {
-                'reset': 'reRender',
-                //'remove': 'reRenderIfEmpty'
+                'reset': 'reRender'
             },
             modelEvents: {
                 'change:group_by': 'updateGroupBy',
@@ -120,19 +119,14 @@ define(["marionette",
             reRender: function () {
                 this.symbolModels.assignRecords(this.dataCollection);
             },
-            reRenderIfEmpty: function () {
-                if (this.model.isEmpty()) {
-                    this.render();
-                }
-            },
             updateGroupBy: function () {
                 this.$el.find('.layer-style-by').html(
                     this.model.get('group_by')
                 );
                 if (this.model.isIndividual()) {
-                    this.$el.find('.collapse-wrapper').css('display', 'none');
+                    this.$el.find('.collapse').css('visibility', 'hidden');
                 } else {
-                    this.$el.find('.collapse-wrapper').css('display', 'inline');
+                    this.$el.find('.collapse').css('visibility', 'visible');
                 }
             },
             childViewOptions: function (model, index) {

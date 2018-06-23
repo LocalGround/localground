@@ -115,6 +115,10 @@ ul {
   opacity: 0.4;
 }
 
+document, body {
+  overflow: hidden;
+}
+
 .map-title {
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 transparent, 0 2px 4px -1px transparent;
   display: block;
@@ -332,6 +336,10 @@ ul {
   background: white;
   /*border-bottom: 1px solid #e4e5eb;
     padding-bottom: 12px;*/
+}
+
+.layer-container .fa {
+  color: #999;
 }
 
 .layer-container .symbols {
@@ -593,7 +601,7 @@ ul {
   width: auto;
   font-size: 16px;
   padding: 0;
-  padding-top: 5px;
+  padding-top: 0px;
 }
 
 .ind-symbol_text {
@@ -601,7 +609,7 @@ ul {
   padding: 4px 0px;
   display: inline-block;
   font-weight: 600;
-  width: 160px;
+  width: 194px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -663,7 +671,7 @@ i.fa.fa.fa-question-circle {
 
 .symbol-item a, .symbol-item > div {
   text-decoration: none;
-  padding: 2px 32px 2px 34px;
+  padding: 2px 0px 2px 34px;
   display: inline-block;
   width: 100%;
 }

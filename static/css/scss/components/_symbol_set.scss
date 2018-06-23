@@ -78,7 +78,7 @@
         width: auto;
         font-size: 16px;
         padding: 0;
-        padding-top: 5px;
+        padding-top: 0px;
     }
 }
 
@@ -87,7 +87,7 @@
     padding: 4px 0px;
     display: inline-block;
     font-weight: 600;
-    width: 160px;
+    width: 194px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -147,7 +147,7 @@ i.fa.fa.fa-question-circle {
 
     a, >div {
         text-decoration: none;
-        padding: 2px 32px 2px 34px;
+        padding: 2px 0px 2px 34px;
         display: inline-block;
         width: 100%;
     }

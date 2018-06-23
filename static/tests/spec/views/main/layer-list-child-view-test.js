@@ -31,9 +31,7 @@ define([
             spyOn(LayerListChildView.prototype, 'displayGeometryOptions').and.callThrough();
             spyOn(LayerListChildView.prototype, 'onRender').and.callThrough();
             spyOn(LayerListChildView.prototype, 'reRender').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'reRenderIfEmpty').and.callThrough();
             spyOn(LayerListChildView.prototype, 'updateGroupBy').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'childViewOptions').and.callThrough();
             spyOn(LayerListChildView.prototype, 'addChild').and.callThrough();
             spyOn(LayerListChildView.prototype, 'removeEmptySymbols').and.callThrough();
             spyOn(LayerListChildView.prototype, 'reRenderOrAssignRecordToSymbol').and.callThrough();
@@ -146,18 +144,18 @@ define([
 
             it(".collapse button hides and shows the Symbol Items", function() {
                 this.view.render();
-                expect(this.view.$el.find('.collapse')).toHaveClass('fa-caret-down');
+                expect(this.view.$el.find('.collapse')).toHaveClass('fa-angle-down');
 
                 this.view.$el.find('.collapse').trigger('click');
 
-                expect(this.view.$el.find('.collapse')).toHaveClass('fa-caret-up');
+                expect(this.view.$el.find('.collapse')).toHaveClass('fa-angle-right');
                 expect(this.view.$el.find('.symbol').css('height')).toEqual('0px');
                 expect(this.view.$el.find('.symbol-item').css('display')).toEqual('none');
                 expect(this.view.$el.find('.symbol-level-svg').css('display')).toEqual('inline');
 
                 this.view.$el.find('.collapse').trigger('click');
 
-                expect(this.view.$el.find('.collapse')).toHaveClass('fa-caret-down');
+                expect(this.view.$el.find('.collapse')).toHaveClass('fa-angle-down');
                 expect(this.view.$el.find('.symbol-item').css('display')).toEqual('block');
                 expect(this.view.$el.find('.symbol-level-svg').css('display')).toEqual('none');
             });
@@ -229,13 +227,13 @@ define([
             it("'styled by: ' text updates when the Layer's 'group_by' attribute changes", function() {
                 this.view.render();
                 expect(this.view.model.get('group_by')).toEqual('height');
-                expect(this.view.$el.find('#layer-style-by').text()).toEqual('height');
-                expect(this.view.$el.find('.collapse-wrapper').css('display')).toEqual('inline');
+                expect(this.view.$el.find('.layer-style-by').text()).toEqual('height');
+                expect(this.view.$el.find('.collapse').css('visibility')).toEqual('visible');
 
                 this.view.model.set('group_by', 'individual');
 
-                expect(this.view.$el.find('#layer-style-by').text()).toEqual('individual');
-                expect(this.view.$el.find('.collapse-wrapper').css('display')).toEqual('none');
+                expect(this.view.$el.find('.layer-style-by').text()).toEqual('individual');
+                expect(this.view.$el.find('.collapse').css('visibility')).toEqual('hidden');
             });
         });
         describe("LayerListChildView, categorical: ", function () {
@@ -281,16 +279,40 @@ define([
                 expect(Symbols.prototype.assignRecords).toHaveBeenCalledTimes(1);
                 expect(Symbols.prototype.assignRecords).toHaveBeenCalledWith(this.view.dataCollection);
             });
-            it('reRenderIfEmpty() works', function () {
-                expect(1).toEqual(0);
-            });
+            // it('reRenderIfEmpty() works', function () {
+            //     this.view.render();
+            //     expect(LayerListChildView.prototype.reRenderIfEmpty).toHaveBeenCalledTimes(0);
+            //     this.view.dataCollection.set([]);
+            //     expect(LayerListChildView.prototype.reRenderIfEmpty).toHaveBeenCalledTimes(1);
+            // });
             it('updateGroupBy() works', function () {
-                expect(1).toEqual(0);
+                this.view.render();
+                expect(LayerListChildView.prototype.updateGroupBy).toHaveBeenCalledTimes(0);
+
+                // set a different categorical group by:
+                this.view.model.set('group_by', 'id');
+                expect(LayerListChildView.prototype.updateGroupBy).toHaveBeenCalledTimes(1);
+                expect(this.view.$el.find('.layer-style-by').html()).toEqual('id');
+                expect(this.view.$el.find('.collapse').css('visibility')).toEqual('visible');
+
+                // set to individual and make sure expand / contract arrow invisible:
+                this.view.model.set('group_by', 'individual');
+                expect(LayerListChildView.prototype.updateGroupBy).toHaveBeenCalledTimes(2);
+                expect(this.view.$el.find('.layer-style-by').html()).toEqual('individual');
+                expect(this.view.$el.find('.collapse').css('visibility')).toEqual('hidden');
+
             });
-            it('childViewOptions() works', function () {
-                expect(1).toEqual(0);
-            });
+
             it('addChild() works', function () {
+                //Start here:
+                /*addChild: function (symbolModel, ChildView, index) {
+                    // unless the model is continuous, don't display empty
+                    // symbols:
+                    if (!symbolModel.hasModels() && !this.model.isContinuous()) {
+                        return null;
+                    }
+                    return Marionette.CollectionView.prototype.addChild.call(this, symbolModel, ChildView, index);
+                },*/
                 expect(1).toEqual(0);
             });
             it('removeEmptySymbols() works', function () {
