@@ -45,19 +45,18 @@
     display: inline;
 }
 
-.symbol-header:hover .symbol-edit,
-.symbol-header:hover .symbol-display,
-.symbol-item:hover .symbol-edit {
-    display: inline;
-    cursor: pointer;
-
-}
-
-.ind-symbol:hover .symbol-edit-individual,
-.ind-symbol:hover .symbol-display {
-    display: inline;
-    cursor: pointer;
-
+.symbol-header:hover,
+.symbol-item:hover,
+.ind-symbol:hover {
+    .symbol-edit,
+    .symbol-display,
+    .symbol-edit-individual {
+        display: inline;
+        cursor: pointer;
+    }
+    .symbol-edit-individual {
+        margin: 5px 10px 0px 0px;
+    }
 }
 
 .half-opac .fa-eye,
@@ -86,8 +85,8 @@
     font-size: 12px;
     padding: 4px 0px;
     display: inline-block;
-    font-weight: 600;
-    width: 194px;
+    /*font-weight: 600;*/
+    width: 185px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -113,6 +112,10 @@
             color:#ffffff;
         }
     }
+}
+.symbol.individual {
+    border-bottom: 0px solid transparent;
+    padding-bottom: 0px;
 }
 
 .symbol-highlight {

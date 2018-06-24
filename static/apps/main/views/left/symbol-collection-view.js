@@ -97,7 +97,7 @@ define(["jquery",
                     layer_id: this.layerId,
                     map_id: this.mapId,
                     dataset: this.layer.get('dataset'),
-                    isIndividual: this.layer.get('group_by') === 'individual',
+                    isIndividual: this.layer.isIndividual(),
                     svgIcon: this.model.toSVG(),
                     count: this.collection ? this.collection.length : 1,
                     notCollapsed: !this.layer.get('metadata').collapsed
