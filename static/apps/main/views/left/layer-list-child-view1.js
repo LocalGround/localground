@@ -54,15 +54,13 @@ define(["marionette",
                 this.symbolModels.assignRecords(this.dataCollection);
                 //this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
-                //this.model.removeEmptySymbols();
-
                 this.attachRecordEventHandlers();
             },
             attachRecordEventHandlers: function () {
                 this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol);
                 this.listenTo(this.dataCollection, 'update-symbol-assignment', this.reRenderOrReassignRecordToSymbol);
                 this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
-                this.listenTo(this.app.vent, 'record-has-been-deleted', this.removeEmptySymbols);
+                this.listenTo(this.app.vent, 'record-has-been-deleted', this.symbolModels.removeEmpty);
             },
 
             onRender: function() {
@@ -146,11 +144,6 @@ define(["marionette",
                 }
                 return Marionette.CollectionView.prototype.addChild.call(this, symbolModel, ChildView, index);
             },
-            removeEmptySymbols: function () {
-                this.symbolModels.removeEmpty();
-                //const mapID = this.app.dataManager.getMap().id;
-                //this.app.router.navigate("//" + mapID);
-            },
             reRenderOrAssignRecordToSymbol: function (recordModel) {
                 const symbol = this.symbolModels.assignRecord(recordModel);
                 if (this.dataCollection.length === 1) {
@@ -164,18 +157,6 @@ define(["marionette",
                     this.render();
                     return;
                 }
-            },
-
-            checkSelectedItem: function(layerId) {
-                this.$el.attr('id', this.model.id);
-                if (this.$el.find('input').prop('checked', false)) {
-                    this.$el.find('input').click();
-                }
-            },
-
-            updateTitle: function (title) {
-                this.model.set("title", title);
-                this.render();
             },
             showStyleByMenu: function (e) {
                 this.popover.update({

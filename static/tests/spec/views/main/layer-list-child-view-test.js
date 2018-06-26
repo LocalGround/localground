@@ -21,7 +21,6 @@ define([
                 Symbols, Popover, AddMarkerMenu, EditLayerMenu) {
 
         'use strict';
-        var map;
 
         const initSpies = function(scope) {
             spyOn(LayerListChildView.prototype, 'initialize').and.callThrough();
@@ -29,15 +28,14 @@ define([
             spyOn(LayerListChildView.prototype, 'addRecord').and.callThrough();
             spyOn(LayerListChildView.prototype, 'showLayerMenu').and.callThrough();
             spyOn(LayerListChildView.prototype, 'displayGeometryOptions').and.callThrough();
+            spyOn(LayerListChildView.prototype, 'render').and.callThrough();
             spyOn(LayerListChildView.prototype, 'onRender').and.callThrough();
             spyOn(LayerListChildView.prototype, 'reRender').and.callThrough();
             spyOn(LayerListChildView.prototype, 'updateGroupBy').and.callThrough();
+            spyOn(Marionette.CollectionView.prototype, 'addChild').and.callThrough();
             spyOn(LayerListChildView.prototype, 'addChild').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'removeEmptySymbols').and.callThrough();
             spyOn(LayerListChildView.prototype, 'reRenderOrAssignRecordToSymbol').and.callThrough();
             spyOn(LayerListChildView.prototype, 'reRenderOrReassignRecordToSymbol').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'checkSelectedItem').and.callThrough();
-            spyOn(LayerListChildView.prototype, 'updateTitle').and.callThrough();
             spyOn(LayerListChildView.prototype, 'showStyleByMenu').and.callThrough();
             spyOn(LayerListChildView.prototype, 'addCssToSelectedLayer').and.callThrough();
             spyOn(LayerListChildView.prototype, 'collapseSymbols').and.callThrough();
@@ -49,6 +47,9 @@ define([
             spyOn(EditDisplayField.prototype, 'initialize').and.callThrough();
 
             spyOn(Record.prototype, "save");
+            spyOn(Symbols.prototype, 'removeEmpty');
+            spyOn(Symbols.prototype, 'assignRecord').and.callThrough();
+            spyOn(Symbols.prototype, 'reassignRecord').and.callThrough();
 
             spyOn(Modal.prototype, 'show').and.callThrough();
             spyOn(Modal.prototype, 'update').and.callThrough();
@@ -69,31 +70,24 @@ define([
         };
 
         const initContinuousLayerView = function(scope) {
-            map = scope.dataManager.getMaps().at(0);
-
-            map.set("layers", scope.getLayers(map.id));
-            //console.log(map);
-            const layer = map.get('layers').at(1);
+            const layer = scope.continuousLayer;
+            const records = scope.dataManager.getCollection(layer.get('dataset').overlay_type);
             scope.view = new LayerListChildView({
                 app: scope.app,
                 model: layer,
-                collection: layer.get('symbols'),
-                dataCollection: scope.dataManager.getCollection(layer.get('dataset').overlay_type)
+                collection: layer.getSymbols(),
+                dataCollection: records
             });
         };
 
         const initCategoricalLayerView = function(scope) {
-            map = scope.dataManager.getMaps().at(0);
-
-            map.set("layers", scope.getLayers(map.id));
-            //console.log(map);
-            const layer = map.get('layers').at(2);
-            console.log('LAYER', layer);
+            const layer = scope.categoricalLayer;
+            const records = scope.dataManager.getCollection(layer.get('dataset').overlay_type);
             scope.view = new LayerListChildView({
                 app: scope.app,
                 model: layer,
-                collection: layer.get('symbols'),
-                dataCollection: scope.dataManager.getCollection(layer.get('dataset').overlay_type)
+                collection: layer.getSymbols(),
+                dataCollection: records
             });
         };
 
@@ -105,8 +99,31 @@ define([
 
             it("should initialize correctly", function () {
                 expect(this.view.initialize).toHaveBeenCalledTimes(1);
-                expect(this.view.model).toEqual(map.get('layers').at(1));
+                expect(this.view.model).toEqual(this.continuousLayer);
                 expect(this.view.collection.length).toEqual(5);
+            });
+
+            it("listens for add new record trigger", function () {
+                expect(LayerListChildView.prototype.reRenderOrAssignRecordToSymbol).toHaveBeenCalledTimes(0);
+                this.view.dataCollection.add(new Backbone.Model());
+                expect(LayerListChildView.prototype.reRenderOrAssignRecordToSymbol).toHaveBeenCalledTimes(1);
+            });
+
+            it("listens for record collection's update-symbol-assignment trigger", function () {
+                expect(LayerListChildView.prototype.reRenderOrReassignRecordToSymbol).toHaveBeenCalledTimes(0);
+                this.view.dataCollection.trigger('update-symbol-assignment', this.view.dataCollection.at(0));
+                expect(LayerListChildView.prototype.reRenderOrReassignRecordToSymbol).toHaveBeenCalledTimes(1);
+            });
+            it("listens for vent trigger: geometry-created", function () {
+                expect(LayerListChildView.prototype.addRecord).toHaveBeenCalledTimes(0);
+                this.app.vent.trigger('geometry-created', {});
+                expect(LayerListChildView.prototype.addRecord).toHaveBeenCalledTimes(1);
+
+            });
+            it("listens for vent trigger: record-has-been-deleted", function () {
+                expect(Symbols.prototype.removeEmpty).toHaveBeenCalledTimes(1);
+                this.app.vent.trigger('record-has-been-deleted');
+                expect(Symbols.prototype.removeEmpty).toHaveBeenCalledTimes(2);
             });
         });
 
@@ -242,50 +259,31 @@ define([
                 initCategoricalLayerView(this);
             });
 
-            // it("createNewSymbol() works", function() {
-            //
-            //     expect(this.view.collection.where({'rule': "type = 'mahogany'"}).length).toEqual(0);
-            //
-            //     const initialSymbolCount = this.view.collection.models.length;
-            //     let record = this.view.dataCollection.get({'id': 50});
-            //     record.set('type', 'mahogany');
-            //     this.view.createNewSymbol(this.view.collection, record);
-            //
-            //     // the newest symbol always gets inserted at the end of the list, but before the final (uncategorized) symbol. Therefore, length - 2.
-            //     const newSymbol = this.view.collection.models[this.view.collection.models.length-2];
-            //
-            //     expect(newSymbol.get('rule')).toEqual("type = 'mahogany'");
-            //     expect(this.view.collection.models.length).toEqual(initialSymbolCount + 1);
-            //
-            // });
         });
 
         describe('LayerListChildView: instance methods work', function () {
             beforeEach(function () {
                 initSpies(this);
-                initCategoricalLayerView(this);
             });
 
             it('onRender() works', function () {
+                initCategoricalLayerView(this);
                 expect(LayerListChildView.prototype.showHideOverlays).toHaveBeenCalledTimes(0);
                 this.view.render();
                 expect(LayerListChildView.prototype.showHideOverlays).toHaveBeenCalledTimes(1);
 
             });
             it('reRender() works', function () {
+                initCategoricalLayerView(this);
                 spyOn(Symbols.prototype, 'assignRecords').and.callThrough();
                 expect(Symbols.prototype.assignRecords).toHaveBeenCalledTimes(0);
                 this.view.reRender();
                 expect(Symbols.prototype.assignRecords).toHaveBeenCalledTimes(1);
                 expect(Symbols.prototype.assignRecords).toHaveBeenCalledWith(this.view.dataCollection);
             });
-            // it('reRenderIfEmpty() works', function () {
-            //     this.view.render();
-            //     expect(LayerListChildView.prototype.reRenderIfEmpty).toHaveBeenCalledTimes(0);
-            //     this.view.dataCollection.set([]);
-            //     expect(LayerListChildView.prototype.reRenderIfEmpty).toHaveBeenCalledTimes(1);
-            // });
+
             it('updateGroupBy() works', function () {
+                initCategoricalLayerView(this);
                 this.view.render();
                 expect(LayerListChildView.prototype.updateGroupBy).toHaveBeenCalledTimes(0);
 
@@ -303,32 +301,60 @@ define([
 
             });
 
-            it('addChild() works', function () {
-                //Start here:
-                /*addChild: function (symbolModel, ChildView, index) {
-                    // unless the model is continuous, don't display empty
-                    // symbols:
-                    if (!symbolModel.hasModels() && !this.model.isContinuous()) {
-                        return null;
+            it('addChild() does not omit empty continuous symbol', function () {
+                expect(Marionette.CollectionView.prototype.addChild).toHaveBeenCalledTimes(0);
+                expect(LayerListChildView.prototype.addChild).toHaveBeenCalledTimes(0);
+                initContinuousLayerView(this);
+                this.view.model.getSymbols().at(0).matchedModels = new Backbone.Collection();
+                this.view.render();
+                let counter = 0;
+                let numRecords = 0;
+                this.view.model.getSymbols().each(symbol => {
+                    if (!symbol.isEmpty()) {
+                        ++counter;
+                        numRecords += symbol.getModels().length;
                     }
-                    return Marionette.CollectionView.prototype.addChild.call(this, symbolModel, ChildView, index);
-                },*/
-                expect(1).toEqual(0);
+                });
+                expect(LayerListChildView.prototype.addChild).toHaveBeenCalledTimes(this.view.model.getSymbols().length);
+                expect(Marionette.CollectionView.prototype.addChild).toHaveBeenCalledTimes(numRecords + counter + 1);
             });
-            it('removeEmptySymbols() works', function () {
-                expect(1).toEqual(0);
+
+            it('addChild() omits empty categorical symbol', function () {
+                expect(Marionette.CollectionView.prototype.addChild).toHaveBeenCalledTimes(0);
+                expect(LayerListChildView.prototype.addChild).toHaveBeenCalledTimes(0);
+                initCategoricalLayerView(this);
+                this.view.model.getSymbols().at(0).matchedModels = new Backbone.Collection();
+                this.view.render();
+                let counter = 0;
+                let numRecords = 0;
+                this.view.model.getSymbols().each(symbol => {
+                    if (!symbol.isEmpty()) {
+                        ++counter;
+                        numRecords += symbol.getModels().length;
+                    }
+                });
+                expect(LayerListChildView.prototype.addChild).toHaveBeenCalledTimes(this.view.model.getSymbols().length);
+                expect(Marionette.CollectionView.prototype.addChild).toHaveBeenCalledTimes(numRecords + counter);
             });
-            it('reRenderOrAssignRecordToSymbol() works', function () {
-                expect(1).toEqual(0);
+            it('reRenderOrAssignRecordToSymbol(recordModel) works', function () {
+                initCategoricalLayerView(this);
+                const record = this.view.dataCollection.at(0);
+                expect(LayerListChildView.prototype.render).toHaveBeenCalledTimes(0);
+                expect(Symbols.prototype.assignRecord).toHaveBeenCalledTimes(18);
+                this.view.reRenderOrAssignRecordToSymbol(record);
+                expect(LayerListChildView.prototype.render).toHaveBeenCalledTimes(0);
+                expect(Symbols.prototype.assignRecord).toHaveBeenCalledWith(record);
+                expect(Symbols.prototype.assignRecord).toHaveBeenCalledTimes(19);
             });
             it('reRenderOrReassignRecordToSymbol() works', function () {
-                expect(1).toEqual(0);
-            });
-            it('checkSelectedItem() works', function () {
-                expect(1).toEqual(0);
-            });
-            it('updateTitle() works', function () {
-                expect(1).toEqual(0);
+                initCategoricalLayerView(this);
+                const record = this.view.dataCollection.at(0);
+                expect(LayerListChildView.prototype.render).toHaveBeenCalledTimes(0);
+                expect(Symbols.prototype.reassignRecord).toHaveBeenCalledTimes(0);
+                this.view.reRenderOrReassignRecordToSymbol(record);
+                expect(LayerListChildView.prototype.render).toHaveBeenCalledTimes(0);
+                expect(Symbols.prototype.reassignRecord).toHaveBeenCalledWith(record);
+
             });
             it('showStyleByMenu() works', function () {
                 expect(1).toEqual(0);

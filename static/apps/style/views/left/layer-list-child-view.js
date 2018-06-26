@@ -36,16 +36,6 @@ define(["jquery",
                 'change input': 'showHideOverlays'
             },
 
-            // triggered from the router
-            checkSelectedItem: function(layerId) {
-                    this.$el.attr('id', this.model.id);
-
-                    if (this.$el.find('input').prop('checked', false)) {
-                        this.$el.find('input').click();
-                    }
-
-            },
-
             childRouterSendCollection: function (mapId, layerId) {
 
                 if (this.model.id == layerId) {
