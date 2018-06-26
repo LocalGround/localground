@@ -1,8 +1,6 @@
 // main: ../main-new.scss
 .layer-container {
     background: white;
-    /*border-bottom: 1px solid #e4e5eb;
-    padding-bottom: 12px;*/
     .fa {
         color: #999;
     }
@@ -12,21 +10,24 @@
         .symbol-level-svg {
             display: none;
         }
-    }
-    .symbols.minimize {
-        .symbol, .symbol-item {
-            display: none;
-        }
-        .sort-by, .count {
-            font-weight: normal;
-        }
-        .symbol-level-svg {
-            display: inline-block;
-        }
-        .symbol-header {
-            line-height: 22px;
-            .symbol-edit, .symbol-display {
-                padding-top: 3px;
+        &.minimize {
+            .symbol,
+            .symbol-item {
+                display: none;
+            }
+            .sort-by,
+            .count {
+                font-weight: normal;
+            }
+            .symbol-level-svg {
+                display: inline-block;
+            }
+            .symbol-header {
+                line-height: 22px;
+                .symbol-edit,
+                .symbol-display {
+                    padding-top: 3px;
+                }
             }
         }
     }
@@ -41,7 +42,6 @@
         .add-record-container {
             float: right;
             cursor: pointer;
-            /*margin-top: -3px;*/
             height: 20px;
         }
         .left-geometry-button {
@@ -73,17 +73,6 @@
         .add-polygon_svg, .add-polyline_svg {
             margin-right: 5px;
         }
-
-        .lc-3 {
-            position: relative;
-        }
-        .geometry-list-wrapper {
-            left: 200px;
-        }
-        .geometry-options {
-            margin-top: 0px;
-        }
-
         .layer-name {
             cursor: pointer;
             font-weight: 600;
@@ -91,12 +80,6 @@
             font-size: 13px;
             margin-left: 4px;
         }
-
-        .collapse-wrapper {
-            line-height: 17px;
-            vertical-align: text-bottom;
-        }
-
         .collapse {
             color: #777;
             .symbol-item {
@@ -107,10 +90,6 @@
             float: right;
             padding: 2px 8px 2px 6px;
             cursor: pointer;
-
-            .fa-ellipsis-v {
-                color: #999;
-            }
         }
         .layer-menu {
             -webkit-touch-callout: none;
@@ -119,13 +98,6 @@
                -moz-user-select: none;
                 -ms-user-select: none;
                     user-select: none;
-        }
-
-        .layer-datasource {
-            font-size: 11px;
-            margin-left: 20px;
-            line-height: 15px;
-
         }
     }
 
@@ -144,7 +116,6 @@
         td {
             line-height: 10px;
             padding-right: 5px;
-
             .collapse {
                 display: inline-block;
                 width: 10px;
@@ -154,26 +125,21 @@
             color: #4691e8;
             font-weight: 600;
             font-size: 11px;
+            &:hover {
+                text-decoration: underline;
+            }
         }
         .fa {
             font-size: 1.6em;
-            color: #999;
-        }
-        a:hover {
-            text-decoration: underline;
         }
     }
 }
 .hide-layer {
-    .lc-2, .lc-3,
-    //#symbols-list,
+    .lc-2,
+    .lc-3,
     .no-symbols-found,
     .add-record-container,
-    .open-layer-menu,
     .layer-details {
         display: none;
-    }
-    &:last-child {
-        border-bottom: 1px solid #e8e8e8;
     }
 }

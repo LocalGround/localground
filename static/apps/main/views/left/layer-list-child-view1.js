@@ -190,7 +190,7 @@ define(["marionette",
 
             displayGeometryOptions: function(e) {
                 this.popover.update({
-                    $source: e.target,
+                    $source: this.$el.find('.add-record-container'),
                     view: new AddMarkerMenu({
                         app: this.app,
                         model: this.model,
@@ -238,7 +238,7 @@ define(["marionette",
                 });
             },
 
-            addCssToSelectedLayer: function(markerId) {
+            addCssToSelectedLayer: function (markerId) {
                 this.$el.find('#' + markerId).addClass('highlight');
             },
 

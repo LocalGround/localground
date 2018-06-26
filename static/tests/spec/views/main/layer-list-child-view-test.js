@@ -8,17 +8,19 @@ define([
     rootDir + "apps/main/views/left/symbol-item-view",
     rootDir + "lib/maps/overlays/marker",
     rootDir + "lib/modals/modal",
-
+    rootDir + "models/layer",
     rootDir + "models/record",
     rootDir + "collections/symbols",
     rootDir + "lib/popovers/popover",
     rootDir + "apps/main/views/left/add-marker-menu",
     rootDir + "apps/main/views/left/edit-layer-menu",
+    rootDir + "apps/main/views/right/marker-style-view",
     "tests/spec-helper1"
 ],
     function (Backbone, LayerListChildView, EditLayerName, EditDisplayField,
-                SymbolCollectionView, SymbolItemView, MarkerOverlay, Modal, Record,
-                Symbols, Popover, AddMarkerMenu, EditLayerMenu) {
+                SymbolCollectionView, SymbolItemView, MarkerOverlay, Modal,
+                Layer, Record, Symbols, Popover, AddMarkerMenu, EditLayerMenu,
+                MarkerStyleView) {
 
         'use strict';
 
@@ -46,6 +48,8 @@ define([
             spyOn(EditLayerName.prototype, 'initialize').and.callThrough();
             spyOn(EditDisplayField.prototype, 'initialize').and.callThrough();
 
+            spyOn(MarkerStyleView.prototype, 'initialize').and.callThrough();
+
             spyOn(Record.prototype, "save");
             spyOn(Symbols.prototype, 'removeEmpty');
             spyOn(Symbols.prototype, 'assignRecord').and.callThrough();
@@ -64,6 +68,7 @@ define([
             spyOn(SymbolItemView.prototype, 'onDestroy');
             spyOn(SymbolCollectionView.prototype, 'redrawOverlays');
             spyOn(SymbolCollectionView.prototype, 'hideOverlays');
+            spyOn(Layer.prototype, 'save');
 
             spyOn(scope.app.vent, 'trigger').and.callThrough();
             spyOn(scope.app.router, 'navigate');
@@ -97,6 +102,10 @@ define([
                 initContinuousLayerView(this);
             });
 
+            afterEach(function () {
+                $('.popover').remove();
+            });
+
             it("should initialize correctly", function () {
                 expect(this.view.initialize).toHaveBeenCalledTimes(1);
                 expect(this.view.model).toEqual(this.continuousLayer);
@@ -124,6 +133,57 @@ define([
                 expect(Symbols.prototype.removeEmpty).toHaveBeenCalledTimes(1);
                 this.app.vent.trigger('record-has-been-deleted');
                 expect(Symbols.prototype.removeEmpty).toHaveBeenCalledTimes(2);
+            });
+
+            it('listens for DOM clicks', function () {
+                this.view.render();
+
+                //1: When user clicks checkbox, shows / hides overlays
+                expect(LayerListChildView.prototype.showHideOverlays).toHaveBeenCalledTimes(1);
+                this.view.$el.find('.layer-isShowing').trigger('change');
+                expect(LayerListChildView.prototype.showHideOverlays).toHaveBeenCalledTimes(2);
+
+                //2: When user clicks style by, shows showStyleByMenu:
+                expect(LayerListChildView.prototype.showStyleByMenu).toHaveBeenCalledTimes(0);
+                this.view.$el.find('.layer-style-by').trigger('click');
+                expect(LayerListChildView.prototype.showStyleByMenu).toHaveBeenCalledTimes(1);
+
+                //3: When user clicks layer menu button, show layer menu:
+                expect(LayerListChildView.prototype.showLayerMenu).toHaveBeenCalledTimes(0);
+                this.view.$el.find('.open-layer-menu').trigger('click');
+                expect(LayerListChildView.prototype.showLayerMenu).toHaveBeenCalledTimes(1);
+
+                //4: When user clicks the collapse arrow call collapes method:
+                expect(LayerListChildView.prototype.collapseSymbols).toHaveBeenCalledTimes(0);
+                this.view.$el.find('.collapse').trigger('click');
+                expect(LayerListChildView.prototype.collapseSymbols).toHaveBeenCalledTimes(1);
+
+                //5: When user clicks add marker button, show add marker menu:
+                expect(LayerListChildView.prototype.displayGeometryOptions).toHaveBeenCalledTimes(0);
+                this.view.$el.find('.add-record-container').trigger('click');
+                expect(LayerListChildView.prototype.displayGeometryOptions).toHaveBeenCalledTimes(1);
+
+            });
+
+            it('listens for model events', function () {
+                const layerModel = this.view.model;
+                expect(LayerListChildView.prototype.updateGroupBy).toHaveBeenCalledTimes(0);
+                layerModel.set('group_by', 'uniform');
+                expect(LayerListChildView.prototype.updateGroupBy).toHaveBeenCalledTimes(1);
+
+                expect(LayerListChildView.prototype.render).toHaveBeenCalledTimes(0);
+                layerModel.set('title', 'My New Title');
+                expect(LayerListChildView.prototype.render).toHaveBeenCalledTimes(1);
+
+                expect(LayerListChildView.prototype.render).toHaveBeenCalledTimes(1);
+                layerModel.set('display_field', 'description');
+                expect(LayerListChildView.prototype.render).toHaveBeenCalledTimes(2);
+            });
+
+            it('listens for collection events', function () {
+                expect(LayerListChildView.prototype.reRender).toHaveBeenCalledTimes(0);
+                this.view.collection.reset();
+                expect(LayerListChildView.prototype.reRender).toHaveBeenCalledTimes(1);
             });
         });
 
@@ -162,26 +222,21 @@ define([
             it(".collapse button hides and shows the Symbol Items", function() {
                 this.view.render();
                 expect(this.view.$el.find('.collapse')).toHaveClass('fa-angle-down');
-
                 this.view.$el.find('.collapse').trigger('click');
 
                 expect(this.view.$el.find('.collapse')).toHaveClass('fa-angle-right');
-                expect(this.view.$el.find('.symbol').css('height')).toEqual('0px');
-                expect(this.view.$el.find('.symbol-item').css('display')).toEqual('none');
-                expect(this.view.$el.find('.symbol-level-svg').css('display')).toEqual('inline');
+                expect(this.view.$el.find('.symbols').hasClass('minimize')).toBeTruthy();
 
                 this.view.$el.find('.collapse').trigger('click');
 
                 expect(this.view.$el.find('.collapse')).toHaveClass('fa-angle-down');
-                expect(this.view.$el.find('.symbol-item').css('display')).toEqual('block');
-                expect(this.view.$el.find('.symbol-level-svg').css('display')).toEqual('none');
+                expect(this.view.$el.find('.symbols').hasClass('minimize')).toBeFalsy();
             });
 
             it("Layer checkbox hides and shows Layer content and icons", function() {
                 this.view.render();
                 expect(SymbolCollectionView.prototype.redrawOverlays).toHaveBeenCalledTimes(5);
                 this.view.$el.find('.layer-isShowing').prop('checked', false).trigger('change');
-                console.log(this.view.$el[0])
                 expect(this.view.$el[0]).toHaveClass('hide-layer');
                 expect(SymbolCollectionView.prototype.hideOverlays).toHaveBeenCalledTimes(5);
 
@@ -264,6 +319,9 @@ define([
         describe('LayerListChildView: instance methods work', function () {
             beforeEach(function () {
                 initSpies(this);
+            });
+            afterEach(function () {
+                $('.popover').remove();
             });
 
             it('onRender() works', function () {
@@ -357,19 +415,58 @@ define([
 
             });
             it('showStyleByMenu() works', function () {
-                expect(1).toEqual(0);
+                initCategoricalLayerView(this);
+                expect(MarkerStyleView.prototype.initialize).toHaveBeenCalledTimes(0);
+                expect(Popover.prototype.update).toHaveBeenCalledTimes(0);
+                this.view.render();
+                this.view.showStyleByMenu();
+                expect(MarkerStyleView.prototype.initialize).toHaveBeenCalledTimes(1);
+                expect(Popover.prototype.update).toHaveBeenCalledTimes(1);
             });
             it('displayGeometryOptions() works', function () {
-                expect(1).toEqual(0);
+                initCategoricalLayerView(this);
+                expect(AddMarkerMenu.prototype.initialize).toHaveBeenCalledTimes(0);
+                expect(Popover.prototype.update).toHaveBeenCalledTimes(0);
+                this.view.render();
+                this.view.displayGeometryOptions();
+                expect(AddMarkerMenu.prototype.initialize).toHaveBeenCalledTimes(1);
+                expect(Popover.prototype.update).toHaveBeenCalledTimes(1);
             });
             it('addCssToSelectedLayer() works', function () {
-                expect(1).toEqual(0);
+                initCategoricalLayerView(this);
+                const record = this.view.dataCollection.at(0);
+                expect(this.view.$el.find('#' + record.id).hasClass('highlight')).toBeFalsy();
+                this.view.render();
+                this.view.addCssToSelectedLayer(record.id);
+                expect(this.view.$el.find('#' + record.id).hasClass('highlight')).toBeTruthy();
             });
             it('collapseSymbols() works', function () {
-                expect(1).toEqual(0);
+                initCategoricalLayerView(this);
+                this.view.model.get('metadata').collapsed = false;
+                this.view.render();
+                const $el = this.view.$el;
+                expect(this.view.model.get('metadata').collapsed).toBeFalsy();
+
+                //minimize:
+                this.view.collapseSymbols();
+                expect(this.view.model.get('metadata').collapsed).toBeTruthy();
+                expect($el.find('.symbols').hasClass('minimize')).toBeTruthy();
+                expect($el.find('.collapse').hasClass('fa-angle-down')).toBeFalsy();
+                expect($el.find('.collapse').hasClass('fa-angle-right')).toBeTruthy();
+
+                //maximize:
+                this.view.collapseSymbols();
+                expect(this.view.model.get('metadata').collapsed).toBeFalsy();
+                expect($el.find('.symbols').hasClass('minimize')).toBeFalsy();
+                expect($el.find('.collapse').hasClass('fa-angle-down')).toBeTruthy();
+                expect($el.find('.collapse').hasClass('fa-angle-right')).toBeFalsy();
             });
+
             it('saveChanges() works', function () {
-                expect(1).toEqual(0);
+                initCategoricalLayerView(this);
+                expect(Layer.prototype.save).toHaveBeenCalledTimes(0);
+                this.view.saveChanges();
+                expect(Layer.prototype.save).toHaveBeenCalledTimes(1);
             });
         });
     });
