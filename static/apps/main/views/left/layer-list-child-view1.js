@@ -245,16 +245,14 @@ define(["marionette",
             collapseSymbols: function () {
                 if (this.model.get('metadata').collapsed === true) {
                     this.model.get('metadata').collapsed = false
-                    this.$el.find('.symbol, .symbol-item').css('display', 'block');
+                    this.$el.find('.symbols').removeClass('minimize');
                     this.$el.find('.collapse').removeClass('fa-angle-right');
                     this.$el.find('.collapse').addClass('fa-angle-down');
-                    this.$el.find('.symbol-level-svg').hide();
                 } else {
                     this.model.get('metadata').collapsed = true;
-                    this.$el.find('.symbol, .symbol-item').css('display', 'none');
+                    this.$el.find('.symbols').addClass('minimize');
                     this.$el.find('.collapse').removeClass('fa-angle-down');
                     this.$el.find('.collapse').addClass('fa-angle-right');
-                    this.$el.find('.symbol-level-svg').show();
                 }
             },
 

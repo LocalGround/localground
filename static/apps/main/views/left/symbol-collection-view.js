@@ -52,8 +52,8 @@ define(["jquery",
                 'click .layer-delete' : 'deleteLayer',
                 'click .symbol-header .symbol-edit': 'showSymbolEditMenu',
                 'click .symbol-display': 'showHideOverlays',
-                'mouseenter .symbol-edit': 'highlightSymbolContent',
-                'mouseleave .symbol-edit': 'unHighlightSymbolContent'
+                'mouseenter .symbol-header': 'highlightSymbolContent',
+                'mouseleave .symbol-header': 'unHighlightSymbolContent'
             },
             modelEvents: function () {
                 const events = {

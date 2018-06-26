@@ -347,6 +347,30 @@ document, body {
   margin: 5px 0px 0px 0px;
 }
 
+.layer-container .symbols .symbol-level-svg {
+  display: none;
+}
+
+.layer-container .symbols.minimize .symbol, .layer-container .symbols.minimize .symbol-item {
+  display: none;
+}
+
+.layer-container .symbols.minimize .sort-by, .layer-container .symbols.minimize .count {
+  font-weight: normal;
+}
+
+.layer-container .symbols.minimize .symbol-level-svg {
+  display: inline-block;
+}
+
+.layer-container .symbols.minimize .symbol-header {
+  line-height: 22px;
+}
+
+.layer-container .symbols.minimize .symbol-header .symbol-edit, .layer-container .symbols.minimize .symbol-header symbol-display {
+  padding-top: 3px;
+}
+
 .layer-container .layer-header {
   background: #f7f7f7;
   padding: 10px 0px 7px 0px;
@@ -478,6 +502,11 @@ document, body {
   padding-right: 5px;
 }
 
+.layer-container .layer-metadata td .collapse {
+  display: inline-block;
+  width: 10px;
+}
+
 .layer-container .layer-metadata a {
   color: #4691e8;
   font-weight: 600;
@@ -524,15 +553,13 @@ document, body {
 }
 
 .symbol-wrapper {
-  padding-left: 5px;
-  border-top: 1px solid #e8e8e8;
+  padding-left: 3px;
+  border: 3px solid transparent;
 }
 
 .symbol-header {
   background: white;
   padding: 0px 7px 0px 23px;
-  border-top: 3px solid transparent;
-  border-right: 3px solid transparent;
   line-height: 28px;
 }
 
@@ -603,15 +630,11 @@ document, body {
   padding: 4px 0px;
   display: inline-block;
   /*font-weight: 600;*/
-  width: 185px;
+  width: 174px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
-}
-
-.symbol-header {
-  border-left: 1px solid #e4e5eb;
 }
 
 .symbol-header svg {
@@ -619,8 +642,6 @@ document, body {
 }
 
 .symbol {
-  border-left: 1px solid #e4e5eb;
-  border-bottom: 3px solid transparent;
   padding-bottom: 7px;
   background: white;
 }
@@ -639,14 +660,8 @@ document, body {
   padding-bottom: 0px;
 }
 
-.symbol-highlight .symbol-header {
-  border-top: 3px solid #8bb8ed;
-  border-right: 3px solid #8bb8ed;
-}
-
-.symbol-highlight .symbol {
-  border-right: 3px solid #8bb8ed;
-  border-bottom: 3px solid #8bb8ed;
+.symbol-wrapper.symbol-highlight {
+  border: 3px solid #8bb8ed;
 }
 
 i.fa.fa.fa-question-circle {

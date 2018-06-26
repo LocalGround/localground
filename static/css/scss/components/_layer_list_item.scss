@@ -9,6 +9,26 @@
     .symbols {
         border-bottom: 1px solid #e8e8e8;
         margin: 5px 0px 0px 0px;
+        .symbol-level-svg {
+            display: none;
+        }
+    }
+    .symbols.minimize {
+        .symbol, .symbol-item {
+            display: none;
+        }
+        .sort-by, .count {
+            font-weight: normal;
+        }
+        .symbol-level-svg {
+            display: inline-block;
+        }
+        .symbol-header {
+            line-height: 22px;
+            .symbol-edit, symbol-display {
+                padding-top: 3px;
+            }
+        }
     }
     .layer-header {
         background: #f7f7f7;
@@ -124,6 +144,11 @@
         td {
             line-height: 10px;
             padding-right: 5px;
+
+            .collapse {
+                display: inline-block;
+                width: 10px;
+            }
         }
         a {
             color: #4691e8;
