@@ -367,7 +367,7 @@ document, body {
   line-height: 22px;
 }
 
-.layer-container .symbols.minimize .symbol-header .symbol-edit, .layer-container .symbols.minimize .symbol-header symbol-display {
+.layer-container .symbols.minimize .symbol-header .symbol-edit, .layer-container .symbols.minimize .symbol-header .symbol-display {
   padding-top: 3px;
 }
 

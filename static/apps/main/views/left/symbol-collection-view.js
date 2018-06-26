@@ -113,8 +113,6 @@ define(["jquery",
                 // 2. partial update of parent SVG:
                 this.$el.find('.symbol-level-svg').html(this.model.toSVG());
                 this.$el.find('.symbol-header > svg').replaceWith(this.model.toSVG());
-                this.$el.find('.symbol-wrapper').css(
-                    'background', this.model.get('icon').fillColor);
             },
 
             showSymbolEditMenu: function (event) {
