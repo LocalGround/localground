@@ -5,6 +5,7 @@ define([
     "marionette",
     rootDir + "lib/maps/overlays/base",
     rootDir + "lib/maps/overlays/marker",
+    rootDir + "lib/data/dataManager",
     rootDir + "apps/main/views/left/left-panel",
     rootDir + "apps/main/views/left/map-title-view",
     rootDir + "apps/main/views/left/layer-list-view",
@@ -12,8 +13,8 @@ define([
     rootDir + "models/layer",
     "tests/spec-helper1"
 ],
-    function ($, Backbone, Marionette, Base, MarkerOverlay, LeftPanelView, MapTitleView,
-            LayerListView, Router, Layer) {
+    function ($, Backbone, Marionette, Base, MarkerOverlay, DataManager,
+            LeftPanelView, MapTitleView, LayerListView, Router, Layer) {
         'use strict';
         var lpv, fixture;
 
@@ -26,20 +27,21 @@ define([
             spyOn(LeftPanelView.prototype, 'initialize').and.callThrough();
             spyOn(LeftPanelView.prototype, 'onRender').and.callThrough();
             spyOn(LeftPanelView.prototype, 'deleteMap').and.callThrough();
+            spyOn(LeftPanelView.prototype, 'scrollToLayer').and.callThrough();
 
             spyOn(MapTitleView.prototype, 'render').and.callThrough();
             spyOn(LayerListView.prototype, 'render').and.callThrough();
 
             spyOn(Layer.prototype, 'destroy').and.callThrough();
+            spyOn(DataManager.prototype, 'destroyMap');
 
             //Interrupt propogation to Google Marker Overlays:
             spyOn(MarkerOverlay.prototype, "initialize");
             spyOn(MarkerOverlay.prototype, "redraw");
+            spyOn(MarkerOverlay.prototype, "show");
+            spyOn(MarkerOverlay.prototype, "hide");
 
-
-
-            // //do not execute:
-            // spyOn(MainApp.prototype, 'showModal');
+            spyOn(scope.app.router, 'navigate');
 
 
             // 3) add dummy HTML elements:
@@ -78,6 +80,12 @@ define([
                 expect(MapTitleView.prototype.render).toHaveBeenCalledTimes(1);
                 expect(LayerListView.prototype.render).toHaveBeenCalledTimes(1);
             });
+            it('listens for new layer add (and scrolls)', function () {
+                expect(LeftPanelView.prototype.scrollToLayer).toHaveBeenCalledTimes(0);
+                this.app.vent.trigger('new-layer-added', this.categoricalLayer);
+                expect(LeftPanelView.prototype.scrollToLayer).toHaveBeenCalledTimes(1);
+                expect(LeftPanelView.prototype.scrollToLayer).toHaveBeenCalledWith(this.categoricalLayer);
+            });
         });
         describe("LeftPanelView function tests: ", function() {
             beforeEach(function () {
@@ -87,77 +95,55 @@ define([
                 Backbone.history.stop();
             });
 
-            it("clicking '#map-delete' calls deleteMap()", function () {
+            it("clicking '#map-delete' deletes map when confirmed deleteMap()", function () {
                 lpv.render();
                 expect(lpv.$el).toContainElement('#map-delete');
                 expect(lpv.deleteMap).toHaveBeenCalledTimes(0);
-                spyOn(window, 'confirm').and.returnValue(false);
-                $(lpv.$el.find('#map-delete').click());
-                expect(lpv.deleteMap).toHaveBeenCalledTimes(1);
+                expect(DataManager.prototype.destroyMap).toHaveBeenCalledTimes(0);
+                expect(this.app.router.navigate).toHaveBeenCalledTimes(0);
 
-
-            });
-            // it("clicking '#map-delete' calls deleteMap()", function () {
-            //     lpv.render();
-            //     console.log(lpv);
-            //     console.log(lpv.layers);
-            //     //expect(Layer.prototype.destroy).not.toHaveBeenCalled();
-
-            //     console.log(lpv.layers.currentView.children.length);
-            //     spyOn(window, 'confirm').and.returnValue(true);
-            //     $(lpv.$el.find('#map-delete').click());
-            //     expect(Layer.prototype.destroy).toHaveBeenCalled();
-
-
-            // });
-            it("clicking '#map-delete' calls deleteMap()", function () {
                 spyOn(window, 'confirm').and.returnValue(true);
-                spyOn(Base.prototype, 'hide');
-                spyOn(Base.prototype, 'onBeforeDestroy');
-                
-                lpv.render();
+                lpv.$el.find('#map-delete').trigger('click');
 
-                expect(lpv.layers.currentView.children.length).toEqual(2);
-                $(lpv.$el.find('#map-delete').click());
-                expect(lpv.layers.currentView.children.length).toEqual(0);
-
+                expect(lpv.deleteMap).toHaveBeenCalledTimes(1);
+                expect(DataManager.prototype.destroyMap).toHaveBeenCalledTimes(1);
+                expect(this.app.router.navigate).toHaveBeenCalledTimes(1);
 
             });
 
+            it("clicking '#map-delete' does not delete map when cancelled", function () {
+                lpv.render();
+                expect(lpv.$el).toContainElement('#map-delete');
+                expect(lpv.deleteMap).toHaveBeenCalledTimes(0);
+                expect(DataManager.prototype.destroyMap).toHaveBeenCalledTimes(0);
+                expect(this.app.router.navigate).toHaveBeenCalledTimes(0);
 
+                spyOn(window, 'confirm').and.returnValue(false);
+                lpv.$el.find('#map-delete').trigger('click');
 
+                expect(lpv.deleteMap).toHaveBeenCalledTimes(1);
+                expect(DataManager.prototype.destroyMap).toHaveBeenCalledTimes(0);
+                expect(this.app.router.navigate).toHaveBeenCalledTimes(0);
+
+            });
+
+            it('scrollToLayer(layer) works', function () {
+                lpv.render();
+                spyOn(lpv.layers.$el, 'animate').and.callThrough();
+                lpv.scrollToLayer(this.categoricalLayer);
+                const $domElement = $('#' + 'layer' + this.categoricalLayer.id);
+                const $panelElement = lpv.layers.$el.find('.layers');
+                const layerHeight = $domElement.parent().parent().height();
+                const panelHeight = $panelElement.height();
+                expect($panelElement.scrollTop()).toEqual(0);
+                expect(layerHeight).toBeGreaterThan(500);
+                expect(panelHeight).toBeGreaterThan(layerHeight);
+                expect(lpv.layers.$el.animate).toHaveBeenCalledWith({
+                    scrollTop: panelHeight - layerHeight
+                });
+            });
 
         });
 
-        // describe("MainApp vent listeners: ", function () {
-        //     beforeEach(function () {
-        //         initApp(this);
-        //     });
-        //     afterEach(function () {
-        //         Backbone.history.stop();
-        //     });
-        //     it("Listens for 'route-map'", function() {
-        //         expect(mainApp.setActiveMapModel).toHaveBeenCalledTimes(0);
-        //         expect(Map.prototype.fetch).toHaveBeenCalledTimes(0);
-
-        //         mainApp.vent.trigger('route-map', 2);
-        //         expect(mainApp.setActiveMapModel).toHaveBeenCalledTimes(1);
-        //         expect(Map.prototype.fetch).toHaveBeenCalledTimes(1);
-        //         expect(mainApp.setActiveMapModel).toHaveBeenCalledWith(2);
-
-        //     });
-        //     it("Listens for 'hide-detail'", function() {
-        //         expect(mainApp.hideDetail).toHaveBeenCalledTimes(0);
-        //         mainApp.vent.trigger('hide-detail');
-        //         expect(mainApp.hideDetail).toHaveBeenCalledTimes(1);
-        //     });
-        //     it("Listens for 'unhide-detail'", function() {
-        //         expect(mainApp.unhideDetail).toHaveBeenCalledTimes(0);
-        //         mainApp.vent.trigger('unhide-detail');
-        //         expect(mainApp.unhideDetail).toHaveBeenCalledTimes(1);
-        //     });
-
-
-        // });
 
     });

@@ -1,9 +1,11 @@
 define(["marionette",
         "handlebars",
         "apps/main/views/left/edit-map-form",
+        "models/layer",
+        "apps/main/views/left/create-layer-form",
         "text!../../templates/left/map-title.html",
     ],
-    function (Marionette, Handlebars, EditMapForm, MapTemplate) {
+    function (Marionette, Handlebars, EditMapForm, Layer, CreateLayerForm, MapTemplate) {
         'use strict';
 
         var MapTitleView = Marionette.ItemView.extend({
@@ -14,7 +16,32 @@ define(["marionette",
                 this.modal = this.app.modal;
             },
             events: {
-                'click': 'showEditModal'
+                'click .add-layer': 'createNewLayer',
+                'click .map-title': 'showEditModal'
+            },
+            createNewLayer: function(e) {
+                var createLayerForm = new CreateLayerForm({
+                    app: this.app,
+                    map: this.model,
+                    model: new Layer({
+                        map_id: this.model.id
+                    })
+                });
+
+                this.modal.update({
+                    app: this.app,
+                    class: "add-layer",
+                    view: createLayerForm,
+                    title: 'Add Layer',
+                    width: 300,
+                    saveButtonText: "Add Layer",
+                    closeButtonText: "Cancel",
+                    showSaveButton: true,
+                    saveFunction: createLayerForm.saveLayer.bind(createLayerForm),
+                    showDeleteButton: false
+                });
+                this.modal.show();
+                if(e) { e.preventDefault(); }
             },
             modelEvents: {
                 'change:name': 'render'

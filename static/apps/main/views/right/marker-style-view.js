@@ -44,11 +44,35 @@ define(["jquery",
                     groupBy: this.model.get('group_by')
                 };
             },
+            
+            events: {
+                'change #data-type-select': 'selectGroupBy',
+                'change #bucket': 'updateBuckets',
+                'change #palette-opacity': 'updatePaletteOpacity',
+                'click .style-menu_shape-wrapper': 'updateGlobalShape',
+                'change #marker-width': 'updateWidth',
+                'change #stroke-weight': 'updateStrokeWeight',
+                'change #stroke-color': 'updateStrokeColor',
+                'change #stroke-opacity': 'updateStrokeOpacity',
+                'click .selected-palette-wrapper': 'showPalettes',
+                'click .palette-list': 'selectPalette',
+                'click .palette-list *': 'selectPalette',
+                'click #global-symbol': 'showSymbols',
+                'click .style-by-menu_close': 'hideStyleMenu',
+                'click #cat-radio': 'toggleContCat',
+                'click #cont-radio': 'toggleContCat',
+                'click .style-options': 'toggleStyleOptions'
+            },
+
+            modelEvents: {
+                'change:symbols': 'saveChanges'
+            },
+            collectionEvents: {
+                'reset': 'saveChanges'
+            },
 
             initialize: function (opts) {
                 _.extend(this, opts);
-
-                console.log(this.model);
 
                 this.lgPalettes = new LGPalettes();
 
@@ -68,24 +92,6 @@ define(["jquery",
                 //this.collection = new Symbols(this.model.get("symbols"));
                 this.collection = this.model.get('symbols');
 
-                /*if (!this.model.get('metadata').isContinuous) {
-                    this.model.get('metadata').isContinuous = false;
-                }*/
-
-                // don't recreate symbols if they already exist
-                // this is so existing unique individual attributes aren't overwritten by global ones
-                /*if (this.model.get('newLayer') === true) {
-                    this.createCorrectSymbols();
-                } else
-                if (this.model.get('group_by') === 'uniform') {
-                    this.createCorrectSymbols();
-                } else if (this.model.get('group_by') === 'individual') {
-                    this.createCorrectSymbols();
-                } else {
-                    this.createCorrectSymbols();
-                    this.updatePalettes(this.model.get('symbols').length);
-                    this.updateMapAndRender();
-                }*/
                 if (this.model.isCategorical() || this.model.isContinuous()) {
                     console.log('is categorical...', this.model.get('symbols').length)
                     this.updatePalettes(this.model.get('symbols').length);
@@ -202,29 +208,6 @@ define(["jquery",
                 return new Array(numSymbols).fill(1);
             },
 
-            events: {
-                'change #data-type-select': 'selectGroupBy',
-                'change #bucket': 'updateBuckets',
-                'change #palette-opacity': 'updatePaletteOpacity',
-                'click .style-menu_shape-wrapper': 'updateGlobalShape',
-                'change #marker-width': 'updateWidth',
-                'change #stroke-weight': 'updateStrokeWeight',
-                'change #stroke-color': 'updateStrokeColor',
-                'change #stroke-opacity': 'updateStrokeOpacity',
-                'click .selected-palette-wrapper': 'showPalettes',
-                'click .palette-list': 'selectPalette',
-                'click .palette-list *': 'selectPalette',
-                'click #global-symbol': 'showSymbols',
-                'click .style-by-menu_close': 'hideStyleMenu',
-                'click #cat-radio': 'toggleContCat',
-                'click #cont-radio': 'toggleContCat',
-                'click .style-options': 'toggleStyleOptions'
-            },
-
-            modelEvents: {
-                'change:symbols': 'saveChanges'
-            },
-
             toggleStyleOptions: function(e) {
                 if (this.$el.find('.marker-style-extra').css('display') === 'none') {
                     this.$el.find('.marker-style-extra').css('display', 'block');
@@ -257,7 +240,6 @@ define(["jquery",
                 let currentProp = this.dataColumnsList.find((item) => {
                     return (item.value === this.model.get('metadata').currentProp)
                 });
-                console.log('Current Prop Type:', currentProp);
                 if (currentProp.type === 'integer' || currentProp.type === 'rating') {
                     return true;
                 } else {
@@ -267,11 +249,13 @@ define(["jquery",
             },
 
             // two second timeout appears to be necessary
+
             saveChanges: function() {
-                var that = this;
+                this.model.save();
+                /*var that = this;
                 setTimeout(function() {
                     that.model.save();
-                }, 2000);
+                }, 2000);*/
             },
 
             showSymbols: function (e) {
@@ -482,7 +466,6 @@ define(["jquery",
             setSymbols: function (symbs) {
                 this.collection.reset(symbs.toJSON())
                 this.render();
-                this.saveChanges();
             },
 
             updateMapAndRender: function () {
@@ -550,18 +533,18 @@ define(["jquery",
                     opacity = 0;
                     this.$el.find('#palette-opacity').val(opacity);
                 }
-                this.updateMetadata("fillOpacity", opacity);
+                this.updateMetadata("fillOpacity", opacity, true);
             },
 
             updateGlobalShape: function(e) {
                 const shape = e.currentTarget.dataset.shape;
-                this.updateMetadata("shape", shape);
+                this.updateMetadata("shape", shape, true);
                 this.render();
             },
 
             updateWidth: function(e) {
                 const width = parseFloat($(e.target).val());
-                this.updateMetadata("width", width);
+                this.updateMetadata("width", width, true);
             },
 
             updateStrokeWeight: function(e) {
@@ -570,19 +553,19 @@ define(["jquery",
                     strokeWeight = 0;
                     this.$el.find('#stroke-weight').val(strokeWeight);
                 }
-                this.updateMetadata("strokeWeight", strokeWeight);
+                this.updateMetadata("strokeWeight", strokeWeight, true);
             },
 
             // triggered from colorPicker
             updateFillColor: function(hex) {
-                this.updateMetadata("fillColor", hex);
+                this.updateMetadata("fillColor", hex, true);
                 this.$el.find('#fill-color-picker').css('background-color', hex);
                 this.$el.find('#example-marker_single').css('color', hex);
             },
 
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
-                this.updateMetadata("strokeColor", hex);
+                this.updateMetadata("strokeColor", hex, true);
                 $('#stroke-color-picker').css('background-color', hex);
             },
 
@@ -595,15 +578,16 @@ define(["jquery",
                     opacity = 0;
                     this.$el.find('#stroke-opacity').val(opacity);
                 }
-                this.updateMetadata("strokeOpacity", opacity);
+                this.updateMetadata("strokeOpacity", opacity, true);
             },
 
             selectPalette: function (e) {
                 this.$el.find(".palette-wrapper").toggle();
                 const paletteId = $(e.target).val();
-                this.updateMetadata("paletteId", paletteId);
                 this.selectedColorPalette = this.allColors[paletteId];
                 this.updatePalette();
+                this.updateMetadata("paletteId", paletteId, true);
+                e.stopImmediatePropagation();
             },
 
             updatePalette: function() {
@@ -627,7 +611,8 @@ define(["jquery",
             },
 
             //convenience function
-            updateMetadata: function(newKey, newValue) {
+            updateMetadata: function (newKey, newValue, doSave=false) {
+                console.log('updateMetadata');
                 let localMeta = this.model.get("metadata") || {};
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta);
@@ -637,6 +622,9 @@ define(["jquery",
                 });
                 this.app.layerHasBeenAltered = true;
                 this.app.layerHasBeenSaved = false;
+                if (doSave) {
+                    this.saveChanges();
+                }
             },
 
             // returns a default value if the input value from the dom is undefined
