@@ -20,8 +20,6 @@ define(['marionette',
             initialize: function (opts) {
                 _.extend(this, opts);
 
-                this.on('render', this.afterRender);
-
                 this.template = Handlebars.compile(SymbolTemplate);
                 this.markerOverlays = new MarkerOverlays({
                     model: this.model,
@@ -31,16 +29,14 @@ define(['marionette',
                     iconOpts: this.model.toJSON(),
                     isShowing: this.getIsShowing()
                 });
+                
                 this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
             },
 
             onRender: function() {
-                this.trigger('render');
-            },
-
-            afterRender: function() {
-                console.log('AFTER RENDER');
-                this.showHideOverlays();
+                if (!this.model.get('isShowing')) {
+                    this.addHiddenCSS();
+                }
             },
 
             show: function (e) {
@@ -134,22 +130,31 @@ define(['marionette',
             },
 
             showHideOverlays: function () {
-                this.model.set("isShowing", !this.$el.find('.legend-show_symbol').hasClass('fa-eye'));
+                //this.model.set("isShowing", !this.$el.find('.legend-show_symbol').hasClass('fa-eye'));
                 console.log(this.model.get('isShowing'));
                 if(this.$el.find('.legend-show_symbol').hasClass('fa-eye-slash')) {
-                    this.$el.removeClass('half-opac');
-                    this.$el.find('.legend-show_symbol').removeClass('fa-eye-slash');
-                    this.$el.find('.legend-show_symbol').addClass('fa-eye');
+                    this.removeHiddenCSS();
                     this.show();
                 } else {
-                    this.$el.addClass('half-opac');
-                    this.$el.find('.legend-show_symbol').removeClass('fa-eye');
-                    this.$el.find('.legend-show_symbol').addClass('fa-eye-slash');
+                    this.addHiddenCSS();
                     this.hide();
                 }
             },
 
+            addHiddenCSS: function() {
+                this.$el.addClass('half-opac');
+                this.$el.find('.legend-show_symbol').removeClass('fa-eye');
+                this.$el.find('.legend-show_symbol').addClass('fa-eye-slash');
+            },
+
+            removeHiddenCSS: function() {
+                this.$el.removeClass('half-opac');
+                this.$el.find('.legend-show_symbol').removeClass('fa-eye-slash');
+                this.$el.find('.legend-show_symbol').addClass('fa-eye');
+            },
+
             getIsShowing: function () {
+                console.log('symbol is showing: ', this.model.get('isShowing'));
                 return this.model.get('isShowing');
             },
 

@@ -24,6 +24,7 @@ define(['marionette',
                 _.extend(this, opts);
                 this.collection.assignRecords(this.dataCollection);
                 this.template = Handlebars.compile(LayerTemplate);
+                console.log(this.model);
             },
 
             onRender: function() {
