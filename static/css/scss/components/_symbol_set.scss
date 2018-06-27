@@ -17,13 +17,14 @@
 }
 
 .symbol-wrapper {
-    padding-left: 3px;
-    border: 3px solid transparent;
+    border-top: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-bottom: 3px solid transparent;
 }
 
 .symbol-header {
     background: white;
-    padding: 0px 7px 0px 23px;
+    padding: 0px 7px 0px 29px;
     line-height: 28px;
 }
 
@@ -84,7 +85,7 @@
     padding: 4px 0px;
     display: inline-block;
     /*font-weight: 600;*/
-    width: 174px;
+    width: 170px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -115,6 +116,15 @@
 
 .symbol-wrapper.symbol-highlight {
     border:  3px solid #8bb8ed;
+    .symbol-header {
+        padding: 0px 7px 0px 26px;
+    }
+    .symbol-item {
+        a,
+        >div {
+            padding: 2px 0px 2px 34px;
+        }
+    }
 }
 
 i.fa.fa.fa-question-circle {
@@ -137,7 +147,7 @@ i.fa.fa.fa-question-circle {
 
     a, >div {
         text-decoration: none;
-        padding: 2px 0px 2px 34px;
+        padding: 2px 0px 2px 37px;
         display: inline-block;
         width: 100%;
     }
