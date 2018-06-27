@@ -26,52 +26,76 @@ define(['marionette',
                 this.template = Handlebars.compile(LayerTemplate);
             },
 
+            onRender: function() {
+                this.collapseSymbols();
+            },
+
             templateHelpers: function () {
                 return {
-                    isShowing: true
+                    isShowing: true,
+                    layerIsIndividual: this.model.isIndividual()
                 };
             },
 
             events: {
                 'change .cb-symbol': 'showHideLayer',
-                'click .collapse': 'collapseSymbols'
+                'click .collapse': 'expandCollapseSymbols'
             },
 
-            collapseSymbols: function () {
-                if (this.$el.find('.collapse').hasClass('fa-angle-right')) {
-                    this.$el.find('.presentation-records_wrapper').css('display', 'block');
+            expandSymbols: function() {
+                this.$el.find('.presentation-records_wrapper').css('display', 'block');
                     
-                    this.$el.find('.collapse').removeClass('fa-angle-right');
-                    this.$el.find('.collapse').addClass('fa-angle-down');
+                this.$el.find('.collapse').removeClass('fa-angle-right');
+                this.$el.find('.collapse').addClass('fa-angle-down');
 
-                    this.$el.find('.symbol-entry-header').addClass('legend-symbol_expanded');
-                    this.$el.find('.symbol-entry-header').removeClass('legend-symbol_collapsed');
-                    //this.$el.find('.legend-symbol_svg').hide();
+                this.$el.find('.symbol-entry-header').addClass('legend-symbol_expanded');
+                this.$el.find('.symbol-entry-header').removeClass('legend-symbol_collapsed');
+                //this.$el.find('.legend-symbol_svg').hide();
+            },
+
+            collapseSymbols: function() {
+                this.$el.find('.presentation-records_wrapper').css('display', 'none');
+                this.$el.find('.collapse').removeClass('fa-angle-down');
+                this.$el.find('.collapse').addClass('fa-angle-right');
+
+                this.$el.find('.symbol-entry-header').removeClass('legend-symbol_expanded');
+                this.$el.find('.symbol-entry-header').addClass('legend-symbol_collapsed');
+                //this.$el.find('.legend-symbol_svg').show();
+            },
+
+            expandCollapseSymbols: function () {
+                if (this.$el.find('.collapse').hasClass('fa-angle-right')) {
+                    this.expandSymbols();
                 } else {
-                    this.$el.find('.presentation-records_wrapper').css('display', 'none');
-                    this.$el.find('.collapse').removeClass('fa-angle-down');
-                    this.$el.find('.collapse').addClass('fa-angle-right');
-
-                    this.$el.find('.symbol-entry-header').removeClass('legend-symbol_expanded');
-                    this.$el.find('.symbol-entry-header').addClass('legend-symbol_collapsed');
-                    //this.$el.find('.legend-symbol_svg').show();
+                    this.collapseSymbols();
                 }
             },
 
             showHideLayer: function(e) {
                 var isChecked = $(e.target).prop('checked');
                 if (isChecked) {
-                    this.children.each((symbol) => {
-                        symbol.markerOverlays.showAll();
+                    this.children.each((symbolView) => {
+                        console.log(symbolView.model.get('isShowing'));
+                        if(symbolView.model.get('isShowing')) {
+                            symbolView.markerOverlays.showAll();
+                        }
+                        
                     });
                     this.$el.find('.symbol-container').show();
+                    if (!this.model.isIndividual()) {
+                        this.$el.find('.collapse').css('visibility', 'visible');
+                    }
+                    
                 } else {
-                    this.children.each((symbol) => {
-                        symbol.markerOverlays.hideAll();
+                    this.children.each((symbolView) => {
+                        symbolView.markerOverlays.hideAll();
                     });
                     this.$el.find('.symbol-container').hide();
+                    this.$el.find('.collapse').css('visibility', 'hidden');
                 }
             },
+
+
 
             drawOverlays: function () {
                 //draw map overlays in reverse order so they draw on

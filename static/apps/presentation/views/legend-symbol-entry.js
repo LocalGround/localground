@@ -19,6 +19,9 @@ define(['marionette',
 
             initialize: function (opts) {
                 _.extend(this, opts);
+
+                this.on('render', this.afterRender);
+
                 this.template = Handlebars.compile(SymbolTemplate);
                 this.markerOverlays = new MarkerOverlays({
                     model: this.model,
@@ -29,7 +32,15 @@ define(['marionette',
                     isShowing: this.getIsShowing()
                 });
                 this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
-                console.log(this.model);
+            },
+
+            onRender: function() {
+                this.trigger('render');
+            },
+
+            afterRender: function() {
+                console.log('AFTER RENDER');
+                this.showHideOverlays();
             },
 
             show: function (e) {
@@ -52,8 +63,9 @@ define(['marionette',
                 return {
                     count: this.symbolCount,
                     isShowing: this.getIsShowing(),
-                    svg: this.model.toSVG(),
-                    records: this.getRecordDisplayInfo(this.model.matchedModels)
+                    symbolSvg: this.model.toSVG(),
+                    records: this.getRecordDisplayInfo(this.model.matchedModels),
+                    layerIsIndividual: this.model.layerModel.isIndividual()
                 };
             },
 
@@ -64,19 +76,13 @@ define(['marionette',
                 let recordInfoList = [];
                 
                 collection.each((record) => {
-                    // href="#/3/layers/8/dataset_4/85"
-                    console.log('INFO: ', record);
-                    console.log('DISPLAY FIELD', this.model.layerModel.get('display_field'));
-
-                    // const mapId = this.model.layerModel.get('map_id');
-                    // const layerId = this.model.layerModel.id;
                     const dataset = this.model.layerModel.get('dataset').overlay_type;
                     const recordId = record.id;
 
                     recordInfoList.push({
                         displayText: record.get(this.model.layerModel.get('display_field')) || 'Untitled',
                         url: `#/${dataset}/${recordId}`,
-                        svg: this.getSVG(record, this.model)
+                        recordSvg: this.getSVG(record, this.model)
                     });
                 });
 
@@ -128,8 +134,8 @@ define(['marionette',
             },
 
             showHideOverlays: function () {
-                //this.model.set("isShowing", !this.$el.find('.symbol-display').hasClass('fa-eye'));
-                console.log('showHideOverlays');
+                this.model.set("isShowing", !this.$el.find('.legend-show_symbol').hasClass('fa-eye'));
+                console.log(this.model.get('isShowing'));
                 if(this.$el.find('.legend-show_symbol').hasClass('fa-eye-slash')) {
                     this.$el.removeClass('half-opac');
                     this.$el.find('.legend-show_symbol').removeClass('fa-eye-slash');

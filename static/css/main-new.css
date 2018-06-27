@@ -958,6 +958,7 @@ i.fa.fa.fa-question-circle {
 #legend .collapse {
   padding: 0px 3px;
   vertical-align: middle;
+  width: 9px;
 }
 
 .legend-layer_title {
@@ -1005,7 +1006,7 @@ i.fa.fa.fa-question-circle {
 .legend-symbol_collapsed {
   display: grid;
   grid-template-columns: 32px auto 22px;
-  margin-left: 25px;
+  margin-left: 28px;
 }
 
 .legend-symbol_collapsed .legend-symbol_svg {

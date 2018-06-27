@@ -10,6 +10,7 @@
     .collapse {
         padding: 0px 3px;
         vertical-align: middle;
+        width: 9px;
     }
 }
 
@@ -58,7 +59,7 @@
 .legend-symbol_collapsed {
     display: grid;
     grid-template-columns: 32px auto 22px;
-    margin-left: 25px;
+    margin-left: 28px;
 
     .legend-symbol_svg {
         display: inline-block;

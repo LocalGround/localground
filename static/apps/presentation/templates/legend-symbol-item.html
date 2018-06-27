@@ -4,7 +4,7 @@
 </svg -->
 <div class="symbol-entry-header legend-symbol_expanded">
 
-    <span class="legend-symbol_svg">{{{svg}}}</span>
+    <span class="legend-symbol_svg">{{{symbolSvg}}}</span>
     <!-- If there is more than one unique item inside the group, give a title
         Otherwise If there's only 1 symbol, then don't show this section
     -->
@@ -13,13 +13,15 @@
     {{/compare}}
     <i class="fa fa-eye legend-show_symbol"></i>
 </div>
+
+{{#unless layerIsIndividual}}
 <ul class="presentation-records_wrapper">
     {{#each records}}
     <a href="{{url}}">
         <li class="presentation-record_item">
             <span class="legend-record_icon">
-                {{#if this.svg}} 
-                    {{{this.svg}}} 
+                {{#if this.recordSvg}} 
+                    {{{this.recordSvg}}} 
                 {{else}}
                     <i class="fa fa-question-circle"></i>
                 {{/if}}
@@ -29,3 +31,4 @@
     </a>
     {{/each}}
 </ul>
+{{/unless}}
