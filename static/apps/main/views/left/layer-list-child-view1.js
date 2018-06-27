@@ -158,7 +158,9 @@ define(["marionette",
                     return;
                 }
             },
+
             showStyleByMenu: function (e) {
+
                 this.popover.update({
                     $source: this.$el.find('.layer-style-by'),
                     view: new MarkerStyleView({

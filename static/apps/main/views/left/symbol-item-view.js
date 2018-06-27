@@ -127,6 +127,7 @@ define(["marionette",
                     width: '220px',
                     title: '    '
                 });
+                e.preventDefault();
                 e.stopImmediatePropagation();
             },
 
@@ -172,7 +173,7 @@ define(["marionette",
             },
 
             onDestroy: function () {
-                console.log('destroying symbol-item-view');
+                //console.log('destroying symbol-item-view');
                 if (this.overlay != null) {
                     this.overlay.destroy();
                 }

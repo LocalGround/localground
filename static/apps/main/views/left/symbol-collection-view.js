@@ -65,7 +65,7 @@ define(["jquery",
                     'fillColor', 'strokeColor', 'shape', 'width', 'markerSize',
                     'fillOpacity', 'strokeWeight'
                 ].forEach(attr => {
-                    events[`change:${attr}`] = 'saveAndRender';
+                    events[`change:${attr}`] = 'partialRender';
                 })
                 return events;
             },
@@ -104,8 +104,8 @@ define(["jquery",
                 }
             },
 
-            saveAndRender: function () {
-                this.layer.save();
+            partialRender: function () {
+                //this.layer.save();
                 // doing a partial re-render so that the style popover doesn't
                 // get blown away:
                 // 1. re-render all child views:
@@ -199,7 +199,7 @@ define(["jquery",
                 this.$el.find('.symbol-wrapper').removeClass('symbol-highlight');
             },
             onDestroy: function() {
-                console.log('destroy symbol collection view');
+                //console.log('destroy symbol collection view');
             }
 
         });

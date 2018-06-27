@@ -12,7 +12,6 @@ define(["jquery",
         var MarkerStyleChildView = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this.model);
                 this.render();
             },
             template: Handlebars.compile(SymbolStyleMenu),
@@ -28,9 +27,16 @@ define(["jquery",
                 'focusout .symbol-title-input': 'updateSymbolTitle',
                 'click .symbol-title-input': 'selectText'
             },
-            /*modelEvents: {
-                'change': 'updateLayerSymbols'
-            },*/
+            modelEvents: function () {
+                const events = {};
+                [
+                    'fillColor', 'strokeColor', 'shape', 'width', 'markerSize',
+                    'fillOpacity', 'strokeOpacity', 'strokeWeight', 'title'
+                ].forEach(attr => {
+                    events[`change:${attr}`] = 'updateLayerSymbols';
+                })
+                return events;
+            },
 
             tagName: "div",
             templateHelpers: function () {
@@ -79,7 +85,7 @@ define(["jquery",
                 this.strokePicker = this.$el.find('#stroke-color-picker').ColorPicker({
                     color: strokeColor,
                     onShow: function (colpkr) {
-                        console.log(strokeColor);
+                        //console.log(strokeColor);
                         $(colpkr).fadeIn(200);
                         return false;
                     },
@@ -102,7 +108,6 @@ define(["jquery",
                 this.render();
             },
             selectText: function (e) {
-                console.log(e);
                 $(e.target).select();
             },
             updateFillColor: function (hex) {
@@ -125,7 +130,7 @@ define(["jquery",
                 this.render();
             },
             updateLayerSymbols: function () {
-                //this.layer.setSymbol(this.model);
+                this.layer.save();
                 this.render();
             },
             updateOpacity: function (e) {
@@ -153,9 +158,9 @@ define(["jquery",
             },
 
             updateSize: function(e) {
-                console.log('updateSize')
+                //console.log('updateSize')
                 var width = parseInt($(e.target).val());
-                console.log(this.model.get('width'), width);
+                //console.log(this.model.get('width'), width);
                 this.model.set('width', width);
             },
             updateSymbolAttribute: function(key, value) {
