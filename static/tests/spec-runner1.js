@@ -18,9 +18,9 @@ require(['boot'], function () {
         'spec/views/main/edit-map-form-test.js',
         'spec/views/main/layer-list-view-test.js',
         'spec/views/main/create-layer-form-test.js',
-        //'spec/views/main/layer-list-view-test.js',
         'spec/views/main/layer-list-child-view-test.js',
         'spec/views/main/symbol-collection-view-test.js',
+        'spec/views/main/symbol-style-menu-view-test.js',
         'spec/views/main/marker-style-view-test.js',
 
         // trouble mocking a Record to test the DataDetail View

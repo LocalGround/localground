@@ -49,6 +49,7 @@ define(["jquery",
                     metadata: this.model,
                     shape: this.model.get('shape'),
                     count: len,
+                    isIndividual: this.layer.isIndividual(),
                     items: len === 1 ? 'item' : 'items'
                 };
             },
