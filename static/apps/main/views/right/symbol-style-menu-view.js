@@ -12,13 +12,9 @@ define(["jquery",
         var MarkerStyleChildView = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.render();
             },
             template: Handlebars.compile(SymbolStyleMenu),
             events: {
-                'change .marker-shape': 'updateShape',
-                'click .selected-symbol-div': 'showSymbols',
-                'click .symbol-style-menu_close': 'hideSymbolStyleMenu',
                 'change #marker-width': 'updateSize',
                 'change #marker-opacity': 'updateOpacity',
                 'change #stroke-weight': 'updateStrokeWidth',
@@ -106,20 +102,16 @@ define(["jquery",
 
             updateSymbolTitle: function(e) {
                 this.model.set('title', this.$el.find('.symbol-title-input').val());
-                this.render();
             },
             selectText: function (e) {
                 $(e.target).select();
             },
+
             updateFillColor: function (hex) {
-                if (this.layer.get('group_by') === 'uniform') {
-                    let md = this.layer.get('metadata');
-                    md.fillColor = hex
-                    this.layer.set('metadata', md);
-                }
-                $('#fill-color-picker').css('background', hex);
                 this.model.set("fillColor", hex);
+                $('#fill-color-picker').css('background', hex);
             },
+
             updateStrokeColor: function (hex) {
                 this.model.set("strokeColor", hex);
                 $('#stroke-color-picker').css('background', hex);
@@ -128,12 +120,13 @@ define(["jquery",
             updateShape: function (e) {
                 const shape = e.currentTarget.dataset.shape;
                 this.model.set('shape', shape);
-                this.render();
             },
+
             updateLayerSymbols: function () {
                 this.layer.save();
                 this.render();
             },
+
             updateOpacity: function (e) {
                 let opacity = parseFloat($(e.target).val());
                 if (opacity > 1) {
@@ -159,46 +152,8 @@ define(["jquery",
             },
 
             updateSize: function(e) {
-                //console.log('updateSize')
                 var width = parseInt($(e.target).val());
-                //console.log(this.model.get('width'), width);
                 this.model.set('width', width);
-            },
-            updateSymbolAttribute: function(key, value) {
-                this.model.set(key, value);
-            },
-            showSymbols: function() {
-                this.indSymbolsView = new IndSymbolLayoutView({
-                    app: this,
-                    el: this.$el.find('#ind-symbol-dropdown')
-                });
-            },
-            hideSymbolStyleMenu: function(e) {
-                this.app.vent.trigger('hide-symbol-style-menu', e, this.model);
-            },
-
-            rebuildMarkersAndSave: function() {
-                this.delayExecution("mapTimer", () => {
-                    this.layer.trigger('rebuild-markers')
-                }, 250);
-                this.layer.save();
-            },
-
-            delayExecution: function (timeoutVar, func, millisecs) {
-                /*
-                 * This method applies a time buffer to whatever
-                 * "func" function is passed in as an argument. So,
-                 * for example, if a user changes the width value,
-                 * and then changes it again before "millisecs"
-                 * milliseconds pass, the new value will "reset the clock,"
-                 * and the "func" function won't fire until the
-                 * user stops changing the value.
-                 */
-                if (this[timeoutVar]) {
-                    clearTimeout(this[timeoutVar]);
-                    this[timeoutVar] = null;
-                }
-                this[timeoutVar] = setTimeout(func, millisecs);
             }
 
         });

@@ -1,13 +1,17 @@
 // main: ../main-new.scss
+$symbolPaddingRight: 26px;
+@mixin overflow-text() {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: middle;
+}
 .sort-by {
     font-size: 12px;
     font-weight: 600;
     max-width: 158px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-    display: inline-block;
+    @include overflow-text();
 }
 .count {
     font-size: 12px;
@@ -24,7 +28,7 @@
 
 .symbol-header {
     background: white;
-    padding: 0px 7px 0px 29px;
+    padding: 0px 7px 0px $symbolPaddingRight + 3;
     line-height: 28px;
 }
 
@@ -68,7 +72,7 @@
 
 .ind-symbol {
     box-sizing: border-box;
-    padding: 0px 32px;
+    padding: 0px $symbolPaddingRight + 6;
     svg {
         vertical-align: middle;
     }
@@ -83,13 +87,8 @@
 .ind-symbol_text {
     font-size: 12px;
     padding: 4px 0px;
-    display: inline-block;
-    /*font-weight: 600;*/
     width: 170px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
+    @include overflow-text();
 }
 
 .symbol-header {
@@ -117,12 +116,12 @@
 .symbol-wrapper.symbol-highlight {
     border:  3px solid #8bb8ed;
     .symbol-header {
-        padding: 0px 7px 0px 26px;
+        padding: 0px 7px 0px $symbolPaddingRight;
     }
     .symbol-item {
         a,
         >div {
-            padding: 2px 0px 2px 34px;
+            padding: 2px 0px 2px $symbolPaddingRight + 5;
         }
     }
 }
@@ -147,18 +146,14 @@ i.fa.fa.fa-question-circle {
 
     a, >div {
         text-decoration: none;
-        padding: 2px 0px 2px 37px;
+        padding: 2px 0px 2px $symbolPaddingRight + 8;
         display: inline-block;
         width: 100%;
     }
     .reg-symbol_text {
-        display: inline-block;
         margin-top: 3px;
-        vertical-align: middle;
         width: 190px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        @include overflow-text();
     }
     svg {
         vertical-align: middle;

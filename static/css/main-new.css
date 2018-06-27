@@ -509,8 +509,8 @@ document, body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  vertical-align: middle;
   display: inline-block;
+  vertical-align: middle;
 }
 
 .count {
@@ -597,12 +597,11 @@ document, body {
 .ind-symbol_text {
   font-size: 12px;
   padding: 4px 0px;
-  display: inline-block;
-  /*font-weight: 600;*/
   width: 170px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: inline-block;
   vertical-align: middle;
 }
 
@@ -639,7 +638,7 @@ document, body {
 
 .symbol-wrapper.symbol-highlight .symbol-item a,
 .symbol-wrapper.symbol-highlight .symbol-item > div {
-  padding: 2px 0px 2px 34px;
+  padding: 2px 0px 2px 31px;
 }
 
 i.fa.fa.fa-question-circle {
@@ -663,19 +662,19 @@ i.fa.fa.fa-question-circle {
 
 .symbol-item a, .symbol-item > div {
   text-decoration: none;
-  padding: 2px 0px 2px 37px;
+  padding: 2px 0px 2px 34px;
   display: inline-block;
   width: 100%;
 }
 
 .symbol-item .reg-symbol_text {
-  display: inline-block;
   margin-top: 3px;
-  vertical-align: middle;
   width: 190px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .symbol-item svg {
