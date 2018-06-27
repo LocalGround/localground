@@ -31,6 +31,7 @@ define(['marionette',
                 });
                 
                 this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
+                this.listenTo(this.app.vent, 'show-detail', this.handleRoute);
             },
 
             onRender: function() {
@@ -40,7 +41,6 @@ define(['marionette',
             },
 
             show: function (e) {
-                console.log('show all');
                 this.markerOverlays.showAll();
                 if (e) {
                     e.preventDefault();
@@ -48,7 +48,6 @@ define(['marionette',
             },
 
             hide: function (e) {
-                console.log('hide all');
                 this.markerOverlays.hideAll();
                 if (e) {
                     e.preventDefault();
@@ -130,8 +129,7 @@ define(['marionette',
             },
 
             showHideOverlays: function () {
-                //this.model.set("isShowing", !this.$el.find('.legend-show_symbol').hasClass('fa-eye'));
-                console.log(this.model.get('isShowing'));
+                this.model.set("isShowing", !this.$el.find('.legend-show_symbol').hasClass('fa-eye'));
                 if(this.$el.find('.legend-show_symbol').hasClass('fa-eye-slash')) {
                     this.removeHiddenCSS();
                     this.show();
@@ -154,7 +152,6 @@ define(['marionette',
             },
 
             getIsShowing: function () {
-                console.log('symbol is showing: ', this.model.get('isShowing'));
                 return this.model.get('isShowing');
             },
 
@@ -162,7 +159,34 @@ define(['marionette',
                 if (this.getIsShowing()) {
                     this.show();
                 }
-            }
+            },
+
+            handleRoute: function(info) {
+                this.markerOverlays.children.each((markerView) => {
+                    if (markerView.model.id === parseInt(info.id)) {
+                        markerView.activate();
+                    }
+                });
+            }//,
+
+            // makeActive: function (e) {
+            //     var activeItem = this.app.selectedItemView;
+            //     if (activeItem && !activeItem.isDestroyed) {
+            //         activeItem.active = false;
+            //         activeItem.render();
+
+            //         // some item's don't have associated overlays, so check first
+            //         if (activeItem.overlay) {
+            //             activeItem.overlay.deactivate();
+            //         }
+            //     }
+            //     this.app.selectedItemView = this;
+            //     this.active = true;
+            //     if (this.overlay != null) {
+            //         this.overlay.activate();
+            //     }
+            //     this.render();
+            // }
         });
         return LegendSymbolEntry;
     });
