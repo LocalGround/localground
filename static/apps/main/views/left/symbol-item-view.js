@@ -127,6 +127,7 @@ define(["marionette",
                     width: '220px',
                     title: '    '
                 });
+                e.preventDefault();
                 e.stopImmediatePropagation();
             },
 

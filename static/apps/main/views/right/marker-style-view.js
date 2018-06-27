@@ -44,7 +44,7 @@ define(["jquery",
                     groupBy: this.model.get('group_by')
                 };
             },
-            
+
             events: {
                 'change #data-type-select': 'selectGroupBy',
                 'change #bucket': 'updateBuckets',

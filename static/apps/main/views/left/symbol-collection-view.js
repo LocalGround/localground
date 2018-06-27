@@ -65,7 +65,7 @@ define(["jquery",
                     'fillColor', 'strokeColor', 'shape', 'width', 'markerSize',
                     'fillOpacity', 'strokeWeight'
                 ].forEach(attr => {
-                    events[`change:${attr}`] = 'saveAndRender';
+                    events[`change:${attr}`] = 'partialRender';
                 })
                 return events;
             },
@@ -104,7 +104,7 @@ define(["jquery",
                 }
             },
 
-            saveAndRender: function () {
+            partialRender: function () {
                 //this.layer.save();
                 // doing a partial re-render so that the style popover doesn't
                 // get blown away:
