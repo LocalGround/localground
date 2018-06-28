@@ -2,12 +2,15 @@
     <div class="content" style="width: {{ width }};">
         <header>
             <span class="close">&times;</span>
+            {{#unless noTitle}}
             <h1>{{ title }}</h1>
+            {{/unless}}
         </header>
         <div class="body {{bodyClass}}" {{#if height }}style="height: {{ height }};"{{/if}}>
             <!-- view content injectsed here -->
         </div>
         <footer>
+            {{#unless noFooter}}
             <div class="buttons">
 
                 {{#if showDeleteButton}}
@@ -19,6 +22,7 @@
                     <button class="save-modal-form button-primary">{{ saveButtonText }}</button>
                 {{/if}}
             </div>
+            {{/unless}}
         </footer>
     </div>
 </div>

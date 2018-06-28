@@ -4,6 +4,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
         var Modal = Marionette.LayoutView.extend({
             view: null,
             title: null,
+            noTitle: false,
+            noFooter: false,
             width: "90vw",
             //height: "70vh",
             margin: "auto",
@@ -45,6 +47,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     width: this.width,
                     height: this.height,
                     bodyClass: this.bodyClass,
+                    noTitle: this.noTitle,
+                    noFooter: this.noFooter,
                     //margin: this.margin,
                     showSaveButton: this.showSaveButton,
                     showDeleteButton: this.showDeleteButton,
@@ -70,6 +74,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts.saveButtonText = opts.saveButtonText || "Save";
                 opts.deleteButtonText = opts.deleteButtonText || "Delete";
                 opts.printButtonText = opts.printButtonText || "Print";
+                opts.noTitle = opts.noTitle || false;
+                opts.noFooter = opts.noFooter || false;
                 opts.bodyClass = opts.bodyClass || null;
                 _.extend(this, opts);
                 this.saveFunction = function () {

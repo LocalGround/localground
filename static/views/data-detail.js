@@ -412,7 +412,7 @@ define([
                     that.app.vent.trigger('success-message', "The form was saved successfully");
                     if (!isNew) {
                         model.trigger('saved', model);
-                        model.trigger('update-symbol-assignment', model)
+                        model.trigger('record-updated', model)
                     } else {
                         model.collection.add(model);
                     }

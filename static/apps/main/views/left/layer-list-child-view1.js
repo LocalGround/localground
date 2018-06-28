@@ -7,10 +7,12 @@ define(["marionette",
         "apps/main/views/left/symbol-collection-view",
         "apps/main/views/left/edit-layer-menu",
         "apps/main/views/right/marker-style-view",
-        "apps/main/views/left/add-marker-menu"
+        "apps/main/views/left/add-marker-menu",
+        "apps/main/views/spreadsheet"
     ],
-    function (Marionette, Handlebars, LayerItemTemplate, Symbols, Symbol, Record,
-            SymbolView, EditLayerMenu, MarkerStyleView, AddMarkerMenu) {
+    function (Marionette, Handlebars, LayerItemTemplate, Symbols, Symbol,
+            Record, SymbolView, EditLayerMenu, MarkerStyleView, AddMarkerMenu,
+            Spreadsheet) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -37,6 +39,7 @@ define(["marionette",
                 'click .collapse': 'collapseSymbols',
                 'click .open-layer-menu': 'showLayerMenu',
                 'click .add-record-container': 'displayGeometryOptions',
+                'click .open-spreadsheet': 'openSpreadsheet'
             },
 
             initialize: function (opts) {
@@ -58,7 +61,7 @@ define(["marionette",
             },
             attachRecordEventHandlers: function () {
                 this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol);
-                this.listenTo(this.dataCollection, 'update-symbol-assignment', this.reRenderOrReassignRecordToSymbol);
+                this.listenTo(this.dataCollection, 'record-updated', this.reRenderOrReassignRecordToSymbol);
                 this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
                 this.listenTo(this.app.vent, 'record-has-been-deleted', this.symbolModels.removeEmpty);
             },
@@ -152,6 +155,7 @@ define(["marionette",
                 }
             },
             reRenderOrReassignRecordToSymbol: function (recordModel) {
+                console.log('reRenderOrReassignRecordToSymbol');
                 const symbol = this.symbolModels.reassignRecord(recordModel);
                 if (this.dataCollection.length === 1) {
                     this.render();
@@ -288,6 +292,25 @@ define(["marionette",
 
             saveChanges: function() {
                 this.model.save();
+            },
+
+            openSpreadsheet: function (e) {
+                const spreadsheet = new Spreadsheet({
+                    app: this.app,
+                    collection: this.dataCollection,
+                    fields: this.dataCollection.getFields()
+                });
+                this.modal.update({
+                    app: this.app,
+                    view: spreadsheet,
+                    noTitle: true,
+                    noFooter: true,
+                    width: '90vw',
+                    showSaveButton: false,
+                    showDeleteButton: false
+                });
+                this.modal.show();
+                e.preventDefault();
             }
         });
         return LayerListChild;
