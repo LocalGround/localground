@@ -31,6 +31,7 @@ define(['marionette',
                 });
                 
                 this.activeRecordId = null;
+                this.activeLayerId = null;
 
                 this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
                 this.listenTo(this.app.vent, 'show-detail', this.handleRoute);
@@ -38,7 +39,6 @@ define(['marionette',
             },
 
             onRender: function() {
-                console.log('render', this.activeRecordId);
                 if (!this.model.get('isShowing')) {
                     this.addHiddenCSS();
                 }
@@ -65,7 +65,8 @@ define(['marionette',
                     symbolSvg: this.model.toSVG(),
                     records: this.getRecordDisplayInfo(this.model.matchedModels),
                     layerIsIndividual: this.model.layerModel.isIndividual(),
-                    activeRecordId: this.activeRecordId
+                    //activeRecordId: (this.model.layerModel.id === this.activeLayerId) ? this.activeRecordId : null,
+                    activeItemId: `${this.activeLayerId}/${this.activeRecordId}`
                 };
             },
 
@@ -78,12 +79,14 @@ define(['marionette',
                 collection.each((record) => {
                     const dataset = this.model.layerModel.get('dataset').overlay_type;
                     const recordId = record.id;
+                    const layerId = this.model.layerModel.id
 
                     recordInfoList.push({
                         displayText: record.get(this.model.layerModel.get('display_field')) || 'Untitled',
-                        url: `#/${dataset}/${recordId}`,
+                        url: `#/layers/${layerId}/${dataset}/${recordId}`,
                         recordSvg: this.getSVG(record, this.model), 
-                        id: recordId
+                        //id: recordId,
+                        itemId: `${layerId}/${recordId}` 
                     });
                 });
 
@@ -168,99 +171,34 @@ define(['marionette',
             },
 
             handleRoute: function(info) {
-
-                // if (this.activeRecordId && this.activeRecordId !== parseInt(info.id)) {
-                //     const oldActiveRecord = this.markerOverlays.collection.findWhere(
-                //         {'id': this.activeRecordId}
-                //     );
-                //     if (oldActiveRecord) {
-                //         this.deactivateMapMarker(info);
-                //     }
-                // }
-
                 this.activeRecordId = parseInt(info.id);
-
-                console.log(this.app.activeSymbol);
-                // if (this.app.activeSymbol) {
-                //     console.log('this.app.ACTIVE: ', this.app.activeSymbol.cid, this.cid);
-                // }
-
-                
-                // if (this.app.activeSymbol && this.app.activeSymbol.cid === this.cid) {
-                //     console.log('should rerender this one', this.app.activeSymbol);
-                //     this.app.activeSymbol.render();
-                // }
+                this.activeLayerId = parseInt(info.layerId);
 
                 // check to see if the selected record is among a particular symbol's records
                 const activeRecord = this.markerOverlays.collection.findWhere(
                     {'id': this.activeRecordId}
                 );
 
-                //console.log(activeRecord);
-
-                if (activeRecord) {
+                if (activeRecord && this.model.layerModel.id === parseInt(info.layerId)) {
                     this.app.activeSymbol = this;
                     this.activateMapMarker(info);
-                    //this.render();
                 }
 
                 this.render();
-
-                this.activateMapMarker(info);
-                //this.activeLegendItem(info);
-            },
-
-            deactivateMapMarker: function(info) {
-                console.log('deactivate function');
-                this.markerOverlays.children.each((mapMarkerView) => {
-                    if (mapMarkerView.model.id === parseInt(info.id)) {
-                        console.log(`DEACTIVATE MARKER ${info.id}`);
-                        mapMarkerView.deactivate();
-                    }
-                });
             },
 
             activateMapMarker: function(info) {
-                console.log(this.markerOverlays);
                 this.markerOverlays.children.each((mapMarkerView) => {
                     if (mapMarkerView.model.id === parseInt(info.id)) {
 
-
-                        if (this.app.activateMapMarker && this.app.activateMapMarker.id !== parseInt(info.id)) {
-                            console.log('DEACTIVATE:', this.app.activateMapMarker.id);
+                        if (this.app.activateMapMarker && this.app.activateMapMarker.model.id !== parseInt(info.id)) {
                             this.app.activateMapMarker.deactivate();
                         }
                         this.app.activateMapMarker = mapMarkerView;
                         mapMarkerView.activate();
                     }
                 });
-            },
-            activeLegendItem: function() {
-                console.log('yo');
-            },
-
-            makeActive: function (e) {
-                var activeItem = this.app.selectedItemView;
-                if (activeItem && !activeItem.isDestroyed) {
-                    activeItem.active = false;
-                    activeItem.render();
-
-                    // some item's don't have a associated overlay, so check first
-                    if (activeItem.overlay) {
-                        activeItem.overlay.deactivate();
-                    }
-                }
-                this.app.selectedItemView = this;
-                this.active = true;
-                if (this.overlay != null) {
-                    this.overlay.activate();
-                }
-                this.render();
             }
         });
         return LegendSymbolEntry;
     });
-
-
-    /* strategy: find the symbol containing the selected marker and set that symbol as 'this.app.activeSymbol'. Also set this.isActive = true, and this.activeRecordId === info.id (from the route). Then re-render. Use handlebars logic so that if record.id === this.activeRecordId, highlight it.
-    */

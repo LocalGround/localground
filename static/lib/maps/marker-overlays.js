@@ -33,6 +33,7 @@ define(['marionette',
                         this.showAll();
                     }
                 }.bind(this));
+                console.log(this.model);
             },
 
             childViewOptions: function (model, index) {
@@ -42,7 +43,7 @@ define(['marionette',
                     app: this.app,
                     isShowing: this.isShowing,
                     displayOverlay: this.displayOverlays,
-                    route: model.get('overlay_type') + '/' + model.id
+                    route: `layers/${this.model.layerModel.id}/${model.get('overlay_type')}/${model.id}`
                 };
             },
 

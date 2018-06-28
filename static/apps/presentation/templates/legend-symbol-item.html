@@ -18,7 +18,7 @@
 <ul class="presentation-records_wrapper">
     {{#each records}}
     <a href="{{url}}">
-        <li class="presentation-record_item {{#ifequal this.id ../activeRecordId}} selectedRecord {{/ifequal}} ">
+        <li class="presentation-record_item {{#ifequal this.itemId ../activeItemId}} selectedRecord {{/ifequal}} ">
             <span class="legend-record_icon">
                 {{#if this.recordSvg}} 
                     {{{this.recordSvg}}} 
@@ -26,7 +26,7 @@
                     <i class="fa fa-question-circle"></i>
                 {{/if}}
             </span>
-            <span>{{this.displayText}}{{this.id}}{{../activeRecordId}}</span>
+            <span>{{this.displayText}}</span>
         </li>
     </a>
     {{/each}}
