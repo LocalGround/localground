@@ -1024,6 +1024,14 @@ i.fa.fa.fa-question-circle {
   background: #f0f1f5;
 }
 
+.presentation-record_item.selectedRecord {
+  background: #7b9be1;
+}
+
+.presentation-record_item.selectedRecord span {
+  color: white;
+}
+
 .legend-record_icon {
   width: 36px;
 }
