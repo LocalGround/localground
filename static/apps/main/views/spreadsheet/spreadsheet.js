@@ -16,11 +16,13 @@ define(["jquery",
         "text!../../templates/spreadsheet/spreadsheet.html",
         "text!../../templates/spreadsheet/create-field.html",
         "lib/audio/audio-player",
-        "lib/carousel/carousel"
+        "lib/carousel/carousel",
+        "apps/main/views/left/edit-layer-menu"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
         Record, AudioModel, Video, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
-        SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel) {
+        SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel,
+        EditLayerMenu) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -41,6 +43,7 @@ define(["jquery",
             foo: "bar",
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.popover = this.app.popover;
 
                 // call Marionette's default functionality (similar to "super")
                 Marionette.ItemView.prototype.initialize.call(this);
@@ -626,7 +629,7 @@ define(["jquery",
 
                 for (var i = 0; i < this.fields.length; ++i) {
                     const deleteColumn = this.show_hide_deleteColumn == true ?
-                        "<a class='fa fa-minus-circle delete_column' fieldIndex= '" +
+                        "<a class='fa fa-ellipsis-v delete_column' fieldIndex= '" +
                         i +"' aria-hidden='true'></a>" : "";
                     cols.push(this.fields.at(i).get("col_name") + deleteColumn);
                 }
@@ -816,6 +819,20 @@ define(["jquery",
             },
 
             deleteField: function (e) {
+                this.popover.update({
+                    $source: event.target,
+                    view: new EditLayerMenu({
+                        app: this.app,
+                        model: this.model,
+                        children: this.children
+                    }),
+                    placement: 'bottom',
+                    width: '180px'
+                });
+                if (e) {
+                    e.preventDefault();
+                }
+                return;
                 //
                 // You need to access the column that is being selected
                 // Then re-order the columns so that the deleted column is last

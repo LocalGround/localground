@@ -1397,7 +1397,7 @@ span.action.rounded:hover, a.action.rounded:hover {
 }
 
 .htContextMenu {
-  z-index: 20001 !important;
+  z-index: 5 !important;
 }
 
 .modal {
@@ -1427,6 +1427,10 @@ span.action.rounded:hover, a.action.rounded:hover {
   width: 800px;
   height: auto;
   position: relative;
+}
+
+.modal.spreadsheet {
+  z-index: 2;
 }
 
 .modal.spreadsheet .content {
@@ -1787,6 +1791,12 @@ span.action.rounded:hover, a.action.rounded:hover {
 
 .modal.show {
   display: block;
+}
+
+.spreadsheet .fa-ellipsis-v {
+  float: right;
+  color: #999;
+  margin-top: 5px;
 }
 
 .popover {

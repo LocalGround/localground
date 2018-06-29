@@ -12,7 +12,7 @@
 }
 
 .htContextMenu {
-    z-index: 20001 !important;
+    z-index: 5 !important;
 }
 .modal {
     display: none;
@@ -32,6 +32,7 @@
         @include content();
     }
     &.spreadsheet {
+        z-index: 2;
         .content {
             transform: none;
             top: auto;
@@ -381,4 +382,12 @@
 
 .modal.show {
     display: block;
+}
+
+.spreadsheet {
+    .fa-ellipsis-v {
+        float: right;
+        color: #999;
+        margin-top: 5px;
+    }
 }
