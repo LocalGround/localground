@@ -33,7 +33,6 @@ define(['marionette',
                         this.showAll();
                     }
                 }.bind(this));
-                console.log(this.model);
             },
 
             childViewOptions: function (model, index) {

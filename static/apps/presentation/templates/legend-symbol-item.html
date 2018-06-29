@@ -2,7 +2,7 @@
     <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
           stroke-width="{{ strokeWeight }}" stroke="{{ icon.strokeColor }}" d="{{ icon.path }}"></path>
 </svg -->
-<div class="symbol-entry-header legend-symbol_expanded">
+<div class="symbol-entry-header {{#if layerIsIndividual}}legend-symbol_collapsed{{else}}legend-symbol_expanded{{/if}}">
 
     <span class="legend-symbol_svg">{{{symbolSvg}}}</span>
     <!-- If there is more than one unique item inside the group, give a title

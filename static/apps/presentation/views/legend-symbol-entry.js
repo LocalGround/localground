@@ -39,6 +39,7 @@ define(['marionette',
             },
 
             onRender: function() {
+                console.log('symbol onRender', this.model);
                 if (!this.model.get('isShowing')) {
                     this.addHiddenCSS();
                 }
@@ -180,10 +181,12 @@ define(['marionette',
                 );
 
                 if (activeRecord && this.model.layerModel.id === parseInt(info.layerId)) {
-                    this.app.activeSymbol = this;
                     this.activateMapMarker(info);
                 }
 
+                // due to 'this.activeRecordId' and 'this.activeLayerId' being used 
+                // by template helpers, all that's needed to highlight the correct record  
+                // in the legend panel is a simple rerender
                 this.render();
             },
 

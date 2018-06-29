@@ -44,6 +44,11 @@ define(['marionette',
             },
 
             expandSymbols: function() {
+                console.log('expandSymbols', this.model);
+                if (this.model.isIndividual()) {
+                    console.log('isIndividual: return', this.model);
+                    return;
+                }
                 this.$el.find('.presentation-records_wrapper').css('display', 'block');
                     
                 this.$el.find('.collapse').removeClass('fa-angle-right');
@@ -55,6 +60,7 @@ define(['marionette',
             },
 
             collapseSymbols: function() {
+                
                 this.$el.find('.presentation-records_wrapper').css('display', 'none');
                 this.$el.find('.collapse').removeClass('fa-angle-down');
                 this.$el.find('.collapse').addClass('fa-angle-right');
