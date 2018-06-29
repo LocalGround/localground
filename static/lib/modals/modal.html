@@ -1,5 +1,5 @@
-<div class="modal">
-    <div class="content {{contentClass}}" style="width: {{ width }};">
+<div class="modal {{modalClass}}">
+    <div class="content" style="width: {{ width }};">
         <header>
             <span class="close">&times;</span>
             {{#unless noTitle}}
@@ -9,10 +9,9 @@
         <div class="body {{bodyClass}}" {{#if height }}style="height: {{ height }};"{{/if}}>
             <!-- view content injectsed here -->
         </div>
+        {{#unless noFooter}}
         <footer>
-            {{#unless noFooter}}
             <div class="buttons">
-
                 {{#if showDeleteButton}}
                     <button class="delete-modal button-secondary">{{ deleteButtonText }}</button>
                 {{else}}
@@ -22,7 +21,7 @@
                     <button class="save-modal-form button-primary">{{ saveButtonText }}</button>
                 {{/if}}
             </div>
-            {{/unless}}
         </footer>
+        {{/unless}}
     </div>
 </div>

@@ -305,7 +305,7 @@ define(["marionette",
                     noTitle: true,
                     noFooter: true,
                     width: '96vw',
-                    contentClass: 'spreadsheet',
+                    modalClass: 'spreadsheet',
                     showSaveButton: false,
                     showDeleteButton: false
                 });

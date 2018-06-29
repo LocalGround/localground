@@ -28,7 +28,7 @@ define(["jquery",
             },
             invalidCells: {},
             table: null,
-            className: 'main-panel',
+            className: 'spreadsheet-panel',
             currentModel: null,
             show_hide_deleteColumn: true,
             events: {
@@ -45,7 +45,7 @@ define(["jquery",
                 // call Marionette's default functionality (similar to "super")
                 Marionette.ItemView.prototype.initialize.call(this);
                 this.registerRatingEditor();
-                this.render();
+                //this.render();
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
@@ -96,6 +96,7 @@ define(["jquery",
                 Handsontable.editors.registerEditor('select-ratings', SelectRatingsEditor);
             },
             onRender: function () {
+                console.log('rendering spreadsheet!');
                 this.renderSpreadsheet();
             },
             //
@@ -158,17 +159,13 @@ define(["jquery",
                     return;
                 }
                 var grid = this.$el.find('#grid').get(0),
-                    rowHeights = [],
+                    rowHeights = 55,
                     i = 0,
                     data = [],
                     that = this;
                 if (this.table) {
                     this.table.destroy();
                     this.table = null;
-                }
-
-                for (i = 0; i < this.collection.length; i++) {
-                    rowHeights.push(55);
                 }
                 this.collection.each(function (model) {
                     var rec = model.toJSON();
@@ -177,7 +174,7 @@ define(["jquery",
                     }
                     data.push(rec);
                 });
-
+                //alert($(window).height() - 270);
                 this.table = new Handsontable(grid, {
                     data: data,
                     contextMenu: true,
@@ -188,15 +185,14 @@ define(["jquery",
                     manualColumnResize: true,
                     manualColumnMove: true,
                     rowHeaders: true,
-                    width: 1000,
-                    height: this.height,
+                    height: $(window).height() - 170,
                     fixedRowsTop: 0,
                     colWidths: this.getColumnWidths(),
                     rowHeights: rowHeights,
                     colHeaders: this.getColumnHeaders(),
                     columns: this.getColumns(),
                     maxRows: this.collection.length,
-                    //stretchH: "all",
+                    stretchH: "all",
                     contextMenu: {
                         callback: function (key, selection, clickEvent) {
                             console.log(clickEvent);
