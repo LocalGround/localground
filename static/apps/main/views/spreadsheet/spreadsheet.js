@@ -13,8 +13,8 @@ define(["jquery",
         "views/field-child-view",
         "models/field",
         "handsontable",
-        "text!../templates/spreadsheet.html",
-        "text!../templates/create-field.html",
+        "text!../../templates/spreadsheet/spreadsheet.html",
+        "text!../../templates/spreadsheet/create-field.html",
         "lib/audio/audio-player",
         "lib/carousel/carousel"
     ],
@@ -144,7 +144,7 @@ define(["jquery",
             renderSpreadsheet: function () {
                 // When the spreadsheet is made without a defined collection
                 // Alert that there is no collection
-                var that = this;
+
                 if (!this.collection) {
                     this.$el.find('#grid').html("Collection is not defined");
                     return;
@@ -166,6 +166,7 @@ define(["jquery",
                     this.table.destroy();
                     this.table = null;
                 }
+
                 for (i = 0; i < this.collection.length; i++) {
                     rowHeights.push(55);
                 }
@@ -179,46 +180,73 @@ define(["jquery",
 
                 this.table = new Handsontable(grid, {
                     data: data,
+                    contextMenu: true,
+                    contextMenu: true,
+                    autoRowSize: true,
+                    columnSorting: true,
+                    undo: true,
+                    manualColumnResize: true,
+                    manualColumnMove: true,
+                    rowHeaders: true,
+                    width: 1000,
+                    height: this.height,
                     fixedRowsTop: 0,
                     colWidths: this.getColumnWidths(),
                     rowHeights: rowHeights,
                     colHeaders: this.getColumnHeaders(),
-                    manualColumnResize: true,
-                    manualColumnMove: (this.fields != null && this.fields != undefined),
-                    rowHeaders: true,
                     columns: this.getColumns(),
                     maxRows: this.collection.length,
-                    autoRowSize: true,
-                    columnSorting: true,
-                    undo: true,
-                    afterValidate: function (isValid, value, rowIndex, prop, source) {
-                        // because of limitations in Hansontable, we need to
-                        // manually track which cells are valid / invalid:
-                        if (!isValid) {
-                            var model = that.getModelFromCell(null, rowIndex);
-                            if (!that.invalidCells[model.id]) {
-                                that.invalidCells[model.id] = [];
-                            }
-                            that.invalidCells[model.id].push(prop)
-                            if (prop === 'lat' || prop === 'lng') {
-                                that.invalidCells[model.id].push('geometry');
+                    //stretchH: "all",
+                    contextMenu: {
+                        callback: function (key, selection, clickEvent) {
+                            console.log(clickEvent);
+                        },
+                        items: {
+                            "row_above": {
+                                name: 'row above'
+                            },
+                            "row_below": {
+                                name: 'row below' // Set custom text for predefined option
+                            },
+                            "about": { // Own custom option
+                                name: 'Custom option',
+                                callback: function() { // Callback for specific option
+                                    setTimeout(function() {
+                                        alert('Hello world!'); // Fire alert after menu close (with timeout)
+                                    }, 0);
+                                }
                             }
                         }
                     },
-                    afterChange: function (changes, source) {
-                        that.saveChanges(changes, source);
-                        if (changes && changes[0] && changes[0].length > 1 && changes[0][1] === "video_provider") {
-                            that.table.render();
-                        }
-                    }
+                    afterValidate: this.afterValidate.bind(this),
+                    afterChange: this.afterChange.bind(this)
                 });
                 if (this.fields) {
                     this.table.addHook('beforeColumnMove', this.columnMoveBefore.bind(this));
                     this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
                 }
             },
+            afterValidate: function (isValid, value, rowIndex, prop, source) {
+                // because of limitations in Hansontable, we need to
+                // manually track which cells are valid / invalid:
+                if (!isValid) {
+                    var model = this.getModelFromCell(null, rowIndex);
+                    if (!this.invalidCells[model.id]) {
+                        this.invalidCells[model.id] = [];
+                    }
+                    this.invalidCells[model.id].push(prop)
+                    if (prop === 'lat' || prop === 'lng') {
+                        this.invalidCells[model.id].push('geometry');
+                    }
+                }
+            },
+            afterChange: function (changes, source) {
+                this.saveChanges(changes, source);
+                if (changes && changes[0] && changes[0].length > 1 && changes[0][1] === "video_provider") {
+                    this.table.render();
+                }
+            },
             saveChanges: function (changes, source) {
-                var that = this;
                 //sync with collection:
                 source = source.split(".");
                 source = source[source.length - 1];
@@ -287,9 +315,6 @@ define(["jquery",
                                 m.trigger('record-updated', m);
                             }
                         });
-
-
-
                     }
                     //clear out invalidCells:
                     this.invalidCells = {};
@@ -329,8 +354,6 @@ define(["jquery",
                 return td;
             },
             audioRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-
-
                 var audio_model = this.getModelFromCell(instance, rowIndex);
 
                 var player = new AudioPlayer({
@@ -603,50 +626,32 @@ define(["jquery",
             },
 
             getColumnHeaders: function () {
-                var cols;
-                switch (this.collection.getDataType()) {
-                    case "audio":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"];
-                    case "photos":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
-                    case "videos":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Video", "Video Link", "Tags", "Attribution", "Owner", "Delete"];
-                    default:
-                        if (!this.fields) {
-                            return null;
-                        }
-                        cols = ["ID", "Lat", "Lng"];
+                const cols = ["ID", "Lat", "Lng"];
 
-                        for (var i = 0; i < this.fields.length; ++i) {
-                            var deleteColumn = this.show_hide_deleteColumn == true ? " <a class='fa fa-minus-circle delete_column' fieldIndex= '" +
-                                                                              i +"' aria-hidden='true'></a>" : "";
-                            cols.push(this.fields.at(i).get("col_name") + deleteColumn);
-                        }
-                        cols.push("Media");
-                        cols.push("Delete");
-                        cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
-                        return cols;
+                for (var i = 0; i < this.fields.length; ++i) {
+                    const deleteColumn = this.show_hide_deleteColumn == true ?
+                        "<a class='fa fa-minus-circle delete_column' fieldIndex= '" +
+                        i +"' aria-hidden='true'></a>" : "";
+                    cols.push(this.fields.at(i).get("col_name") + deleteColumn);
                 }
+                cols.push("Media");
+                cols.push("Delete");
+                cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
+                return cols;
             },
             getColumnWidths: function () {
-                switch(this.collection.getDataType()){
-                    case "audio":
-                        return [30, 80, 80, 200, 400, 300, 200, 100, 80, 100];
-                    case "photos":
-                        return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
-                    case "videos":
-                        return [30, 80, 80, 200, 400, 65, 100, 200, 100, 80, 100];
-                    default:
-                        if (!this.fields){
-                            return null;
-                        }//*/
-                        var cols = [30, 80, 80];
-                        for (var i = 0; i < this.fields.length; ++i){
-                            cols.push(150);
-                        }
-                        cols.push(120);
-                        return cols;
-                }
+                const cols = [30, 80, 80];
+                this.fields.forEach(field => {
+                    if (field.get('data_type') === 'integer') {
+                        cols.push(80);
+                    } else if (field.get('data_type') === 'text') {
+                        cols.push(250);
+                    } else {
+                        cols.push(150);
+                    }
+                })
+                cols.push(120);
+                return cols;
             },
 
             doSearch: function (term) {

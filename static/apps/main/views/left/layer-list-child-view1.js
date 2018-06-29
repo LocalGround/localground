@@ -8,11 +8,11 @@ define(["marionette",
         "apps/main/views/left/edit-layer-menu",
         "apps/main/views/right/marker-style-view",
         "apps/main/views/left/add-marker-menu",
-        "apps/main/views/spreadsheet"
+        "apps/main/views/spreadsheet/layout"
     ],
     function (Marionette, Handlebars, LayerItemTemplate, Symbols, Symbol,
             Record, SymbolView, EditLayerMenu, MarkerStyleView, AddMarkerMenu,
-            Spreadsheet) {
+            SpreadsheetLayout) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -295,17 +295,17 @@ define(["marionette",
             },
 
             openSpreadsheet: function (e) {
-                const spreadsheet = new Spreadsheet({
+                const spreadsheet = new SpreadsheetLayout({
                     app: this.app,
                     collection: this.dataCollection,
-                    fields: this.dataCollection.getFields()
                 });
                 this.modal.update({
                     app: this.app,
                     view: spreadsheet,
                     noTitle: true,
                     noFooter: true,
-                    width: '90vw',
+                    width: '96vw',
+                    contentClass: 'spreadsheet',
                     showSaveButton: false,
                     showDeleteButton: false
                 });

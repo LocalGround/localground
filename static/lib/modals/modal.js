@@ -7,7 +7,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             noTitle: false,
             noFooter: false,
             width: "90vw",
-            //height: "70vh",
+            bodyClass: null,
+            contentClass: null,
             margin: "auto",
             showCloseButton: true,
             closeButtonText: "Cancel",
@@ -47,6 +48,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     width: this.width,
                     height: this.height,
                     bodyClass: this.bodyClass,
+                    contentClass: this.contentClass,
                     noTitle: this.noTitle,
                     noFooter: this.noFooter,
                     //margin: this.margin,
@@ -77,6 +79,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts.noTitle = opts.noTitle || false;
                 opts.noFooter = opts.noFooter || false;
                 opts.bodyClass = opts.bodyClass || null;
+                opts.contentClass = opts.contentClass || null;
                 _.extend(this, opts);
                 this.saveFunction = function () {
                     opts.saveFunction();

@@ -102,9 +102,14 @@ $symbolPaddingRight: 26px;
 
     .highlight {
         background: rgb(123, 155, 225);
-        color: #ffffff;
-        p {
-            color:#ffffff;
+        color: #fff;
+        p { color: #fff; }
+        svg g { stroke: #fff; }
+        &:hover {
+            background: #EEE;
+            color: #444;
+            p { color: #444; }
+            svg g { stroke: #999; }
         }
     }
 }

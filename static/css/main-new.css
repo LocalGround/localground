@@ -616,11 +616,28 @@ document, body {
 
 .symbol .highlight {
   background: #7b9be1;
-  color: #ffffff;
+  color: #fff;
 }
 
 .symbol .highlight p {
-  color: #ffffff;
+  color: #fff;
+}
+
+.symbol .highlight svg g {
+  stroke: #fff;
+}
+
+.symbol .highlight:hover {
+  background: #EEE;
+  color: #444;
+}
+
+.symbol .highlight:hover p {
+  color: #444;
+}
+
+.symbol .highlight:hover svg g {
+  stroke: #999;
 }
 
 .symbol.individual {
@@ -1379,6 +1396,10 @@ span.action.rounded:hover, a.action.rounded:hover {
   color: white;
 }
 
+.htContextMenu {
+  z-index: 20001 !important;
+}
+
 .modal {
   display: none;
   position: fixed;
@@ -1399,8 +1420,6 @@ span.action.rounded:hover, a.action.rounded:hover {
   position: absolute;
   top: 45%;
   transform: translateY(-50%);
-  margin: 20px auto 0;
-  width: 80%;
   vertical-align: middle;
   border-radius: 6px;
   background-color: #fefefe;
@@ -1412,15 +1431,18 @@ span.action.rounded:hover, a.action.rounded:hover {
 }
 
 .modal .content.spreadsheet {
-  /* vertical-align: middle; */
-  border-radius: 6px;
-  background-color: #fefefe;
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
-  height: auto;
-  margin: calc((100vh - 480px) / 2) auto 0px auto;
   transform: none;
-  display: block;
-  position: static;
+  top: auto;
+}
+
+.modal .content.spreadsheet .body {
+  overflow: hidden;
+  background-color: transparent;
+  border-top: 0px solid #e4e5eb;
+}
+
+.modal .content.spreadsheet .body > div {
+  margin: 10px;
 }
 
 .modal header {
@@ -1442,6 +1464,49 @@ span.action.rounded:hover, a.action.rounded:hover {
   font-size: 24px;
   line-height: 12px;
   cursor: pointer;
+}
+
+.modal .body {
+  background-color: #ffffff;
+  border-top: 1px solid #e4e5eb;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.modal .body > div {
+  margin: 20px;
+}
+
+.modal .body nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modal .body nav li {
+  display: inline-block;
+  padding: 14px 4px;
+  font-size: 12px;
+  margin: 0 20px 0 20px;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.modal .body .inline-form {
+  margin: 6px 0px;
+  width: 100%;
+}
+
+.modal .body .inline-form td {
+  padding: 0px 6px;
+}
+
+.modal .body .inline-form label {
+  text-align: left;
+}
+
+.modal .body.gray {
+  background: #EEE;
 }
 
 .modal footer {
@@ -1528,49 +1593,6 @@ span.action.rounded:hover, a.action.rounded:hover {
   border-bottom: solid;
   font-weight: 600;
   border-color: #4e70d4;
-}
-
-.modal .body {
-  background-color: #ffffff;
-  border-top: 1px solid #e4e5eb;
-  max-height: 75vh;
-  overflow-y: auto;
-}
-
-.modal .body.gray {
-  background: #EEE;
-}
-
-.modal .body > div {
-  margin: 20px;
-}
-
-.modal .body nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.modal .body nav li {
-  display: inline-block;
-  padding: 14px 4px;
-  font-size: 12px;
-  margin: 0 20px 0 20px;
-  font-weight: 400;
-  font-size: 12px;
-}
-
-.modal .body .inline-form {
-  margin: 6px 0px;
-  width: 100%;
-}
-
-.modal .body .inline-form td {
-  padding: 0px 6px;
-}
-
-.modal .body .inline-form label {
-  text-align: left;
 }
 
 .modal .modal-body .grey-bg {
