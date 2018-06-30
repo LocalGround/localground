@@ -25,6 +25,10 @@ define(["jquery",
         SpreadsheetMenu) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
+            /**
+            NOTE: HERE ARE THE OPEN SOURCE DOCS:
+            https://docs.handsontable.com/4.0.0/ColumnSorting.html#sort
+            */
             template: function () {
                 return Handlebars.compile(SpreadsheetTemplate);
             },
@@ -98,7 +102,7 @@ define(["jquery",
                 };
                 Handsontable.editors.registerEditor('select-ratings', SelectRatingsEditor);
             },
-            onRender: function () {
+            onShow: function () {
                 console.log('rendering spreadsheet!');
                 this.renderSpreadsheet();
             },
@@ -146,13 +150,7 @@ define(["jquery",
                 }
             },
             renderSpreadsheet: function () {
-                // When the spreadsheet is made without a defined collection
-                // Alert that there is no collection
-
-                if (!this.collection) {
-                    this.$el.find('#grid').html("Collection is not defined");
-                    return;
-                }
+                if (this.table) { return; }
 
                 if (this.collection.length == 0) {
                     // Render spreadsheet should be called after every removal of rows
@@ -161,62 +159,32 @@ define(["jquery",
                         '</div>');
                     return;
                 }
-                var grid = this.$el.find('#grid').get(0),
-                    rowHeights = 55,
-                    i = 0,
-                    data = [],
-                    that = this;
-                if (this.table) {
-                    this.table.destroy();
-                    this.table = null;
-                }
-                this.collection.each(function (model) {
+                const data = this.collection.map(model => {
                     var rec = model.toJSON();
                     if (rec.tags) {
                         rec.tags = rec.tags.join(", ");
                     }
-                    data.push(rec);
+                    return rec;
                 });
-                //alert($(window).height() - 270);
-                this.table = new Handsontable(grid, {
+                this.table = new Handsontable(this.$el.find('#grid').get(0), {
                     data: data,
-                    contextMenu: true,
-                    contextMenu: true,
                     autoRowSize: true,
-                    columnSorting: true,
                     undo: true,
                     manualColumnResize: true,
                     manualColumnMove: true,
                     rowHeaders: true,
+                    sortIndicator: true,
+                    columnSorting: {
+                        column: 0
+                    },
                     height: $(window).height() - 170,
                     fixedRowsTop: 0,
                     colWidths: this.getColumnWidths(),
-                    rowHeights: rowHeights,
+                    rowHeights: 55,
                     colHeaders: this.getColumnHeaders(),
                     columns: this.getColumns(),
                     maxRows: this.collection.length,
                     stretchH: "all",
-                    contextMenu: {
-                        callback: function (key, selection, clickEvent) {
-                            console.log(clickEvent);
-                        },
-                        items: {
-                            "row_above": {
-                                name: 'row above'
-                            },
-                            "row_below": {
-                                name: 'row below' // Set custom text for predefined option
-                            },
-                            "about": { // Own custom option
-                                name: 'Custom option',
-                                callback: function() { // Callback for specific option
-                                    setTimeout(function() {
-                                        alert('Hello world!'); // Fire alert after menu close (with timeout)
-                                    }, 0);
-                                }
-                            }
-                        }
-                    },
                     afterValidate: this.afterValidate.bind(this),
                     afterChange: this.afterChange.bind(this)
                 });
@@ -320,8 +288,7 @@ define(["jquery",
                 }
             },
             getModelFromCell: function (table, index) {
-                table = table || this.table;
-                var modelID = table.getDataAtRowProp(index, "id");
+                table = this.table.getDataAtRowProp(index, "id");
                 return this.collection.get(modelID);
             },
 
@@ -399,6 +366,7 @@ define(["jquery",
             },
 
             mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
+                return;
                 var model = this.getModelFromCell(instance, row);
 
                 // There are two possible places to extract
@@ -823,16 +791,17 @@ define(["jquery",
                     $source: event.target,
                     view: new SpreadsheetMenu({
                         app: this.app,
-                        model: this.model,
-                        children: this.children
+                        collection: this.collection,
+                        table: this.table,
+                        columnID: $(e.srcElement).attr('fieldIndex')
                     }),
                     placement: 'bottom',
                     width: '180px'
                 });
-                if (e) {
-                    e.stopImmediatePropagation();
-                    e.preventDefault();
-                }
+                //if (e) {
+                //    e.stopImmediatePropagation();
+                //    e.preventDefault();
+                //}
 
                 return;
                 //

@@ -10,8 +10,7 @@ define(["underscore",
 
         var SpreadsheetMenu =  Marionette.ItemView.extend({
             events: {
-                'click .sort-asc': 'itemClicked',
-                'click .sort-desc': 'itemClicked',
+                'click .sort': 'sort',
                 'click .insert-col-before': 'itemClicked',
                 'click .insert-col-after': 'itemClicked',
                 'click .duplicate-col': 'itemClicked',
@@ -27,7 +26,10 @@ define(["underscore",
             template: Handlebars.compile(ContextMenuTemplate),
             itemClicked: function (e) {
                 console.log('Clicked:', e);
-            }
+            },
+            sort: function (e) {
+                this.table.sort(this.columnID);
+            },
 
         });
         return SpreadsheetMenu;
