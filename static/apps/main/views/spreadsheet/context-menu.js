@@ -14,7 +14,7 @@ define(["underscore",
                 'click .insert-col-before': 'itemClicked',
                 'click .insert-col-after': 'itemClicked',
                 'click .duplicate-col': 'itemClicked',
-                'click .delete-col': 'itemClicked',
+                'click .delete-col': 'deleteColumn',
                 'click .set-title-field': 'itemClicked'
             },
 
@@ -30,6 +30,20 @@ define(["underscore",
             sort: function (e) {
                 this.table.sort(this.columnID);
             },
+            deleteColumn: function (e) {
+                e.preventDefault();
+                if (!confirm("Do you want to delete this field?")){
+                    return;
+                }
+                this.fields.at(this.columnID).destroy({
+                    success: () => {
+                        this.app.vent.trigger('render-spreadsheet');
+                    },
+                    error: (e) => {
+                        console.error(e)
+                    }
+                });
+            }
 
         });
         return SpreadsheetMenu;

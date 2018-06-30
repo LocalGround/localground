@@ -150,7 +150,10 @@ define(["jquery",
                 }
             },
             renderSpreadsheet: function () {
-                if (this.table) { return; }
+                if (this.table) {
+                    this.table.render();
+                    return;
+                }
 
                 if (this.collection.length == 0) {
                     // Render spreadsheet should be called after every removal of rows
@@ -166,6 +169,7 @@ define(["jquery",
                     }
                     return rec;
                 });
+                const that = this;
                 this.table = new Handsontable(this.$el.find('#grid').get(0), {
                     data: data,
                     autoRowSize: true,
@@ -174,6 +178,7 @@ define(["jquery",
                     manualColumnMove: true,
                     rowHeaders: true,
                     sortIndicator: true,
+                    //columnSorting: true,
                     columnSorting: {
                         column: 0
                     },
@@ -185,32 +190,32 @@ define(["jquery",
                     columns: this.getColumns(),
                     maxRows: this.collection.length,
                     stretchH: "all",
-                    afterValidate: this.afterValidate.bind(this),
-                    afterChange: this.afterChange.bind(this)
+                    afterValidate: function (isValid, value, rowIndex, prop, source) {
+                        // because of limitations in Hansontable, we need to
+                        // manually track which cells are valid / invalid:
+                        console.log('afterValidate', that.table);
+                        if (!isValid) {
+                            var model = that.getModelFromCell(null, rowIndex);
+                            if (!that.invalidCells[model.id]) {
+                                that.invalidCells[model.id] = [];
+                            }
+                            that.invalidCells[model.id].push(prop)
+                            if (prop === 'lat' || prop === 'lng') {
+                                that.invalidCells[model.id].push('geometry');
+                            }
+                        }
+                    },
+                    afterChange: function (changes, source) {
+                        console.log('afterChange', that.table);
+                        that.saveChanges(changes, source);
+                        if (changes && changes[0] && changes[0].length > 1 && changes[0][1] === "video_provider") {
+                            that.table.render();
+                        }
+                    }
                 });
                 if (this.fields) {
                     this.table.addHook('beforeColumnMove', this.columnMoveBefore.bind(this));
                     this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
-                }
-            },
-            afterValidate: function (isValid, value, rowIndex, prop, source) {
-                // because of limitations in Hansontable, we need to
-                // manually track which cells are valid / invalid:
-                if (!isValid) {
-                    var model = this.getModelFromCell(null, rowIndex);
-                    if (!this.invalidCells[model.id]) {
-                        this.invalidCells[model.id] = [];
-                    }
-                    this.invalidCells[model.id].push(prop)
-                    if (prop === 'lat' || prop === 'lng') {
-                        this.invalidCells[model.id].push('geometry');
-                    }
-                }
-            },
-            afterChange: function (changes, source) {
-                this.saveChanges(changes, source);
-                if (changes && changes[0] && changes[0].length > 1 && changes[0][1] === "video_provider") {
-                    this.table.render();
                 }
             },
             saveChanges: function (changes, source) {
@@ -288,7 +293,8 @@ define(["jquery",
                 }
             },
             getModelFromCell: function (table, index) {
-                table = this.table.getDataAtRowProp(index, "id");
+                table = table || this.table;
+                const modelID = table.getDataAtRowProp(index, 'id');
                 return this.collection.get(modelID);
             },
 
@@ -793,6 +799,7 @@ define(["jquery",
                         app: this.app,
                         collection: this.collection,
                         table: this.table,
+                        fields: this.fields,
                         columnID: $(e.srcElement).attr('fieldIndex')
                     }),
                     placement: 'bottom',
@@ -802,27 +809,6 @@ define(["jquery",
                 //    e.stopImmediatePropagation();
                 //    e.preventDefault();
                 //}
-
-                return;
-                //
-                // You need to access the column that is being selected
-                // Then re-order the columns so that the deleted column is last
-                // Then after re-ordering the columns, then delete the selected column
-                //
-                var that = this;
-                if (!confirm("Do you want to delete this field?")){
-                    return;
-                }
-
-                e.preventDefault();
-                var fieldIndex = $(e.currentTarget).attr("fieldIndex");
-                var targetColumn = this.fields.at(fieldIndex);
-                targetColumn.destroy({
-                    success: function () {
-                        that.renderSpreadsheet();
-                    }
-                });
-
             },
             addRow: function (dataType) {
                 var that = this,
