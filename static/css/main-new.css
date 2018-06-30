@@ -1368,7 +1368,8 @@ span.action.rounded:hover, a.action.rounded:hover {
 }
 
 .dropdown-menu .divider {
-  border-top: solid 1px #EEE;
+  border-top: solid 1px #DDD;
+  margin: 6px 0px 6px 0px;
 }
 
 .dropdown-menu ul {
@@ -1855,7 +1856,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   border-radius: 2px;
   /*box-shadow: 0 0 2px rgba(0,0,0,0.4);*/
   box-shadow: 1px 1px 16px 1px rgba(0, 0, 0, 0.2);
-  padding: 0px 0px 0px 0px;
+  padding: 0px 0px 5px 0px;
 }
 
 .popper .popper__arrow,

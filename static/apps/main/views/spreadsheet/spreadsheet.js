@@ -17,12 +17,12 @@ define(["jquery",
         "text!../../templates/spreadsheet/create-field.html",
         "lib/audio/audio-player",
         "lib/carousel/carousel",
-        "apps/main/views/left/edit-layer-menu"
+        "apps/main/views/spreadsheet/context-menu"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
         Record, AudioModel, Video, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
         SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel,
-        EditLayerMenu) {
+        SpreadsheetMenu) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -821,7 +821,7 @@ define(["jquery",
             deleteField: function (e) {
                 this.popover.update({
                     $source: event.target,
-                    view: new EditLayerMenu({
+                    view: new SpreadsheetMenu({
                         app: this.app,
                         model: this.model,
                         children: this.children
@@ -830,8 +830,10 @@ define(["jquery",
                     width: '180px'
                 });
                 if (e) {
+                    e.stopImmediatePropagation();
                     e.preventDefault();
                 }
+
                 return;
                 //
                 // You need to access the column that is being selected
