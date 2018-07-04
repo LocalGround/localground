@@ -40,7 +40,7 @@ define(["jquery",
             events: {
                 'click #addColumn': 'showCreateFieldForm',
                 'click .addMedia': 'showMediaBrowser',
-                'click .delete_column' : 'deleteField',
+                'click .column-opts' : 'deleteField',
                 'click .carousel-media': 'carouselMedia',
 
             },
@@ -178,10 +178,7 @@ define(["jquery",
                     manualColumnMove: true,
                     rowHeaders: true,
                     sortIndicator: true,
-                    //columnSorting: true,
-                    columnSorting: {
-                        column: 0
-                    },
+                    columnSorting: true,
                     height: $(window).height() - 170,
                     fixedRowsTop: 0,
                     colWidths: this.getColumnWidths(),
@@ -597,15 +594,25 @@ define(["jquery",
 
                 this.app.vent.trigger('hide-modal');
             },
+            getMenuTemplate: function (index) {
+                return `<a class="fa fa-ellipsis-v column-opts" fieldIndex="${index}" aria-hidden="true"></a>`;
+            },
 
             getColumnHeaders: function () {
-                const cols = ["ID", "Lat", "Lng"];
+                const cols = [
+                    "ID" + this.getMenuTemplate(0),
+                    "Lat" + this.getMenuTemplate(1),
+                    "Lng" + this.getMenuTemplate(2)
+                ];
 
                 for (var i = 0; i < this.fields.length; ++i) {
-                    const deleteColumn = this.show_hide_deleteColumn == true ?
-                        "<a class='fa fa-ellipsis-v delete_column' fieldIndex= '" +
-                        i +"' aria-hidden='true'></a>" : "";
-                    cols.push(this.fields.at(i).get("col_name") + deleteColumn);
+                    const menuButton = this.show_hide_deleteColumn ? this.getMenuTemplate(i + 3) : '';
+                    cols.push(
+                        '<span class="hide-overflow">' +
+                        this.fields.at(i).get("col_name") +
+                        '</span>' +
+                        menuButton
+                    );
                 }
                 cols.push("Media");
                 cols.push("Delete");
@@ -793,6 +800,9 @@ define(["jquery",
             },
 
             deleteField: function (e) {
+                const src = e.srcElement;
+                const headerLink = src.parentNode;
+                const columnID = parseInt($(src).attr('fieldIndex'));
                 this.popover.update({
                     $source: event.target,
                     view: new SpreadsheetMenu({
@@ -800,7 +810,8 @@ define(["jquery",
                         collection: this.collection,
                         table: this.table,
                         fields: this.fields,
-                        columnID: $(e.srcElement).attr('fieldIndex')
+                        columnID: columnID,
+                        headerLink: headerLink
                     }),
                     placement: 'bottom',
                     width: '180px'

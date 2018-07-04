@@ -1,12 +1,5 @@
 // main: ../main-new.scss
 $symbolPaddingRight: 26px;
-@mixin overflow-text() {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: inline-block;
-    vertical-align: middle;
-}
 .sort-by {
     font-size: 12px;
     font-weight: 600;

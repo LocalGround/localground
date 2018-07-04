@@ -1797,7 +1797,22 @@ span.action.rounded:hover, a.action.rounded:hover {
 .spreadsheet .fa-ellipsis-v {
   float: right;
   color: #999;
-  margin-top: 5px;
+  display: inline-block;
+  padding: 4px 8px;
+}
+
+.spreadsheet .fa-ellipsis-v:hover {
+  background: #EEE;
+  border-radius: 20px;
+}
+
+.spreadsheet .hide-overflow {
+  max-width: 65%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .popover {

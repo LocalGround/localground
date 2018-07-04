@@ -10,7 +10,8 @@ define(["underscore",
 
         var SpreadsheetMenu =  Marionette.ItemView.extend({
             events: {
-                'click .sort': 'sort',
+                'click .sort-asc': 'sortAsc',
+                'click .sort-desc': 'sortDesc',
                 'click .insert-col-before': 'itemClicked',
                 'click .insert-col-after': 'itemClicked',
                 'click .duplicate-col': 'itemClicked',
@@ -27,8 +28,31 @@ define(["underscore",
             itemClicked: function (e) {
                 console.log('Clicked:', e);
             },
-            sort: function (e) {
+            sortAsc: function (e) {
+                this.sort('asc');
+            },
+            sortDesc: function (e) {
+                this.sort('desc');
+            },
+            sort: function (direction) {
+                /*
+                MEGA HACK:
+                https://github.com/handsontable/handsontable/blob/master/src/plugins/columnSorting/columnSorting.js
+                */
+                this.table.sortOrder = !this.table.sortOrder;
+                if (direction === 'asc') {
+                    this.table.sortOrder = undefined;
+                } else {
+                    this.table.sortOrder = true;
+                }
+                const oldSort = this.table.sortOrder;
+                console.log(this.table.sortOrder);
                 this.table.sort(this.columnID);
+                if (oldSort === this.table.sortOrder === true) {
+                    //yet another hack:
+                    this.table.sort(this.columnID);
+                }
+                console.log(this.table.sortOrder);
             },
             deleteColumn: function (e) {
                 e.preventDefault();

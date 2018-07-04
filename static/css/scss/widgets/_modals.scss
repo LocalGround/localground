@@ -388,6 +388,15 @@
     .fa-ellipsis-v {
         float: right;
         color: #999;
-        margin-top: 5px;
+        display: inline-block;
+        padding: 4px 8px;
+    }
+    .fa-ellipsis-v:hover {
+        background: #EEE;
+        border-radius: 20px;
+    }
+    .hide-overflow {
+        max-width: 65%;
+        @include overflow-text();
     }
 }
