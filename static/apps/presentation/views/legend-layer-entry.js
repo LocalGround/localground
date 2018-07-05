@@ -45,6 +45,8 @@ define(['marionette',
 
             expandSymbols: function() {
                 console.log('expandSymbols', this.model);
+
+                // individual symbols are always collapsed
                 if (this.model.isIndividual()) {
                     console.log('isIndividual: return', this.model);
                     return;

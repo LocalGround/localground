@@ -9,10 +9,10 @@ define([
         "models/record",
         "lib/appUtilities",
         "apps/main/router",
+        "apps/presentation/router",
         "lib/modals/modal",
         "lib/popovers/popover"
-    ], function ($, _, Backbone, Marionette, DataManager, Layers, Record, appUtilities, Router,
-            Modal, Popover) {
+    ], function ($, _, Backbone, Marionette, DataManager, Layers, Record, appUtilities, Router, PresentationRouter, Modal, Popover) {
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker, .modal, #map_canvas').remove();
@@ -483,6 +483,33 @@ define([
             });
             this.app.popover = new Popover({
                 app: this.app
+            });
+
+            //spoof the presentation-app for child view testing
+            this.presentationApp = _.extend({}, appUtilities);
+            _.extend(this.presentationApp, {
+                username: "Tester",
+                vent: this.vent,
+                dataManager: this.dataManager,
+                model: this.map,
+                basemapView: {
+                    getCenter: function () {
+                        return {
+                            lat: function () { return 84; },
+                            lng: function () { return -122; }
+                        };
+                    },
+                    getMapTypeId:  function () {
+                        return 5;
+                    },
+                    getZoom: function () {
+                        return 18;
+                    }
+                },
+                router: new PresentationRouter({ app: this }),
+                start: function (options) {
+                    Backbone.history.start();
+                }
             });
 
         });

@@ -140,6 +140,7 @@ define(['marionette',
 
             showHideOverlays: function () {
                 this.model.set("isShowing", !this.$el.find('.legend-show_symbol').hasClass('fa-eye'));
+                
                 if(this.$el.find('.legend-show_symbol').hasClass('fa-eye-slash')) {
                     this.removeHiddenCSS();
                     this.show();
@@ -172,6 +173,8 @@ define(['marionette',
             },
 
             handleRoute: function(info) {
+
+                console.log('INFO: ', info);
                 this.activeRecordId = parseInt(info.id);
                 this.activeLayerId = parseInt(info.layerId);
 
@@ -194,11 +197,12 @@ define(['marionette',
                 this.markerOverlays.children.each((mapMarkerView) => {
                     if (mapMarkerView.model.id === parseInt(info.id)) {
 
-                        if (this.app.activateMapMarker && this.app.activateMapMarker.model.id !== parseInt(info.id)) {
-                            this.app.activateMapMarker.deactivate();
+                        if (this.app.activeMapMarker && this.app.activeMapMarker.model.id !== parseInt(info.id)) {
+                            this.app.activeMapMarker.deactivate();
                         }
-                        this.app.activateMapMarker = mapMarkerView;
+                        this.app.activeMapMarker = mapMarkerView;
                         mapMarkerView.activate();
+                        console.log(mapMarkerView.active);
                     }
                 });
             }

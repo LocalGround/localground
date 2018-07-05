@@ -186,6 +186,7 @@ define(["marionette",
         },
 
         deactivate: function () {
+            console.log('deactivate');
             this.active = false;
             this.redraw()
         },
