@@ -1049,8 +1049,8 @@ i.fa.fa.fa-question-circle {
 .legend-symbol_collapsed {
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: 32px auto 22px;
-      grid-template-columns: 32px auto 22px;
+  -ms-grid-columns: 36px auto 22px;
+      grid-template-columns: 36px auto 22px;
   margin-left: 28px;
 }
 

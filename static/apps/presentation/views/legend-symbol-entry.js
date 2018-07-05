@@ -90,7 +90,7 @@ define(['marionette',
                         itemId: `${layerId}/${recordId}` 
                     });
                 });
-
+    
                 return recordInfoList;
             },
 

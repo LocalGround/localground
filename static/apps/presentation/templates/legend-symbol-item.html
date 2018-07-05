@@ -6,13 +6,8 @@
     <a href="{{records.0.url}}">
         <div class="symbol-entry-header legend-symbol_collapsed legend-symbol_ind {{#ifequal records.0.itemId activeItemId}} selectedRecord {{/ifequal}} ">
 
-            <span class="legend-symbol_svg">{{{symbolSvg}}}</span>
-            <!-- If there is more than one unique item inside the group, give a title
-                Otherwise If there's only 1 symbol, then don't show this section
-            -->
-            {{#compare count 1 operator=">"}}
-                <span>{{ title }}</span>
-            {{/compare}}
+            <span class="legend-symbol_svg">{{{records.0.recordSvg}}}</span>
+            <span>{{ title }}</span>
             <i class="fa fa-eye legend-show_symbol"></i>
         </div>
     </a>
@@ -21,12 +16,7 @@
     <div class="symbol-entry-header legend-symbol_expanded">
 
         <span class="legend-symbol_svg">{{{symbolSvg}}}</span>
-        <!-- If there is more than one unique item inside the group, give a title
-            Otherwise If there's only 1 symbol, then don't show this section
-        -->
-        {{#compare count 1 operator=">"}}
-            <span>{{ title }}</span>
-        {{/compare}}
+        <span>{{ title }}</span>
         <i class="fa fa-eye legend-show_symbol"></i>
     </div>
 
