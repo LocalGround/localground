@@ -34,7 +34,6 @@ define([
 
             map = scope.dataManager.getMaps().at(0);
             layer = scope.getLayers(map.id).at(1);
-            console.log(layer.get('symbols'));
             const symbols = layer.getSymbols();
 
             const records = scope.dataManager.getCollection(
@@ -43,10 +42,6 @@ define([
             symbols.assignRecords(records);
 
             symbol = symbols.models[1];
-
-            console.log(layer.get('symbols').models.length);
-            console.log(layer.get("dataset"));
-            console.log(layer.get("metadata").isShowing);
 
             scope.view = new LegendSymbolEntry({
                 app: scope.presentationApp,
@@ -57,12 +52,6 @@ define([
             });
 
             scope.view.render();
-
-
-            console.log(symbol.getModels());
-            console.log(symbol);
-            console.log(scope.view);
-
         };
 
         describe("LegendSymbolEntry: ", function () {
@@ -232,9 +221,13 @@ define([
                     layerId: 63
                 }
 
+                const info2 = {
+                    dataType: 'dataset_2',
+                    id: 10,
+                    layerId: 63
+                }
+
                 this.view.activateMapMarker(info1);
-                console.log(this.view.app.activeMapMarker);
-                console.log(this.view.app.activeMapMarker.active);
                 expect(this.view.app.activeMapMarker.model.id).toEqual(12);
                 expect(MarkerOverlay.prototype.activate).toHaveBeenCalledTimes(1);
                 expect(MarkerOverlay.prototype.deactivate).toHaveBeenCalledTimes(0);

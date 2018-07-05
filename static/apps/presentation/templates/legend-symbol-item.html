@@ -2,33 +2,48 @@
     <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
           stroke-width="{{ strokeWeight }}" stroke="{{ icon.strokeColor }}" d="{{ icon.path }}"></path>
 </svg -->
-<div class="symbol-entry-header {{#if layerIsIndividual}}legend-symbol_collapsed{{else}}legend-symbol_expanded{{/if}}">
+{{#if layerIsIndividual}}
+    <a href="{{records.0.url}}">
+        <div class="symbol-entry-header legend-symbol_collapsed legend-symbol_ind {{#ifequal records.0.itemId activeItemId}} selectedRecord {{/ifequal}} ">
 
-    <span class="legend-symbol_svg">{{{symbolSvg}}}</span>
-    <!-- If there is more than one unique item inside the group, give a title
-        Otherwise If there's only 1 symbol, then don't show this section
-    -->
-    {{#compare count 1 operator=">"}}
-        <p>{{ title }}</p>
-    {{/compare}}
-    <i class="fa fa-eye legend-show_symbol"></i>
-</div>
-
-{{#unless layerIsIndividual}}
-<ul class="presentation-records_wrapper">
-    {{#each records}}
-    <a href="{{url}}">
-        <li class="presentation-record_item {{#ifequal this.itemId ../activeItemId}} selectedRecord {{/ifequal}} ">
-            <span class="legend-record_icon">
-                {{#if this.recordSvg}} 
-                    {{{this.recordSvg}}} 
-                {{else}}
-                    <i class="fa fa-question-circle"></i>
-                {{/if}}
-            </span>
-            <span>{{this.displayText}}</span>
-        </li>
+            <span class="legend-symbol_svg">{{{symbolSvg}}}</span>
+            <!-- If there is more than one unique item inside the group, give a title
+                Otherwise If there's only 1 symbol, then don't show this section
+            -->
+            {{#compare count 1 operator=">"}}
+                <span>{{ title }}</span>
+            {{/compare}}
+            <i class="fa fa-eye legend-show_symbol"></i>
+        </div>
     </a>
-    {{/each}}
-</ul>
-{{/unless}}
+
+{{else}}
+    <div class="symbol-entry-header legend-symbol_expanded">
+
+        <span class="legend-symbol_svg">{{{symbolSvg}}}</span>
+        <!-- If there is more than one unique item inside the group, give a title
+            Otherwise If there's only 1 symbol, then don't show this section
+        -->
+        {{#compare count 1 operator=">"}}
+            <span>{{ title }}</span>
+        {{/compare}}
+        <i class="fa fa-eye legend-show_symbol"></i>
+    </div>
+
+    <ul class="presentation-records_wrapper">
+        {{#each records}}
+        <a href="{{this.url}}">
+            <li class="presentation-record_item {{#ifequal this.itemId ../activeItemId}} selectedRecord {{/ifequal}}">
+                <span class="legend-record_icon">
+                    {{#if this.recordSvg}} 
+                        {{{this.recordSvg}}} 
+                    {{else}}
+                        <i class="fa fa-question-circle"></i>
+                    {{/if}}
+                </span>
+                <span>{{this.displayText}}</span>
+            </li>
+        </a>
+        {{/each}}
+    </ul>
+{{/if}}

@@ -66,6 +66,18 @@
     }
 }
 
+.legend-symbol_ind {
+    &:hover {
+        background: #f0f1f5;
+    }
+
+    &.selectedRecord {
+        background: #7b9be1;
+        span {
+            color: white;
+        }
+    }
+}
 
 
 .presentation-record_item {

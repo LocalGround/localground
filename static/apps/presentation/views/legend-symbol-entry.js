@@ -205,7 +205,14 @@ define(['marionette',
                         console.log(mapMarkerView.active);
                     }
                 });
-            }
+            }//,
+            // highlightIfIndividual: function() {
+            //     console.log('highlight');
+            //     if (this.model.layerModel.isIndividual()) {
+            //         console.log('highlight IND');
+            //         this.$el.find('.legend-symbol_ind').addClass('selectedRecord');
+            //     }
+            // }
         });
         return LegendSymbolEntry;
     });
