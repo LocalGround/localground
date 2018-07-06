@@ -816,10 +816,10 @@ define(["jquery",
                     placement: 'bottom',
                     width: '180px'
                 });
-                //if (e) {
-                //    e.stopImmediatePropagation();
-                //    e.preventDefault();
-                //}
+                if (e) {
+                   e.stopImmediatePropagation();
+                   e.preventDefault();
+                }
             },
             addRow: function (dataType) {
                 var that = this,
