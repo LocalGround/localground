@@ -48,7 +48,6 @@ define(['marionette',
 
                 // individual symbols are always collapsed
                 if (this.model.isIndividual()) {
-                    console.log('isIndividual: return', this.model);
                     return;
                 }
                 this.$el.find('.presentation-records_wrapper').css('display', 'block');
@@ -58,7 +57,6 @@ define(['marionette',
 
                 this.$el.find('.symbol-entry-header').addClass('legend-symbol_expanded');
                 this.$el.find('.symbol-entry-header').removeClass('legend-symbol_collapsed');
-                //this.$el.find('.legend-symbol_svg').hide();
             },
 
             collapseSymbols: function() {
@@ -69,7 +67,6 @@ define(['marionette',
 
                 this.$el.find('.symbol-entry-header').removeClass('legend-symbol_expanded');
                 this.$el.find('.symbol-entry-header').addClass('legend-symbol_collapsed');
-                //this.$el.find('.legend-symbol_svg').show();
             },
 
             expandCollapseSymbols: function () {
@@ -84,7 +81,7 @@ define(['marionette',
                 var isChecked = $(e.target).prop('checked');
                 if (isChecked) {
                     this.children.each((symbolView) => {
-                        console.log(symbolView.model.get('isShowing'));
+                        //console.log(symbolView.model.get('isShowing'));
                         if(symbolView.model.get('isShowing')) {
                             symbolView.markerOverlays.showAll();
                         }

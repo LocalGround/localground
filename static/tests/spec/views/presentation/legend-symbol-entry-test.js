@@ -232,6 +232,11 @@ define([
                 expect(MarkerOverlay.prototype.activate).toHaveBeenCalledTimes(1);
                 expect(MarkerOverlay.prototype.deactivate).toHaveBeenCalledTimes(0);
 
+                this.view.activateMapMarker(info2);
+                expect(this.view.app.activeMapMarker.model.id).toEqual(10);
+                expect(MarkerOverlay.prototype.activate).toHaveBeenCalledTimes(2);
+                expect(MarkerOverlay.prototype.deactivate).toHaveBeenCalledTimes(1);
+
             });
 
 

@@ -66,7 +66,6 @@ define(['marionette',
                     symbolSvg: this.model.toSVG(),
                     records: this.getRecordDisplayInfo(this.model.matchedModels),
                     layerIsIndividual: this.model.layerModel.isIndividual(),
-                    //activeRecordId: (this.model.layerModel.id === this.activeLayerId) ? this.activeRecordId : null,
                     activeItemId: `${this.activeLayerId}/${this.activeRecordId}`
                 };
             },
@@ -86,7 +85,6 @@ define(['marionette',
                         displayText: record.get(this.model.layerModel.get('display_field')) || 'Untitled',
                         url: `#/layers/${layerId}/${dataset}/${recordId}`,
                         recordSvg: this.getSVG(record, this.model), 
-                        //id: recordId,
                         itemId: `${layerId}/${recordId}` 
                     });
                 });
@@ -174,7 +172,6 @@ define(['marionette',
 
             handleRoute: function(info) {
 
-                console.log('INFO: ', info);
                 this.activeRecordId = parseInt(info.id);
                 this.activeLayerId = parseInt(info.layerId);
 
@@ -202,17 +199,9 @@ define(['marionette',
                         }
                         this.app.activeMapMarker = mapMarkerView;
                         mapMarkerView.activate();
-                        console.log(mapMarkerView.active);
                     }
                 });
-            }//,
-            // highlightIfIndividual: function() {
-            //     console.log('highlight');
-            //     if (this.model.layerModel.isIndividual()) {
-            //         console.log('highlight IND');
-            //         this.$el.find('.legend-symbol_ind').addClass('selectedRecord');
-            //     }
-            // }
+            }
         });
         return LegendSymbolEntry;
     });
