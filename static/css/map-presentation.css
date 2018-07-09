@@ -790,7 +790,7 @@ body, html {
 height: 100%;
 
 /* Allows you to scroll below the viewport; default value is visible */
-overflow-y: scroll;
+overflow-y: hidden !important;
 
 /* To smooth any scrolling behavior */
 }

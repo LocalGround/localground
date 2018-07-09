@@ -120,7 +120,7 @@ document, body {
 }
 
 div::-webkit-scrollbar, section::-webkit-scrollbar {
-  width: 12px;
+  width: 10px;
 }
 
 div::-webkit-scrollbar-thumb, section::-webkit-scrollbar-thumb {
