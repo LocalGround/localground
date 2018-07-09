@@ -178,7 +178,6 @@ define([
                     "ordering": 2,
                     "metadata": {
                         "fillOpacity": 1,
-                        "currentProp": "height",
                         "strokeWeight": 1,
                         "buckets": 4,
                         "isShowing": true,
@@ -285,7 +284,6 @@ define([
                     "ordering": 3,
                     "metadata": {
                         "fillOpacity": 1,
-                        "currentProp": "type",
                         "strokeWeight": 1,
                         "buckets": 4,
                         "isShowing": true,

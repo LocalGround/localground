@@ -288,3 +288,47 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
         except models.Field.DoesNotExist:
             # trigger assertion success if photo is removed
             self.assertEqual(1, 1)
+
+    def test_rename_fields_does_not_kill_record_values(self):
+        record_url = '/api/0/datasets/{0}/data/?project_id={1}'.format(
+            self.dataset.id, self.project.id)
+        project_id = self.project.id
+        values = [
+            {'field_1': 'moist', 'field_2': 'text', 'project_id': project_id},
+            {'field_1': 'wet', 'field_2': 'blah', 'project_id': project_id},
+            {'field_1': 'dry', 'field_2': 'text', 'project_id': project_id},
+        ]
+        # create three records:
+        for d in values:
+            response = self.client_user.post(
+                record_url,
+                data=urllib.urlencode(d),
+                HTTP_X_CSRFTOKEN=self.csrf_token,
+                content_type="application/x-www-form-urlencoded"
+            )
+
+        # now get the records:
+        response = self.client_user.get(
+            record_url
+        )
+        data = response.data.get('results')
+        self.assertEqual(data[0].get('field_1'), 'moist')
+        self.assertEqual(data[1].get('field_1'), 'wet')
+        self.assertEqual(data[2].get('field_1'), 'dry')
+
+        response = self.client_user.patch(
+            self.url,
+            data=urllib.urlencode({
+                'col_alias': 'soil moisture'
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
+        # now get the records (again):
+        response = self.client_user.get(
+            record_url
+        )
+        data = response.data.get('results')
+        self.assertEqual(data[0].get('soil_moisture'), 'moist')
+        self.assertEqual(data[1].get('soil_moisture'), 'wet')
+        self.assertEqual(data[2].get('soil_moisture'), 'dry')

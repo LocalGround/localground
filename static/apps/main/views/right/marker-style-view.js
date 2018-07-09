@@ -238,24 +238,19 @@ define(["jquery",
                     return false;
                 }
                 let currentProp = this.dataColumnsList.find((item) => {
-                    return (item.value === this.model.get('metadata').currentProp)
+                    return (item.value === this.model.get('group_by'))
                 });
                 if (currentProp.type === 'integer' || currentProp.type === 'rating') {
                     return true;
                 } else {
                     return false;
                 }
-
             },
 
             // two second timeout appears to be necessary
 
             saveChanges: function() {
                 this.model.save();
-                /*var that = this;
-                setTimeout(function() {
-                    that.model.save();
-                }, 2000);*/
             },
 
             showSymbols: function (e) {
@@ -263,12 +258,10 @@ define(["jquery",
                     app: this,
                     el: $('#global-symbol-dropdown')
                 });
-              //  this.$el.append(this.symbolsView.$el);
-              //  this.symbolsView.$el.show();
+
             },
 
             displaySymbols: function () {
-                //this.collection = new Symbols(this.model.get("symbols"));
                 this.collection = this.model.get('symbols');
                 this.render();
             },
@@ -276,7 +269,6 @@ define(["jquery",
             selectGroupBy: function (e) {
 
                 this.model.set('group_by', $(e.target).val() || this.$el.find("#data-type-select").val());
-                this.updateMetadata('currentProp', this.model.get('group_by'));
                 this.model.get('metadata').isContinuous = false;
                 this.createCorrectSymbols();
                 //to resize the popover menu:
@@ -383,7 +375,7 @@ define(["jquery",
 
             buildContinuousSymbols: function (cont) {
                 var counter = 0,
-                selected = this.model.get('metadata').currentProp;
+                selected = this.model.get('group_by');
                 if (!this.layerDraft.continuous === null) {
                     this.model.set('symbols', this.layerDraft.continuous);
                 }
@@ -420,7 +412,7 @@ define(["jquery",
             // returns an object containing information
             // for defining a layer's continuous 'buckets'
             getContInfo: function () {
-                var selected = this.model.get('metadata').currentProp,
+                var selected = this.model.get('group_by'),
                     buckets = this.model.get("metadata").buckets,
                     key = this.model.get('dataset').overlay_type,
                     collection = this.app.dataManager.getCollection(key);
@@ -453,7 +445,7 @@ define(["jquery",
             getCatInfo: function () {
                 let categoryList = [];
                 var key = this.model.get('dataset').overlay_type,
-                selected = this.model.get('metadata').currentProp,
+                selected = this.model.get('group_by'),
                 collection = this.app.dataManager.getCollection(key);
                 collection.models.forEach(function(d) {
                     if (!categoryList.includes(d.get(selected)) && d.get(selected)) {

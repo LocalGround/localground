@@ -63,7 +63,7 @@ define(["jquery",
                 this.data_source = this.model.get('data_source'); //e.g. "form_1"
                 this.collection = new Symbols(this.model.get("symbols"));
 
-                this.selectedProp = this.model.get('metadata').currentProp;
+                this.selectedProp = this.model.get('group_by');
 
                 // important to render before createCorrectSymbol because createCorrectSymbol
                 // depends on info in the DOM (e.g. what property is selected)
@@ -190,7 +190,7 @@ define(["jquery",
                     for (var i=0; i < this.categoricalList.length; i++) {
                         if (this.categoricalList[i].hasData) {
                             this.selectedProp = this.continuousList[i].value;
-                            this.model.get('metadata').currentProp = this.continuousList[i].value;
+                            this.model.set('group_by', this.continuousList[i].value);
                             break;
                         }
                     }
@@ -202,7 +202,7 @@ define(["jquery",
                     for (var i=0; i < this.categoricalList.length; i++) {
                         if (this.categoricalList[i].hasData) {
                             this.selectedProp = this.categoricalList[i].value;
-                            this.model.get('metadata').currentProp = this.categoricalList[i].value;
+                            this.model.set('group_by', this.categoricalList[i].value);
                             break;
                         }
                     }
@@ -447,9 +447,9 @@ define(["jquery",
             //this.selectedProp is global so it can be used in template helper
             setSelectedProp: function (cssId) {
                 if (this.$el.find(cssId).val()) {
-                    this.model.get('metadata').currentProp = this.$el.find(cssId).val();
+                    this.model.set('group_by', this.$el.find(cssId).val());
                 }
-                this.selectedProp = this.model.get('metadata').currentProp;
+                this.selectedProp = this.model.get('group_by');
             },
 
             setSymbols: function (symbs) {

@@ -36,7 +36,7 @@ define([
                 this.view.render();
                 expect(this.view.model.get('symbols').length).toEqual(5);
                 expect(this.view.model.get('metadata').buckets).toEqual(4);
-                expect(this.view.model.get('metadata').currentProp).toEqual('height');
+                expect(this.view.model.get('group_by')).toEqual('height');
                 expect(this.view.setSymbols).toHaveBeenCalledTimes(0);
                 expect(this.view.saveChanges).toHaveBeenCalledTimes(0);
 
@@ -47,7 +47,7 @@ define([
                 )
                 expect(this.view.model.get('symbols').length).toEqual(18);
                 expect(this.view.model.get('symbols').length).toEqual(records.length);
-                expect(this.view.model.get('metadata').currentProp).toEqual('individual');
+                expect(this.view.model.get('group_by')).toEqual('individual');
                 expect(this.view.setSymbols).toHaveBeenCalledTimes(1);
                 expect(this.view.saveChanges).toHaveBeenCalledTimes(1);
             });
@@ -58,7 +58,7 @@ define([
                 expect(this.view.updateGlobalShape).toHaveBeenCalledTimes(0);
 
                 this.view.$el.find('.style-menu_shape-wrapper[data-shape="square"]').click();
-                
+
                 expect(this.view.updateGlobalShape).toHaveBeenCalledTimes(1);
                 expect(this.view.model.get('metadata').shape).toEqual('square');
             });

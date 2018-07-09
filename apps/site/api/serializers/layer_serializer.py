@@ -14,15 +14,69 @@ from django.conf import settings
 from rest_framework.fields import empty
 
 
+class FieldField(serializers.SlugRelatedField):
+    def to_internal_value(self, data):
+        if self.root.instance and data:
+            for field in self.root.instance.dataset.fields:
+                if field.col_name_db == data:
+                    return field
+        return self.root.instance.display_field
+
+    def to_representation(self, obj):
+        return getattr(obj, 'col_name')
+
+
+class GroupByField(serializers.CharField):
+
+    def to_internal_value(self, group_by):
+        if group_by in ['uniform', 'individual']:
+            return group_by
+
+        data = self.context.get('request').data
+        dataset_id = data.get('dataset').get('id')
+        field = Field.get_field_by_col_name(
+            dataset_id, group_by
+        )
+        if field is None:
+            raise exceptions.ValidationError(
+                'The field "{0}" could not be found.'.format(
+                    group_by
+                )
+            )
+        return field.col_name_db
+
+    def to_representation(self, group_by):
+        if group_by in ['uniform', 'individual']:
+            return group_by
+        try:
+            field = Field.get_field_by_unique_key(group_by)
+            return field.col_name
+        except Exception:
+            print group_by + ' not found'
+            return group_by
+
+
 class LayerSerializer(BaseSerializer):
     create_new_dataset = serializers.BooleanField(
         required=False, write_only=True)
     symbols = fields.SymbolsField(required=False, read_only=True)
     metadata = fields.JSONField(required=False, read_only=True)
     display_field = serializers.SerializerMethodField()
+    group_by = GroupByField()
     map_id = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
     dataset = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = models.Layer
+        read_only_fields = (
+            'ordering', 'group_by', 'symbols', 'metadata', 'dataset')
+        fields = BaseSerializer.field_list + (
+            'title', 'dataset', 'create_new_dataset',
+            'group_by', 'display_field', 'ordering', 'map_id', 'symbols',
+            'metadata', 'url'
+        )
+        depth = 0
 
     def get_fields(self, *args, **kwargs):
         fields = super(LayerSerializer, self).get_fields(*args, **kwargs)
@@ -53,7 +107,7 @@ class LayerSerializer(BaseSerializer):
     def get_display_field(self, obj):
         return obj.display_field.col_name
 
-    def run_validation(self, data=empty):
+    def _get_serialized_display_field(self, data):
         # A hack to support users to set the display field using col_name
         if isinstance(data, dict) and data.get('display_field'):
             if self.instance:
@@ -69,7 +123,11 @@ class LayerSerializer(BaseSerializer):
                         data.get('display_field')
                     )
                 )
-            data['display_field'] = field.col_name_db
+            return field.col_name_db
+
+    def run_validation(self, data=empty):
+        # A hack to support users to set the display field using col_name
+        data['display_field'] = self._get_serialized_display_field(data)
         return super(LayerSerializer, self).run_validation(
             data=data)
 
@@ -129,17 +187,6 @@ class LayerSerializer(BaseSerializer):
 
         return self.instance
 
-    class Meta:
-        model = models.Layer
-        read_only_fields = (
-            'ordering', 'group_by', 'symbols', 'metadata', 'dataset')
-        fields = BaseSerializer.field_list + (
-            'title', 'dataset', 'create_new_dataset',
-            'group_by', 'display_field', 'ordering', 'map_id', 'symbols',
-            'metadata', 'url'
-        )
-        depth = 0
-
 
 class LayerSerializerPost(LayerSerializer):
     dataset = serializers.PrimaryKeyRelatedField(
@@ -157,19 +204,6 @@ class LayerSerializerPost(LayerSerializer):
         depth = 0
 
 
-class FieldField(serializers.SlugRelatedField):
-
-    def to_internal_value(self, data):
-        if self.root.instance and data:
-            for field in self.root.instance.dataset.fields:
-                if field.col_name_db == data:
-                    return field
-        return self.root.instance.display_field
-
-    def to_representation(self, obj):
-        return getattr(obj, 'col_name')
-
-
 class LayerDetailSerializer(LayerSerializer):
     symbols = fields.SymbolsField(
         style={'base_template': 'json.html', 'rows': 5},
@@ -182,14 +216,6 @@ class LayerDetailSerializer(LayerSerializer):
         slug_field='col_name_db'
     )
 
-    def update(self, instance, validated_data):
-        map_id = self.context.get('view').kwargs.get('map_id')
-        validated_data.update({
-            'styled_map_id': map_id
-        })
-        return super(LayerDetailSerializer, self).update(
-            instance, validated_data)
-
     class Meta:
         model = models.Layer
         fields = BaseSerializer.field_list + (
@@ -197,3 +223,11 @@ class LayerDetailSerializer(LayerSerializer):
             'ordering', 'metadata', 'map_id', 'symbols'
         )
         depth = 0
+
+    def update(self, instance, validated_data):
+        map_id = self.context.get('view').kwargs.get('map_id')
+        validated_data.update({
+            'styled_map_id': map_id
+        })
+        return super(LayerDetailSerializer, self).update(
+            instance, validated_data)

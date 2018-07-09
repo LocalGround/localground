@@ -54,16 +54,8 @@ define(["underscore", "models/symbol", "collections/base"],
             });
             return count;
         },
-        /*hasValue: function (record) {
-            const prop = this.layerModel.get('metadata').currentProp
-            const value = record.get(prop);
-            if (value && value !== 0) {
-                return true;
-            }
-            return false;
-        },*/
         __updateIfApplicable: function (record) {
-            const prop = this.layerModel.get('metadata').currentProp
+            const prop = this.layerModel.get('group_by')
             const value = record.get(prop);
             let matchedSymbol;
             this.each(symbol => {
@@ -100,7 +92,7 @@ define(["underscore", "models/symbol", "collections/base"],
             //       new categorical and 'individual' symbols do ge created
             let matchedSymbol;
             const metadata = this.layerModel.get('metadata');
-            const value = record.get(metadata.currentProp);
+            const value = record.get(this.layerModel.get('group_by'));
 
             if (this.layerModel.isIndividual()){
                 if (this.debug) {
