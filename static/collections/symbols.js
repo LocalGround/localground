@@ -9,6 +9,7 @@ define(["underscore", "models/symbol", "collections/base"],
         model: Symbol,
         name: 'Symbols',
         key: 'symbols',
+        debug: false,
         initialize: function (recs, opts) {
             _.extend(this, opts);
             if (!this.layerModel) {
@@ -68,7 +69,9 @@ define(["underscore", "models/symbol", "collections/base"],
             this.each(symbol => {
                 if (symbol.isUpdateCandidate(record, value)
                     && this.__getNumMatches(record) === 1) {
-                    console.log('__updateIfApplicable');
+                    if (this.debug) {
+                        console.log('__updateIfApplicable');
+                    }
                     matchedSymbol = symbol;
                     symbol.set({
                         'rule': `${prop} = '${value}'`,
@@ -82,7 +85,9 @@ define(["underscore", "models/symbol", "collections/base"],
             let matchedSymbol;
             this.each(symbol => {
                 if (symbol.checkModel(record)) {
-                    console.log('__assignToExistingSymbol');
+                    if (this.debug) {
+                        console.log('__assignToExistingSymbol');
+                    }
                     matchedSymbol = symbol;
                     matchedSymbol.addModel(record);
                 }
@@ -98,7 +103,9 @@ define(["underscore", "models/symbol", "collections/base"],
             const value = record.get(metadata.currentProp);
 
             if (this.layerModel.isIndividual()){
-                console.log('creating new individual symbol');
+                if (this.debug) {
+                    console.log('creating new individual symbol');
+                }
                 matchedSymbol = Symbol.createIndividualSymbol({
                     layerModel: this.layerModel,
                     category: value,
@@ -109,7 +116,9 @@ define(["underscore", "models/symbol", "collections/base"],
                 this.add(matchedSymbol);
 
             } else if (this.layerModel.isCategorical() && value) {
-                console.log('creating new categorical symbol');
+                if (this.debug) {
+                    console.log('creating new categorical symbol');
+                }
                 matchedSymbol = Symbol.createCategoricalSymbol({
                     layerModel: this.layerModel,
                     category: value,
@@ -126,10 +135,14 @@ define(["underscore", "models/symbol", "collections/base"],
             } else {
                 matchedSymbol = this.getUncategorizedSymbol();
                 if (matchedSymbol) {
-                    console.log('adding to existing uncategorized symbol');
+                    if (this.debug) {
+                        console.log('adding to existing uncategorized symbol');
+                    }
                     matchedSymbol.addModel(record);
                 } else {
-                    console.log('adding to new uncategorized symbol');
+                    if (this.debug) {
+                        console.log('adding to new uncategorized symbol');
+                    }
                     matchedSymbol = Symbol.createUncategorizedSymbol({
                         layerModel: this.layerModel,
                         id: this.getNextId()

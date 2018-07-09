@@ -1,34 +1,27 @@
 // main: ../main-new.scss
+$symbolPaddingRight: 26px;
 .sort-by {
     font-size: 12px;
     font-weight: 600;
     max-width: 158px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-    display: inline-block;
+    @include overflow-text();
 }
 .count {
     font-size: 12px;
     color: #949393;
     font-weight: 600;
-    margin-left: 4px;   
+    margin-left: 4px;
 }
 
 .symbol-wrapper {
-    padding-left: 5px;
-    border-bottom: 1px solid #e8e8e8;
+    border-top: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-bottom: 3px solid transparent;
 }
 
 .symbol-header {
     background: white;
-    // border-top: 1px solid #ebebeb;
-    background: white;
-    padding: 0px 7px 0px 23px;
-    border-top: 3px solid white;
-    border-right: 3px solid white;
-    height: 23px;
+    padding: 0px 7px 0px $symbolPaddingRight + 3;
     line-height: 28px;
 }
 
@@ -48,19 +41,18 @@
     display: inline;
 }
 
-.symbol-header:hover .symbol-edit,
-.symbol-header:hover .symbol-display,
-.symbol-item:hover .symbol-edit {
-    display: inline;
-    cursor: pointer;
-
-}
-
-.ind-symbol:hover .symbol-edit-individual,
-.ind-symbol:hover .symbol-display {
-    display: inline;
-    cursor: pointer;
-
+.symbol-header:hover,
+.symbol-item:hover,
+.ind-symbol:hover {
+    .symbol-edit,
+    .symbol-display,
+    .symbol-edit-individual {
+        display: inline;
+        cursor: pointer;
+    }
+    .symbol-edit-individual {
+        margin: 5px 10px 0px 0px;
+    }
 }
 
 .half-opac .fa-eye,
@@ -73,7 +65,7 @@
 
 .ind-symbol {
     box-sizing: border-box;
-    padding: 0px 32px;
+    padding: 0px $symbolPaddingRight + 6;
     svg {
         vertical-align: middle;
     }
@@ -81,51 +73,54 @@
         width: auto;
         font-size: 16px;
         padding: 0;
-        padding-top: 5px;
+        padding-top: 0px;
     }
 }
 
 .ind-symbol_text {
     font-size: 12px;
     padding: 4px 0px;
-    display: inline-block;
-    font-weight: 600;
-    width: 160px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
+    width: 170px;
+    @include overflow-text();
 }
 
 .symbol-header {
-    border-left: 1px solid #e4e5eb;
     svg {
         vertical-align: middle;
     }
 }
 .symbol {
-    border-left: 1px solid #e4e5eb;
-    border-bottom: 3px solid white;
     padding-bottom: 7px;
     background: white;
 
     .highlight {
         background: rgb(123, 155, 225);
-        color: #ffffff;
-        p {
-            color:#ffffff;
+        color: #fff;
+        p { color: #fff; }
+        svg g { stroke: #fff; }
+        &:hover {
+            background: #EEE;
+            color: #444;
+            p { color: #444; }
+            svg g { stroke: #999; }
         }
     }
 }
+.symbol.individual {
+    border-bottom: 0px solid transparent;
+    padding-bottom: 0px;
+}
 
-.symbol-highlight {
+.symbol-wrapper.symbol-highlight {
+    border:  3px solid #8bb8ed;
     .symbol-header {
-        border-top: 3px solid #8bb8ed;
-        border-right: 3px solid #8bb8ed;
+        padding: 0px 7px 0px $symbolPaddingRight;
     }
-    .symbol {
-        border-right: 3px solid #8bb8ed;
-        border-bottom: 3px solid #8bb8ed;
+    .symbol-item {
+        a,
+        >div {
+            padding: 2px 0px 2px $symbolPaddingRight + 5;
+        }
     }
 }
 
@@ -137,7 +132,6 @@ i.fa.fa.fa-question-circle {
 }
 
 .symbol-item {
-    // border-bottom: 1px solid #ebebeb;
     font-size: 12px;
     list-style: none;
     background-color: white;
@@ -150,18 +144,14 @@ i.fa.fa.fa-question-circle {
 
     a, >div {
         text-decoration: none;
-        padding: 2px 32px 2px 34px;
+        padding: 2px 0px 2px $symbolPaddingRight + 8;
         display: inline-block;
         width: 100%;
     }
     .reg-symbol_text {
-        display: inline-block;
         margin-top: 3px;
-        vertical-align: middle;
         width: 190px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        @include overflow-text();
     }
     svg {
         vertical-align: middle;

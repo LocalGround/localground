@@ -1,12 +1,10 @@
 define(["marionette",
         "handlebars",
-        "models/layer",
         "apps/main/views/left/layer-list-child-view1",
-        "text!../../templates/left/layer-list.html",
-        "apps/main/views/left/create-layer-form"
+        "text!../../templates/left/layer-list.html"
     ],
-    function (Marionette, Handlebars, Layer, LayerListChild,
-        LayerListTemplate, CreateLayerForm) {
+    function (Marionette, Handlebars, LayerListChild,
+        LayerListTemplate) {
         'use strict';
         /**
          *  In this view, this.model = Map, this.collection = Layers
@@ -30,7 +28,6 @@ define(["marionette",
                 this.app = opts.app;
                 this.model = opts.model;
                 this.modal = this.app.modal;
-                this.symbols =
                 this.listenTo(this.app.vent, 'update-layer-list', this.render);
                 this.listenTo(this.app.vent, 'add-css-to-selected-layer', this.addCssToSelectedLayer);
             },
@@ -44,39 +41,10 @@ define(["marionette",
                 };
             },
 
-            events: {
-                'click .add-layer': 'createNewLayer'
-            },
-
             // this just adds some css to indicate the selected layer
             addCssToSelectedLayer: function (id) {
                 this.$el.find('.layer-column').removeClass('selected-layer');
                 this.$el.find('#' +'layer' + id).addClass('selected-layer');
-            },
-
-            createNewLayer: function(e) {
-                var createLayerForm = new CreateLayerForm({
-                    app: this.app,
-                    map: this.model,
-                    model: new Layer({
-                        map_id: this.model.id
-                    })
-                });
-
-                this.modal.update({
-                    app: this.app,
-                    class: "add-layer",
-                    view: createLayerForm,
-                    title: 'Add Layer',
-                    width: 300,
-                    saveButtonText: "Add Layer",
-                    closeButtonText: "Cancel",
-                    showSaveButton: true,
-                    saveFunction: createLayerForm.saveLayer.bind(createLayerForm),
-                    showDeleteButton: false
-                });
-                this.modal.show();
-                if(e) { e.preventDefault(); }
             },
 
             onDestroy: function() {

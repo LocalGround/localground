@@ -38,9 +38,6 @@ define([
             'click #print-button': 'showPrintModal',
             'click #map-menu': 'showMapMenu',
         },
-        onRender: function () {
-            console.log('rendering breadcrumbs...');
-        },
 
         showMapMenu: function(e) {
             this.popover.update({

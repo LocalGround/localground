@@ -7,10 +7,12 @@ define(["marionette",
         "apps/main/views/left/symbol-collection-view",
         "apps/main/views/left/edit-layer-menu",
         "apps/main/views/right/marker-style-view",
-        "apps/main/views/left/add-marker-menu"
+        "apps/main/views/left/add-marker-menu",
+        "apps/main/views/spreadsheet/layout"
     ],
-    function (Marionette, Handlebars, LayerItemTemplate, Symbols, Symbol, Record,
-            SymbolView, EditLayerMenu, MarkerStyleView, AddMarkerMenu) {
+    function (Marionette, Handlebars, LayerItemTemplate, Symbols, Symbol,
+            Record, SymbolView, EditLayerMenu, MarkerStyleView, AddMarkerMenu,
+            SpreadsheetLayout) {
         'use strict';
         /**
          *  In this view, this.model = layer, this.collection = symbols
@@ -23,8 +25,7 @@ define(["marionette",
          // layerListView
         var LayerListChild =  Marionette.CompositeView.extend({
             collectionEvents: {
-                'reset': 'reRender',
-                //'remove': 'reRenderIfEmpty'
+                'reset': 'reRender'
             },
             modelEvents: {
                 'change:group_by': 'updateGroupBy',
@@ -34,10 +35,11 @@ define(["marionette",
             events: {
                 //edit event here, pass the this.model to the right panel
                 'change .layer-isShowing': 'showHideOverlays',
-                'click #layer-style-by': 'showStyleByMenu',
+                'click .layer-style-by': 'showStyleByMenu',
                 'click .collapse': 'collapseSymbols',
                 'click .open-layer-menu': 'showLayerMenu',
                 'click .add-record-container': 'displayGeometryOptions',
+                'click .open-spreadsheet': 'openSpreadsheet'
             },
 
             initialize: function (opts) {
@@ -55,15 +57,13 @@ define(["marionette",
                 this.symbolModels.assignRecords(this.dataCollection);
                 //this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
-                //this.model.removeEmptySymbols();
-
                 this.attachRecordEventHandlers();
             },
             attachRecordEventHandlers: function () {
                 this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol);
-                this.listenTo(this.dataCollection, 'update-symbol-assignment', this.reRenderOrReassignRecordToSymbol);
+                this.listenTo(this.dataCollection, 'record-updated', this.reRenderOrReassignRecordToSymbol);
                 this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
-                this.listenTo(this.app.vent, 'record-has-been-deleted', this.removeEmptySymbols);
+                this.listenTo(this.app.vent, 'record-has-been-deleted', this.symbolModels.removeEmpty);
             },
 
             onRender: function() {
@@ -72,9 +72,10 @@ define(["marionette",
 
             template: Handlebars.compile(LayerItemTemplate),
             templateHelpers: function () {
+                //console.log('rendering...');
                 return {
                     project: this.app.dataManager.getProject(),
-                    name: this.dataCollection.name,
+                    name: this.dataCollection.name.toLowerCase(),
                     isChecked: this.model.get("metadata").isShowing,
                     hasData: !this.isEmpty(),
                     isIndividual: this.model.isIndividual()
@@ -97,13 +98,19 @@ define(["marionette",
                     className: 'symbol-item marker-container',
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        var templateHTML = `<div>
-                            'Dataset Empty!!!'
+                        var templateHTML = `<div class="no-symbols-found">
+                            <div>
+                            Add places to this dataset by <br>
+                            placing markers on the map.
+                            <div>
                         </div>`
                         this.template = Handlebars.compile(templateHTML);
+                        //this.template = Handlebars.compile(LayerItemTemplate);
                     },
                     templateHelpers: function () {
-                        return this.parent.model.toJSON()
+                        const d = this.parent.model.toJSON();
+                        d.hasData = false;
+                        return d;
                     }
                 });
             },
@@ -113,19 +120,14 @@ define(["marionette",
             reRender: function () {
                 this.symbolModels.assignRecords(this.dataCollection);
             },
-            reRenderIfEmpty: function () {
-                if (this.model.isEmpty()) {
-                    this.render();
-                }
-            },
             updateGroupBy: function () {
-                this.$el.find('#layer-style-by').html(
+                this.$el.find('.layer-style-by').html(
                     this.model.get('group_by')
                 );
                 if (this.model.isIndividual()) {
-                    this.$el.find('.collapse-wrapper').css('display', 'none');
+                    this.$el.find('.collapse').css('visibility', 'hidden');
                 } else {
-                    this.$el.find('.collapse-wrapper').css('display', 'inline');
+                    this.$el.find('.collapse').css('visibility', 'visible');
                 }
             },
             childViewOptions: function (model, index) {
@@ -145,11 +147,6 @@ define(["marionette",
                 }
                 return Marionette.CollectionView.prototype.addChild.call(this, symbolModel, ChildView, index);
             },
-            removeEmptySymbols: function () {
-                this.symbolModels.removeEmpty();
-                //const mapID = this.app.dataManager.getMap().id;
-                //this.app.router.navigate("//" + mapID);
-            },
             reRenderOrAssignRecordToSymbol: function (recordModel) {
                 const symbol = this.symbolModels.assignRecord(recordModel);
                 if (this.dataCollection.length === 1) {
@@ -158,6 +155,7 @@ define(["marionette",
                 }
             },
             reRenderOrReassignRecordToSymbol: function (recordModel) {
+                console.log('reRenderOrReassignRecordToSymbol');
                 const symbol = this.symbolModels.reassignRecord(recordModel);
                 if (this.dataCollection.length === 1) {
                     this.render();
@@ -165,18 +163,8 @@ define(["marionette",
                 }
             },
 
-            checkSelectedItem: function(layerId) {
-                this.$el.attr('id', this.model.id);
-                if (this.$el.find('input').prop('checked', false)) {
-                    this.$el.find('input').click();
-                }
-            },
+            showStyleByMenu: function (e) {
 
-            updateTitle: function (title) {
-                this.model.set("title", title);
-                this.render();
-            },
-            showStyleByMenu: function (event) {
                 this.popover.update({
                     $source: this.$el.find('.layer-style-by'),
                     view: new MarkerStyleView({
@@ -188,6 +176,9 @@ define(["marionette",
                     width: '220px',
                     title: 'Layer Properties'
                 });
+                if (e) {
+                    e.preventDefault();
+                }
             },
 
             showLayerMenu: function(event) {
@@ -205,7 +196,7 @@ define(["marionette",
 
             displayGeometryOptions: function(e) {
                 this.popover.update({
-                    $source: e.target,
+                    $source: this.$el.find('.add-record-container'),
                     view: new AddMarkerMenu({
                         app: this.app,
                         model: this.model,
@@ -222,15 +213,21 @@ define(["marionette",
             // If it is triggered by an event, there is only 1 argument.
             // If it is triggered from onRender, there are 2 args, and arg1 is null.
             showHideOverlays: function (event, state) {
-                if (this.isEmpty()) {
-                    return;
-                }
                 let isShowing;
                 if (arguments.length === 1) {
                     isShowing = this.$el.find('input').prop('checked');
                     this.model.get("metadata").isShowing = isShowing;
                 } else {
                     isShowing = state;
+                }
+                if (isShowing) {
+                    this.$el.removeClass('hide-layer');
+                } else {
+                    this.$el.addClass('hide-layer');
+                }
+                this.saveChanges();
+                if (this.isEmpty()) {
+                    return;
                 }
                 this.children.each(function(childView) {
                     if (isShowing) {
@@ -244,35 +241,24 @@ define(["marionette",
                         // but when we are hiding at the layer level, we always hide all child symbols
                         childView.hideOverlays();
                     }
-
-                })
-                if (isShowing) {
-                    this.$el.removeClass('hide-layer');
-                } else {
-                    this.$el.addClass('hide-layer');
-                }
-                this.saveChanges();
+                });
             },
 
-            addCssToSelectedLayer: function(markerId) {
+            addCssToSelectedLayer: function (markerId) {
                 this.$el.find('#' + markerId).addClass('highlight');
             },
 
             collapseSymbols: function () {
                 if (this.model.get('metadata').collapsed === true) {
                     this.model.get('metadata').collapsed = false
-                    this.$el.find('.symbol').css('height', 'auto');
-                    this.$el.find('.symbol-item').css('display', 'block');
-                    this.$el.find('.collapse').removeClass('fa-caret-up');
-                    this.$el.find('.collapse').addClass('fa-caret-down');
-                    this.$el.find('.symbol-level-svg').hide();
+                    this.$el.find('.symbols').removeClass('minimize');
+                    this.$el.find('.collapse').removeClass('fa-angle-right');
+                    this.$el.find('.collapse').addClass('fa-angle-down');
                 } else {
                     this.model.get('metadata').collapsed = true;
-                    this.$el.find('.symbol').css('height', 0);
-                    this.$el.find('.symbol-item').css('display', 'none');
-                    this.$el.find('.collapse').removeClass('fa-caret-down');
-                    this.$el.find('.collapse').addClass('fa-caret-up');
-                    this.$el.find('.symbol-level-svg').show();
+                    this.$el.find('.symbols').addClass('minimize');
+                    this.$el.find('.collapse').removeClass('fa-angle-down');
+                    this.$el.find('.collapse').addClass('fa-angle-right');
                 }
             },
 
@@ -306,6 +292,25 @@ define(["marionette",
 
             saveChanges: function() {
                 this.model.save();
+            },
+
+            openSpreadsheet: function (e) {
+                const spreadsheet = new SpreadsheetLayout({
+                    app: this.app,
+                    collection: this.dataCollection,
+                });
+                this.modal.update({
+                    app: this.app,
+                    view: spreadsheet,
+                    noTitle: true,
+                    noFooter: true,
+                    width: '96vw',
+                    modalClass: 'spreadsheet',
+                    showSaveButton: false,
+                    showDeleteButton: false
+                });
+                this.modal.show();
+                e.preventDefault();
             }
         });
         return LayerListChild;

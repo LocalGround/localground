@@ -1,3 +1,14 @@
+// main: ../main-new.scss
 .disabled {
     opacity: 0.4;
+}
+document, body {
+    overflow: hidden;
+}
+@mixin overflow-text() {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: middle;
 }

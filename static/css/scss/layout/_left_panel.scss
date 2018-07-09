@@ -24,9 +24,15 @@
 .add-layer {
     padding: 10px;
     display: block;
-    // border-bottom: solid 1px #EEE;
+    border-bottom: 1px solid #e4e5eb;
     font-size: 0.8em;
 }
 .add-layer:hover {
     background: $light-gray;
+}
+
+.left-wrapper {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 194px);
 }

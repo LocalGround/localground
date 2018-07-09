@@ -17,12 +17,6 @@
     display: flex;
 }
 
-.left-wrapper {
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: calc(100vh - 154px);
-}
-
 .end-section {
     position: relative;
     font-size: 12px;
@@ -248,9 +242,9 @@
     /*padding: 10px 0px; */
 }
 
-.layer-column {
+/* .layer-column {
     padding: 0px 10px 5px 10px;
-}
+} */
 
 .selected-layer {
     background-color: #4e70d4;

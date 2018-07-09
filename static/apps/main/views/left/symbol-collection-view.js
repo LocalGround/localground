@@ -31,9 +31,7 @@ define(["jquery",
                 className: 'symbol-item marker-container',
                 initialize: function (opts) {
                     _.extend(this, opts);
-                    var templateHTML = `<div>
-                        No markers matching: {{ rule }}
-                    </div>`
+                    var templateHTML = `<div>No matches</div>`
                     this.template = Handlebars.compile(templateHTML);
                 },
                 templateHelpers: function () {
@@ -54,8 +52,8 @@ define(["jquery",
                 'click .layer-delete' : 'deleteLayer',
                 'click .symbol-header .symbol-edit': 'showSymbolEditMenu',
                 'click .symbol-display': 'showHideOverlays',
-                'mouseenter .symbol-edit': 'highlightSymbolContent',
-                'mouseleave .symbol-edit': 'unHighlightSymbolContent'
+                'mouseenter .symbol-header': 'highlightSymbolContent',
+                'mouseleave .symbol-header': 'unHighlightSymbolContent'
             },
             modelEvents: function () {
                 const events = {
@@ -67,12 +65,11 @@ define(["jquery",
                     'fillColor', 'strokeColor', 'shape', 'width', 'markerSize',
                     'fillOpacity', 'strokeWeight'
                 ].forEach(attr => {
-                    events[`change:${attr}`] = 'saveAndRender';
+                    events[`change:${attr}`] = 'partialRender';
                 })
                 return events;
             },
             onRender: function() {
-                //console.log('redrawing', this.model.toJSON())
                 if(!this.model.get('isShowing')) {
                     this.$el.addClass('half-opac');
                 }
@@ -89,6 +86,7 @@ define(["jquery",
             templateHelpers: function () {
                 const title = this.model.get('title')
                 name = this.collection.name;
+                //console.log('notCollapsed', !this.layer.get('metadata').collapsed);
                 return {
                     empty: this.model.getModelsJSON().length === 0,
                     name: name,
@@ -99,23 +97,22 @@ define(["jquery",
                     layer_id: this.layerId,
                     map_id: this.mapId,
                     dataset: this.layer.get('dataset'),
-                    isIndividual: this.layer.get('group_by') === 'individual',
+                    isIndividual: this.layer.isIndividual(),
                     svgIcon: this.model.toSVG(),
                     count: this.collection ? this.collection.length : 1,
                     notCollapsed: !this.layer.get('metadata').collapsed
                 }
             },
 
-            saveAndRender: function () {
-                this.layer.save();
+            partialRender: function () {
+                //this.layer.save();
                 // doing a partial re-render so that the style popover doesn't
                 // get blown away:
                 // 1. re-render all child views:
                 this._renderChildren();
                 // 2. partial update of parent SVG:
+                this.$el.find('.symbol-level-svg').html(this.model.toSVG());
                 this.$el.find('.symbol-header > svg').replaceWith(this.model.toSVG());
-                this.$el.find('.symbol-wrapper').css(
-                    'background', this.model.get('icon').fillColor);
             },
 
             showSymbolEditMenu: function (event) {
@@ -202,7 +199,7 @@ define(["jquery",
                 this.$el.find('.symbol-wrapper').removeClass('symbol-highlight');
             },
             onDestroy: function() {
-                console.log('destroy symbol collection view');
+                //console.log('destroy symbol collection view');
             }
 
         });

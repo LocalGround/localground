@@ -54,7 +54,6 @@ define(["models/base", "models/symbol", "collections/symbols", "lib/lgPalettes"]
             return baseURL;
         },
         set: function(key, val, options) {
-            //console.log('setting...', key, val, options);
             //save symbols to a temporary variable:
             var symbols;
             if (typeof key === 'object' && key.symbols) {

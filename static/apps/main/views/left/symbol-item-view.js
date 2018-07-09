@@ -36,7 +36,7 @@ define(["marionette",
                 'change': 'render'
             },
             events: {
-                'click .ind-symbol .symbol-edit': 'showSymbolEditMenu'
+                'click .symbol-edit-individual': 'showSymbolEditMenu'
             },
             template: Handlebars.compile(SymbolItemTemplate),
             tagName: "li",
@@ -116,7 +116,7 @@ define(["marionette",
 
             showSymbolEditMenu: function (e) {
                 this.popover.update({
-                    $source: this.$el.find('.ind-symbol'),
+                    $source: this.parent.$el,
                     view: new SymbolStyleMenuView({
                         app: this.app,
                         model: this.symbolModel,
@@ -127,6 +127,7 @@ define(["marionette",
                     width: '220px',
                     title: '    '
                 });
+                e.preventDefault();
                 e.stopImmediatePropagation();
             },
 

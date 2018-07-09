@@ -324,7 +324,7 @@ define([
 
             it("addLayerToMap works as expected", function () {
                 const map = this.dataManager.getMaps().get(3);
-                expect(map.get('layers').length).toEqual(3);
+                expect(map.get('layers').length).toEqual(4);
                 expect(this.dataManager.getDatasets().length).toEqual(2);
                 const newLayer = new Map(this.newMapJSON).get('layers').at(0);
                 expect(this.dataManager.getDatasets().length).toEqual(2);
@@ -333,7 +333,7 @@ define([
                 this.dataManager.addLayerToMap(map, newLayer);
 
                 //new layer should be added:
-                expect(map.get('layers').length).toEqual(4);
+                expect(map.get('layers').length).toEqual(5);
 
                 //new map should be added:
                 expect(this.dataManager.getDatasets().length).toEqual(3);

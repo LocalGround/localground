@@ -1,11 +1,11 @@
 <div class="style-menu">
-    <div class="style-menu_row">
+    {{#unless isIndividual}}<div class="style-menu_row">
         <div>
             <span class="symbol-info">category: {{title}} ({{count}} {{items}})</span>
         </div>
         <input type="text" value="{{title}}" class='symbol-title-input'>
     </div>
-
+    {{/unless}}
     <div class="style-menu_row">
         <div class="symbol-style-menu_label">Marker Fill: </div>
         <div class="style-menu_shape-inner-row">

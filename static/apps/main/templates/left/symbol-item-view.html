@@ -8,7 +8,7 @@
             {{display_name}}
             {{#ifequal display_name ""}}Untitled{{/ifequal}}
         </p>
-        <p class="symbol-edit"><i class="fa fa-pencil-alt" aria-hidden="true"></i></p>
+        <i class="fa fa-pencil-alt symbol-edit-individual" aria-hidden="true"></i>
     </a>
 {{else}}
     <a model-id="{{id}}" id="{{id}}" href="#/{{map_id}}/layers/{{layer_id}}/{{dataset.overlay_type}}/{{id}}" {{#if active }}class="highlight"{{/if}}>

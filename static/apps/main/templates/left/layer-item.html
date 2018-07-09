@@ -1,38 +1,37 @@
 <div class="layer-container">
-    <div class='layer-column' id='layer{{id}}'>
-        <input class='layer-isShowing' id='cb{{id}}' type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} />
-        <p class="layer-name">{{ title }}</p>
-        <!-- <a class="delete-layer"><i class="fa fa-trash-o" aria-hidden="true"></i></a> -->
-        <span class="open-layer-menu">
-            <i class="fa fa-ellipsis-v fa-lg"></i>
-        </span>
-        <img src="/static/assets/record-add-icon.svg" type="image/svg+xml" alt="add record" class="add-record-container"></img>
+    <div class="layer-header">
+        <div class='layer-column' id='layer{{id}}'>
+            <input class='layer-isShowing' id='cb{{id}}' type="checkbox" value="{{ id }}" {{#if isChecked}}CHECKED{{/if}} />
+            <p class="layer-name">{{ title }}</p>
+            <!-- <a class="delete-layer"><i class="fa fa-trash-o" aria-hidden="true"></i></a> -->
+            <span class="open-layer-menu">
+                <i class="fa fa-ellipsis-v"></i>
+            </span>
+            <img src="/static/assets/record-add-icon.svg" type="image/svg+xml" alt="add record" class="add-record-container"></img>
+        </div>
+        <!---->
     </div>
-    <div class="layer-column">
-        <p class="layer-datasource">
-            data source:
-            <a href="/data/{{project.id}}/#/table/{{dataset.overlay_type}}" target="_blank">{{name}}</a>
-        </p>
+    <div class="layer-details">
+        <table class="layer-metadata">
+            <tr>
+                <td rowspan="2">
+                    <i class="fa fa-angle-down collapse" style="visibility:{{#if isIndividual}}hidden{{else}}visible{{/if}}"></i>
+                </td>
+                <td>
+                    data source:
+                    <a class="open-spreadsheet" href="/data/{{project.id}}/#/table/{{dataset.overlay_type}}">{{name}}</a>
+                </td>
+            </tr>
+            {{#if hasData}}
+            <tr>
+                <td>
+                    styled by:
+                    <a href="#" class="layer-style-by">{{group_by}}</a>
+                </td>
+            </tr>
+            {{/if}}
+        </table>
+        <div id="symbols-list" class="symbols"></div>
     </div>
-    {{#if hasData}}
-    <div class="layer-column lc-3">
-        <span class="collapse-wrapper" style="display:{{#if isIndividual}} none {{else}} inline {{/if}} ">
-            <i class="fa fa-caret-down fa-lg collapse"></i>
-        </span>
-        <a class="layer-style-by"><span >styled by: </span><span id="layer-style-by">{{group_by}}</span></a>
-    </div>
-    {{/if}}
-    <div id="symbols-list">
-        {{#each dataList}}
-        <li class="list-item">
-            <a>
-                <p>{{this.display_name}}
-                    {{#ifequal this.property ""}}<i class="fa fa-question-circle"></i>{{/ifequal}}
 
-                </p>
-            </a>
-
-        </li>
-        {{/each}}
-    </div>
 </div>
