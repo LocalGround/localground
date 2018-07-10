@@ -6,9 +6,12 @@ define(["marionette",
     ],
     function (Marionette, _, Handlebars, LayerEntryView, LegendTemplate) {
         'use strict';
+
+        // in this view, each childview is a layer
         var LayerListManager = Marionette.CompositeView.extend({
             tagName: 'div',
             template: Handlebars.compile(LegendTemplate),
+
             initialize: function (opts) {
                 _.extend(this, opts);
             },

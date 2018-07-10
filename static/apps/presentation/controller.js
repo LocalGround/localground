@@ -6,9 +6,10 @@ define([
         initialize: function (options) {
             this.app = options.app;
         },
-        dataDetail: function (dataType, id) {
+        dataDetail: function (layerId, dataType, recordId) {
             this.app.vent.trigger("show-detail", {
-                id: id,
+                layerId: layerId,
+                id: recordId,
                 dataType: dataType
             }, false);
         },

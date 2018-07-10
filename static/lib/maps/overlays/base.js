@@ -180,11 +180,13 @@ define(["marionette",
         },
 
         activate: function () {
+            console.log('activate');
             this.active = true;
             this.redraw()
         },
 
         deactivate: function () {
+            console.log('deactivate');
             this.active = false;
             this.redraw()
         },

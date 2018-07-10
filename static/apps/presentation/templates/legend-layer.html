@@ -1,4 +1,8 @@
 <ul class="list-indent-simple">
-    <li>{{ title }}</li>
+    <li>
+        <input class="cb-symbol" type="checkbox" {{#if isShowing}}checked{{/if}} />
+        <i class="fa fa-lg collapse fa-angle-down" {{#if layerIsIndividual}} style='visibility: hidden;' {{/if}}></i>
+        <span class="legend-layer_title">{{ title }}</span>
+    </li>
 </ul>
 <ul class="symbol-container list-indent-simple"></ul>

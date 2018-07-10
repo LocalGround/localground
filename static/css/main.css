@@ -1190,7 +1190,7 @@ tbody .failure-message, tbody .success-message {
     /* top: 111px; */
     padding: 0;
     z-index: 0;
-    overflow: auto;
+    overflow: hidden;
 }
 
 .main-panel {
@@ -1313,7 +1313,7 @@ tbody .failure-message, tbody .success-message {
     order: 2;
     background-color: rgb(246, 246, 249);
     border-left: 1px solid rgb(217, 220, 229);
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 .side-panel .img-card {
