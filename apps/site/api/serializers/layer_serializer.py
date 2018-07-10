@@ -32,8 +32,10 @@ class GroupByField(serializers.CharField):
         if group_by in ['uniform', 'individual']:
             return group_by
 
-        data = self.context.get('request').data
-        dataset_id = data.get('dataset').get('id')
+        if self.root.instance:
+            dataset_id = self.root.instance.dataset.id
+        else:
+            dataset_id = data.get('dataset').get('id')
         field = Field.get_field_by_col_name(
             dataset_id, group_by
         )
@@ -109,27 +111,26 @@ class LayerSerializer(BaseSerializer):
 
     def _get_serialized_display_field(self, data):
         # A hack to support users to set the display field using col_name
-        if isinstance(data, dict) and data.get('display_field'):
-            if self.instance:
-                dataset_id = self.instance.dataset.id
-            else:
-                dataset_id = data.get('dataset')
-            field = Field.get_field_by_col_name(
-                dataset_id, data.get('display_field')
-            )
-            if field is None:
-                raise exceptions.ValidationError(
-                    'The field "{0}" could not be found.'.format(
-                        data.get('display_field')
-                    )
+        if self.instance:
+            dataset_id = self.instance.dataset.id
+        else:
+            dataset_id = data.get('dataset').get('id')
+        field = Field.get_field_by_col_name(
+            dataset_id, data.get('display_field')
+        )
+        if field is None:
+            raise exceptions.ValidationError(
+                'The field "{0}" could not be found.'.format(
+                    data.get('display_field')
                 )
-            return field.col_name_db
+            )
+        return field.col_name_db
 
     def run_validation(self, data=empty):
         # A hack to support users to set the display field using col_name
-        data['display_field'] = self._get_serialized_display_field(data)
-        return super(LayerSerializer, self).run_validation(
-            data=data)
+        if isinstance(data, dict) and data.get('display_field'):
+            data['display_field'] = self._get_serialized_display_field(data)
+        return super(LayerSerializer, self).run_validation(data=data)
 
     def get_dataset(self, obj):
         return {
@@ -189,6 +190,7 @@ class LayerSerializer(BaseSerializer):
 
 
 class LayerSerializerPost(LayerSerializer):
+    group_by = GroupByField(required=False, read_only=True)
     dataset = serializers.PrimaryKeyRelatedField(
         queryset=models.Dataset.objects.all(),
         allow_null=True, required=False)

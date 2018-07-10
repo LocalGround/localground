@@ -35,8 +35,16 @@ class ChoiceIntField(serializers.ChoiceField):
 
 class CustomDataTimeField(serializers.DateTimeField):
     def to_representation(self, obj):
-        datetime_object = datetime.datetime.strptime(obj, '%Y-%m-%dT%H:%M:%S')
-        return str(datetime_object)
+        datetime_object = None
+        # for fmt in ('%Y-%m-%dT%H:%M:%S', '%Y-%m-%d %H:%M:%S'):
+        for fmt in settings.DATETIME_INPUT_FORMATS:
+            try:
+                datetime_object = datetime.datetime.strptime(obj, fmt)
+            except ValueError:
+                pass
+        if datetime_object is not None:
+            return str(datetime_object)
+        raise ValueError('no valid date format found')
 
 
 class RecordSerializerMixin(GeometrySerializer):

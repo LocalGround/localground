@@ -365,6 +365,9 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
                 'name = Oregon',
                 'id = 5',
                 "name = oregon and name = 'and'",
+                "name = 'Kai and Leyna'",
+                "name = 'Kai or Leyna'",
+                "name = 'Kai and Leyna' or name = 'Phil or Jackson'"
                 ]:
             symbol['rule'] = rule
             response = self.client_user.patch(
@@ -407,3 +410,60 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
             )
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             self.assertTrue(isinstance(response.data['symbols'], list))
+
+    def test_update_group_by_to_generic(self):
+        for generic in ['individual', 'uniform']:
+            response = self.client_user.patch(
+                self.url,
+                data=json.dumps({
+                    'group_by': generic
+                }),
+                HTTP_X_CSRFTOKEN=self.csrf_token,
+                content_type="application/json"
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            data = response.data
+            self.assertEqual(data.get('group_by'), generic)
+            self.assertEqual(
+                models.Layer.objects.get(id=data.get('id')).group_by, generic)
+
+    def test_field_rename_does_not_wreck_group_by(self):
+
+        field1 = self.create_field(
+            name='Soil Type',
+            data_type=models.DataType.objects.get(id=1),
+            ordering=3,
+            dataset=self.dataset)
+
+        field2 = self.create_field(
+            name='Worm Count',
+            data_type=models.DataType.objects.get(id=2),
+            ordering=3,
+            dataset=self.dataset)
+
+        response = self.client_user.patch(
+            self.url,
+            data=json.dumps({
+                'group_by': 'worm_count'
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.data
+        self.assertEqual(data.get('group_by'), 'worm_count')
+        self.assertEqual(
+            models.Layer.objects.get(id=data.get('id')).group_by,
+            field2.unique_key)
+
+        # Now rename field and make sure that everything is OK:
+        field2.col_alias = 'Worms'
+        field2.save()
+
+        response = self.client_user.get(
+            self.url,
+            HTTP_X_CSRFTOKEN=self.csrf_token
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.data
+        self.assertEqual(data.get('group_by'), 'worms')

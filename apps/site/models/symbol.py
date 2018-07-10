@@ -68,10 +68,25 @@ class Symbol(object):
             return self.rule
         return self._deserialize_field_names(layer)
 
-    def _get_expressions(self, rule):
-        expressions = [
-            n.strip() for n in re.split('(\s+or\s+|\s+and\s+)', rule)]
+    def _split_by_conjunction(self, rule):
+        # extra logic to ensure that phrases surrounded by quotes that have
+        # 'and' or 'or' in them (e.g. Kai and Leyna) don't get split
+        # incorrectly
+        expressions = []
+        start = end = 0
+        regex = "( |\\\".*?\\\"|'.*?')"
+        for token in [token for token in re.split(regex, rule) if token]:
+            for delimiter in ['and', 'or']:
+                if token == delimiter:
+                    expressions.append(rule[start:end].strip())
+                    start = end + len(delimiter)
+                    expressions.append(rule[end:start].strip())
+            end += len(token)
+        expressions.append(rule[start:end].strip())
+        return expressions
 
+    def _get_expressions(self, rule):
+        expressions = self._split_by_conjunction(rule)
         return filter(lambda e: e != 'or' and e != 'and', expressions)
 
     def _serialize_field_names(self, rule, layer):
@@ -87,9 +102,7 @@ class Symbol(object):
         return self._do_substitutions(self.rule, layer, crosswalk)
 
     def _do_substitutions(self, rule, layer, crosswalk):
-        # normalize expressions:
-        expressions = [
-            n.strip() for n in re.split('(\s+or\s+|\s+and\s+)', rule)]
+        expressions = self._split_by_conjunction(rule)
         # tokenize and validate each expression (split on spaces)
         for i, e in enumerate(expressions):
             tokens = re.split('("[^"]*"|\'[^\']*\'|[\S]+)+', e)
@@ -100,7 +113,6 @@ class Symbol(object):
                     raise exceptions.ValidationError(
                         'Symbol rule "{0}" is not valid.'.format(rule))
                 tokens[0] = crosswalk[tokens[0]]
-                # print tokens
             expressions[i] = ' '.join(tokens)
 
         # return the serialized rule:

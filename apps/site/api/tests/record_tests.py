@@ -12,7 +12,8 @@ from localground.apps.site.tests import Client, ModelMixin
 
 def get_metadata():
     return {
-        'description': {'read_only': False, 'required': False, 'type': 'string'},
+        'description':
+            {'read_only': False, 'required': False, 'type': 'string'},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False,

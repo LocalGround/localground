@@ -115,7 +115,7 @@ class ModelMixin(object):
         return self._client_user
 
     def get_client_user(self, user):
-        #if self._client_user is None:
+        # if self._client_user is None:
         self._client_user = Client(enforce_csrf_checks=True)
         self._client_user.login(
             username=user.username,
@@ -455,9 +455,9 @@ class ModelMixin(object):
                 'thumbnail_' + uuid + '.jpg', File(open(thumb_file_path)))
         return p
 
-    def create_dataset(self, name='A title',
-                    description='A description', user=None,
-                    project=None):
+    def create_dataset(
+            self, name='A title', description='A description',
+            user=None, project=None):
         from localground.apps.site import models
         f = models.Dataset.create(
             owner=user or self.user,
@@ -612,7 +612,10 @@ class ModelMixin(object):
             photo.process_file(image)
         return photo
 
-    def create_icon(self, user, project, icon_file='icon.jpg', name='test_icon', file_type='jpg', size=100, width=100, height=100, anchor_x=30, anchor_y=50):
+    def create_icon(
+            self, user, project, icon_file='icon.jpg', name='test_icon',
+            file_type='jpg', size=100, width=100, height=100, anchor_x=30,
+            anchor_y=50):
         from localground.apps.site import models
         icon = models.Icon(
             project=project,

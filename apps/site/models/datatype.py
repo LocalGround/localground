@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from localground.apps.site.models import Base
 
+
 class DataType(Base):
 
     class DataTypes():
