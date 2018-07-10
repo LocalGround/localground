@@ -165,7 +165,7 @@ define(['backbone', 'underscore', 'collections/records',
                 const id = opts.id;
                 const fillColor = opts.fillColor;
                 const metadata = layerModel.get('metadata');
-                const prop = metadata.currentProp;
+                const prop = opts.layerModel.get('group_by');
                 const props = _.extend(
                     Symbol._getDefaultMetadataProperties(metadata), {
                         'rule': `${prop} = '${value}'`,

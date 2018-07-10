@@ -35,8 +35,16 @@ class ChoiceIntField(serializers.ChoiceField):
 
 class CustomDataTimeField(serializers.DateTimeField):
     def to_representation(self, obj):
-        datetime_object = datetime.datetime.strptime(obj, '%Y-%m-%dT%H:%M:%S')
-        return str(datetime_object)
+        datetime_object = None
+        # for fmt in ('%Y-%m-%dT%H:%M:%S', '%Y-%m-%d %H:%M:%S'):
+        for fmt in settings.DATETIME_INPUT_FORMATS:
+            try:
+                datetime_object = datetime.datetime.strptime(obj, fmt)
+            except ValueError:
+                pass
+        if datetime_object is not None:
+            return str(datetime_object)
+        raise ValueError('no valid date format found')
 
 
 class RecordSerializerMixin(GeometrySerializer):
@@ -173,16 +181,30 @@ class RecordSerializerMixin(GeometrySerializer):
              'attached_map_images_ids')
         depth = 0
 
+    def _get_field_by_col_name(self, col_name):
+        print self.dataset.fields
+        for field in self.dataset.fields:
+            print field.col_name, col_name
+            if field.col_name == col_name:
+                return field.unique_key
+        raise exceptions.ValidationError(
+            '{0} not found'.format(col_name)
+        )
+
+    def clean_attributes(self, attributes):
+        cleaned = {}
+        for key in attributes.keys():
+            val = attributes[key]
+            if isinstance(val, (datetime.datetime, datetime.date)):
+                val = val.isoformat()
+            cleaned[key] = val
+        return HStoreDict(cleaned)
+
     def create(self, validated_data):
         # Override to handle HStore
         if 'attributes' in validated_data:
-            for key in validated_data['attributes'].keys():
-                val = validated_data['attributes'][key]
-                if isinstance(val, (datetime.datetime, datetime.date)):
-                    validated_data['attributes'][key] = val.isoformat()
-            validated_data['attributes'] = HStoreDict(
+            validated_data['attributes'] = self.clean_attributes(
                 validated_data['attributes'])
-
         validated_data.update(self.get_presave_create_dictionary())
         validated_data.update({
             'dataset': self.dataset,
@@ -201,13 +223,15 @@ class RecordSerializerMixin(GeometrySerializer):
                 field = getattr(instance, attr)
                 field.set(value)
             elif attr == 'attributes':
-                # stringify all attribute values before DB commit:
-                for key in value:
-                    if isinstance(
-                            value[key], (datetime.datetime, datetime.date)):
-                        value[key] = value[key].isoformat()
-                    value[key] = str(value[key])
-                instance.attributes.update(value)
+                # stringify all non-null attributes before DB commit:
+                attribute_dict = value
+                for prop in attribute_dict:
+                    val = attribute_dict[prop]
+                    if isinstance(val, (datetime.datetime, datetime.date)):
+                        attribute_dict[prop] = val.isoformat()
+                    if val is not None:
+                        attribute_dict[prop] = str(val)
+                instance.attributes.update(attribute_dict)
             else:
                 setattr(instance, attr, value)
         instance.save()
@@ -269,7 +293,7 @@ def create_dynamic_serializer(dataset, **kwargs):
     def createIntField():
         attrs.update({
             field.col_name: serializers.IntegerField(
-                source='attributes.' + field.col_name,
+                source='attributes.' + field.unique_key,
                 allow_null=True,
                 required=False)
         })
@@ -277,7 +301,7 @@ def create_dynamic_serializer(dataset, **kwargs):
     def createChoiceField():
         attrs.update({
             field.col_name: serializers.ChoiceField(
-                source='attributes.' + field.col_name,
+                source='attributes.' + field.unique_key,
                 choices=list(
                     map(lambda d: (d['name'], d['name']), field.extras)
                 ),
@@ -289,7 +313,7 @@ def create_dynamic_serializer(dataset, **kwargs):
         # https://github.com/encode/django-rest-framework/issues/1755
         attrs.update({
             field.col_name: ChoiceIntField(
-                source='attributes.' + field.col_name,
+                source='attributes.' + field.unique_key,
                 choices=list(
                     map(lambda d: (d['value'], d['name']), field.extras)
                 ),
@@ -300,7 +324,7 @@ def create_dynamic_serializer(dataset, **kwargs):
     def createTextField():
         attrs.update({
             field.col_name: serializers.CharField(
-                source='attributes.' + field.col_name,
+                source='attributes.' + field.unique_key,
                 allow_null=True,
                 allow_blank=True,
                 required=False)
@@ -309,7 +333,7 @@ def create_dynamic_serializer(dataset, **kwargs):
     def createDateTimeField():
         attrs.update({
             field.col_name: CustomDataTimeField(
-                source='attributes.' + field.col_name,
+                source='attributes.' + field.unique_key,
                 allow_null=True,
                 required=False,
                 format="iso-8601",
@@ -319,14 +343,14 @@ def create_dynamic_serializer(dataset, **kwargs):
     def createBooleanField():
         attrs.update({
             field.col_name: serializers.NullBooleanField(
-                source='attributes.' + field.col_name,
+                source='attributes.' + field.unique_key,
                 required=False)
         })
 
     def createFloatField():
         attrs.update({
             field.col_name: serializers.FloatField(
-                source='attributes.' + field.col_name,
+                source='attributes.' + field.unique_key,
                 allow_null=True,
                 required=False)
         })
@@ -346,7 +370,7 @@ def create_dynamic_serializer(dataset, **kwargs):
         else:
             attrs.update({
                 field.col_name: serializers.CharField(
-                    source='attributes.' + field.col_name,
+                    source='attributes.' + field.unique_key,
                     allow_null=True,
                     required=False)
             })

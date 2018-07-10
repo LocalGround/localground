@@ -123,6 +123,7 @@ TIME_INPUT_FORMATS = ('%I:%M:%S %p', '%H:%M:%S', '%H:%M')
 DATETIME_INPUT_FORMATS = []
 for date_format in DATE_INPUT_FORMATS:
     for time_format in TIME_INPUT_FORMATS:
+        DATETIME_INPUT_FORMATS.append(date_format + 'T' + time_format)
         DATETIME_INPUT_FORMATS.append(date_format + ' ' + time_format)
 DATETIME_INPUT_FORMATS = tuple(DATETIME_INPUT_FORMATS)
 

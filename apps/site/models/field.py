@@ -50,6 +50,19 @@ class Field(BaseAudit):
         # replace spaces and dashes with underscores:
         return str(re.sub(r'([-\s])+', '_', tmp).lower())
 
+    @property
+    def unique_key(self):
+        return 'field_{0}'.format(self.id)
+
+    @classmethod
+    def get_field_by_unique_key(cls, unique_key):
+        try:
+            return cls.objects.filter(col_name_db=unique_key)[0]
+        except Exception:
+            raise Exception(
+                'The field "{0}" could not be found.'.format(unique_key)
+            )
+
     @classmethod
     def get_field_by_col_name(cls, dataset_id, col_name):
         from localground.apps.site.models import Dataset
@@ -89,7 +102,7 @@ class Field(BaseAudit):
         super(Field, self).save(*args, **kwargs)
 
         # 2. ensure that the column name is unique, and add column to table:
-        self.col_name_db = 'field_{0}'.format(self.pk)
+        self.col_name_db = self.unique_key
         super(Field, self).save(update_fields=['col_name_db'])
 
     def _output_dependency(self, layer):

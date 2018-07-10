@@ -187,6 +187,7 @@ define(
                         "symbol_shape": "fa-circle",
                         "layer_type": "continuous",
                         "newLayer": true,
+                        "group_by": "test_integer",
                         "metadata": {
                             "fillColor": "#4e70d4",
                             "strokeWeight": 1,
@@ -197,7 +198,6 @@ define(
                             "fillOpacity": 1,
                             "strokeColor": "#ffffff",
                             "paletteId": 2,
-                            "currentProp": "test_integer",
                             "isShowing": false
                         },
                         "filters": [
@@ -280,6 +280,7 @@ define(
                         "symbol_shape": "circle",
                         "layer_type": "categorical",
                         "newLayer": true,
+                        "group_by": "test_text",
                         "metadata": {
                             "newKey": 6,
                             "fillColor": "#4e70d4",
@@ -291,7 +292,6 @@ define(
                             "fillOpacity": 1,
                             "strokeColor": "#FFFFFF",
                             "paletteId": 3,
-                            "currentProp": "test_text",
                             "isShowing": false
                         },
                         "filters": {
