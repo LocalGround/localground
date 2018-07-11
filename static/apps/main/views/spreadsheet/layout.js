@@ -26,7 +26,7 @@ define(["marionette",
                     app: this.app,
                     collection: this.collection,
                     fields: this.collection.getFields(),
-                    //width: '100%',
+                    layer: this.layer,
                     height: $(window).height() - 180
                 });
                 this.spreadsheetRegion.show(spreadsheet)

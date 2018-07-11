@@ -33,12 +33,12 @@ define ([
                     this.render();
                     return;
                 }
-
                 this.model.save(null, {
                     dataType:"text",
                     success: (model, response) => {
                         response = JSON.parse(response);
                         this.model.set('col_name', response.col_name);
+                        this.syncDependencies();
                         this.app.vent.trigger('field-updated');
                         this.sourceModal.hide();
                     },
@@ -51,6 +51,26 @@ define ([
                     }
                 });
 
+            },
+            syncDependencies: function () {
+                const dataset = this.layer.getDataset(this.app.dataManager);
+                const currentField = this.layer.getGroupByField(this.app.dataManager);
+                // re-query the dataset from the server
+                // (because the column headers no longer match):
+                dataset.fetch({
+                    success: () => {
+                        // if the current field no longer exists, then the active
+                        // field has been renamed...requires further coordination
+                        if (!currentField && !this.layer.isUniform() && !this.layer.isIndividual()) {
+                            this.layer.fetch().done(() => {
+                                // using 'done' b/c success doesn't seem to be working
+                                // for the Layer model.
+                                // Resetting symbols:
+                                this.layer.setSymbols(this.layer.get('symbols_json'));
+                            });
+                        }
+                    }
+                });
             },
             onShow: function () {
                 setTimeout(() => {

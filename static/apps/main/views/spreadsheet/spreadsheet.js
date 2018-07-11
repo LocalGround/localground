@@ -813,6 +813,7 @@ define(["jquery",
                         app: this.app,
                         collection: this.collection,
                         table: this.table,
+                        layer: this.layer,
                         fields: this.fields,
                         field: this.fields.at(columnID - 3),
                         columnID: columnID,
@@ -853,6 +854,8 @@ define(["jquery",
                 this.table.updateSettings({
                     colHeaders: this.getColumnHeaders()
                 });
+                //console.log(this.layer.getGroupByField(this.app.dataManager));
+                //this.layer.fetch();
                 //this.table.render();
             }
         });

@@ -298,6 +298,7 @@ define(["marionette",
                 const spreadsheet = new SpreadsheetLayout({
                     app: this.app,
                     collection: this.dataCollection,
+                    layer: this.model
                 });
                 this.modal.update({
                     app: this.app,

@@ -41,6 +41,7 @@ define(["underscore",
                 const renameFieldForm = new RenameField({
                     app: this.app,
                     model: this.field,
+                    layer: this.layer,
                     sourceModal: this.secondaryModal
                 });
 

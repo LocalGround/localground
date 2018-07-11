@@ -46,6 +46,18 @@ define(["models/base", "models/symbol", "collections/symbols", "lib/lgPalettes"]
         isIndividual: function () {
             return this.get('group_by') === 'individual';
         },
+        getDataset: function (dataManager) {
+            return dataManager.getCollection(this.get('dataset').overlay_type);
+        },
+        getGroupByField: function (dataManager) {
+            if (this.isUniform() || this.isIndividual()) {
+                return null;
+            }
+            const fields = this.getDataset(dataManager).getFields();
+            return fields.findWhere({
+                col_name: this.get('group_by')
+            });
+        },
         url: function () {
             let baseURL =  Base.prototype.url.apply(this, arguments);
             if (baseURL.indexOf('.json') === -1) {
@@ -58,6 +70,7 @@ define(["models/base", "models/symbol", "collections/symbols", "lib/lgPalettes"]
             var symbols;
             if (typeof key === 'object' && key.symbols) {
                 symbols = key.symbols;
+                key.symbols_json = symbols;
                 delete key.symbols;
             } else if (key === 'symbols') {
                 symbols = val;
@@ -84,8 +97,10 @@ define(["models/base", "models/symbol", "collections/symbols", "lib/lgPalettes"]
             });
             const symbolCollection = this.get('symbols');
             if (symbolCollection) {
+                console.log('resetting symbols...');
                 symbolCollection.reset(symbolJSON)
             } else {
+                console.log('setting symbols...');
                 this.set('symbols', new Symbols(symbolJSON, {layerModel: this}));
             }
         },
