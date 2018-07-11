@@ -22,6 +22,7 @@ define(["underscore",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.modal = this.app.modal;
+                this.popover = this.app.popover;
                 this.secondaryModal = new Modal({
                     app: this.app
                 });
@@ -55,6 +56,7 @@ define(["underscore",
                     showDeleteButton: false
                 });
                 this.secondaryModal.show();
+                this.popover.hide();
                 if (e) {
                     e.preventDefault();
                 }

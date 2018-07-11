@@ -7,7 +7,10 @@ define ([
 ],
     function ($, _, Marionette, Handlebars, FieldItemTemplate) {
         'use strict';
-
+        /**
+         * model --> Field
+         * layer --> current layer (dataset accessible from layer)
+         */
         var RenameFieldView = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -53,15 +56,22 @@ define ([
 
             },
             syncDependencies: function () {
+                /*
+                 * This method synchronizes the field rename with any
+                 * dependent models in the dataManager:
+                 *   1. Re-queries the dataset (to refresh column headings)
+                 *   2. If necessary, requeries the layer
+                 *     (to update the symbol rules and group_by attribute)
+                 */
                 const dataset = this.layer.getDataset(this.app.dataManager);
-                const currentField = this.layer.getGroupByField(this.app.dataManager);
+                const groupByField = this.layer.getGroupByField(this.app.dataManager);
                 // re-query the dataset from the server
                 // (because the column headers no longer match):
                 dataset.fetch({
                     success: () => {
                         // if the current field no longer exists, then the active
                         // field has been renamed...requires further coordination
-                        if (!currentField && !this.layer.isUniform() && !this.layer.isIndividual()) {
+                        if (!groupByField && !this.layer.isUniform() && !this.layer.isIndividual()) {
                             this.layer.fetch().done(() => {
                                 // using 'done' b/c success doesn't seem to be working
                                 // for the Layer model.
