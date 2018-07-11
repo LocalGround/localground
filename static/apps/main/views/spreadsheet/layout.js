@@ -22,9 +22,6 @@ define(["marionette",
                 console.log('showMenu');
             },
             showSpreadsheet: function () {
-                console.log(this.$el.find('.spreadsheet-container'));
-                console.log(this.$el.find('.spreadsheet-container').html());
-                console.log(this.$el.find('.spreadsheet-container').height());
                 const spreadsheet = new Spreadsheet({
                     app: this.app,
                     collection: this.collection,
@@ -32,7 +29,6 @@ define(["marionette",
                     //width: '100%',
                     height: $(window).height() - 180
                 });
-                console.log($(window).height() - 180);
                 this.spreadsheetRegion.show(spreadsheet)
             }
 

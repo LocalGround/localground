@@ -679,6 +679,13 @@ Separate Mobile CSS
     max-height: 85vh;
     padding-right: 15px;
 }
+.legend-layers::-webkit-scrollbar {
+    background: #FFF;
+    border-width: 0px;
+}
+.legend-layers::-webkit-scrollbar-thumb {
+    background: #CCC;
+}
 
 #presentation-title {
     /*background-color: #354c7a;*/

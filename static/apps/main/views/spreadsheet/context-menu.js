@@ -1,11 +1,11 @@
 define(["underscore",
         "marionette",
         "handlebars",
+        'apps/main/views/spreadsheet/rename-field',
         "text!../../templates/spreadsheet/context-menu.html",
-        "apps/main/views/left/edit-layer-name-modal-view",
-        "apps/main/views/left/edit-display-field-modal-view",
+        "lib/modals/modal"
     ],
-    function (_, Marionette, Handlebars, ContextMenuTemplate) {
+    function (_, Marionette, Handlebars, RenameField, ContextMenuTemplate, Modal) {
         'use strict';
 
         var SpreadsheetMenu =  Marionette.ItemView.extend({
@@ -16,12 +16,15 @@ define(["underscore",
                 'click .insert-col-after': 'itemClicked',
                 'click .duplicate-col': 'itemClicked',
                 'click .delete-col': 'deleteColumn',
-                'click .set-title-field': 'itemClicked'
+                'click .rename-col': 'renameColumn'
             },
 
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.modal = this.app.modal;
+                this.secondaryModal = new Modal({
+                    app: this.app
+                });
             },
 
             template: Handlebars.compile(ContextMenuTemplate),
@@ -33,6 +36,27 @@ define(["underscore",
             },
             sortDesc: function (e) {
                 this.sort('desc');
+            },
+            renameColumn: function (e) {
+                const renameFieldForm = new RenameField({
+                    app: this.app,
+                    model: this.field,
+                    sourceModal: this.secondaryModal
+                });
+
+                this.secondaryModal.update({
+                    app: this.app,
+                    view: renameFieldForm,
+                    title: 'Rename Field',
+                    width: '300px',
+                    showSaveButton: true,
+                    saveFunction: renameFieldForm.saveField.bind(renameFieldForm),
+                    showDeleteButton: false
+                });
+                this.secondaryModal.show();
+                if (e) {
+                    e.preventDefault();
+                }
             },
             sort: function (direction) {
                 /*

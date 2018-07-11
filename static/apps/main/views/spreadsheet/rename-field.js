@@ -1,0 +1,75 @@
+define ([
+    "jquery",
+    "underscore",
+    "marionette",
+    "handlebars",
+    "text!../../templates/spreadsheet/field-item.html"
+],
+    function ($, _, Marionette, Handlebars, FieldItemTemplate) {
+        'use strict';
+
+        var RenameFieldView = Marionette.ItemView.extend({
+            initialize: function (opts) {
+                _.extend(this, opts);
+                this.template = Handlebars.compile(FieldItemTemplate);
+            },
+            error: null,
+            templateHelpers: function () {
+                var helpers = {
+                    error: this.error
+                };
+                return helpers;
+            },
+
+            saveField: function() {
+                this.error = null;
+                const col_alias = this.$el.find('#col_alias').val();
+                if (col_alias.length > 0) {
+                    this.model.set('col_alias', col_alias);
+                } else {
+                    this.error = "A valid field name is required";
+                }
+                if (this.error) {
+                    this.render();
+                    return;
+                }
+
+                this.model.save(null, {
+                    dataType:"text",
+                    success: (model, response) => {
+                        response = JSON.parse(response);
+                        this.model.set('col_name', response.col_name);
+                        this.app.vent.trigger('field-updated');
+                        this.sourceModal.hide();
+                    },
+                    error: (model, response) => {
+                        var messages = response.responseText;
+                        if (messages.slug && messages.slug.length > 0) {
+                            this.slugError = messages.slug[0];
+                        }
+                        this.updateModal(response);
+                    }
+                });
+
+            },
+            onShow: function () {
+                setTimeout(() => {
+                    this.$el.find('#col_alias').focus().select();
+                }, 50);
+            },
+
+            updateModal: function (errorMessage) {
+                if (errorMessage.status == '400') {
+                    var messages = JSON.parse(errorMessage.responseText);
+                    this.slugError = messages.slug[0];
+                    this.generalError = null;
+                } else {
+                    this.generalError = "Save Unsuccessful. Unspecified Server Error. Consider changing layer title";
+                    this.slugError = null;
+                }
+                this.render();
+            }
+        });
+        return RenameFieldView;
+
+    });

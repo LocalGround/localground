@@ -1,0 +1,9 @@
+<form class="form">
+    <div class="row {{#if error}} error{{/if}}">
+        <label>Field Name </label>
+        {{#if error}}
+            <p>{{ error }}</p>
+        {{/if}}
+        <input id="col_alias" type="text" value="{{col_alias}}">
+    </div>
+</form>
