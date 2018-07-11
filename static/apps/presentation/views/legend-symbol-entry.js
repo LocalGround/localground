@@ -32,14 +32,13 @@ define(['marionette',
                 
                 this.activeRecordId = null;
                 this.activeLayerId = null;
-
+               
                 this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
                 this.listenTo(this.app.vent, 'show-detail', this.handleRoute);
-                console.log(this.model);
+                //console.log(this.model);
             },
 
             onRender: function() {
-                console.log('symbol onRender', this.model);
                 if (!this.model.get('isShowing')) {
                     this.addHiddenCSS();
                 }
@@ -61,7 +60,8 @@ define(['marionette',
 
             templateHelpers: function () {
                 return {
-                    count: this.symbolCount,
+                    count: this.model.getModels().length,
+                    collapsed: this.model.layerModel.get('metadata').collapsed,
                     isShowing: this.getIsShowing(),
                     symbolSvg: this.model.toSVG(),
                     records: this.getRecordDisplayInfo(this.model.matchedModels),
@@ -171,7 +171,7 @@ define(['marionette',
             },
 
             handleRoute: function(info) {
-
+                console.log('handle route');
                 this.activeRecordId = parseInt(info.id);
                 this.activeLayerId = parseInt(info.layerId);
 

@@ -48,7 +48,9 @@ define(["marionette",
                 //NOTE: Alternatively, you can set the z-index of each marker
                 for (let i = this.collection.length - 1; i >= 0; i--) {
                     const childView = this.children.findByModel(this.collection.at(i));
-                    childView.drawOverlays();
+                    if (childView.model.get('metadata').isShowing) {
+                        childView.drawOverlays();
+                    }
                 }
             }
         });
