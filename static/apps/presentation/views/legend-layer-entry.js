@@ -25,10 +25,24 @@ define(['marionette',
                 this.model.get('metadata').collapsed = true;
                 this.collection.assignRecords(this.dataCollection);
                 this.template = Handlebars.compile(LayerTemplate);
+                this.listenTo(this.app.vent, 'show-layer', this.showLayerIfActive);
                 //console.log(this.model);
             },
 
+            // in case a user loads a page using a url where the route point to a record on a layer that is not showing, we automatically show the record.
+            showLayerIfActive: function(layerId) {
+                console.log('show layer if active');
+                if (parseInt(layerId) === this.model.id) {
+
+                    this.model.get('metadata').isShowing = true;
+                    this.showHideLayer(null, this.model.get('metadata').isShowing);
+                    this.$el.find('.cb-symbol').prop('checked', true).change();
+                    //this.expandSymbols();
+                }
+            },
+
             onRender: function() {
+                console.log('layer render', this.model.id);
                 this.collapseSymbols();
                 this.showHideLayer(null, this.model.get('metadata').isShowing);
             },

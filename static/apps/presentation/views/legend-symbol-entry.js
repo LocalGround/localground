@@ -34,6 +34,11 @@ define(['marionette',
                 this.activeLayerId = null;
                
                 this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
+
+                // this first event listener is necessary for routing when a page is loaded fresh
+                this.listenTo(this.app.vent, 'highlight-current-record', this.handleRoute);
+                
+                // this is the normal routing event
                 this.listenTo(this.app.vent, 'show-detail', this.handleRoute);
                 //console.log(this.model);
             },
@@ -181,6 +186,10 @@ define(['marionette',
                 );
 
                 if (activeRecord && this.model.layerModel.id === parseInt(info.layerId)) {
+                    if (!this.model.layerModel.get('metadata').isShowing) {
+                        this.model.layerModel.get('metadata').isShowing = true;
+                        this.app.vent.trigger('show-layer', info.layerId);
+                    }
                     this.activateMapMarker(info);
                 }
 

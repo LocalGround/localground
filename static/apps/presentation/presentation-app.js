@@ -41,6 +41,8 @@ define([
             });
             this.model = this.dataManager.getMapBySlug(options.mapJSON.slug);
 
+            this.routeInfo = null;
+
             this.loadRegions();
 
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
@@ -99,6 +101,7 @@ define([
             } else {
                 this.showLegend();
             }
+            this.vent.trigger('highlight-current-record', this.routeInfo);
         },
 
         showMapTitle: function () {
@@ -135,6 +138,7 @@ define([
             this.container.$el.addClass(className);
         },
         showMediaDetail: function (opts) {
+            this.routeInfo = opts;
             const dm = this.dataManager;
             const recordModel = dm.getModel(opts.dataType, parseInt(opts.id));
             recordModel.set("active", true);
