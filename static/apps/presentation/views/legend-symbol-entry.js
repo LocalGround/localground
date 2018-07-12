@@ -40,7 +40,6 @@ define(['marionette',
                 
                 // this is the normal routing event
                 this.listenTo(this.app.vent, 'show-detail', this.handleRoute);
-                //console.log(this.model);
             },
 
             onRender: function() {
@@ -176,7 +175,6 @@ define(['marionette',
             },
 
             handleRoute: function(info) {
-                console.log('handle route');
                 this.activeRecordId = parseInt(info.id);
                 this.activeLayerId = parseInt(info.layerId);
 
