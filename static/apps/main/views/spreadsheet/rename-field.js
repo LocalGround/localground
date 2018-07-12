@@ -41,7 +41,7 @@ define ([
                     success: (model, response) => {
                         response = JSON.parse(response);
                         this.model.set('col_name', response.col_name);
-                        this.syncDependencies();
+                        this.reloadDataset();
                         this.app.vent.trigger('field-updated');
                         this.sourceModal.hide();
                     },
@@ -55,7 +55,7 @@ define ([
                 });
 
             },
-            syncDependencies: function () {
+            reloadDataset: function () {
                 /*
                  * This method synchronizes the field rename with any
                  * dependent models in the dataManager:
@@ -63,22 +63,19 @@ define ([
                  *   2. If necessary, requeries the layer
                  *     (to update the symbol rules and group_by attribute)
                  */
-                const dataset = this.layer.getDataset(this.app.dataManager);
-                const groupByField = this.layer.getGroupByField(this.app.dataManager);
-                // re-query the dataset from the server
-                // (because the column headers no longer match):
-                dataset.fetch({
-                    success: () => {
-                        // if the current field no longer exists, then the active
-                        // field has been renamed...requires further coordination
-                        if (!groupByField && !this.layer.isUniform() && !this.layer.isIndividual()) {
-                            this.layer.fetch().done(() => {
-                                // using 'done' b/c success doesn't seem to be working
-                                // for the Layer model.
-                                // Resetting symbols:
-                                this.layer.setSymbols(this.layer.get('symbols_json'));
-                            });
-                        }
+                this.dataset.fetch({
+                    success: this.reloadDependentLayers.bind(this)
+                });
+            },
+            reloadDependentLayers: function () {
+                // if the current field no longer exists and there's a
+                // field dependency, then the active field has been
+                // renamed...requires further coordination across
+                // dependent layers:
+                const layers = this.dataset.getDependentLayers(this.app.dataManager);
+                layers.forEach(layer => {
+                    if (layer.hasFieldDependency() && !layer.getGroupByField(this.app.dataManager)) {
+                        layer.refreshFromServer();
                     }
                 });
             },

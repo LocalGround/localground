@@ -63,7 +63,7 @@ define(["marionette",
                 this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol);
                 this.listenTo(this.dataCollection, 'record-updated', this.reRenderOrReassignRecordToSymbol);
                 this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
-                this.listenTo(this.app.vent, 'record-has-been-deleted', this.symbolModels.removeEmpty);
+                this.listenTo(this.app.vent, 'record-has-been-deleted', this.removeEmpty);
             },
 
             onRender: function() {
@@ -163,6 +163,10 @@ define(["marionette",
                 }
             },
 
+            removeEmpty: function () {
+                this.symbolModels.removeEmpty();
+            },
+
             showStyleByMenu: function (e) {
 
                 this.popover.update({
@@ -225,7 +229,10 @@ define(["marionette",
                 } else {
                     this.$el.addClass('hide-layer');
                 }
-                this.saveChanges();
+                if (arguments.length === 1) {
+                    //don't save if this has been called onRender
+                    this.saveChanges();
+                }
                 if (this.isEmpty()) {
                     return;
                 }

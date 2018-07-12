@@ -42,7 +42,7 @@ define(["underscore",
                 const renameFieldForm = new RenameField({
                     app: this.app,
                     model: this.field,
-                    layer: this.layer,
+                    dataset: this.collection,
                     sourceModal: this.secondaryModal
                 });
 
@@ -72,14 +72,13 @@ define(["underscore",
                 } else {
                     this.table.sortOrder = true;
                 }
+
                 const oldSort = this.table.sortOrder;
-                console.log(this.table.sortOrder);
                 this.table.sort(this.columnID);
                 if (oldSort === this.table.sortOrder === true) {
                     //yet another hack:
                     this.table.sort(this.columnID);
                 }
-                console.log(this.table.sortOrder);
             },
             deleteColumn: function (e) {
                 e.preventDefault();
@@ -94,6 +93,7 @@ define(["underscore",
                         console.error(e)
                     }
                 });
+                this.popover.hide();
             }
 
         });

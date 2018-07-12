@@ -40,6 +40,9 @@ define(["models/base", "models/symbol", "collections/symbols", "lib/lgPalettes"]
         isContinuous: function () {
             return this.get('metadata').isContinuous;
         },
+        hasFieldDependency: function () {
+            return !this.isUniform() && !this.isIndividual();
+        },
         isUniform: function () {
             return this.get('group_by') === 'uniform';
         },
@@ -48,6 +51,14 @@ define(["models/base", "models/symbol", "collections/symbols", "lib/lgPalettes"]
         },
         getDataset: function (dataManager) {
             return dataManager.getCollection(this.get('dataset').overlay_type);
+        },
+        refreshFromServer: function () {
+            this.fetch().done(() => {
+                // using 'done' b/c success doesn't seem to be working
+                // for the Layer model.
+                // Resetting symbols:
+                this.setSymbols(this.get('symbols_json'));
+            });
         },
         getGroupByField: function (dataManager) {
             if (this.isUniform() || this.isIndividual()) {

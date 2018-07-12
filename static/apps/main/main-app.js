@@ -120,8 +120,11 @@ define([
             map.fetch({ success: this.applyNewMap.bind(this) });
         },
 
-        applyNewMap: function () {
-            this.vent.trigger('new-map-loaded', this.dataManager.getMap());
+        applyNewMap: function (model, response) {
+            //ensures that layer collections get rebuilt:
+            const map = this.dataManager.getMap();
+            map.set("layers", response.layers_json);
+            this.vent.trigger('new-map-loaded', map);
             this.showBreadcrumbs();
             this.showLeftLayout();
         },
