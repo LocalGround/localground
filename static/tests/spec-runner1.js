@@ -27,6 +27,9 @@ require(['boot'], function () {
         'spec/views/main/symbol-style-menu-view-test.js',
         'spec/views/main/marker-style-view-test.js',
 
+        //spreadsheet tests:
+        'spec/views/main/rename-field-test.js',
+
 
         // trouble mocking a Record to test the DataDetail View
         'spec/views/main/data-detail-test.js',

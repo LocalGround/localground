@@ -35,9 +35,6 @@ define(["underscore", "marionette", "models/project",
             __initMaps: function () {
                 this.__maps = new Maps(this.__project.get('maps').data, {
                     projectID: this.__project.id});
-                const layer = this.__maps.at(0).getLayers().at(0);
-                const overlayType = layer.get('dataset').overlay_type;
-                const collection = this.getCollection(overlayType);
             },
 
             __initCollections: function () {
