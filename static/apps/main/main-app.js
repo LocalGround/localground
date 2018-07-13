@@ -123,7 +123,11 @@ define([
         applyNewMap: function (model, response) {
             //ensures that layer collections get rebuilt:
             const map = this.dataManager.getMap();
-            map.set("layers", response.layers_json);
+            if (response) {
+                map.set("layers", response.layers_json);
+            } else {
+                console.warn('Response should only be empty during automated tests');
+            }
             this.vent.trigger('new-map-loaded', map);
             this.showBreadcrumbs();
             this.showLeftLayout();
