@@ -26,7 +26,6 @@ define(['marionette',
                 this.collection.assignRecords(this.dataCollection);
                 this.template = Handlebars.compile(LayerTemplate);
                 this.listenTo(this.app.vent, 'show-layer', this.showLayerIfActive);
-                //console.log(this.model);
             },
 
             onRender: function() {
@@ -120,7 +119,8 @@ define(['marionette',
                 if (parseInt(layerId) === this.model.id) {
 
                     this.model.get('metadata').isShowing = true;
-                    //this.showHideLayer(null, this.model.get('metadata').isShowing);
+
+                    // updating '.cb-symbol' triggers this.showHideLayer()
                     this.$el.find('.cb-symbol').prop('checked', true).change();
                 }
             },

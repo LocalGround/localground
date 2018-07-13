@@ -51,7 +51,6 @@ define(["marionette",
             },
 
             doHighlight: function (model) {
-                console.log('do highlight');
                 if (this.activeModel) {
                     this.activeModel.set("active", false);
                 }

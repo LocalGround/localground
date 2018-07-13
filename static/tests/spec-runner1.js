@@ -5,7 +5,7 @@ require(['boot'], function () {
      */
     'use strict';
     var specs = [
-        //views:
+        // Main App:
         'spec/views/main/add-marker-menu-test.js',
         'spec/views/main/edit-layer-menu-test.js',
         'spec/views/main/main-app-test.js',
@@ -21,6 +21,8 @@ require(['boot'], function () {
         'spec/views/main/layer-list-child-view-test.js',
         'spec/views/main/symbol-collection-view-test.js',
 
+        // Presentation App
+        'spec/views/presentation/presentation-app-test.js',
         'spec/views/presentation/legend-symbol-entry-test.js',
         'spec/views/presentation/legend-layer-entry-test.js',
 
