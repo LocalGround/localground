@@ -108,10 +108,10 @@ define(["models/base", "models/symbol", "collections/symbols", "lib/lgPalettes"]
             });
             const symbolCollection = this.get('symbols');
             if (symbolCollection) {
-                console.log('resetting symbols...');
+                // console.log('resetting symbols...');
                 symbolCollection.reset(symbolJSON)
             } else {
-                console.log('setting symbols...');
+                // console.log('setting symbols...');
                 this.set('symbols', new Symbols(symbolJSON, {layerModel: this}));
             }
         },

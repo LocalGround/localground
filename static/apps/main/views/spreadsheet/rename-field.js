@@ -30,7 +30,7 @@ define ([
                 if (col_alias.length > 0) {
                     this.model.set('col_alias', col_alias);
                 } else {
-                    this.error = "A valid field name is required";
+                    this.error = "A valid column name is required";
                 }
                 if (this.error) {
                     this.render();
@@ -39,7 +39,9 @@ define ([
                 this.model.save(null, {
                     dataType:"text",
                     success: (model, response) => {
-                        response = JSON.parse(response);
+                        if (typeof(response) === 'string') {
+                            response = JSON.parse(response);
+                        }
                         this.model.set('col_name', response.col_name);
                         this.reloadDataset();
                         this.app.vent.trigger('field-updated');

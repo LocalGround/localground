@@ -49,7 +49,7 @@ define(["underscore",
                 this.secondaryModal.update({
                     app: this.app,
                     view: renameFieldForm,
-                    title: 'Rename Field',
+                    title: 'Rename Column',
                     width: '300px',
                     showSaveButton: true,
                     saveFunction: renameFieldForm.saveField.bind(renameFieldForm),

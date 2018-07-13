@@ -49,7 +49,8 @@ require(['boot'], function () {
         'spec/models/symbol-test.js',
 
         // collections
-        'spec/collections/symbols-test.js'
+        'spec/collections/symbols-test.js',
+        'spec/collections/records-test.js'
 
     ];
 
