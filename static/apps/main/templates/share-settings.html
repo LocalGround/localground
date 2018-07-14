@@ -1,0 +1,44 @@
+<div class="link-embed_container">
+    <div class="link-embed_header">
+        <span class="link-button {{#ifequal hyperlinkMode 'link'}}activeLinkButton{{/ifequal}}">Link</span>
+        <span class="embed-button {{#ifequal hyperlinkMode 'embed'}}activeLinkButton{{/ifequal}}">Embed</span>
+    </div>
+    {{#ifequal hyperlinkMode 'link'}}
+        <div class="link_container">
+            <textarea  readonly="readonly" class="link-text">http://localhost:7777/main/3/#/3/layers/19/dataset_4/73
+            </textarea>
+        </div>
+    {{/ifequal}}
+    {{#ifequal hyperlinkMode 'embed'}}
+        <div class="embed_container">
+            <p>
+                To embed this map in your own website, copy the following HTML and paste it in the source code for your page.
+            </p>
+            <textarea  readonly="readonly" class="link-text">"iframe http://localhost:7777/main/3/#/3/layers/19/dataset_4/73 iframe"
+            </textarea>
+        </div>
+    {{/ifequal}}
+</div>
+<div class="share-options_container">
+    <span>Who can view the map</span>
+        <form class="form-inline">
+            <div>
+                <input type="radio" name="rb" checked="">
+                <label>Public Searchable - public on the web</label>
+                <span>Anyone on the internet can find and view the map</span>
+                <br>
+                <input type="radio" name="rb">
+                <label>Public Unlisted - anyone with the link </label>
+                <span>Anyone who has the link can view the map</span>
+                <br>
+                <input type="radio" name="rb">
+                <label>Password Protected - link and password required</label>
+                <span>Map accessible only to people who know the password</span>
+                <div>
+                    <span>View password:</span>
+                    <input type="text">
+                </div>
+                <br>
+            </div>
+        </form>
+</div>

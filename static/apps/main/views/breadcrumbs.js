@@ -14,9 +14,10 @@ define([
     "views/generate-print",
     "apps/main/views/left/new-map-modal-view",
     "apps/main/views/map-menu",
+    "apps/main/views/share-settings",
     "text!../templates/breadcrumbs.html"
 ], function (_, Handlebars, Marionette, Map, PrintLayoutView,
-        CreateMapForm, MapMenu, BreadcrumbsTemplate) {
+        CreateMapForm, MapMenu, ShareSettings, BreadcrumbsTemplate) {
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
         template: Handlebars.compile(BreadcrumbsTemplate),
@@ -37,6 +38,7 @@ define([
         events: {
             'click #print-button': 'showPrintModal',
             'click #map-menu': 'showMapMenu',
+            'click .share': 'showShareMenu' 
         },
 
         showMapMenu: function(e) {
@@ -50,6 +52,27 @@ define([
                 placement: 'bottom',
                 width: '150px'
             });
+        },
+
+        showShareMenu: function() {
+            let shareSettings = new ShareSettings({
+                app: this.app
+            });
+            this.modal.update({
+                bodyClass: 'gray',
+                app: this.app,
+                view: shareSettings,
+                title: 'Sharing Settings',
+                saveButtonText: 'Save',
+                saveFunction: shareSettings.saveShareSettings.bind(shareSettings),
+                closeButtonText: "Done",
+                width: 700,
+                height: null,   
+                showSaveButton: true,
+                showDeleteButton: false
+            });
+            this.modal.show();
+
         },
 
         //TODO: come back to this. Where does the print button go?
