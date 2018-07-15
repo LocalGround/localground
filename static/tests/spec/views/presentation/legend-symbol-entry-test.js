@@ -19,7 +19,7 @@ define([
             spyOn(LegendSymbolEntry.prototype, 'activateMapMarker').and.callThrough();
             
 
-            // spyOn(scope.app.vent, 'trigger');
+            spyOn(scope.app.vent, 'trigger').and.callThrough();
             // spyOn(scope.app.router, 'navigate');
             // spyOn(LegendSymbolEntry.prototype, 'initialize');
             // spyOn(LegendSymbolEntry.prototype, 'render');
@@ -160,7 +160,7 @@ define([
                 expect(this.view.$el.find('.legend-show_symbol')).not.toHaveClass('fa-eye-slash');
             });
 
-            it('handleRoute() is works with matching route info', function() {
+            it('handleRoute() works with matching route info', function() {
 
                 expect(this.view.handleRoute).toHaveBeenCalledTimes(0);
                 expect(this.view.activateMapMarker).toHaveBeenCalledTimes(0);
@@ -187,7 +187,7 @@ define([
                 expect(this.view.onRender).toHaveBeenCalledTimes(2);
             });
 
-            it('handleRoute() is works with nonmatching route info', function() {
+            it('handleRoute() works with nonmatching route info', function() {
 
                 expect(this.view.handleRoute).toHaveBeenCalledTimes(0);
                 expect(this.view.activateMapMarker).toHaveBeenCalledTimes(0);
@@ -212,6 +212,27 @@ define([
                 expect(this.view.activeLayerId).toEqual(63);
                 expect(this.view.activateMapMarker).toHaveBeenCalledTimes(0);
                 expect(this.view.onRender).toHaveBeenCalledTimes(2);
+            });
+
+            it("handleRoute() turns on a hidden layer", function() {
+                expect(this.view.handleRoute).toHaveBeenCalledTimes(0);
+                expect(this.app.vent.trigger).toHaveBeenCalledTimes(0);
+
+                // turn off the layer
+                this.view.model.layerModel.get('metadata').isShowing = false
+
+                const matchingInfo = {
+                    dataType: 'dataset_2',
+                    id: 12,
+                    layerId: 63
+                }
+
+                this.view.handleRoute(matchingInfo);
+
+                expect(this.view.handleRoute).toHaveBeenCalledTimes(1);
+                expect(this.view.handleRoute).toHaveBeenCalledWith(matchingInfo);
+                expect(this.app.vent.trigger).toHaveBeenCalledTimes(1);
+                expect(this.view.model.layerModel.get('metadata').isShowing).toEqual(true);
             });
 
             it('activateMapMarker() is works', function() {

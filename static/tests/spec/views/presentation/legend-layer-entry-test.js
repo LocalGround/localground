@@ -13,6 +13,7 @@ define([
             spyOn(LegendLayerEntry.prototype, 'onRender').and.callThrough();
             spyOn(LegendLayerEntry.prototype, 'collapseSymbols').and.callThrough();
             spyOn(LegendLayerEntry.prototype, 'expandSymbols').and.callThrough();
+            spyOn(LegendLayerEntry.prototype, 'showHideLayer').and.callThrough();
             
             
 
@@ -34,11 +35,6 @@ define([
             const records = scope.dataManager.getCollection(
                 scope.layer.get('dataset').overlay_type
             )
-            console.log(records);
-            // symbols.assignRecords(records);
-
-            // symbol = symbols.models[1];
-
 
             scope.view = new LegendLayerEntry({
                 app: scope.presentationApp,
@@ -62,8 +58,12 @@ define([
             });
 
             it("onRender() works", function () {
+                // render already gets called in initView()
+
                 expect(this.view.onRender).toHaveBeenCalledTimes(1);
                 expect(this.view.collapseSymbols).toHaveBeenCalledTimes(1);
+                expect(this.view.showHideLayer).toHaveBeenCalledTimes(1);
+                expect(this.view.showHideLayer).toHaveBeenCalledWith(null, true);
             });
 
             it("expandSymbols() works", function () {
@@ -123,7 +123,7 @@ define([
                 this.view.$el.find('.cb-symbol').prop('checked', false).change();
                 // hide all 5 symbols
                 expect(MarkerOverlays.prototype.hideAll).toHaveBeenCalledTimes(5);
-                expect(MarkerOverlays.prototype.showAll).toHaveBeenCalledTimes(0);
+                expect(MarkerOverlays.prototype.showAll).toHaveBeenCalledTimes(4);
                 expect(this.view.$el.find('.symbol-container').css('display')).toEqual('none');
                 expect(this.view.$el.find('.collapse').css('visibility')).toEqual('hidden');
 
@@ -132,16 +132,15 @@ define([
                 // show all 5 symbols except the one's that are individually hidden 
                 //(so show 4 out of 5)
                 expect(MarkerOverlays.prototype.hideAll).toHaveBeenCalledTimes(5);
-                expect(MarkerOverlays.prototype.showAll).toHaveBeenCalledTimes(4);
+                expect(MarkerOverlays.prototype.showAll).toHaveBeenCalledTimes(8);
                 expect(this.view.$el.find('.symbol-container').css('display')).toEqual('block');
                 expect(this.view.$el.find('.collapse').css('visibility')).toEqual('visible');
-
 
 
                 this.view.$el.find('.cb-symbol').prop('checked', false).change();
                 // hide all 5 symbols
                 expect(MarkerOverlays.prototype.hideAll).toHaveBeenCalledTimes(10);
-                expect(MarkerOverlays.prototype.showAll).toHaveBeenCalledTimes(4);
+                expect(MarkerOverlays.prototype.showAll).toHaveBeenCalledTimes(8);
                 expect(this.view.$el.find('.symbol-container').css('display')).toEqual('none');
                 expect(this.view.$el.find('.collapse').css('visibility')).toEqual('hidden');
 
@@ -150,10 +149,21 @@ define([
                 // show all 5 symbols except the one's that are individually hidden 
                 //(so show 4 out of 5)
                 expect(MarkerOverlays.prototype.hideAll).toHaveBeenCalledTimes(10);
-                expect(MarkerOverlays.prototype.showAll).toHaveBeenCalledTimes(8);
+                expect(MarkerOverlays.prototype.showAll).toHaveBeenCalledTimes(12);
                 expect(this.view.$el.find('.symbol-container').css('display')).toEqual('block');
                 expect(this.view.$el.find('.collapse').css('visibility')).toEqual('visible');
-               
+            });
+
+            it("showLayerIfActive() works", function() {
+                expect(this.view.showHideLayer).toHaveBeenCalledTimes(1);
+
+                this.view.model.get('metadata').isShowing = false;
+
+                this.view.showLayerIfActive(63);
+                expect(this.view.model.get('metadata').isShowing).toEqual(true);
+                expect(this.view.showHideLayer).toHaveBeenCalledTimes(2);
+                expect(this.view.showHideLayer).toHaveBeenCalledWith(null, true);
+                expect(this.view.$el.find('.cb-symbol').prop('checked')).toEqual(true);
             });
         });
         

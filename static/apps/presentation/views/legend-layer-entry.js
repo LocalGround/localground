@@ -22,18 +22,20 @@ define(['marionette',
             },
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.model.get('metadata').collapsed = true;
                 this.collection.assignRecords(this.dataCollection);
                 this.template = Handlebars.compile(LayerTemplate);
-                console.log(this.model);
+                this.listenTo(this.app.vent, 'show-layer', this.showLayerIfActive);
             },
 
             onRender: function() {
                 this.collapseSymbols();
+                this.showHideLayer(null, this.model.get('metadata').isShowing);
             },
 
             templateHelpers: function () {
                 return {
-                    isShowing: true,
+                    isShowing: this.model.get("metadata").isShowing,
                     layerIsIndividual: this.model.isIndividual()
                 };
             },
@@ -44,7 +46,6 @@ define(['marionette',
             },
 
             expandSymbols: function() {
-                console.log('expandSymbols', this.model);
 
                 // individual symbols are always collapsed
                 if (this.model.isIndividual()) {
@@ -57,6 +58,7 @@ define(['marionette',
 
                 this.$el.find('.symbol-entry-header').addClass('legend-symbol_expanded');
                 this.$el.find('.symbol-entry-header').removeClass('legend-symbol_collapsed');
+                this.model.get('metadata').collapsed = false;
             },
 
             collapseSymbols: function() {
@@ -67,6 +69,7 @@ define(['marionette',
 
                 this.$el.find('.symbol-entry-header').removeClass('legend-symbol_expanded');
                 this.$el.find('.symbol-entry-header').addClass('legend-symbol_collapsed');
+                this.model.get('metadata').collapsed = true;
             },
 
             expandCollapseSymbols: function () {
@@ -77,9 +80,19 @@ define(['marionette',
                 }
             },
 
-            showHideLayer: function(e) {
-                var isChecked = $(e.target).prop('checked');
-                if (isChecked) {
+            // This function gets triggered both by user events and by onRender, so we manage
+            // the arguments to handle both situations.
+            // If it is triggered by an event, there is only 1 argument.
+            // If it is triggered from onRender, there are 2 args, and arg1 is null.
+            showHideLayer: function(event, state) {
+                let isShowing;
+                if (arguments.length === 1) {
+                    isShowing = $(event.target).prop('checked');
+                    this.model.get("metadata").isShowing = isShowing
+                } else {
+                    isShowing = state;
+                }
+                if (isShowing) {
                     this.children.each((symbolView) => {
                         //console.log(symbolView.model.get('isShowing'));
                         if(symbolView.model.get('isShowing')) {
@@ -101,7 +114,16 @@ define(['marionette',
                 }
             },
 
+            // in the case where a user loads a page using a url where the route point to a record on a layer that is not showing, we automatically show the layer.
+            showLayerIfActive: function(layerId) {
+                if (parseInt(layerId) === this.model.id) {
 
+                    this.model.get('metadata').isShowing = true;
+
+                    // updating '.cb-symbol' triggers this.showHideLayer()
+                    this.$el.find('.cb-symbol').prop('checked', true).change();
+                }
+            },
 
             drawOverlays: function () {
                 //draw map overlays in reverse order so they draw on
