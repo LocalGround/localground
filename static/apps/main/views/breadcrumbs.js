@@ -56,7 +56,8 @@ define([
 
         showShareMenu: function() {
             let shareSettings = new ShareSettings({
-                app: this.app
+                app: this.app,
+                model: this.activeMap
             });
             this.modal.update({
                 bodyClass: 'gray',
@@ -66,7 +67,7 @@ define([
                 saveButtonText: 'Save',
                 saveFunction: shareSettings.saveShareSettings.bind(shareSettings),
                 closeButtonText: "Done",
-                width: 700,
+                width: 600,
                 height: null,   
                 showSaveButton: true,
                 showDeleteButton: false

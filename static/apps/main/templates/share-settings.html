@@ -5,7 +5,7 @@
     </div>
     {{#ifequal hyperlinkMode 'link'}}
         <div class="link_container">
-            <textarea  readonly="readonly" class="link-text">http://localhost:7777/main/3/#/3/layers/19/dataset_4/73
+            <textarea  readonly="readonly" class="link-text">{{sharing_url}}
             </textarea>
         </div>
     {{/ifequal}}
@@ -14,31 +14,40 @@
             <p>
                 To embed this map in your own website, copy the following HTML and paste it in the source code for your page.
             </p>
-            <textarea  readonly="readonly" class="link-text">"iframe http://localhost:7777/main/3/#/3/layers/19/dataset_4/73 iframe"
+            <textarea  readonly="readonly" class="link-text">{{embed_url}}
             </textarea>
         </div>
     {{/ifequal}}
 </div>
 <div class="share-options_container">
-    <span>Who can view the map</span>
+    <span class="share-options_header">Who can view the map</span>
         <form class="form-inline">
-            <div>
-                <input type="radio" name="rb" checked="">
-                <label>Public Searchable - public on the web</label>
-                <span>Anyone on the internet can find and view the map</span>
-                <br>
-                <input type="radio" name="rb">
-                <label>Public Unlisted - anyone with the link </label>
-                <span>Anyone who has the link can view the map</span>
-                <br>
-                <input type="radio" name="rb">
-                <label>Password Protected - link and password required</label>
-                <span>Map accessible only to people who know the password</span>
-                <div>
-                    <span>View password:</span>
-                    <input type="text">
+            <div class="radio-wrapper">
+                <div class="radio-item-wrapper">
+                    <input type="radio" name="rb" checked="">
+                    <div class="label-wrapper">
+                        <label>Public Searchable - public on the web</label>
+                        <p class='label-descr'>Anyone on the internet can find and view the map</p>
+                    </div>
                 </div>
-                <br>
+                <div class="radio-item-wrapper">
+                    <input type="radio" name="rb">
+                    <div class="label-wrapper">
+                        <label>Public Unlisted - anyone with the link </label>
+                        <p class='label-descr'>Anyone who has the link can view the map</p>
+                    </div>
+                </div>
+                <div class="radio-item-wrapper">
+                <input type="radio" name="rb">
+                    <div class="label-wrapper">
+                        <label>Password Protected - link and password required</label>
+                        <p class='label-descr'>Map accessible only to people who know the password</p>
+                        <div>
+                            <span>Viewer password:</span>
+                            <input id="password-input" type="text">
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
 </div>

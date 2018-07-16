@@ -19,13 +19,16 @@ define([
             _.extend(this, opts);
             this.modal = this.app.modal;
             this.hyperlinkMode = 'link';
+            console.log(this.model);
         },
 
         className: 'share-settings',
 
         templateHelpers: function () {
             return {
-                hyperlinkMode: this.hyperlinkMode
+                hyperlinkMode: this.hyperlinkMode,
+                sharing_url: this.model.get('sharing_url'),
+                embed_url: `<iframe src="${this.model.get('sharing_url')}" style="width: 950px; height: 350px; margin-left: auto; margin-right: auto; display: block; border: none;"></iframe>`
             };
         },
 
