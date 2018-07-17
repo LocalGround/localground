@@ -23,7 +23,34 @@ define([
         },
 
         events: {
-            // 'click .add-map': "showAddMapModal"
+             'click #display-legend': 'updateDisplayLegend',
+             'click #next-prev': 'updateNextPrev',
+             'click #pan-zoom': 'updatePanZoom',
+             'click #street-view': 'updateStreetView',
+             'click #title-card': 'updateTitleCardDisplay'
+
+        },
+
+        updateDisplayLegend: function() {
+            const val = this.$el.find('#display-legend').prop('checked');
+            console.log('#display-legend',val);
+        },
+
+        updateNextPrev: function() {
+            const val = this.$el.find('#next-prev').prop('checked');
+            console.log('#next-prev', val);
+        },
+        updatePanZoom: function() {
+            const val = this.$el.find('#pan-zoom').prop('checked');
+            console.log('#pan-zoom', val);
+        },
+        updateStreetView: function() {
+            const val = this.$el.find('#street-view').prop('checked');
+            console.log('#street-view', val);
+        },
+        updateTitleCardDisplay: function() {
+            const val = this.$el.find('#title-card').prop('checked');
+            console.log('#title-card', val);
         },
 
         showAddMapModal: function (e) {
