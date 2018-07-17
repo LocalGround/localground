@@ -1,11 +1,3 @@
-/**
- * This view's job is as follows:
- * 1. Show a list of available maps
- * 2. If user opts to create a new map, trigger the functionality to create
-      one (showAddMapModal).
- * 3. If the user chooses to navigate to a different map, delegate to the Router
- *    to instantiate correct functionality.
-*/
 define([
     "underscore",
     "handlebars",
@@ -33,7 +25,6 @@ define([
         },
 
         events: {
-            //'click .add-map': "showAddMapModal"
             'click .link-button': 'showLinkText',
             'click .embed-button': 'showEmbedText'
         },

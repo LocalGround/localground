@@ -1130,12 +1130,108 @@ i.fa.fa.fa-question-circle {
   font-size: 14px;
 }
 
+.presentation-options_list {
+  list-style: none;
+  padding: 8px 12px;
+}
+
+.presentation-options_list li {
+  padding: 6px 6px;
+  cursor: default;
+  border-bottom: 1px solid #e4e5eb;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.presentation-options_list li:last-child {
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.presentation-options_list .tgl {
+  display: none;
+}
+
+.presentation-options_list .tgl, .presentation-options_list .tgl:after, .presentation-options_list .tgl:before, .presentation-options_list .tgl *, .presentation-options_list .tgl *:after, .presentation-options_list .tgl *:before, .presentation-options_list .tgl + .tgl-btn {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.presentation-options_list .tgl::-moz-selection, .presentation-options_list .tgl:after::-moz-selection, .presentation-options_list .tgl:before::-moz-selection, .presentation-options_list .tgl *::-moz-selection, .presentation-options_list .tgl *:after::-moz-selection, .presentation-options_list .tgl *:before::-moz-selection, .presentation-options_list .tgl + .tgl-btn::-moz-selection {
+  background: none;
+}
+
+.presentation-options_list .tgl::selection, .presentation-options_list .tgl:after::selection, .presentation-options_list .tgl:before::selection, .presentation-options_list .tgl *::selection, .presentation-options_list .tgl *:after::selection, .presentation-options_list .tgl *:before::selection, .presentation-options_list .tgl + .tgl-btn::selection {
+  background: none;
+}
+
+.presentation-options_list .tgl + .tgl-btn {
+  outline: 0;
+  display: block;
+  width: 4em;
+  height: 2em;
+  position: relative;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.presentation-options_list .tgl + .tgl-btn:after, .presentation-options_list .tgl + .tgl-btn:before {
+  position: relative;
+  display: block;
+  content: "";
+  width: 50%;
+  height: 100%;
+}
+
+.presentation-options_list .tgl + .tgl-btn:after {
+  left: 0;
+}
+
+.presentation-options_list .tgl + .tgl-btn:before {
+  display: none;
+}
+
+.presentation-options_list .tgl:checked + .tgl-btn:after {
+  left: 50%;
+}
+
+.presentation-options_list .tgl-light + .tgl-btn {
+  background: #f0f0f0;
+  border-radius: 2em;
+  padding: 2px;
+  -webkit-transition: all .4s ease;
+  transition: all .4s ease;
+}
+
+.presentation-options_list .tgl-light + .tgl-btn:after {
+  border-radius: 50%;
+  background: #fff;
+  -webkit-transition: all .2s ease;
+  transition: all .2s ease;
+}
+
+.presentation-options_list .tgl-light:checked + .tgl-btn {
+  background: #9FD6AE;
+}
+
 .breadcrumb {
   -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 rgba(0, 0, 0, 0), 0 2px 4px -1px rgba(0, 0, 0, 0);
           box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 rgba(0, 0, 0, 0), 0 2px 4px -1px rgba(0, 0, 0, 0);
   position: absolute;
   width: 100%;
   min-height: 44px;
+}
+
+.presentation-options-btn {
+  padding-right: 10px;
+  padding-top: 8px;
 }
 
 .breadcrumb-container {
