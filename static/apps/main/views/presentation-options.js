@@ -2,8 +2,9 @@ define([
     "underscore",
     "handlebars",
     "marionette",
+    "apps/main/views/edit-title-card",
     "text!../templates/presentation-options.html"
-], function (_, Handlebars, Marionette, PresentationOptionsTemplate, ) {
+], function (_, Handlebars, Marionette, EditTitleCard, PresentationOptionsTemplate) {
     "use strict";
     var PresentationOptions = Marionette.ItemView.extend({
         template: Handlebars.compile(PresentationOptionsTemplate),
@@ -27,7 +28,8 @@ define([
              'click #next-prev': 'updateNextPrev',
              'click #pan-zoom': 'updatePanZoom',
              'click #street-view': 'updateStreetView',
-             'click #title-card': 'updateTitleCardDisplay'
+             'click #title-card': 'updateTitleCardDisplay',
+             'click #edit-title-card': 'showTitleCardModal'
 
         },
 
@@ -51,6 +53,26 @@ define([
         updateTitleCardDisplay: function() {
             const val = this.$el.find('#title-card').prop('checked');
             console.log('#title-card', val);
+        },
+
+        showTitleCardModal:function (e) {
+            var editTitleCard = new EditTitleCard({
+                app: this.app
+            });
+
+            this.modal.update({
+                view: editTitleCard,
+                title: 'Edit Title Card',
+                width: 400,
+                saveButtonText: "Save",
+                closeButtonText: "Cancel",
+                showSaveButton: true,
+                saveFunction: editTitleCard.saveTitleCard.bind(editTitleCard),
+                showDeleteButton: false
+            });
+
+            this.modal.show();
+            if (e) { e.preventDefault(); }
         },
 
         showAddMapModal: function (e) {

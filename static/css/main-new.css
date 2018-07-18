@@ -1147,6 +1147,10 @@ i.fa.fa.fa-question-circle {
           justify-content: space-between;
 }
 
+.presentation-options_list li span {
+  font-weight: 600;
+}
+
 .presentation-options_list li:last-child {
   border-bottom: none;
   cursor: pointer;
@@ -1218,7 +1222,31 @@ i.fa.fa.fa-question-circle {
 }
 
 .presentation-options_list .tgl-light:checked + .tgl-btn {
-  background: #9FD6AE;
+  background: #3b99fc;
+}
+
+.edit-title-card-menu .title-card_label {
+  font-style: italic;
+  font-size: 11px;
+  color: #bcbcbc !important;
+}
+
+.edit-title-card-menu .title-card_textarea {
+  height: 200px;
+}
+
+.photo-icon_wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+
+.photo-icon_wrapper i {
+  color: #888888;
+  cursor: pointer;
 }
 
 .breadcrumb {
