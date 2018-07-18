@@ -73,7 +73,7 @@ define([
         showShareMenu: function() {
             let shareSettings = new ShareSettings({
                 app: this.app,
-                model: this.activeMap
+                activeMap: this.activeMap
             });
             this.modal.update({
                 bodyClass: 'gray',

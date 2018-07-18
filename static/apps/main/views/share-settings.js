@@ -11,7 +11,7 @@ define([
             _.extend(this, opts);
             this.modal = this.app.modal;
             this.hyperlinkMode = 'link';
-            console.log(this.model);
+            console.log(this.activeMap);
         },
 
         className: 'share-settings',
@@ -19,8 +19,8 @@ define([
         templateHelpers: function () {
             return {
                 hyperlinkMode: this.hyperlinkMode,
-                sharing_url: this.model.get('sharing_url'),
-                embed_url: `<iframe src="${this.model.get('sharing_url')}" style="width: 950px; height: 350px; margin-left: auto; margin-right: auto; display: block; border: none;"></iframe>`
+                sharing_url: this.activeMap.get('sharing_url'),
+                embed_url: `<iframe src="${this.activeMap.get('sharing_url')}" style="width: 950px; height: 350px; margin-left: auto; margin-right: auto; display: block; border: none;"></iframe>`
             };
         },
 

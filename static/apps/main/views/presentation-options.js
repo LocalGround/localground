@@ -57,7 +57,8 @@ define([
 
         showTitleCardModal:function (e) {
             var editTitleCard = new EditTitleCard({
-                app: this.app
+                app: this.app,
+                activeMap: this.activeMap
             });
 
             this.modal.update({

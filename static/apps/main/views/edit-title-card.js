@@ -23,12 +23,9 @@ define([
             };
         },
 
-        events: {
-            //'click .add-map': "showAddMapModal"
-        },
-
         saveTitleCard: function() {
-            console.log('save title card');
+            const title = this.$el.find('.title-card_title').val();
+            const description = this.$el.find('.title-card_textarea').val();
         }
     });
     return EditTitleCard;
