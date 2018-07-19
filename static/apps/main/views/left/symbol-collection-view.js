@@ -173,6 +173,7 @@ define(["jquery",
                     this.$el.find('.symbol-display').removeClass('fa-eye');
                     this.$el.find('.symbol-display').addClass('fa-eye-slash');
                 }
+                this.layer.save();
             },
 
             handleSymbolHighlight: function() {
