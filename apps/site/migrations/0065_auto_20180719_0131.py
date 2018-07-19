@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='styledmap',
             name='metadata',
-            field=jsonfield.fields.JSONField(default=b'{"has_nav_controls": false, "has_zoom_pan_controls": true, "has_streetview": true, "title_card": {"enabled": true, "description": "Provide some text to introduce your map. You can include images.", "photo_ids": [], "title": "Title Card"}, "has_legend": true}'),
+            field=jsonfield.fields.JSONField(default=b'{"has_nav_controls": false, "has_zoom_pan_controls": true, "has_streetview": true, "title_card": {"enabled": true, "description": "Provide some text to introduce your map. You can include images.", "photo_ids": [], "title": "Title Card"}, "has_legend": true, "access_level": 2}'),
         ),
         migrations.AlterField(
             model_name='layer',

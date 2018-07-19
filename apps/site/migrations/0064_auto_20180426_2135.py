@@ -4,31 +4,6 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import jsonfield.fields
 import django.contrib.gis.db.models.fields
-from django.core import serializers
-import os
-
-
-def get_extra_sql():
-    from localground.apps.settings import APPS_ROOT
-    sql_statements = open(
-        os.path.join(APPS_ROOT, 'sql/custom.sql'), 'r').read()
-    return sql_statements
-
-
-fixture_dir = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '../../fixtures'))
-fixture_filename = 'database_initialization.json'
-
-
-def load_fixture(apps, schema_editor):
-    fixture_file = os.path.join(fixture_dir, fixture_filename)
-
-    fixture = open(fixture_file, 'rb')
-    objects = serializers.deserialize('json', fixture, ignorenonexistent=True)
-    for obj in objects:
-        obj.save()
-    fixture.close()
-
 
 class Migration(migrations.Migration):
 
@@ -50,7 +25,5 @@ class Migration(migrations.Migration):
             model_name='userprofile',
             name='default_location',
             field=django.contrib.gis.db.models.fields.PointField(help_text=b'Default center point', srid=4326, null=True, blank=True),
-        ),
-        migrations.RunPython(load_fixture),
-        migrations.RunSQL(get_extra_sql())
+        )
     ]

@@ -126,7 +126,7 @@ class MapSerializerDetail(MapSerializerList):
     class Meta:
         model = models.StyledMap
         fields = MapSerializerList.Meta.fields + (
-            'slug', 'layers', 'layers_url')
+            'slug', 'layers', 'layers_url', 'password')
         depth = 0
 
 

@@ -8,12 +8,12 @@ import json
 
 
 class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
-    '''
-     legend yes/no, allow pan/zoom,
-     enable streetview,
-     title card yes/no,
-     edit title card.
-    '''
+
+    class Permissions(object):
+        PUBLIC_SEARCHABLE = 1
+        PUBLIC_UNLISTED = 2
+        PASSWORD_PROTECTED = 3
+
     default_metadata = {
         'title_card': {
             'enabled': True,
@@ -24,7 +24,8 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         'has_legend': True,
         'has_streetview': True,
         'has_nav_controls': False,
-        'has_zoom_pan_controls': True
+        'has_zoom_pan_controls': True,
+        'access_level': Permissions.PUBLIC_UNLISTED
     }
     default_panel_styles = {
         'display_legend': True,
@@ -62,6 +63,7 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         }
     }
     center = models.PointField()
+    password = models.CharField(max_length=255, null=True, blank=True)
     zoom = models.IntegerField()
     panel_styles = JSONField(
         blank=False, null=False,
