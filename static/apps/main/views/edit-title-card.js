@@ -55,7 +55,6 @@ define([
                     );
                     */
 
-                    // this.app.vent.trigger('hide-modal)
                 }
             }
 

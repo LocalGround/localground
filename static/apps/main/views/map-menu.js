@@ -56,8 +56,10 @@ define([
                         displayTitleCard: true,
                         titleCardInfo: {
                             header: null,
-                            description: null
-                        }
+                            description: null,
+                            photo_ids: []
+                        },
+                        accessLevel: 2
                     }
                 })
             });
