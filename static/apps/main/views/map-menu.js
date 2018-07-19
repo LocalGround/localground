@@ -47,7 +47,18 @@ define([
                     },
                     basemap: this.app.basemapView.getMapTypeId(),
                     zoom: this.app.basemapView.getZoom(),
-                    project_id: this.app.getProjectID()
+                    project_id: this.app.getProjectID(),
+                    metadata: {
+                        displayLegend: true,
+                        nextPrevButtons: false,
+                        allowPanZoom: true,
+                        streetView: true,
+                        displayTitleCard: true,
+                        titleCardInfo: {
+                            header: null,
+                            description: null
+                        }
+                    }
                 })
             });
 

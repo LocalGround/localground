@@ -11,14 +11,20 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
             this.modal = this.app.modal;
+            console.log(this.activeMap);
+
         },
 
         className: 'presentation-options',
 
         templateHelpers: function () {
+            const metadata = this.activeMap.get('metadata');
             return {
-                // mapList: this.collection.toJSON(),
-                // map: this.activeMap ? this.activeMap.toJSON() : null
+                displayLegend: metadata.displayLegend,
+                nextPrevButtons: metadata.nextPrevButtons,
+                allowPanZoom: metadata.allowPanZoom,
+                streetView: metadata.streetView,
+                displayTitleCard: metadata.displayTitleCard
             };
         },
 
@@ -35,23 +41,33 @@ define([
         updateDisplayLegend: function() {
             const val = this.$el.find('#display-legend').prop('checked');
             console.log('#display-legend',val);
+            this.activeMap.get('metadata').displayLegend = val;
+            // this.activeMap.save();
         },
 
         updateNextPrev: function() {
             const val = this.$el.find('#next-prev').prop('checked');
             console.log('#next-prev', val);
+            this.activeMap.get('metadata').nextPrevButtons = val;
+            // this.activeMap.save();
         },
         updatePanZoom: function() {
             const val = this.$el.find('#pan-zoom').prop('checked');
             console.log('#pan-zoom', val);
+            this.activeMap.get('metadata').allowPanZoom = val;
+            // this.activeMap.save();
         },
         updateStreetView: function() {
             const val = this.$el.find('#street-view').prop('checked');
             console.log('#street-view', val);
+            this.activeMap.get('metadata').streetView = val;
+            // this.activeMap.save();
         },
         updateTitleCardDisplay: function() {
             const val = this.$el.find('#title-card').prop('checked');
             console.log('#title-card', val);
+            this.activeMap.get('metadata').displayTitleCard = val;
+            // this.activeMap.save();
         },
 
         showTitleCardModal:function (e) {
