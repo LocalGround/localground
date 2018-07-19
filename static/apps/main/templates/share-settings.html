@@ -1,21 +1,19 @@
 <div class="link-embed_container">
     <div class="link-embed_header">
-        <span class="link-button {{#ifequal hyperlinkMode 'link'}}activeLinkButton{{/ifequal}}">Link</span>
-        <span class="embed-button {{#ifequal hyperlinkMode 'embed'}}activeLinkButton{{/ifequal}}">Embed</span>
+        <span class="link-button {{#ifequal linkMode 'link'}}activeLinkButton{{/ifequal}}">Link</span>
+        <span class="embed-button {{#ifequal linkMode 'embed'}}activeLinkButton{{/ifequal}}">Embed</span>
     </div>
-    {{#ifequal hyperlinkMode 'link'}}
+    {{#ifequal linkMode 'link'}}
         <div class="link_container">
-            <textarea  readonly="readonly" class="link-text">{{sharing_url}}
-            </textarea>
+            <textarea  readonly="readonly" id="link-text" class="link-text">{{sharing_url}}</textarea>
         </div>
     {{/ifequal}}
-    {{#ifequal hyperlinkMode 'embed'}}
+    {{#ifequal linkMode 'embed'}}
         <div class="embed_container">
             <p>
                 To embed this map in your own website, copy the following HTML and paste it in the source code for your page.
             </p>
-            <textarea  readonly="readonly" class="link-text">{{embed_url}}
-            </textarea>
+            <textarea  readonly="readonly" id="embed-text" class="link-text">{{embed_url}}</textarea>
         </div>
     {{/ifequal}}
 </div>

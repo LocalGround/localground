@@ -9,16 +9,14 @@ define([
         template: Handlebars.compile(ShareSettingsTemplate),
         initialize: function (opts) {
             _.extend(this, opts);
-            this.modal = this.app.modal;
-            this.hyperlinkMode = 'link';
-            console.log(this.activeMap);
+            this.linkMode = 'link';
         },
 
         className: 'share-settings',
 
         templateHelpers: function () {
             return {
-                hyperlinkMode: this.hyperlinkMode,
+                linkMode: this.linkMode,
                 sharing_url: this.activeMap.get('sharing_url'),
                 embed_url: `<iframe src="${this.activeMap.get('sharing_url')}" style="width: 950px; height: 350px; margin-left: auto; margin-right: auto; display: block; border: none;"></iframe>`
             };
@@ -30,15 +28,15 @@ define([
         },
 
         showLinkText: function() {
-            if (this.hyperlinkMode === 'embed') {
-                this.hyperlinkMode = 'link';
+            if (this.linkMode === 'embed') {
+                this.linkMode = 'link';
                 this.render();
             }
         },
 
         showEmbedText: function() {
-            if (this.hyperlinkMode === 'link') {
-                this.hyperlinkMode = 'embed';
+            if (this.linkMode === 'link') {
+                this.linkMode = 'embed';
                 this.render();
             }
         },
