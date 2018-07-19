@@ -438,13 +438,15 @@ define([
                 projectJSON: this.getProjectJSON(),
                 vent: this.vent
             });
+            this.dataManager.setMapById(3);
 
             this.photos = this.dataManager.getCollection('photos');
             this.photo = this.photos.at(0);
             this.audio = this.dataManager.getCollection('audio');
             this.dataset_2 = this.dataManager.getCollection('dataset_2');
             this.dataset_3 = this.dataManager.getCollection('dataset_3');
-            this.map = this.dataManager.getMaps().get(3);
+
+            this.map = this.dataManager.getMap();
             this.map.set('layers', this.getLayers(this.map.id));
             this.uniformLayer = this.getLayers(this.map.id).get(62);
             this.continuousLayer = this.getLayers(this.map.id).get(63);

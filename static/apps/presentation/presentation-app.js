@@ -31,7 +31,7 @@ define([
         initialize: function (options) {
             options = options || {};
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            
+
             this.selectedProjectID = this.projectID = options.projectJSON.id;
             this.dataManager = new DataManager({
                 vent: this.vent,
@@ -102,7 +102,9 @@ define([
             } else {
                 this.showLegend();
             }
-            this.vent.trigger('highlight-current-record', this.routeInfo);
+            if (this.routeInfo) {
+                this.vent.trigger('highlight-current-record', this.routeInfo);
+            }
         },
 
         showMapTitle: function () {

@@ -40,7 +40,7 @@ define(["jquery",
             events: {
                 'click #addColumn': 'showCreateFieldForm',
                 'click .addMedia': 'showMediaBrowser',
-                'click .column-opts' : 'deleteField',
+                'click .column-opts' : 'showContextMenu',
                 'click .carousel-media': 'carouselMedia',
 
             },
@@ -62,6 +62,9 @@ define(["jquery",
                 this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
                 this.listenTo(this.collection, 'add', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
+                this.listenTo(this.fields, 'update', this.renderSpreadsheet);
+                this.listenTo(this.app.vent, "field-updated", this.refreshHeaders);
+
             },
             registerRatingEditor: function () {
                 // following this tutorial: https://docs.handsontable.com/0.15.0-beta1/tutorial-cell-editor.html
@@ -150,6 +153,7 @@ define(["jquery",
                 }
             },
             renderSpreadsheet: function () {
+                console.log('rendering spreadsheet');
                 if (this.table) {
                     this.table.render();
                     return;
@@ -609,7 +613,7 @@ define(["jquery",
                     const menuButton = this.show_hide_deleteColumn ? this.getMenuTemplate(i + 3) : '';
                     cols.push(
                         '<span class="hide-overflow">' +
-                        this.fields.at(i).get("col_name") +
+                        this.fields.at(i).get("col_alias") +
                         '</span>' +
                         menuButton
                     );
@@ -620,10 +624,10 @@ define(["jquery",
                 return cols;
             },
             getColumnWidths: function () {
-                const cols = [30, 80, 80];
+                const cols = [80, 100, 100];
                 this.fields.forEach(field => {
                     if (field.get('data_type') === 'integer') {
-                        cols.push(80);
+                        cols.push(120);
                     } else if (field.get('data_type') === 'text') {
                         cols.push(250);
                     } else {
@@ -799,7 +803,7 @@ define(["jquery",
                 });
             },
 
-            deleteField: function (e) {
+            showContextMenu: function (e) {
                 const src = e.srcElement;
                 const headerLink = src.parentNode;
                 const columnID = parseInt($(src).attr('fieldIndex'));
@@ -810,6 +814,7 @@ define(["jquery",
                         collection: this.collection,
                         table: this.table,
                         fields: this.fields,
+                        field: this.fields.at(columnID - 3),
                         columnID: columnID,
                         headerLink: headerLink
                     }),
@@ -841,6 +846,11 @@ define(["jquery",
                         that.collection.add(rec, {at: 0});
                         that.renderSpreadsheet();
                     }
+                });
+            },
+            refreshHeaders: function () {
+                this.table.updateSettings({
+                    colHeaders: this.getColumnHeaders()
                 });
             }
         });

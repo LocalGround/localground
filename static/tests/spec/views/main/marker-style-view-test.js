@@ -32,6 +32,7 @@ define([
                 expect(this.view.initialize).toHaveBeenCalledTimes(1);
                 expect(this.view.model).toEqual(layer);
             });
+
             it("behavior: changing group_by", function () {
                 this.view.render();
                 expect(this.view.model.get('symbols').length).toEqual(5);

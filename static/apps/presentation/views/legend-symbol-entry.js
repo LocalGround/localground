@@ -19,7 +19,6 @@ define(['marionette',
 
             initialize: function (opts) {
                 _.extend(this, opts);
-
                 this.template = Handlebars.compile(SymbolTemplate);
                 this.markerOverlays = new MarkerOverlays({
                     model: this.model,
@@ -29,15 +28,15 @@ define(['marionette',
                     iconOpts: this.model.toJSON(),
                     isShowing: this.getIsShowing()
                 });
-                
+
                 this.activeRecordId = null;
                 this.activeLayerId = null;
-               
+
                 this.listenTo(this.app.vent, "show-all-markers", this.markerOverlays.showAll.bind(this.markerOverlays));
 
                 // this first event listener is necessary for routing when a page is loaded fresh
                 this.listenTo(this.app.vent, 'highlight-current-record', this.handleRoute);
-                
+
                 // this is the normal routing event
                 this.listenTo(this.app.vent, 'show-detail', this.handleRoute);
             },
@@ -79,7 +78,7 @@ define(['marionette',
             // information for a given record.
             getRecordDisplayInfo: function(collection) {
                 let recordInfoList = [];
-                
+
                 collection.each((record) => {
                     const dataset = this.model.layerModel.get('dataset').overlay_type;
                     const recordId = record.id;
@@ -88,11 +87,11 @@ define(['marionette',
                     recordInfoList.push({
                         displayText: record.get(this.model.layerModel.get('display_field')) || 'Untitled',
                         url: `#/layers/${layerId}/${dataset}/${recordId}`,
-                        recordSvg: this.getSVG(record, this.model), 
-                        itemId: `${layerId}/${recordId}` 
+                        recordSvg: this.getSVG(record, this.model),
+                        itemId: `${layerId}/${recordId}`
                     });
                 });
-    
+
                 return recordInfoList;
             },
 
@@ -142,7 +141,7 @@ define(['marionette',
 
             showHideOverlays: function () {
                 this.model.set("isShowing", !this.$el.find('.legend-show_symbol').hasClass('fa-eye'));
-                
+
                 if(this.$el.find('.legend-show_symbol').hasClass('fa-eye-slash')) {
                     this.removeHiddenCSS();
                     this.show();
@@ -191,8 +190,8 @@ define(['marionette',
                     this.activateMapMarker(info);
                 }
 
-                // due to 'this.activeRecordId' and 'this.activeLayerId' being used 
-                // by template helpers, all that's needed to highlight the correct record  
+                // due to 'this.activeRecordId' and 'this.activeLayerId' being used
+                // by template helpers, all that's needed to highlight the correct record
                 // in the legend panel is a simple rerender
                 this.render();
             },
