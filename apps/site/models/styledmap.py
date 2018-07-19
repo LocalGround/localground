@@ -8,6 +8,24 @@ import json
 
 
 class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
+    '''
+     legend yes/no, allow pan/zoom,
+     enable streetview,
+     title card yes/no,
+     edit title card.
+    '''
+    default_metadata = {
+        'title_card': {
+            'enabled': True,
+            'title': 'Title Card',
+            'description': 'Provide some text to introduce your map. You can include images.',
+            'photo_ids': []
+        },
+        'has_legend': True,
+        'has_streetview': True,
+        'has_nav_controls': False,
+        'has_zoom_pan_controls': True
+    }
     default_panel_styles = {
         'display_legend': True,
         'title': {
@@ -48,6 +66,9 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
     panel_styles = JSONField(
         blank=False, null=False,
         default=json.dumps(default_panel_styles))
+    metadata = JSONField(
+        blank=False, null=False,
+        default=json.dumps(default_metadata))
     slug = models.SlugField(
         verbose_name="Friendly URL",
         max_length=100,
