@@ -17,7 +17,8 @@ define(['marionette',
                 return {
                     app: this.app,
                     isShowing: this.model.get("metadata").isShowing,
-                    symbolCount: this.collection.length
+                    symbolCount: this.collection.length,
+                    layerModel: this.model
                 };
             },
             initialize: function (opts) {
@@ -52,7 +53,7 @@ define(['marionette',
                     return;
                 }
                 this.$el.find('.presentation-records_wrapper').css('display', 'block');
-                    
+
                 this.$el.find('.collapse').removeClass('fa-angle-right');
                 this.$el.find('.collapse').addClass('fa-angle-down');
 
@@ -62,7 +63,7 @@ define(['marionette',
             },
 
             collapseSymbols: function() {
-                
+
                 this.$el.find('.presentation-records_wrapper').css('display', 'none');
                 this.$el.find('.collapse').removeClass('fa-angle-down');
                 this.$el.find('.collapse').addClass('fa-angle-right');
@@ -98,13 +99,13 @@ define(['marionette',
                         if(symbolView.model.get('isShowing')) {
                             symbolView.markerOverlays.showAll();
                         }
-                        
+
                     });
                     this.$el.find('.symbol-container').show();
                     if (!this.model.isIndividual()) {
                         this.$el.find('.collapse').css('visibility', 'visible');
                     }
-                    
+
                 } else {
                     this.children.each((symbolView) => {
                         symbolView.markerOverlays.hideAll();

@@ -23,7 +23,7 @@ define(["marionette",
                 const dm = this.app.dataManager;
                 return {
                     app: this.app,
-                    collection: model.get('symbols'),
+                    collection: model.getSymbols(),
                     dataCollection: dm.getCollection(model.get('dataset').overlay_type)
                 };
             },

@@ -22,7 +22,8 @@ define([
                     "shape": "worm",
                     "strokeColor": "#FFF",
                     "color": "#df65b0",
-                    "isShowing": true
+                    "isShowing": true,
+                    "layerModel": scope.continuousLayer
                 },
                 childView = new LegendSymbolEntry({
                     app: scope.app,

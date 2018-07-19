@@ -11,29 +11,34 @@ define([
                 scope.uniform = new Symbol({
                     title: 'Uniform Symbol',
                     rule: '*',
-                    id: 1
+                    id: 1,
+                    layerModel: scope.uniformLayer
                 });
                 scope.categorical = new Symbol({
                     title: 'Maple',
                     rule: 'type = \'maple\'',
                     id: 1,
-                    paletteId: 0
+                    paletteId: 0,
+                    layerModel: scope.categoricalLayer
                 });
                 scope.continuous = new Symbol({
                     title: 'between 0 and 21',
                     rule: 'height >= 0 and height < 21',
                     id: 1,
-                    paletteId: 0
+                    paletteId: 0,
+                    layerModel: scope.continuousLayer
                 });
                 scope.individual = new Symbol({
                     title: 'Jamie\'s House',
                     rule: 'id = 106',
                     id: 1,
+                    layerModel: scope.individualLayer
                 });
                 scope.uncategorized = new Symbol({
                     title: 'Other / No value',
                     rule: Symbol.UNCATEGORIZED_SYMBOL_RULE,
                     id: 1,
+                    layerModel: scope.categoricalLayer
                 });
             };
             const initSpies = function () {
@@ -169,14 +174,30 @@ define([
 
             it('initialize() throws error if no title', function () {
                 expect(() => {
-                    const s = new Symbol({rule: '*', id: 1});
+                    const s = new Symbol({rule: '*', id: 1, layerModel: this.continuousLayer});
                 }).toThrow('title must be defined');
             });
 
             it('initialize() throws error if no rule', function () {
                 expect(() => {
-                    const s = new Symbol({title: 'Murals', id: 1});
+                    const s = new Symbol({title: 'Murals', id: 1, layerModel: this.continuousLayer});
                 }).toThrow('rule must be defined');
+            });
+
+            it('initialize() throws error if no rule', function () {
+                expect(() => {
+                    const s = new Symbol({title: 'Murals', id: 1, rule: '*'});
+                }).toThrow('layerModel must be defined');
+            });
+
+            it('initialize() does not throw error if layerModel in opts', function () {
+                expect(() => {
+                    const s = new Symbol({
+                        title: 'Murals', rule: '*', id: 1
+                    }, {
+                        layerModel: this.uniformLayer
+                    });
+                }).not.toThrow();
             });
         });
 

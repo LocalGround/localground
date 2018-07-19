@@ -104,6 +104,7 @@ define(["models/base", "models/symbol", "collections/symbols", "lib/lgPalettes"]
             // assign ids (only if missing):
             symbolJSON = symbolJSON.map((item, i) => {
                 item.id = item.id || (i + 1);
+                item.layerModel = this;
                 return item;
             });
             const symbolCollection = this.get('symbols');

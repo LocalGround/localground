@@ -93,7 +93,6 @@ define(["jquery",
                 this.collection = this.model.get('symbols');
 
                 if (this.model.isCategorical() || this.model.isContinuous()) {
-                    console.log('is categorical...', this.model.get('symbols').length)
                     this.updatePalettes(this.model.get('symbols').length);
                     this.render();
                 }
@@ -313,7 +312,6 @@ define(["jquery",
 
             createCorrectSymbols: function () {
                 if (this.model.isUniform()) {
-                    console.log('doing uniform');
                     this.uniformData();
                 } else if (this.model.isIndividual()) {
                     this.individualData();
@@ -340,7 +338,6 @@ define(["jquery",
 
             catData: function() {
                 let categoryList = this.getCatInfo();
-                console.log()
                 this.updatePalettes(categoryList.length);
                 this.setSymbols(this.buildCategoricalSymbols(categoryList));
             },
@@ -350,7 +347,6 @@ define(["jquery",
                 this.updateMetadata('fillColor', Symbol.UNIFORM_SYMBOL_COLOR)
                 this.layerDraft.uniform = Symbol.createUniformSymbol(this.model, 1);
                 this.layerNoLongerNew();
-                console.log(this.layerDraft.uniform);
                 return this.layerDraft.uniform;
             },
 
@@ -368,7 +364,6 @@ define(["jquery",
                     this.layerDraft.individual.add(symbol);
                 });
                 this.layerNoLongerNew();
-                console.log(this.layerDraft.individual);
                 return this.layerDraft.individual;
 
             },
@@ -604,7 +599,7 @@ define(["jquery",
 
             //convenience function
             updateMetadata: function (newKey, newValue, doSave=false) {
-                console.log('updateMetadata');
+                console.log('updateMetadata:', newKey, newValue);
                 let localMeta = this.model.get("metadata") || {};
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta);

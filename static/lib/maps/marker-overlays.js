@@ -36,10 +36,6 @@ define(['marionette',
             },
 
             childViewOptions: function (model, index) {
-                console.log(model);
-                console.log(model.get('overlay_type'));
-                console.log(this.model);
-                console.log(this.model.layerModel);
                 return {
                     map: this.map,
                     symbol: this.model,
