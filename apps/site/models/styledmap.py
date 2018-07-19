@@ -15,17 +15,17 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         PASSWORD_PROTECTED = 3
 
     default_metadata = {
-        'title_card': {
-            'enabled': True,
-            'title': 'Title Card',
-            'description': 'Provide some text to introduce your map. You can include images.',
+        'displayLegend': True,
+        'nextPrevButtons': False,
+        'allowPanZoom': True,
+        'streetview': True,
+        'displayTitleCard': True,
+        'titleCardInfo': {
+            'header': None,
+            'description': None,
             'photo_ids': []
         },
-        'has_legend': True,
-        'has_streetview': True,
-        'has_nav_controls': False,
-        'has_zoom_pan_controls': True,
-        'access_level': Permissions.PUBLIC_UNLISTED
+        'accessLevel': Permissions.PUBLIC_UNLISTED
     }
     default_panel_styles = {
         'display_legend': True,

@@ -103,8 +103,7 @@ class MapSerializerPost(MapSerializerList):
             validated_data['panel_styles'] = \
                 models.StyledMap.default_panel_styles
         if validated_data.get('metadata') is None:
-            validated_data['metadata'] = \
-                models.StyledMap.default_metadata
+            validated_data['metadata'] = models.StyledMap.default_metadata
         datasets = self.get_datasets(
             dataset_ids, validated_data.get('project_id'))
         self.instance = self.Meta.model.create(
@@ -115,6 +114,12 @@ class MapSerializerPost(MapSerializerList):
 class MapSerializerDetail(MapSerializerList):
     layers = serializers.SerializerMethodField()
     layers_url = serializers.SerializerMethodField()
+    password = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True,
+        style={'input_type': 'password'}
+    )
 
     def get_layers(self, obj):
         layers = models.Layer.objects.filter(styled_map=obj)

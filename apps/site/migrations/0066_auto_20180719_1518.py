@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='styledmap',
             name='metadata',
-            field=jsonfield.fields.JSONField(default=b'{"title_card": {"enabled": true, "description": "Provide some text to introduce your map. You can include images.", "photo_ids": [], "title": "Title Card"}, "has_legend": true, "has_streetview": true, "access_level": 2, "has_zoom_pan_controls": true, "has_nav_controls": false}'),
+            field=jsonfield.fields.JSONField(default=b'{"displayLegend": true, "streetview": true, "allowPanZoom": true, "displayTitleCard": true, "titleCardInfo": {"header": null, "description": null, "photo_ids": []}, "nextPrevButtons": false, "accessLevel": 2}'),
         ),
         migrations.RunPython(load_fixture),
         migrations.RunSQL(get_extra_sql())

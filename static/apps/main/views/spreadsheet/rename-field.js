@@ -48,11 +48,13 @@ define ([
                         this.sourceModal.hide();
                     },
                     error: (model, response) => {
-                        var messages = response.responseText;
-                        if (messages.slug && messages.slug.length > 0) {
-                            this.slugError = messages.slug[0];
+                        try {
+                            response = JSON.parse(response.responseText);
+                            this.app.vent.trigger('error-message', response.detail);
+                        } catch (e) {
+                            console.error(e);
+                            this.app.vent.trigger('error-message', response.responseText);
                         }
-                        this.updateModal(response);
                     }
                 });
 
@@ -85,18 +87,6 @@ define ([
                 setTimeout(() => {
                     this.$el.find('#col_alias').focus().select();
                 }, 50);
-            },
-
-            updateModal: function (errorMessage) {
-                if (errorMessage.status == '400') {
-                    var messages = JSON.parse(errorMessage.responseText);
-                    this.slugError = messages.slug[0];
-                    this.generalError = null;
-                } else {
-                    this.generalError = "Save Unsuccessful. Unspecified Server Error. Consider changing layer title";
-                    this.slugError = null;
-                }
-                this.render();
             }
         });
         return RenameFieldView;

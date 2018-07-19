@@ -14,32 +14,57 @@
     </script>
 </head>
 <body>
-    <div class="main-panel presentation-main-panel none">
-            <div id="presentation-title" ></div>
-        <div id="map-panel">
-            <div id="map"></div>
+    {% if map %}
+        <div class="main-panel presentation-main-panel none">
+                <div id="presentation-title" ></div>
+            <div id="map-panel">
+                <div id="map"></div>
+            </div>
+            <div id="marker-detail-panel" class="side-panel">
+                <!-- Marker list goes here -->
+            </div>
+            <div id="legend" style="display:none;" ></div>
         </div>
-        <div id="marker-detail-panel" class="side-panel">
-            <!-- Marker list goes here -->
-        </div>
-        <div id="legend" style="display:none;" ></div>
-    </div>
 
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places"></script>
-    {% if DEBUG %}
-        <script>
-            var configPath = '../',
-                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
-        </script>
-        <script data-main="/static/apps/presentation/kickoff.js" src="/static/external/require.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places"></script>
+        {% if DEBUG %}
+            <script>
+                var configPath = '../',
+                    MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
+            </script>
+            <script data-main="/static/apps/presentation/kickoff.js" src="/static/external/require.js"></script>
+        {% else %}
+           <!-- Use minified, concatenated code -->
+            <script>
+                var configPath = '../apps/',
+                    MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
+            </script>
+            <script data-main="/static/build/presentation.js" src="/static/external/require.js"></script>
+        {% endif %}
+
     {% else %}
-       <!-- Use minified, concatenated code -->
-        <script>
-            var configPath = '../apps/',
-                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
-        </script>
-        <script data-main="/static/build/presentation.js" src="/static/external/require.js"></script>
+    <div class="block-centered">
+        <form id="model-form" method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert-message error">
+                <p>Authentication error: Please enter a correct username and password. Note that both fields are case-sensitive.</p>
+            </div>
+            {% endif %}
+            {% include "includes/forms/generic_form_renderer.html" %}
+            <fieldset>
+                <div class="clearfix">
+                    <label></label>
+                    <div class="input">
+                        <input type="password" name="access_key" value="" placeholder="Map Password" />
+                        <button type="submit" class="button button-primary">Submit</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
     {% endif %}
 
 </body>

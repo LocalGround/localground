@@ -68,9 +68,6 @@ define([
             this.listenTo(this.vent, 'hide-modal', this.hideModal);
             this.addMessageListeners();
 
-            //ONLY SHOW LEFT PANEL AND TOOLBAR AFTER MAP HAS BEEN ROUTED
-            //this.showBreadcrumbs();
-            //this.showLeftLayout();
         },
 
         showDataDetail: function(info) {

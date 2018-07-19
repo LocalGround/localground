@@ -296,18 +296,19 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
             json.loads(updated_map.metadata), models.StyledMap.default_metadata)
 
     def test_update_map_metadata(self, **kwargs):
-        metadata = json.loads(self.map.metadata)
-        metadata['has_nav_controls'] = True
-        metadata['has_zoom_pan_controls'] = True
-        metadata['has_streetview'] = True
-        metadata['title_card'] = {
-            'enabled': False,
-            'description': '',
-            'photo_ids': [1, 2, 3],
-            'title': 'My Title'
+        metadata = {
+            'displayLegend': False,
+            'nextPrevButtons': True,
+            'allowPanZoom': False,
+            'streetview': False,
+            'displayTitleCard': False,
+            'titleCardInfo': {
+                'header': 'hi there',
+                'description': 'some description',
+                'photo_ids': [1, 2, 3]
+            },
+            'accessLevel': models.StyledMap.Permissions.PUBLIC_SEARCHABLE
         }
-        metadata['has_legend'] = False
-        metadata['access_level'] = models.StyledMap.Permissions.PUBLIC_SEARCHABLE
         response = self.client_user.patch(
             self.url,
             data=urllib.urlencode({
