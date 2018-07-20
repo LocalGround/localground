@@ -1,0 +1,62 @@
+// main: ../main-new.scss
+.modal.spreadsheet {
+    z-index: 2;
+    .content {
+        background: #fafafc;
+        transform: none;
+        top: auto;
+        margin: 40px auto 0 !important;
+        padding-bottom: 10px !important;
+
+        .body {
+            overflow: hidden;
+            background-color: transparent;
+            border-top: 0px solid #e4e5eb;
+            max-height: none;
+            height: auto;
+            > div {
+                margin: 0px;
+            }
+            .spreadsheet-toolbar {
+                box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
+                padding: 0px 20px 10px 20px;
+                display: flex;
+                z-index: 3000000000;
+                position: relative;
+            }
+        }
+    }
+    .handsontable {
+        .htCore {
+            th {
+                >div {
+                    //@include overflow-text();
+                }
+            }
+        }
+        .columnSorting {
+            &.ascending:after, &.descending:after {
+                right: 20px;
+            }
+            text-decoration: none;
+        }
+
+        .fa-ellipsis-v {
+            color: #999;
+            display: inline-block;
+            padding: 4px 8px;
+            margin-left: auto;
+        }
+        .fa-ellipsis-v:hover {
+            background: #EEE;
+            border-radius: 20px;
+        }
+        .hide-overflow {
+            max-width: 85%;
+            @include overflow-text();
+        }
+        .colHeader {
+            display: flex;
+        }
+    }
+}

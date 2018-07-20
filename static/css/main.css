@@ -910,16 +910,13 @@ span.action.tag:hover, a.action.tag:hover {
 /*                                     GENERIC CONTROLS                                 */
 /****************************************************************************************/
 
-.success-message, .failure-message, .warning-message {
-    position: absolute;
-    display: none;
-    z-index: 1000;
+
+.success-icon {
+    background-color: #468847;
+    border: solid 1px white;
 }
-.create-form .failure-message, .create-form .success-message {
-    display: block;
-}
-tbody .failure-message, tbody .success-message {
-    display: table-row !important;
+.failure-icon {
+    background-color: rgb(185, 74, 72);
 }
 
 .alert {
@@ -943,49 +940,6 @@ tbody .failure-message, tbody .success-message {
     width: calc(100% - 60px);
 }
 
-.success-message {
-    color: #468847;
-    background-color: #dff0d8;
-    border: solid 1px #468847;
-    width: 500px;
-    top: 100px;
-    left: 30%;
-    padding: 20px;
-    border-radius: 8px;
-    border-width: 2px;
-}
-
-.failure-message {
-    color: #b94a48;
-    background-color: #f2dede;
-    border: solid 1px #eea6a6;
-    width: 500px;
-    top: 100px;
-    left: 30%;
-    padding: 20px;
-    border-radius: 8px;
-    border-width: 2px;
-}
-
-.warning-message {
-    color: #666622;
-    background-color: #f2f2de;
-    border: solid 1px #bb6;
-    width: 500px;
-    top: 100px;
-    left: 30%;
-    padding: 20px;
-    border-radius: 8px;
-    border-width: 2px;
-}
-
-.success-icon {
-    background-color: #468847;
-    border: solid 1px white;
-}
-.failure-icon {
-    background-color: rgb(185, 74, 72);
-}
 
 .error *[data-error], .errorlist li {
     font-size: 11px;
@@ -1190,7 +1144,7 @@ tbody .failure-message, tbody .success-message {
     /* top: 111px; */
     padding: 0;
     z-index: 0;
-    overflow: auto;
+    overflow: hidden;
 }
 
 .main-panel {
@@ -1313,7 +1267,7 @@ tbody .failure-message, tbody .success-message {
     order: 2;
     background-color: rgb(246, 246, 249);
     border-left: 1px solid rgb(217, 220, 229);
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 .side-panel .img-card {

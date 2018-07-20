@@ -82,13 +82,20 @@ class ViewMixinAPI(ModelMixin):
                 fields = response.data['actions'].get('PUT') or \
                          response.data['actions'].get('POST')
             except (Exception):
+                # print 'NOT PUT OR POST'
                 return
 
             # ensure that dictionary is not empty:
             self.assertFalse(not fields)
 
-            # ensure that the two dictionaries are the same length:
-            #self.assertEqual(len(fields.keys()), len(self.metadata.keys()))
+            # print 'server:'
+            # print fields.keys()
+            #
+            # print 'current:'
+            # print self.metadata.keys()
+            #
+            # # ensure that the two dictionaries are the same length:
+            # self.assertEqual(len(fields.keys()), len(self.metadata.keys()))
 
             # ensure that field specs match:
             for key in self.metadata.keys():

@@ -1,0 +1,30 @@
+// main: ../main-new.scss
+.success-message, .failure-message, .warning-message {
+    position: absolute;
+    display: none;
+    z-index: 100000000;
+    width: 500px;
+    top: 100px;
+    left: 30%;
+    padding: 20px;
+    border-radius: 8px;
+    border-width: 2px;
+}
+
+.success-message {
+    color: #468847;
+    background-color: #dff0d8;
+    border: solid 1px #468847;
+}
+
+.failure-message {
+    color: #b94a48;
+    background-color: #f2dede;
+    border: solid 1px #eea6a6;
+}
+
+.warning-message {
+    color: #666622;
+    background-color: #f2f2de;
+    border: solid 1px #bb6;
+}

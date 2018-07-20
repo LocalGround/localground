@@ -68,9 +68,6 @@ define([
             this.listenTo(this.vent, 'hide-modal', this.hideModal);
             this.addMessageListeners();
 
-            //ONLY SHOW LEFT PANEL AND TOOLBAR AFTER MAP HAS BEEN ROUTED
-            //this.showBreadcrumbs();
-            //this.showLeftLayout();
         },
 
         showDataDetail: function(info) {
@@ -120,8 +117,15 @@ define([
             map.fetch({ success: this.applyNewMap.bind(this) });
         },
 
-        applyNewMap: function () {
-            this.vent.trigger('new-map-loaded', this.dataManager.getMap());
+        applyNewMap: function (model, response) {
+            //ensures that layer collections get rebuilt:
+            const map = this.dataManager.getMap();
+            if (response) {
+                map.set("layers", response.layers_json);
+            } else {
+                console.warn('Response should only be empty during automated tests');
+            }
+            this.vent.trigger('new-map-loaded', map);
             this.showBreadcrumbs();
             this.showLeftLayout();
         },

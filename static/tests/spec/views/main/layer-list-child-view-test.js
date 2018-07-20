@@ -118,9 +118,9 @@ define([
                 expect(LayerListChildView.prototype.reRenderOrAssignRecordToSymbol).toHaveBeenCalledTimes(1);
             });
 
-            it("listens for record collection's update-symbol-assignment trigger", function () {
+            it("listens for record collection's record-updated trigger", function () {
                 expect(LayerListChildView.prototype.reRenderOrReassignRecordToSymbol).toHaveBeenCalledTimes(0);
-                this.view.dataCollection.trigger('update-symbol-assignment', this.view.dataCollection.at(0));
+                this.view.dataCollection.trigger('record-updated', this.view.dataCollection.at(0));
                 expect(LayerListChildView.prototype.reRenderOrReassignRecordToSymbol).toHaveBeenCalledTimes(1);
             });
             it("listens for vent trigger: geometry-created", function () {
@@ -287,7 +287,7 @@ define([
                 expect(uncategorizedSymbol.matchedModels.contains(record)).toEqual(false);
 
                 record.set('height', 100);
-                record.trigger('update-symbol-assignment', record);
+                record.trigger('record-updated', record);
 
                 expect(uncategorizedSymbol.matchedModels.length).toEqual(3);
                 expect(highestSymbol.matchedModels.contains(record)).toEqual(false);

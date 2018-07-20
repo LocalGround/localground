@@ -8,6 +8,25 @@ import json
 
 
 class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
+
+    class Permissions(object):
+        PUBLIC_SEARCHABLE = 1
+        PUBLIC_UNLISTED = 2
+        PASSWORD_PROTECTED = 3
+
+    default_metadata = {
+        'displayLegend': True,
+        'nextPrevButtons': False,
+        'allowPanZoom': True,
+        'streetview': True,
+        'displayTitleCard': True,
+        'titleCardInfo': {
+            'header': None,
+            'description': None,
+            'photo_ids': []
+        },
+        'accessLevel': Permissions.PUBLIC_UNLISTED
+    }
     default_panel_styles = {
         'display_legend': True,
         'title': {
@@ -44,10 +63,14 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         }
     }
     center = models.PointField()
+    password = models.CharField(max_length=255, null=True, blank=True)
     zoom = models.IntegerField()
     panel_styles = JSONField(
         blank=False, null=False,
         default=json.dumps(default_panel_styles))
+    metadata = JSONField(
+        blank=False, null=False,
+        default=json.dumps(default_metadata))
     slug = models.SlugField(
         verbose_name="Friendly URL",
         max_length=100,

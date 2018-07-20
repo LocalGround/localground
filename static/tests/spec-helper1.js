@@ -9,10 +9,10 @@ define([
         "models/record",
         "lib/appUtilities",
         "apps/main/router",
+        "apps/presentation/router",
         "lib/modals/modal",
         "lib/popovers/popover"
-    ], function ($, _, Backbone, Marionette, DataManager, Layers, Record, appUtilities, Router,
-            Modal, Popover) {
+    ], function ($, _, Backbone, Marionette, DataManager, Layers, Record, appUtilities, Router, PresentationRouter, Modal, Popover) {
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker, .modal, #map_canvas').remove();
@@ -438,13 +438,15 @@ define([
                 projectJSON: this.getProjectJSON(),
                 vent: this.vent
             });
+            this.dataManager.setMapById(3);
 
             this.photos = this.dataManager.getCollection('photos');
             this.photo = this.photos.at(0);
             this.audio = this.dataManager.getCollection('audio');
             this.dataset_2 = this.dataManager.getCollection('dataset_2');
             this.dataset_3 = this.dataManager.getCollection('dataset_3');
-            this.map = this.dataManager.getMaps().get(3);
+
+            this.map = this.dataManager.getMap();
             this.map.set('layers', this.getLayers(this.map.id));
             this.uniformLayer = this.getLayers(this.map.id).get(62);
             this.continuousLayer = this.getLayers(this.map.id).get(63);
@@ -481,6 +483,33 @@ define([
             });
             this.app.popover = new Popover({
                 app: this.app
+            });
+
+            //spoof the presentation-app for child view testing
+            this.presentationApp = _.extend({}, appUtilities);
+            _.extend(this.presentationApp, {
+                username: "Tester",
+                vent: this.vent,
+                dataManager: this.dataManager,
+                model: this.map,
+                basemapView: {
+                    getCenter: function () {
+                        return {
+                            lat: function () { return 84; },
+                            lng: function () { return -122; }
+                        };
+                    },
+                    getMapTypeId:  function () {
+                        return 5;
+                    },
+                    getZoom: function () {
+                        return 18;
+                    }
+                },
+                router: new PresentationRouter({ app: this }),
+                start: function (options) {
+                    Backbone.history.start();
+                }
             });
 
         });

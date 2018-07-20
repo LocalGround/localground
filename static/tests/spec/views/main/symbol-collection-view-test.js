@@ -21,6 +21,8 @@ define([
                 model: symbol,
                 layer: layer
             });
+            console.log(scope.app);
+            console.log(symbol);
         };
 
         describe("SymbolCollectionView: ", function () {

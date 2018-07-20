@@ -22,6 +22,14 @@ define(['backbone', 'underscore', 'collections/records',
                 isShowing: true
             },
             initialize: function (data, opts) {
+                opts = opts || {};
+                if (_.isUndefined(opts.layerModel) && _.isUndefined(data.layerModel)) {
+                    throw "layerModel must be defined";
+                }
+                if (data.layerModel) {
+                    this.layerModel = data.layerModel;
+                    delete data['layerModel'];
+                }
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);
                 if (_.isUndefined(this.get("rule"))) {
@@ -60,6 +68,7 @@ define(['backbone', 'underscore', 'collections/records',
             toJSON: function () {
                 var json = Backbone.Model.prototype.toJSON.call(this);
                 delete json.icon;
+                delete json.layerModel;
                 return json;
             },
             toSVG: function () {
@@ -171,18 +180,21 @@ define(['backbone', 'underscore', 'collections/records',
                         'rule': `${prop} = '${value}'`,
                         'title': value,
                         'id': id,
-                        'fillColor': fillColor
+                        'fillColor': fillColor,
+                        'layerModel': layerModel
                     });
                 return new Symbol(props);
             },
             createContinuousSymbol: function (opts) {
+                const layerModel = opts.layerModel;
                 const metadata = opts.layerModel.get('metadata');
                 const props = _.extend(
                     Symbol._getDefaultMetadataProperties(metadata), {
                         'rule': opts.rule,
                         'title': opts.title,
                         'id': opts.id,
-                        'fillColor': opts.fillColor
+                        'fillColor': opts.fillColor,
+                        'layerModel': layerModel
                     });
                 return new Symbol(props);
             },
@@ -197,7 +209,8 @@ define(['backbone', 'underscore', 'collections/records',
                         'rule': `id = ${value}`,
                         'title': value || 'Untitled',
                         'id': id,
-                        'fillColor': fillColor
+                        'fillColor': fillColor,
+                        'layerModel': layerModel
                     });
                 return new Symbol(props);
             },
@@ -211,7 +224,8 @@ define(['backbone', 'underscore', 'collections/records',
                     'rule': Symbol.UNCATEGORIZED_SYMBOL_RULE,
                     'title': 'Other / No value',
                     'fillColor': Symbol.UNCATEGORIZED_SYMBOL_COLOR,
-                    'id': id
+                    'id': id,
+                    'layerModel': layerModel
                 });
                 return new Symbol(props);
             },
@@ -221,7 +235,8 @@ define(['backbone', 'underscore', 'collections/records',
                     Symbol._getDefaultMetadataProperties(metadata), {
                     'rule': "*",
                     'title': 'All Items',
-                    'id': id
+                    'id': id,
+                    'layerModel': layerModel
                 });
                 return new Symbol(props);
             }
