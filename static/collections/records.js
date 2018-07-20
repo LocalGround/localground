@@ -54,6 +54,17 @@ define([
             return response.results;
         },
 
+        getDependentLayers: function (dataManager) {
+            const map = dataManager.getMap();
+            const matchedLayers = [];
+            map.getLayers().forEach(layer => {
+                if (layer.get('dataset').overlay_type === this.dataType) {
+                    matchedLayers.push(layer);
+                }
+            });
+            return matchedLayers;
+        },
+
         doSearch: function (term, projectID, fields) {
             /*
              * NOTE

@@ -300,7 +300,6 @@ define([
                 panelStyles = this.panelStyles;
             }
             if (photos.length > 0 || videos.length > 0) {
-                console.log("Finding carousel photos / videos", photos);
                 genericList = [];
                 genericList = genericList.concat(photos.toJSON());
                 genericList = genericList.concat(videos.toJSON());
@@ -317,7 +316,6 @@ define([
                 this.$el.find(".carousel-videos-photos").append(c.$el);
             }
             if (audio.length > 0) {
-                console.log("Finding carousel audio")
                 audio.forEach(function (audioTrack) {
                     c = new AudioPlayer({
                         model: audioTrack,

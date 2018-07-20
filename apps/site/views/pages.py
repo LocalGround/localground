@@ -29,6 +29,7 @@ def style_guide_pages(request, page_name='banners'):
 class PublicView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
+        self.password = request.GET.get('access_key')
         try:
             map = StyledMap.objects.get(slug=kwargs.get('map_slug'))
         except StyledMap.DoesNotExist:
@@ -43,10 +44,11 @@ class PublicView(TemplateView):
             ProjectDetailSerializer, MapSerializerDetail
         from rest_framework.renderers import JSONRenderer
 
-        context = super(PublicView, self).get_context_data(
-            *args, **kwargs)
-
         map = StyledMap.objects.get(slug=map_slug)
+        accessLevel = map.metadata.get('accessLevel')
+        has_access = accessLevel < StyledMap.Permissions.PASSWORD_PROTECTED \
+            or self.password == map.password
+        accessLevel = map.metadata.get('accessLevel')
         project = map.project
         renderer = JSONRenderer()
 
@@ -54,11 +56,13 @@ class PublicView(TemplateView):
             project, context={'request': {}}).data
 
         mapJSON = MapSerializerDetail(map, context={'request': {}}).data
-
-        context.update({
-            'project': renderer.render(projectJSON),
-            'map': renderer.render(mapJSON)
-        })
+        context = super(PublicView, self).get_context_data(
+            *args, **kwargs)
+        if has_access:
+            context.update({
+                'project': renderer.render(projectJSON),
+                'map': renderer.render(mapJSON)
+            })
         return context
 
 

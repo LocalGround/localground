@@ -1,0 +1,106 @@
+@media (min-width: 901px) {
+    #legend {
+        height: auto;
+        width: auto;
+        min-width: 260px;
+    }
+}
+
+#legend {
+    .collapse {
+        padding: 0px 3px;
+        vertical-align: middle;
+        width: 9px;
+    }
+}
+
+.legend-layer_title {
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.legend-show_symbol.fa-eye {
+    display: none;
+}
+.legend-show_symbol.fa-eye-slash {
+    display: inline;
+}
+
+.half-opac {
+    opacity: 0.5;
+}
+
+.symbol-entry-header {
+    display: grid;
+    grid-template-columns: 27px auto 22px;
+    align-items: center;
+    
+    p {
+        display: inline-block;
+        padding: 0px 4px 0px 0px;
+    }
+
+    &:hover .legend-show_symbol{
+        display: inline-block;
+    }
+
+}
+
+.legend-symbol_expanded {
+    display: grid;
+    grid-template-columns: auto 22px;
+    margin-left: 34px;
+
+    .legend-symbol_svg {
+        display: none;
+    }
+}
+
+.legend-symbol_collapsed {
+    display: grid;
+    grid-template-columns: 36px auto 22px;
+    margin-left: 28px;
+
+    .legend-symbol_svg {
+        display: inline-block;
+    }
+}
+
+.legend-symbol_ind {
+    &:hover {
+        background: #f0f1f5;
+    }
+
+    &.selectedRecord {
+        background: #7b9be1;
+        span {
+            color: white;
+        }
+    }
+}
+
+
+.presentation-record_item {
+    padding-left: 35px;
+    // display: grid;
+    // grid-template-columns: 37px auto;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+        background: #f0f1f5;
+    }
+
+    &.selectedRecord {
+        background: #7b9be1;
+        span {
+            color: white;
+        }
+    }
+
+}
+
+.legend-record_icon {
+    width: 36px;
+}

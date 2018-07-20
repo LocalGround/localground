@@ -5,7 +5,7 @@ require(['boot'], function () {
      */
     'use strict';
     var specs = [
-        //views:
+        // Main App:
         'spec/views/main/add-marker-menu-test.js',
         'spec/views/main/edit-layer-menu-test.js',
         'spec/views/main/main-app-test.js',
@@ -20,11 +20,21 @@ require(['boot'], function () {
         'spec/views/main/create-layer-form-test.js',
         'spec/views/main/layer-list-child-view-test.js',
         'spec/views/main/symbol-collection-view-test.js',
+
+        // Presentation App
+        'spec/views/presentation/presentation-app-test.js',
+        'spec/views/presentation/legend-symbol-entry-test.js',
+        'spec/views/presentation/legend-layer-entry-test.js',
+
         'spec/views/main/symbol-style-menu-view-test.js',
         'spec/views/main/marker-style-view-test.js',
         'spec/views/main/edit-title-card-test.js',
         'spec/views/main/presentation-options-test.js',
         'spec/views/main/share-settings-test.js',
+
+        //spreadsheet tests:
+        'spec/views/main/rename-field-test.js',
+
 
         // trouble mocking a Record to test the DataDetail View
         'spec/views/main/data-detail-test.js',
@@ -44,7 +54,8 @@ require(['boot'], function () {
         'spec/models/symbol-test.js',
 
         // collections
-        'spec/collections/symbols-test.js'
+        'spec/collections/symbols-test.js',
+        'spec/collections/records-test.js'
 
     ];
 

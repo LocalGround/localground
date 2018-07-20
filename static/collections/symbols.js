@@ -15,7 +15,28 @@ define(["underscore", "models/symbol", "collections/base"],
             if (!this.layerModel) {
                 throw Error('A layerModel must be defined.')
             }
+            recs = this.setLayerModel(recs);
             Base.prototype.initialize.apply(this, recs, opts);
+        },
+        setLayerModel: function (recs) {
+            if (!recs || recs.length === 0) {
+                return recs;
+            }
+            if (recs[0] instanceof Symbol) {
+                return recs.map(rec => {
+                    rec.set('layerModel', this.layerModel);
+                    return rec;
+                });
+            } else {
+                return recs.map(rec => {
+                    rec.layerModel = this.layerModel;
+                    return rec;
+                });
+            }
+        },
+        reset: function (models, options) {
+            models = this.setLayerModel(models);
+            Base.prototype.reset.apply(this, arguments);
         },
         getNextId: function() {
             let symbolIds = this.models.map(symbol => symbol.get('id'));

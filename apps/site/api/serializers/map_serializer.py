@@ -21,6 +21,8 @@ class MapSerializerList(
     )
     panel_styles = fields.JSONField(
         style={'base_template': 'json.html', 'rows': 5}, required=False)
+    metadata = fields.JSONField(
+        style={'base_template': 'json.html', 'rows': 5}, required=False)
     basemap = serializers.PrimaryKeyRelatedField(
         queryset=models.TileSet.objects.all())
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
@@ -45,7 +47,7 @@ class MapSerializerList(
             NamedSerializerMixin.field_list + \
             ProjectSerializerMixin.field_list + (
                 'sharing_url', 'center',  'basemap', 'zoom', 'panel_styles',
-                'slug', 'layers', 'layers_url'
+                'metadata', 'slug', 'layers', 'layers_url'
             )
         depth = 0
 
@@ -100,6 +102,8 @@ class MapSerializerPost(MapSerializerList):
         if validated_data.get('panel_styles') is None:
             validated_data['panel_styles'] = \
                 models.StyledMap.default_panel_styles
+        if validated_data.get('metadata') is None:
+            validated_data['metadata'] = models.StyledMap.default_metadata
         datasets = self.get_datasets(
             dataset_ids, validated_data.get('project_id'))
         self.instance = self.Meta.model.create(
@@ -110,6 +114,12 @@ class MapSerializerPost(MapSerializerList):
 class MapSerializerDetail(MapSerializerList):
     layers = serializers.SerializerMethodField()
     layers_url = serializers.SerializerMethodField()
+    password = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True,
+        style={'input_type': 'password'}
+    )
 
     def get_layers(self, obj):
         layers = models.Layer.objects.filter(styled_map=obj)
@@ -121,7 +131,7 @@ class MapSerializerDetail(MapSerializerList):
     class Meta:
         model = models.StyledMap
         fields = MapSerializerList.Meta.fields + (
-            'slug', 'layers', 'layers_url')
+            'slug', 'layers', 'layers_url', 'password')
         depth = 0
 
 

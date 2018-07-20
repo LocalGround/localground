@@ -37,9 +37,11 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     this.render();
                 }
                 this.render();
-                if (!$(".modal").get(0)) {
-                    $('body').append(this.$el);
-                }
+                $('body').append(this.$el);
+                // if you only want one modal to exist, do this:
+                // if (!$(".modal").get(0)) {
+                //     $('body').append(this.$el);
+                // }
                 this.attachEvents();
             },
             templateHelpers: function () {

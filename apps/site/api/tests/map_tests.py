@@ -174,9 +174,16 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
             'layers_url':
                 {'read_only': True, 'required': False, 'type': 'field'},
             'panel_styles': {
-                'read_only': False, 'required': False, 'type': 'json'}
+                'read_only': False, 'required': False, 'type': 'json'},
+            'metadata': {
+                'read_only': False, 'required': False, 'type': 'json'},
+            'slug': {
+                'read_only': False, 'required': True, 'type': 'slug'},
+            'project_id': {
+                'read_only': True, 'required': True, 'type': 'field'},
+            'password': {
+                'read_only': False, 'required': False, 'type': 'string'}
         })
-        del self.metadata['project_id']
 
     def test_get_instance_returns_expected_json(self):
         response = self.client_user.get(
@@ -213,7 +220,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
             set(['id', 'fields', 'overlay_type', 'name'])
         )
 
-    def test_update_project_using_put(self, **kwargs):
+    def test_update_map_using_put(self, **kwargs):
         name, description = 'New Map Name', 'Test description'
         basemap = 1
         center = {
@@ -241,7 +248,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_map.name, name)
         self.assertEqual(updated_map.description, description)
 
-    def test_update_project_using_patch(self, **kwargs):
+    def test_update_map_using_patch(self, **kwargs):
         import json
         name = 'Dummy name'
         slug = 'my-new-map-name'
@@ -258,22 +265,57 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_map.name, name)
         self.assertEqual(updated_map.slug, slug)
 
-    def test_delete_project(self, **kwargs):
-        map_id = self.map.id
-        # ensure project exists:
-        models.StyledMap.objects.get(id=map_id)
-
-        # delete project:
-        response = self.client_user.delete(
-            self.url, HTTP_X_CSRFTOKEN=self.csrf_token)
+    def test_update_map_using_put(self, **kwargs):
+        name, description = 'New Map Name', 'Test description'
+        basemap = 1
+        center = {
+            "type": "Point",
+            "coordinates": [
+                -122.27640407752006,
+                37.85713522119835
+            ]
+        }
+        slug = 'newmap'
+        response = self.client_user.put(
+            self.url,
+            data=urllib.urlencode({
+                'name': name,
+                'caption': description,
+                'basemap': basemap,
+                'center': json.dumps(center),
+                'slug': slug
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_map = models.StyledMap.objects.get(id=self.map.id)
+        self.assertEqual(updated_map.name, name)
+        self.assertEqual(updated_map.description, description)
+        self.assertEqual(
+            json.loads(updated_map.metadata), models.StyledMap.default_metadata)
 
-        # check to make sure it's gone:
-        try:
-            models.Project.objects.get(id=map_id)
-            # throw assertion error if project still in database
-            print 'Project not deleted'
-            self.assertEqual(1, 0)
-        except models.Project.DoesNotExist:
-            # trigger assertion success if project is removed
-            self.assertEqual(1, 1)
+    def test_update_map_metadata(self, **kwargs):
+        metadata = {
+            'displayLegend': False,
+            'nextPrevButtons': True,
+            'allowPanZoom': False,
+            'streetview': False,
+            'displayTitleCard': False,
+            'titleCardInfo': {
+                'header': 'hi there',
+                'description': 'some description',
+                'photo_ids': [1, 2, 3]
+            },
+            'accessLevel': models.StyledMap.Permissions.PUBLIC_SEARCHABLE
+        }
+        response = self.client_user.patch(
+            self.url,
+            data=urllib.urlencode({
+                'metadata': json.dumps(metadata)
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_map = models.StyledMap.objects.get(id=self.map.id)
+        self.assertEqual(updated_map.metadata, metadata)

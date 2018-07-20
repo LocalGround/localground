@@ -11,6 +11,13 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 is_printable: true,
                 ordering: 1
             }),
+            url: function () {
+                let baseURL =  Base.prototype.url.apply(this, arguments);
+                if (baseURL.indexOf('.json') === -1) {
+                    baseURL += '/.json';
+                }
+                return baseURL;
+            },
             schema: {
                 data_type: { type: 'Select', options: new DataTypes() },
                 col_alias: { type: 'Text', title: 'Column Name' },

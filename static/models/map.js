@@ -34,6 +34,7 @@ define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
                 } else if (this.get("layers").length != attributes.layers.length) {
                     this.get("layers").reset(attributes.layers)
                 }
+                attributes.layers_json = attributes.layers;
                 delete attributes.layers;
             }
             if (!_.isUndefined(attributes.panelStyles) && _.isString(attributes.panelStyles)) {

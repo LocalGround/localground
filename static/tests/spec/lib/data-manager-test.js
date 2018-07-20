@@ -238,9 +238,9 @@ define([
             });
 
             it("map getter / setter both work", function () {
-                expect(this.dataManager.getMap()).toBeUndefined();
-                this.dataManager.setMapById(3);
                 expect(this.dataManager.getMap().id).toEqual(3);
+                this.dataManager.setMapById(2);
+                expect(this.dataManager.getMap().id).toEqual(2);
             });
 
             it("Gets a data entry associated with the correct key and returns expected values", function () {

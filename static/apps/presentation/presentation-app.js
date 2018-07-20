@@ -31,6 +31,7 @@ define([
         initialize: function (options) {
             options = options || {};
             Marionette.Application.prototype.initialize.apply(this, [options]);
+
             this.selectedProjectID = this.projectID = options.projectJSON.id;
             this.dataManager = new DataManager({
                 vent: this.vent,
@@ -40,6 +41,8 @@ define([
                 app: this
             });
             this.model = this.dataManager.getMapBySlug(options.mapJSON.slug);
+
+            this.routeInfo = null;
 
             this.loadRegions();
 
@@ -99,6 +102,9 @@ define([
             } else {
                 this.showLegend();
             }
+            if (this.routeInfo) {
+                this.vent.trigger('highlight-current-record', this.routeInfo);
+            }
         },
 
         showMapTitle: function () {
@@ -135,6 +141,7 @@ define([
             this.container.$el.addClass(className);
         },
         showMediaDetail: function (opts) {
+            this.routeInfo = opts;
             const dm = this.dataManager;
             const recordModel = dm.getModel(opts.dataType, parseInt(opts.id));
             recordModel.set("active", true);
