@@ -1,0 +1,40 @@
+<ul class="presentation-options_list">
+    <li>
+        <span>Display map legend</span>
+        <span>
+            <input {{#if displayLegend}}checked{{/if}} class="tgl tgl-light" id="display-legend" type="checkbox"/>
+            <label class="tgl-btn" for="display-legend"></label>
+        </span>
+    </li>
+    <li>
+        <span>Card - next / previous buttons</span>
+        <span>
+            <input {{#if nextPrevButton}}checked{{/if}} class="tgl tgl-light" id="next-prev" type="checkbox"/>
+            <label class="tgl-btn" for="next-prev"></label>
+        </span>
+    </li>
+    <li>
+        <span>Allow pan and zoom</span>
+        <span>
+            <input {{#if allowPanZoom}}checked{{/if}} class="tgl tgl-light" id="pan-zoom" type="checkbox"/>
+            <label class="tgl-btn" for="pan-zoom"></label>
+        </span>
+    </li>
+    <li>
+        <span>Enable street view</span>
+        <span>
+            <input {{#if streetView}}checked{{/if}} class="tgl tgl-light" id="street-view" type="checkbox"/>
+            <label class="tgl-btn" for="street-view"></label>
+        </span>
+    </li>
+    <li>
+        <span>Title card</span>
+        <span>
+            <input {{#if displayTitleCard}}checked{{/if}} class="tgl tgl-light" id="title-card" type="checkbox"/>
+            <label class="tgl-btn" for="title-card"></label>
+        </span>
+    </li>
+    <li>
+        <span id="edit-title-card">Edit title card...</span>
+    </li>
+</ul>

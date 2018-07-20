@@ -14,9 +14,11 @@ define([
     "views/generate-print",
     "apps/main/views/left/new-map-modal-view",
     "apps/main/views/map-menu",
+    "apps/main/views/share-settings",
+    "apps/main/views/presentation-options",
     "text!../templates/breadcrumbs.html"
 ], function (_, Handlebars, Marionette, Map, PrintLayoutView,
-        CreateMapForm, MapMenu, BreadcrumbsTemplate) {
+        CreateMapForm, MapMenu, ShareSettings, PresentationOptions, BreadcrumbsTemplate) {
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
         template: Handlebars.compile(BreadcrumbsTemplate),
@@ -37,6 +39,8 @@ define([
         events: {
             'click #print-button': 'showPrintModal',
             'click #map-menu': 'showMapMenu',
+            'click .share': 'showShareMenu' ,
+            'click .presentation-options-btn': 'showPresentationOptions'
         },
 
         showMapMenu: function(e) {
@@ -50,6 +54,42 @@ define([
                 placement: 'bottom',
                 width: '150px'
             });
+        },
+
+        showPresentationOptions: function(e) {
+            console.log('pres options!');
+            this.popover.update({
+                $source: e.target,
+                view: new PresentationOptions({
+                    app: this.app,
+                    activeMap: this.activeMap,
+                    collection: this.collection
+                }),
+                placement: 'bottom',
+                width: '270px'
+            });
+        },
+
+        showShareMenu: function() {
+            let shareSettings = new ShareSettings({
+                app: this.app,
+                activeMap: this.activeMap
+            });
+            this.modal.update({
+                bodyClass: 'gray',
+                app: this.app,
+                view: shareSettings,
+                title: 'Sharing Settings',
+                saveButtonText: 'Save',
+                saveFunction: shareSettings.saveShareSettings.bind(shareSettings),
+                closeButtonText: "Cancel",
+                width: 600,
+                height: null,   
+                showSaveButton: true,
+                showDeleteButton: false
+            });
+            this.modal.show();
+
         },
 
         //TODO: come back to this. Where does the print button go?

@@ -28,6 +28,9 @@ require(['boot'], function () {
 
         'spec/views/main/symbol-style-menu-view-test.js',
         'spec/views/main/marker-style-view-test.js',
+        'spec/views/main/edit-title-card-test.js',
+        'spec/views/main/presentation-options-test.js',
+        'spec/views/main/share-settings-test.js',
 
         //spreadsheet tests:
         'spec/views/main/rename-field-test.js',

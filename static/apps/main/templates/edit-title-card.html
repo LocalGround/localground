@@ -1,0 +1,11 @@
+<form class="form">
+    <div class="row">
+        <label class="title-card_label">(Header)</label>
+        <input class='title-card_title' type="text" {{#if header}}value='{{header}}'{{else}}placeholder="Title Card"{{/if}}>
+    </div>
+    <div class="row">
+        <label class="title-card_label">(Introductory Text)</label>
+        <textarea class="title-card_textarea" placeholder="Provide some text to introduce your map. You can include images.">{{description}}</textarea>
+    </div>
+    <span class="photo-icon_wrapper"><i class="fas fa-image"></i></span>
+</form>
