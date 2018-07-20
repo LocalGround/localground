@@ -1170,75 +1170,6 @@ i.fa.fa.fa-question-circle {
   cursor: pointer;
 }
 
-.presentation-options_list .tgl {
-  display: none;
-}
-
-.presentation-options_list .tgl, .presentation-options_list .tgl:after, .presentation-options_list .tgl:before, .presentation-options_list .tgl *, .presentation-options_list .tgl *:after, .presentation-options_list .tgl *:before, .presentation-options_list .tgl + .tgl-btn {
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-}
-
-.presentation-options_list .tgl::-moz-selection, .presentation-options_list .tgl:after::-moz-selection, .presentation-options_list .tgl:before::-moz-selection, .presentation-options_list .tgl *::-moz-selection, .presentation-options_list .tgl *:after::-moz-selection, .presentation-options_list .tgl *:before::-moz-selection, .presentation-options_list .tgl + .tgl-btn::-moz-selection {
-  background: none;
-}
-
-.presentation-options_list .tgl::selection, .presentation-options_list .tgl:after::selection, .presentation-options_list .tgl:before::selection, .presentation-options_list .tgl *::selection, .presentation-options_list .tgl *:after::selection, .presentation-options_list .tgl *:before::selection, .presentation-options_list .tgl + .tgl-btn::selection {
-  background: none;
-}
-
-.presentation-options_list .tgl + .tgl-btn {
-  outline: 0;
-  display: block;
-  width: 40px;
-  height: 20px;
-  position: relative;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.presentation-options_list .tgl + .tgl-btn:after, .presentation-options_list .tgl + .tgl-btn:before {
-  position: relative;
-  display: block;
-  content: "";
-  width: 50%;
-  height: 100%;
-}
-
-.presentation-options_list .tgl + .tgl-btn:after {
-  left: 0;
-}
-
-.presentation-options_list .tgl + .tgl-btn:before {
-  display: none;
-}
-
-.presentation-options_list .tgl:checked + .tgl-btn:after {
-  left: 50%;
-}
-
-.presentation-options_list .tgl-light + .tgl-btn {
-  background: #f0f0f0;
-  border-radius: 2em;
-  padding: 2px;
-  -webkit-transition: all .4s ease;
-  transition: all .4s ease;
-}
-
-.presentation-options_list .tgl-light + .tgl-btn:after {
-  border-radius: 50%;
-  background: #fff;
-  -webkit-transition: all .2s ease;
-  transition: all .2s ease;
-}
-
-.presentation-options_list .tgl-light:checked + .tgl-btn {
-  background: #3b99fc;
-}
-
 .edit-title-card-menu .title-card_label {
   font-style: italic;
   font-size: 11px;
@@ -1773,6 +1704,75 @@ span.action.rounded:hover, a.action.rounded:hover {
   margin: 0px;
   font-weight: 400;
   padding-top: 3px;
+}
+
+.tgl {
+  display: none;
+}
+
+.tgl, .tgl:after, .tgl:before, .tgl *, .tgl *:after, .tgl *:before, .tgl + .tgl-btn {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.tgl::-moz-selection, .tgl:after::-moz-selection, .tgl:before::-moz-selection, .tgl *::-moz-selection, .tgl *:after::-moz-selection, .tgl *:before::-moz-selection, .tgl + .tgl-btn::-moz-selection {
+  background: none;
+}
+
+.tgl::selection, .tgl:after::selection, .tgl:before::selection, .tgl *::selection, .tgl *:after::selection, .tgl *:before::selection, .tgl + .tgl-btn::selection {
+  background: none;
+}
+
+.tgl + .tgl-btn {
+  outline: 0;
+  display: block;
+  width: 40px;
+  height: 20px;
+  position: relative;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.tgl + .tgl-btn:after, .tgl + .tgl-btn:before {
+  position: relative;
+  display: block;
+  content: "";
+  width: 50%;
+  height: 100%;
+}
+
+.tgl + .tgl-btn:after {
+  left: 0;
+}
+
+.tgl + .tgl-btn:before {
+  display: none;
+}
+
+.tgl:checked + .tgl-btn:after {
+  left: 50%;
+}
+
+.tgl-light + .tgl-btn {
+  background: #f0f0f0;
+  border-radius: 2em;
+  padding: 2px;
+  -webkit-transition: all .4s ease;
+  transition: all .4s ease;
+}
+
+.tgl-light + .tgl-btn:after {
+  border-radius: 50%;
+  background: #fff;
+  -webkit-transition: all .2s ease;
+  transition: all .2s ease;
+}
+
+.tgl-light:checked + .tgl-btn {
+  background: #3b99fc;
 }
 
 .banner-username {
