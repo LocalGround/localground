@@ -16,6 +16,7 @@ define([
 
         templateHelpers: function () {
             return {
+                accessLevel: this.activeMap.get('metadata').accessLevel,
                 linkMode: this.linkMode,
                 sharing_url: this.activeMap.get('sharing_url'),
                 embed_url: `<iframe src="${this.activeMap.get('sharing_url')}" style="width: 950px; height: 350px; margin-left: auto; margin-right: auto; display: block; border: none;"></iframe>`
@@ -59,7 +60,14 @@ define([
         },
 
         saveShareSettings: function() {
-            console.log('save');
+            //$("input[name=rate]:checked").val()
+            const val = this.$el.find('input[name=rb]:checked').val();
+            this.activeMap.get('metadata').accessLevel = parseInt(val);
+            this.activeMap.save(null, {
+                success: () => {
+                    this.app.vent.trigger('close-modal');
+                }
+            })
         }
     });
     return ShareSettings;

@@ -125,6 +125,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
 
             },
             hide: function (e) {
+                console.log('hide modal');
                 this.$el.find('.modal').hide();
                 this.render();
                 if (e) {
