@@ -47,9 +47,9 @@
         <div class="block-centered">
             <form id="model-form" method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
                 {% csrf_token %}
-                {% if form.errors %}
+                {% if error %}
                 <div class="alert-message error">
-                    <p>Authentication error: Please enter a correct username and password. Note that both fields are case-sensitive.</p>
+                    <p>{{ error }}</p>
                 </div>
                 {% endif %}
                 {% include "includes/forms/generic_form_renderer.html" %}

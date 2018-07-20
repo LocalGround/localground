@@ -4,6 +4,10 @@ from django.template import TemplateDoesNotExist, RequestContext
 from django.shortcuts import render as direct_to_template, render_to_response
 from django.views.generic import TemplateView
 from localground.apps.site.models import Project, StyledMap
+from django.http import Http404
+from localground.apps.site.api.serializers import \
+    ProjectDetailSerializer, MapSerializerDetail
+from rest_framework.renderers import JSONRenderer
 
 
 def about_pages(request, page_name):
@@ -28,45 +32,54 @@ def style_guide_pages(request, page_name='banners'):
 
 class PublicView(TemplateView):
 
+    def __init__(self, *args, **kwargs):
+        self.password = None
+        self.map = None
+        return super(TemplateView, self).__init__(*args, **kwargs)
+
+    def _get_map(self, map_slug):
+        print map_slug
+        try:
+            return StyledMap.objects.get(slug=map_slug)
+        except StyledMap.DoesNotExist:
+            # msg = 'Either map slug={0} does not exist or you don\'t '
+            # msg += 'have access to it.'
+            raise Http404
+
+    def _has_access(self):
+        is_protected = self.map.metadata.get('accessLevel') == \
+            StyledMap.Permissions.PASSWORD_PROTECTED
+        if is_protected:
+            return self.access_key == self.map.password
+        else:
+            return True
+
     def post(self, request, *args, **kwargs):
-        map_slug = kwargs.get('map_slug')
-        self.password = '123'
-        map = StyledMap.objects.get(slug=map_slug)
+        # This form is for checking they access key for restricted maps
+        self.access_key = request.POST.get('access_key')
+        map = StyledMap.objects.get(slug=kwargs.get('map_slug'))
         context = self.get_context_data(*args, **kwargs)
-        if context.get('project') and context.get('map'):
-        return super(TemplateView, self).render_to_response(context)
+        if self.password != map.password:
+            context.update({
+                'error': 'Incorrect Password'
+            })
+            return super(TemplateView, self).render_to_response(context)
 
     def dispatch(self, request, *args, **kwargs):
-        self.password = request.GET.get('access_key')
-        try:
-            map = StyledMap.objects.get(slug=kwargs.get('map_slug'))
-        except StyledMap.DoesNotExist:
-            msg = 'Either map slug={0} does not exist or you don\'t '
-            msg += 'have access to it.'
-            print msg.format(kwargs.get('map_slug'))
-            return HttpResponseRedirect('/')
+        self.access_key = request.GET.get('access_key')
+        self.map = self._get_map(kwargs.get('map_slug'))
         return super(PublicView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, map_slug, *args, **kwargs):
-        from localground.apps.site.api.serializers import \
-            ProjectDetailSerializer, MapSerializerDetail
-        from rest_framework.renderers import JSONRenderer
-
-        map = StyledMap.objects.get(slug=map_slug)
-        accessLevel = map.metadata.get('accessLevel')
-        has_access = accessLevel < StyledMap.Permissions.PASSWORD_PROTECTED \
-            or self.password == map.password
-        accessLevel = map.metadata.get('accessLevel')
-        project = map.project
         renderer = JSONRenderer()
-
-        projectJSON = ProjectDetailSerializer(
-            project, context={'request': {}}).data
-
-        mapJSON = MapSerializerDetail(map, context={'request': {}}).data
         context = super(PublicView, self).get_context_data(
             *args, **kwargs)
-        if has_access:
+
+        if self._has_access():
+            projectJSON = ProjectDetailSerializer(
+                self.map.project, context={'request': {}}).data
+            mapJSON = MapSerializerDetail(
+                self.map, context={'request': {}}).data
             context.update({
                 'project': renderer.render(projectJSON),
                 'map': renderer.render(mapJSON)
