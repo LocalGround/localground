@@ -81,6 +81,25 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         ('slug', 'name', 'description', 'tags', 'owner', 'project')
     objects = StyledMapManager()
 
+    def get_metadata(self):
+        import json
+        if isinstance(self.metadata, basestring):
+            return json.loads(self.metadata)
+        else:
+            return self.metadata
+
+    def _get_access_level(self):
+        return self.get_metadata().get('accessLevel')
+
+    def is_password_protected(self):
+        return self._get_access_level() == StyledMap.Permissions.PASSWORD_PROTECTED
+
+    def is_public_unlisted(self):
+        return self._get_access_level() == StyledMap.Permissions.PUBLIC_UNLISTED
+
+    def is_public_searchable(self):
+        return self._get_access_level() == StyledMap.Permissions.PUBLIC_SEARCHABLE
+
     @property
     def layers(self):
         if not hasattr(self, '_layers') or self._layers is None:

@@ -38,7 +38,6 @@ class PublicView(TemplateView):
         return super(TemplateView, self).__init__(*args, **kwargs)
 
     def _get_map(self, map_slug):
-        print map_slug
         try:
             return StyledMap.objects.get(slug=map_slug)
         except StyledMap.DoesNotExist:
@@ -47,9 +46,7 @@ class PublicView(TemplateView):
             raise Http404
 
     def _has_access(self):
-        is_protected = self.map.metadata.get('accessLevel') == \
-            StyledMap.Permissions.PASSWORD_PROTECTED
-        if is_protected:
+        if self.map.is_password_protected():
             return self.access_key == self.map.password
         else:
             return True
@@ -57,9 +54,9 @@ class PublicView(TemplateView):
     def post(self, request, *args, **kwargs):
         # This form is for checking they access key for restricted maps
         self.access_key = request.POST.get('access_key')
-        map = StyledMap.objects.get(slug=kwargs.get('map_slug'))
+        self.map = StyledMap.objects.get(slug=kwargs.get('map_slug'))
         context = self.get_context_data(*args, **kwargs)
-        if self.password != map.password:
+        if self.password != self.map.password:
             context.update({
                 'error': 'Incorrect Password'
             })
@@ -74,7 +71,6 @@ class PublicView(TemplateView):
         renderer = JSONRenderer()
         context = super(PublicView, self).get_context_data(
             *args, **kwargs)
-
         if self._has_access():
             projectJSON = ProjectDetailSerializer(
                 self.map.project, context={'request': {}}).data

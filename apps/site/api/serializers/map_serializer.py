@@ -9,6 +9,77 @@ from localground.apps.site.api.serializers.layer_serializer import \
     LayerSerializer
 
 
+# Validators:
+class MetadataValidator(object):
+    def __call__(self, value):
+        self._validate_access_level()
+        self._validate_boolean_flags()
+        if self._is_password_protected():
+            self._validate_password()
+
+    def _validate_access_level(self):
+        if self.accessLevel not in [1, 2, 3]:
+            raise serializers.ValidationError(
+                'The accessLevel must be set to 1, 2, or 3.')
+        if self.accessLevel in [1, 2]:
+            # Map is not password protected, so clear out old password:
+            if self.instance:
+                self.instance.password = None
+
+    def _validate_boolean_flags(self):
+        metadata = self._get_metadata()
+        for key in [
+                'displayLegend', 'nextPrevButtons', 'allowPanZoom',
+                'streetview', 'displayTitleCard'
+                ]:
+            try:
+                if not isinstance(metadata[key], bool):
+                    self._raise_boolean_error(key)
+            except Exception:
+                self._raise_boolean_error(key)
+
+    def _get_metadata(self):
+        import json
+        if isinstance(self.data.get('metadata'), basestring):
+            return json.loads(self.data.get('metadata'))
+        else:
+            return self.data.get('metadata')
+
+    def set_context(self, serializer_field):
+        # In `__call__` we can  use this to inform the validation behavior.
+        self.request = serializer_field.parent.context.get('request')
+        self.data = self.request.data  # immutable
+        self.instance = serializer_field.parent.instance
+        self.password = self.data.get('password')
+        self.accessLevel = self._get_metadata().get('accessLevel')
+
+    def _has_existing_password(self):
+        return self.instance and self.instance.password \
+            and len(self.instance.password) > 2
+
+    def _raise_boolean_error(self, key):
+        self._raise_error(
+            'The metadata property {0} must be a boolean'.format(key))
+
+    def _raise_password_error(self):
+        self._raise_error(
+            'A password of at least three characters is required.')
+
+    def _raise_error(self, message):
+        raise serializers.ValidationError(message)
+
+    def _validate_password(self):
+        if self.password is None or self.password == '':
+            if not self._has_existing_password():
+                self._raise_password_error()
+        elif len(self.password) < 3:
+            self._raise_password_error()
+
+    def _is_password_protected(self):
+        return self.accessLevel == \
+            models.StyledMap.Permissions.PASSWORD_PROTECTED
+
+
 class MapSerializerList(
         NamedSerializerMixin, ProjectSerializerMixin, BaseSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='map-detail',)
@@ -22,7 +93,10 @@ class MapSerializerList(
     panel_styles = fields.JSONField(
         style={'base_template': 'json.html', 'rows': 5}, required=False)
     metadata = fields.JSONField(
-        style={'base_template': 'json.html', 'rows': 5}, required=False)
+        style={'base_template': 'json.html', 'rows': 5},
+        required=False,
+        validators=[MetadataValidator()]
+    )
     basemap = serializers.PrimaryKeyRelatedField(
         queryset=models.TileSet.objects.all())
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
@@ -112,19 +186,13 @@ class MapSerializerPost(MapSerializerList):
 
 
 class MapSerializerDetail(MapSerializerList):
-    def min_length(value):
-        if value is not None and len(value) < 3:
-            raise serializers.ValidationError(
-                'The password must be at least three characters long.')
-
     layers = serializers.SerializerMethodField()
     layers_url = serializers.SerializerMethodField()
     password = serializers.CharField(
         write_only=True,
         required=False,
         allow_blank=True,
-        style={'input_type': 'password'},
-        validators=[min_length]
+        style={'input_type': 'password'}
     )
 
     def get_layers(self, obj):
@@ -134,34 +202,26 @@ class MapSerializerDetail(MapSerializerList):
     def get_layers_url(self, obj):
         return '%s/api/0/maps/%s/layers/' % (settings.SERVER_URL, obj.id)
 
-    def is_password_protected(self, validated_data):
-        request = self.context.get('request')
-        accessLevel = validated_data.get('metadata').get('accessLevel')
-        if accessLevel not in [1, 2, 3]:
-            raise serializers.ValidationError(
-                'The accessLevel must be set to 1, 2, or 3.')
-        return accessLevel == models.StyledMap.Permissions.PASSWORD_PROTECTED
+    # def validate_permissions(self, instance, validated_data):
+    #     if self.is_password_protected(validated_data):
+    #         # If a new password hasn't been passed in,
+    #         # don't clear out the old one:
+    #         if validated_data.get('password') is None or \
+    #                 validated_data.get('password') == '':
+    #             if instance.password:
+    #                 validated_data['password'] = instance.password
+    #             else:
+    #                 raise serializers.ValidationError(
+    #                     'A password of at least three characters is required.')
+    #     else:
+    #         # Map is not password protected, so clear out old password:
+    #         validated_data['password'] = None
+    #     return validated_data
 
-    def validate_permissions(self, instance, validated_data):
-        if self.is_password_protected(validated_data):
-            # If a new password hasn't been passed in,
-            # don't clear out the old one:
-            if validated_data.get('password') is None or \
-                    validated_data.get('password') == '':
-                if instance.password:
-                    validated_data['password'] = instance.password
-                else:
-                    raise serializers.ValidationError(
-                        'A password of at least three characters is required.')
-        else:
-            # Map is not password protected, so clear out old password:
-            validated_data['password'] = None
-        return validated_data
-
-    def update(self, instance, validated_data):
-        validated_data = self.validate_permissions(instance, validated_data)
-        return super(MapSerializerDetail, self).update(
-            instance, validated_data)
+    # def update(self, instance, validated_data):
+    #     # validated_data = self.validate_permissions(instance, validated_data)
+    #     return super(MapSerializerDetail, self).update(
+    #         instance, validated_data)
 
     class Meta:
         model = models.StyledMap
