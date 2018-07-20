@@ -42,12 +42,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='layer',
             name='symbols',
-            field=jsonfield.fields.JSONField(default=[{b'strokeWeight': 1, b'strokeOpacity': 1, b'height': 25, b'shape': b'circle', b'fillOpacity': 1, b'strokeColor': b'#ffffff', b'title': b'All items', b'isShowing': True, b'rule': b'*', b'width': 25, b'fillColor': b'rgb(177, 89, 40)'}], null=True, blank=True),
+            field=jsonfield.fields.JSONField(default=[{b'strokeWeight': 1, b'strokeOpacity': 1, b'height': 25, b'shape': b'circle', b'fillOpacity': 1, b'strokeColor': b'#ffffff', b'title': b'All items', b'isShowing': True, b'rule': b'*', b'width': 25, b'fillColor': b'rgb(255, 255, 153)'}], null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='styledmap',
+            name='panel_styles',
+            field=jsonfield.fields.JSONField(default={b'display_legend': True, b'paragraph': {b'fw': b'regular', b'color': b'#666', b'backgroundColor': b'#f0f1f5', b'font': b'Lato', b'type': b'paragraph', b'size': b'12'}, b'subtitle': {b'fw': b'regular', b'color': b'#666', b'backgroundColor': b'#f7f7f7', b'font': b'Lato', b'type': b'subtitle', b'size': b'12'}, b'tags': {b'fw': b'regular', b'color': b'#3d3d3d', b'backgroundColor': b'#f7f7f7', b'font': b'Lato', b'type': b'tags', b'size': b'10'}, b'title': {b'fw': b'bold', b'color': b'#ffffff', b'backgroundColor': b'#4e70d4', b'font': b'Lato', b'type': b'title', b'size': b'15'}}),
         ),
         migrations.AlterField(
             model_name='styledmap',
             name='metadata',
-            field=jsonfield.fields.JSONField(default=b'{"displayLegend": true, "streetview": true, "allowPanZoom": true, "displayTitleCard": true, "titleCardInfo": {"header": null, "description": null, "photo_ids": []}, "nextPrevButtons": false, "accessLevel": 2}'),
+            field=jsonfield.fields.JSONField(default={b'displayLegend': True, b'streetview': True, b'allowPanZoom': True, b'displayTitleCard': True, b'titleCardInfo': {b'header': None, b'description': None, b'photo_ids': []}, b'nextPrevButtons': False, b'accessLevel': 2}),
         ),
         migrations.RunPython(load_fixture),
         migrations.RunSQL(get_extra_sql())

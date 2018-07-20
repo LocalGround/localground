@@ -44,27 +44,26 @@
         {% endif %}
 
     {% else %}
-    <div class="block-centered">
-        <form id="model-form" method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
-            {% csrf_token %}
-            {% if form.errors %}
-            <div class="alert-message error">
-                <p>Authentication error: Please enter a correct username and password. Note that both fields are case-sensitive.</p>
-            </div>
-            {% endif %}
-            {% include "includes/forms/generic_form_renderer.html" %}
-            <fieldset>
-                <div class="clearfix">
-                    <label></label>
-                    <div class="input">
-                        <input type="password" name="access_key" value="" placeholder="Map Password" />
-                        <button type="submit" class="button button-primary">Submit</button>
-                    </div>
+        <div class="block-centered">
+            <form id="model-form" method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
+                {% csrf_token %}
+                {% if form.errors %}
+                <div class="alert-message error">
+                    <p>Authentication error: Please enter a correct username and password. Note that both fields are case-sensitive.</p>
                 </div>
-            </fieldset>
-        </form>
-    </div>
-</div>
+                {% endif %}
+                {% include "includes/forms/generic_form_renderer.html" %}
+                <fieldset>
+                    <div class="clearfix">
+                        <label></label>
+                        <div class="input">
+                            <input type="password" name="access_key" value="" placeholder="Map Password" />
+                            <button type="submit" class="button button-primary">Submit</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
     {% endif %}
 
 </body>

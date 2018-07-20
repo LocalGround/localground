@@ -28,6 +28,14 @@ def style_guide_pages(request, page_name='banners'):
 
 class PublicView(TemplateView):
 
+    def post(self, request, *args, **kwargs):
+        map_slug = kwargs.get('map_slug')
+        self.password = '123'
+        map = StyledMap.objects.get(slug=map_slug)
+        context = self.get_context_data(*args, **kwargs)
+        if context.get('project') and context.get('map'):
+        return super(TemplateView, self).render_to_response(context)
+
     def dispatch(self, request, *args, **kwargs):
         self.password = request.GET.get('access_key')
         try:

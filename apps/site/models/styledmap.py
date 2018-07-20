@@ -67,10 +67,10 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
     zoom = models.IntegerField()
     panel_styles = JSONField(
         blank=False, null=False,
-        default=json.dumps(default_panel_styles))
+        default=default_panel_styles)
     metadata = JSONField(
         blank=False, null=False,
-        default=json.dumps(default_metadata))
+        default=default_metadata)
     slug = models.SlugField(
         verbose_name="Friendly URL",
         max_length=100,
