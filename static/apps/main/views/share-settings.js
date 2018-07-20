@@ -24,7 +24,24 @@ define([
 
         events: {
             'click .link-button': 'showLinkText',
-            'click .embed-button': 'showEmbedText'
+            'click .embed-button': 'showEmbedText',
+            'click .toggle-pw-visibility': 'togglePWVisibility'
+
+        },
+
+        togglePWVisibility: function() {
+            const pwInput = this.$el.find('#password-input');
+            const eyeIcon = this.$el.find('.toggle-pw-visibility');
+
+            if (pwInput.prop('type') === 'password') {
+                pwInput.prop('type', 'text');
+                eyeIcon.removeClass('fa-eye');
+                eyeIcon.addClass('fa-eye-slash');
+            } else {
+                pwInput.prop('type', 'password');
+                eyeIcon.removeClass('fa-eye-slash');
+                eyeIcon.addClass('fa-eye');
+            }
         },
 
         showLinkText: function() {
