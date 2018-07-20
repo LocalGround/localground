@@ -112,13 +112,19 @@ class MapSerializerPost(MapSerializerList):
 
 
 class MapSerializerDetail(MapSerializerList):
+    def min_length(value):
+        if value is not None and len(value) < 3:
+            raise serializers.ValidationError(
+                'The password must be at least three characters long.')
+
     layers = serializers.SerializerMethodField()
     layers_url = serializers.SerializerMethodField()
     password = serializers.CharField(
         write_only=True,
         required=False,
         allow_blank=True,
-        style={'input_type': 'password'}
+        style={'input_type': 'password'},
+        validators=[min_length]
     )
 
     def get_layers(self, obj):
@@ -127,6 +133,35 @@ class MapSerializerDetail(MapSerializerList):
 
     def get_layers_url(self, obj):
         return '%s/api/0/maps/%s/layers/' % (settings.SERVER_URL, obj.id)
+
+    def is_password_protected(self, validated_data):
+        request = self.context.get('request')
+        accessLevel = validated_data.get('metadata').get('accessLevel')
+        if accessLevel not in [1, 2, 3]:
+            raise serializers.ValidationError(
+                'The accessLevel must be set to 1, 2, or 3.')
+        return accessLevel == models.StyledMap.Permissions.PASSWORD_PROTECTED
+
+    def validate_permissions(self, instance, validated_data):
+        if self.is_password_protected(validated_data):
+            # If a new password hasn't been passed in,
+            # don't clear out the old one:
+            if validated_data.get('password') is None or \
+                    validated_data.get('password') == '':
+                if instance.password:
+                    validated_data['password'] = instance.password
+                else:
+                    raise serializers.ValidationError(
+                        'A password of at least three characters is required.')
+        else:
+            # Map is not password protected, so clear out old password:
+            validated_data['password'] = None
+        return validated_data
+
+    def update(self, instance, validated_data):
+        validated_data = self.validate_permissions(instance, validated_data)
+        return super(MapSerializerDetail, self).update(
+            instance, validated_data)
 
     class Meta:
         model = models.StyledMap
