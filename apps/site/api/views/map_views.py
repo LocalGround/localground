@@ -52,17 +52,6 @@ class MapInstance(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.MapSerializerDetail
     model = models.StyledMap
 
-    def retrieve(self, request, *args, **kwargs):
-        # if they don't have an access key, they don't get to see the data:
-        import json
-        instance = self.get_object()
-        password = self.request.GET.get('access_key')
-        metadata = json.loads(instance.metadata)
-        if metadata.get('accessLevel') == 3 and password != instance.password:
-            from rest_framework.exceptions import APIException
-            raise APIException('A valid access_key is required')
-        return super(MapInstance, self).retrieve(request, *args, **kwargs)
-
     def update(self, request, *args, **kwargs):
         response = super(MapInstance, self).update(request, *args, **kwargs)
         if len(self.warnings) > 0:

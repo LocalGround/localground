@@ -67,10 +67,10 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
     zoom = models.IntegerField()
     panel_styles = JSONField(
         blank=False, null=False,
-        default=json.dumps(default_panel_styles))
+        default=default_panel_styles)
     metadata = JSONField(
         blank=False, null=False,
-        default=json.dumps(default_metadata))
+        default=default_metadata)
     slug = models.SlugField(
         verbose_name="Friendly URL",
         max_length=100,
@@ -80,6 +80,25 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
     filter_fields = BaseAudit.filter_fields + \
         ('slug', 'name', 'description', 'tags', 'owner', 'project')
     objects = StyledMapManager()
+
+    def get_metadata(self):
+        import json
+        if isinstance(self.metadata, basestring):
+            return json.loads(self.metadata)
+        else:
+            return self.metadata
+
+    def _get_access_level(self):
+        return self.get_metadata().get('accessLevel')
+
+    def is_password_protected(self):
+        return self._get_access_level() == StyledMap.Permissions.PASSWORD_PROTECTED
+
+    def is_public_unlisted(self):
+        return self._get_access_level() == StyledMap.Permissions.PUBLIC_UNLISTED
+
+    def is_public_searchable(self):
+        return self._get_access_level() == StyledMap.Permissions.PUBLIC_SEARCHABLE
 
     @property
     def layers(self):
