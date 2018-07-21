@@ -8,10 +8,12 @@
     <link rel=stylesheet type="text/css" href="/static/css/map-presentation.css" />
     <link rel=stylesheet type="text/css" href="/static/css/main.css" />
     <link rel=stylesheet type="text/css" href="/static/css/main-new.css" />
+    {% if map %}
     <script>
         var projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
         var mapJSON = {% autoescape off %}{{map}}{% endautoescape %};
     </script>
+    {% endif %}
 </head>
 <body>
     {% if map %}
@@ -48,9 +50,9 @@
         <div class="pw-required-wrapper">
             <form id="model-form" class="form" method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
                 {% csrf_token %}
-                {% if form.errors %}
+                {% if error %}
                 <div class="alert-message error">
-                    <p>Authentication error: Please enter a correct username and password. Note that both fields are case-sensitive.</p>
+                    <p>{{ error }}</p>
                 </div>
                 {% endif %}
                 {% include "includes/forms/generic_form_renderer.html" %}
@@ -68,7 +70,6 @@
             </form>
         </div>
     </div>
-</div>
     {% endif %}
 
 </body>

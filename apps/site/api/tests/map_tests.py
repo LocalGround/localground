@@ -159,6 +159,21 @@ class ApiMapListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(styled_map.layers[2].dataset, ds3)
 
 
+map_config_metadata = {
+    'displayLegend': False,
+    'nextPrevButtons': True,
+    'allowPanZoom': False,
+    'streetview': False,
+    'displayTitleCard': False,
+    'titleCardInfo': {
+        'header': 'hi there',
+        'description': 'some description',
+        'photo_ids': [1, 2, 3]
+    },
+    'accessLevel': models.StyledMap.Permissions.PUBLIC_SEARCHABLE
+}
+
+
 class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
@@ -292,23 +307,75 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
         updated_map = models.StyledMap.objects.get(id=self.map.id)
         self.assertEqual(updated_map.name, name)
         self.assertEqual(updated_map.description, description)
-        self.assertEqual(
-            json.loads(updated_map.metadata), models.StyledMap.default_metadata)
+        self.assertEqual(updated_map.metadata, models.StyledMap.default_metadata)
 
     def test_update_map_metadata(self, **kwargs):
-        metadata = {
-            'displayLegend': False,
-            'nextPrevButtons': True,
-            'allowPanZoom': False,
-            'streetview': False,
-            'displayTitleCard': False,
-            'titleCardInfo': {
-                'header': 'hi there',
-                'description': 'some description',
-                'photo_ids': [1, 2, 3]
-            },
-            'accessLevel': models.StyledMap.Permissions.PUBLIC_SEARCHABLE
-        }
+        response = self.client_user.patch(
+            self.url,
+            data=urllib.urlencode({
+                'metadata': json.dumps(map_config_metadata)
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_map = models.StyledMap.objects.get(id=self.map.id)
+        self.assertEqual(updated_map.metadata, map_config_metadata)
+
+    def test_update_map_metadata_validate_boolean_flags(self, **kwargs):
+        for key in [
+                'displayLegend', 'nextPrevButtons', 'allowPanZoom',
+                'streetview', 'displayTitleCard'
+                ]:
+            metadata = map_config_metadata.copy()
+            del metadata[key]
+            response = self.client_user.patch(
+                self.url,
+                data=urllib.urlencode({
+                    'metadata': json.dumps(metadata)
+                }),
+                HTTP_X_CSRFTOKEN=self.csrf_token,
+                content_type="application/x-www-form-urlencoded")
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(
+                response.data.get('metadata'),
+                ['The metadata property {0} must be a boolean'.format(key)]
+            )
+
+    def test_update_map_metadata_validate_access_key_good(self, **kwargs):
+        metadata = map_config_metadata
+        for val in [1, 2, 3]:
+            metadata['accessLevel'] = val
+            response = self.client_user.patch(
+                self.url,
+                data=urllib.urlencode({
+                    'metadata': json.dumps(metadata),
+                    'password': '123'
+                }),
+                HTTP_X_CSRFTOKEN=self.csrf_token,
+                content_type="application/x-www-form-urlencoded")
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_map_metadata_validate_access_key_bad(self, **kwargs):
+        metadata = map_config_metadata
+        for val in [4, '55']:
+            metadata['accessLevel'] = val
+            response = self.client_user.patch(
+                self.url,
+                data=urllib.urlencode({
+                    'metadata': json.dumps(metadata)
+                }),
+                HTTP_X_CSRFTOKEN=self.csrf_token,
+                content_type="application/x-www-form-urlencoded")
+            self.assertEqual(
+                response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(
+                response.data.get('metadata'),
+                ['The accessLevel must be set to 1, 2, or 3.']
+            )
+
+    def test_update_map_metadata_if_password_protected_needs_password(self):
+        metadata = map_config_metadata
+        metadata['accessLevel'] = 3
         response = self.client_user.patch(
             self.url,
             data=urllib.urlencode({
@@ -316,6 +383,55 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data.get('metadata'),
+            ['A password of at least three characters is required.']
+        )
+
+    def test_update_map_metadata_if_password_protected_needs_password(self):
+        metadata = map_config_metadata
+        metadata['accessLevel'] = 3
+        response = self.client_user.patch(
+            self.url,
+            data=urllib.urlencode({
+                'metadata': json.dumps(metadata)
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded")
+        self.assertEqual(
+            response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data.get('metadata'),
+            ['A password of at least three characters is required.']
+        )
+
+    def test_update_map_metadata_password_does_not_get_blown_away(self):
+        self.map.password = '123'
+        self.map.metadata['accessLevel'] = 3
+        self.map.save()
+
+        metadata = map_config_metadata
+        metadata['displayTitleCard'] = True
+        response = self.client_user.put(
+            self.url,
+            data=urllib.urlencode({
+                'metadata': json.dumps(metadata),
+                'basemap': 1,
+                'center': json.dumps({
+                    "type": "Point",
+                    "coordinates": [
+                        -122.27640407752006,
+                        37.85713522119835
+                    ]
+                }),
+                'slug': 'here-is-a-slug'
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded")
+        self.assertEqual(
+            response.status_code, status.HTTP_200_OK)
         updated_map = models.StyledMap.objects.get(id=self.map.id)
+        self.assertEqual(updated_map.password, '123')
         self.assertEqual(updated_map.metadata, metadata)

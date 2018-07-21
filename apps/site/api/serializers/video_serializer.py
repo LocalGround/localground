@@ -84,12 +84,6 @@ class VideoUpdateSerializer(VideoSerializer):
     video_link = serializers.CharField(required=False)
 
     def update(self, instance, validated_data):
-        # Extend to add auditing information:
-        validated_data.update(self.get_presave_update_dictionary())
-        return super(AuditSerializerMixin, self).update(
-            instance, validated_data)
-
-    def update(self, instance, validated_data):
         # Recalculate the video provider and id if provided
         validated_data.update(self.get_presave_update_dictionary())
         validated_data.update(self.get_video_provider_and_id(
