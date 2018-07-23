@@ -133,10 +133,8 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         im = self.django_file_field_to_pil(self.media_file_orig)
 
         # 2. Do the rotation:
-        im.save('/localground/test_before.jpg')
         # http://effbot.org/imagingbook/image.htm#tag-Image.Image.transpose
         im = im.transpose(degrees)
-        im.save('/localground/test_after.jpg')
 
         # 3. Generate the thumbnails
         base_name, ext = os.path.splitext(self.media_file_orig.name)

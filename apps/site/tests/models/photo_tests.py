@@ -89,11 +89,8 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
         self.assertEqual(photo.media_file_orig.width, 200)
         self.assertEqual(photo.media_file_orig.height, 100)
 
-        print photo.media_file_orig.width, photo.media_file_orig.height
-
         # rotate photo to the right:
         rotate_function()
-        print photo.media_file_orig.width, photo.media_file_orig.height
 
         # check that photo has rotated 90 degrees
         self.assertEqual(photo.media_file_orig.width, 100)
