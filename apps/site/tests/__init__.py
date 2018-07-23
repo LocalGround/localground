@@ -693,7 +693,8 @@ class ModelMixin(object):
             last_updated_by=self.user,
             owner=self.user,
             project=self.project,
-            name='Oakland Map'
+            name='Oakland Map',
+            slug='8675309'
         )
         return map
 

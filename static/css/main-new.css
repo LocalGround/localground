@@ -1411,6 +1411,10 @@ i.fa.fa.fa-question-circle {
   padding-left: 5px;
 }
 
+.pw-required-input.row {
+  margin: 0 !important;
+}
+
 .success-message, .failure-message, .warning-message {
   position: absolute;
   display: none;
