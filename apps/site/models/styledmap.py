@@ -88,6 +88,14 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         else:
             return self.metadata
 
+    def check_password(self, password):
+        if not password:
+            return False
+        print password
+        import hashlib
+        md5 = hashlib.md5(password)
+        return self.password == md5.hexdigest()
+
     def _get_access_level(self):
         return self.get_metadata().get('accessLevel')
 
