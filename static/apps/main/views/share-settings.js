@@ -62,7 +62,10 @@ define([
         saveShareSettings: function() {
             //$("input[name=rate]:checked").val()
             const val = this.$el.find('input[name=rb]:checked').val();
+            const pw = this.$el.find('#password-input').val();
+            console.log(pw);
             this.activeMap.get('metadata').accessLevel = parseInt(val);
+            this.activeMap.set('password', pw);
             this.activeMap.save(null, {
                 success: () => {
                     this.app.vent.trigger('close-modal');
