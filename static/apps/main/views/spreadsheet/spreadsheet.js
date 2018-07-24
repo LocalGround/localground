@@ -158,19 +158,6 @@ define(["jquery",
                 });
                 if (this.table) {
                     this.table.destroy();
-                    // console.log('updating data...');
-                    // console.log(data);
-                    // // this.table.updateSettings({
-                    // //     data: [
-                    // //         {'id': 1, 'name': 'hi', 'description': 'sup'},
-                    // //         {'id': 2, 'name': 'hi again', 'description': 'sup again'},
-                    // //     ]
-                    // // });
-                    // this.table.updateSettings({
-                    //     data: data
-                    // });
-                    // this.table.render();
-                    // return;
                 }
 
                 if (data.length == 0) {
@@ -215,7 +202,7 @@ define(["jquery",
                         }
                     },
                     afterChange: function (changes, source) {
-                        console.log('afterChange', that.table);
+                        //console.log('afterChange', that.table);
                         that.saveChanges(changes, source);
                         if (changes && changes[0] && changes[0].length > 1 && changes[0][1] === "video_provider") {
                             that.table.render();
@@ -511,13 +498,13 @@ define(["jquery",
             },
 
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var button = document.createElement('BUTTON'),
-                    that = this,
+                var that = this,
                     model;
-                button.innerHTML = "<i class='fa fa-trash trash_button' aria-hidden='true'></i>";
+                const icon = document.createElement('i');
+                icon.classList.add('fa', 'fa-trash');
                 Handsontable.Dom.empty(td);
-                td.appendChild(button);
-                button.onclick = function () {
+                td.appendChild(icon);
+                icon.onclick = function () {
                     if (!confirm("Are you sure you want to delete this row?")) {
                         return;
                     }
@@ -628,7 +615,6 @@ define(["jquery",
                 }
                 cols.push("Media");
                 cols.push("Delete");
-                cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
                 return cols;
             },
             getColumnWidths: function () {
@@ -642,7 +628,6 @@ define(["jquery",
                         cols.push(150);
                     }
                 })
-                cols.push(120);
                 return cols;
             },
 
@@ -784,10 +769,6 @@ define(["jquery",
                         cols.push(
                             {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );
-
-                        cols.push(
-                            {data: "addField", renderer: "html", readOnly: true, disableVisualSelection: true }
-                        );
                         return cols;
                 }
             },
@@ -835,32 +816,11 @@ define(["jquery",
                 }
             },
             addRow: function (top) {
-                this.app.dataManager.addRecordToCollection(
-                    this.collection, (model, response) => {
-                        this.renderSpreadsheet();
-                        this.$el.find('.wtHolder').animate({
-                            scrollTop: top ? 0 : 10000 //scroll to either top or bottom
-                        });
-                    });
-                // const rec = new Record(
-                //     { project_id: this.app.getProjectID() },
-                //     { urlRoot: this.collection.url }
-                // );
-                // rec.save(null, {
-                //     success: (model, response) => {
-                //         if (top) {
-                //             console.log('adding top...')
-                //             this.collection.add(model, {at: 0});
-                //         } else {
-                //             console.log('adding bottom...')
-                //             this.collection.add(model);
-                //         }
-                //         this.renderSpreadsheet();
-                //         this.$el.find('.wtHolder').animate({
-                //             scrollTop: top ? 0 : 10000 //scroll to either top or bottom
-                //         });
-                //     }
-                // });
+                const dm = this.app.dataManager;
+                dm.addRecordToCollection(this.collection, () => {
+                    this.renderSpreadsheet();
+                    this.$el.find('.wtHolder').scrollTop(top ? 0 : 10000); //scroll to either top or bottom
+                });
             },
             refreshHeaders: function () {
                 this.table.updateSettings({

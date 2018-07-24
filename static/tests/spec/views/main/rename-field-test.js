@@ -13,7 +13,6 @@ define([
             spyOn(RenameField.prototype, 'initialize').and.callThrough();
             spyOn(RenameField.prototype, 'saveField').and.callThrough();
             spyOn(RenameField.prototype, 'reloadDataset').and.callThrough();
-            spyOn(RenameField.prototype, 'updateModal').and.callThrough();
             spyOn(Layers.prototype, 'forEach').and.callThrough();
             spyOn(Layer.prototype, 'refreshFromServer'); // don't call through
             spyOn(Layer.prototype, 'hasFieldDependency').and.callThrough();

@@ -34,6 +34,7 @@ require(['boot'], function () {
 
         //spreadsheet tests:
         'spec/views/main/spreadsheet-test.js',
+        'spec/views/main/spreadsheet-layout-test.js',
         'spec/views/main/rename-field-test.js',
 
 

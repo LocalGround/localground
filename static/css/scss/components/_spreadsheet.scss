@@ -58,5 +58,15 @@
         .colHeader {
             display: flex;
         }
+
+        .fa-trash {
+            color: #BBB;
+            margin: 10px;
+            font-size: 1.3em;
+
+            &:hover {
+                color: #DDD;
+            }
+        }
     }
 }
