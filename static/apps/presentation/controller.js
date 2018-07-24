@@ -13,6 +13,11 @@ define([
                 dataType: dataType
             }, false);
         },
+
+        titleCard: function() {
+            this.app.vent.trigger('title-card');
+        },
+
         dataList: function (dataType) {
             this.app.vent.trigger("show-list", dataType);
         },

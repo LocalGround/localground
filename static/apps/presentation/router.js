@@ -10,7 +10,8 @@ define([
             'layers/:layerId/:dataType/:recordId': 'dataDetail',
             //'/^[\w-]+/': 'fetchMap'//,
             //new RegExp('^([\w-]+)'): 'fetchMap',
-            ':slug': 'fetchMap'
+            //':slug': 'fetchMap',
+            'home': 'titleCard'
         },
         initialize: function (options) {
             this.controller = new Controller({
