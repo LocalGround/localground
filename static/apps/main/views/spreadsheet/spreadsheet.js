@@ -48,23 +48,18 @@ define(["jquery",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.popover = this.app.popover;
-
-                // call Marionette's default functionality (similar to "super")
                 Marionette.ItemView.prototype.initialize.call(this);
                 this.registerRatingEditor();
-                //this.render();
-                //listen to events that fire from other parts of the application:
+
+                this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
+                this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
+                this.listenTo(this.fields, 'update', this.renderSpreadsheet);
+
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
-                this.listenTo(this.app.vent, "add-row", this.addRow);
                 this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
-                this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
-                this.listenTo(this.collection, 'add', this.renderSpreadsheet);
-                this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
-                this.listenTo(this.fields, 'update', this.renderSpreadsheet);
                 this.listenTo(this.app.vent, "field-updated", this.refreshHeaders);
-
             },
             registerRatingEditor: function () {
                 // following this tutorial: https://docs.handsontable.com/0.15.0-beta1/tutorial-cell-editor.html
@@ -153,19 +148,7 @@ define(["jquery",
                 }
             },
             renderSpreadsheet: function () {
-                console.log('rendering spreadsheet');
-                if (this.table) {
-                    this.table.render();
-                    return;
-                }
-
-                if (this.collection.length == 0) {
-                    // Render spreadsheet should be called after every removal of rows
-                    this.$el.find('#grid').html('<div class="empty-message">' +
-                        'No rows have been added yet.' +
-                        '</div>');
-                    return;
-                }
+                console.log('rendering spreadsheet...');
                 const data = this.collection.map(model => {
                     var rec = model.toJSON();
                     if (rec.tags) {
@@ -173,6 +156,30 @@ define(["jquery",
                     }
                     return rec;
                 });
+                if (this.table) {
+                    this.table.destroy();
+                    // console.log('updating data...');
+                    // console.log(data);
+                    // // this.table.updateSettings({
+                    // //     data: [
+                    // //         {'id': 1, 'name': 'hi', 'description': 'sup'},
+                    // //         {'id': 2, 'name': 'hi again', 'description': 'sup again'},
+                    // //     ]
+                    // // });
+                    // this.table.updateSettings({
+                    //     data: data
+                    // });
+                    // this.table.render();
+                    // return;
+                }
+
+                if (data.length == 0) {
+                    // Render spreadsheet should be called after every removal of rows
+                    this.$el.find('#grid').html('<div class="empty-message">' +
+                        'No rows have been added yet.' +
+                        '</div>');
+                    return;
+                }
                 const that = this;
                 this.table = new Handsontable(this.$el.find('#grid').get(0), {
                     data: data,
@@ -181,6 +188,7 @@ define(["jquery",
                     manualColumnResize: true,
                     manualColumnMove: true,
                     rowHeaders: true,
+                    autoInsertRow: true,
                     sortIndicator: true,
                     columnSorting: true,
                     height: $(window).height() - 170,
@@ -826,25 +834,24 @@ define(["jquery",
                    e.preventDefault();
                 }
             },
-            addRow: function (dataType) {
-                var that = this,
-                    projectID = this.app.getProjectID(),
-                    rec;
-                dataType = dataType != undefined ? dataType : this.app.dataType;
-                if (dataType == "audio" || dataType == "photos") {
-                    return;
-                } else if (dataType == "videos") {
-                    rec = new Video({project_id: projectID});
-                } else {
-                    rec = new Record ({project_id: projectID});
-                }
-
-                rec.collection = this.collection;
+            addRow: function (top) {
+                const rec = new Record(
+                    { project_id: this.app.getProjectID() },
+                    { urlRoot: this.collection.url }
+                );
                 rec.save(null, {
-                    success: function(){
-                        // To add an empty column a the top, set the index to insert at 0
-                        that.collection.add(rec, {at: 0});
-                        that.renderSpreadsheet();
+                    success: (model, response) => {
+                        if (top) {
+                            console.log('adding top...')
+                            this.collection.add(model, {at: 0});
+                        } else {
+                            console.log('adding bottom...')
+                            this.collection.add(model);
+                        }
+                        this.renderSpreadsheet();
+                        this.$el.find('.wtHolder').animate({
+                            scrollTop: top ? 0 : 10000 //scroll to either top or bottom
+                        });
                     }
                 });
             },

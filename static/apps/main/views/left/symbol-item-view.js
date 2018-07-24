@@ -61,7 +61,7 @@ define(["marionette",
             },
             getSVG: function () {
                 const icon = this.symbolModel.get('icon');
-                if (this.model.get('geometry') === null) {
+                if (!this.model.get('geometry')) {
                     return;
                 }
                 const geomType = this.model.get('geometry').type;
@@ -154,8 +154,10 @@ define(["marionette",
             updateGeometry: function() {
 
                 if (!this.model.get('geometry')) { // delete marker
-                    this.overlay.destroy();
-                    this.overlay = null;
+                    if (this.overlay) {
+                        this.overlay.destroy();
+                        this.overlay = null;
+                    }
                     return;
                 }
                 if (!this.overlay) { // create new overlay

@@ -33,6 +33,7 @@ require(['boot'], function () {
         'spec/views/main/share-settings-test.js',
 
         //spreadsheet tests:
+        'spec/views/main/spreadsheet-test.js',
         'spec/views/main/rename-field-test.js',
 
 
