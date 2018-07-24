@@ -36,27 +36,18 @@ define([
             let header = this.$el.find('.title-card_title').val();
             let description = this.$el.find('.title-card_textarea').val();
 
-            if (this.activeMap.get('metadata')) {
-                if (this.activeMap.get('metadata').titleCardInfo) {
 
-                    this.activeMap.get('metadata').titleCardInfo.header = header;
-                    this.activeMap.get('metadata').titleCardInfo.description = description;
+            this.activeMap.get('metadata').titleCardInfo.header = header;
+            this.activeMap.get('metadata').titleCardInfo.description = description;
 
-                    console.log(this.activeMap);
-                    /*
-                    this.activeMap.save(null, {
-                            error: function () {
-                                console.error('error');
-                            },
-                            success: function () {
-                                this.app.vent.trigger('hide-modal)
-                            }
-                        }
-                    );
-                    */
-
+            this.activeMap.save(null, {
+                    success: () => {
+                        this.app.vent.trigger('close-modal');
+                    }
                 }
-            }
+            );
+                
+            
 
         }
     });

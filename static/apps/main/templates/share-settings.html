@@ -22,27 +22,28 @@
         <form class="form-inline">
             <div class="radio-wrapper">
                 <div class="radio-item-wrapper">
-                    <input type="radio" name="rb" checked="">
+                    <input type="radio" name="rb" value="1" {{#ifequal accessLevel 1}}checked{{/ifequal}}>
                     <div class="label-wrapper">
                         <label>Public Searchable - public on the web</label>
                         <p class='label-descr'>Anyone on the internet can find and view the map</p>
                     </div>
                 </div>
                 <div class="radio-item-wrapper">
-                    <input type="radio" name="rb">
+                    <input type="radio" name="rb" value="2" {{#ifequal accessLevel 2}}checked{{/ifequal}}>
                     <div class="label-wrapper">
                         <label>Public Unlisted - anyone with the link </label>
                         <p class='label-descr'>Anyone who has the link can view the map</p>
                     </div>
                 </div>
                 <div class="radio-item-wrapper">
-                <input type="radio" name="rb">
+                <input type="radio" name="rb" value="3" {{#ifequal accessLevel 3}}checked{{/ifequal}}>
                     <div class="label-wrapper">
                         <label>Password Protected - link and password required</label>
                         <p class='label-descr'>Map accessible only to people who know the password</p>
                         <div>
                             <span>Viewer password:</span>
                             <input id="password-input" type="password">
+                            <i class="fa fa-eye toggle-pw-visibility" style="cursor: pointer"></i>
                         </div>
                     </div>
                 </div>

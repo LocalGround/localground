@@ -1,8 +1,8 @@
-define(["underscore", "marionette", "models/project",
+define(["underscore", "marionette", "models/project", "models/record",
             "collections/photos", "collections/audio", "collections/videos",
             "collections/mapimages", "collections/records", "collections/fields",
             "collections/tilesets", "collections/maps"],
-    function (_, Marionette, Project, Photos, Audio, Videos, MapImages,
+    function (_, Marionette, Project, Record, Photos, Audio, Videos, MapImages,
                 Records, Fields, TileSets, Maps) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
@@ -176,6 +176,21 @@ define(["underscore", "marionette", "models/project",
                     this.__addDataset(dataset);
                 }
                 map.get('layers').add(layer);
+            },
+            addRecordToCollection: function (collection, successCallback) {
+                const rec = new Record(
+                    { project_id: this.getProject().id },
+                    { urlRoot: collection.url }
+                );
+                rec.save(null, {
+                    success: (model, response) => {
+                        collection.add(model);
+                        this.__attachFieldsToRecord(collection.fields, model);
+                        if (successCallback) {
+                            successCallback(model, response);
+                        }
+                    }
+                });
             },
             destroyMap: function (map) {
                 const datasets = map.get('layers').map(layer => {

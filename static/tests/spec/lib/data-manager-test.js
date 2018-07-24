@@ -339,5 +339,18 @@ define([
                 expect(this.dataManager.getDatasets().length).toEqual(3);
 
             });
+
+            it("addRecordToCollection works as expected", function () {
+                let dummy = 0;
+                const callback = () => {
+                    ++dummy;
+                };
+                expect(this.dataset_2.length).toEqual(18);
+                this.dataManager.addRecordToCollection(this.dataset_2, callback);
+                expect(this.dataset_2.length).toEqual(19);
+                // check that the callback function was actually called:
+                expect(dummy).toEqual(1);
+
+            });
         });
     });

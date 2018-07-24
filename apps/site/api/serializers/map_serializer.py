@@ -7,6 +7,7 @@ import uuid
 from django.conf import settings
 from localground.apps.site.api.serializers.layer_serializer import \
     LayerSerializer
+import hashlib
 
 
 # Validators:
@@ -51,6 +52,7 @@ class MetadataValidator(object):
         self.data = self.request.data  # immutable
         self.instance = serializer_field.parent.instance
         self.password = self.data.get('password')
+        print self.password
         self.accessLevel = self._get_metadata().get('accessLevel')
 
     def _has_existing_password(self):
@@ -195,33 +197,26 @@ class MapSerializerDetail(MapSerializerList):
         style={'input_type': 'password'}
     )
 
+    def _encrypt_password(self, validated_data):
+        password = validated_data.get('password')
+        if password is not None:
+            if len(password) > 0:
+                md5 = hashlib.md5(password)
+                validated_data['password'] = md5.hexdigest()
+            else:
+                del validated_data['password']
+
+    def update(self, instance, validated_data):
+        self._encrypt_password(validated_data)
+        return super(MapSerializerDetail, self).update(
+            instance, validated_data)
+
     def get_layers(self, obj):
         layers = models.Layer.objects.filter(styled_map=obj)
         return LayerSerializer(layers, many=True, context={'request': {}}).data
 
     def get_layers_url(self, obj):
         return '%s/api/0/maps/%s/layers/' % (settings.SERVER_URL, obj.id)
-
-    # def validate_permissions(self, instance, validated_data):
-    #     if self.is_password_protected(validated_data):
-    #         # If a new password hasn't been passed in,
-    #         # don't clear out the old one:
-    #         if validated_data.get('password') is None or \
-    #                 validated_data.get('password') == '':
-    #             if instance.password:
-    #                 validated_data['password'] = instance.password
-    #             else:
-    #                 raise serializers.ValidationError(
-    #                     'A password of at least three characters is required.')
-    #     else:
-    #         # Map is not password protected, so clear out old password:
-    #         validated_data['password'] = None
-    #     return validated_data
-
-    # def update(self, instance, validated_data):
-    #     # validated_data = self.validate_permissions(instance, validated_data)
-    #     return super(MapSerializerDetail, self).update(
-    #         instance, validated_data)
 
     class Meta:
         model = models.StyledMap

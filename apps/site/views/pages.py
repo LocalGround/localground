@@ -33,7 +33,6 @@ def style_guide_pages(request, page_name='banners'):
 class PublicView(TemplateView):
 
     def __init__(self, *args, **kwargs):
-        self.password = None
         self.map = None
         return super(TemplateView, self).__init__(*args, **kwargs)
 
@@ -47,7 +46,7 @@ class PublicView(TemplateView):
 
     def _has_access(self):
         if self.map.is_password_protected():
-            return self.access_key == self.map.password
+            return self.map.check_password(self.access_key)
         else:
             return True
 
@@ -56,13 +55,14 @@ class PublicView(TemplateView):
         self.access_key = request.POST.get('access_key')
         self.map = StyledMap.objects.get(slug=kwargs.get('map_slug'))
         context = self.get_context_data(*args, **kwargs)
-        if self.password != self.map.password:
+        if not self.map.check_password(self.access_key):
             context.update({
                 'error': 'Incorrect Password'
             })
-            return super(TemplateView, self).render_to_response(context)
+        return super(TemplateView, self).render_to_response(context)
 
     def dispatch(self, request, *args, **kwargs):
+        print 'dispatch'
         self.access_key = request.GET.get('access_key')
         self.map = self._get_map(kwargs.get('map_slug'))
         return super(PublicView, self).dispatch(request, *args, **kwargs)

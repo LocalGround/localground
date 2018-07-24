@@ -123,17 +123,18 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
         super(Photo, self).delete(*args, **kwargs)
 
     def rotate_left(self):
-        self.__rotate(degrees=90)
+        self.__rotate(degrees=Image.ROTATE_270)
 
     def rotate_right(self):
-        self.__rotate(degrees=270)
+        self.__rotate(degrees=Image.ROTATE_90)
 
     def __rotate(self, degrees):
         # 1. retrieve file from S3 and convert to PIL image:
         im = self.django_file_field_to_pil(self.media_file_orig)
 
         # 2. Do the rotation:
-        im = im.rotate(degrees)
+        # http://effbot.org/imagingbook/image.htm#tag-Image.Image.transpose
+        im = im.transpose(degrees)
 
         # 3. Generate the thumbnails
         base_name, ext = os.path.splitext(self.media_file_orig.name)

@@ -57,7 +57,6 @@ define([
         },
 
         showPresentationOptions: function(e) {
-            console.log('pres options!');
             this.popover.update({
                 $source: e.target,
                 view: new PresentationOptions({

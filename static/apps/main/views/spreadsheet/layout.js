@@ -10,6 +10,9 @@ define(["marionette",
                 spreadsheetRegion: '.spreadsheet-container',
                 toolbarRegion: '.spreadsheet-toolbar'
             },
+            events: {
+                'click #add-row': 'addRow'
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.template = Handlebars.compile(LayoutTemplate);
@@ -17,19 +20,30 @@ define(["marionette",
             onRender: function () {
                 this.showSpreadsheet();
             },
+            addRow: function (e) {
+                this.getSpreadsheet().addRow();
+                if (e) {
+                    e.preventDefault();
+                }
+            },
 
             showMenu: function () {
                 console.log('showMenu');
             },
+            getSpreadsheet: function () {
+                if (!this.spreadsheet) {
+                    this.spreadsheet = new Spreadsheet({
+                        app: this.app,
+                        collection: this.collection,
+                        fields: this.collection.getFields(),
+                        layer: this.layer,
+                        height: $(window).height() - 180
+                    });
+                }
+                return this.spreadsheet;
+            },
             showSpreadsheet: function () {
-                const spreadsheet = new Spreadsheet({
-                    app: this.app,
-                    collection: this.collection,
-                    fields: this.collection.getFields(),
-                    layer: this.layer,
-                    height: $(window).height() - 180
-                });
-                this.spreadsheetRegion.show(spreadsheet)
+                this.spreadsheetRegion.show(this.getSpreadsheet());
             }
 
         });
