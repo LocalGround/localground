@@ -19,6 +19,8 @@ define([
                 app: scope.app,
                 activeMap: scope.dataManager.getMaps().at(0)
             });
+
+            scope.editTitleCard.render();
         };
 
         describe("EditTitleCard", function () {
@@ -30,6 +32,19 @@ define([
                 this.editTitleCard.render();
                 expect(this.editTitleCard.$el).toContainElement('.title-card_title');
                 expect(this.editTitleCard.$el).toContainElement('.title-card_textarea');
-            });        
+            }); 
+            
+            it("saveTitleCard() works", function() {
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.header).toEqual(null);
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.description).toEqual(null);
+
+                this.editTitleCard.$el.find('.title-card_title').val('Test Title 22');
+                this.editTitleCard.$el.find('.title-card_textarea').val('This is the description for this map');
+
+                this.editTitleCard.saveTitleCard();
+
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.header).toEqual('Test Title 22');
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.description).toEqual('This is the description for this map');
+            });
         });
     });

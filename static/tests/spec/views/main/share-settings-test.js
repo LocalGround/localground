@@ -73,7 +73,33 @@ define([
             });
 
             it("saveShareSettings() works", function() {
-                expect(1).toEqual(1);
+                expect(this.shareSettings.activeMap.get('metadata').accessLevel).toEqual(2);
+                this.shareSettings.$el.find('input[name=rb]:checked').val(1);
+                this.shareSettings.$el.find('#password-input').val('testpassword777');
+
+                this.shareSettings.saveShareSettings();
+                expect(this.shareSettings.activeMap.get('metadata').accessLevel).toEqual(1);
+                expect(this.shareSettings.activeMap.get('password')).toEqual('testpassword777');
+            });
+
+            it("togglePWVisibility() works", function() {
+
+                expect(this.shareSettings.$el.find('#password-input').prop('type')).toEqual('password');
+                expect(this.shareSettings.$el.find('.toggle-pw-visibility')).toHaveClass('fa-eye');
+                expect(this.shareSettings.$el.find('.toggle-pw-visibility')).not.toHaveClass('fa-eye-slash');
+
+                this.shareSettings.$el.find('.toggle-pw-visibility').click();
+
+                expect(this.shareSettings.$el.find('#password-input').prop('type')).toEqual('text');
+                expect(this.shareSettings.$el.find('.toggle-pw-visibility')).not.toHaveClass('fa-eye');
+                expect(this.shareSettings.$el.find('.toggle-pw-visibility')).toHaveClass('fa-eye-slash');
+
+                this.shareSettings.$el.find('.toggle-pw-visibility').click();
+
+                expect(this.shareSettings.$el.find('#password-input').prop('type')).toEqual('password');
+                expect(this.shareSettings.$el.find('.toggle-pw-visibility')).toHaveClass('fa-eye');
+                expect(this.shareSettings.$el.find('.toggle-pw-visibility')).not.toHaveClass('fa-eye-slash');
+
             });
         });
     });
