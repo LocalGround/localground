@@ -835,25 +835,32 @@ define(["jquery",
                 }
             },
             addRow: function (top) {
-                const rec = new Record(
-                    { project_id: this.app.getProjectID() },
-                    { urlRoot: this.collection.url }
-                );
-                rec.save(null, {
-                    success: (model, response) => {
-                        if (top) {
-                            console.log('adding top...')
-                            this.collection.add(model, {at: 0});
-                        } else {
-                            console.log('adding bottom...')
-                            this.collection.add(model);
-                        }
+                this.app.dataManager.addRecordToCollection(
+                    this.collection, (model, response) => {
                         this.renderSpreadsheet();
                         this.$el.find('.wtHolder').animate({
                             scrollTop: top ? 0 : 10000 //scroll to either top or bottom
                         });
-                    }
-                });
+                    });
+                // const rec = new Record(
+                //     { project_id: this.app.getProjectID() },
+                //     { urlRoot: this.collection.url }
+                // );
+                // rec.save(null, {
+                //     success: (model, response) => {
+                //         if (top) {
+                //             console.log('adding top...')
+                //             this.collection.add(model, {at: 0});
+                //         } else {
+                //             console.log('adding bottom...')
+                //             this.collection.add(model);
+                //         }
+                //         this.renderSpreadsheet();
+                //         this.$el.find('.wtHolder').animate({
+                //             scrollTop: top ? 0 : 10000 //scroll to either top or bottom
+                //         });
+                //     }
+                // });
             },
             refreshHeaders: function () {
                 this.table.updateSettings({
