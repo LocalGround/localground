@@ -46,9 +46,6 @@ define([
                     }
                 }
             );
-                
-            
-
         }
     });
     return EditTitleCard;

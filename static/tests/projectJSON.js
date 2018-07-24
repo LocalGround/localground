@@ -2035,6 +2035,19 @@ var __projectJSON = {
           },
           "basemap": 5,
           "zoom": 9,
+          "metadata": {
+            "displayLegend": true,
+            "nextPrevButtons": false,
+            "allowPanZoom": true,
+            "displayTitleCard": true,
+            "titleCardInfo": {
+                "header": null,
+                "description": null,
+                "photo_ids": []
+            },
+            "streetview": true,
+            "accessLevel": 2
+          },
           "panel_styles": {
             "display_legend": true,
             "paragraph": {
@@ -2093,6 +2106,19 @@ var __projectJSON = {
           },
           "basemap": 5,
           "zoom": 12,
+          "metadata": {
+            "displayLegend": true,
+            "nextPrevButtons": false,
+            "allowPanZoom": true,
+            "displayTitleCard": true,
+            "titleCardInfo": {
+                "header": null,
+                "description": null,
+                "photo_ids": []
+            },
+            "streetview": true,
+            "accessLevel": 2
+          },
           "panel_styles": {
             "display_legend": true,
             "title": {
