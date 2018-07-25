@@ -3,15 +3,23 @@ define([
     "underscore",
     "handlebars",
     "marionette",
+    "views/add-media",
+    "lib/modals/modal",
     "text!../templates/edit-title-card.html"
-], function (_, Handlebars, Marionette, EditTitleCardTemplate) {
+], function (_, Handlebars, Marionette, AddMedia, Modal, EditTitleCardTemplate) {
     "use strict";
     var EditTitleCard = Marionette.ItemView.extend({
         template: Handlebars.compile(EditTitleCardTemplate),
         initialize: function (opts) {
             _.extend(this, opts);
             this.modal = this.app.modal;
+            this.secondaryModal = new Modal({
+                app: this.app
+            });
             this.popover = this.app.popover;
+        },
+        events: {
+            'click .photo-icon_wrapper': 'showMediaBrowser'
         },
 
         className: 'edit-title-card-menu',
@@ -46,6 +54,26 @@ define([
                     }
                 }
             );
+        },
+        showMediaBrowser: function (e) {
+            console.log('show media browser');
+            var uploadAttachMedia = new AddMedia({
+                app: this.app,
+                parentModel: this.model
+            });
+            this.secondaryModal.update({
+                title: 'Media Browser',
+                //width: 1100,
+                //height: 400,
+                view: uploadAttachMedia,
+                saveButtonText: "Add",
+                showDeleteButton: false,
+                showSaveButton: true,
+                saveFunction: uploadAttachMedia.addModels.bind(uploadAttachMedia),
+            });
+            this.secondaryModal.show();
+            uploadAttachMedia.showUploader();
+            e.preventDefault();
         }
     });
     return EditTitleCard;
