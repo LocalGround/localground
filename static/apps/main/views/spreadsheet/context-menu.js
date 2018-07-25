@@ -2,18 +2,19 @@ define(["underscore",
         "marionette",
         "handlebars",
         'apps/main/views/spreadsheet/rename-field',
+        'apps/main/views/spreadsheet/add-field',
         "text!../../templates/spreadsheet/context-menu.html",
         "lib/modals/modal"
     ],
-    function (_, Marionette, Handlebars, RenameField, ContextMenuTemplate, Modal) {
+    function (_, Marionette, Handlebars, RenameField, AddField, ContextMenuTemplate, Modal) {
         'use strict';
 
         var SpreadsheetMenu =  Marionette.ItemView.extend({
             events: {
                 'click .sort-asc': 'sortAsc',
                 'click .sort-desc': 'sortDesc',
-                'click .insert-col-before': 'itemClicked',
-                'click .insert-col-after': 'itemClicked',
+                'click .insert-col-before': 'addFieldBefore',
+                'click .insert-col-after': 'addFieldAfter',
                 'click .duplicate-col': 'itemClicked',
                 'click .delete-col': 'deleteColumn',
                 'click .rename-col': 'renameColumn'
@@ -94,6 +95,36 @@ define(["underscore",
                     }
                 });
                 this.popover.hide();
+            },
+
+            addField: function (ordering, e) {
+                const addFieldForm = new AddField({
+                    app: this.app,
+                    dataset: this.collection,
+                    sourceModal: this.secondaryModal,
+                    ordering: ordering
+                });
+
+                this.secondaryModal.update({
+                    app: this.app,
+                    view: addFieldForm,
+                    title: 'Add New Column',
+                    width: '300px',
+                    showSaveButton: true,
+                    saveFunction: addFieldForm.saveField.bind(addFieldForm),
+                    showDeleteButton: false
+                });
+                this.secondaryModal.show();
+                this.popover.hide();
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+            addFieldBefore: function (e) {
+                this.addField(this.columnID, e);
+            },
+            addFieldAfter: function (e) {
+                this.addField(this.columnID + 1, e);
             }
 
         });

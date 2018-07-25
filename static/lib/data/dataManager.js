@@ -192,6 +192,18 @@ define(["underscore", "marionette", "models/project", "models/record",
                     }
                 });
             },
+            addFieldToCollection: function (collection, field, successCallback) {
+                field.save(null, {
+                    success: (model, response) => {
+                        collection.fields.add(model);
+                        // this.__attachFieldsToRecord(collection.fields, model);
+                        this.__attachFieldsToRecords(collection.fields, collection);
+                        if (successCallback) {
+                            successCallback(model, response);
+                        }
+                    }
+                });
+            },
             destroyMap: function (map) {
                 const datasets = map.get('layers').map(layer => {
                     return layer.get('dataset');

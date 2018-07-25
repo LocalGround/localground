@@ -38,6 +38,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
             initialize: function (data, opts) {
                 // This had to be made dynamic because there are different Fields
                 // for each form
+                console.log(data, opts)
                 if (this.collection && this.collection.url) {
                     this.baseURL = this.collection.url();
                 } else if (opts.id) {
