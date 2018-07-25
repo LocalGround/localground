@@ -254,6 +254,11 @@ define(["underscore", "marionette", "models/project", "models/record",
                 }
                 return this.__dataDictionary[dataType];
             },
+
+            getPhoto: function(photoId) {
+                return this.getCollection('photos').get(photoId);
+            },  
+
             getDatasets: function () {
                 return this.__getCollections().filter(collection => {
                     return collection.getIsCustomType();

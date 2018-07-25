@@ -80,7 +80,7 @@ define([
         },
         attachMedia: function (models) {
             models.forEach((model)=> {
-                this.activeMap.get('metadata').titleCardInfo.photo_ids.push(model)
+                this.activeMap.get('metadata').titleCardInfo.photo_ids.push(model.id)
             });
 
             this.activeMap.save(null, {
