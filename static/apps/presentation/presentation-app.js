@@ -146,8 +146,6 @@ define([
         },
 
         showTitleCard: function() {
-            console.log('show title card bro');
-
             const titleCardModel = new Backbone.Model({
                 id: 1,
                 title: this.model.get('metadata').titleCardInfo.header,

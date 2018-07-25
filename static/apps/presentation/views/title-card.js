@@ -21,11 +21,11 @@ define(["underscore",
                 }
             },
             onRender: function () {
-                if (this.model.get('photoList') > 0) {
+                if (this.model.get('photoList').length > 0) {
                     const carousel = new Carousel({
                         model: this.model,
                         app: this.app,
-                        mode: "photos",
+                        mode: "videos",
                         collection: new Backbone.Collection(this.model.get('photoList')),
                         panelStyles: null
                     });

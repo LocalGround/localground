@@ -60,7 +60,6 @@ define([
             );
         },
         showMediaBrowser: function (e) {
-            console.log('show media browser');
             var uploadAttachMedia = new AddMedia({
                 app: this.app,
                 parentModel: this.model
@@ -80,8 +79,17 @@ define([
             e.preventDefault();
         },
         attachMedia: function (models) {
-            console.log('do something with these models:', models);
-            alert(models);
+            models.forEach((model)=> {
+                this.activeMap.get('metadata').titleCardInfo.photo_ids.push(model)
+            });
+
+            this.activeMap.save(null, {
+                success: () => {
+                    this.secondaryModal.hide();
+                }
+            }
+        );
+            
         }
     });
     return EditTitleCard;
