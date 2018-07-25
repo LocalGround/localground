@@ -82,6 +82,7 @@ define([
             if (this.parentModel) {
                 this.app.vent.trigger('success-message', "The form was saved successfully");
                 this.parentModel.trigger('add-models-to-marker', [ model ])
+                this.parentModel.trigger('add-media-to-model', [ model ]);
                 this.app.vent.trigger('add-models-to-marker', [ model ]);
             }
 

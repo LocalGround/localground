@@ -450,6 +450,7 @@ define([
                 selectedModels.push(model);
             });
             this.parentModel.trigger('add-models-to-marker', selectedModels);
+            this.parentModel.trigger('add-media-to-model', selectedModels);
         }
     });
     return CreateMediaView;

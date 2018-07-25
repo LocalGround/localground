@@ -11,6 +11,7 @@ define([
     var EditTitleCard = Marionette.ItemView.extend({
         template: Handlebars.compile(EditTitleCardTemplate),
         initialize: function (opts) {
+            opts.model = opts.activeMap;
             _.extend(this, opts);
             this.modal = this.app.modal;
             this.secondaryModal = new Modal({
@@ -20,6 +21,9 @@ define([
         },
         events: {
             'click .photo-icon_wrapper': 'showMediaBrowser'
+        },
+        modelEvents: {
+            'add-media-to-model': 'attachMedia'
         },
 
         className: 'edit-title-card-menu',
@@ -74,6 +78,10 @@ define([
             this.secondaryModal.show();
             uploadAttachMedia.showUploader();
             e.preventDefault();
+        },
+        attachMedia: function (models) {
+            console.log('do something with these models:', models);
+            alert(models);
         }
     });
     return EditTitleCard;
