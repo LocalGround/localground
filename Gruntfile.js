@@ -47,27 +47,12 @@ module.exports = function (grunt) {
 						['./static/build/home.js']
 				}
 			},
-            //Note: minification doesn't work for ES6. Need a transpiler
-            // task
-            // style: {
-			// 	files: {
-            //         './static/build/style.min.js':
-			// 			['./static/build/style.js']
-			// 	}
-			// },
-
             main: {
                 files: {
                     './static/build/main.min.js':
 						['./static/build/main.js']
 				}
 	        },
-			// dataviewer: {
-			// 	files: {
-            //         './static/build/dataviewer.min.js':
-			// 			['./static/build/dataviewer.js']
-			// 	}
-			// },
 			presentation: {
 				files: {
                     './static/build/presentation.min.js':
@@ -80,22 +65,12 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-uglify-es');
-    //grunt.loadNpmTasks('grunt-contrib-uglify');
-    //grunt.loadNpmTasks('grunt-es6-transpiler');
     grunt.registerTask('default', ['requirejs', 'uglify'])
 
-    //grunt.registerTask('default', ['requirejs', 'es6transpiler', 'uglify']);
-    //grunt.registerTask('default', ['requirejs', 'transpile']);
 };
 
 
 /*
-#sudo apt-get install nodejs
-#sudo apt-get install npm
-#sudo npm install -g grunt-cli
-#sudo ln -s /usr/bin/nodejs /usr/bin/node
-cd /localground
-npm update -g npm
-npm install
-grunt
+$ npm install  // installs package.json file
+$ grunt
 */
