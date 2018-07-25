@@ -54,6 +54,7 @@ define(["jquery",
                 this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'update', this.renderSpreadsheet);
+                this.listenTo(this.fields, 'add', this.renderSpreadsheet);
 
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
@@ -149,6 +150,7 @@ define(["jquery",
             },
             renderSpreadsheet: function () {
                 console.log('rendering spreadsheet...');
+                console.log(this.fields.length, this.fields);
                 const data = this.collection.map(model => {
                     var rec = model.toJSON();
                     if (rec.tags) {

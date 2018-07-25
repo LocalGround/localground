@@ -195,9 +195,8 @@ define(["underscore", "marionette", "models/project", "models/record",
             addFieldToCollection: function (collection, field, successCallback) {
                 field.save(null, {
                     success: (model, response) => {
-                        collection.fields.add(model);
-                        // this.__attachFieldsToRecord(collection.fields, model);
                         this.__attachFieldsToRecords(collection.fields, collection);
+                        collection.fields.add(model);
                         if (successCallback) {
                             successCallback(model, response);
                         }

@@ -22,6 +22,7 @@ define(["underscore",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.fieldIndex = this.columnID - 3; //to account for admin columns
                 this.modal = this.app.modal;
                 this.popover = this.app.popover;
                 this.secondaryModal = new Modal({
@@ -86,7 +87,8 @@ define(["underscore",
                 if (!confirm("Do you want to delete this field?")){
                     return;
                 }
-                this.fields.at(this.columnID).destroy({
+                console.log(this.fields, this.fieldIndex);
+                this.fields.at(this.fieldIndex).destroy({
                     success: () => {
                         this.app.vent.trigger('render-spreadsheet');
                     },
@@ -121,10 +123,10 @@ define(["underscore",
                 }
             },
             addFieldBefore: function (e) {
-                this.addField(this.columnID, e);
+                this.addField(this.fieldIndex, e);
             },
             addFieldAfter: function (e) {
-                this.addField(this.columnID + 1, e);
+                this.addField(this.fieldIndex + 1, e);
             }
 
         });

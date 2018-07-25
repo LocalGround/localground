@@ -15,23 +15,23 @@ define ([
         var AddFieldView = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this.dataset.formID);
                 this.model = new Field(
                     {ordering: this.ordering},
                     {id: this.dataset.formID}
                 );
                 this.template = Handlebars.compile(AddFieldTemplate);
             },
-            error: null,
+            data_type_error: null,
+            col_alias_error: null,
             templateHelpers: function () {
                 var helpers = {
-                    col_type_error: this.col_type_error,
+                    data_type_error: this.data_type_error,
                     col_alias_error: this.col_alias_error
                 };
                 return helpers;
             },
             _clearErrorMessages: function () {
-                this.col_type_error = null;
+                this.data_type_error = null;
                 this.col_alias_error = null;
             },
             _validateColAlias: function () {
@@ -46,49 +46,30 @@ define ([
                 return true;
             },
             _validateColType: function () {
-                const col_type = this.$el.find('#col_type').val();
-                if (['a', 'b', 'c'].includes(col_type)) {
-                    this.model.set('col_type', col_type);
+                const data_type = this.$el.find('#data_type').val();
+
+                if (['text', 'integer', 'boolean', 'choice', 'date-time'].includes(data_type)) {
+                    this.model.set('data_type', data_type);
                 } else {
-                    this.col_type_error = "A valid column type is required";
+                    this.data_type_error = "A valid data type is required";
                     this.render();
                     return false;
                 }
                 return true;
             },
-
             saveField: function() {
                 this._clearErrorMessages();
                 if (!this._validateColAlias() || !this._validateColType()) {
-                    console.log(errors);
                     return;
                 }
                 this.app.dataManager.addFieldToCollection(
                     this.dataset,
                     this.model,
-                    () => { console.log('callback'); }
+                    () => {
+                        this.sourceModal.hide();
+                    }
                 );
-                // this.model.save(null, {
-                //     dataType:"text",
-                //     success: (model, response) => {
-                //         if (typeof(response) === 'string') {
-                //             response = JSON.parse(response);
-                //         }
-                //         this.model.set('col_name', response.col_name);
-                //         this.reloadDataset();
-                //         this.app.vent.trigger('field-updated');
-                //         this.sourceModal.hide();
-                //     },
-                //     error: (model, response) => {
-                //         try {
-                //             response = JSON.parse(response.responseText);
-                //             this.app.vent.trigger('error-message', response.detail);
-                //         } catch (e) {
-                //             console.error(e);
-                //             this.app.vent.trigger('error-message', response.responseText);
-                //         }
-                //     }
-                // });
+
 
             }
             // reloadDataset: function () {
