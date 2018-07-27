@@ -2043,7 +2043,7 @@ var __projectJSON = {
             "titleCardInfo": {
                 "header": 'Test Map Title',
                 "description": 'Test description of the map.',
-                "photo_ids": []
+                "photo_ids": [7, 14, 15]
             },
             "streetview": true,
             "accessLevel": 2

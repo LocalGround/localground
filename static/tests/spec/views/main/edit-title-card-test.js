@@ -35,8 +35,8 @@ define([
             }); 
             
             it("saveTitleCard() works", function() {
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.header).toEqual(null);
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.description).toEqual(null);
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.header).toEqual('Test Map Title');
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.description).toEqual('Test description of the map.');
 
                 this.editTitleCard.$el.find('.title-card_title').val('Test Title 22');
                 this.editTitleCard.$el.find('.title-card_textarea').val('This is the description for this map');
@@ -47,8 +47,29 @@ define([
                 expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.description).toEqual('This is the description for this map');
             });
 
-            it("display any attached photos", function() {
-                expect(this.editTitleCard.$el.find('photos').length).toEqual(3);
+            it("attachMedia() works", function() {
+                expect(EditTitleCard.prototype.render).toHaveBeenCalledTimes(1);
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.length).toEqual(3);
+
+                // photo 7 already in list. Test to make sure it doesn't gett added again.
+                const photoObjs = [{id: 23}, {id: 25}, {id: 7}]; 
+
+                this.editTitleCard.attachMedia(photoObjs);
+
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.length).toEqual(5);
+
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.includes(23)).toEqual(true);
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.includes(25)).toEqual(true);
+                
+
+                expect(EditTitleCard.prototype.render).toHaveBeenCalledTimes(2);
+                
+            });
+
+
+            it("displays attached photos", function() {
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.length).toEqual(3);
+                expect(this.editTitleCard.$el.find('.photo-attached').length).toEqual(3);
             }); 
         });
     });
