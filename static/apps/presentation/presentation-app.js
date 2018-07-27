@@ -162,6 +162,7 @@ define([
             this.unhideDetail();
 
             this.sideRegion.show(titleCardView);
+            console.log(this.sideRegion);
         },
 
         showMediaDetail: function (opts) {

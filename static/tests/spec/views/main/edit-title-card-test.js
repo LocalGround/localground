@@ -46,5 +46,9 @@ define([
                 expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.header).toEqual('Test Title 22');
                 expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.description).toEqual('This is the description for this map');
             });
+
+            it("display any attached photos", function() {
+                expect(this.editTitleCard.$el.find('photos').length).toEqual(3);
+            }); 
         });
     });

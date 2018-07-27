@@ -7,5 +7,16 @@
         <label class="title-card_label">(Introductory Text)</label>
         <textarea class="title-card_textarea" placeholder="Provide some text to introduce your map. You can include images.">{{description}}</textarea>
     </div>
+    {{#each media}}
+        <div class="attached-container photo-attached">
+            <div class="attached-media" style="background: url('{{this.path}}');"></div>
+            <div class="attached-media-overlay">
+                <div class="hover-to-show">
+                    <i class="fa fa-times detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>
+                    <p>Featured</p>
+                </div>
+            </div>
+        </div>
+    {{/each}}
     <span class="photo-icon_wrapper"><i class="fas fa-image"></i></span>
 </form>

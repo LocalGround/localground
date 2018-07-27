@@ -2041,8 +2041,8 @@ var __projectJSON = {
             "allowPanZoom": true,
             "displayTitleCard": true,
             "titleCardInfo": {
-                "header": null,
-                "description": null,
+                "header": 'Test Map Title',
+                "description": 'Test description of the map.',
                 "photo_ids": []
             },
             "streetview": true,

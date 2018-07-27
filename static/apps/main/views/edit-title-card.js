@@ -20,7 +20,8 @@ define([
             this.popover = this.app.popover;
         },
         events: {
-            'click .photo-icon_wrapper': 'showMediaBrowser'
+            'click .photo-icon_wrapper': 'showMediaBrowser',
+            'click .detach_media': 'detachMedia'
         },
         modelEvents: {
             'add-media-to-model': 'attachMedia'
@@ -31,6 +32,19 @@ define([
         templateHelpers: function () {
             let header, description;
 
+            let media = [];
+            this.activeMap.get('metadata').titleCardInfo.photo_ids.forEach((photoId) => {
+                let photo = this.app.dataManager.getPhoto(photoId);
+                if (photo) {
+                    media.push({
+                        path: photo.get('path_medium'),
+                        id: photo.id
+                    });
+                }
+            });
+
+            console.log(media);
+
             // once map metadata is fully implemented, these conditional statements can be removed
             if (this.activeMap.get('metadata')) {
                 if (this.activeMap.get('metadata').titleCardInfo) {
@@ -40,7 +54,8 @@ define([
             }
             return {
                 header: header,
-                description: description
+                description: description,
+                media: media
             };
         },
 
@@ -78,18 +93,36 @@ define([
             uploadAttachMedia.showUploader();
             e.preventDefault();
         },
+
         attachMedia: function (models) {
+            let list = this.activeMap.get('metadata').titleCardInfo.photo_ids; // pointer
             models.forEach((model)=> {
-                this.activeMap.get('metadata').titleCardInfo.photo_ids.push(model.id)
+                if (!list.includes(model.id)) {
+                    list.push(model.id)
+                }
             });
 
             this.activeMap.save(null, {
                 success: () => {
                     this.secondaryModal.hide();
+                    this.render();
                 }
-            }
-        );
-            
+            });
+        },
+
+        detachMedia: function(e) {
+            const idToBeRemoved = parseInt(e.target.dataset.id);
+            const mediaList = this.activeMap.get('metadata').titleCardInfo.photo_ids.filter((item) => {
+                return item !== idToBeRemoved;
+            });
+
+            this.activeMap.get('metadata').titleCardInfo.photo_ids = mediaList;
+
+            this.activeMap.save(null, {
+                success: () => {
+                    this.render();
+                }
+            });
         }
     });
     return EditTitleCard;
