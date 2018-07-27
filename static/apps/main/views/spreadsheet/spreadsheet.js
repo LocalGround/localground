@@ -614,6 +614,9 @@ define(["jquery",
                         '</span>' +
                         menuButton
                     );
+                    // cols.push(
+                    //     this.fields.at(i).get("col_alias") + menuButton
+                    // );
                 }
                 cols.push("Media");
                 cols.push("Delete");

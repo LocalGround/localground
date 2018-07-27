@@ -1,5 +1,5 @@
 from django.conf import settings
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from localground.apps.site import models
 from localground.apps.site.api.serializers.base_serializer import \
     AuditSerializerMixin
@@ -67,6 +67,38 @@ class AssociationSerializer(AuditSerializerMixin, serializers.ModelSerializer):
 class AssociationSerializerDetail(AssociationSerializer):
     parent = serializers.SerializerMethodField()
     child = serializers.SerializerMethodField()
+
+    def reorder_sibling_media(self, instance, ordering):
+        if ordering is not None:
+            try:
+                new_index = int(ordering) - 1
+            except Exception:
+                raise exceptions.ValidationError(
+                    'ordering value of {0} is not valid'.format(ordering))
+
+            entities = list(
+                instance.source_object.entities.all().order_by('ordering',)
+            )
+            current_index = entities.index(instance)
+
+
+
+
+            # move instance from current index to new index:
+            entities.insert(new_index, entities.pop(current_index))
+
+            # commit re-ordered values to database:
+            counter = 1
+            for entity in entities:
+                entity.ordering = counter
+                entity.save()
+                counter += 1
+
+    def update(self, instance, validated_data):
+        # re-sort list of entities:
+        self.reorder_sibling_media(instance, validated_data.get('ordering'))
+        return super(
+            AssociationSerializerDetail, self).update(instance, validated_data)
 
     class Meta:
         model = models.GenericAssociation
