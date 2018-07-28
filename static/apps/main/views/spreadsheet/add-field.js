@@ -16,8 +16,8 @@ define ([
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.model = new Field(
-                    {ordering: this.ordering},
-                    {id: this.dataset.formID}
+                    { ordering: this.ordering },
+                    { id: this.dataset.formID }
                 );
                 this.template = Handlebars.compile(AddFieldTemplate);
             },
@@ -57,50 +57,18 @@ define ([
                 }
                 return true;
             },
-            saveField: function() {
+            saveField: function () {
                 this._clearErrorMessages();
                 if (!this._validateColAlias() || !this._validateColType()) {
                     return;
                 }
                 this.app.dataManager.addFieldToCollection(
-                    this.dataset,
-                    this.model,
-                    () => {
-                        this.sourceModal.hide();
-                    }
+                    this.dataset, this.model, this.afterSave.bind(this)
                 );
-
-
+            },
+            afterSave: function () {
+                this.sourceModal.hide();
             }
-            // reloadDataset: function () {
-            //     /*
-            //      * This method synchronizes the field rename with any
-            //      * dependent models in the dataManager:
-            //      *   1. Re-queries the dataset (to refresh column headings)
-            //      *   2. If necessary, requeries the layer
-            //      *     (to update the symbol rules and group_by attribute)
-            //      */
-            //     this.dataset.fetch({
-            //         success: this.reloadDependentLayers.bind(this)
-            //     });
-            // },
-            // reloadDependentLayers: function () {
-            //     // if the current field no longer exists and there's a
-            //     // field dependency, then the active field has been
-            //     // renamed...requires further coordination across
-            //     // dependent layers:
-            //     const layers = this.dataset.getDependentLayers(this.app.dataManager);
-            //     layers.forEach(layer => {
-            //         if (layer.hasFieldDependency() && !layer.getGroupByField(this.app.dataManager)) {
-            //             layer.refreshFromServer();
-            //         }
-            //     });
-            // },
-            // onShow: function () {
-            //     setTimeout(() => {
-            //         this.$el.find('#col_alias').focus().select();
-            //     }, 50);
-            // }
         });
         return AddFieldView;
 

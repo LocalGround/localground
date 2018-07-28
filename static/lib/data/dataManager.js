@@ -192,14 +192,21 @@ define(["underscore", "marionette", "models/project", "models/record",
                     }
                 });
             },
-            addFieldToCollection: function (collection, field, successCallback) {
+            addFieldToCollection: function (dataset, field, successCallback) {
                 field.save(null, {
-                    success: (model, response) => {
-                        this.__attachFieldsToRecords(collection.fields, collection);
-                        collection.fields.add(model);
-                        if (successCallback) {
-                            successCallback(model, response);
-                        }
+                    success: (fieldModel, response) => {
+                        // after field saved, re-fetch dataset from server:
+                        dataset.fetch({
+                            success: () => {
+                                //after dataset refreshed, attach fields:
+                                console.log(dataset.fields);
+                                dataset.fields.add(fieldModel);
+                                this.__attachFieldsToRecords(dataset.fields, dataset);
+                                if (successCallback) {
+                                    successCallback(fieldModel, response);
+                                }
+                            }
+                        });
                     }
                 });
             },

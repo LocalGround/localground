@@ -369,64 +369,22 @@ define(["jquery",
                 return td;
             },
 
-            mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
-                return;
+            mediaCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 var model = this.getModelFromCell(instance, row);
-
-                // There are two possible places to extract
-                // count of media types
-                var photoIds= model.get("attached_photos_ids"),
-                    audioIds= model.get("attached_audio_ids"),
-                    videoIds= model.get("attached_videos_ids");
-
-                var photoCollection = null,
-                    audioCollection = null,
-                    videoCollection = null;
-                    if (model.get("media")){
-                        photoCollection = model.get("media").photos
-                        audioCollection = model.get("media").audio
-                        videoCollection = model.get("media").videos
-                    }
-
-                var photoCount = 0,
-                    audioCount = 0,
-                    videoCount = 0,
-                    i;
-
-                // Make sure to check for two sources for length of media:
-                // option 1 - #media#_ids.length
-                // option 2 - #media#Collection.data.length
-                if (photoIds){
-                    photoCount = photoIds.length;
-                } else if (photoCollection){
-                    photoCount = photoCollection.data.length;
+                const photoCount = model.get("attached_photos_ids") ? model.get("attached_photos_ids").length : 0;
+                const audioCount = model.get("attached_audio_ids") ? model.get("attached_audio_ids").length : 0;
+                const videoCount = model.get("attached_videos_ids") ? model.get("attached_videos_ids").length : 0;
+                td.innerHTML = '';
+                if (photoCount) {
+                    td.innerHTML += `<p>photos: ${photoCount}</p>`
                 }
-
-                if (audioIds){
-                    audioCount = audioIds.length;
-                } else if (audioCollection){
-                    audioCount = audioCollection.data.length;
+                if (audioCount) {
+                    td.innerHTML += `<p>audio files: ${audioCount}</p>`
                 }
-
-                if (videoIds){
-                    videoCount = videoIds.length;
-                } else if (videoCollection){
-                    videoCount = videoCollection.data.length;
+                if (videoCount) {
+                    td.innerHTML += `<p>videos: ${videoCount}</p>`
                 }
-
-                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
-                for (i = 0; i < photoCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-media' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-                for (i = 0; i < audioCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-media' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-                for (i = 0; i < videoCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-media' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-video-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
+                return td;
 
             },
             showModal: function(carousel) {
@@ -633,6 +591,8 @@ define(["jquery",
                         cols.push(150);
                     }
                 })
+                cols.push(150);  // media column
+                cols.push(50);   // delete column
                 return cols;
             },
 

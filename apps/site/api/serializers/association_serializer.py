@@ -79,10 +79,10 @@ class AssociationSerializerDetail(AssociationSerializer):
             entities = list(
                 instance.source_object.entities.all().order_by('ordering',)
             )
+            # ensures that new_index is within bounds:
+            new_index = min(new_index, len(entities) - 1)
+            new_index = max(new_index, 0)
             current_index = entities.index(instance)
-
-
-
 
             # move instance from current index to new index:
             entities.insert(new_index, entities.pop(current_index))
@@ -94,9 +94,14 @@ class AssociationSerializerDetail(AssociationSerializer):
                 entity.save()
                 counter += 1
 
+            # return valid new index:
+            return new_index + 1
+        return ordering
+
     def update(self, instance, validated_data):
         # re-sort list of entities:
-        self.reorder_sibling_media(instance, validated_data.get('ordering'))
+        validated_data['ordering'] = self.reorder_sibling_media(
+            instance, validated_data.get('ordering'))
         return super(
             AssociationSerializerDetail, self).update(instance, validated_data)
 
