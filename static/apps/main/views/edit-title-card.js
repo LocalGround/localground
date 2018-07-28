@@ -43,8 +43,6 @@ define([
                 }
             });
 
-            console.log(media);
-
             // once map metadata is fully implemented, these conditional statements can be removed
             if (this.activeMap.get('metadata')) {
                 if (this.activeMap.get('metadata').titleCardInfo) {
@@ -112,11 +110,12 @@ define([
 
         detachMedia: function(e) {
             const idToBeRemoved = parseInt(e.target.dataset.id);
-            const mediaList = this.activeMap.get('metadata').titleCardInfo.photo_ids.filter((item) => {
+            const originalList = this.activeMap.get('metadata').titleCardInfo.photo_ids;
+            const newList = originalList.filter((item) => {
                 return item !== idToBeRemoved;
             });
 
-            this.activeMap.get('metadata').titleCardInfo.photo_ids = mediaList;
+            this.activeMap.get('metadata').titleCardInfo.photo_ids = newList;
 
             this.activeMap.save(null, {
                 success: () => {

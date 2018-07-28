@@ -61,11 +61,20 @@ define([
                 expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.includes(23)).toEqual(true);
                 expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.includes(25)).toEqual(true);
                 
-
                 expect(EditTitleCard.prototype.render).toHaveBeenCalledTimes(2);
-                
             });
 
+            it("detachMedia() works", function() {
+                expect(EditTitleCard.prototype.render).toHaveBeenCalledTimes(1);
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.includes(7)).toEqual(true);
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.length).toEqual(3);
+
+                this.editTitleCard.$el.find('.detach_media[data-id="7"]').click();
+
+                expect(EditTitleCard.prototype.render).toHaveBeenCalledTimes(2);
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.includes(7)).toEqual(false);
+                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.length).toEqual(2);
+            });
 
             it("displays attached photos", function() {
                 expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.length).toEqual(3);
