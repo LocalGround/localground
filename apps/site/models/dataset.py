@@ -90,7 +90,7 @@ class Dataset(NamedMixin, ProjectMixin, BaseAudit):
         return Layer.objects.filter(dataset=self)
 
     def get_records(self):
-        return Record.objects.filter(dataset=self)
+        return Record.objects.get_objects_with_lists(dataset=self)
 
     def save(self, user=None, *args, **kwargs):
         from localground.apps.lib.helpers import generic

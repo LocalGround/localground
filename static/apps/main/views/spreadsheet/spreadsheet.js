@@ -368,6 +368,36 @@ define(["jquery",
                 td.appendChild(i);
                 return td;
             },
+            photoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                const model = this.getModelFromCell(instance, row);
+                const photoIDs = model.get("attached_photos_ids") || [];
+                const content = photoIDs.map(id => {
+                    const imageURL = this.app.dataManager.getPhoto(id).get('path_marker_lg');
+                    return `<img src="${imageURL}" />`;
+                });
+                td.innerHTML = content.join('');
+                return td;
+            },
+
+            audioListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                const model = this.getModelFromCell(instance, row);
+                const count = model.get("attached_audio_ids") ? model.get("attached_audio_ids").length : 0;
+                td.innerHTML = '';
+                if (count) {
+                    td.innerHTML += `<p>audio files: ${count}</p>`
+                }
+                return td;
+            },
+
+            videoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                const model = this.getModelFromCell(instance, row);
+                const count = model.get("attached_videos_ids") ? model.get("attached_videos_ids").length : 0;
+                td.innerHTML = '';
+                if (count) {
+                    td.innerHTML += `<p>videos: ${count}</p>`
+                }
+                return td;
+            },
 
             mediaCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 var model = this.getModelFromCell(instance, row);
@@ -576,7 +606,9 @@ define(["jquery",
                     //     this.fields.at(i).get("col_alias") + menuButton
                     // );
                 }
-                cols.push("Media");
+                cols.push("Photos");
+                cols.push("Audio Files");
+                cols.push("Video");
                 cols.push("Delete");
                 return cols;
             },
@@ -591,7 +623,9 @@ define(["jquery",
                         cols.push(150);
                     }
                 })
-                cols.push(150);  // media column
+                cols.push(350);  // photos column
+                cols.push(150);  // audio column
+                cols.push(150);  // video column
                 cols.push(50);   // delete column
                 return cols;
             },
@@ -728,11 +762,10 @@ define(["jquery",
                         };
 
                         cols.push(
-                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
-                        );
-
-                        cols.push(
-                            {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
+                            { data: "media", renderer: this.photoListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            { data: "media", renderer: this.audioListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            { data: "media", renderer: this.videoListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );
                         return cols;
                 }
