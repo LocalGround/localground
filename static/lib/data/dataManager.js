@@ -196,17 +196,17 @@ define(["underscore", "marionette", "models/project", "models/record",
                 field.save(null, {
                     success: (fieldModel, response) => {
                         // after field saved, re-fetch dataset from server:
-                        dataset.fetch({
-                            success: () => {
-                                //after dataset refreshed, attach fields:
-                                console.log(dataset.fields);
-                                dataset.fields.add(fieldModel);
-                                this.__attachFieldsToRecords(dataset.fields, dataset);
-                                if (successCallback) {
-                                    successCallback(fieldModel, response);
-                                }
-                            }
-                        });
+                        dataset.fields.add(fieldModel);
+                        this.reloadDatasetFromServer(dataset, successCallback);
+                    }
+                });
+            },
+            reloadDatasetFromServer: function (dataset, successCallback) {
+                dataset.fetch({
+                    success: () => {
+                        //after dataset refreshed, attach fields to all records:
+                        this.__attachFieldsToRecords(dataset.fields, dataset);
+                        if (successCallback) { successCallback(); }
                     }
                 });
             },

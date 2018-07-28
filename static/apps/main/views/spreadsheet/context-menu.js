@@ -91,6 +91,7 @@ define(["underscore",
                 this.fields.at(this.fieldIndex).destroy({
                     success: () => {
                         this.app.vent.trigger('render-spreadsheet');
+                        this.app.dataManager.reloadDatasetFromServer(this.collection);
                     },
                     error: (e) => {
                         console.error(e)
