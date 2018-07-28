@@ -32,16 +32,35 @@ define([
         templateHelpers: function () {
             let header, description;
 
-            let media = [];
-            this.activeMap.get('metadata').titleCardInfo.photo_ids.forEach((photoId) => {
-                let photo = this.app.dataManager.getPhoto(photoId);
-                if (photo) {
-                    media.push({
-                        path: photo.get('path_medium'),
-                        id: photo.id
-                    });
+            let media = {
+                photos: [],
+                videos: [],
+                audio: []
+            };
+            this.activeMap.get('metadata').titleCardInfo.media.forEach((item) => {
+                let mediaObj = this.app.dataManager.getMediaItem(item.id, item.type);
+                console.log(item.id, item);
+                if (mediaObj) {
+                    if (item.type === 'photos') {
+                        media.photos.push({
+                            path: mediaObj.get('path_medium'),
+                            id: item.id
+                        });
+                    } else if (item.type === 'video') {
+                        media.videos.push({
+                            id: item.id,
+                            video_id: mediaObj.get('video_id')
+                        });
+                    } else if (item.type === 'audio') {
+                        media.audio.push({
+                            id: item.id,
+                            name: mediaObj.get('name')
+                        });
+                    }
                 }
             });
+
+            console.log(media);
 
             // once map metadata is fully implemented, these conditional statements can be removed
             if (this.activeMap.get('metadata')) {
@@ -93,11 +112,31 @@ define([
         },
 
         attachMedia: function (models) {
-            let list = this.activeMap.get('metadata').titleCardInfo.photo_ids; // pointer
+            console.log(models);
+            let list = this.activeMap.get('metadata').titleCardInfo.media; // pointer
             models.forEach((model)=> {
-                if (!list.includes(model.id)) {
-                    list.push(model.id)
+                // if (!list.includes(model.id)) {
+                //     list.push({
+                //         id: model.id,
+                //         type: model.dataType
+                //     });
+                // }
+
+                // need to make sure media ibject being added to title card isn't already attached to the title card.
+
+                let dataType;
+                if (model.get('overlay_type') === 'photo') {
+                    dataType = 'photos';
+                } else if (model.get('overlay_type') === 'videos') {
+                    dataType = 'videos';
+                } else if (model.get('overlay_type') === 'audio') {
+                    dataType = 'audio';
                 }
+
+                list.push({
+                    id: model.id,
+                    type: dataType
+                });
             });
 
             this.activeMap.save(null, {
@@ -110,12 +149,12 @@ define([
 
         detachMedia: function(e) {
             const idToBeRemoved = parseInt(e.target.dataset.id);
-            const originalList = this.activeMap.get('metadata').titleCardInfo.photo_ids;
+            const originalList = this.activeMap.get('metadata').titleCardInfo.media;
             const newList = originalList.filter((item) => {
                 return item !== idToBeRemoved;
             });
 
-            this.activeMap.get('metadata').titleCardInfo.photo_ids = newList;
+            this.activeMap.get('metadata').titleCardInfo.media = newList;
 
             this.activeMap.save(null, {
                 success: () => {

@@ -23,7 +23,7 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         'titleCardInfo': {
             'header': None,
             'description': None,
-            'photo_ids': []
+            'media': []
         },
         'accessLevel': Permissions.PUBLIC_UNLISTED
     }

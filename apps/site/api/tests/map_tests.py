@@ -168,7 +168,7 @@ map_config_metadata = {
     'titleCardInfo': {
         'header': 'hi there',
         'description': 'some description',
-        'photo_ids': [1, 2, 3]
+        'media': [1, 2, 3]
     },
     'accessLevel': models.StyledMap.Permissions.PUBLIC_SEARCHABLE
 }

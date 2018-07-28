@@ -7,13 +7,49 @@
         <label class="title-card_label">(Introductory Text)</label>
         <textarea class="title-card_textarea" placeholder="Provide some text to introduce your map. You can include images.">{{description}}</textarea>
     </div>
-    {{#each media}}
+    {{#each media.photos}}
         <div class="attached-container photo-attached">
             <div class="attached-media" style="background: url('{{this.path}}');"></div>
             <div class="attached-media-overlay">
                 <div class="hover-to-show">
                     <i class="fa fa-times detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>
                     <p>Featured</p>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+    {{#each media.audio}}
+        <div class="attached-container audio-attached">
+            <div class="player-container audio-basic" data-id="{{this.id}}">
+                <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
+            </div>
+            <div class="attached-media-overlay">
+                <div class="hover-to-show">
+                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="audio" media-name="{{this.name}}"></i>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+    {{#each media.videos}}
+        <div class="attached-container photo-attached">
+            <div class="attached-media" data-id="{{this.id}}">
+                {{#ifequal this.video_provider "vimeo"}}
+                    <iframe src="https://player.vimeo.com/video/{{this.video_id}}"
+                    style="width:100%;height:100%"
+                    frameborder="0">
+                    </iframe>
+                {{/ifequal}}
+
+                {{#ifequal this.video_provider "youtube"}}
+                    <iframe src="https://www.youtube.com/embed/{{this.video_id}}?ecver=1"
+                    style="width:100%;height:100%"
+                    frameborder="0">
+                    </iframe>
+                {{/ifequal}}
+            </div>
+            <div class="attached-media-overlay video-hover">
+                <div class="hover-to-show video-hover">
+                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="videos" media-name="{{this.name}}"></i>
                 </div>
             </div>
         </div>

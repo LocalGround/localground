@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='styledmap',
             name='metadata',
-            field=jsonfield.fields.JSONField(default={b'displayLegend': True, b'streetview': True, b'allowPanZoom': True, b'displayTitleCard': True, b'titleCardInfo': {b'header': None, b'description': None, b'photo_ids': []}, b'nextPrevButtons': False, b'accessLevel': 2}),
+            field=jsonfield.fields.JSONField(default={b'displayLegend': True, b'streetview': True, b'allowPanZoom': True, b'displayTitleCard': True, b'titleCardInfo': {b'header': None, b'description': None, b'media': []}, b'nextPrevButtons': False, b'accessLevel': 2}),
         ),
         migrations.RunPython(load_fixture),
         migrations.RunSQL(get_extra_sql())
