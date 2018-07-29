@@ -176,7 +176,8 @@ define(["jquery",
                     undo: true,
                     manualColumnResize: true,
                     manualColumnMove: true,
-                    rowHeaders: true,
+                    //autoRowSize: true,
+                    //rowHeaders: true,
                     autoInsertRow: true,
                     sortIndicator: true,
                     columnSorting: true,
@@ -370,32 +371,44 @@ define(["jquery",
             },
             photoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 const model = this.getModelFromCell(instance, row);
-                const photoIDs = model.get("attached_photos_ids") || [];
-                const content = photoIDs.map(id => {
+                const ids = model.get("attached_photos_ids") || [];
+                const imageList = ids.map(id => {
                     const imageURL = this.app.dataManager.getPhoto(id).get('path_marker_lg');
                     return `<img src="${imageURL}" />`;
                 });
-                td.innerHTML = content.join('');
+                td.innerHTML = imageList.join('');
                 return td;
             },
 
             audioListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 const model = this.getModelFromCell(instance, row);
-                const count = model.get("attached_audio_ids") ? model.get("attached_audio_ids").length : 0;
+                const ids = model.get("attached_audio_ids") || [];
                 td.innerHTML = '';
-                if (count) {
-                    td.innerHTML += `<p>audio files: ${count}</p>`
-                }
+                ids.forEach(id => {
+                    const audioModel = this.app.dataManager.getAudio(id);
+                    const player = new AudioPlayer({
+                        model: audioModel,
+                        audioMode: "basic",
+                        app: this.app
+                    });
+                    $(td).append(player.$el.css({
+                        display: 'inline-block'
+                    }));
+                });
                 return td;
             },
 
             videoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 const model = this.getModelFromCell(instance, row);
-                const count = model.get("attached_videos_ids") ? model.get("attached_videos_ids").length : 0;
-                td.innerHTML = '';
-                if (count) {
-                    td.innerHTML += `<p>videos: ${count}</p>`
-                }
+                const ids = model.get("attached_videos_ids") || [];
+                const iframeList = ids.map(id => {
+                    const video_link = this.app.dataManager.getVideo(id).getEmbedLink();
+                    const size = '50px';
+                    return `<iframe src="${video_link}"
+                                style="width:${size};height:${size}" frameborder="0"
+                                allowfullscreen></iframe>`
+                });
+                td.innerHTML = iframeList.join(' ');
                 return td;
             },
 
@@ -613,7 +626,7 @@ define(["jquery",
                 return cols;
             },
             getColumnWidths: function () {
-                const cols = [80, 100, 100];
+                const cols = [50, 100, 100];
                 this.fields.forEach(field => {
                     if (field.get('data_type') === 'integer') {
                         cols.push(120);
@@ -624,7 +637,7 @@ define(["jquery",
                     }
                 })
                 cols.push(350);  // photos column
-                cols.push(150);  // audio column
+                cols.push(210);  // audio column
                 cols.push(150);  // video column
                 cols.push(50);   // delete column
                 return cols;

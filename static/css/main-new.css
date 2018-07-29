@@ -1323,6 +1323,11 @@ i.fa.fa.fa-question-circle {
   color: #DDD;
 }
 
+.modal.spreadsheet .play-ctrls {
+  margin: 4px;
+  background: #F0F0F0;
+}
+
 .pw-required-background {
   background-image: url(../assets/splash-map-5.png);
   background-size: cover;

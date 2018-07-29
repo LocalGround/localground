@@ -66,10 +66,12 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 this.audio.pause();
             },
             showPauseButton: function () {
-                this.$el.find(".play").addClass("fa-pause");
+                console.log('pause');
+                this.$el.find(".play").removeClass('fa-play').addClass("fa-pause");
             },
             showPlayButton: function () {
-                this.$el.find(".play").removeClass("fa-pause");
+                console.log('play');
+                this.$el.find(".play").removeClass("fa-pause").addClass("fa-play");
             },
             togglePlay: function () {
                 if (this.audio.paused) {
