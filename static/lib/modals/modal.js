@@ -32,7 +32,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts = opts || {};
                 _.extend(this, opts);
                 this.saveFunction = function () {
-                    console.log('saving 1...');
+                    console.log('saving...');
                     opts.saveFunction();
                     this.render();
                 }
@@ -73,7 +73,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     this.listenTo(this.app.vent, 'close-modal', this.hide);
                 }
             },
-            update: function (opts) {
+            prepOptions: function (opts) {
                 opts.closeButtonText = opts.closeButtonText || "Cancel";
                 opts.saveButtonText = opts.saveButtonText || "Save";
                 opts.deleteButtonText = opts.deleteButtonText || "Delete";
@@ -82,6 +82,10 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts.noFooter = opts.noFooter || false;
                 opts.bodyClass = opts.bodyClass || null;
                 opts.modalClass = opts.modalClass || null;
+                opts.height = opts.height || null;
+            },
+            update: function (opts) {
+                this.prepOptions(opts);
                 _.extend(this, opts);
                 this.saveFunction = function () {
                     opts.saveFunction();
@@ -125,7 +129,6 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
 
             },
             hide: function (e) {
-                console.log('hide modal');
                 this.$el.find('.modal').hide();
                 this.render();
                 if (e) {

@@ -192,6 +192,24 @@ define(["underscore", "marionette", "models/project", "models/record",
                     }
                 });
             },
+            addFieldToCollection: function (dataset, field, successCallback) {
+                field.save(null, {
+                    success: (fieldModel, response) => {
+                        // after field saved, re-fetch dataset from server:
+                        dataset.fields.add(fieldModel);
+                        this.reloadDatasetFromServer(dataset, successCallback);
+                    }
+                });
+            },
+            reloadDatasetFromServer: function (dataset, successCallback) {
+                dataset.fetch({
+                    success: () => {
+                        //after dataset refreshed, attach fields to all records:
+                        this.__attachFieldsToRecords(dataset.fields, dataset);
+                        if (successCallback) { successCallback(); }
+                    }
+                });
+            },
             destroyMap: function (map) {
                 const datasets = map.get('layers').map(layer => {
                     return layer.get('dataset');
@@ -253,6 +271,15 @@ define(["underscore", "marionette", "models/project", "models/record",
                     throw new Error("No collection found for " + dataType);
                 }
                 return this.__dataDictionary[dataType];
+            },
+            getPhoto: function (id) {
+                return this.getCollection('photos').get(id);
+            },
+            getAudio: function (id) {
+                return this.getCollection('audio').get(id);
+            },
+            getVideo: function (id) {
+                return this.getCollection('videos').get(id);
             },
             getDatasets: function () {
                 return this.__getCollections().filter(collection => {

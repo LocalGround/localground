@@ -2,18 +2,19 @@ define(["underscore",
         "marionette",
         "handlebars",
         'apps/main/views/spreadsheet/rename-field',
+        'apps/main/views/spreadsheet/add-field',
         "text!../../templates/spreadsheet/context-menu.html",
         "lib/modals/modal"
     ],
-    function (_, Marionette, Handlebars, RenameField, ContextMenuTemplate, Modal) {
+    function (_, Marionette, Handlebars, RenameField, AddField, ContextMenuTemplate, Modal) {
         'use strict';
 
         var SpreadsheetMenu =  Marionette.ItemView.extend({
             events: {
                 'click .sort-asc': 'sortAsc',
                 'click .sort-desc': 'sortDesc',
-                'click .insert-col-before': 'itemClicked',
-                'click .insert-col-after': 'itemClicked',
+                'click .insert-col-before': 'addFieldBefore',
+                'click .insert-col-after': 'addFieldAfter',
                 'click .duplicate-col': 'itemClicked',
                 'click .delete-col': 'deleteColumn',
                 'click .rename-col': 'renameColumn'
@@ -21,6 +22,7 @@ define(["underscore",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.fieldIndex = this.columnID - 3; //to account for admin columns
                 this.modal = this.app.modal;
                 this.popover = this.app.popover;
                 this.secondaryModal = new Modal({
@@ -85,15 +87,47 @@ define(["underscore",
                 if (!confirm("Do you want to delete this field?")){
                     return;
                 }
-                this.fields.at(this.columnID).destroy({
+                console.log(this.fields, this.fieldIndex);
+                this.fields.at(this.fieldIndex).destroy({
                     success: () => {
                         this.app.vent.trigger('render-spreadsheet');
+                        this.app.dataManager.reloadDatasetFromServer(this.collection);
                     },
                     error: (e) => {
                         console.error(e)
                     }
                 });
                 this.popover.hide();
+            },
+
+            addField: function (ordering, e) {
+                const addFieldForm = new AddField({
+                    app: this.app,
+                    dataset: this.collection,
+                    sourceModal: this.secondaryModal,
+                    ordering: ordering
+                });
+
+                this.secondaryModal.update({
+                    app: this.app,
+                    view: addFieldForm,
+                    title: 'Add New Column',
+                    width: '300px',
+                    showSaveButton: true,
+                    saveFunction: addFieldForm.saveField.bind(addFieldForm),
+                    showDeleteButton: false
+                });
+                this.secondaryModal.show();
+                this.popover.hide();
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+            addFieldBefore: function (e) {
+                this.addField(this.fieldIndex, e);
+            },
+            addFieldAfter: function (e) {
+                this.addField(this.fieldIndex + 1, e);
             }
 
         });

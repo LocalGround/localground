@@ -11,7 +11,6 @@ define ([
         var MediaBrowserChildView = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.render();
             },
             getTemplate: function () {
                 if (this.parent.viewMode == "thumb") {

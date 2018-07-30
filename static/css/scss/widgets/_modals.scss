@@ -54,6 +54,12 @@
         border-top: 1px solid #e4e5eb;
         max-height: 75vh;
         overflow-y: auto;
+
+        &.media {
+            > div {
+                margin: 0px;
+            }
+        }
         > div {
             margin: 20px;
         }
@@ -118,47 +124,83 @@
         font-weight: 600;
     }
 
-    h2{
+    h2 {
         font-size: 22px;
         font-weight: 400;
     }
 
-
-    .card-img-preview {
-        background-position: center center;
-        width: 100%;
-        border-radius: 2px 2px 0 0;
-        height: 185px;
-        background-size: cover;
-        background-repeat: no-repeat;
-    }
-
     .column {
-        width: calc(25% - 12px);
+        //width: calc(25% - 12px);
+        width: calc(13% + 1px);
         margin: 4px 5px 8px;
         border: 1px solid #e4e5eb;
         border-radius: 2px;
         flex-direction: column;
-        width: calc(25% - 12px);
 
+        .card-img-preview {
+            background-size: cover;
+            background-position: center center;
+            border-radius: 2px 2px 0 0;
+            height: 135px;
+        }
+        h1 {
+            @include overflow-text();
+            font-size: 14px;
+            padding: 10px 10px 1px;
+            font-weight: 400;
+            display: block;
+        }
+
+        h2 {
+            @include overflow-text();
+            font-size: 12px;
+            padding: 0 10px 12px;
+            color: #7a7a7a;
+            display: block;
+        }
     }
 
     #gallery-main.container {
         display: flex;
         flex-wrap: wrap;
     }
-
-    .column h1 {
-        font-size: 14px;
-        padding: 10px 10px 1px;
-        font-weight: 400;
+    #dropzone {
+        border: dashed 1px #CCC;
+        height: calc(100% - 100px);
+        margin: 20px;
+    }
+    #fileupload {
+        opacity: 0;
+        position: absolute;
+        height: 0px;
+    }
+    #dropzone:hover {
+        background: #fafafc;
     }
 
-    .column h2 {
-        font-size: 12px;
-        padding: 0 10px 12px;
-        color: #7a7a7a;
+    /****************************/
+    /*        Video CSS         */
+    /****************************/
+    .video-form {
+        width: 550px;
+        input {
+            padding: 6px;
+            background-color: white;
+            border-radius: 4px;
+            width: 100%;
+        }
     }
+    .video-container {
+        iframe {
+            width: 250px;
+            height: 200px;
+            margin-top: 20px;
+            margin-left: 20px;
+            display: block;
+            border: solid 1px #CCC;
+        }
+    }
+
 
     nav li.active {
         border-bottom: solid;
@@ -183,6 +225,7 @@
         background-color: #fafafc;
         margin: 0;
         border-bottom: 1px solid #e4e5eb;
+        border-top: 1px solid #e4e5eb;
     }
 
     .modal-search-form {
@@ -238,7 +281,7 @@
         flex-wrap: wrap;
         margin: 0 auto;
         padding: 20px 14px 24px;
-        overflow: scroll;
+        // overflow: scroll;
         /*height: 50%;*/
     }
 

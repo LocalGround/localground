@@ -54,6 +54,7 @@ define(["jquery",
                 this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'update', this.renderSpreadsheet);
+                this.listenTo(this.fields, 'add', this.renderSpreadsheet);
 
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
@@ -149,6 +150,7 @@ define(["jquery",
             },
             renderSpreadsheet: function () {
                 console.log('rendering spreadsheet...');
+                // console.log(this.collection.toJSON());
                 const data = this.collection.map(model => {
                     var rec = model.toJSON();
                     if (rec.tags) {
@@ -174,7 +176,8 @@ define(["jquery",
                     undo: true,
                     manualColumnResize: true,
                     manualColumnMove: true,
-                    rowHeaders: true,
+                    //autoRowSize: true,
+                    //rowHeaders: true,
                     autoInsertRow: true,
                     sortIndicator: true,
                     columnSorting: true,
@@ -366,65 +369,74 @@ define(["jquery",
                 td.appendChild(i);
                 return td;
             },
+            photoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                td.innerHTML = '';
+                const model = this.getModelFromCell(instance, row);
+                if (model) {
+                    const ids = model.get("attached_photos_ids") || [];
+                    const imageList = ids.map(id => {
+                        const imageURL = this.app.dataManager.getPhoto(id).get('path_marker_lg');
+                        return `<img src="${imageURL}" />`;
+                    });
+                    td.innerHTML = imageList.join('');
+                }
+                return td;
+            },
 
-            mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties) {
-                return;
+            audioListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                td.innerHTML = '';
+                const model = this.getModelFromCell(instance, row);
+                if (model) {
+                    const ids = model.get("attached_audio_ids") || [];
+                    td.innerHTML = '';
+                    ids.forEach(id => {
+                        const audioModel = this.app.dataManager.getAudio(id);
+                        const player = new AudioPlayer({
+                            model: audioModel,
+                            audioMode: "basic",
+                            app: this.app
+                        });
+                        $(td).append(player.$el.css({
+                            display: 'inline-block'
+                        }));
+                    });
+                }
+                return td;
+            },
+
+            videoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                td.innerHTML = '';
+                const model = this.getModelFromCell(instance, row);
+                if (model) {
+                    const ids = model.get("attached_videos_ids") || [];
+                    const iframeList = ids.map(id => {
+                        const video_link = this.app.dataManager.getVideo(id).getEmbedLink();
+                        const size = '50px';
+                        return `<iframe src="${video_link}"
+                                    style="width:${size};height:${size}" frameborder="0"
+                                    allowfullscreen></iframe>`
+                    });
+                    td.innerHTML = iframeList.join(' ');
+                }
+                return td;
+            },
+
+            mediaCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 var model = this.getModelFromCell(instance, row);
-
-                // There are two possible places to extract
-                // count of media types
-                var photoIds= model.get("attached_photos_ids"),
-                    audioIds= model.get("attached_audio_ids"),
-                    videoIds= model.get("attached_videos_ids");
-
-                var photoCollection = null,
-                    audioCollection = null,
-                    videoCollection = null;
-                    if (model.get("media")){
-                        photoCollection = model.get("media").photos
-                        audioCollection = model.get("media").audio
-                        videoCollection = model.get("media").videos
-                    }
-
-                var photoCount = 0,
-                    audioCount = 0,
-                    videoCount = 0,
-                    i;
-
-                // Make sure to check for two sources for length of media:
-                // option 1 - #media#_ids.length
-                // option 2 - #media#Collection.data.length
-                if (photoIds){
-                    photoCount = photoIds.length;
-                } else if (photoCollection){
-                    photoCount = photoCollection.data.length;
+                const photoCount = model.get("attached_photos_ids") ? model.get("attached_photos_ids").length : 0;
+                const audioCount = model.get("attached_audio_ids") ? model.get("attached_audio_ids").length : 0;
+                const videoCount = model.get("attached_videos_ids") ? model.get("attached_videos_ids").length : 0;
+                td.innerHTML = '';
+                if (photoCount) {
+                    td.innerHTML += `<p>photos: ${photoCount}</p>`
                 }
-
-                if (audioIds){
-                    audioCount = audioIds.length;
-                } else if (audioCollection){
-                    audioCount = audioCollection.data.length;
+                if (audioCount) {
+                    td.innerHTML += `<p>audio files: ${audioCount}</p>`
                 }
-
-                if (videoIds){
-                    videoCount = videoIds.length;
-                } else if (videoCollection){
-                    videoCount = videoCollection.data.length;
+                if (videoCount) {
+                    td.innerHTML += `<p>videos: ${videoCount}</p>`
                 }
-
-                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
-                for (i = 0; i < photoCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-media' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-                for (i = 0; i < audioCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-media' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-                for (i = 0; i < videoCount; ++i) {
-                    td.innerHTML += "<a class = 'carousel-media' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-video-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
+                return td;
 
             },
             showModal: function(carousel) {
@@ -612,13 +624,18 @@ define(["jquery",
                         '</span>' +
                         menuButton
                     );
+                    // cols.push(
+                    //     this.fields.at(i).get("col_alias") + menuButton
+                    // );
                 }
-                cols.push("Media");
+                cols.push("Photos");
+                cols.push("Audio Files");
+                cols.push("Video");
                 cols.push("Delete");
                 return cols;
             },
             getColumnWidths: function () {
-                const cols = [80, 100, 100];
+                const cols = [50, 100, 100];
                 this.fields.forEach(field => {
                     if (field.get('data_type') === 'integer') {
                         cols.push(120);
@@ -628,6 +645,10 @@ define(["jquery",
                         cols.push(150);
                     }
                 })
+                cols.push(250);  // photos column
+                cols.push(210);  // audio column
+                cols.push(210);  // video column
+                cols.push(50);   // delete column
                 return cols;
             },
 
@@ -763,11 +784,10 @@ define(["jquery",
                         };
 
                         cols.push(
-                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
-                        );
-
-                        cols.push(
-                            {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
+                            { data: "media", renderer: this.photoListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            { data: "media", renderer: this.audioListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            { data: "media", renderer: this.videoListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );
                         return cols;
                 }

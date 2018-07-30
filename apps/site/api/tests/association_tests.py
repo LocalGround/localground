@@ -3,6 +3,7 @@ from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 from rest_framework import status
+import urllib
 
 
 class ApiRelatedMediaListTest(test.TestCase, ViewMixinAPI):
@@ -145,19 +146,21 @@ class ApiRelatedMediaInstanceTest(
         self.audio1 = self.create_audio(self.user, self.project)
         self.audio2 = self.create_audio(self.user, self.project)
 
-        # create urls:
-        self.urls = [
-            '/api/0/datasets/%s/data/%s/%s/%s/' % (
-                self.dataset.id, self.record.id, 'photos', self.photo1.id
-            ),
-            '/api/0/datasets/%s/data/%s/%s/%s/' % (
-                self.dataset.id, self.record.id, 'audio', self.audio1.id
-            )
-        ]
-
         # create associations
-        self.create_relation(self.record, self.photo1)
-        self.create_relation(self.record, self.audio1)
+        self.create_relation(self.record, self.photo1)  # ordering = 1
+        self.create_relation(self.record, self.photo2)  # ordering = 2
+        self.create_relation(self.record, self.audio1)  # ordering = 3
+        self.create_relation(self.record, self.audio2)  # ordering = 4
+
+        # create urls:
+        base_url = '/api/0/datasets/%s/data/%s/%s/%s/'
+        ds_id = self.dataset.id
+        r_id = self.record.id
+        self.url_p1 = base_url % (ds_id, r_id, 'photos', self.photo1.id)
+        self.url_p2 = base_url % (ds_id, r_id, 'photos', self.photo2.id)
+        self.url_a1 = base_url % (ds_id, r_id, 'audio', self.audio1.id)
+        self.url_a2 = base_url % (ds_id, r_id, 'audio', self.audio2.id)
+        self.urls = [self.url_p1, self.url_p2, self.url_a1, self.url_a2]
 
     def tearDown(self):
         # delete associations:
@@ -216,53 +219,54 @@ class ApiRelatedMediaInstanceTest(
             )
             self.assertEqual(len(queryset), 0)
 
-    def _test_using_put_or_patch(self, f, params, **kwargs):
-        urls = {
-            '/api/0/datasets/%s/data/%s/photos/%s/' % (
-                self.dataset.id, self.record.id, self.photo1.id
-            ): {
-                'source_model': self.record, 'attach_model': self.photo1
-            },
-            '/api/0/datasets/%s/data/%s/audio/%s/' % (
-                self.dataset.id, self.record.id, self.audio1.id
-            ): {
-                'source_model': self.record, 'attach_model': self.audio1
-            }
-        }
-        for url in urls:
-            # 1) make sure that the object is appended to the record:
-            source_model = urls[url]['source_model']
-            attach_model = urls[url]['attach_model']
-
-            relation = self.get_relation(source_model, attach_model)
-
-            self.assertEqual(relation.ordering, 1)
-            self.assertEqual(relation.turned_on, False)
-            import urllib
-            response = f(
-                url,
-                data=urllib.urlencode(params),
-                HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-form-urlencoded")
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-            updated_relation = models.GenericAssociation.objects.get(
-                id=relation.id
-            )
-
-            # check that values have been updated:
-            for key in params.keys():
-                self.assertEqual(getattr(updated_relation, key), params[key])
-
     def test_update_relation_using_put(self, **kwargs):
-        self._test_using_put_or_patch(
-            self.client_user.put,
-            {'ordering': 5, 'turned_on': True},
-            **kwargs
-        )
+        relation = self.get_relation(self.record, self.photo1)
+        self.assertEqual(relation.ordering, 1)
+        response = self.client_user.put(
+            self.url_p1,
+            data=urllib.urlencode({'ordering': 5, 'turned_on': True}),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        relation = self.get_relation(self.record, self.photo1)
+        self.assertEqual(relation.ordering, 4)
+        self.assertEqual(relation.turned_on, True)
 
     def test_update_relation_using_patch(self, **kwargs):
-        self._test_using_put_or_patch(
-            self.client_user.patch,
-            {'turned_on': True},
-            **kwargs
-        )
+        relation = self.get_relation(self.record, self.audio1)
+        self.assertEqual(relation.ordering, 3)
+        response = self.client_user.patch(
+            self.url_a1,
+            data=urllib.urlencode({'ordering': 5}),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        relation = self.get_relation(self.record, self.audio1)
+        self.assertEqual(relation.ordering, 4)
+        self.assertEqual(relation.turned_on, False)
+
+    def test_reordering_one_reorders_them_all_put(self, **kwargs):
+        counter = 1
+        for relation in self.record.entities.all().order_by('ordering',):
+            self.assertEqual(relation.ordering, counter)
+            counter += 1
+        response = self.client_user.patch(
+            self.url_a1,
+            data=urllib.urlencode({'ordering': 2}),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        p1_relation = self.get_relation(self.record, self.photo1)
+        self.assertEqual(p1_relation.ordering, 1)
+
+        a1_relation = self.get_relation(self.record, self.audio1)
+        self.assertEqual(a1_relation.ordering, 2)
+
+        p2_relation = self.get_relation(self.record, self.photo2)
+        self.assertEqual(p2_relation.ordering, 3)
+
+        a2_relation = self.get_relation(self.record, self.audio2)
+        self.assertEqual(a2_relation.ordering, 4)

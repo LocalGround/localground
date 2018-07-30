@@ -1323,6 +1323,11 @@ i.fa.fa.fa-question-circle {
   color: #DDD;
 }
 
+.modal.spreadsheet .play-ctrls {
+  margin: 4px;
+  background: #F0F0F0;
+}
+
 .pw-required-background {
   background-image: url(../assets/splash-map-5.png);
   background-size: cover;
@@ -1388,6 +1393,278 @@ i.fa.fa.fa-question-circle {
   color: #666622;
   background-color: #f2f2de;
   border: solid 1px #bb6;
+}
+
+/****************************************************************************************/
+/*                                            AUDIO                                     */
+/****************************************************************************************/
+/* Put all generic audio formatting here */
+audio {
+  display: none;
+}
+
+/**************************
+ * Old Templated Player
+ **************************/
+/*
+
+ these may be important, but need to be applied to specific classes, not just '.fa'
+.fa {
+    display: inline-block;
+    text-rendering: auto;
+}
+*/
+.audio-container {
+  background: #EDEDED;
+  color: #686868;
+  text-align: center;
+  font-family: Candara, Calibri, Segoe;
+  /*min-height: 200px;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;*/
+  margin: auto;
+  padding: 20px;
+}
+
+.audio-container span {
+  font-size: 1.6em;
+  /* margin-top: 20px; */
+  display: block;
+}
+
+.progress {
+  height: 10px;
+  width: 110px;
+  background: #CBCBCB;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: auto;
+  cursor: pointer;
+}
+
+.progress > div {
+  height: 10px;
+  width: 0;
+  background: #686868;
+}
+
+.progress-circle {
+  height: 15px;
+  width: 15px;
+  border: 6px solid #686868;
+  background-color: white;
+  border-radius: 5px;
+  top: -5px;
+}
+
+.play {
+  cursor: pointer;
+  /*  width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 15px 0 15px 30px;
+    border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgb(104, 104, 104); */
+  margin: 20px auto;
+}
+
+.play-ctrls {
+  text-align: center;
+  margin: 20px 0 10px;
+}
+
+.spreadsheet .play-ctrls {
+  margin: 0px;
+}
+
+.spreadsheet .play {
+  margin: 10px;
+  color: #666;
+}
+
+.spreadsheet > div {
+  padding: 0px !important;
+  margin: 0px auto !important;
+  /*border: solid 1px #000;*/
+}
+
+.empty-message {
+  text-align: center;
+  margin-top: 30vh;
+  color: #AAA;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.play.pause {
+  width: 10px;
+  height: 30px;
+  border-width: 0 10px 0 10px;
+  border-color: #686868;
+}
+
+.fwd-back {
+  vertical-align: top;
+  padding: 5px 20px;
+}
+
+.vol {
+  margin-top: 10px;
+  user-select: none;
+}
+
+.vol i {
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+/**************************
+ * Simple Player
+ **************************/
+.audio-simple {
+  width: 100%;
+  height: 100%;
+  border-radius: 2px 2px 0 0;
+  height: 100px;
+  background-size: 410px auto;
+  background-position: center center;
+}
+
+.progress-container {
+  width: calc(100% - 80px);
+  margin: auto;
+}
+
+.audio-basic .play {
+  margin-top: 15px;
+  margin-left: -2px;
+  position: relative;
+  z-index: 10;
+  color: #686868;
+}
+
+.audio-basic {
+  width: 100px;
+  height: 100px;
+  display: inline-block;
+  background: #f0f1f5;
+  /*margin: 10px 10px 0px 0px;*/
+}
+
+/**************************
+ * Simple and Detailed Player
+ **************************/
+.progress-container {
+  width: calc(100% - 40px);
+  display: inline-block;
+  text-align: left;
+}
+
+.audio-simple .audio-progress {
+  padding: 10px 20px 17px 20px;
+  position: relative;
+}
+
+.audio-detail .audio-progress {
+  padding: 10px 0px 17px 0px;
+  position: relative;
+}
+
+.audio-simple .audio-labels, .audio-detail .audio-labels {
+  font-size: 12px;
+  color: #7a7a7a;
+  display: inline-block;
+  /*  position: absolute; */
+  top: 4px;
+  width: 10%;
+}
+
+.audio-progress-bar {
+  color: #999999;
+  background-color: #f6f6f9;
+  height: 2px;
+  border-radius: 10px;
+  display: inline-block;
+  border: 1px solid;
+}
+
+.audio-simple .audio-progress-bar {
+  width: 100%;
+}
+
+.audio-detail .audio-progress-bar {
+  width: 100%;
+}
+
+.audio-simple .audio-progress-duration, .audio-detail .audio-progress-duration {
+  background-color: #999999;
+  color: #999999;
+  width: 0px;
+  height: 2px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-top: -4px;
+  border: 1px solid;
+}
+
+.audio-simple .audio-progress-circle, .audio-detail .audio-progress-circle {
+  height: 12px;
+  width: 12px;
+  border-radius: 40px;
+  border: 1px solid #999999;
+  background-color: #f6f6f9;
+  margin-top: -9px;
+  margin-left: -8px;
+  position: relative;
+}
+
+.audio-simple .progress-container {
+  width: 100%;
+}
+
+/**************************
+ * Detailed Player
+ **************************/
+.audio-detail {
+  /*  border: 1px solid #e4e5eb;  */
+  margin: 16px;
+  position: relative;
+}
+
+.audio-detail .play-ctrls {
+  text-align: center;
+  margin: 20px 0 10px;
+  color: #898989;
+}
+
+.fwd-back {
+  vertical-align: top;
+  padding: 5px 20px;
+  font-size: 1.2em;
+}
+
+.audio-detail .play {
+  margin: -4px 10px 5px 0px;
+  float: left;
+}
+
+.audio-info {
+  width: 90%;
+  float: left;
+  text-align: left;
+  font-size: 12px;
+  /*  font-weight: bold; */
+}
+
+.audio-caption {
+  font-style: italic;
+  margin-top: 7px;
+  display: inline-block;
+  text-align: left;
+}
+
+.audio-detail .audio-container {
+  /*   background: #FFFFFF; */
 }
 
 .breadcrumb {
@@ -1859,6 +2136,9 @@ span.action.rounded:hover, a.action.rounded:hover {
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.8);
+  /****************************/
+  /*        Video CSS         */
+  /****************************/
   /*
       Field Form Modal
     */
@@ -1904,6 +2184,10 @@ span.action.rounded:hover, a.action.rounded:hover {
   border-top: 1px solid #e4e5eb;
   max-height: 75vh;
   overflow-y: auto;
+}
+
+.modal .body.media > div {
+  margin: 0px;
 }
 
 .modal .body > div {
@@ -1981,22 +2265,43 @@ span.action.rounded:hover, a.action.rounded:hover {
   font-weight: 400;
 }
 
-.modal .card-img-preview {
-  background-position: center center;
-  width: 100%;
-  border-radius: 2px 2px 0 0;
-  height: 185px;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
 .modal .column {
-  width: calc(25% - 12px);
+  width: calc(13% + 1px);
   margin: 4px 5px 8px;
   border: 1px solid #e4e5eb;
   border-radius: 2px;
   flex-direction: column;
-  width: calc(25% - 12px);
+}
+
+.modal .column .card-img-preview {
+  background-size: cover;
+  background-position: center center;
+  border-radius: 2px 2px 0 0;
+  height: 135px;
+}
+
+.modal .column h1 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 14px;
+  padding: 10px 10px 1px;
+  font-weight: 400;
+  display: block;
+}
+
+.modal .column h2 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 12px;
+  padding: 0 10px 12px;
+  color: #7a7a7a;
+  display: block;
 }
 
 .modal #gallery-main.container {
@@ -2004,16 +2309,40 @@ span.action.rounded:hover, a.action.rounded:hover {
   flex-wrap: wrap;
 }
 
-.modal .column h1 {
-  font-size: 14px;
-  padding: 10px 10px 1px;
-  font-weight: 400;
+.modal #dropzone {
+  border: dashed 1px #CCC;
+  height: calc(100% - 100px);
+  margin: 20px;
 }
 
-.modal .column h2 {
-  font-size: 12px;
-  padding: 0 10px 12px;
-  color: #7a7a7a;
+.modal #fileupload {
+  opacity: 0;
+  position: absolute;
+  height: 0px;
+}
+
+.modal #dropzone:hover {
+  background: #fafafc;
+}
+
+.modal .video-form {
+  width: 550px;
+}
+
+.modal .video-form input {
+  padding: 6px;
+  background-color: white;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.modal .video-container iframe {
+  width: 250px;
+  height: 200px;
+  margin-top: 20px;
+  margin-left: 20px;
+  display: block;
+  border: solid 1px #CCC;
 }
 
 .modal nav li.active {
@@ -2040,6 +2369,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   background-color: #fafafc;
   margin: 0;
   border-bottom: 1px solid #e4e5eb;
+  border-top: 1px solid #e4e5eb;
 }
 
 .modal .modal-search-form {
@@ -2096,7 +2426,6 @@ span.action.rounded:hover, a.action.rounded:hover {
   flex-wrap: wrap;
   margin: 0 auto;
   padding: 20px 14px 24px;
-  overflow: scroll;
   /*height: 50%;*/
 }
 

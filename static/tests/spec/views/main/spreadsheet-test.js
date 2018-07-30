@@ -49,7 +49,7 @@ define([
                 this.spreadsheet.render();
                 fixture.append(this.spreadsheet.$el);
                 this.spreadsheet.renderSpreadsheet();
-                expect(this.spreadsheet.$el.find('.htCore tbody tr').length).toEqual(this.collection.length * 2);
+                expect(this.spreadsheet.$el.find('.htCore tbody tr').length).toEqual(this.collection.length);
                 expect(this.collection.length).toEqual(5);
             });
 
@@ -57,7 +57,7 @@ define([
                 //not sure why twice as many rows. Must be a HOT thing
                 this.spreadsheet.renderSpreadsheet();
                 this.spreadsheet.addRow()
-                expect(this.spreadsheet.$el.find('.htCore tbody tr').length).toEqual(this.collection.length * 2);
+                expect(this.spreadsheet.$el.find('.htCore tbody tr').length).toEqual(this.collection.length);
                 expect(this.collection.length).toEqual(6);
             });
 
