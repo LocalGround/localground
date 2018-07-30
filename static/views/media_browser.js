@@ -24,12 +24,16 @@ define([
                 'click #table-view-button-modal' : 'displayTable',
                 'click #toolbar-search': 'doSearch'
             },
+            onRender: function () {
+                console.log('rendering media browser');
+            },
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
+                console.log(this.collection);
                 Marionette.CompositeView.prototype.initialize.call(this);
                 this.template = Handlebars.compile(ParentTemplate);
-                this.collection = this.app.dataManager.getCollection(this.currentMedia);
 
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
@@ -82,19 +86,19 @@ define([
                 this.$el.find("#loading-animation").empty();
             },
 
-            displayMedia: function () {
-                if (this.currentMedia == 'photos') {
-                    this.collection = new Photos(null, { projectID: this.app.getProjectID() });
-                } else if (this.currentMedia == 'audio') {
-                    this.collection = new Audio(null, { projectID: this.app.getProjectID() });
-                } else {
-                    this.collection = new Videos(null, { projectID: this.app.getProjectID() });
-                }
-                //this.collection.setServerQuery("WHERE project_id = " + this.app.getProjectID());
-                this.collection.fetch({reset: true});
-                this.listenTo(this.collection, 'reset', this.render);
-                this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
-            },
+            // displayMedia: function () {
+            //     if (this.currentMedia == 'photos') {
+            //         this.collection = new Photos(null, { projectID: this.app.getProjectID() });
+            //     } else if (this.currentMedia == 'audio') {
+            //         this.collection = new Audio(null, { projectID: this.app.getProjectID() });
+            //     } else {
+            //         this.collection = new Videos(null, { projectID: this.app.getProjectID() });
+            //     }
+            //     //this.collection.setServerQuery("WHERE project_id = " + this.app.getProjectID());
+            //     this.collection.fetch({reset: true});
+            //     this.listenTo(this.collection, 'reset', this.render);
+            //     this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
+            // },
 
             doSearch: function (e) {
                 this.searchTerm = this.$el.find("#searchTerm").val();

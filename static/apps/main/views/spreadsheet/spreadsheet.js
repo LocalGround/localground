@@ -636,9 +636,9 @@ define(["jquery",
                         cols.push(150);
                     }
                 })
-                cols.push(350);  // photos column
+                cols.push(250);  // photos column
                 cols.push(210);  // audio column
-                cols.push(150);  // video column
+                cols.push(210);  // video column
                 cols.push(50);   // delete column
                 return cols;
             },

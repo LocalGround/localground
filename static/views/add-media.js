@@ -6,8 +6,8 @@ define(["marionette",
         "text!templates/media-browser-layout.html",
         "models/layer"
     ],
-    function (Marionette, Handlebars,
-        MediaBrowserView, UploaderView, VideoLinkView, AddMediaModalTemplate) {
+    function (Marionette, Handlebars, MediaBrowserView, UploaderView,
+            VideoLinkView, AddMediaModalTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var AddMediaModal = Marionette.LayoutView.extend({
@@ -16,6 +16,7 @@ define(["marionette",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.render();
+                this.showUploader();
             },
 
             events: {
@@ -25,101 +26,55 @@ define(["marionette",
             },
 
             regions: {
-                uploaderRegion: "#uploader",
-                videoLinkerRegion: "#video_linker",
-                mediaBrowserRegion: "#media_browser"
+                mainRegion: "#main",
             },
-            onRender: function () {
-                // only load views after the LayoutView has
-                // been rendered to the screen:
 
-               /* var upld = new SelectMapView({ app: this.app });
-                this.menu.show(upld);
-                */
-                this.upld = new UploaderView({
-                    app: this.app,
-                    parentModel: this.parentModel
-                });
-                this.uploaderRegion.show(this.upld);
-                this.uploaderRegion.$el.hide();
-
-
-                // This instantiation must have caused either of the following:
-
-                // Either the overall order caused this to be called first
-                // before DataForm ever gets called
-                // OR
-                // DataForm has been overwritten with an empty undefined value
-                //
-
-                // by instantiating the create-video,
-                // that is the single code that led to to massive breaking
-                // of data form
-                this.vdlk = new VideoLinkView({
-                    app: this.app,
-                    parentModel: this.parentModel
-                });
-
-                this.videoLinkerRegion.show(this.vdlk);
-                //this.videoLinkerRegion.show(); // leave this empty for testing
-                this.videoLinkerRegion.$el.hide();
-
-                this.mb = new MediaBrowserView({
-                    app: this.app,
-                    parentModel: this.parentModel
-                });
-                this.mediaBrowserRegion.show(this.mb);
-                this.$el.find("#database-tab-li").addClass("active");
-
-                //sets proper region from which to call addModel()
-                this.activeRegion = "mediaBrowser";
-
-
+            highlightTab: function (e) {
+                this.$el.find("nav > ul > li").removeClass("active");
+                if (e) {
+                    $(e.target).parent().addClass("active");
+                } else {
+                    this.$el.find("nav > ul > li:first-child").addClass("active");
+                }
             },
 
             showUploader: function (e) {
-                this.mediaBrowserRegion.$el.hide();
-                this.videoLinkerRegion.$el.hide();
-                this.uploaderRegion.$el.show();
-                this.$el.find("#database-tab-li").removeClass("active");
-                this.$el.find("#video-tab-li").removeClass("active");
-                this.$el.find("#upload-tab-li").addClass("active");
                 this.activeRegion = "uploader";
+                this.mainRegion.show(new UploaderView({
+                    app: this.app,
+                    parentModel: this.parentModel
+                }));
+                this.highlightTab(e);
                 if (e) {
                     e.preventDefault();
                 }
             },
 
-
-
             showVideoLinker: function (e) {
-                this.mediaBrowserRegion.$el.hide();
-                this.uploaderRegion.$el.hide();
-                this.videoLinkerRegion.$el.show();
-                this.$el.find("#database-tab-li").removeClass("active");
-                this.$el.find("#upload-tab-li").removeClass("active");
-                this.$el.find("#video-tab-li").addClass("active");
                 this.activeRegion = "videoLinker";
+                this.mainRegion.show(new VideoLinkView({
+                    app: this.app,
+                    parentModel: this.parentModel
+                }));
+                this.highlightTab(e);
                 if (e) {
                     e.preventDefault();
                 }
             },
 
             showDatabase: function (e) {
-                this.uploaderRegion.$el.hide();
-                this.videoLinkerRegion.$el.hide();
-                this.mediaBrowserRegion.$el.show();
-                this.$el.find("#upload-tab-li").removeClass("active");
-                this.$el.find("#video-tab-li").removeClass("active");
-                this.$el.find("#database-tab-li").addClass("active");
                 this.activeRegion = "mediaBrowser";
+                this.mainRegion.show(new MediaBrowserView({
+                    app: this.app,
+                    parentModel: this.parentModel
+                }));
+                this.highlightTab(e);
                 if (e) {
                     e.preventDefault();
                 }
             },
             addModels: function () {
                 if (this.activeRegion == "mediaBrowser") {
-                    console.log("read mb.addModels()");
                     this.mb.addModels();
                 } else if (this.activeRegion == "uploader") {
                     this.upld.addModels();
