@@ -245,6 +245,7 @@ define([
                 title: 'Media Browser',
                 //width: 1100,
                 //height: 400,
+                bodyClass: 'media',
                 view: addMediaLayoutView,
                 saveButtonText: "Add",
                 showSaveButton: true,

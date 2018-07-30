@@ -11,7 +11,6 @@ define ([
         var MediaBrowserChildView = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.render();
             },
             getTemplate: function () {
                 if (this.parent.viewMode == "thumb") {
@@ -89,18 +88,17 @@ define ([
                 e.preventDefault();
             },
 
-            // onRender: function () {
-            //     //console.log('rendering child view...')
-            //     var player;
-            //     if (this.currentMedia == "audio") {
-            //         player = new AudioPlayer({
-            //             model: this.model,
-            //             audioMode: "simple",
-            //             app: this.app
-            //         });
-            //         this.$el.find(".player-container").html(player.$el);
-            //     }
-            // },
+            onRender: function () {
+                var player;
+                if (this.currentMedia == "audio") {
+                    player = new AudioPlayer({
+                        model: this.model,
+                        audioMode: "simple",
+                        app: this.app
+                    });
+                    this.$el.find(".player-container").html(player.$el);
+                }
+            },
 
             templateHelpers: function () {
                 return {
