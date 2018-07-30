@@ -2136,6 +2136,9 @@ span.action.rounded:hover, a.action.rounded:hover {
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.8);
+  /****************************/
+  /*        Video CSS         */
+  /****************************/
   /*
       Field Form Modal
     */
@@ -2304,6 +2307,42 @@ span.action.rounded:hover, a.action.rounded:hover {
 .modal #gallery-main.container {
   display: flex;
   flex-wrap: wrap;
+}
+
+.modal #dropzone {
+  border: dashed 1px #CCC;
+  height: calc(100% - 100px);
+  margin: 20px;
+}
+
+.modal #fileupload {
+  opacity: 0;
+  position: absolute;
+  height: 0px;
+}
+
+.modal #dropzone:hover {
+  background: #fafafc;
+}
+
+.modal .video-form {
+  width: 550px;
+}
+
+.modal .video-form input {
+  padding: 6px;
+  background-color: white;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.modal .video-container iframe {
+  width: 250px;
+  height: 200px;
+  margin-top: 20px;
+  margin-left: 20px;
+  display: block;
+  border: solid 1px #CCC;
 }
 
 .modal nav li.active {

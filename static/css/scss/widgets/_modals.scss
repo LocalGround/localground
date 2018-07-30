@@ -164,6 +164,43 @@
         display: flex;
         flex-wrap: wrap;
     }
+    #dropzone {
+        border: dashed 1px #CCC;
+        height: calc(100% - 100px);
+        margin: 20px;
+    }
+    #fileupload {
+        opacity: 0;
+        position: absolute;
+        height: 0px;
+    }
+    #dropzone:hover {
+        background: #fafafc;
+    }
+
+    /****************************/
+    /*        Video CSS         */
+    /****************************/
+    .video-form {
+        width: 550px;
+        input {
+            padding: 6px;
+            background-color: white;
+            border-radius: 4px;
+            width: 100%;
+        }
+    }
+    .video-container {
+        iframe {
+            width: 250px;
+            height: 200px;
+            margin-top: 20px;
+            margin-left: 20px;
+            display: block;
+            border: solid 1px #CCC;
+        }
+    }
+
 
     nav li.active {
         border-bottom: solid;

@@ -150,7 +150,7 @@ define(["jquery",
             },
             renderSpreadsheet: function () {
                 console.log('rendering spreadsheet...');
-                console.log(this.fields.length, this.fields);
+                // console.log(this.collection.toJSON());
                 const data = this.collection.map(model => {
                     var rec = model.toJSON();
                     if (rec.tags) {
@@ -370,45 +370,54 @@ define(["jquery",
                 return td;
             },
             photoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                td.innerHTML = '';
                 const model = this.getModelFromCell(instance, row);
-                const ids = model.get("attached_photos_ids") || [];
-                const imageList = ids.map(id => {
-                    const imageURL = this.app.dataManager.getPhoto(id).get('path_marker_lg');
-                    return `<img src="${imageURL}" />`;
-                });
-                td.innerHTML = imageList.join('');
+                if (model) {
+                    const ids = model.get("attached_photos_ids") || [];
+                    const imageList = ids.map(id => {
+                        const imageURL = this.app.dataManager.getPhoto(id).get('path_marker_lg');
+                        return `<img src="${imageURL}" />`;
+                    });
+                    td.innerHTML = imageList.join('');
+                }
                 return td;
             },
 
             audioListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                const model = this.getModelFromCell(instance, row);
-                const ids = model.get("attached_audio_ids") || [];
                 td.innerHTML = '';
-                ids.forEach(id => {
-                    const audioModel = this.app.dataManager.getAudio(id);
-                    const player = new AudioPlayer({
-                        model: audioModel,
-                        audioMode: "basic",
-                        app: this.app
+                const model = this.getModelFromCell(instance, row);
+                if (model) {
+                    const ids = model.get("attached_audio_ids") || [];
+                    td.innerHTML = '';
+                    ids.forEach(id => {
+                        const audioModel = this.app.dataManager.getAudio(id);
+                        const player = new AudioPlayer({
+                            model: audioModel,
+                            audioMode: "basic",
+                            app: this.app
+                        });
+                        $(td).append(player.$el.css({
+                            display: 'inline-block'
+                        }));
                     });
-                    $(td).append(player.$el.css({
-                        display: 'inline-block'
-                    }));
-                });
+                }
                 return td;
             },
 
             videoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                td.innerHTML = '';
                 const model = this.getModelFromCell(instance, row);
-                const ids = model.get("attached_videos_ids") || [];
-                const iframeList = ids.map(id => {
-                    const video_link = this.app.dataManager.getVideo(id).getEmbedLink();
-                    const size = '50px';
-                    return `<iframe src="${video_link}"
-                                style="width:${size};height:${size}" frameborder="0"
-                                allowfullscreen></iframe>`
-                });
-                td.innerHTML = iframeList.join(' ');
+                if (model) {
+                    const ids = model.get("attached_videos_ids") || [];
+                    const iframeList = ids.map(id => {
+                        const video_link = this.app.dataManager.getVideo(id).getEmbedLink();
+                        const size = '50px';
+                        return `<iframe src="${video_link}"
+                                    style="width:${size};height:${size}" frameborder="0"
+                                    allowfullscreen></iframe>`
+                    });
+                    td.innerHTML = iframeList.join(' ');
+                }
                 return td;
             },
 

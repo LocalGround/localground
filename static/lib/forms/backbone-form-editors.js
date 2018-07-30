@@ -236,15 +236,14 @@ define([
             });
         },
         showMediaBrowser: function (e) {
-            console.log('show media browser');
             var addMediaLayoutView = new AddMedia({
                 app: this.app,
                 parentModel: this.model
             });
             this.app.vent.trigger("show-modal", {
                 title: 'Media Browser',
-                //width: 1100,
-                //height: 400,
+                width: 1100,
+                height: 'calc(100vh - 250px)',
                 bodyClass: 'media',
                 view: addMediaLayoutView,
                 saveButtonText: "Add",

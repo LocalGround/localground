@@ -12,7 +12,6 @@ define(["marionette",
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var AddMediaModal = Marionette.LayoutView.extend({
             template: Handlebars.compile(AddMediaModalTemplate),
-            activeRegion: null,
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.render();
@@ -29,6 +28,38 @@ define(["marionette",
                 mainRegion: "#main",
             },
 
+            showUploader: function (e) {
+                this.currentView = new UploaderView({
+                    app: this.app,
+                    parentModel: this.parentModel
+                });
+                this.showView(e);
+            },
+
+            showVideoLinker: function (e) {
+                this.currentView = new VideoLinkView({
+                    app: this.app,
+                    parentModel: this.parentModel
+                });
+                this.showView(e);
+            },
+
+            showDatabase: function (e) {
+                this.currentView = new MediaBrowserView({
+                    app: this.app,
+                    parentModel: this.parentModel
+                });
+                this.showView(e);
+            },
+
+            showView: function (e) {
+                this.mainRegion.show(this.currentView);
+                this.highlightTab(e);
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+
             highlightTab: function (e) {
                 this.$el.find("nav > ul > li").removeClass("active");
                 if (e) {
@@ -38,49 +69,8 @@ define(["marionette",
                 }
             },
 
-            showUploader: function (e) {
-                this.activeRegion = "uploader";
-                this.mainRegion.show(new UploaderView({
-                    app: this.app,
-                    parentModel: this.parentModel
-                }));
-                this.highlightTab(e);
-                if (e) {
-                    e.preventDefault();
-                }
-            },
-
-            showVideoLinker: function (e) {
-                this.activeRegion = "videoLinker";
-                this.mainRegion.show(new VideoLinkView({
-                    app: this.app,
-                    parentModel: this.parentModel
-                }));
-                this.highlightTab(e);
-                if (e) {
-                    e.preventDefault();
-                }
-            },
-
-            showDatabase: function (e) {
-                this.activeRegion = "mediaBrowser";
-                this.mainRegion.show(new MediaBrowserView({
-                    app: this.app,
-                    parentModel: this.parentModel
-                }));
-                this.highlightTab(e);
-                if (e) {
-                    e.preventDefault();
-                }
-            },
             addModels: function () {
-                if (this.activeRegion == "mediaBrowser") {
-                    this.mb.addModels();
-                } else if (this.activeRegion == "uploader") {
-                    this.upld.addModels();
-                } else if (this.activeRegion == "videoLinker") {
-                    this.vdlk.saveModel();
-                }
+                this.currentView.addModels();
             }
         });
         return AddMediaModal;
