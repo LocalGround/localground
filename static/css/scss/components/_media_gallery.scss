@@ -1,0 +1,300 @@
+// main: ../main-new.scss
+.column {
+    width: calc(13% + 1px);
+    margin: 4px 5px 8px;
+    border: 1px solid #e4e5eb;
+    border-radius: 2px;
+    flex-direction: column;
+
+    .card-img-preview {
+        background-size: cover;
+        background-position: center center;
+        border-radius: 2px 2px 0 0;
+        height: 135px;
+    }
+    h1 {
+        @include overflow-text();
+        font-size: 14px;
+        padding: 10px 10px 1px;
+        font-weight: 400;
+        display: block;
+    }
+
+    h2 {
+        @include overflow-text();
+        font-size: 12px;
+        padding: 0 10px 12px;
+        color: #7a7a7a;
+        display: block;
+    }
+}
+
+#gallery-main.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+#dropzone {
+    border: dashed 1px #CCC;
+    height: calc(100% - 100px);
+    margin: 20px;
+}
+#fileupload {
+    opacity: 0;
+    position: absolute;
+    height: 0px;
+}
+#dropzone:hover {
+    background: #fafafc;
+}
+.img-polaroid {
+    margin-bottom: 5px;
+    margin-top: 5px;
+    background-color: #FFF;
+    padding: 5px 5px 10px 5px;
+    text-align: center;
+
+    .fa-headphones {
+        color: #999;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
+    > p {
+        margin-top: 5px;
+        line-height: 12px;
+        font-size: 11px;
+        color: #999;
+        margin: 0px;
+        text-align: center;
+        overflow: hidden;
+    }
+}
+.img-container {
+    width: 145px;
+    max-height: 140px;
+    min-height: 100px;
+    overflow: hidden;
+}
+.preview {
+    width: 145px;
+}
+.audio-holder, .error-holder {
+    display: inline-block;
+    width: 145px;
+}
+.file-container {
+    width: 155px;
+    height: 190px;
+    float: left;
+    margin: 0px 8px 8px 0px;
+}
+#nothing-here {
+    text-align: center;
+    margin-top: 40px;
+    width: 100%;
+    font-size: 20px;
+    color: #666;
+}
+
+span.plus {
+    width: 28px;
+    height: 28px;
+    border: solid 1px #CCC;
+    border-radius: 40px;
+    display: inline-block;
+    background: #FFF;
+    line-height: 22px;
+}
+
+
+/****************************/
+/*        Video CSS         */
+/****************************/
+.video-form {
+    width: 550px;
+    input {
+        padding: 6px;
+        background-color: white;
+        border-radius: 4px;
+        width: 100%;
+    }
+}
+.video-container {
+    iframe {
+        width: 250px;
+        height: 200px;
+        margin-top: 20px;
+        margin-left: 20px;
+        display: inline-block;
+        border: solid 1px #CCC;
+    }
+}
+
+
+nav li.active {
+    border-bottom: solid;
+    font-weight: 600;
+    border-color: #4e70d4;
+}
+
+nav li.active {
+    border-bottom: solid;
+    font-weight: 600;
+    border-color: #4e70d4;
+}
+
+.modal-body .grey-bg {
+    background-color: #eee;
+    border-top: 1px solid #ddd;
+    margin: 0px !important;
+}
+.filter {
+    padding: 18px;
+    width: calc(100% - 40px);
+    background-color: #fafafc;
+    margin: 0;
+    border-bottom: 1px solid #e4e5eb;
+    border-top: 1px solid #e4e5eb;
+
+    #table-view-button-modal, #card-view-button-modal {
+        width: 50px;
+    }
+
+    .button-secondary {
+        background-color: #fafafc;
+        border: none;
+        border-radius: 3px;
+        padding: 0 12px;
+        text-transform: uppercase;
+        font-size: 12px;
+        margin: 0 2px;
+        border: 1px solid #e4e5eb;
+        -webkit-transition: background 0.3s linear;
+        -moz-transition: background 0.3s linear;
+        -ms-transition: background 0.3s linear;
+        -o-transition: background 0.3s linear;
+        transition: background 0.3s linear;
+        line-height: 26px;
+        height: 29px;
+        vertical-align: bottom;
+        letter-spacing: 0.7px;
+        width: 80px;
+
+        &.active {
+            background-color: #f1f3fb;
+            border-color: #4e70d4;
+        }
+    }
+}
+
+.modal-search-form {
+    width: 300px;
+    display: inline-block;
+}
+
+.modal-search-form .fa {
+    padding: 4px 0 4px 16px;
+    color: #7a7a7a;
+}
+
+.modal-search-form input {
+    padding: 6px;
+    background-color: white;
+    margin-right: -40px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.modal-search-form button{
+    outline: none;
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.pull-right {
+    float: right
+}
+
+#gallery-main.container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    padding: 20px 14px 24px;
+}
+
+.selected-card {
+    color: #fff;
+    background-color: rgb(123, 155, 225);
+}
+
+.selected-card h1, .selected-card h2, .selected-card > .fa-map-marker, .selected-card .coords {
+    color: #fff;
+}
+// TABLE VIEw:
+
+.database-views-modal {
+    table {
+        width: 100%;
+        font-size: 13px;
+        border-collapse: collapse;
+        border-spacing: 0;
+        margin-top: 20px;
+
+        tr {
+            cursor: pointer;
+            border-bottom: 1px solid #E2E2E2;
+        }
+        th {
+            text-align: left;
+            line-height: 20px;
+            font-weight: 600;
+            padding: 5px;
+        }
+        td {
+            padding: 0px 0px;
+            border: none;
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none; /* Safari */
+             -khtml-user-select: none; /* Konqueror HTML */
+               -moz-user-select: none; /* Firefox */
+                -ms-user-select: none; /* Internet Explorer/Edge */
+                    user-select: none;
+            /*line-height: 40px;*/
+            padding: 5px;
+
+            .fa, .fab {
+                color: #999;
+                margin-left: 10px
+            }
+        }
+    }
+    .table:hover, td:hover {
+        background-color: rgb(123, 155, 225);;
+        color: white;
+    }
+}
+.thumbnail-img {
+    height: 36px;
+    width: 36px;
+    padding: 4px 10px 4px 20px;
+}
+.pull-right {
+    float: right;
+}
+#media-photos, #media-audio, #media-videos {
+    float: right;
+}
+
+
+.error {
+    background-color: #fae5e3;
+    color: #b94a48;
+    padding: 5px;
+}
+.errorMessage {
+    color: #b94a48;
+    margin: 0px 15px;
+    font-size: 13px;
+}

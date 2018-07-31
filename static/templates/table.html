@@ -1,17 +1,17 @@
-{{#ifequal dataType "photos"}}  
+{{#ifequal dataType "photos"}}
     <td><img src="{{ path_medium }}" class="thumbnail-img"></td>
 {{/ifequal}}
 
 {{#ifequal dataType "audio"}}
-    <td><i class="fa fa-2x fa-volume-up" aria-hidden="true"></i></td>
+    <td><i class="fa fa-2x fa-headphones" aria-hidden="true"></i></td>
 {{/ifequal}}
 
 {{#ifequal dataType "videos"}}
     <td>
         {{#ifequal video_provider "vimeo"}}
-            <i class="fa fa-2x fa-vimeo" aria-hidden="true"></i>
+            <i class="fab fa-2x fa-vimeo" aria-hidden="true"></i>
         {{ else }}
-            <i class="fa fa-2x fa-youtube" aria-hidden="true"></i>
+            <i class="fab fa-2x fa-youtube" aria-hidden="true"></i>
         {{/ifequal}}
     </td>
 {{/ifequal}}
@@ -21,4 +21,3 @@
 <td>{{ tags }}</td>
 <td>{{ overlay_type }}</td>
 <td>{{ owner }}</td>
-
