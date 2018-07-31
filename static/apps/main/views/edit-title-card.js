@@ -112,42 +112,46 @@ define([
             e.preventDefault();
         },
 
+        mediaItemAlreadyInList: function(list, newItem) {
+            let flag = false;
+            list.forEach((existingItem) => {
+                if (existingItem.id === newItem.id && existingItem.type === newItem.type){
+                    flag = true;
+                }
+            });
+            return flag
+        },
+
+        assignDataType: function(model) {
+            if (model.get('overlay_type') === 'photo') {
+                return 'photos';
+            } else if (model.get('overlay_type') === 'video') {
+                return 'videos';
+            } else if (model.get('overlay_type') === 'audio') {
+                return 'audio';
+            }
+        },
+
         attachMedia: function (models) {
             console.log(models);
             let list = this.activeMap.get('metadata').titleCardInfo.media; // pointer
+            
             models.forEach((model)=> {
-                // if (!list.includes(model.id)) {
-                //     list.push({
-                //         id: model.id,
-                //         type: model.dataType
-                //     });
-                // }
-
-                // need to make sure media ibject being added to title card isn't already attached to the title card.
-
-                let dataType;
-                if (model.get('overlay_type') === 'photo') {
-                    dataType = 'photos';
-                } else if (model.get('overlay_type') === 'video') {
-                    dataType = 'videos';
-                } else if (model.get('overlay_type') === 'audio') {
-                    dataType = 'audio';
-                }
-
                 let newMediaItem = {
                     id: model.id,
-                    type: dataType
+                    type: this.assignDataType(model)
                 };
 
-                if (newMediaItem.type === 'videos') {
-                    newMediaItem.video_provider = model.get('video_provider');
-                }
+                // need to make sure media object being added to title card isn't already attached to the title card.
+                if (!this.mediaItemAlreadyInList(list, newMediaItem)) {
 
-                list.push(newMediaItem);
+                    if (newMediaItem.type === 'videos') {
+                        newMediaItem.video_provider = model.get('video_provider');
+                    }
+                    list.push(newMediaItem);
+                }
             });
 
-            console.log(list);
-            console.log(this.activeMap.get('metadata').titleCardInfo.media);
             console.log(this.activeMap);
 
             this.activeMap.save(null, {
@@ -163,7 +167,6 @@ define([
             const idToBeRemoved = parseInt(e.target.dataset.id);
             const dataType = e.target.dataset.type;
 
-            console.log(dataType);
             const originalList = this.activeMap.get('metadata').titleCardInfo.media;
             const newList = originalList.filter((item) => {
                 if (item.id === idToBeRemoved && item.type === dataType) {
@@ -172,7 +175,6 @@ define([
                 return true;
             });
 
-            console.log(originalList, newList);
             this.activeMap.get('metadata').titleCardInfo.media = newList;
 
             this.activeMap.save(null, {
