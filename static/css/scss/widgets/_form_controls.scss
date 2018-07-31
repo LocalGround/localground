@@ -142,6 +142,15 @@
     }
 }
 
+.modal {
+    p.error {
+        color: $dark-red;
+        font-size: 0.8em;
+        background: transparent;
+        padding: none;
+    }
+}
+
 // toggle buttons
 .tgl {
     display: none;

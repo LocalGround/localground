@@ -1951,6 +1951,13 @@ span.action.rounded:hover, a.action.rounded:hover {
   padding-top: 3px;
 }
 
+.modal p.error {
+  color: #d73729;
+  font-size: 0.8em;
+  background: transparent;
+  padding: none;
+}
+
 .tgl {
   display: none;
 }
@@ -2325,6 +2332,74 @@ span.action.rounded:hover, a.action.rounded:hover {
   background: #fafafc;
 }
 
+.modal .img-polaroid {
+  margin-bottom: 5px;
+  margin-top: 5px;
+  background-color: #FFF;
+  padding: 5px 5px 10px 5px;
+  text-align: center;
+}
+
+.modal .img-polaroid .fa-headphones {
+  color: #999;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.modal .img-polaroid > p {
+  margin-top: 5px;
+  line-height: 12px;
+  font-size: 11px;
+  color: #999;
+  margin: 0px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.modal .img-container {
+  width: 145px;
+  max-height: 140px;
+  min-height: 100px;
+  overflow: hidden;
+}
+
+.modal .preview {
+  width: 145px;
+}
+
+.modal .audio-holder, .modal .error-holder {
+  display: inline-block;
+  width: 145px;
+}
+
+.modal .file-container {
+  width: 155px;
+  height: 190px;
+  float: left;
+  margin: 0px 8px 8px 0px;
+}
+
+.modal #nothing-here {
+  text-align: center;
+  margin-top: 40px;
+  width: 100%;
+  font-size: 20px;
+  color: #666;
+}
+
+.modal span.plus {
+  width: 28px;
+  height: 28px;
+  border: solid 1px #CCC;
+  border-radius: 40px;
+  display: inline-block;
+  background: #FFF;
+  line-height: 22px;
+}
+
 .modal .video-form {
   width: 550px;
 }
@@ -2341,7 +2416,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   height: 200px;
   margin-top: 20px;
   margin-left: 20px;
-  display: block;
+  display: inline-block;
   border: solid 1px #CCC;
 }
 

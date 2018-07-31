@@ -9,6 +9,7 @@ define([
 
     var CreateVideoView = Marionette.CompositeView.extend({
         template: Handlebars.compile(CreateVideoTemplate),
+        models: [],
         events: {
             'blur #video_link': 'renderIframe',
             'change #video_link': 'renderIframe',
@@ -17,69 +18,54 @@ define([
         },
         renderIframe: function (e) {
             setTimeout(() => {
-                if (this.model) {
-                    this.createNewVideo();
-                    this.model.set("errorMessage", "");
-                }
-                this.commitForm();
-                this.model.save(null, {
-                    success: this.render,
-                    error: (model, response) => {
-                        if (this.model.get("video_link") == ""){
-                            this.model.set("errorMessage", "Link is empty");
-                        } else {
-                            this.model.set("errorMessage", "Needs a valid video link");
-                        }
-                        console.log("About to trigger error message", JSON.parse(response.responseText)[0]);
-                        this.app.vent.trigger('error-message', JSON.parse(response.responseText)[0]);
-                        this.$el.find("#model-form").append("error saving");
-                        this.render();
-                    }
+                const video = new Video({
+                    'project_id': this.app.selectedProjectID
                 });
-            },0);
+                this.commitForm(video);
+            }, 0);
         },
         initialize: function (opts) {
             _.extend(this, opts);
-            this.model = new Video({
-                'project_id': this.app.selectedProjectID
-            });
+            this.models = [];
         },
         templateHelpers: function () {
             return {
                 mode: this.mode,
-                dataType: this.options.dataType
+                dataType: this.options.dataType,
+                errorMessage: this.errorMessage,
+                videos: this.models.map(model => {
+                    return model.toTemplateJSON()
+                })
             };
         },
-        createNewVideo(){
-            this.model = new Video({
-                'project_id': this.app.selectedProjectID
-            });
-        },
-        commitForm: function () {
-            this.model.set('video_link', this.$el.find('#video_link').val());
-
-        },
-        saveModel: function () {
-            this.commitForm();
-            this.model.save(null, {
-                error: (model, response) => {
-                    if (this.model.get("video_link") === '') {
-                        this.model.set("errorMessage", "Link is empty");
-                    } else {
-                        this.model.set("errorMessage", "Needs a valid video link");
+        commitForm: function (video) {
+            this.errorMessage = '';
+            const url = this.$el.find('#video_link').val();
+            if (url === '') {
+                return;
+            } else {
+                video.set('video_link', url);
+                video.save(null, {
+                    success: () => {
+                        this.models.push(video);
+                        this.render();
+                    },
+                    error: (model, response) => {
+                        this.errorMessage = 'This video could not be found on YouTube or Vimeo.';
+                        this.render();
                     }
-                    this.render()
-                }
-            });
+                });
+            }
         },
         addModels: function () {
-            if (this.model.id) {
-                this.app.dataManager.getCollection("videos").add(this.model);
-                this.parentModel.trigger('add-models-to-marker', [ this.model ])
-                this.app.vent.trigger('add-models-to-marker', [ this.model ]);
-            } else {
-                alert('no video added');
-            }
+            const videos = this.app.dataManager.getCollection("videos");
+            // add to data manager:
+            this.models.forEach(model => {
+                videos.add(model);
+            });
+            this.parentModel.trigger('add-models-to-marker', this.models)
+            this.app.vent.trigger('add-models-to-marker', this.models);
+
         }
     });
     return CreateVideoView;

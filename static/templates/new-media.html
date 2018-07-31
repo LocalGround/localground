@@ -1,4 +1,5 @@
 {{#ifequal mode "begin"}}
+    {{#ifequal dataType "photo"}}
     <div class="file-container">
         <div class="img-polaroid thumbnail">
             <div class="img-container">
@@ -13,9 +14,26 @@
             <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: 10%;"></div>
         </div>
     </div>
+    {{/ifequal}}
+
+    {{#ifequal dataType "audio"}}
+    <div class="file-container">
+        <div class="img-polaroid thumbnail">
+            <i class="fa fa-headphones fa-5x"></i>
+            <p>
+                {{ file_name }}<br>
+                {{ file_size }}<br>
+            <p>
+        </div>
+        <div class="progress">
+            <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: 10%;"></div>
+        </div>
+    </div>
+    {{/ifequal}}
 {{/ifequal}}
 
 {{#ifequal mode "end"}}
+    {{#ifequal dataType "photo"}}
     <div class="file-container">
         <div class="img-polaroid thumbnail">
             <div class="img-container">
@@ -31,6 +49,23 @@
             </p>
         </div>
     </div>
+    {{/ifequal}}
+
+    {{#ifequal dataType "audio"}}
+    <div class="file-container">
+        <div class="img-polaroid thumbnail">
+            <div class="badge success-icon">
+                <i class="fa fa-check"></i>
+            </div>
+            <i class="fa fa-headphones fa-5x"></i>
+            <p>
+                {{ file_name }}<br>
+                {{ file_size }}<br>
+                <a href="#" class="delete">delete</a>
+            </p>
+        </div>
+    </div>
+    {{/ifequal}}
 {{/ifequal}}
 
 {{#ifequal mode "error"}}

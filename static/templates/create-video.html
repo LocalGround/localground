@@ -3,27 +3,16 @@
         <input type="text" id="video_link" value="{{ video_link }}"
             placeholder="Paste a link from either YouTube or Vimeo">
         {{#if errorMessage}}
-            <span class="errorMessage">{{errorMessage}}</span>
+            <p class="error">{{errorMessage}}</p>
         {{/if}}
     </form>
 </div>
-
-{{#if video_provider}}
-    <div class="video-container">
-        {{#ifequal video_provider "vimeo"}}
-            <iframe src="https://player.vimeo.com/video/{{video_id}}"
+<div class="video-container">
+    {{#each videos}}
+        <iframe src="{{this.embedURL}}"
             style="width:150px;height:150px;"
             frameborder="0"
             webkitallowfullscreen mozallowfullscreen allowfullscreen>
-            </iframe>
-        {{/ifequal}}
-
-
-        {{#ifequal video_provider "youtube"}}
-            <iframe src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
-            style="width:150px;height:150px;"
-            frameborder="0" allowfullscreen>
-            </iframe>
-        {{/ifequal}}
-    </div>
-{{/if}}
+        </iframe>
+    {{/each}}
+</div>

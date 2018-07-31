@@ -375,8 +375,12 @@ define(["jquery",
                 if (model) {
                     const ids = model.get("attached_photos_ids") || [];
                     const imageList = ids.map(id => {
-                        const imageURL = this.app.dataManager.getPhoto(id).get('path_marker_lg');
-                        return `<img src="${imageURL}" />`;
+                        const photo = this.app.dataManager.getPhoto(id);
+                        if (photo) {
+                            const imageURL = photo.get('path_marker_lg');
+                            return `<img src="${imageURL}" />`;
+                        }
+                        return '';
                     });
                     td.innerHTML = imageList.join('');
                 }
@@ -386,11 +390,10 @@ define(["jquery",
             audioListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 td.innerHTML = '';
                 const model = this.getModelFromCell(instance, row);
-                if (model) {
-                    const ids = model.get("attached_audio_ids") || [];
-                    td.innerHTML = '';
-                    ids.forEach(id => {
-                        const audioModel = this.app.dataManager.getAudio(id);
+                const ids = model.get("attached_audio_ids") || [];
+                ids.forEach(id => {
+                    const audioModel = this.app.dataManager.getAudio(id);
+                    if (audioModel) {
                         const player = new AudioPlayer({
                             model: audioModel,
                             audioMode: "basic",
@@ -399,25 +402,27 @@ define(["jquery",
                         $(td).append(player.$el.css({
                             display: 'inline-block'
                         }));
-                    });
-                }
+                    }
+                });
                 return td;
             },
 
             videoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 td.innerHTML = '';
                 const model = this.getModelFromCell(instance, row);
-                if (model) {
-                    const ids = model.get("attached_videos_ids") || [];
-                    const iframeList = ids.map(id => {
-                        const video_link = this.app.dataManager.getVideo(id).getEmbedLink();
+                const ids = model.get("attached_videos_ids") || [];
+                const iframeList = ids.map(id => {
+                    const video = this.app.dataManager.getVideo(id);
+                    if (video) {
+                        const videoURL = video.getEmbedLink();
                         const size = '50px';
-                        return `<iframe src="${video_link}"
-                                    style="width:${size};height:${size}" frameborder="0"
-                                    allowfullscreen></iframe>`
-                    });
-                    td.innerHTML = iframeList.join(' ');
-                }
+                        return `<iframe src="${videoURL}"
+                                style="width:${size};height:${size}" frameborder="0"
+                                allowfullscreen></iframe>`;
+                    }
+                    return '';
+                });
+                td.innerHTML = iframeList.join(' ');
                 return td;
             },
 
