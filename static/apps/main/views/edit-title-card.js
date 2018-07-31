@@ -46,10 +46,11 @@ define([
                             path: mediaObj.get('path_medium'),
                             id: item.id
                         });
-                    } else if (item.type === 'video') {
+                    } else if (item.type === 'videos') {
                         media.videos.push({
                             id: item.id,
-                            video_id: mediaObj.get('video_id')
+                            video_id: mediaObj.get('video_id'),
+                            video_provider: mediaObj.get('video_provider')
                         });
                     } else if (item.type === 'audio') {
                         media.audio.push({
@@ -127,17 +128,27 @@ define([
                 let dataType;
                 if (model.get('overlay_type') === 'photo') {
                     dataType = 'photos';
-                } else if (model.get('overlay_type') === 'videos') {
+                } else if (model.get('overlay_type') === 'video') {
                     dataType = 'videos';
                 } else if (model.get('overlay_type') === 'audio') {
                     dataType = 'audio';
                 }
 
-                list.push({
+                let newMediaItem = {
                     id: model.id,
                     type: dataType
-                });
+                };
+
+                if (newMediaItem.type === 'videos') {
+                    newMediaItem.video_provider = model.get('video_provider');
+                }
+
+                list.push(newMediaItem);
             });
+
+            console.log(list);
+            console.log(this.activeMap.get('metadata').titleCardInfo.media);
+            console.log(this.activeMap);
 
             this.activeMap.save(null, {
                 success: () => {
@@ -148,12 +159,20 @@ define([
         },
 
         detachMedia: function(e) {
+            
             const idToBeRemoved = parseInt(e.target.dataset.id);
+            const dataType = e.target.dataset.type;
+
+            console.log(dataType);
             const originalList = this.activeMap.get('metadata').titleCardInfo.media;
             const newList = originalList.filter((item) => {
-                return item !== idToBeRemoved;
+                if (item.id === idToBeRemoved && item.type === dataType) {
+                    return false;
+                }
+                return true;
             });
 
+            console.log(originalList, newList);
             this.activeMap.get('metadata').titleCardInfo.media = newList;
 
             this.activeMap.save(null, {
