@@ -8,7 +8,6 @@ from rest_framework.serializers import ValidationError
 
 
 class RelatedMediaList(generics.ListCreateAPIView):
-    # return HttpResponse(self.kwargs.get('entity_name_plural'))
     model = models.GenericAssociation
     serializer_class = serializers.AssociationSerializer
     # http://stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service

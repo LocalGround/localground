@@ -461,7 +461,6 @@ class ModelMixin(object):
         from localground.apps.site import models
         f = models.Dataset.create(
             owner=user or self.user,
-            name=name,
             description=description,
             last_updated_by=user or self.user,
             project=project or self.project
