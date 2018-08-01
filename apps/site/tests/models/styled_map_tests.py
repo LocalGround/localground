@@ -109,9 +109,9 @@ class StyledMapTests(
         # delete one of the maps (but not the other one):
         map1.delete()
 
-        # ensure that the Layer and the Dataset no longer exist:
+        # ensure that the dataset still exists:
         self.assertEqual(
-            Dataset.objects.get(id=new_dataset_id).name, 'A title')
+            Dataset.objects.get(id=new_dataset_id).id, new_dataset_id)
 
     def test_delete_map_does_not_remove_dataset_if_not_empty(
             self, **kwargs):
