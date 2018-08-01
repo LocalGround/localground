@@ -5,8 +5,9 @@ define([
     "marionette",
     "views/add-media",
     "lib/modals/modal",
+    "lib/media/photo-video-viewer",
     "text!../templates/edit-title-card.html"
-], function (_, Handlebars, Marionette, AddMedia, Modal, EditTitleCardTemplate) {
+], function (_, Handlebars, Marionette, AddMedia, Modal, PhotoVideoView, EditTitleCardTemplate) {
     "use strict";
     var EditTitleCard = Marionette.ItemView.extend({
         template: Handlebars.compile(EditTitleCardTemplate),
@@ -32,6 +33,25 @@ define([
         templateHelpers: function () {
             let header, description;
 
+            
+
+            //console.log(media);
+
+            // once map metadata is fully implemented, these conditional statements can be removed
+            if (this.activeMap.get('metadata')) {
+                if (this.activeMap.get('metadata').titleCardInfo) {
+                    header = this.activeMap.get('metadata').titleCardInfo.header;
+                    description = this.activeMap.get('metadata').titleCardInfo.description;
+                }
+            }
+            return {
+                header: header,
+                description: description//,
+                //media: media
+            };
+        },
+
+        getMediaInfo: function() {
             let media = {
                 photos: [],
                 videos: [],
@@ -61,20 +81,23 @@ define([
                 }
             });
 
-            console.log(media);
+            return media
+        },
 
-            // once map metadata is fully implemented, these conditional statements can be removed
-            if (this.activeMap.get('metadata')) {
-                if (this.activeMap.get('metadata').titleCardInfo) {
-                    header = this.activeMap.get('metadata').titleCardInfo.header;
-                    description = this.activeMap.get('metadata').titleCardInfo.description;
-                }
-            }
-            return {
-                header: header,
-                description: description,
-                media: media
-            };
+        onRender: function() {
+            let media = this.getMediaInfo();
+
+            this.photoVideoView = new PhotoVideoView({
+                detachMedia: this.detachMedia, 
+                modal: this.modal,
+                app: this.app, 
+                photoCollection: new Backbone.Collection(media.photos),
+                videoCollection: new Backbone.Collection(media.videos)
+            })
+
+            console.log(this.photoVideoView);
+
+            this.$el.find('.title-card_media').append(this.photoVideoView.$el);
         },
 
         saveTitleCard: function() {

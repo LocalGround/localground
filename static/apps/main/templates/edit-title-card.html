@@ -7,7 +7,10 @@
         <label class="title-card_label">(Introductory Text)</label>
         <textarea class="title-card_textarea" placeholder="Provide some text to introduce your map. You can include images.">{{description}}</textarea>
     </div>
-    {{#each media.photos}}
+    <div class="title-card_media">
+
+    </div>
+    <!-- {{#each media.photos}}
         <div class="attached-container photo-attached">
             <div class="attached-media" style="background: url('{{this.path}}');"></div>
             <div class="attached-media-overlay">
@@ -21,7 +24,6 @@
     {{#each media.audio}}
         <div class="attached-container audio-attached">
             <div class="player-container audio-basic" data-id="{{this.id}}">
-                <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
             </div>
             <div class="attached-media-overlay">
                 <div class="hover-to-show">
@@ -52,6 +54,6 @@
                 </div>
             </div>
         </div>
-    {{/each}}
+    {{/each}} -->
     <span class="photo-icon_wrapper"><i class="fas fa-image"></i></span>
 </form>
