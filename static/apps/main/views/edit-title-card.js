@@ -6,8 +6,9 @@ define([
     "views/add-media",
     "lib/modals/modal",
     "lib/media/photo-video-viewer",
+    "lib/media/audio-viewer",
     "text!../templates/edit-title-card.html"
-], function (_, Handlebars, Marionette, AddMedia, Modal, PhotoVideoView, EditTitleCardTemplate) {
+], function (_, Handlebars, Marionette, AddMedia, Modal, PhotoVideoView, AudioView, EditTitleCardTemplate) {
     "use strict";
     var EditTitleCard = Marionette.ItemView.extend({
         template: Handlebars.compile(EditTitleCardTemplate),
@@ -21,8 +22,8 @@ define([
             this.popover = this.app.popover;
         },
         events: {
-            'click .photo-icon_wrapper': 'showMediaBrowser',
-            'click .detach_media': 'detachMedia'
+            'click .photo-icon_wrapper': 'showMediaBrowser'//,
+            //'click .detach_media': 'detachMedia'
         },
         modelEvents: {
             'add-media-to-model': 'attachMedia'
@@ -88,7 +89,7 @@ define([
             let media = this.getMediaInfo();
 
             this.photoVideoView = new PhotoVideoView({
-                detachMedia: this.detachMedia, 
+                detachMedia: this.detachMedia.bind(this), 
                 modal: this.modal,
                 app: this.app, 
                 photoCollection: new Backbone.Collection(media.photos),
@@ -98,6 +99,18 @@ define([
             console.log(this.photoVideoView);
 
             this.$el.find('.title-card_media').append(this.photoVideoView.$el);
+
+
+            this.audioView = new AudioView({
+                detachMedia: this.detachMedia.bind(this), 
+                modal: this.modal,
+                app: this.app, 
+                audioCollection: new Backbone.Collection(media.audio)
+            })
+
+            console.log(this.photoVideoView);
+
+            this.$el.find('.title-card_media').append(this.audioView.$el);
         },
 
         saveTitleCard: function() {
@@ -186,7 +199,8 @@ define([
         },
 
         detachMedia: function(e) {
-            
+            console.log('detach parent function');
+            console.log(this);
             const idToBeRemoved = parseInt(e.target.dataset.id);
             const dataType = e.target.dataset.type;
 

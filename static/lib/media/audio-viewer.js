@@ -4,11 +4,11 @@ define([
     "handlebars",
     "marionette",
     "lib/modals/modal",
-    "text!./photo-video-viewer.html"
-], function (_, Handlebars, Marionette, Modal, PhotoVideoTemplate) {
+    "text!./audio-viewer.html"
+], function (_, Handlebars, Marionette, Modal, AudioViewerTemplate) {
     "use strict";
-    var PhotoVideoViewer = Marionette.ItemView.extend({
-        template: Handlebars.compile(PhotoVideoTemplate),
+    var AudioViewer = Marionette.ItemView.extend({
+        template: Handlebars.compile(AudioViewerTemplate),
         initialize: function (opts) {
             //opts.model = opts.activeMap;
             _.extend(this, opts);
@@ -29,26 +29,17 @@ define([
         className: 'media-items_wrapper',
 
         templateHelpers: function () {
-            let photos = []; 
-            let videos = [];
-            this.photoCollection.each((model) => {
-                photos.push({
-                    id: model.get('id'),
-                    path: model.get('path')
-                });
-            });
+            let audio = []; 
 
-            this.videoCollection.each((model) => {
-                videos.push({
+            this.audioCollection.each((model) => {
+                audio.push({
                     id: model.get('id'),
-                    video_id: model.get('video_id'),
-                    video_provider: model.get('video_provider')
+                    videoname_id: model.get('name')
                 });
             });
            
             return {
-                photos: photos,
-                videos: videos
+                audio: audio
             };
         },
 
@@ -56,5 +47,5 @@ define([
             this.detachMedia(e);
         } 
     });
-    return PhotoVideoViewer;
+    return AudioViewer;
 });
