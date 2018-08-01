@@ -56,7 +56,6 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
             data=urllib.urlencode({
                 'col_alias': 'Display Name',
                 'ordering': 1,
-                'do_reshuffle': 1,
                 'data_type': 'text'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,

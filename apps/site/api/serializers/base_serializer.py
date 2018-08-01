@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
 from django.forms.widgets import Input
@@ -44,6 +44,35 @@ class AuditSerializerMixin(object):
         validated_data.update(self.get_presave_update_dictionary())
         return super(AuditSerializerMixin, self).update(
             instance, validated_data)
+
+
+class ReorderingMixin(object):
+
+    def reorder_siblings_on_update(
+            self, update_model, sibling_models, new_ordering):
+        try:
+            new_index = int(new_ordering) - 1
+        except Exception:
+            raise exceptions.ValidationError(
+                'ordering value of {0} is not valid'.format(new_ordering))
+
+        # ensures that new_index is within bounds:
+        new_index = min(new_index, len(sibling_models) - 1)
+        new_index = max(new_index, 0)
+        current_index = sibling_models.index(update_model)
+
+        # move update_model from current index to new index:
+        sibling_models.insert(new_index, sibling_models.pop(current_index))
+
+        # commit re-ordered values to database:
+        counter = 1
+        for model in sibling_models:
+            model.ordering = counter
+            model.save()
+            counter += 1
+
+        # return valid new index:
+        return new_index + 1
 
 
 class TagsSerializerMixin(serializers.ModelSerializer):

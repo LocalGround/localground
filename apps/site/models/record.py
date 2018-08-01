@@ -39,3 +39,25 @@ class Record(ExtrasMixin, PointMixin, ProjectMixin,
 
     def __unicode__(self):
         return str(self.id)
+
+    def get_media_siblings(self, media_content_type_id):
+        # If the instance is an audio association, only re-sort
+        # sibling audio instances. If the instance is either video or photo,
+        # then siblings = video + audio (b/c they're in the same carousel):
+        from localground.apps.site.models import Audio
+        if media_content_type_id == Audio.get_content_type().id:
+            return self._get_audio_siblings()
+        return self._get_photo_and_video_siblings()
+
+    def _get_photo_and_video_siblings(self):
+        from localground.apps.site.models import Photo, Video
+        return list(self.entities.filter(
+            entity_type_id__in=[
+                Photo.get_content_type().id, Video.get_content_type().id
+            ]).order_by('ordering',))
+
+    def _get_audio_siblings(self):
+        from localground.apps.site.models import Audio
+        return list(self.entities.filter(
+            entity_type_id=Audio.get_content_type().id
+        ).order_by('ordering',))

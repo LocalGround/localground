@@ -143,9 +143,10 @@ define(["jquery",
                         --destination_index;
                     }
                     newPosition = destination_index - 2 + i;
+                    console.log('setting field order to:', newPosition);
 
                     field.set("ordering", newPosition);
-                    field.save({"ordering": newPosition, do_reshuffle: 1}, { patch: true, wait: true });
+                    field.save({"ordering": newPosition}, { patch: true, wait: true });
                 }
             },
             renderSpreadsheet: function () {

@@ -14,7 +14,6 @@ class GenericAssociation(BaseAudit):
     the reference above for more information about the contenttypes framework.
     """
     ordering = models.IntegerField(default=1)
-    turned_on = models.BooleanField(default=False)
 
     # analogous to the "subject" in a triplet,
     # (e.g. "The 'source' has an 'entity.'")
@@ -32,8 +31,7 @@ class GenericAssociation(BaseAudit):
     def to_dict(self):
         return {
             'username': self.id,
-            'ordering': self.ordering,
-            'turned_on': self.turned_on
+            'ordering': self.ordering
         }
 
     def can_view(self, user, access_key=None):
@@ -52,7 +50,49 @@ class GenericAssociation(BaseAudit):
         )
 
     def __unicode__(self):
-        return '{0}. {1} --> {2}'.format(self.source_id, self.source_type, self.entity_type)
+        return '{0}. {1} --> {2}'.format(
+            self.source_id, self.source_type, self.entity_type)
+
+    # def get_siblings(self):
+    #     # If the instance is an audio association, only re-sort
+    #     # sibling audio instances. If the instance is either video or photo,
+    #     # then siblings = video + audio (b/c they're in the same carousel):
+    #     from localground.apps.site.models import Audio
+    #     if self.entity_type.id == Audio.get_content_type().id:
+    #         return self._get_audio_siblings()
+    #     return self._get_photo_and_video_siblings()
+    #
+    # def _get_photo_and_video_siblings(self):
+    #     from localground.apps.site.models import Photo, Video
+    #     return list(self.source_object.entities.filter(
+    #         entity_type_id__in=[
+    #             Photo.get_content_type().id, Video.get_content_type().id
+    #         ]).order_by('ordering',))
+    #
+    # def _get_audio_siblings(self):
+    #     from localground.apps.site.models import Audio
+    #     return list(self.source_object.entities.filter(
+    #         entity_type_id=Audio.get_content_type().id
+    #     ).order_by('ordering',))
+
+    def _reorder_siblings_on_delete(self):
+        # splice model from list:
+        from localground.apps.site.models import Audio
+        sibling_models = self.source_object.get_media_siblings(
+            self.entity_type.id)
+        current_index = sibling_models.index(self)
+        sibling_models.pop(current_index)
+
+        # commit re-ordered values to database:
+        counter = 1
+        for model in sibling_models:
+            model.ordering = counter
+            model.save()
+            counter += 1
+
+    def delete(self, **kwargs):
+        self._reorder_siblings_on_delete()
+        super(GenericAssociation, self).delete(**kwargs)
 
     class Meta:
         app_label = 'site'

@@ -6,9 +6,6 @@ from rest_framework.response import Response
 from django.db import IntegrityError
 from rest_framework.serializers import ValidationError
 
-def get_group_model(model_type):
-    return models.Record
-
 
 class RelatedMediaList(generics.ListCreateAPIView):
     # return HttpResponse(self.kwargs.get('entity_name_plural'))
@@ -17,37 +14,34 @@ class RelatedMediaList(generics.ListCreateAPIView):
     # http://stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service
 
     def get_queryset(self):
-        group_model = get_group_model(self.kwargs.get('group_name_plural'))
         try:
-            marker = group_model.objects.get(
-                id=int(
-                    self.kwargs.get('source_id')))
-        except group_model.DoesNotExist:
+            record = models.Record.objects.get(
+                id=int(self.kwargs.get('source_id')))
+        except models.Record.DoesNotExist:
             raise Http404
 
         entity_type = models.Base.get_model(
             model_name_plural=self.kwargs.get('entity_name_plural')
         ).get_content_type()
+
         return self.model.objects.filter(
             entity_type=entity_type,
-            source_type=group_model.get_content_type(),
-            source_id=self.kwargs.get('source_id'))
+            source_type=models.Record.get_content_type(),
+            source_id=self.kwargs.get('source_id')).order_by('ordering',)
 
     def perform_create(self, serializer):
         d = {}
-        group_model = get_group_model(self.kwargs.get('group_name_plural'))
-        source_type = group_model.get_content_type()
+        source_type = models.Record.get_content_type()
         entity_model = models.Base.get_model(
             model_name_plural=self.kwargs.get('entity_name_plural')
         )
         entity_type = entity_model.get_content_type()
-        if self.kwargs.get('entity_name_plural') in [
-                'markers',
-                'views',
-                'prints'] or 'dataset_' in self.kwargs.get('entity_name_plural'):
+        if self.kwargs.get('entity_name_plural') in \
+                ['markers', 'views', 'prints'] or 'dataset_' in \
+                self.kwargs.get('entity_name_plural'):
             raise exceptions.ParseError(
                 'You cannot attach a %s to a %s' % (
-                    entity_model.model_name, group_model.model_name
+                    entity_model.model_name, models.Record.model_name
                 ))
         d.update({
             'source_type': source_type,
@@ -68,8 +62,7 @@ class RelatedMediaInstance(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.AssociationSerializerDetail
 
     def get_object(self, queryset=None):
-        group_model = get_group_model(self.kwargs.get('group_name_plural'))
-        source_type = group_model.get_content_type()
+        source_type = models.Record.get_content_type()
         entity_type = models.Base.get_model(
             model_name_plural=self.kwargs.get('entity_name_plural')
         ).get_content_type()

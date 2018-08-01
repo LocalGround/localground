@@ -127,7 +127,6 @@ class GenericRelationMixin(models.Model):
                 if rec.entity_id == o.id:
                     found = True
                     o.ordering = rec.ordering
-                    o.turned_on = rec.turned_on
                     break
             if not found:
                 stale_references.append(rec.id)
@@ -143,10 +142,10 @@ class GenericRelationMixin(models.Model):
         objects = sorted(objects, key=operator.attrgetter('ordering'))
         return objects
 
-    def stash(self, item, user, ordering=1, turned_on=False):
+    def stash(self, item, user, ordering=1):
         '''
         Creates an association between the object and whatever the item
-        specified "ordering" and "turned_on" args are optional.
+        specified "ordering" arg is optional.
         '''
         from localground.apps.site.models import GenericAssociation
         from localground.apps.site.models.abstract.base import \
@@ -164,7 +163,6 @@ class GenericRelationMixin(models.Model):
             entity_type=item.get_content_type(),
             entity_id=item.id,
             ordering=ordering,
-            turned_on=turned_on,
             owner=user,
             last_updated_by=user,
             date_created=get_timestamp_no_milliseconds(),

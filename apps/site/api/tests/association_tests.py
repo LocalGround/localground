@@ -32,9 +32,7 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixinAPI):
             "object_id": {"type": "integer", "required": True,
                           "read_only": False},
             "ordering": {"type": "integer", "required": False,
-                         "read_only": False},
-            "turned_on": {"type": "boolean", "required": False,
-                          "read_only": False},
+                         "read_only": True},
             "relation": {"type": "field", "required": False, "read_only": True}
         }
         self.view = views.RelatedMediaList.as_view()
@@ -133,8 +131,6 @@ class ApiRelatedMediaInstanceTest(
         self.metadata = {
             "ordering": {"type": "integer", "required": False,
                          "read_only": False},
-            "turned_on": {"type": "boolean", "required": False,
-                          "read_only": False},
             "parent": {"type": "field", "required": False, "read_only": True},
             "child": {"type": "field", "required": False, "read_only": True}
         }
@@ -147,10 +143,10 @@ class ApiRelatedMediaInstanceTest(
         self.audio2 = self.create_audio(self.user, self.project)
 
         # create associations
-        self.create_relation(self.record, self.photo1)  # ordering = 1
-        self.create_relation(self.record, self.photo2)  # ordering = 2
-        self.create_relation(self.record, self.audio1)  # ordering = 3
-        self.create_relation(self.record, self.audio2)  # ordering = 4
+        self.create_relation(self.record, self.photo1, ordering=1)
+        self.create_relation(self.record, self.photo2, ordering=2)
+        self.create_relation(self.record, self.audio1, ordering=1)
+        self.create_relation(self.record, self.audio2, ordering=2)
 
         # create urls:
         base_url = '/api/0/datasets/%s/data/%s/%s/%s/'
@@ -224,18 +220,17 @@ class ApiRelatedMediaInstanceTest(
         self.assertEqual(relation.ordering, 1)
         response = self.client_user.put(
             self.url_p1,
-            data=urllib.urlencode({'ordering': 5, 'turned_on': True}),
+            data=urllib.urlencode({'ordering': 5}),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         relation = self.get_relation(self.record, self.photo1)
-        self.assertEqual(relation.ordering, 4)
-        self.assertEqual(relation.turned_on, True)
+        self.assertEqual(relation.ordering, 2)
 
     def test_update_relation_using_patch(self, **kwargs):
         relation = self.get_relation(self.record, self.audio1)
-        self.assertEqual(relation.ordering, 3)
+        self.assertEqual(relation.ordering, 1)
         response = self.client_user.patch(
             self.url_a1,
             data=urllib.urlencode({'ordering': 5}),
@@ -244,14 +239,10 @@ class ApiRelatedMediaInstanceTest(
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         relation = self.get_relation(self.record, self.audio1)
-        self.assertEqual(relation.ordering, 4)
-        self.assertEqual(relation.turned_on, False)
+        self.assertEqual(relation.ordering, 2)
 
     def test_reordering_one_reorders_them_all_put(self, **kwargs):
         counter = 1
-        for relation in self.record.entities.all().order_by('ordering',):
-            self.assertEqual(relation.ordering, counter)
-            counter += 1
         response = self.client_user.patch(
             self.url_a1,
             data=urllib.urlencode({'ordering': 2}),
@@ -265,8 +256,8 @@ class ApiRelatedMediaInstanceTest(
         a1_relation = self.get_relation(self.record, self.audio1)
         self.assertEqual(a1_relation.ordering, 2)
 
-        p2_relation = self.get_relation(self.record, self.photo2)
-        self.assertEqual(p2_relation.ordering, 3)
-
         a2_relation = self.get_relation(self.record, self.audio2)
-        self.assertEqual(a2_relation.ordering, 4)
+        self.assertEqual(a2_relation.ordering, 1)
+
+        p2_relation = self.get_relation(self.record, self.photo2)
+        self.assertEqual(p2_relation.ordering, 2)

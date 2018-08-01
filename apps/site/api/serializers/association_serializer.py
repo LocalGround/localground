@@ -2,7 +2,7 @@ from django.conf import settings
 from rest_framework import serializers, exceptions
 from localground.apps.site import models
 from localground.apps.site.api.serializers.base_serializer import \
-    AuditSerializerMixin
+    AuditSerializerMixin, ReorderingMixin
 
 
 class AssociationSerializer(AuditSerializerMixin, serializers.ModelSerializer):
@@ -12,7 +12,14 @@ class AssociationSerializer(AuditSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = models.GenericAssociation
-        fields = ('object_id', 'ordering', 'turned_on', 'relation')
+        read_only_fields = ('ordering',)
+        fields = ('object_id', 'ordering', 'relation')
+
+    def create(self, validated_data):
+        record = models.Record.objects.get(id=validated_data.get('source_id'))
+        validated_data['ordering'] = len(
+            record.get_media_siblings(validated_data.get('entity_type')))
+        return super(AssociationSerializer, self).create(validated_data)
 
     def validate(self, attrs):
         """
@@ -64,50 +71,29 @@ class AssociationSerializer(AuditSerializerMixin, serializers.ModelSerializer):
             )
 
 
-class AssociationSerializerDetail(AssociationSerializer):
+class AssociationSerializerDetail(ReorderingMixin, AssociationSerializer):
     parent = serializers.SerializerMethodField()
     child = serializers.SerializerMethodField()
 
-    def reorder_sibling_media(self, instance, ordering):
-        if ordering is not None:
-            try:
-                new_index = int(ordering) - 1
-            except Exception:
-                raise exceptions.ValidationError(
-                    'ordering value of {0} is not valid'.format(ordering))
-
-            entities = list(
-                instance.source_object.entities.all().order_by('ordering',)
-            )
-            # ensures that new_index is within bounds:
-            new_index = min(new_index, len(entities) - 1)
-            new_index = max(new_index, 0)
-            current_index = entities.index(instance)
-
-            # move instance from current index to new index:
-            entities.insert(new_index, entities.pop(current_index))
-
-            # commit re-ordered values to database:
-            counter = 1
-            for entity in entities:
-                entity.ordering = counter
-                entity.save()
-                counter += 1
-
-            # return valid new index:
-            return new_index + 1
-        return ordering
-
     def update(self, instance, validated_data):
+        view = self.context.get('view')
+        entity_type = models.Base.get_model(
+            model_name_plural=view.kwargs.get('entity_name_plural')
+        ).get_content_type()
+
         # re-sort list of entities:
-        validated_data['ordering'] = self.reorder_sibling_media(
-            instance, validated_data.get('ordering'))
+        if validated_data.get('ordering') is not None:
+            validated_data['ordering'] = self.reorder_siblings_on_update(
+                instance,
+                instance.source_object.get_media_siblings(entity_type.id),
+                validated_data.get('ordering')
+            )
         return super(
             AssociationSerializerDetail, self).update(instance, validated_data)
 
     class Meta:
         model = models.GenericAssociation
-        fields = ('ordering', 'turned_on', 'parent', 'child')
+        fields = ('ordering', 'parent', 'child')
 
     def get_parent(self, obj):
         view = self.context.get('view')

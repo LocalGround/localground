@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.site.api.serializers.base_serializer import \
-    AuditSerializerMixin
+    AuditSerializerMixin, ReorderingMixin
 from django.conf import settings
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api import fields
@@ -26,7 +26,8 @@ class FieldSerializerSimple(serializers.ModelSerializer):
             'data_type')
 
 
-class FieldSerializerBase(AuditSerializerMixin, FieldSerializerSimple):
+class FieldSerializerBase(
+        ReorderingMixin, AuditSerializerMixin, FieldSerializerSimple):
     '''
     Hack: can't use HyperlinkSerializer field for URLs with two
     dynamic parameters because of DRF limitations. So, we'll build
@@ -67,9 +68,31 @@ class FieldSerializer(FieldSerializerBase):
         model = models.Field
         fields = FieldSerializerBase.Meta.fields
 
+    def create(self, validated_data):
+        instance = super(FieldSerializer, self).create(validated_data)
+        # after insert, reshuffle the other fields:
+        instance.ordering = self.reorder_siblings_on_update(
+            instance,
+            list(instance.dataset.fields),
+            instance.ordering
+        )
+        instance.save()
+        return instance
+
 
 class FieldSerializerUpdate(FieldSerializerBase):
     data_type = serializers.SlugRelatedField(slug_field='name', read_only=True)
+
+    def update(self, instance, validated_data):
+        # re-sort the other fields:
+        if validated_data.get('ordering') is not None:
+            validated_data['ordering'] = self.reorder_siblings_on_update(
+                instance,
+                list(instance.dataset.fields),
+                validated_data.get('ordering')
+            )
+        return super(
+            FieldSerializerUpdate, self).update(instance, validated_data)
 
     class Meta:
         model = models.Field
