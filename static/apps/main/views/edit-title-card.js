@@ -32,23 +32,9 @@ define([
         className: 'edit-title-card-menu',
 
         templateHelpers: function () {
-            let header, description;
-
-            
-
-            //console.log(media);
-
-            // once map metadata is fully implemented, these conditional statements can be removed
-            if (this.activeMap.get('metadata')) {
-                if (this.activeMap.get('metadata').titleCardInfo) {
-                    header = this.activeMap.get('metadata').titleCardInfo.header;
-                    description = this.activeMap.get('metadata').titleCardInfo.description;
-                }
-            }
             return {
-                header: header,
-                description: description//,
-                //media: media
+                header: this.activeMap.get('metadata').titleCardInfo.header,
+                description: this.activeMap.get('metadata').titleCardInfo.description
             };
         },
 
@@ -60,7 +46,6 @@ define([
             };
             this.activeMap.get('metadata').titleCardInfo.media.forEach((item) => {
                 let mediaObj = this.app.dataManager.getMediaItem(item.id, item.type);
-                console.log(item.id, item);
                 if (mediaObj) {
                     if (item.type === 'photos') {
                         media.photos.push({
@@ -76,18 +61,23 @@ define([
                     } else if (item.type === 'audio') {
                         media.audio.push({
                             id: item.id,
-                            name: mediaObj.get('name')
+                            name: mediaObj.get('name'),
+                            file_path: mediaObj.get('file_path')
                         });
                     }
                 }
             });
-
             return media
         },
 
         onRender: function() {
             let media = this.getMediaInfo();
 
+            this.attachPhotoVideoView(media);
+            this.attachAudioView(media);
+        },
+
+        attachAudioView: function() {
             this.photoVideoView = new PhotoVideoView({
                 detachMedia: this.detachMedia.bind(this), 
                 modal: this.modal,
@@ -96,19 +86,16 @@ define([
                 videoCollection: new Backbone.Collection(media.videos)
             })
 
-            console.log(this.photoVideoView);
-
             this.$el.find('.title-card_media').append(this.photoVideoView.$el);
+        },
 
-
+        attachPhotoVideoView: function() {
             this.audioView = new AudioView({
                 detachMedia: this.detachMedia.bind(this), 
                 modal: this.modal,
                 app: this.app, 
                 audioCollection: new Backbone.Collection(media.audio)
             })
-
-            console.log(this.photoVideoView);
 
             this.$el.find('.title-card_media').append(this.audioView.$el);
         },
@@ -169,7 +156,6 @@ define([
         },
 
         attachMedia: function (models) {
-            console.log(models);
             let list = this.activeMap.get('metadata').titleCardInfo.media; // pointer
             
             models.forEach((model)=> {
@@ -188,8 +174,6 @@ define([
                 }
             });
 
-            console.log(this.activeMap);
-
             this.activeMap.save(null, {
                 success: () => {
                     this.secondaryModal.hide();
@@ -199,8 +183,6 @@ define([
         },
 
         detachMedia: function(e) {
-            console.log('detach parent function');
-            console.log(this);
             const idToBeRemoved = parseInt(e.target.dataset.id);
             const dataType = e.target.dataset.type;
 

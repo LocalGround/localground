@@ -4,8 +4,9 @@ define([
     "handlebars",
     "marionette",
     "lib/modals/modal",
+    "lib/audio/audio-player",
     "text!./audio-viewer.html"
-], function (_, Handlebars, Marionette, Modal, AudioViewerTemplate) {
+], function (_, Handlebars, Marionette, Modal, AudioPlayer, AudioViewerTemplate) {
     "use strict";
     var AudioViewer = Marionette.ItemView.extend({
         template: Handlebars.compile(AudioViewerTemplate),
@@ -17,7 +18,6 @@ define([
             //     app: this.app
             // });
             this.popover = this.app.popover;
-            console.log(this);
 
             this.render();
         },
@@ -39,8 +39,32 @@ define([
             });
            
             return {
-                audio: audio
+                audio: audio,
+                showHeader: (this.audioCollection.length > 0)
             };
+        },
+
+        onRender: function() {
+            this.renderAudioPlayers();
+        },
+
+        renderAudioPlayers: function () {
+            var audio_attachments = [],
+                that = this,
+                player,
+                $elem;
+            if (this.audioCollection) {
+                audio_attachments = this.audioCollection;
+            }
+            this.audioCollection.each(function (item) {
+                $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
+                player = new AudioPlayer({
+                    model: item,
+                    audioMode: "basic",
+                    app: that.app
+                });
+                $elem.append(player.$el[0]);
+            });
         },
 
         relayDetachMedia: function(e) {

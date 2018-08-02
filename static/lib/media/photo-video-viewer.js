@@ -17,12 +17,10 @@ define([
             //     app: this.app
             // });
             this.popover = this.app.popover;
-            console.log(this);
 
             this.render();
         },
         events: {
-            //'click .photo-icon_wrapper': 'showMediaBrowser',
             'click .detach_media': 'relayDetachMedia'
         },
 
@@ -48,7 +46,8 @@ define([
            
             return {
                 photos: photos,
-                videos: videos
+                videos: videos, 
+                showHeader: (this.photoCollection.length > 0) || (this.videoCollection.length > 0)
             };
         },
 
