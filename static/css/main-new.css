@@ -2198,7 +2198,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   flex-wrap: wrap;
 }
 
-.form .row label, .form .row p, .form-inline .row label, .form-inline .row p {
+.form .row label:first-child, .form .row p, .form-inline .row label:first-child, .form-inline .row p {
   padding: 8px;
   font-weight: 400;
   color: #666;
@@ -2207,12 +2207,42 @@ span.action.rounded:hover, a.action.rounded:hover {
   word-wrap: break-word;
 }
 
+.form .row.numbers, .form-inline .row.numbers {
+  padding-left: 20px;
+}
+
+.form .row.numbers label, .form-inline .row.numbers label {
+  font-size: 0.8em;
+  vertical-align: middle;
+}
+
+.form .row.choices, .form-inline .row.choices {
+  margin: 16px 20px;
+}
+
+.form .row.choices td:first-child, .form-inline .row.choices td:first-child {
+  width: 8px;
+}
+
+.form .row.choices td:first-child .fa-grip-vertical, .form-inline .row.choices td:first-child .fa-grip-vertical {
+  color: #CCC;
+  cursor: pointer;
+}
+
+.form .row.choices td:first-child .fa-grip-vertical:nth-child(2), .form-inline .row.choices td:first-child .fa-grip-vertical:nth-child(2) {
+  margin-top: -1px;
+}
+
+.form .row.choices .add-new-choice, .form-inline .row.choices .add-new-choice {
+  margin-left: 20px;
+}
+
 .form .row.error, .form-inline .row.error {
   background-color: #fae5e3;
   padding: 5px 10px;
 }
 
-.form .row.error label, .form .row.error p, .form-inline .row.error label, .form-inline .row.error p {
+.form .row.error label:first-child, .form .row.error p, .form-inline .row.error label:first-child, .form-inline .row.error p {
   color: #d73729;
 }
 
@@ -2235,7 +2265,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   /* direct descendents inline */
 }
 
-.form-inline .row > label {
+.form-inline .row > label:first-child {
   flex: 1;
   /*border: solid 1px #000;*/
 }
@@ -2263,7 +2293,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   margin: 16px 0px;
 }
 
-.form .row > label,
+.form .row > label:first-child,
 .form .row > p {
   font-weight: 600;
   flex: 1;

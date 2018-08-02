@@ -1,4 +1,6 @@
 <form class="form">
+
+    <!-- ALIAS -->
     <div class="row {{#if col_alias_error}} error{{/if}}">
         <label>Field Name</label>
         {{#if col_alias_error}}
@@ -6,18 +8,51 @@
         {{/if}}
         <input id="col_alias" type="text" value="{{col_alias}}">
     </div>
+
+    <!-- DATATYPE -->
     <div class="row {{#if col_type_error}} error{{/if}}">
         <label>Type</label>
         {{#if data_type_error}}
             <p>{{ data_type_error }}</p>
         {{/if}}
         <select id="data_type">
-            <option value="text">Text</option>
-            <option value="integer">Number</option>
-            <option value="boolean">Yes / No</option>
-            <option value="choice">Choice</option>
-            <option value="date-time">Date</option>
-            <option value="date-time">Time</option>
+            <option value="text" {{#ifequal dataType 'text'}}selected{{/ifequal}}>Text</option>
+            <option value="number"{{#ifequal dataType 'number'}}selected{{/ifequal}}>Number</option>
+            <option value="boolean"{{#ifequal dataType 'boolean'}}selected{{/ifequal}}>Yes / No</option>
+            <option value="choice"{{#ifequal dataType 'choice'}}selected{{/ifequal}}>Choice</option>
+            <option value="date"{{#ifequal dataType 'date'}}selected{{/ifequal}}>Date</option>
+            <option value="time"{{#ifequal dataType 'time'}}selected{{/ifequal}}>Time</option>
         </select>
     </div>
+
+    <!-- INTEGER / FLOAT -->
+    <div class="row numbers">
+        <input checked type="checkbox">
+        <label>Integers only</label>
+    </div>
+
+    <!-- CHOICES -->
+    <div class="row choices">
+        <table>
+            {{#each extras.choices}}
+            <tr>
+                <td>
+                    <i class="fas fa-grip-vertical"></i>
+                    <i class="fas fa-grip-vertical"></i>
+                </td>
+                <td>
+                    <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
+                </td>
+                <td>
+                    <a href="#" index={{@index}} class="remove-choice">&times;</a>
+                </td>
+            </tr>
+            {{/each}}
+        </table>
+        <a href="#" class="add-new-choice">
+            <i class="fa fa-plus"></i> Add Option
+        </a>
+    </div>
+
+
 </form>
