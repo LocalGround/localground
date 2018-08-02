@@ -27,9 +27,9 @@ define([
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
                 Marionette.CompositeView.prototype.initialize.call(this);
                 this.template = Handlebars.compile(ParentTemplate);
-                this.collection = this.app.dataManager.getCollection(this.currentMedia);
 
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
@@ -54,17 +54,11 @@ define([
             },
 
             determineChildViewTagName: function (vm) {
-                if (vm == "thumb") {
-                    return "div";
-                }
-                return "tr";
+                return (vm === "thumb") ? "div" : "tr";
             },
 
             determineChildViewClassName: function (vm) {
-                if (vm == "thumb") {
-                    return "column";
-                }
-                return "table";
+                return (vm === "thumb") ? "column" : "table";
             },
 
             displayCards: function () {
@@ -75,25 +69,6 @@ define([
             displayTable: function () {
                 this.viewMode = "table";
                 this.render();
-                this.hideLoadingMessage();
-            },
-
-            hideLoadingMessage: function () {
-                this.$el.find("#loading-animation").empty();
-            },
-
-            displayMedia: function () {
-                if (this.currentMedia == 'photos') {
-                    this.collection = new Photos(null, { projectID: this.app.getProjectID() });
-                } else if (this.currentMedia == 'audio') {
-                    this.collection = new Audio(null, { projectID: this.app.getProjectID() });
-                } else {
-                    this.collection = new Videos(null, { projectID: this.app.getProjectID() });
-                }
-                //this.collection.setServerQuery("WHERE project_id = " + this.app.getProjectID());
-                this.collection.fetch({reset: true});
-                this.listenTo(this.collection, 'reset', this.render);
-                this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
             },
 
             doSearch: function (e) {

@@ -14,24 +14,12 @@ module.exports = function (grunt) {
                     optimize: 'none'
                 }
 	        },
-            style: {
+            main: {
                 options: {
-                    out: './static/build/style.js',
+                    out: './static/build/main.js',
                     baseUrl: "./static/",
                     mainConfigFile: "./static/apps/require-config.js",
-                    name: 'apps/style/kickoff',
-                    removeCombined: 'true',
-                    findNestedDependencies: 'true',
-                    wrapShim: 'true',
-                    optimize: 'none'
-                }
-	        },
-	        dataviewer: {
-                options: {
-                    out: './static/build/dataviewer.js',
-                    baseUrl: "./static/",
-                    mainConfigFile: "./static/apps/require-config.js",
-                    name: 'apps/dataviewer/kickoff',
+                    name: 'apps/main/kickoff',
                     removeCombined: 'true',
                     findNestedDependencies: 'true',
                     wrapShim: 'true',
@@ -59,42 +47,30 @@ module.exports = function (grunt) {
 						['./static/build/home.js']
 				}
 			},
-            //Note: minification doesn't work for ES6. Need a transpiler
-            // task
-            /*style: {
-				files: {
-                    './static/build/style.min.js':
-						['./static/build/style.js']
+            main: {
+                files: {
+                    './static/build/main.min.js':
+						['./static/build/main.js']
 				}
-			},
-			dataviewer: {
-				files: {
-                    './static/build/dataviewer.min.js':
-						['./static/build/dataviewer.js']
-				}
-			},
+	        },
 			presentation: {
 				files: {
                     './static/build/presentation.min.js':
 						['./static/build/presentation.js']
 				}
-			}*/
+			}
 		}
 
     });
+
     grunt.loadNpmTasks('grunt-contrib-requirejs');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.registerTask('default', ['requirejs', 'uglify']);
+    grunt.loadNpmTasks('grunt-contrib-uglify-es');
+    grunt.registerTask('default', ['requirejs', 'uglify'])
+
 };
 
 
 /*
-#sudo apt-get install nodejs
-#sudo apt-get install npm
-#sudo npm install -g grunt-cli
-#sudo ln -s /usr/bin/nodejs /usr/bin/node
-cd /localground
-npm update -g npm
-npm install
-grunt
+$ npm install  // installs package.json file
+$ grunt
 */

@@ -52,7 +52,6 @@ class MetadataValidator(object):
         self.data = self.request.data  # immutable
         self.instance = serializer_field.parent.instance
         self.password = self.data.get('password')
-        print self.password
         self.accessLevel = self._get_metadata().get('accessLevel')
 
     def _has_existing_password(self):

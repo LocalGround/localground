@@ -19,6 +19,13 @@ define(["models/baseItem"], function (BaseItem) {
         },
         getFormSchema: function () {
             return this.schema;
+        },
+        getEmbedLink: function () {
+            if (this.get('video_provider') == 'vimeo') {
+                return 'https://player.vimeo.com/video/' + this.get('video_id');
+            } else {
+                return 'https://www.youtube.com/embed/' + this.get('video_id') + '?ecver=1';
+            }
         }
     });
     return Video;

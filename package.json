@@ -19,11 +19,14 @@
     "url": "https://github.com/LocalGround/localground/issues"
   },
   "devDependencies": {
-    "grunt": "~1.0.1"
+    "grunt": "^1.0.3",
+    "grunt-contrib-requirejs": "^1.0.0",
+    "grunt-contrib-uglify": "^3.0.1",
+    "grunt-es6-module-transpiler": "^0.6.0",
+    "grunt-es6-transpiler": "^1.0.2",
+    "uglify-js": "^3.4.5"
   },
   "dependencies": {
-    "grunt": "~1.0.1",
-    "grunt-contrib-requirejs": "~1.0.0",
-    "grunt-contrib-uglify": "~3.0.1"
+    "grunt-contrib-uglify-es": "github:gruntjs/grunt-contrib-uglify#harmony"
   }
 }
