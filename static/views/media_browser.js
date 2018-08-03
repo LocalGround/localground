@@ -38,7 +38,8 @@ define([
             templateHelpers: function () {
                 return {
                     viewMode: this.viewMode,
-                    searchTerm: this.searchTerm
+                    searchTerm: this.searchTerm,
+                    currentMedia: this.currentMedia
                 };
             },
 
@@ -82,6 +83,8 @@ define([
             },
 
             toggleMedia: function (e) {
+                this.$el.find('.fetch-btn').removeClass('active');
+                $(e.target).addClass('active');
                 this.currentMedia = $(e.target).attr('data-value');
                 this.collection = this.app.dataManager.getCollection(this.currentMedia);
                 this.render();

@@ -63,7 +63,7 @@
     }
     .row {
         flex-wrap: wrap;
-        label, p {
+        label:first-child, p {
             padding: 8px;
             font-weight: 400;
             color: #666;
@@ -71,17 +71,42 @@
             text-align: right;
             word-wrap: break-word;
         }
-    }
-    .row.error {
-        background-color: $light-red;
-        padding: 5px 10px;
-        label, p {
-            color: $dark-red;
+        &.numbers {
+            padding-left: 20px;
+            label {
+                font-size: 0.8em;
+                vertical-align: middle;
+            }
         }
-        input[type="checkbox"] {
-            background-color: $light-red
+        &.choices {
+            margin: 16px 20px;
+
+            td:first-child {
+                width: 8px;
+                .fa-grip-vertical {
+                    color: #CCC;
+                    cursor: pointer;
+                }
+                .fa-grip-vertical:nth-child(2) {
+                    margin-top: -1px;
+                }
+            }
+            .add-new-choice {
+                margin-left: 20px;
+            }
+        }
+        &.error {
+            background-color: $light-red;
+            padding: 5px 10px;
+            label:first-child, p {
+                color: $dark-red;
+            }
+            input[type="checkbox"] {
+                background-color: $light-red
+            }
         }
     }
+
     .checkbox-list {
         td {
             font-size: 0.7em;
@@ -98,7 +123,7 @@
         display: flex;
         flex-wrap: wrap;
         margin: 8px 0px;
-        > label {
+        > label:first-child {
             flex: 1;
             /*border: solid 1px #000;*/
         }
@@ -110,24 +135,25 @@
             flex: 3;
         }
 
-    }
-    .row.error {
-        div {
-            display: flex;
-            flex-wrap: wrap;
-            p {
-                padding: 0px;
-            }
-            input[type="checkbox"] {
-                background-color: $light-red
+        &.error {
+            div {
+                display: flex;
+                flex-wrap: wrap;
+                p {
+                    padding: 0px;
+                }
+                input[type="checkbox"] {
+                    background-color: $light-red
+                }
             }
         }
     }
 }
+
 .form {
     .row {
         margin: 16px 0px;
-        > label,
+        > label:first-child,
         > p {
             font-weight: 600;
             flex: 1;
@@ -139,6 +165,15 @@
             font-weight: 400;
             padding-top: 3px;
         }
+    }
+}
+
+.modal {
+    p.error {
+        color: $dark-red;
+        font-size: 0.8em;
+        background: transparent;
+        padding: none;
     }
 }
 

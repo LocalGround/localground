@@ -147,7 +147,21 @@ class Field(BaseAudit):
             }
             raise exceptions.ValidationError(messages)
 
+    def _reorder_siblings_on_delete(self):
+        # splice model from list:
+        fields = list(self.dataset.fields)
+        current_index = fields.index(self)
+        fields.pop(current_index)
+
+        # commit re-ordered values to database:
+        counter = 1
+        for model in fields:
+            model.ordering = counter
+            model.save()
+            counter += 1
+
     def delete(self, **kwargs):
         self._throw_error_if_only_one_field()
         self._throw_error_if_map_layer_dependencies()
+        self._reorder_siblings_on_delete()
         super(Field, self).delete(**kwargs)

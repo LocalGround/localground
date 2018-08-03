@@ -26,7 +26,15 @@ define(["models/baseItem"], function (BaseItem) {
             } else {
                 return 'https://www.youtube.com/embed/' + this.get('video_id') + '?ecver=1';
             }
-        }
+        },
+        getKey: function () {
+            return 'videos';
+        },
+        toTemplateJSON: function () {
+            const json = BaseItem.prototype.toTemplateJSON.apply(this, arguments);
+            json.embedURL = this.getEmbedLink();
+            return json;
+        },
     });
     return Video;
 });

@@ -107,27 +107,6 @@ define(["jquery",
                 let strokeColor = this.model.get('metadata').strokeColor;
                 let fillColor = this.model.get('metadata').fillColor;
 
-                $(".layer-fill-color-picker").remove();
-                this.$el.find('#fill-color-picker').ColorPicker({
-                    color: fillColor,
-                    onShow: function (colpkr) {
-                        $(colpkr).fadeIn(200);
-                        return false;
-                    },
-                    onHide: function (colpkr) {
-                        if(that.model.get('metadata').fillColor !== fillColor) {
-                            that.updateFillColor(fillColor);
-                        }
-                        $(colpkr).fadeOut(200);
-                        return false;
-                    },
-                    onChange: function (hsb, hex, rgb) {
-                        fillColor = "#" + hex;
-                    }
-                });
-                $(".colorpicker:last-child").addClass('layer-fill-color-picker');
-
-
                 $(".layer-stroke-color-picker").remove();
                 this.$el.find('#stroke-color-picker').ColorPicker({
                     color: strokeColor,

@@ -1,4 +1,6 @@
 <form class="form">
+    {{ data_type }} - {{ integer_mode }}
+    <!-- ALIAS -->
     <div class="row {{#if col_alias_error}} error{{/if}}">
         <label>Field Name</label>
         {{#if col_alias_error}}
@@ -6,18 +8,55 @@
         {{/if}}
         <input id="col_alias" type="text" value="{{col_alias}}">
     </div>
+
+    <!-- DATATYPE -->
     <div class="row {{#if col_type_error}} error{{/if}}">
         <label>Type</label>
         {{#if data_type_error}}
             <p>{{ data_type_error }}</p>
         {{/if}}
         <select id="data_type">
-            <option value="text">Text</option>
-            <option value="integer">Number</option>
-            <option value="boolean">Yes / No</option>
-            <option value="choice">Choice</option>
-            <option value="date-time">Date</option>
-            <option value="date-time">Time</option>
+            <option value="text" {{#ifequal menuSelection 'text'}}selected{{/ifequal}}>Text</option>
+            <option value="number"{{#ifequal menuSelection 'number'}}selected{{/ifequal}}>Number</option>
+            <option value="boolean"{{#ifequal menuSelection 'boolean'}}selected{{/ifequal}}>Yes / No</option>
+            <option value="choice"{{#ifequal menuSelection 'choice'}}selected{{/ifequal}}>Choice</option>
+            <option value="date"{{#ifequal menuSelection 'date'}}selected{{/ifequal}}>Date</option>
+            <option value="time"{{#ifequal menuSelection 'time'}}selected{{/ifequal}}>Time</option>
         </select>
     </div>
+
+    <!-- INTEGER / FLOAT -->
+    {{#ifequal menuSelection 'number'}}
+    <div class="row numbers">
+        <input {{#if integer_mode}}checked{{/if}} id="number_type" type="checkbox">
+        <label>Integers only</label>
+    </div>
+    {{/ifequal}}
+
+    <!-- CHOICES -->
+    {{#ifequal menuSelection 'choice'}}
+    <div class="row choices">
+        <table>
+            {{#each extras.choices}}
+            <tr>
+                <td>
+                    <i class="fas fa-grip-vertical"></i>
+                    <i class="fas fa-grip-vertical"></i>
+                </td>
+                <td>
+                    <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
+                </td>
+                <td>
+                    <a href="#" index={{@index}} class="remove-choice">&times;</a>
+                </td>
+            </tr>
+            {{/each}}
+        </table>
+        <a href="#" class="add-new-choice">
+            <i class="fa fa-plus"></i> Add Option
+        </a>
+    </div>
+    {{/ifequal}}
+
+
 </form>

@@ -461,7 +461,6 @@ class ModelMixin(object):
         from localground.apps.site import models
         f = models.Dataset.create(
             owner=user or self.user,
-            name=name,
             description=description,
             last_updated_by=user or self.user,
             project=project or self.project
@@ -699,9 +698,8 @@ class ModelMixin(object):
         return map
 
     def create_relation(
-            self, source_model, attach_model, ordering=None, turned_on=False):
+            self, source_model, attach_model, ordering=1):
         from localground.apps.site import models
-        ordering = ordering or len(source_model.entities.all()) + 1
         r = models.GenericAssociation(
             source_type=type(source_model).get_content_type(),
             source_id=source_model.id,
@@ -709,7 +707,6 @@ class ModelMixin(object):
             entity_id=attach_model.id,
             ordering=ordering,
             owner=self.user,
-            turned_on=turned_on,
             last_updated_by=self.user
         )
         r.save()

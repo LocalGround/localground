@@ -196,7 +196,7 @@ define(["underscore", "marionette", "models/project", "models/record",
                 field.save(null, {
                     success: (fieldModel, response) => {
                         // after field saved, re-fetch dataset from server:
-                        dataset.fields.add(fieldModel);
+                        dataset.fields.add(fieldModel, {at: fieldModel.get('ordering') - 1});
                         this.reloadDatasetFromServer(dataset, successCallback);
                     }
                 });

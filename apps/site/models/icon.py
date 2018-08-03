@@ -21,6 +21,7 @@ class Icon(ProjectMixin, MediaMixin, BaseAudit):
         max_length=63, null=False, blank=False, choices=FILE_TYPES,
         verbose_name="file type")
     size = models.IntegerField(null=False, blank=False)
+    # TODO: opacity flag
     width = models.FloatField(null=False, blank=False)
     height = models.FloatField(null=False, blank=False)
     anchor_x = models.FloatField(null=False, blank=False)

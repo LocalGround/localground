@@ -1931,58 +1931,6 @@ li .player-container {
 
 
 /*************************** UPLOAD MEDIA  **************************/
-.img-polaroid {
-    margin-bottom: 5px;
-    margin-top: 5px;
-    background-color: #FFF;
-    padding: 5px 5px 10px 5px;
-}
-.img-polaroid > p {
-    margin-top: 5px;
-    line-height: 12px;
-    font-size: 11px;
-    color: #999;
-    margin: 0px;
-    text-align: center;
-    overflow: hidden;
-}
-.img-container {
-    width: 145px;
-    max-height: 140px;
-    min-height: 100px;
-    overflow: hidden;
-}
-.preview {
-    width: 145px;
-}
-.audio-holder, .error-holder {
-    display: inline-block;
-    width: 145px;
-}
-.file-container {
-    width: 155px;
-    height: 190px;
-    float: left;
-    margin: 0px 8px 8px 0px;
-}
-#nothing-here {
-    text-align: center;
-    margin-top: 40px;
-    width: 100%;
-    font-size: 20px;
-    color: #666;
-}
-
-
-span.plus {
-    width: 28px;
-    height: 28px;
-    border: solid 1px #CCC;
-    border-radius: 40px;
-    display: inline-block;
-    background: #FFF;
-    line-height: 22px;
-}
 
 /* SHOULD MOVE THIS BUTTON INTO BUTTONS AND GIVE IT A MORE GENERIC TYPE */
 .btn {

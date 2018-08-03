@@ -112,7 +112,8 @@ define(["underscore",
                     app: this.app,
                     view: addFieldForm,
                     title: 'Add New Column',
-                    width: '300px',
+                    width: '350px',
+                    height: '250px',
                     showSaveButton: true,
                     saveFunction: addFieldForm.saveField.bind(addFieldForm),
                     showDeleteButton: false
@@ -124,10 +125,14 @@ define(["underscore",
                 }
             },
             addFieldBefore: function (e) {
-                this.addField(this.fieldIndex, e);
+                //put the column in the same position as the reference column
+                const ordering = this.fieldIndex + 1;
+                this.addField(ordering, e);
             },
             addFieldAfter: function (e) {
-                this.addField(this.fieldIndex + 1, e);
+                //put the column one after the reference column
+                const ordering = this.fieldIndex + 2;
+                this.addField(ordering, e);
             }
 
         });

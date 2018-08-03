@@ -3,11 +3,19 @@
         <input type="text" id="searchTerm" value="{{searchTerm}}" placeholder="Filter data and media">
     	<button id="toolbar-search"><i class="fa fa-search" aria-hidden="true"></i></button>
     </form>
-    <button id="card-view-button-modal" class="button-secondary database-view-buttons-modal"><i class="fa fa-th" aria-hidden="true"></i></button>
-    <button id="table-view-button-modal" class="button-secondary database-view-buttons-modal active"><i class="fa fa-bars" aria-hidden="true"></i></button>
-    <button id="media-videos" class="button-secondary fetch-btn" data-value="videos">Videos</button>
-    <button id="media-audio" class="button-secondary fetch-btn" data-value="audio">Audio</button>
-    <button id="media-photos" class="button-secondary fetch-btn" data-value="photos">Photos</button>
+    <button id="card-view-button-modal" class="button-secondary {{#ifequal viewMode 'thumb'}}active{{/ifequal}}">
+        <i class="fa fa-th" aria-hidden="true"></i></button>
+    <button id="table-view-button-modal" class="button-secondary {{#ifequal viewMode 'table'}}active{{/ifequal}}">
+        <i class="fa fa-bars" aria-hidden="true"></i></button>
+    <button id="media-videos"
+        class="button-secondary fetch-btn {{#ifequal currentMedia 'videos'}}active{{/ifequal}}"
+        data-value="videos">Videos</button>
+    <button id="media-audio"
+        class="button-secondary fetch-btn {{#ifequal currentMedia 'audio'}}active{{/ifequal}}"
+        data-value="audio">Audio</button>
+    <button id="media-photos"
+        class="button-secondary fetch-btn {{#ifequal currentMedia 'photos'}}active{{/ifequal}}"
+        data-value="photos">Photos</button>
 </div>
 
 
