@@ -44,6 +44,9 @@ define([
                 videos: [],
                 audio: []
             };
+            if (!this.activeMap.get('metadata').titleCardInfo.media) {
+                this.activeMap.get('metadata').titleCardInfo.media = [];
+            }
             this.activeMap.get('metadata').titleCardInfo.media.forEach((item) => {
                 let mediaObj = this.app.dataManager.getMediaItem(item.id, item.type);
                 if (mediaObj) {
@@ -77,11 +80,11 @@ define([
             this.attachAudioView(media);
         },
 
-        attachAudioView: function() {
+        attachPhotoVideoView: function (media) {
             this.photoVideoView = new PhotoVideoView({
-                detachMedia: this.detachMedia.bind(this), 
+                detachMedia: this.detachMedia.bind(this),
                 modal: this.modal,
-                app: this.app, 
+                app: this.app,
                 photoCollection: new Backbone.Collection(media.photos),
                 videoCollection: new Backbone.Collection(media.videos)
             })
@@ -89,11 +92,11 @@ define([
             this.$el.find('.title-card_media').append(this.photoVideoView.$el);
         },
 
-        attachPhotoVideoView: function() {
+        attachAudioView: function (media) {
             this.audioView = new AudioView({
-                detachMedia: this.detachMedia.bind(this), 
+                detachMedia: this.detachMedia.bind(this),
                 modal: this.modal,
-                app: this.app, 
+                app: this.app,
                 audioCollection: new Backbone.Collection(media.audio)
             })
 
@@ -157,7 +160,7 @@ define([
 
         attachMedia: function (models) {
             let list = this.activeMap.get('metadata').titleCardInfo.media; // pointer
-            
+
             models.forEach((model)=> {
                 let newMediaItem = {
                     id: model.id,

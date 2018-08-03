@@ -29,7 +29,7 @@ define([
         className: 'media-items_wrapper',
 
         templateHelpers: function () {
-            let audio = []; 
+            let audio = [];
 
             this.audioCollection.each((model) => {
                 audio.push({
@@ -37,7 +37,7 @@ define([
                     videoname_id: model.get('name')
                 });
             });
-           
+
             return {
                 audio: audio,
                 showHeader: (this.audioCollection.length > 0)
@@ -69,7 +69,7 @@ define([
 
         relayDetachMedia: function(e) {
             this.detachMedia(e);
-        } 
+        }
     });
     return AudioViewer;
 });

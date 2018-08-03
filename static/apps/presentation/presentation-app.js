@@ -146,23 +146,20 @@ define([
         },
 
         showTitleCard: function() {
+            const titleCardInfo = this.model.get('metadata').titleCardInfo;
             const titleCardModel = new Backbone.Model({
                 id: 1,
-                title: this.model.get('metadata').titleCardInfo.header,
-                description: this.model.get('metadata').titleCardInfo.description,
-                photoList: this.model.get('metadata').titleCardInfo.photo_ids
-                
+                title: titleCardInfo.header,
+                description: titleCardInfo.description,
+                media: titleCardInfo.media
             });
 
             const titleCardView = new TitleCardView({
                 model: titleCardModel,
-                app: this
+                app: this,
             });
-
             this.unhideDetail();
-
             this.sideRegion.show(titleCardView);
-            console.log(this.sideRegion);
         },
 
         showMediaDetail: function (opts) {
