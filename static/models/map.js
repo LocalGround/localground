@@ -62,6 +62,15 @@ define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
                 }
             };
         },
+        getTitleCardModel: function () {
+            const titleCardInfo = this.get('metadata').titleCardInfo;
+            return new Backbone.Model({
+                id: 1,
+                title: titleCardInfo.header,
+                description: titleCardInfo.description,
+                media: titleCardInfo.media
+            });
+        },
 
         getDefaultSkin: function () {
             return {

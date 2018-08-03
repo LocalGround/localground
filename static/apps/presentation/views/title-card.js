@@ -15,38 +15,27 @@ define(["underscore",
             initialize: function (opts) {
                 _.extend(this, opts);
             },
+
             getPhotoVideoModels: function () {
                 const dm = this.app.dataManager;
+                const media = this.model.get('media') || [];
                 return new Backbone.Collection(
-                    this.model.get('media').filter(item => {
-                        return item.type !== 'audio';
-                    }).map(item => {
-                        return dm.getCollection(item.type).get(item.id);
-                    }).filter(item => {
-                        return item != null;
-                    })
+                    media.filter(item => (item.type !== 'audio'))
+                        .map(item => dm.getCollection(item.type).get(item.id))
+                        .filter(item => (item != null))
                 );
             },
 
             getAudioModels: function () {
                 const dm = this.app.dataManager;
+                const media = this.model.get('media') || [];
                 return new Backbone.Collection(
-                    this.model.get('media').filter(item => {
-                        return item.type === 'audio';
-                    }).map(item => {
-                        return dm.getAudio(item.id);
-                    }).filter(item => {
-                        return item != null;
-                    })
+                    media.filter(item => (item.type === 'audio'))
+                        .map(item => dm.getAudio(item.id))
+                        .filter(item => (item != null))
                 );
             },
 
-            templateHelpers: function () {
-                return {
-                    header: this.model.get('title'),
-                    description: this.model.get('description')
-                }
-            },
             renderCarousel: function () {
                 const photosVideos = this.getPhotoVideoModels();
                 if (photosVideos.length > 0) {
@@ -59,6 +48,7 @@ define(["underscore",
                     this.$el.find(".carousel").append(carousel.$el);
                 }
             },
+
             renderAudioPlayers: function () {
                 this.getAudioModels().each(audioModel => {
                     const player = new AudioPlayer({
@@ -70,6 +60,7 @@ define(["underscore",
                     this.$el.find(".audio-players").append(player.$el);
                 });
             },
+
             onRender: function () {
                 this.renderCarousel();
                 this.renderAudioPlayers();

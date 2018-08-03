@@ -2043,7 +2043,28 @@ var __projectJSON = {
             "titleCardInfo": {
                 "header": 'Test Map Title',
                 "description": 'Test description of the map.',
-                "photo_ids": [7, 14, 15]
+                "media": [
+                      {
+                          "type": "photos",
+                          "id": 4
+                      },
+                      {
+                          "type": "photos",
+                          "id": 5
+                      },
+                      {
+                          "type": "videos",
+                          "id": 50
+                      },
+                      {
+                          "type": "audio",
+                          "id": 4
+                      },
+                      {
+                          "type": "audio",
+                          "id": 3
+                      }
+                  ]
             },
             "streetview": true,
             "accessLevel": 2
@@ -2084,8 +2105,7 @@ var __projectJSON = {
             }
           },
           "project_id": 3
-        },
-        {
+      }, {
           "url": "\/api\/0\/maps\/2\/",
           "id": 2,
           "name": "Map 2",
@@ -2114,7 +2134,7 @@ var __projectJSON = {
             "titleCardInfo": {
                 "header": null,
                 "description": null,
-                "photo_ids": []
+                "media": []
             },
             "streetview": true,
             "accessLevel": 2

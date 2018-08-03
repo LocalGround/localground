@@ -25,6 +25,7 @@ require(['boot'], function () {
         'spec/views/presentation/presentation-app-test.js',
         'spec/views/presentation/legend-symbol-entry-test.js',
         'spec/views/presentation/legend-layer-entry-test.js',
+        'spec/views/presentation/title-card-test.js',
 
         'spec/views/main/symbol-style-menu-view-test.js',
         'spec/views/main/marker-style-view-test.js',
