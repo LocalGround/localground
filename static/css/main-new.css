@@ -1288,6 +1288,22 @@ i.fa.fa.fa-question-circle {
   right: 20px;
 }
 
+.modal.spreadsheet .handsontable .fab {
+  font-size: 3em;
+}
+
+.modal.spreadsheet .handsontable .fab.fa-vimeo {
+  color: #00ADEF;
+}
+
+.modal.spreadsheet .handsontable .fab.fa-youtube {
+  color: #ff0002;
+}
+
+.modal.spreadsheet .handsontable .fab:hover {
+  opacity: 0.9;
+}
+
 .modal.spreadsheet .handsontable .fa-ellipsis-v {
   color: #999;
   display: inline-block;

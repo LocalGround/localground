@@ -58,26 +58,6 @@ define(["jquery",
                 //new color picker is added to the dom each time the icon is clicked,
                 //so we remove the previous color picker with each additional click.
                 //for this reason, each marker's picker needs to be uniquely identified
-                $(".marker-fill-color-picker").remove();
-                this.fillPicker = this.$el.find('#fill-color-picker').ColorPicker({
-                    color: fillColor,
-                    onShow: function (colpkr) {
-                        $(colpkr).fadeIn(200);
-                        return false;
-                    },
-                    onHide: function (colpkr) {
-                        if (that.model.get('fillColor') !== fillColor) {
-                            that.updateFillColor(fillColor);
-                        }
-                        $(colpkr).fadeOut(200);
-                        return false;
-                    },
-                    onChange: function (hsb, hex, rgb) {
-                        fillColor = "#" + hex;
-                    }
-                });
-                $(".colorpicker:last-child").addClass('marker-fill-color-picker');
-
                 $(".marker-stroke-color-picker").remove();
                 this.strokePicker = this.$el.find('#stroke-color-picker').ColorPicker({
                     color: strokeColor,

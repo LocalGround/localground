@@ -1,5 +1,5 @@
 <form class="form">
-
+    {{ data_type }} - {{ integer_mode }}
     <!-- ALIAS -->
     <div class="row {{#if col_alias_error}} error{{/if}}">
         <label>Field Name</label>
@@ -16,22 +16,25 @@
             <p>{{ data_type_error }}</p>
         {{/if}}
         <select id="data_type">
-            <option value="text" {{#ifequal dataType 'text'}}selected{{/ifequal}}>Text</option>
-            <option value="number"{{#ifequal dataType 'number'}}selected{{/ifequal}}>Number</option>
-            <option value="boolean"{{#ifequal dataType 'boolean'}}selected{{/ifequal}}>Yes / No</option>
-            <option value="choice"{{#ifequal dataType 'choice'}}selected{{/ifequal}}>Choice</option>
-            <option value="date"{{#ifequal dataType 'date'}}selected{{/ifequal}}>Date</option>
-            <option value="time"{{#ifequal dataType 'time'}}selected{{/ifequal}}>Time</option>
+            <option value="text" {{#ifequal menuSelection 'text'}}selected{{/ifequal}}>Text</option>
+            <option value="number"{{#ifequal menuSelection 'number'}}selected{{/ifequal}}>Number</option>
+            <option value="boolean"{{#ifequal menuSelection 'boolean'}}selected{{/ifequal}}>Yes / No</option>
+            <option value="choice"{{#ifequal menuSelection 'choice'}}selected{{/ifequal}}>Choice</option>
+            <option value="date"{{#ifequal menuSelection 'date'}}selected{{/ifequal}}>Date</option>
+            <option value="time"{{#ifequal menuSelection 'time'}}selected{{/ifequal}}>Time</option>
         </select>
     </div>
 
     <!-- INTEGER / FLOAT -->
+    {{#ifequal menuSelection 'number'}}
     <div class="row numbers">
-        <input checked type="checkbox">
+        <input {{#if integer_mode}}checked{{/if}} id="number_type" type="checkbox">
         <label>Integers only</label>
     </div>
+    {{/ifequal}}
 
     <!-- CHOICES -->
+    {{#ifequal menuSelection 'choice'}}
     <div class="row choices">
         <table>
             {{#each extras.choices}}
@@ -53,6 +56,7 @@
             <i class="fa fa-plus"></i> Add Option
         </a>
     </div>
+    {{/ifequal}}
 
 
 </form>

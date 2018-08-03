@@ -408,7 +408,7 @@ define(["jquery",
                 return td;
             },
 
-            videoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+            videoListRendererIframe: function (instance, td, row, col, prop, value, cellProperties) {
                 td.innerHTML = '';
                 const model = this.getModelFromCell(instance, row);
                 const ids = model.get("attached_videos_ids") || [];
@@ -424,6 +424,24 @@ define(["jquery",
                     return '';
                 });
                 td.innerHTML = iframeList.join(' ');
+                return td;
+            },
+            videoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                td.innerHTML = '';
+                const model = this.getModelFromCell(instance, row);
+                const ids = model.get("attached_videos_ids") || [];
+                const iconList = ids.map(id => {
+                    const video = this.app.dataManager.getVideo(id);
+                    if (video) {
+                        if (video.get('video_provider') === 'vimeo') {
+                            return '<i class="fab fa-vimeo"></i>';
+                        } else {
+                            return '<i class="fab fa-youtube"></i>';
+                        }
+                    }
+                    return '';
+                });
+                td.innerHTML = iconList.join(' ');
                 return td;
             },
 
