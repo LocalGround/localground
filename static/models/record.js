@@ -45,6 +45,13 @@ define(["models/base",
                     error: callbackError
                 });
             },
+            getAudioCollection: function (dataManager) {
+                const ids = this.get("attached_audio_ids");
+                return new Backbone.Collection(
+                    ids.map(id => dataManager.getAudio(id))
+                        .filter(model => model != null)
+                );
+            },
 
             detach: function (attachmentType, attachmentID, callback) {
                 var association = new Association({

@@ -1,12 +1,1 @@
 {{#if showHeader}}<p class="media-items_header">audio</p>{{/if}}
-{{#each audio}}
-    <div class="attached-container audio-attached">
-        <div class="player-container audio-basic" data-id="{{this.id}}">
-        </div>
-        <div class="attached-media-overlay">
-            <div class="hover-to-show">
-                <i class="fa fa-times detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="audio" media-name="{{this.name}}"></i>
-            </div>
-        </div>
-    </div>
-{{/each}}

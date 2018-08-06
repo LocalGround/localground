@@ -22,8 +22,7 @@ define([
             this.popover = this.app.popover;
         },
         events: {
-            'click .photo-icon_wrapper': 'showMediaBrowser'//,
-            //'click .detach_media': 'detachMedia'
+            'click .photo-icon_wrapper': 'showMediaBrowser'
         },
         modelEvents: {
             'add-media-to-model': 'attachMedia'
@@ -38,68 +37,27 @@ define([
             };
         },
 
-        getMediaInfo: function() {
-            let media = {
-                photos: [],
-                videos: [],
-                audio: []
-            };
-            if (!this.activeMap.get('metadata').titleCardInfo.media) {
-                this.activeMap.get('metadata').titleCardInfo.media = [];
-            }
-            this.activeMap.get('metadata').titleCardInfo.media.forEach((item) => {
-                let mediaObj = this.app.dataManager.getMediaItem(item.id, item.type);
-                if (mediaObj) {
-                    if (item.type === 'photos') {
-                        media.photos.push({
-                            path: mediaObj.get('path_medium'),
-                            id: item.id
-                        });
-                    } else if (item.type === 'videos') {
-                        media.videos.push({
-                            id: item.id,
-                            video_id: mediaObj.get('video_id'),
-                            video_provider: mediaObj.get('video_provider')
-                        });
-                    } else if (item.type === 'audio') {
-                        media.audio.push({
-                            id: item.id,
-                            name: mediaObj.get('name'),
-                            file_path: mediaObj.get('file_path')
-                        });
-                    }
-                }
-            });
-            return media
-        },
-
         onRender: function() {
-            let media = this.getMediaInfo();
-
-            this.attachPhotoVideoView(media);
-            this.attachAudioView(media);
+            this.attachPhotoVideoView();
+            this.attachAudioView();
         },
 
-        attachPhotoVideoView: function (media) {
+        attachPhotoVideoView: function () {
             this.photoVideoView = new PhotoVideoView({
                 detachMedia: this.detachMedia.bind(this),
-                modal: this.modal,
                 app: this.app,
-                photoCollection: new Backbone.Collection(media.photos),
-                videoCollection: new Backbone.Collection(media.videos)
-            })
-
+                model: this.activeMap.getTitleCardModel()
+            });
             this.$el.find('.title-card_media').append(this.photoVideoView.$el);
         },
 
         attachAudioView: function (media) {
+            const cardModel = this.activeMap.getTitleCardModel();
             this.audioView = new AudioView({
                 detachMedia: this.detachMedia.bind(this),
-                modal: this.modal,
                 app: this.app,
-                audioCollection: new Backbone.Collection(media.audio)
-            })
-
+                audioCollection: cardModel.getAudioCollection(this.app.dataManager)
+            });
             this.$el.find('.title-card_media').append(this.audioView.$el);
         },
 
@@ -107,16 +65,14 @@ define([
             let header = this.$el.find('.title-card_title').val();
             let description = this.$el.find('.title-card_textarea').val();
 
-
             this.activeMap.get('metadata').titleCardInfo.header = header;
             this.activeMap.get('metadata').titleCardInfo.description = description;
 
             this.activeMap.save(null, {
-                    success: () => {
-                        this.app.vent.trigger('close-modal');
-                    }
+                success: () => {
+                    this.app.vent.trigger('close-modal');
                 }
-            );
+            });
         },
         showMediaBrowser: function (e) {
             var uploadAttachMedia = new AddMedia({
@@ -125,8 +81,6 @@ define([
             });
             this.secondaryModal.update({
                 title: 'Media Browser',
-                //width: 1100,
-                //height: 400,
                 view: uploadAttachMedia,
                 saveButtonText: "Add",
                 showDeleteButton: false,

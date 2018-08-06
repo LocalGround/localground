@@ -16,28 +16,9 @@ define(["underscore",
                 _.extend(this, opts);
             },
 
-            getPhotoVideoModels: function () {
-                const dm = this.app.dataManager;
-                const media = this.model.get('media') || [];
-                return new Backbone.Collection(
-                    media.filter(item => (item.type !== 'audio'))
-                        .map(item => dm.getCollection(item.type).get(item.id))
-                        .filter(item => (item != null))
-                );
-            },
-
-            getAudioModels: function () {
-                const dm = this.app.dataManager;
-                const media = this.model.get('media') || [];
-                return new Backbone.Collection(
-                    media.filter(item => (item.type === 'audio'))
-                        .map(item => dm.getAudio(item.id))
-                        .filter(item => (item != null))
-                );
-            },
-
             renderCarousel: function () {
-                const photosVideos = this.getPhotoVideoModels();
+                const dm = this.app.dataManager;
+                const photosVideos = this.model.getPhotoVideoModels(dm);
                 if (photosVideos.length > 0) {
                     const carousel = new Carousel({
                         model: this.model,
@@ -50,7 +31,8 @@ define(["underscore",
             },
 
             renderAudioPlayers: function () {
-                this.getAudioModels().each(audioModel => {
+                const dm = this.app.dataManager;
+                this.model.getAudioCollection(dm).each(audioModel => {
                     const player = new AudioPlayer({
                         model: audioModel,
                         audioMode: "detail",

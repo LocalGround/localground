@@ -15,6 +15,7 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
             },
             suspendUIUpdate: false,
             audio: null,
+            className: 'audio-container',
             template: Handlebars.compile(PlayerTemplate),
             initialize: function (opts) {
                 opts = opts || {};

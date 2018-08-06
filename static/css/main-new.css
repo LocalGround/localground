@@ -1813,6 +1813,7 @@ nav li.active {
   font-size: 18px !important;
   line-height: 14px;
   margin: 5px;
+  text-shadow: 1px 1px 2px #FFF;
 }
 
 .detach_media:hover {
@@ -1889,34 +1890,94 @@ audio {
   display: none;
 }
 
-/**************************
- * Old Templated Player
- **************************/
-/*
-
- these may be important, but need to be applied to specific classes, not just '.fa'
-.fa {
-    display: inline-block;
-    text-rendering: auto;
-}
-*/
 .audio-container {
-  background: #EDEDED;
-  color: #686868;
-  text-align: center;
-  font-family: Candara, Calibri, Segoe;
-  /*min-height: 200px;
-    padding: 20px;
-    border-radius: 10px;
-    width: 300px;*/
-  margin: auto;
-  padding: 20px;
+  margin: 16px 4px 0px 8px;
+  display: inline-block;
 }
 
 .audio-container span {
   font-size: 1.6em;
-  /* margin-top: 20px; */
   display: block;
+}
+
+.audio-container .play-ctrls {
+  text-align: center;
+  margin: 20px 0 10px;
+}
+
+.audio-container .play-ctrls .play {
+  cursor: pointer;
+  margin: 20px auto;
+}
+
+.audio-container .play-ctrls .play.pause {
+  width: 10px;
+  height: 30px;
+  border-width: 0 10px 0 10px;
+  border-color: #686868;
+}
+
+.audio-container .audio-basic {
+  width: 100px;
+  height: 100px;
+  display: inline-block;
+  background: #f0f1f5;
+}
+
+.audio-container .audio-basic .play {
+  margin-top: 15px;
+  margin-left: -2px;
+  position: relative;
+  z-index: 10;
+  color: #686868;
+}
+
+.title-card_media .edit {
+  display: none;
+}
+
+.spreadsheet .audio-container {
+  margin: 4px 4px 0px 0px;
+  display: inline-block;
+  width: 48px;
+  height: 48px;
+}
+
+.spreadsheet .audio-container .attached-media-overlay, .spreadsheet .audio-container .audio-basic {
+  width: 48px;
+  height: 48px;
+}
+
+.spreadsheet .audio-container .attached-media-overlay {
+  margin-top: -48px;
+}
+
+.spreadsheet .audio-container .attached-media-overlay .edit {
+  float: right;
+  color: #888 !important;
+  font-size: 12px !important;
+  line-height: 12px;
+  margin: 2px;
+  cursor: pointer;
+}
+
+.spreadsheet .audio-container .attached-media-overlay .detach_media {
+  display: none;
+}
+
+.spreadsheet .audio-container .play-ctrls {
+  margin: 0px;
+}
+
+.spreadsheet .audio-container .play-ctrls .play {
+  margin: 15px 19px;
+  color: #666;
+  font-size: 1.5em;
+}
+
+.spreadsheet > div {
+  padding: 0px !important;
+  margin: 0px auto !important;
 }
 
 .progress {
@@ -1944,49 +2005,12 @@ audio {
   top: -5px;
 }
 
-.play {
-  cursor: pointer;
-  /*  width: 0px;
-    height: 0px;
-    border-style: solid;
-    border-width: 15px 0 15px 30px;
-    border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgb(104, 104, 104); */
-  margin: 20px auto;
-}
-
-.play-ctrls {
-  text-align: center;
-  margin: 20px 0 10px;
-}
-
-.spreadsheet .play-ctrls {
-  margin: 0px;
-}
-
-.spreadsheet .play {
-  margin: 10px;
-  color: #666;
-}
-
-.spreadsheet > div {
-  padding: 0px !important;
-  margin: 0px auto !important;
-  /*border: solid 1px #000;*/
-}
-
 .empty-message {
   text-align: center;
   margin-top: 30vh;
   color: #AAA;
   font-size: 30px;
   font-weight: bold;
-}
-
-.play.pause {
-  width: 10px;
-  height: 30px;
-  border-width: 0 10px 0 10px;
-  border-color: #686868;
 }
 
 .fwd-back {
@@ -2019,22 +2043,6 @@ audio {
 .progress-container {
   width: calc(100% - 80px);
   margin: auto;
-}
-
-.audio-basic .play {
-  margin-top: 15px;
-  margin-left: -2px;
-  position: relative;
-  z-index: 10;
-  color: #686868;
-}
-
-.audio-basic {
-  width: 100px;
-  height: 100px;
-  display: inline-block;
-  background: #f0f1f5;
-  /*margin: 10px 10px 0px 0px;*/
 }
 
 /**************************

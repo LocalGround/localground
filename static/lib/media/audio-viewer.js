@@ -3,72 +3,51 @@ define([
     "underscore",
     "handlebars",
     "marionette",
-    "lib/modals/modal",
     "lib/audio/audio-player",
     "text!./audio-viewer.html"
-], function (_, Handlebars, Marionette, Modal, AudioPlayer, AudioViewerTemplate) {
+], function (_, Handlebars, Marionette, AudioPlayer, AudioViewerTemplate) {
     "use strict";
     var AudioViewer = Marionette.ItemView.extend({
         template: Handlebars.compile(AudioViewerTemplate),
         initialize: function (opts) {
-            //opts.model = opts.activeMap;
             _.extend(this, opts);
-            this.modal = this.app.modal;
-            // this.secondaryModal = new Modal({
-            //     app: this.app
-            // });
-            this.popover = this.app.popover;
-
+            this.templateType = this.templateType || 'standard';
             this.render();
         },
         events: {
-            //'click .photo-icon_wrapper': 'showMediaBrowser',
-            'click .detach_media': 'relayDetachMedia'
+            'click .detach_media': 'relayDetachMedia',
+            'click .edit': 'editAudioFile'
         },
-
-        className: 'media-items_wrapper',
-
+        //className: 'media-items_wrapper',
         templateHelpers: function () {
-            let audio = [];
-
-            this.audioCollection.each((model) => {
-                audio.push({
-                    id: model.get('id'),
-                    videoname_id: model.get('name')
-                });
-            });
-
+            const showHeader = this.audioCollection.length > 0 && this.templateType === 'standard';
             return {
-                audio: audio,
-                showHeader: (this.audioCollection.length > 0)
+                audio: this.audioCollection.toJSON(),
+                showHeader: showHeader,
+                templateType: this.templateType
             };
         },
-
         onRender: function() {
             this.renderAudioPlayers();
         },
-
         renderAudioPlayers: function () {
-            var audio_attachments = [],
-                that = this,
-                player,
-                $elem;
-            if (this.audioCollection) {
-                audio_attachments = this.audioCollection;
-            }
-            this.audioCollection.each(function (item) {
-                $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
-                player = new AudioPlayer({
+            this.audioCollection.each(item => {
+                //const $elem = this.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
+                const player = new AudioPlayer({
                     model: item,
                     audioMode: "basic",
-                    app: that.app
+                    app: this.app
                 });
-                $elem.append(player.$el[0]);
+                this.$el.append(player.$el);
             });
         },
-
         relayDetachMedia: function(e) {
             this.detachMedia(e);
+        },
+        editAudioFile: function (e) {
+            const audioID = parseInt($(e.target).attr('data-id'));
+            const audioModel = this.audioCollection.get(audioID);
+            alert(audioModel.get('name'));
         }
     });
     return AudioViewer;

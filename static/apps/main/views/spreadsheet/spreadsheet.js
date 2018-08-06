@@ -15,13 +15,13 @@ define(["jquery",
         "handsontable",
         "text!../../templates/spreadsheet/spreadsheet.html",
         "text!../../templates/spreadsheet/create-field.html",
-        "lib/audio/audio-player",
+        "lib/media/audio-viewer",
         "lib/carousel/carousel",
         "apps/main/views/spreadsheet/context-menu"
     ],
     function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
         Record, AudioModel, Video, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
-        SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel,
+        SpreadsheetTemplate, CreateFieldTemplate, AudioViewer, Carousel,
         SpreadsheetMenu) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
@@ -391,20 +391,14 @@ define(["jquery",
             audioListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 td.innerHTML = '';
                 const model = this.getModelFromCell(instance, row);
-                const ids = model.get("attached_audio_ids") || [];
-                ids.forEach(id => {
-                    const audioModel = this.app.dataManager.getAudio(id);
-                    if (audioModel) {
-                        const player = new AudioPlayer({
-                            model: audioModel,
-                            audioMode: "basic",
-                            app: this.app
-                        });
-                        $(td).append(player.$el.css({
-                            display: 'inline-block'
-                        }));
-                    }
+                //const ids = model.get("attached_audio_ids") || [];
+                this.audioView = new AudioViewer({
+                    detachMedia: function () { alert('detach'); },
+                    app: this.app,
+                    audioCollection: model.getAudioCollection(this.app.dataManager),
+                    templateType: 'spreadsheet'
                 });
+                $(td).append(this.audioView.$el);
                 return td;
             },
 

@@ -1,4 +1,5 @@
-define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
+define(["models/baseItem", "models/title-card", "collections/layers"],
+    function (BaseItem, TitleCard, Layers) {
     "use strict";
     var Map = BaseItem.extend({
         getMapBySlug: function (opts) {
@@ -64,7 +65,7 @@ define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
         },
         getTitleCardModel: function () {
             const titleCardInfo = this.get('metadata').titleCardInfo;
-            return new Backbone.Model({
+            return new TitleCard({
                 id: 1,
                 title: titleCardInfo.header,
                 description: titleCardInfo.description,
