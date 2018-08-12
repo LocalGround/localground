@@ -14,7 +14,7 @@ define([
             spyOn(Carousel.prototype, 'initialize').and.callThrough();
             spyOn(AudioPlayer.prototype, 'initialize').and.callThrough();
             spyOn(TitleCard.prototype, 'render').and.callThrough();
-            spyOn(TitleCard.prototype, 'getPhotoVideoModels').and.callThrough();
+            spyOn(TitleCard.prototype, 'getPhotoVideoCollection').and.callThrough();
             spyOn(TitleCard.prototype, 'getAudioModels').and.callThrough();
             spyOn(TitleCard.prototype, 'renderCarousel').and.callThrough();
             spyOn(TitleCard.prototype, 'renderAudioPlayers').and.callThrough();
@@ -51,12 +51,12 @@ define([
                 expect(this.titleCard.$el.find('.audio-detail').length).toEqual(2);
             });
 
-            it("getPhotoVideoModels should return 2 photos and 1 video", function () {
+            it("getPhotoVideoCollection should return 2 photos and 1 video", function () {
                 this.titleCard = new TitleCard({
                     model: this.map.getTitleCardModel(),
                     app: this.app,
                 });
-                const collection = this.titleCard.getPhotoVideoModels();
+                const collection = this.titleCard.getPhotoVideoCollection(this.app.dataManager);
                 expect(collection.at(0).get('overlay_type')).toEqual('photo');
                 expect(collection.at(0).get('id')).toEqual(4);
                 expect(collection.at(1).get('overlay_type')).toEqual('photo');
@@ -82,7 +82,7 @@ define([
                     model: this.app.dataManager.getMaps().at(1).getTitleCardModel(),
                     app: this.app,
                 });
-                expect(this.titleCard.getPhotoVideoModels().length).toEqual(0);
+                expect(this.titleCard.getPhotoVideoCollection(this.app.dataManager).length).toEqual(0);
                 expect(this.titleCard.getAudioModels().length).toEqual(0);
             });
 

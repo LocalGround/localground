@@ -18,7 +18,7 @@ define(["underscore",
 
             renderCarousel: function () {
                 const dm = this.app.dataManager;
-                const photosVideos = this.model.getPhotoVideoModels(dm);
+                const photosVideos = this.model.getPhotoVideoCollection(dm);
                 if (photosVideos.length > 0) {
                     const carousel = new Carousel({
                         model: this.model,

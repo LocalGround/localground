@@ -4,22 +4,18 @@ define([
     "handlebars",
     "marionette",
     "views/add-media",
-    "lib/modals/modal",
     "lib/media/photo-video-viewer",
     "lib/media/audio-viewer",
     "text!../templates/edit-title-card.html"
-], function (_, Handlebars, Marionette, AddMedia, Modal, PhotoVideoView, AudioView, EditTitleCardTemplate) {
+], function (_, Handlebars, Marionette, AddMedia, PhotoVideoView, AudioView, EditTitleCardTemplate) {
     "use strict";
     var EditTitleCard = Marionette.ItemView.extend({
         template: Handlebars.compile(EditTitleCardTemplate),
         initialize: function (opts) {
-            // Note: the model for this view is the TitleCard model
-            // (a convenience model, like the Symbol model):
+            // Note: the model for this view is the *TitleCard* model
+            // (a convenience model that does not correspond w/endpoint):
             _.extend(this, opts);
-            this.secondaryModal = new Modal({
-                app: this.app
-            });
-            this.popover = this.app.popover;
+            this.secondaryModal = this.app.secondaryModal;
         },
         events: {
             'click .photo-icon_wrapper': 'showMediaBrowser'
@@ -27,7 +23,6 @@ define([
         modelEvents: {
             'add-media-to-model': 'attachMedia'
         },
-
         className: 'edit-title-card-menu',
 
         templateHelpers: function () {
@@ -63,13 +58,13 @@ define([
         saveTitleCard: function () {
             this.model.set('header', this.$el.find('.title-card_title').val());
             this.model.set('description',this.$el.find('.title-card_textarea').val());
-            console.log(this.model.toJSON);
             this.activeMap.save(null, {
                 success: () => {
                     this.app.vent.trigger('close-modal');
                 }
             });
         },
+
         showMediaBrowser: function (e) {
             var uploadAttachMedia = new AddMedia({
                 app: this.app,
@@ -88,41 +83,10 @@ define([
             e.preventDefault();
         },
 
-        mediaItemAlreadyInList: function (mediaList, newItem) {
-            let flag = false;
-            mediaList.forEach(existingItem => {
-                if (existingItem.id === newItem.id && existingItem.type === newItem.type){
-                    flag = true;
-                    return;
-                }
-            });
-            return flag
-        },
-
-        assignDataType: function (model) {
-            if (model.get('overlay_type') === 'audio') {
-                return 'audio';
-            }
-            return model.get('overlay_type') + 's';
-        },
-
         attachMedia: function (models) {
-            const mediaList = this.model.getMedia();
-            models.forEach((model)=> {
-                const newMediaItem = {
-                    id: model.id,
-                    type: this.assignDataType(model)
-                };
-
-                // need to make sure media object being added to title card isn't already attached to the title card.
-                if (!this.mediaItemAlreadyInList(mediaList, newMediaItem)) {
-                    if (newMediaItem.type === 'videos') {
-                        newMediaItem.video_provider = model.get('video_provider');
-                    }
-                    mediaList.push(newMediaItem);
-                }
+            models.forEach(model => {
+                this.model.addMediaModel(model);
             });
-
             this.activeMap.save(null, {
                 success: () => {
                     this.secondaryModal.hide();
@@ -132,12 +96,10 @@ define([
         },
 
         detachMedia: function(e) {
-            const idToBeRemoved = parseInt(e.target.dataset.id);
-            const dataType = e.target.dataset.type;
-            const newList = this.model.getMedia().filter(item => {
-                return !(item.id === idToBeRemoved && item.type === dataType);
-            });
-            this.model.setMedia(newList);
+            const $target = $(e.target);
+            const id = parseInt($target.attr('data-id'));
+            const overlay_type = $target.attr('data-type');
+            this.model.removeMediaModel(id, overlay_type);
             this.activeMap.save(null, {
                 success: () => {
                     this.render();

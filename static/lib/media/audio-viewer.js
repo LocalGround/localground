@@ -21,6 +21,7 @@ define([
         //className: 'media-items_wrapper',
         templateHelpers: function () {
             const showHeader = this.audioCollection.length > 0 && this.templateType === 'standard';
+            console.log(this.audioCollection.toJSON());
             return {
                 audio: this.audioCollection.toJSON(),
                 showHeader: showHeader,
@@ -32,7 +33,6 @@ define([
         },
         renderAudioPlayers: function () {
             this.audioCollection.each(item => {
-                //const $elem = this.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
                 const player = new AudioPlayer({
                     model: item,
                     audioMode: "basic",

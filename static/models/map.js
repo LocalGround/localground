@@ -89,6 +89,8 @@ define(["models/baseItem", "models/title-card", "collections/layers"],
             if (json.center != null) {
                 json.center = JSON.stringify(json.center);
             }
+            // serialize from helper TitleCard model
+            // (so that it gets committed) to the server:
             json.metadata.titleCardInfo = this.getTitleCardModel().toJSON();
             return json;
         }

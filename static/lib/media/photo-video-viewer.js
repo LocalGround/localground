@@ -11,7 +11,7 @@ define([
         template: Handlebars.compile(PhotoVideoTemplate),
         initialize: function (opts) {
             _.extend(this, opts);
-            this.photoVideoModels = this.model.getPhotoVideoModels(this.app.dataManager);
+            this.photoVideoModels = this.model.getPhotoVideoCollection(this.app.dataManager);
             this.render();
         },
         events: {
@@ -27,6 +27,32 @@ define([
         },
         relayDetachMedia: function(e) {
             this.detachMedia(e);
+        },
+        onRender: function () {
+            this.enableMediaReordering();
+        },
+        enableMediaReordering: function () {
+            var that = this,
+                newOrder,
+                attachmentType,
+                attachmentID,
+                association;
+            this.$el.sortable({
+                helper: this.fixHelper,
+                items : '.attached-container',
+                update: (event, ui) => {
+                    newOrder = ui.item.index();
+                    //attachmentType = ui.item.find('.detach_media').attr("data-type");
+                    //attachmentID = ui.item.find('.detach_media').attr("data-id");
+                    alert(newOrder);
+                    // association = new Association({
+                    //     model: that.model,
+                    //     attachmentType: attachmentType,
+                    //     attachmentID: attachmentID
+                    // });
+                    // association.save({ ordering: newOrder}, {patch: true});
+                }
+            }).disableSelection();
         }
     });
     return PhotoVideoViewer;
