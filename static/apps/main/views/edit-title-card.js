@@ -41,18 +41,25 @@ define([
             this.photoVideoView = new PhotoVideoView({
                 detachMedia: this.detachMedia.bind(this),
                 app: this.app,
-                model: this.model
+                collection: this.model.getPhotoVideoCollection(this.app.dataManager),
+                updateOrdering: this.updateMediaOrdering.bind(this)
             });
             this.$el.find('.title-card_media').append(this.photoVideoView.$el);
         },
 
-        attachAudioView: function (media) {
+        attachAudioView: function () {
             this.audioView = new AudioView({
                 detachMedia: this.detachMedia.bind(this),
                 app: this.app,
-                audioCollection: this.model.getAudioCollection(this.app.dataManager)
+                collection: this.model.getAudioCollection(this.app.dataManager),
+                updateOrdering: this.updateMediaOrdering.bind(this)
             });
             this.$el.find('.title-card_media').append(this.audioView.$el);
+        },
+
+        updateMediaOrdering: function (id, overlay_type, newOrder) {
+            this.model.updateMediaOrdering(id, overlay_type, newOrder);
+            this.activeMap.save();
         },
 
         saveTitleCard: function () {

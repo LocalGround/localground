@@ -395,7 +395,7 @@ define(["jquery",
                 this.audioView = new AudioViewer({
                     detachMedia: function () { alert('detach'); },
                     app: this.app,
-                    audioCollection: model.getAudioCollection(this.app.dataManager),
+                    collection: model.getAudioCollection(this.app.dataManager),
                     templateType: 'spreadsheet'
                 });
                 $(td).append(this.audioView.$el);

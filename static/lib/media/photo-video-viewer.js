@@ -11,7 +11,6 @@ define([
         template: Handlebars.compile(PhotoVideoTemplate),
         initialize: function (opts) {
             _.extend(this, opts);
-            this.photoVideoModels = this.model.getPhotoVideoCollection(this.app.dataManager);
             this.render();
         },
         events: {
@@ -21,8 +20,8 @@ define([
 
         templateHelpers: function () {
             return {
-                photoVideoModels: this.photoVideoModels.toJSON(),
-                showHeader: this.photoVideoModels.length > 0
+                photoVideoModels: this.collection.toJSON(),
+                showHeader: this.collection.length > 0
             };
         },
         relayDetachMedia: function(e) {
@@ -32,27 +31,19 @@ define([
             this.enableMediaReordering();
         },
         enableMediaReordering: function () {
-            var that = this,
-                newOrder,
-                attachmentType,
-                attachmentID,
-                association;
-            this.$el.sortable({
-                helper: this.fixHelper,
-                items : '.attached-container',
-                update: (event, ui) => {
-                    newOrder = ui.item.index();
-                    //attachmentType = ui.item.find('.detach_media').attr("data-type");
-                    //attachmentID = ui.item.find('.detach_media').attr("data-id");
-                    alert(newOrder);
-                    // association = new Association({
-                    //     model: that.model,
-                    //     attachmentType: attachmentType,
-                    //     attachmentID: attachmentID
-                    // });
-                    // association.save({ ordering: newOrder}, {patch: true});
-                }
-            }).disableSelection();
+            if (this.updateOrdering) {
+                this.$el.sortable({
+                    helper: this.fixHelper,
+                    items : '.attached-container',
+                    update: (event, ui) => {
+                        const $elem = ui.item.find('.detach_media');
+                        const id = parseInt($elem.attr("data-id"));
+                        const overlay_type = $elem.attr("data-type");
+                        const newOrder = ui.item.index() - 1;
+                        this.updateOrdering(id, overlay_type, newOrder);
+                    }
+                }).disableSelection();
+            }
         }
     });
     return PhotoVideoViewer;

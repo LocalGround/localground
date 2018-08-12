@@ -62,6 +62,13 @@ define(["backbone"], function (Backbone) {
             return this.audioCollection;
         },
 
+        updateMediaOrdering: function (id, overlay_type, newOrder) {
+            const collection = (overlay_type === 'audio') ? this.audioCollection : this.photoVideoCollection;
+            const model = collection.findWhere({id: id, overlay_type: overlay_type});
+            collection.remove(model);
+            collection.add(model, { at: newOrder })
+        },
+
         moveToPosition: function (item, newOrder) {
             const likeMedia = this.getMedia().filter(
                 element => (element.overlay_type === item.overlay_type)
@@ -69,7 +76,7 @@ define(["backbone"], function (Backbone) {
             //likeMedia.splice(to, 0, this.splice(from, 1)[0]);
         },
 
-        convertMediaToJSON: function () {
+        getMediaJSON: function () {
             //serialize concatenated lists:
             return this.photoVideoCollection.map(item => {
                 return { id: item.id, overlay_type: item.get('overlay_type') }
@@ -83,7 +90,7 @@ define(["backbone"], function (Backbone) {
                 id: this.get('id'),
                 description: this.get('description'),
                 header: this.get('header'),
-                media: this.convertMediaToJSON()
+                media: this.getMediaJSON()
             };
         }
     });
