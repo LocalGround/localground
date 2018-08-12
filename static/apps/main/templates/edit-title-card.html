@@ -1,11 +1,14 @@
 <form class="form">
     <div class="row">
         <label class="title-card_label">(Header)</label>
-        <input class='title-card_title' type="text" {{#if header}}value='{{header}}'{{else}}placeholder="Title Card"{{/if}}>
+        <input class="title-card_title"
+            type="text" value="{{header}}" placeholder="Name of the title card">
     </div>
     <div class="row">
         <label class="title-card_label">(Introductory Text)</label>
-        <textarea class="title-card_textarea" placeholder="Provide some text to introduce your map. You can include images.">{{description}}</textarea>
+        <textarea class="title-card_textarea"
+            placeholder="Provide some text to introduce your map. You can include images."
+            >{{description}}</textarea>
     </div>
     <div class="title-card_media"></div>
     <span class="photo-icon_wrapper"><i class="fas fa-image"></i></span>

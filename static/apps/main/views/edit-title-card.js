@@ -13,9 +13,9 @@ define([
     var EditTitleCard = Marionette.ItemView.extend({
         template: Handlebars.compile(EditTitleCardTemplate),
         initialize: function (opts) {
-            opts.model = opts.activeMap;
+            // Note: the model for this view is the TitleCard model
+            // (a convenience model, like the Symbol model):
             _.extend(this, opts);
-            this.modal = this.app.modal;
             this.secondaryModal = new Modal({
                 app: this.app
             });
@@ -32,8 +32,8 @@ define([
 
         templateHelpers: function () {
             return {
-                header: this.activeMap.get('metadata').titleCardInfo.header,
-                description: this.activeMap.get('metadata').titleCardInfo.description
+                header: this.model.get('header'),
+                description: this.model.get('description')
             };
         },
 
@@ -46,28 +46,24 @@ define([
             this.photoVideoView = new PhotoVideoView({
                 detachMedia: this.detachMedia.bind(this),
                 app: this.app,
-                model: this.activeMap.getTitleCardModel()
+                model: this.model
             });
             this.$el.find('.title-card_media').append(this.photoVideoView.$el);
         },
 
         attachAudioView: function (media) {
-            const cardModel = this.activeMap.getTitleCardModel();
             this.audioView = new AudioView({
                 detachMedia: this.detachMedia.bind(this),
                 app: this.app,
-                audioCollection: cardModel.getAudioCollection(this.app.dataManager)
+                audioCollection: this.model.getAudioCollection(this.app.dataManager)
             });
             this.$el.find('.title-card_media').append(this.audioView.$el);
         },
 
-        saveTitleCard: function() {
-            let header = this.$el.find('.title-card_title').val();
-            let description = this.$el.find('.title-card_textarea').val();
-
-            this.activeMap.get('metadata').titleCardInfo.header = header;
-            this.activeMap.get('metadata').titleCardInfo.description = description;
-
+        saveTitleCard: function () {
+            this.model.set('header', this.$el.find('.title-card_title').val());
+            this.model.set('description',this.$el.find('.title-card_textarea').val());
+            console.log(this.model.toJSON);
             this.activeMap.save(null, {
                 success: () => {
                     this.app.vent.trigger('close-modal');
@@ -92,42 +88,38 @@ define([
             e.preventDefault();
         },
 
-        mediaItemAlreadyInList: function(list, newItem) {
+        mediaItemAlreadyInList: function (mediaList, newItem) {
             let flag = false;
-            list.forEach((existingItem) => {
+            mediaList.forEach(existingItem => {
                 if (existingItem.id === newItem.id && existingItem.type === newItem.type){
                     flag = true;
+                    return;
                 }
             });
             return flag
         },
 
-        assignDataType: function(model) {
-            if (model.get('overlay_type') === 'photo') {
-                return 'photos';
-            } else if (model.get('overlay_type') === 'video') {
-                return 'videos';
-            } else if (model.get('overlay_type') === 'audio') {
+        assignDataType: function (model) {
+            if (model.get('overlay_type') === 'audio') {
                 return 'audio';
             }
+            return model.get('overlay_type') + 's';
         },
 
         attachMedia: function (models) {
-            let list = this.activeMap.get('metadata').titleCardInfo.media; // pointer
-
+            const mediaList = this.model.getMedia();
             models.forEach((model)=> {
-                let newMediaItem = {
+                const newMediaItem = {
                     id: model.id,
                     type: this.assignDataType(model)
                 };
 
                 // need to make sure media object being added to title card isn't already attached to the title card.
-                if (!this.mediaItemAlreadyInList(list, newMediaItem)) {
-
+                if (!this.mediaItemAlreadyInList(mediaList, newMediaItem)) {
                     if (newMediaItem.type === 'videos') {
                         newMediaItem.video_provider = model.get('video_provider');
                     }
-                    list.push(newMediaItem);
+                    mediaList.push(newMediaItem);
                 }
             });
 
@@ -142,17 +134,10 @@ define([
         detachMedia: function(e) {
             const idToBeRemoved = parseInt(e.target.dataset.id);
             const dataType = e.target.dataset.type;
-
-            const originalList = this.activeMap.get('metadata').titleCardInfo.media;
-            const newList = originalList.filter((item) => {
-                if (item.id === idToBeRemoved && item.type === dataType) {
-                    return false;
-                }
-                return true;
+            const newList = this.model.getMedia().filter(item => {
+                return !(item.id === idToBeRemoved && item.type === dataType);
             });
-
-            this.activeMap.get('metadata').titleCardInfo.media = newList;
-
+            this.model.setMedia(newList);
             this.activeMap.save(null, {
                 success: () => {
                     this.render();

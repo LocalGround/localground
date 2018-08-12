@@ -64,13 +64,12 @@ define(["models/baseItem", "models/title-card", "collections/layers"],
             };
         },
         getTitleCardModel: function () {
-            const titleCardInfo = this.get('metadata').titleCardInfo;
-            return new TitleCard({
-                id: 1,
-                title: titleCardInfo.header,
-                description: titleCardInfo.description,
-                media: titleCardInfo.media
-            });
+            if (!this.titleCard) {
+                const data = this.get('metadata').titleCardInfo || {};
+                data.id = 1;
+                this.titleCard = new TitleCard(data);
+            }
+            return this.titleCard;
         },
 
         getDefaultSkin: function () {
@@ -90,6 +89,7 @@ define(["models/baseItem", "models/title-card", "collections/layers"],
             if (json.center != null) {
                 json.center = JSON.stringify(json.center);
             }
+            json.metadata.titleCardInfo = this.getTitleCardModel().toJSON();
             return json;
         }
     });

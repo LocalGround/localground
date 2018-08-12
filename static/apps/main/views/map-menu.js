@@ -47,7 +47,8 @@ define([
                     },
                     basemap: this.app.basemapView.getMapTypeId(),
                     zoom: this.app.basemapView.getZoom(),
-                    project_id: this.app.getProjectID()
+                    project_id: this.app.getProjectID(),
+                    metadata: {}
                 })
             });
 
