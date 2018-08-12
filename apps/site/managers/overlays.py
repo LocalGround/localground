@@ -8,7 +8,7 @@ from localground.apps.site.managers.base import BaseMixin, \
 
 
 class MarkerMixin():
-    # Sarah wants to refactor this into two functions. 
+    # Sarah wants to refactor this into two functions.
     # It currently handles filtering of:
     # 1) Records with attributes (i.e. Markers with Attributes)
     # 2) Records without attributes (i.e. plain Markers)
@@ -58,17 +58,21 @@ class MarkerMixin():
             models.Photo, models.Audio, models.MapImage, models.Video]
 
         # build a custom query that includes child counts:
+        # Note: subquery needed to preserve media ordering
         select = {}
         for cls in child_classes:
             select[cls.model_name + '_' + suffix] = '''
-                SELECT %s(entity_id) FROM site_genericassociation e
+                SELECT %s(entity_id)
+                FROM (
+                    SELECT * FROM site_genericassociation
+                    ORDER BY source_type_id, entity_type_id, ordering
+                ) as e
                 WHERE e.entity_type_id = %s AND e.source_type_id = %s AND
                 e.source_id = %s.id
                 ''' % (
                     sql_function, cls.get_content_type().id, content_type_id,
                     table_name
                 )
-
         return q.extra(select)
 
     def get_objects_public_with_counts(

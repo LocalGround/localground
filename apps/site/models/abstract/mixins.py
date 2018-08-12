@@ -130,6 +130,8 @@ class GenericRelationMixin(models.Model):
                     break
             if not found:
                 stale_references.append(rec.id)
+        for o in objects:
+            print o.ordering
 
         # Because the ContentTypes framework doesn't use traditional relational
         # database controls (no constraints), it's possible that the referenced

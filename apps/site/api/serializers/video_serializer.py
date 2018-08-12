@@ -14,6 +14,7 @@ class VideoSerializer(
         ('vimeo', 'Vimeo'),
         ('youtube', 'YouTube')
     )
+    ordering = serializers.SerializerMethodField()
 
     video_provider = serializers.ChoiceField(
         source='provider', choices=VIDEO_PROVIDERS, read_only=True)
@@ -57,6 +58,12 @@ class VideoSerializer(
             raise serializers.ValidationError(
                 'This is neither YouTube nor Vimeo')
 
+    def get_ordering(self, obj):
+        try:
+            return obj.ordering
+        except Exception:
+            return None
+
     def create(self, validated_data):
         # Overriding the create method to handle file processing
         self.validated_data.update(self.get_presave_create_dictionary())
@@ -76,7 +83,8 @@ class VideoSerializer(
             NamedSerializerMixin.field_list + \
             GeometrySerializerMixin.field_list + \
             ProjectSerializerMixin.field_list + (
-                'video_link', 'video_id', 'video_provider', 'attribution'
+                'video_link', 'video_id', 'video_provider', 'attribution',
+                'ordering'
             )
 
 

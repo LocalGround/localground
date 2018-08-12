@@ -45,6 +45,14 @@ define(["models/base",
                     error: callbackError
                 });
             },
+
+            getPhotoVideoCollection: function (dataManager) {
+                const ids = this.get("attached_photo_ids") || [];
+                return new Backbone.Collection(
+                    ids.map(id => dataManager.getPhoto(id))
+                        .filter(model => model != null)
+                );
+            },
             getAudioCollection: function (dataManager) {
                 const ids = this.get("attached_audio_ids") || [];
                 return new Backbone.Collection(

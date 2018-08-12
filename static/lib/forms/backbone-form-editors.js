@@ -5,14 +5,17 @@ define([
     "models/association",
     "models/audio",
     "views/add-media",
+    "lib/media/photo-video-viewer",
+    "lib/media/audio-viewer",
     "lib/audio/audio-player",
     "external/pikaday-forked",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
     "text!../forms/templates/date-time-template.html",
     "text!../forms/templates/media-editor-template.html",
     "form"
-], function ($, Backbone, Handlebars, Association, Audio, AddMedia, AudioPlayer,
-             Pikaday, dateFns, DateTimeTemplate, MediaTemplate) {
+], function ($, Backbone, Handlebars, Association, Audio, AddMedia,
+            PhotoVideoView, AudioView, AudioPlayer, Pikaday, dateFns,
+            DateTimeTemplate, MediaTemplate) {
     "use strict";
 
     Backbone.Form.editors.Rating = Backbone.Form.editors.Select.extend({
@@ -172,9 +175,9 @@ define([
 
         events: {
             'click #add-media-button': 'showMediaBrowser',
-            'click .detach_media': 'detachModel',
-            'click .fa-star-o': 'addStar',
-            'click .fa-star': 'removeStar'
+            //'click .detach_media': 'detachModel',
+            // 'click .fa-star-o': 'addStar',
+            // 'click .fa-star': 'removeStar'
         },
 
         tagName: "div",
@@ -258,88 +261,90 @@ define([
         },
         render: function () {
             //re-render the child template:
-            this.$el.empty().append(this.template({
-                media: this.model.get("media"),
-                featured_image: this.getFeaturedImage()
-            }));
+            this.$el.empty().append(this.template({}));
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
-            this.renderAudioPlayers();
-            this.enableMediaReordering();
+            this.attachAudioView();
             return this;
         },
-        getFeaturedImage: function () {
-            var extras = this.model.get("extras") || {};
-            return extras.featured_image;
-        },
-        renderAudioPlayers: function () {
-            var audio_attachments = [],
-                that = this,
-                player,
-                $elem;
-            if (this.model.get("media") && this.model.get("media").audio) {
-                audio_attachments = this.model.get("media").audio.data;
-            }
-            _.each(audio_attachments, function (item) {
-                $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
-                player = new AudioPlayer({
-                    model: new Audio(item),
-                    audioMode: "basic",
-                    app: that.app
-                });
-                $elem.append(player.$el[0]);
+
+        attachPhotoVideoView: function () {
+            this.photoVideoView = new PhotoVideoView({
+                detachMedia: this.detachMedia.bind(this),
+                app: this.app,
+                collection: this.model.getPhotoVideoCollection(this.app.dataManager),
+                updateOrdering: this.updateMediaOrdering.bind(this)
             });
-        },
-        enableMediaReordering: function () {
-            var sortableFields = this.$el.find(".attached-media-container"),
-                that = this,
-                newOrder,
-                attachmentType,
-                attachmentID,
-                association;
-            sortableFields.sortable({
-                helper: this.fixHelper,
-                items : '.attached-container',
-                update: function (event, ui) {
-                    newOrder = ui.item.index();
-                    attachmentType = ui.item.find('.detach_media').attr("data-type");
-                    attachmentID = ui.item.find('.detach_media').attr("data-id");
-                    association = new Association({
-                        model: that.model,
-                        attachmentType: attachmentType,
-                        attachmentID: attachmentID
-                    });
-                    association.save({ ordering: newOrder}, {patch: true});
-                }
-            }).disableSelection();
+            this.$el.find('.title-card_media').append(this.photoVideoView.$el);
         },
 
-        fixHelper: function (e, ui) {
-            //not sure what this does:
-            ui.children().each(function () {
-                $(this).width($(this).width());
+        attachAudioView: function () {
+            this.audioView = new AudioView({
+                detachMedia: this.detachModel.bind(this),
+                app: this.app,
+                collection: this.model.getAudioCollection(this.app.dataManager),
+                updateOrdering: (id, overlay_type, newOrder) => {
+                    newOrder += 1; // 0-based ordering
+                    const association = new Association({
+                        model: this.model,
+                        attachmentType: 'audio',
+                        attachmentID: id
+                    });
+                    association.save({ ordering: newOrder}, {patch: true});
+                },
             });
-            return ui;
+            this.$el.find('.attached-media-container').append(this.audioView.$el);
         },
-        removeStars: function () {
-            this.$el.find(".hover-to-show.featured").removeClass("featured");
-            this.$el.find("i.fa-star").removeClass("fa-star").addClass("fa-star-o");
-        },
-        addStar: function (e) {
-            this.removeStars();
-            var $elem = $(e.target),
-                extras = this.model.get("extras") || {};
-            $elem.removeClass("fa-star-o").addClass("fa-star");
-            $elem.parent().addClass("featured");
-            extras.featured_image = parseInt($elem.attr("data-id"), 10);
-            this.model.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
-            this.model.set("extras", extras);
-        },
-        removeStar: function () {
-            this.removeStars();
-            var extras = this.model.get("extras") || {};
-            delete extras.featured_image;
-            this.model.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
-            this.model.set("extras", extras);
-        }
+        // enableMediaReordering: function () {
+        //     var sortableFields = this.$el.find(".attached-media-container"),
+        //         that = this,
+        //         newOrder,
+        //         attachmentType,
+        //         attachmentID,
+        //         association;
+        //     sortableFields.sortable({
+        //         helper: this.fixHelper,
+        //         items : '.attached-container',
+        //         update: function (event, ui) {
+        //             newOrder = ui.item.index();
+        //             attachmentType = ui.item.find('.detach_media').attr("data-type");
+        //             attachmentID = ui.item.find('.detach_media').attr("data-id");
+        //             association = new Association({
+        //                 model: that.model,
+        //                 attachmentType: attachmentType,
+        //                 attachmentID: attachmentID
+        //             });
+        //             association.save({ ordering: newOrder}, {patch: true});
+        //         }
+        //     }).disableSelection();
+        // },
+
+        // fixHelper: function (e, ui) {
+        //     //not sure what this does:
+        //     ui.children().each(function () {
+        //         $(this).width($(this).width());
+        //     });
+        //     return ui;
+        // },
+        // removeStars: function () {
+        //     this.$el.find(".hover-to-show.featured").removeClass("featured");
+        //     this.$el.find("i.fa-star").removeClass("fa-star").addClass("fa-star-o");
+        // },
+        // addStar: function (e) {
+        //     this.removeStars();
+        //     var $elem = $(e.target),
+        //         extras = this.model.get("extras") || {};
+        //     $elem.removeClass("fa-star-o").addClass("fa-star");
+        //     $elem.parent().addClass("featured");
+        //     extras.featured_image = parseInt($elem.attr("data-id"), 10);
+        //     this.model.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
+        //     this.model.set("extras", extras);
+        // },
+        // removeStar: function () {
+        //     this.removeStars();
+        //     var extras = this.model.get("extras") || {};
+        //     delete extras.featured_image;
+        //     this.model.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
+        //     this.model.set("extras", extras);
+        // }
     });
 });
