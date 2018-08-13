@@ -174,7 +174,7 @@ define([
     Backbone.Form.editors.MediaEditor = Backbone.Form.editors.Base.extend({
 
         events: {
-            'click #add-media-button': 'showMediaBrowser',
+            'click #add-media': 'showMediaBrowser',
             //'click .detach_media': 'detachModel',
             // 'click .fa-star-o': 'addStar',
             // 'click .fa-star': 'removeStar'
@@ -197,46 +197,36 @@ define([
                 return;
             }
             this.model.save(null, {
-                success: function () {
-                    that.attachMedia(models);
+                success: () => {
+                    models.forEach(model => this.model.attach(model));
+                    //fetch and re-render model:
+                    if (models.length > 0) {
+                        setTimeout(
+                            this.refreshWidgetFromDatabase.bind(this),
+                            1000
+                        );
+                    }
                 }
             });
             this.app.vent.trigger('hide-modal');
         },
-        /*
-        * Attach Media and Detach Model calls the following that causes
-        * the current unsaved values of fields in HTML form to be reset to stored values:
-        *
-        * that.model.fetch({reset: true});
-        */
-        attachMedia: function (models) {
-            var that = this,
-                i,
-                ordering,
-                fetch = function () {
-                    that.model.fetch({reset: true});
-                };
-            const phot_ct = !this.model.get('attached_photos_ids') ? 0 : this.model.get('attached_photos_ids').length;
-            const aud_ct = !this.model.get('attached_audio_ids') ? 0 : this.model.get('attached_audio_ids').length;
-            for (i = 0; i < models.length; ++i) {
-                console.log(models[i]);
-                //ordering = this.model.get("photo_count") + this.model.get("audio_count");
-                ordering = phot_ct + aud_ct;
-                console.log('ordering', ordering);
-                console.log(this.model);
-                this.model.attach(models[i], (ordering + i + 1));
-            }
-            //fetch and re-render model:
-            if (models.length > 0) { setTimeout(fetch, 800); }
+
+        refreshWidgetFromDatabase: function () {
+            this.model.fetch({
+                success: this.render.bind(this)
+            })
         },
+
         detachModel: function (e) {
-            var $elem = $(e.target),
-                attachmentType = $elem.attr("data-type"),
-                attachmentID = $elem.attr("data-id"),
-                that = this;
-            this.model.detach(attachmentType, attachmentID, function () {
-                that.model.fetch({reset: true});
-            });
+            const $elem = $(e.target);
+            const overlay_type = $elem.attr("data-type");
+            const attachmentID = $elem.attr("data-id");
+            const attachmentType = (overlay_type === 'audio') ? overlay_type : overlay_type + 's';
+            this.model.detach(
+                attachmentType,
+                attachmentID,
+                this.refreshWidgetFromDatabase.bind(this)
+            );
         },
         showMediaBrowser: function (e) {
             var addMediaLayoutView = new AddMedia({
@@ -263,18 +253,19 @@ define([
             //re-render the child template:
             this.$el.empty().append(this.template({}));
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
+            this.attachPhotoVideoView();
             this.attachAudioView();
             return this;
         },
 
         attachPhotoVideoView: function () {
             this.photoVideoView = new PhotoVideoView({
-                detachMedia: this.detachMedia.bind(this),
+                detachMedia: this.detachModel.bind(this),
                 app: this.app,
                 collection: this.model.getPhotoVideoCollection(this.app.dataManager),
-                updateOrdering: this.updateMediaOrdering.bind(this)
+                updateOrdering: this.updateOrdering.bind(this)
             });
-            this.$el.find('.title-card_media').append(this.photoVideoView.$el);
+            this.$el.find('.attached-media-container').append(this.photoVideoView.$el);
         },
 
         attachAudioView: function () {
@@ -282,69 +273,19 @@ define([
                 detachMedia: this.detachModel.bind(this),
                 app: this.app,
                 collection: this.model.getAudioCollection(this.app.dataManager),
-                updateOrdering: (id, overlay_type, newOrder) => {
-                    newOrder += 1; // 0-based ordering
-                    const association = new Association({
-                        model: this.model,
-                        attachmentType: 'audio',
-                        attachmentID: id
-                    });
-                    association.save({ ordering: newOrder}, {patch: true});
-                },
+                updateOrdering: this.updateOrdering.bind(this)
             });
             this.$el.find('.attached-media-container').append(this.audioView.$el);
         },
-        // enableMediaReordering: function () {
-        //     var sortableFields = this.$el.find(".attached-media-container"),
-        //         that = this,
-        //         newOrder,
-        //         attachmentType,
-        //         attachmentID,
-        //         association;
-        //     sortableFields.sortable({
-        //         helper: this.fixHelper,
-        //         items : '.attached-container',
-        //         update: function (event, ui) {
-        //             newOrder = ui.item.index();
-        //             attachmentType = ui.item.find('.detach_media').attr("data-type");
-        //             attachmentID = ui.item.find('.detach_media').attr("data-id");
-        //             association = new Association({
-        //                 model: that.model,
-        //                 attachmentType: attachmentType,
-        //                 attachmentID: attachmentID
-        //             });
-        //             association.save({ ordering: newOrder}, {patch: true});
-        //         }
-        //     }).disableSelection();
-        // },
-
-        // fixHelper: function (e, ui) {
-        //     //not sure what this does:
-        //     ui.children().each(function () {
-        //         $(this).width($(this).width());
-        //     });
-        //     return ui;
-        // },
-        // removeStars: function () {
-        //     this.$el.find(".hover-to-show.featured").removeClass("featured");
-        //     this.$el.find("i.fa-star").removeClass("fa-star").addClass("fa-star-o");
-        // },
-        // addStar: function (e) {
-        //     this.removeStars();
-        //     var $elem = $(e.target),
-        //         extras = this.model.get("extras") || {};
-        //     $elem.removeClass("fa-star-o").addClass("fa-star");
-        //     $elem.parent().addClass("featured");
-        //     extras.featured_image = parseInt($elem.attr("data-id"), 10);
-        //     this.model.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
-        //     this.model.set("extras", extras);
-        // },
-        // removeStar: function () {
-        //     this.removeStars();
-        //     var extras = this.model.get("extras") || {};
-        //     delete extras.featured_image;
-        //     this.model.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
-        //     this.model.set("extras", extras);
-        // }
+        updateOrdering: function (id, overlay_type, newOrder) {
+            newOrder += 1;
+            const attachmentType = (overlay_type === 'audio') ? overlay_type : overlay_type + 's';
+            const association = new Association({
+                model: this.model,
+                attachmentType: attachmentType,
+                attachmentID: id
+            });
+            association.save({ ordering: newOrder}, { patch: true });
+        }
     });
 });

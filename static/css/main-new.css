@@ -1761,8 +1761,42 @@ nav li.active {
   background-repeat: no-repeat !important;
 }
 
-.attached-media-container {
-  margin-left: 15px;
+.attached-media-container .media-items_wrapper {
+  margin: 0px 0px 15px 20px;
+}
+
+.attached-media-container .media-items_header {
+  margin-left: 8px;
+}
+
+.attached-media-container .attached-container {
+  margin: 16px 0px 0px 8px;
+}
+
+.attached-media-container .audio-container {
+  display: inline-block;
+}
+
+.add-media-button {
+  display: inline-flex;
+}
+
+.add-media-button i.fas.fa-plus {
+  position: relative;
+  color: #444;
+  left: 16px;
+  font-size: 1.5em;
+  top: -2px;
+}
+
+.add-media-button i.fas.fa-camera {
+  font-size: 2.8em;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.add-media-button:hover i.fas.fa-plus {
+  color: #008580;
 }
 
 .attached-media {
@@ -1784,10 +1818,6 @@ nav li.active {
   margin-top: -100px;
 }
 
-.upload-spot > h4 {
-  margin: 10px;
-}
-
 .upload-spot {
   border: dashed;
   text-align: center;
@@ -1800,6 +1830,15 @@ nav li.active {
   display: inline-block;
   vertical-align: top;
   margin-left: 28px !important;
+}
+
+.upload-spot > h4 {
+  margin: 10px;
+}
+
+.upload-spot, .attached-container {
+  margin: 16px 0px 0px 8px;
+  vertical-align: top;
 }
 
 .hover-to-show {
@@ -1818,11 +1857,6 @@ nav li.active {
 
 .detach_media:hover {
   color: #444 !important;
-}
-
-.upload-spot, .attached-container {
-  margin: 16px 0px 0px 8px;
-  vertical-align: top;
 }
 
 #upload-from-computer > .upload-spot {
@@ -1892,7 +1926,6 @@ audio {
 
 .audio-container {
   margin: 16px 4px 0px 8px;
-  display: inline-block;
 }
 
 .audio-container span {

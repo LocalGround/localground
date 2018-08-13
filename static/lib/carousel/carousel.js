@@ -1,12 +1,10 @@
 define(["jquery", "underscore", "marionette", "handlebars",
-        "lib/audio/audio-player",
         "text!../carousel/carousel-container.html",
         "text!../carousel/carousel-video-item.html",
-        "text!../carousel/carousel-photo-item.html",
-        "text!../carousel/carousel-container-audio.html"
+        "text!../carousel/carousel-photo-item.html"
     ],
-    function ($, _, Marionette, Handlebars, AudioPlayer,
-              CarouselContainerTemplate, VideoItemTemplate, PhotoItemTemplate, CarouselContainerAudioTemplate) {
+    function ($, _, Marionette, Handlebars,
+              CarouselContainerTemplate, VideoItemTemplate, PhotoItemTemplate) {
         'use strict';
         var Carousel = Marionette.CompositeView.extend({
             events: {
@@ -25,13 +23,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.fullScreen = false;
-                if (this.mode === "photos") {
-                    this.template = Handlebars.compile(CarouselContainerTemplate);
-                } else if (this.mode === "videos") {
-                    this.template = Handlebars.compile(CarouselContainerTemplate);
-                } else {
-                    this.template = Handlebars.compile(CarouselContainerAudioTemplate);
-                }
+                this.template = Handlebars.compile(CarouselContainerTemplate);
                 this.render();
                 this.navigate(0);
             },
@@ -79,8 +71,6 @@ define(["jquery", "underscore", "marionette", "handlebars",
                             this.template = Handlebars.compile(PhotoItemTemplate);
                         } else if (model.get("overlay_type") == "video") {
                             this.template = Handlebars.compile(VideoItemTemplate);
-                        } else if (model.get("overlay_type") == "audio"){
-                            this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
                         }
                     },
                     templateHelpers: function () {
@@ -95,18 +85,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
                             fullScreen: this.fullScreen
                         };
                     },
-                    tagName: "li",
-                    onRender: function () {
-                        if (this.model.get("overlay_type") == "audio") {
-                            var player = new AudioPlayer({
-                                model: this.model,
-                                audioMode: "detail",
-                                app: this.app,
-                                panelStyles: this.panelStyles
-                            });
-                            this.$el.find('.player-container').append(player.$el);
-                        }
-                    }
+                    tagName: "li"
                 });
             },
 
@@ -174,7 +153,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
                 this.hideArrows();
                 this.fullScreen = true;
                 this.$el.find('.close-fullscreen').show();
-                
+
                 this.children.each(function(child) {
                     child.fullScreen = true;
                     child.render();

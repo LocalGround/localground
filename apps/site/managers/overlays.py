@@ -60,25 +60,12 @@ class MarkerMixin():
         # build a custom query that includes child counts:
         # Note: subquery needed to preserve media ordering
         select = {}
-        for cls in child_classes:
-            select[cls.model_name + '_' + suffix] = '''
-                SELECT %s(entity_id)
-                FROM (
-                    SELECT * FROM site_genericassociation
-                    ORDER BY source_type_id, entity_type_id, ordering
-                ) as e
-                WHERE e.entity_type_id = %s AND e.source_type_id = %s AND
-                e.source_id = %s.id
-                ''' % (
-                    sql_function, cls.get_content_type().id, content_type_id,
-                    table_name
-                )
-        select['media_list'] = '''
+        query = '''
             SELECT json_agg(
                 json_build_object(
                     'id', e.entity_id, 'ordering', e.ordering,
                     'overlay_type', ct.model
-                ) ORDER BY (ct.model, e.ordering)
+                ) ORDER BY (e.ordering, ct.model)
             )
             FROM (
                SELECT * FROM site_genericassociation
@@ -88,14 +75,26 @@ class MarkerMixin():
                 e.entity_type_id in (%s) AND
                 e.source_type_id = %s AND
                 e.source_id = %s.id
-            ''' % (
+            '''
+        select['photo_video_list'] = query % (
                 ','.join([
-                    str(c.get_content_type().id) for c in child_classes]
-                ),
+                    str(c.get_content_type().id) for c in [
+                        models.Photo, models.Video
+                    ]]),
                 content_type_id,
                 table_name
             )
-        print select
+        select['map_image_list'] = query % (
+                models.MapImage.get_content_type().id,
+                content_type_id,
+                table_name
+            )
+        select['audio_list'] = query % (
+                models.Audio.get_content_type().id,
+                content_type_id,
+                table_name
+            )
+        # print select
         return q.extra(select)
 
     def get_objects_public_with_counts(

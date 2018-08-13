@@ -1,7 +1,8 @@
 define(["models/base",
         "underscore",
-	    "models/association"],
-    function (Base, _, Association) {
+	    "models/association",
+	    "collections/audio"],
+    function (Base, _, Association, AudioCollection) {
         "use strict";
 
         var Record = Base.extend({
@@ -35,30 +36,31 @@ define(["models/base",
                 return json;
             },
 
-            attach: function (model, order, callbackSuccess, callbackError) {
+            attach: function (model, callbackSuccess, callbackError) {
                 var association = new Association({
                     model: this,
                     attachmentType: model.getDataTypePlural()
                 });
-                association.save({ object_id: model.id, ordering: order }, {
+                association.save({ object_id: model.id}, {
                     success: callbackSuccess,
                     error: callbackError
                 });
             },
 
             getPhotoVideoCollection: function (dataManager) {
-                const ids = this.get("attached_photo_ids") || [];
-                return new Backbone.Collection(
-                    ids.map(id => dataManager.getPhoto(id))
-                        .filter(model => model != null)
-                );
+                const mediaList = this.get("attached_photos_videos") || [];
+                const models = mediaList.map(item => dataManager.getCollection(item.overlay_type + 's').get(item.id))
+                    .filter(item => (item != null));
+                return new Backbone.Collection(models);
             },
+
             getAudioCollection: function (dataManager) {
-                const ids = this.get("attached_audio_ids") || [];
-                return new Backbone.Collection(
-                    ids.map(id => dataManager.getAudio(id))
-                        .filter(model => model != null)
-                );
+                const audioList = this.get("attached_audio") || [];
+                const models = audioList.map(item => dataManager.getAudio(item.id))
+                    .filter(model => model != null);
+                return new AudioCollection(models, {
+                    projectID: this.get('project_id')
+                });
             },
 
             detach: function (attachmentType, attachmentID, callback) {
