@@ -73,6 +73,29 @@ class MarkerMixin():
                     sql_function, cls.get_content_type().id, content_type_id,
                     table_name
                 )
+        select['media_list'] = '''
+            SELECT json_agg(
+                json_build_object(
+                    'id', e.entity_id, 'ordering', e.ordering,
+                    'overlay_type', ct.model
+                ) ORDER BY (ct.model, e.ordering)
+            )
+            FROM (
+               SELECT * FROM site_genericassociation
+            ) as e, django_content_type as ct
+            WHERE
+                ct.id = e.entity_type_id AND
+                e.entity_type_id in (%s) AND
+                e.source_type_id = %s AND
+                e.source_id = %s.id
+            ''' % (
+                ','.join([
+                    str(c.get_content_type().id) for c in child_classes]
+                ),
+                content_type_id,
+                table_name
+            )
+        print select
         return q.extra(select)
 
     def get_objects_public_with_counts(

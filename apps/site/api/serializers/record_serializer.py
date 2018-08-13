@@ -63,6 +63,7 @@ class RecordSerializerMixin(GeometrySerializer):
     attached_audio_ids = serializers.SerializerMethodField()
     attached_videos_ids = serializers.SerializerMethodField()
     attached_map_images_ids = serializers.SerializerMethodField()
+    media_lite = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         return '%s/api/0/datasets/%s/data/%s' % \
@@ -127,6 +128,12 @@ class RecordSerializerMixin(GeometrySerializer):
             many=True, context={'request': {}}).data
         return self.serialize_list(obj, models.MapImage, data)
 
+    def get_media_lite(self, obj):
+        try:
+            return obj.media_list
+        except Exception:
+            return None
+
     def get_attached_photos_ids(self, obj):
         try:
             return obj.photo_array
@@ -178,7 +185,8 @@ class RecordSerializerMixin(GeometrySerializer):
             ('attached_photos_ids',
              'attached_audio_ids',
              'attached_videos_ids',
-             'attached_map_images_ids')
+             'attached_map_images_ids',
+             'media_lite')
         depth = 0
 
     def _get_field_by_col_name(self, col_name):
