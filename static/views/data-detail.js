@@ -87,10 +87,10 @@ define([
                 $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
-            const photo_count = this.getPhotos().length;
-            const audio_count = this.getAudio().length;
-            const video_count = this.getVideos().length;
-
+            const dm = this.app.dataManager;
+            const photo_count = this.model.getPhotos(dm).length;
+            const audio_count = this.model.getAudio(dm).length;
+            const video_count = this.model.getVideos(dm).length;
             return {
                 mode: this.app.mode,
                 dataType: this.dataType,
@@ -103,7 +103,7 @@ define([
                 paragraph: paragraph,
                 title: title,
                 expanded: this.expanded,
-                hasPhotoOrAudio: this.getPhotos().length > 0 || this.getAudio().length > 0,
+                hasPhotoOrAudio: photo_count > 0 || audio_count > 0,
                 featuredImage: this.getFeaturedImage(),
                 thumbnail: this.getThumbnail(),
                 photo_count: photo_count,
@@ -251,39 +251,18 @@ define([
         },
 
         getFeaturedImage: function () {
-            if (!this.model.get("children") || !this.model.get("extras") || !this.model.get("children").photos) {
-                return null;
-            }
-            var featuredID = this.model.get("extras").featured_image,
-                photoData = this.model.get("children").photos.data,
-                i;
-            for (i = 0; i < photoData.length; ++i) {
-                if (photoData[i].id === featuredID) {
-                    return photoData[i];
+            const extras = this.model.get("extras") || {}
+            if (extras.featured_image) {
+                const photo = this.app.dataManager.getPhoto(extras.featured_image)
+                if (photo) {
+                    return photo.toJSON();
                 }
             }
-            return null;
-        },
-        getPhotos: function () {
-            const dm = this.app.dataManager;
-            return this.model.getPhotoVideoCollection(dm).filter(
-                model => model.get('overlay_type') === 'photo'
-            );
-        },
-        getAudio: function () {
-            const dm = this.app.dataManager;
-            return this.model.getAudioCollection(dm);
-        },
-        getVideos: function () {
-            const dm = this.app.dataManager;
-            return this.model.getPhotoVideoCollection(dm).filter(
-                model => model.get('overlay_type') === 'video'
-            );
         },
 
         viewRender: function () {
             const pvc = this.model.getPhotoVideoCollection(this.app.dataManager);
-            const ac = this.model.getAudioCollection(this.app.dataManager);
+            const ac = this.model.getAudio(this.app.dataManager);
 
             if (pvc.length > 0) {
                 const carousel = new Carousel({

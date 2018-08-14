@@ -1851,14 +1851,14 @@ nav li.active {
 .detach_media, .fa-star {
   color: white;
   float: right;
-  font-size: 18px !important;
+  font-size: 14px !important;
   line-height: 14px;
-  margin: 5px;
-  text-shadow: 1px 1px 2px #FFF;
+  margin: 2px 2px 0px 0px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 .detach_media:hover {
-  color: #444 !important;
+  font-size: 16px !important;
 }
 
 #upload-from-computer > .upload-spot {
@@ -1874,12 +1874,9 @@ nav li.active {
   -webkit-transition: .2s;
 }
 
-.hover-to-show p {
+.hover-to-show .fa, .hover-to-show .fas {
   display: none;
-}
-
-.hover-to-show:hover {
-  opacity: 1;
+  cursor: hand;
 }
 
 .hover-to-show.featured {
@@ -1890,10 +1887,6 @@ nav li.active {
   opacity: 0;
 }
 
-.hover-to-show.featured:hover .close {
-  opacity: 1;
-}
-
 .hover-to-show.featured p {
   color: #FFF;
   text-shadow: 1px 1px 1px black;
@@ -1902,6 +1895,26 @@ nav li.active {
   font-weight: 600;
   display: inline;
   font-size: 14px;
+}
+
+.hover-to-show.featured .fa-star {
+  display: block;
+}
+
+.hover-to-show.featured:hover .close {
+  opacity: 1;
+}
+
+.hover-to-show:hover {
+  opacity: 1;
+}
+
+.hover-to-show:hover .fas, .hover-to-show:hover .fa {
+  display: block;
+}
+
+.hover-to-show p {
+  display: none;
 }
 
 .edit-img-overlay .close {

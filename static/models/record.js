@@ -62,7 +62,19 @@ define(["models/base",
                     projectID: this.get('project_id')
                 });
             },
-
+            getPhotos: function (dataManager) {
+                return this.getPhotoVideoCollection(dataManager).filter(
+                    model => model.get('overlay_type') === 'photo'
+                );
+            },
+            getAudio: function (dataManager) {
+                return this.getAudioCollection(dataManager);
+            },
+            getVideos: function (dataManager) {
+                return this.getPhotoVideoCollection(dataManager).filter(
+                    model => model.get('overlay_type') === 'video'
+                );
+            },
             detach: function (attachmentType, attachmentID, callback) {
                 var association = new Association({
                     model: this,

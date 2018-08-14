@@ -15,8 +15,7 @@ define([
         },
         events: {
             'click .detach_media': 'relayDetachMedia',
-            'click .fa-star-o': 'addStar',
-            'click .fa-star': 'removeStar'
+            'click .fa-star': 'toggleStar'
         },
         className: 'media-items_wrapper',
 
@@ -53,17 +52,25 @@ define([
                 return;
             }
             const extras = this.recordModel.get("extras") || {};
+            console.log(extras);
             return extras.featured_image;
         },
         removeStars: function () {
             this.$el.find(".hover-to-show.featured").removeClass("featured");
-            this.$el.find("i.fa-star").removeClass("fa-star").addClass("fa-star-o");
+        },
+        toggleStar: function (e) {
+            const $elem = $(e.target);
+            if ($elem.parent().hasClass("featured")) {
+                this.removeStar(e);
+            } else {
+                this.addStar(e);
+            }
+            e.preventDefault();
         },
         addStar: function (e) {
             this.removeStars();
-            var $elem = $(e.target),
-                extras = this.recordModel.get("extras") || {};
-            $elem.removeClass("fa-star-o").addClass("fa-star");
+            const $elem = $(e.target);
+            const extras = this.recordModel.get("extras") || {};
             $elem.parent().addClass("featured");
             extras.featured_image = parseInt($elem.attr("data-id"), 10);
             this.recordModel.save({extras: JSON.stringify(extras)}, {patch: true, parse: false});
