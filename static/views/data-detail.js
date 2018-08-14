@@ -104,7 +104,7 @@ define([
                 title: title,
                 expanded: this.expanded,
                 hasPhotoOrAudio: photo_count > 0 || audio_count > 0,
-                featuredImage: this.getFeaturedImage(),
+                featuredImage: this.model.getFeaturedImage(dm),
                 thumbnail: this.getThumbnail(),
                 photo_count: photo_count,
                 audio_count: audio_count,
@@ -236,8 +236,9 @@ define([
         },
 
         getThumbnail: function () {
-            if (this.getFeaturedImage()) {
-                return this.getFeaturedImage();
+            const dm = this.app.dataManager;
+            if (this.model.getFeaturedImage(dm)) {
+                return this.model.getFeaturedImage(dm);
             } else if (!_.isEmpty(this.model.get("children"))) {
                 if (this.model.get("children").photos) {
                     var photoData = this.model.get("children").photos.data;
@@ -247,16 +248,6 @@ define([
                 }
             } else {
                 return null;
-            }
-        },
-
-        getFeaturedImage: function () {
-            const extras = this.model.get("extras") || {}
-            if (extras.featured_image) {
-                const photo = this.app.dataManager.getPhoto(extras.featured_image)
-                if (photo) {
-                    return photo.toJSON();
-                }
             }
         },
 

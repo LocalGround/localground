@@ -75,6 +75,15 @@ define(["models/base",
                     model => model.get('overlay_type') === 'video'
                 );
             },
+            getFeaturedImage: function (dataManager) {
+                const extras = this.get("extras") || {}
+                if (extras.featured_image) {
+                    const photo = dataManager.getPhoto(extras.featured_image)
+                    if (photo) {
+                        return photo.toJSON();
+                    }
+                }
+            },
             detach: function (attachmentType, attachmentID, callback) {
                 var association = new Association({
                     model: this,
