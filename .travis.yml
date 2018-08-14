@@ -48,7 +48,7 @@ before_install:
   - sudo apt-get -y install postgresql-plperl-9.5
   - sudo apt-get -y install postgresql-9.5-postgis-2.2
   - sudo apt-get -y install postgresql-9.5-postgis-scripts
-  - sudo apt-get -yinstall libpq-dev
+  - sudo apt-get -y install libpq-dev
 
   # Install some final MapServer libraries (which I think need to
   # get installed after PostgreSQL / PostGIS)
