@@ -1288,22 +1288,6 @@ i.fa.fa.fa-question-circle {
   right: 20px;
 }
 
-.modal.spreadsheet .handsontable .fab {
-  font-size: 3em;
-}
-
-.modal.spreadsheet .handsontable .fab.fa-vimeo {
-  color: #00ADEF;
-}
-
-.modal.spreadsheet .handsontable .fab.fa-youtube {
-  color: #ff0002;
-}
-
-.modal.spreadsheet .handsontable .fab:hover {
-  opacity: 0.9;
-}
-
 .modal.spreadsheet .handsontable .fa-ellipsis-v {
   color: #999;
   display: inline-block;
@@ -1340,8 +1324,69 @@ i.fa.fa.fa-question-circle {
 }
 
 .modal.spreadsheet .play-ctrls {
-  margin: 4px;
   background: #F0F0F0;
+}
+
+.modal.spreadsheet .media-items_wrapper {
+  margin: 0px;
+}
+
+.modal.spreadsheet .attached-container, .modal.spreadsheet .audio-container {
+  margin: 4px 4px 0px 0px;
+  width: 48px;
+  height: 48px;
+}
+
+.modal.spreadsheet .attached-container.video-container, .modal.spreadsheet .audio-container.video-container {
+  background: #f0f1f5;
+  text-align: center;
+}
+
+.modal.spreadsheet .attached-container.video-container .fab, .modal.spreadsheet .audio-container.video-container .fab {
+  line-height: 48px;
+  vertical-align: text-bottom;
+  font-size: 30px;
+  opacity: 0.6;
+}
+
+.modal.spreadsheet .attached-container.video-container .fab.fa-vimeo, .modal.spreadsheet .audio-container.video-container .fab.fa-vimeo {
+  color: #00ADEF;
+}
+
+.modal.spreadsheet .attached-container.video-container .fab.fa-youtube, .modal.spreadsheet .audio-container.video-container .fab.fa-youtube {
+  color: #ff0002;
+}
+
+.modal.spreadsheet .attached-container.video-container .fab:hover, .modal.spreadsheet .audio-container.video-container .fab:hover {
+  opacity: 1;
+}
+
+.modal.spreadsheet .attached-container .attached-media-overlay, .modal.spreadsheet .attached-container .attached-media, .modal.spreadsheet .attached-container .audio-basic, .modal.spreadsheet .audio-container .attached-media-overlay, .modal.spreadsheet .audio-container .attached-media, .modal.spreadsheet .audio-container .audio-basic {
+  width: 48px;
+  height: 48px;
+}
+
+.modal.spreadsheet .attached-container .attached-media-overlay, .modal.spreadsheet .audio-container .attached-media-overlay {
+  margin-top: -48px;
+}
+
+.modal.spreadsheet .attached-container .attached-media-overlay:hover, .modal.spreadsheet .audio-container .attached-media-overlay:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.modal.spreadsheet .attached-container .attached-media-overlay .edit, .modal.spreadsheet .audio-container .attached-media-overlay .edit {
+  float: right;
+  color: #444;
+  font-size: 12px;
+  line-height: 12px;
+  margin: 2px;
+  cursor: pointer;
+  text-shadow: none;
+}
+
+.modal.spreadsheet .attached-container .attached-media-overlay .detach_media, .modal.spreadsheet .audio-container .attached-media-overlay .detach_media {
+  display: none;
 }
 
 .pw-required-background {
@@ -2006,23 +2051,6 @@ audio {
   height: 48px;
 }
 
-.spreadsheet .audio-container .attached-media-overlay {
-  margin-top: -48px;
-}
-
-.spreadsheet .audio-container .attached-media-overlay .edit {
-  float: right;
-  color: #888 !important;
-  font-size: 12px !important;
-  line-height: 12px;
-  margin: 2px;
-  cursor: pointer;
-}
-
-.spreadsheet .audio-container .attached-media-overlay .detach_media {
-  display: none;
-}
-
 .spreadsheet .audio-container .play-ctrls {
   margin: 0px;
 }
@@ -2031,11 +2059,6 @@ audio {
   margin: 15px 19px;
   color: #666;
   font-size: 1.5em;
-}
-
-.spreadsheet > div {
-  padding: 0px !important;
-  margin: 0px auto !important;
 }
 
 .progress {

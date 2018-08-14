@@ -58,20 +58,6 @@ audio {
             width: 48px;
             height: 48px;
         }
-        .attached-media-overlay {
-            margin-top: -48px;
-            .edit {
-                float: right;
-                color: #888 !important;
-                font-size: 12px !important;
-                line-height: 12px;
-                margin: 2px;
-                cursor: pointer;
-            }
-            .detach_media {
-                display: none;
-            }
-        }
         .play-ctrls {
             margin: 0px;
             .play {
@@ -80,10 +66,6 @@ audio {
                 font-size: 1.5em;
             }
         }
-    }
-    > div {
-        padding: 0px !important;
-        margin: 0px auto !important;
     }
 }
 

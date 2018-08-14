@@ -23,9 +23,10 @@ define([
         templateHelpers: function () {
             return {
                 photoVideoModels: this.collection.toJSON(),
-                showHeader: this.collection.length > 0,
+                showHeader: this.collection.length > 0 && this.templateType !== 'spreadsheet',
                 featured_image: this.getFeaturedImage(),
-                show_stars: this.showStars
+                show_stars: this.showStars,
+                templateType: this.templateType
             };
         },
         detachMedia: function(e) {

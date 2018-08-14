@@ -33,6 +33,7 @@ define(["models/baseItem"], function (BaseItem) {
         toTemplateJSON: function () {
             const json = BaseItem.prototype.toTemplateJSON.apply(this, arguments);
             json.embedURL = this.getEmbedLink();
+            console.log(json)
             return json;
         },
     });

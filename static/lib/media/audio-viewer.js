@@ -22,7 +22,6 @@ define([
         //className: 'media-items_wrapper',
         templateHelpers: function () {
             const showHeader = this.collection.length > 0 && this.templateType === 'standard';
-            console.log(this.collection.toJSON());
             return {
                 audio: this.collection.toJSON(),
                 showHeader: showHeader,
