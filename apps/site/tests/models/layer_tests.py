@@ -67,7 +67,8 @@ class LayerModelTests(BaseAuditAbstractModelClassTest, test.TestCase):
     def test_creates_new_dataset_if_none_defined(self):
         kwargs = self.get_map_kwargs()
         map = StyledMap.objects.create(**kwargs)
-        num_datasets = len(Dataset.objects.all())
+        datasets = Dataset.objects.all()
+        num_datasets = len(datasets)
         layer = Layer.create(
             last_updated_by=kwargs.get('last_updated_by'),
             owner=kwargs.get('owner'),
@@ -79,8 +80,11 @@ class LayerModelTests(BaseAuditAbstractModelClassTest, test.TestCase):
             project=map.project,
             ordering=1
         )
-        self.assertEqual(num_datasets + 1, len(Dataset.objects.all()))
-        dataset = Dataset.objects.all()[len(Dataset.objects.all()) - 1]
+        datasets = Dataset.objects.all().order_by('id',)
+        dataset = datasets[len(datasets) - 1]
+        # for dataset in datasets:
+        #     print dataset.name, dataset.id
+        self.assertEqual(num_datasets + 1, len(datasets))
         self.assertEqual(dataset.name, 'Untitled Dataset 2')
         layer = Layer.create(
             last_updated_by=kwargs.get('last_updated_by'),
@@ -93,7 +97,8 @@ class LayerModelTests(BaseAuditAbstractModelClassTest, test.TestCase):
             project=map.project,
             ordering=1
         )
-        dataset = Dataset.objects.all()[len(Dataset.objects.all()) - 1]
+        datasets = Dataset.objects.all().order_by('id',)
+        dataset = datasets[len(datasets) - 1]
         self.assertEqual(dataset.name, 'Untitled Dataset 3')
 
     def test_uses_existing_dataset_if_defined(self):
