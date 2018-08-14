@@ -4,6 +4,7 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
 
         var AudioPlayer = Marionette.ItemView.extend({
             events: {
+                'click .detach_media': 'detachMedia',
                 'click .close': 'hide',
                 'click .close-modal': 'hide',
                 'click .volUp': 'volumeUp',
@@ -20,6 +21,7 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
             initialize: function (opts) {
                 opts = opts || {};
                 _.extend(this, opts);
+                this.detachMedia = this.detachMedia || (() => {});
                 this.render();
                 this.audio = this.$el.find(".audio").get(0);
                 this.listenTo(this.app.vent, 'audio-carousel-advanced', this.stop);

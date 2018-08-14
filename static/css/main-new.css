@@ -1773,7 +1773,7 @@ nav li.active {
   margin: 16px 0px 0px 8px;
 }
 
-.attached-media-container .audio-container {
+.ui-sortable .audio-container, .attached-media-container .audio-container {
   display: inline-block;
 }
 

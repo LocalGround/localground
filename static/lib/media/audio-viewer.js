@@ -15,7 +15,7 @@ define([
             this.render();
         },
         events: {
-            'click .detach_media': 'relayDetachMedia',
+            //'click .detach_media': 'relayDetachMedia',
             'click .edit': 'editAudioFile'
         },
         //className: 'media-items_wrapper',
@@ -38,13 +38,11 @@ define([
                 const player = new AudioPlayer({
                     model: item,
                     audioMode: "basic",
-                    app: this.app
+                    app: this.app,
+                    detachMedia: this.detachMedia.bind(this)
                 });
                 this.$el.append(player.$el);
             });
-        },
-        relayDetachMedia: function(e) {
-            this.detachMedia(e);
         },
         editAudioFile: function (e) {
             const audioID = parseInt($(e.target).attr('data-id'));
