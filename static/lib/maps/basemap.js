@@ -27,6 +27,7 @@ define(["marionette",
             tileManager: null,
             userProfile: null,
             panorama: null,
+            allowPanZoom: true,
             //todo: populate this from user prefs:
             defaultLocation: {
                 zoom: 15,

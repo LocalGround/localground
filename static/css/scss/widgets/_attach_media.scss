@@ -29,19 +29,21 @@
     }
 }
 .add-media-button {
+    margin-top: 10px;
     display: inline-flex;
 
     i.fas.fa-plus {
         position: relative;
         color: #444;
-        left: 16px;
-        font-size: 1.5em;
-        top: -2px;
+        left: 7px;
+        font-size: 1.0em;
+        top: -5px;
+        text-shadow: 1px 1px #FFF;
     }
 
     i.fas.fa-camera {
-        font-size: 2.8em;
-        color: #ccc;
+        font-size: 1.8em;
+        color: #444;
         cursor: pointer;
     }
 
@@ -96,8 +98,9 @@
     height: 100%;
 }
 
-.detach_media {
-    color: #444 !important;
+.detach_media, .fa-star {
+    //color: #444 !important;
+    color: white;
     float: right;
     font-size: 18px !important;
     line-height: 14px;

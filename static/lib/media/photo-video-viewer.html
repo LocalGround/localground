@@ -1,11 +1,21 @@
 {{#if showHeader}}<p class="media-items_header">photos/videos</p>{{/if}}
 {{#each photoVideoModels}}
     {{#ifequal this.overlay_type 'photo'}}
-        <div class="attached-container photo-attached">
+        <!-- <div class="attached-container photo-attached">
             <div class="attached-media" style="background: url('{{this.path}}');"></div>
             <div class="attached-media-overlay">
                 <div class="hover-to-show">
                     <i class="fa fa-times detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photo" media-name="{{this.name}}"></i>
+                    <p>Featured</p>
+                </div>
+            </div>
+        </div> -->
+        <div class="attached-container photo-attached">
+            <div class="attached-media" style="background: url('{{this.path_medium}}');"></div>
+            <div class="attached-media-overlay">
+                <div class="hover-to-show {{#ifequal ../featured_image this.id}}featured{{/ifequal}}">
+                    <i class="{{#ifequal ../featured_image this.id}}fa{{else}}fas{{/ifequal}} fa-star featured" title="Click to select / unselect featured image" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>
+                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>
                     <p>Featured</p>
                 </div>
             </div>

@@ -234,7 +234,7 @@ define([
                 parentModel: this.model
             });
             this.app.vent.trigger("show-modal", {
-                title: 'Media Browser',
+                title: 'Add Image, Audio or Video',
                 width: 1100,
                 height: 'calc(100vh - 250px)',
                 bodyClass: 'media',
@@ -262,6 +262,7 @@ define([
             this.photoVideoView = new PhotoVideoView({
                 detachMedia: this.detachModel.bind(this),
                 app: this.app,
+                recordModel: this.model,
                 collection: this.model.getPhotoVideoCollection(this.app.dataManager),
                 updateOrdering: this.updateOrdering.bind(this)
             });
@@ -285,7 +286,10 @@ define([
                 attachmentType: attachmentType,
                 attachmentID: id
             });
-            association.save({ ordering: newOrder}, { patch: true });
+            association.save({ ordering: newOrder}, {
+                patch: true,
+                success: this.refreshWidgetFromDatabase.bind(this)
+            });
         }
     });
 });
