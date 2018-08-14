@@ -384,10 +384,10 @@ table.color-properties td:first-child {
     padding: 4px 4px;
 }
 
-.edit {
+/* .edit {
     margin-top: 7px;
     float: right;
-}
+} */
 
 .layer-delete {
     float: right;

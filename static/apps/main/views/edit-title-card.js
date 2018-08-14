@@ -18,7 +18,7 @@ define([
             this.secondaryModal = this.app.secondaryModal;
         },
         events: {
-            'click .photo-icon_wrapper': 'showMediaBrowser'
+            'click #add-media': 'showMediaBrowser'
         },
         modelEvents: {
             'add-media-to-model': 'attachMedia'
@@ -39,22 +39,28 @@ define([
 
         attachPhotoVideoView: function () {
             this.photoVideoView = new PhotoVideoView({
-                detachMedia: this.detachMedia.bind(this),
                 app: this.app,
                 collection: this.model.getPhotoVideoCollection(this.app.dataManager),
-                updateOrdering: this.updateMediaOrdering.bind(this)
+                detachMediaFunction: this.detachMedia.bind(this),
+                updateOrdering: this.updateMediaOrdering.bind(this),
+                editFunction: this.editModel.bind(this)
             });
             this.$el.find('.title-card_media').append(this.photoVideoView.$el);
         },
 
         attachAudioView: function () {
             this.audioView = new AudioView({
-                detachMedia: this.detachMedia.bind(this),
                 app: this.app,
                 collection: this.model.getAudioCollection(this.app.dataManager),
-                updateOrdering: this.updateMediaOrdering.bind(this)
+                detachMediaFunction: this.detachMedia.bind(this),
+                updateOrdering: this.updateMediaOrdering.bind(this),
+                editFunction: this.editModel.bind(this)
             });
             this.$el.find('.title-card_media').append(this.audioView.$el);
+        },
+
+        editModel: function (model) {
+            alert(model.get('name'));
         },
 
         updateMediaOrdering: function (id, overlay_type, newOrder) {
@@ -102,11 +108,8 @@ define([
             });
         },
 
-        detachMedia: function(e) {
-            const $target = $(e.target);
-            const id = parseInt($target.attr('data-id'));
-            const overlay_type = $target.attr('data-type');
-            this.model.removeMediaModel(id, overlay_type);
+        detachMedia: function (attachmentType, attachmentID) {
+            this.model.removeMediaModel(attachmentType, attachmentID);
             this.activeMap.save(null, {
                 success: () => {
                     this.render();

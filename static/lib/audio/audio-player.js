@@ -12,7 +12,8 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 'click .play' : 'togglePlay',
                 'click .skip-fwd' : 'skipForward',
                 'click .skip-back' : 'skipBackward',
-                'click .progress-container' : 'jumpToTime'
+                'click .progress-container' : 'jumpToTime',
+                'click .edit': 'edit'
             },
             suspendUIUpdate: false,
             audio: null,
@@ -21,7 +22,7 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
             initialize: function (opts) {
                 opts = opts || {};
                 _.extend(this, opts);
-                this.detachMedia = this.detachMedia || (() => {});
+                //this.detachMedia = this.detachMedia || (() => {});
                 this.render();
                 this.audio = this.$el.find(".audio").get(0);
                 this.listenTo(this.app.vent, 'audio-carousel-advanced', this.stop);
@@ -32,6 +33,24 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 _.bindAll(this, 'playerDurationUpdate');
                 this.$el.find('audio').on('timeupdate', this.playerDurationUpdate);
                 this.$el.find('audio').on('ended', this.showPlayButton.bind(this));
+            },
+            detachMedia: function (e) {
+                // detachMediaFunction passed in via constructor:
+                if (this.detachMediaFunction) {
+                    const $elem = $(e.target);
+                    const overlay_type = $elem.attr("data-type");
+                    const attachmentID = $elem.attr("data-id");
+                    const attachmentType = (overlay_type === 'audio') ? overlay_type : overlay_type + 's';
+                    this.detachMediaFunction(attachmentType, attachmentID);
+                }
+            },
+            edit: function (e) {
+                // editFunction passed in via constructor:
+                if (this.editFunction) {
+                    const audioID = parseInt($(e.target).attr('data-id'));
+                    const audioModel = this.app.dataManager.getAudio(audioID);
+                    this.editFunction(audioModel);
+                }
             },
             onRender: function () {
                 if (!this.$el.find('.progress-container').get(0)) {

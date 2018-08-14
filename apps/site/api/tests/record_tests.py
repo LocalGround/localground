@@ -25,14 +25,12 @@ def get_metadata():
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'},
         'dataset': {'read_only': True, 'required': False, 'type': 'field'},
-        'media': {'read_only': True, 'required': False, 'type': 'field'},
-        'attached_photos_ids': {
+        # 'media': {'read_only': True, 'required': False, 'type': 'field'},
+        'attached_photos_videos': {
             'read_only': True, 'required': False, 'type': 'field'},
-        'attached_audio_ids': {
+        'attached_audio': {
             'read_only': True, 'required': False, 'type': 'field'},
-        'attached_videos_ids': {
-            'read_only': True, 'required': False, 'type': 'field'},
-        'attached_map_images_ids': {
+        'attached_map_images': {
             'read_only': True, 'required': False, 'type': 'field'},
         'field_1': {'read_only': False, 'required': False, 'type': 'string'},
         'field_2': {'read_only': False, 'required': False, 'type': 'integer'},
@@ -595,16 +593,19 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
     def test_child_serializer(self, **kwargs):
         self.photo1 = self.create_photo(self.user, self.project)
         self.audio1 = self.create_audio(self.user, self.project)
+        self.video1 = self.create_video(self.user, self.project)
         self.create_relation(self.markerwattrs, self.photo1)
         self.create_relation(self.markerwattrs, self.audio1)
+        self.create_relation(self.markerwattrs, self.video1)
 
         response = self.client_user.get(self.urls[0])
-        self.assertEqual(len(response.data['media']['photos']['data']), 1)
-        self.assertEqual(len(response.data['media']['audio']['data']), 1)
+        self.assertEqual(len(response.data['attached_photos_videos']), 2)
+        self.assertEqual(len(response.data['attached_audio']), 1)
 
         # clean up:
         self.delete_relation(self.markerwattrs, self.photo1)
         self.delete_relation(self.markerwattrs, self.audio1)
+        self.delete_relation(self.markerwattrs, self.video1)
 
     def test_attach_media(self):
         mwa_ids, posted_data = self.post_hstore_data(self.hstore_data)
@@ -646,25 +647,28 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             self.assertEqual(
                 audio_response.status_code, status.HTTP_201_CREATED)
             response = self.client_user.get(self.list_url + '%s/' % marker_id)
-
+            # print response.data
             self.assertEqual(
-                response.data['media']['photos']['data'][0]['url'],
-                "/api/0/photos/" + '%s/' % self.photo1.id)
-            self.assertEqual(
-                response.data['media']['audio']['data'][0]['url'],
-                "/api/0/audio/" + '%s/' % self.audio1.id)
-
-            self.assertEqual(
-                response.data['attached_photos_ids'][0], self.photo1.id
+                response.data['attached_photos_videos'][0]['id'],
+                self.photo1.id
             )
             self.assertEqual(
-                len(response.data['attached_photos_ids']), 1
+                response.data['attached_photos_videos'][0]['overlay_type'],
+                'photo'
             )
             self.assertEqual(
-                response.data['attached_audio_ids'][0], self.audio1.id
+                response.data['attached_audio'][0]['id'],
+                self.audio1.id
             )
             self.assertEqual(
-                len(response.data['attached_audio_ids']), 1
+                response.data['attached_audio'][0]['overlay_type'],
+                'audio'
+            )
+            self.assertEqual(
+                len(response.data['attached_audio']), 1
+            )
+            self.assertEqual(
+                len(response.data['attached_photos_videos']), 1
             )
 
             self.delete_relation(marker, self.photo1)

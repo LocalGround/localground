@@ -14,10 +14,10 @@ define([
             this.templateType = this.templateType || 'standard';
             this.render();
         },
-        events: {
-            //'click .detach_media': 'relayDetachMedia',
-            'click .edit': 'editAudioFile'
-        },
+        // events: {
+        //     //'click .detach_media': 'relayDetachMedia',
+        //     'click .edit': 'editAudioFile'
+        // },
         //className: 'media-items_wrapper',
         //className: 'media-items_wrapper',
         templateHelpers: function () {
@@ -34,20 +34,21 @@ define([
             this.enableMediaReordering();
         },
         renderAudioPlayers: function () {
+            const opts = {
+                audioMode: "basic",
+                app: this.app
+            }
+            if (this.editFunction) {
+                opts.editFunction = this.editFunction.bind(this);
+            }
+            if (this.detachMediaFunction) {
+                opts.detachMediaFunction = this.detachMediaFunction.bind(this)
+            }
             this.collection.each(item => {
-                const player = new AudioPlayer({
-                    model: item,
-                    audioMode: "basic",
-                    app: this.app,
-                    detachMedia: this.detachMedia.bind(this)
-                });
+                opts.model = item;
+                const player = new AudioPlayer(opts);
                 this.$el.append(player.$el);
             });
-        },
-        editAudioFile: function (e) {
-            const audioID = parseInt($(e.target).attr('data-id'));
-            const audioModel = this.collection.get(audioID);
-            alert(audioModel.get('name'));
         },
         enableMediaReordering: function () {
             if (this.updateOrdering) {

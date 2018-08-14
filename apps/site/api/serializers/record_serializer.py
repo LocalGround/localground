@@ -56,27 +56,15 @@ class RecordSerializerMixin(GeometrySerializer):
     the URL for ourselves:
     '''
     url = serializers.SerializerMethodField()
-
     dataset = serializers.SerializerMethodField()
-    # media = serializers.SerializerMethodField()
     attached_photos_videos = serializers.SerializerMethodField()
     attached_map_images = serializers.SerializerMethodField()
     attached_audio = serializers.SerializerMethodField()
-    attached_photos_ids = serializers.SerializerMethodField()
-    attached_audio_ids = serializers.SerializerMethodField()
-    attached_videos_ids = serializers.SerializerMethodField()
-    attached_map_images_ids = serializers.SerializerMethodField()
-    # media_lite = serializers.SerializerMethodField()
-
-    def get_url(self, obj):
-        return '%s/api/0/datasets/%s/data/%s' % \
-                (settings.SERVER_URL, obj.dataset.id, obj.id)
-
-    def get_dataset(self, obj):
-        return self.dataset.id
-
-    def get_overlay_type(self, obj):
-        return 'dataset_{0}'.format(obj.dataset.id)
+    # media = serializers.SerializerMethodField()
+    # attached_photos_ids = serializers.SerializerMethodField()
+    # attached_audio_ids = serializers.SerializerMethodField()
+    # attached_videos_ids = serializers.SerializerMethodField()
+    # attached_map_images_ids = serializers.SerializerMethodField()
 
     # def get_media(self, obj):
     #     from django.contrib.contenttypes.models import ContentType
@@ -130,26 +118,7 @@ class RecordSerializerMixin(GeometrySerializer):
     #         obj.map_images,
     #         many=True, context={'request': {}}).data
     #     return self.serialize_list(obj, models.MapImage, data)
-
-    def get_attached_photos_videos(self, obj):
-        try:
-            return obj.photo_video_list
-        except Exception:
-            return None
-
-    def get_attached_map_images(self, obj):
-        try:
-            return obj.map_image_list
-        except Exception:
-            return None
-
-    def get_attached_audio(self, obj):
-        try:
-            return obj.audio_list
-        except Exception:
-            return None
-
-
+    #
     # def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
     #                    model_name_plural=None):
     #     if data is None or len(data) == 0:
@@ -169,6 +138,34 @@ class RecordSerializerMixin(GeometrySerializer):
     #         (settings.SERVER_URL,
     #          obj.id,
     #          model_name_plural)}
+
+    def get_url(self, obj):
+        return '%s/api/0/datasets/%s/data/%s' % \
+                (settings.SERVER_URL, obj.dataset.id, obj.id)
+
+    def get_dataset(self, obj):
+        return self.dataset.id
+
+    def get_overlay_type(self, obj):
+        return 'dataset_{0}'.format(obj.dataset.id)
+
+    def get_attached_photos_videos(self, obj):
+        try:
+            return obj.photo_video_list
+        except Exception:
+            return None
+
+    def get_attached_map_images(self, obj):
+        try:
+            return obj.map_image_list
+        except Exception:
+            return None
+
+    def get_attached_audio(self, obj):
+        try:
+            return obj.audio_list
+        except Exception:
+            return None
 
     class Meta:
         model = models.Record

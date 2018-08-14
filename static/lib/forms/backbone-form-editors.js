@@ -174,10 +174,7 @@ define([
     Backbone.Form.editors.MediaEditor = Backbone.Form.editors.Base.extend({
 
         events: {
-            'click #add-media': 'showMediaBrowser',
-            //'click .detach_media': 'detachModel',
-            // 'click .fa-star-o': 'addStar',
-            // 'click .fa-star': 'removeStar'
+            'click #add-media': 'showMediaBrowser'
         },
 
         tagName: "div",
@@ -217,16 +214,15 @@ define([
             })
         },
 
-        detachModel: function (e) {
-            const $elem = $(e.target);
-            const overlay_type = $elem.attr("data-type");
-            const attachmentID = $elem.attr("data-id");
-            const attachmentType = (overlay_type === 'audio') ? overlay_type : overlay_type + 's';
+        detachModel: function (attachmentType, attachmentID) {
             this.model.detach(
                 attachmentType,
                 attachmentID,
                 this.refreshWidgetFromDatabase.bind(this)
             );
+        },
+        editModel: function (model) {
+            alert(model.get('name'));
         },
         showMediaBrowser: function (e) {
             var addMediaLayoutView = new AddMedia({
@@ -260,8 +256,10 @@ define([
 
         attachPhotoVideoView: function () {
             this.photoVideoView = new PhotoVideoView({
-                detachMedia: this.detachModel.bind(this),
+                detachMediaFunction: this.detachModel.bind(this),
+                editFunction: this.editModel.bind(this),
                 app: this.app,
+                showStars: true,
                 recordModel: this.model,
                 collection: this.model.getPhotoVideoCollection(this.app.dataManager),
                 updateOrdering: this.updateOrdering.bind(this)
@@ -271,7 +269,8 @@ define([
 
         attachAudioView: function () {
             this.audioView = new AudioView({
-                detachMedia: this.detachModel.bind(this),
+                detachMediaFunction: this.detachModel.bind(this),
+                editFunction: this.editModel.bind(this),
                 app: this.app,
                 collection: this.model.getAudioCollection(this.app.dataManager),
                 updateOrdering: this.updateOrdering.bind(this)

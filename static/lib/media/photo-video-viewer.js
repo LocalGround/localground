@@ -14,8 +14,9 @@ define([
             this.render();
         },
         events: {
-            'click .detach_media': 'relayDetachMedia',
-            'click .fa-star': 'toggleStar'
+            'click .detach_media': 'detachMedia',
+            'click .fa-star': 'toggleStar',
+            'click .edit': 'edit'
         },
         className: 'media-items_wrapper',
 
@@ -23,11 +24,28 @@ define([
             return {
                 photoVideoModels: this.collection.toJSON(),
                 showHeader: this.collection.length > 0,
-                featured_image: this.getFeaturedImage()
+                featured_image: this.getFeaturedImage(),
+                show_stars: this.showStars
             };
         },
-        relayDetachMedia: function(e) {
-            this.detachMedia(e);
+        detachMedia: function(e) {
+            if (this.detachMediaFunction) {
+                const $elem = $(e.target);
+                const overlay_type = $elem.attr("data-type");
+                const attachmentID = parseInt($elem.attr("data-id"));
+                const attachmentType = overlay_type + 's';
+                this.detachMediaFunction(attachmentType, attachmentID);
+            }
+        },
+        edit: function (e) {
+            // editFunction passed in via constructor:
+            if (this.editFunction) {
+                const $elem = $(e.target);
+                const attachmentType = $elem.attr("data-type") + 's';
+                const id = parseInt($elem.attr("data-id"));
+                const model = this.app.dataManager.getCollection(attachmentType).get(id);
+                this.editFunction(model);
+            }
         },
         onRender: function () {
             this.enableMediaReordering();
@@ -52,7 +70,6 @@ define([
                 return;
             }
             const extras = this.recordModel.get("extras") || {};
-            console.log(extras);
             return extras.featured_image;
         },
         removeStars: function () {

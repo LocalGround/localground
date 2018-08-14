@@ -29,15 +29,18 @@ define(["backbone"], function (Backbone) {
             }
         },
 
-        removeMediaModel: function(id, overlay_type) {
-            //console.log(id, overlay_type);
-            if (overlay_type === 'audio') {
+        removeMediaModel: function(attachmentType, id) {
+            if (attachmentType === 'audio') {
                 this.audioCollection.remove(this.audioCollection.get(id));
             } else {
-                this.photoVideoCollection.remove(this.photoVideoCollection.findWhere({
+                const overlay_type = attachmentType.substring(0, attachmentType.length - 1);
+                const modelToRemove = this.photoVideoCollection.findWhere({
                     id: id, overlay_type: overlay_type
-                }));
+                });
+                this.photoVideoCollection.remove(modelToRemove);
+                console.log(this.photoVideoCollection.length);
             }
+            this.set('media', this.getMediaJSON());
         },
 
         getPhotoVideoCollection: function (dataManager) {
@@ -78,11 +81,13 @@ define(["backbone"], function (Backbone) {
 
         getMediaJSON: function () {
             //serialize concatenated lists:
-            return this.photoVideoCollection.map(item => {
+            const mediaJSON = this.photoVideoCollection.map(item => {
                 return { id: item.id, overlay_type: item.get('overlay_type') }
             }).concat(this.audioCollection.map(item => {
                 return { id: item.id, overlay_type: item.get('overlay_type') }
             }));
+            console.log(mediaJSON);
+            return mediaJSON;
         },
 
         toJSON: function () {

@@ -1,26 +1,19 @@
 {{#if showHeader}}<p class="media-items_header">photos/videos</p>{{/if}}
 {{#each photoVideoModels}}
     {{#ifequal this.overlay_type 'photo'}}
-        <!-- <div class="attached-container photo-attached">
-            <div class="attached-media" style="background: url('{{this.path}}');"></div>
-            <div class="attached-media-overlay">
-                <div class="hover-to-show">
-                    <i class="fa fa-times detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photo" media-name="{{this.name}}"></i>
-                    <p>Featured</p>
-                </div>
-            </div>
-        </div> -->
         <div class="attached-container photo-attached">
             <div class="attached-media" style="background: url('{{this.path_medium}}');"></div>
             <div class="attached-media-overlay">
                 <div class="hover-to-show {{#ifequal ../featured_image this.id}}featured{{/ifequal}}">
-                    <i class="fa fa-times close detach_media"
-                        aria-hidden="true" data-id="{{this.id}}"
-                        data-type="photo" media-name="{{this.name}}"></i>
-                    <i class="fas fa-star" title="Click to select / unselect featured image"
-                        data-id="{{this.id}}" data-type="photo"
-                        media-name="{{this.name}}"></i>
-                    <p>Featured</p>
+                    <i class="fa fa-times detach_media" aria-hidden="true"
+                        data-id="{{this.id}}" data-type="photo"></i>
+                    <i class="fa fa-pencil-alt edit" aria-hidden="true"
+                        data-id="{{this.id}}" data-type="photo"></i>
+                    {{#if ../show_stars}}
+                        <i class="fas fa-star" aria-hidden="true" title="Click to select / unselect featured image"
+                            data-id="{{this.id}}" data-type="photo"></i>
+                        <p>Featured</p>
+                    {{/if}}
                 </div>
             </div>
         </div>
@@ -44,6 +37,7 @@
             <div class="attached-media-overlay video-hover">
                 <div class="hover-to-show video-hover">
                     <i class="fa fa-times detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="video" media-name="{{this.name}}"></i>
+                    <i class="fa fa-pencil-alt edit" aria-hidden="true" data-id="{{this.id}}" data-type="video"></i>
                 </div>
             </div>
         </div>

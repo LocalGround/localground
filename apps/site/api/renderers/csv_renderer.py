@@ -43,12 +43,15 @@ class CSVRenderer(renderers.BaseRenderer):
         '''
         # add top-level record:
         top_level_record = data.copy()
-        del top_level_record['media']
+        # del top_level_record['media']
         dataset = [top_level_record]
         headers += top_level_record.keys()
 
         # add child records:
-        media = data.get('media')
+        # media = data.get('media')
+        # if data.get('datasets'):
+        #     media.update(data.get('datasets'))
+        media = {}
         if data.get('datasets'):
             media.update(data.get('datasets'))
         for key in media:
