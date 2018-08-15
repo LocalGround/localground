@@ -14,6 +14,21 @@ import json
 from rest_framework import serializers
 
 
+def force_to_unicode(val):
+    # For special characters:
+    # https://gist.github.com/gornostal/1f123aaf838506038710
+    if val is None:
+        return val
+    if isinstance(val, (datetime.datetime, datetime.date)):
+        return val.isoformat().decode('utf8')
+    if isinstance(val, (int, float)):
+        return str(val).decode('utf8')
+    if isinstance(val, unicode):
+        return val
+    else:
+        return val.decode('utf8')
+
+
 class ChoiceIntField(serializers.ChoiceField):
 
     def to_internal_value(self, data):
@@ -210,7 +225,9 @@ class RecordSerializerMixin(GeometrySerializer):
         from rest_framework.utils import model_meta
         validated_data.update(self.get_presave_update_dictionary())
         info = model_meta.get_field_info(instance)
-
+        # import sys
+        # reload(sys)
+        # sys.setdefaultencoding('utf-8')
         for attr, value in validated_data.items():
             if attr in info.relations and info.relations[attr].to_many:
                 field = getattr(instance, attr)
@@ -219,11 +236,8 @@ class RecordSerializerMixin(GeometrySerializer):
                 # stringify all non-null attributes before DB commit:
                 attribute_dict = value
                 for prop in attribute_dict:
-                    val = attribute_dict[prop]
-                    if isinstance(val, (datetime.datetime, datetime.date)):
-                        attribute_dict[prop] = val.isoformat()
-                    if val is not None:
-                        attribute_dict[prop] = str(val)
+                    attribute_dict[prop] = \
+                        force_to_unicode(attribute_dict[prop])
                 instance.attributes.update(attribute_dict)
             else:
                 setattr(instance, attr, value)
