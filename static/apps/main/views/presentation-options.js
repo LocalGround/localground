@@ -11,7 +11,6 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
             this.modal = this.app.modal;
-            console.log(this.activeMap);
         },
 
         className: 'presentation-options',

@@ -60,11 +60,11 @@ define([
                 expect(presentationApp.projectID).toEqual(3);
                 expect(presentationApp.popover).toEqual(jasmine.any(Popover));
                 expect(presentationApp.loadRegions).toHaveBeenCalledTimes(1);
-                expect(presentationApp.addMessageListeners).toHaveBeenCalledTimes(1);  
+                expect(presentationApp.addMessageListeners).toHaveBeenCalledTimes(1);
             });
 
             it("loadRegions() works", function() {
-            
+
                 // loadRegions() already gets called in initialize()
                 expect(presentationApp.showMapTitle).toHaveBeenCalledTimes(1);
                 expect(presentationApp.showBasemap).toHaveBeenCalledTimes(1);
@@ -75,9 +75,9 @@ define([
                 expect(presentationApp.mapRegion.show).toHaveBeenCalledTimes(0);
 
                 presentationApp.showBasemap();
-                
+
                 expect(presentationApp.basemapView).toEqual(jasmine.any(Basemap));
-                
+
                 expect(presentationApp.basemapView.app).toEqual(presentationApp);
                 expect(presentationApp.basemapView.activeMapTypeID).toEqual(5);
                 expect(presentationApp.basemapView.zoom).toEqual(9);
@@ -121,10 +121,10 @@ define([
 
                 expect(presentationApp.showTitleCard).toHaveBeenCalledTimes(1);
 
-                expect(presentationApp.sideRegion.currentView.model.get('title')).toEqual('Test Map Title');
+                expect(presentationApp.sideRegion.currentView.model.get('header')).toEqual('Test Map Title');
 
                 expect(presentationApp.sideRegion.currentView.model.get('description')).toEqual('Test description of the map.');
-                
+
             });
 
         });

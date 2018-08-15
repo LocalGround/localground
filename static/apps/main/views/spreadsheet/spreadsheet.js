@@ -281,23 +281,22 @@ define(["jquery",
             htmlLinkRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
                 var htmlLink = "<a href='" + value + "' >" + value + "</a>"
                 td.innerHTML = htmlLink;
-
-
                 return td;
             },
 
             photoVideoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 td.innerHTML = '';
                 const model = this.getModelFromCell(instance, row);
-                this.photoVideoViewer = new PhotoVideoViewer({
-                    app: this.app,
-                    collection: model.getPhotoVideoCollection(this.app.dataManager),
-                    templateType: 'spreadsheet',
-                    detachMedia: this.detachMediaModel.bind(this),
-                    editFunction: this.editMediaModel.bind(this)
-                });
-                //$(td).css({'background': '#F0F0F0'});
-                $(td).append(this.photoVideoViewer.$el);
+                if (model) {
+                    this.photoVideoViewer = new PhotoVideoViewer({
+                        app: this.app,
+                        collection: model.getPhotoVideoCollection(this.app.dataManager),
+                        templateType: 'spreadsheet',
+                        detachMedia: this.detachMediaModel.bind(this),
+                        editFunction: this.editMediaModel.bind(this)
+                    });
+                    $(td).append(this.photoVideoViewer.$el);
+                }
                 return td;
             },
             editMediaModel: function (model) {
@@ -310,14 +309,16 @@ define(["jquery",
             audioListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 td.innerHTML = '';
                 const model = this.getModelFromCell(instance, row);
-                this.audioView = new AudioViewer({
-                    app: this.app,
-                    collection: model.getAudioCollection(this.app.dataManager),
-                    templateType: 'spreadsheet',
-                    detachMedia: this.detachMediaModel.bind(this),
-                    editFunction: this.editMediaModel.bind(this)
-                });
-                $(td).append(this.audioView.$el);
+                if(model){
+                    this.audioView = new AudioViewer({
+                        app: this.app,
+                        collection: model.getAudioCollection(this.app.dataManager),
+                        templateType: 'spreadsheet',
+                        detachMedia: this.detachMediaModel.bind(this),
+                        editFunction: this.editMediaModel.bind(this)
+                    });
+                    $(td).append(this.audioView.$el);
+                }
                 return td;
             },
 

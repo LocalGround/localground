@@ -10,14 +10,18 @@ define([
             // 1) add spies for all relevant objects:
             spyOn(EditTitleCard.prototype, 'initialize').and.callThrough();
             spyOn(EditTitleCard.prototype, 'render').and.callThrough();
+            spyOn(EditTitleCard.prototype, 'detachMedia').and.callThrough();
+
 
             // 2) add dummy HTML elements:
             scope.fixture = setFixtures('<div></div>');
 
             // 3) initialize Toolbar:
+            const map = scope.dataManager.getMaps().at(0);
             scope.editTitleCard = new EditTitleCard({
                 app: scope.app,
-                activeMap: scope.dataManager.getMaps().at(0)
+                activeMap: map,
+                model: map.getTitleCardModel()
             });
 
             scope.editTitleCard.render();
@@ -32,8 +36,8 @@ define([
                 this.editTitleCard.render();
                 expect(this.editTitleCard.$el).toContainElement('.title-card_title');
                 expect(this.editTitleCard.$el).toContainElement('.title-card_textarea');
-            }); 
-            
+            });
+
             it("saveTitleCard() works", function() {
                 expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.header).toEqual('Test Map Title');
                 expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.description).toEqual('Test description of the map.');
@@ -43,42 +47,51 @@ define([
 
                 this.editTitleCard.saveTitleCard();
 
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.header).toEqual('Test Title 22');
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.description).toEqual('This is the description for this map');
+                expect(this.editTitleCard.model.get('header')).toEqual('Test Title 22');
+                expect(this.editTitleCard.model.get('description')).toEqual('This is the description for this map');
             });
 
             it("attachMedia() works", function() {
+                const dm = this.app.dataManager;
                 expect(EditTitleCard.prototype.render).toHaveBeenCalledTimes(1);
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.length).toEqual(3);
+                expect(this.editTitleCard.model.getPhotoVideoCollection(dm).length).toEqual(3);
 
-                // photo 7 already in list. Test to make sure it doesn't gett added again.
-                const photoObjs = [{id: 23}, {id: 25}, {id: 7}]; 
+                // photo 19 already in list. Test to make sure it doesn't get added again.
+                const p1 = dm.getPhoto(19);
+                const p2 = dm.getPhoto(18);
+                const p3 = dm.getPhoto(17);
+                this.editTitleCard.attachMedia([p1, p2, p3]);
 
-                this.editTitleCard.attachMedia(photoObjs);
+                expect(this.editTitleCard.model.getPhotoVideoCollection(dm).length).toEqual(5);
 
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.length).toEqual(5);
-
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.includes(23)).toEqual(true);
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.includes(25)).toEqual(true);
-                
+                const photos = this.editTitleCard.model.getPhotoVideoCollection(dm);
+                expect(photos.get(p1.id)).toEqual(p1);
+                expect(photos.get(p2.id)).toEqual(p2);
+                expect(photos.get(p3.id)).toEqual(p3);
                 expect(EditTitleCard.prototype.render).toHaveBeenCalledTimes(2);
             });
 
             it("detachMedia() works", function() {
+                const dm = this.app.dataManager;
+                const photosVideos = this.editTitleCard.model.getPhotoVideoCollection(dm);
+                const p1 = dm.getPhoto(20);
+
+                expect(EditTitleCard.prototype.detachMedia).toHaveBeenCalledTimes(0);
                 expect(EditTitleCard.prototype.render).toHaveBeenCalledTimes(1);
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.includes(7)).toEqual(true);
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.length).toEqual(3);
+                expect(photosVideos.get(p1).id).toEqual(p1.id);
+                expect(photosVideos.length).toEqual(3);
 
-                this.editTitleCard.$el.find('.detach_media[data-id="7"]').click();
-
+                this.editTitleCard.$el.find('.detach_media[data-id="20"]').click();
+                expect(EditTitleCard.prototype.detachMedia).toHaveBeenCalledTimes(1);
+                expect(photosVideos.get(p1)).toBeUndefined();
+                expect(photosVideos.length).toEqual(2);
                 expect(EditTitleCard.prototype.render).toHaveBeenCalledTimes(2);
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.includes(7)).toEqual(false);
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.length).toEqual(2);
             });
 
             it("displays attached photos", function() {
-                expect(this.editTitleCard.activeMap.get('metadata').titleCardInfo.photo_ids.length).toEqual(3);
+                const dm = this.app.dataManager;
+                const photosVideos = this.editTitleCard.model.getPhotoVideoCollection(dm);
                 expect(this.editTitleCard.$el.find('.photo-attached').length).toEqual(3);
-            }); 
+            });
         });
     });

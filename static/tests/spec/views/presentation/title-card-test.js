@@ -3,9 +3,10 @@ define([
     "backbone",
     rootDir + "apps/presentation/views/title-card",
     rootDir + "lib/carousel/carousel",
-    rootDir + "lib/audio/audio-player"
+    rootDir + "lib/audio/audio-player",
+    rootDir + "models/title-card"
 ],
-    function (Backbone, TitleCard, Carousel, AudioPlayer) {
+    function (Backbone, TitleCard, Carousel, AudioPlayer, TitleCardModel) {
         'use strict';
         const initSpies = function () {
 
@@ -14,8 +15,8 @@ define([
             spyOn(Carousel.prototype, 'initialize').and.callThrough();
             spyOn(AudioPlayer.prototype, 'initialize').and.callThrough();
             spyOn(TitleCard.prototype, 'render').and.callThrough();
-            spyOn(TitleCard.prototype, 'getPhotoVideoCollection').and.callThrough();
-            spyOn(TitleCard.prototype, 'getAudioModels').and.callThrough();
+            spyOn(TitleCardModel.prototype, 'getPhotoVideoCollection').and.callThrough();
+            spyOn(TitleCardModel.prototype, 'getAudioCollection').and.callThrough();
             spyOn(TitleCard.prototype, 'renderCarousel').and.callThrough();
             spyOn(TitleCard.prototype, 'renderAudioPlayers').and.callThrough();
 
@@ -56,11 +57,11 @@ define([
                     model: this.map.getTitleCardModel(),
                     app: this.app,
                 });
-                const collection = this.titleCard.getPhotoVideoCollection(this.app.dataManager);
+                const collection = this.titleCard.model.getPhotoVideoCollection(this.app.dataManager);
                 expect(collection.at(0).get('overlay_type')).toEqual('photo');
-                expect(collection.at(0).get('id')).toEqual(4);
+                expect(collection.at(0).get('id')).toEqual(20);
                 expect(collection.at(1).get('overlay_type')).toEqual('photo');
-                expect(collection.at(1).get('id')).toEqual(5);
+                expect(collection.at(1).get('id')).toEqual(19);
                 expect(collection.at(2).get('overlay_type')).toEqual('video');
                 expect(collection.at(2).get('id')).toEqual(50);
             });
@@ -70,7 +71,7 @@ define([
                     model: this.map.getTitleCardModel(),
                     app: this.app,
                 });
-                const collection = this.titleCard.getAudioModels();
+                const collection = this.titleCard.model.getAudioCollection(this.app.dataManager);
                 expect(collection.at(0).get('overlay_type')).toEqual('audio');
                 expect(collection.at(0).get('id')).toEqual(4);
                 expect(collection.at(1).get('overlay_type')).toEqual('audio');
@@ -82,8 +83,8 @@ define([
                     model: this.app.dataManager.getMaps().at(1).getTitleCardModel(),
                     app: this.app,
                 });
-                expect(this.titleCard.getPhotoVideoCollection(this.app.dataManager).length).toEqual(0);
-                expect(this.titleCard.getAudioModels().length).toEqual(0);
+                expect(this.titleCard.model.getPhotoVideoCollection(this.app.dataManager).length).toEqual(0);
+                expect(this.titleCard.model.getAudioCollection(this.app.dataManager).length).toEqual(0);
             });
 
             it("does not call carousel or player functions if empty media", function () {

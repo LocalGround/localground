@@ -38,7 +38,6 @@ define(["backbone"], function (Backbone) {
                     id: id, overlay_type: overlay_type
                 });
                 this.photoVideoCollection.remove(modelToRemove);
-                console.log(this.photoVideoCollection.length);
             }
             this.set('media', this.getMediaJSON());
         },
@@ -86,7 +85,6 @@ define(["backbone"], function (Backbone) {
             }).concat(this.audioCollection.map(item => {
                 return { id: item.id, overlay_type: item.get('overlay_type') }
             }));
-            console.log(mediaJSON);
             return mediaJSON;
         },
 
