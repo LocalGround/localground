@@ -56,13 +56,88 @@ class RecordSerializerMixin(GeometrySerializer):
     the URL for ourselves:
     '''
     url = serializers.SerializerMethodField()
-
     dataset = serializers.SerializerMethodField()
-    media = serializers.SerializerMethodField()
-    attached_photos_ids = serializers.SerializerMethodField()
-    attached_audio_ids = serializers.SerializerMethodField()
-    attached_videos_ids = serializers.SerializerMethodField()
-    attached_map_images_ids = serializers.SerializerMethodField()
+    attached_photos_videos = serializers.SerializerMethodField()
+    attached_map_images = serializers.SerializerMethodField()
+    attached_audio = serializers.SerializerMethodField()
+    # media = serializers.SerializerMethodField()
+    # attached_photos_ids = serializers.SerializerMethodField()
+    # attached_audio_ids = serializers.SerializerMethodField()
+    # attached_videos_ids = serializers.SerializerMethodField()
+    # attached_map_images_ids = serializers.SerializerMethodField()
+
+    # def get_media(self, obj):
+    #     from django.contrib.contenttypes.models import ContentType
+    #     from localground.apps.site import models
+    #
+    #     media = {}
+    #     self.audio = self.get_audio(obj) or []
+    #     self.photos = self.get_photos(obj) or []
+    #     self.videos = self.get_videos(obj) or []
+    #     self.map_images = self.get_map_images(obj) or []
+    #     if self.audio:
+    #         media['audio'] = self.audio
+    #     if self.photos:
+    #         media['photos'] = self.photos
+    #     if self.videos:
+    #         media['videos'] = self.videos
+    #     if self.map_images:
+    #         media['map_images'] = self.map_images
+    #
+    #     return media
+    #
+    # def get_photos(self, obj):
+    #     from localground.apps.site.api.serializers import PhotoSerializer
+    #
+    #     data = PhotoSerializer(
+    #         obj.photos,
+    #         many=True, context={'request': {}}).data
+    #     return self.serialize_list(obj, models.Photo, data)
+    #
+    # def get_videos(self, obj):
+    #     from localground.apps.site.api.serializers import VideoSerializer
+    #
+    #     data = VideoSerializer(
+    #         obj.videos,
+    #         many=True, context={'request': {}}).data
+    #     return self.serialize_list(obj, models.Video, data)
+    #
+    # def get_audio(self, obj):
+    #     from localground.apps.site.api.serializers import AudioSerializer
+    #
+    #     data = AudioSerializer(
+    #         obj.audio,
+    #         many=True, context={'request': {}}).data
+    #     return self.serialize_list(obj, models.Audio, data)
+    #
+    # def get_map_images(self, obj):
+    #     from localground.apps.site.api.serializers import \
+    #         MapImageSerializerUpdate
+    #
+    #     data = MapImageSerializerUpdate(
+    #         obj.map_images,
+    #         many=True, context={'request': {}}).data
+    #     return self.serialize_list(obj, models.MapImage, data)
+    #
+    # def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
+    #                    model_name_plural=None):
+    #     if data is None or len(data) == 0:
+    #         return None
+    #     if name is None:
+    #         name = cls.model_name_plural.title()
+    #     if overlay_type is None:
+    #         overlay_type = cls.model_name
+    #     if model_name_plural is None:
+    #         model_name_plural = cls.model_name_plural
+    #     return {
+    #         'id': model_name_plural,
+    #         'name': name,
+    #         'overlay_type': overlay_type,
+    #         'data': data,
+    #         'attach_url': '%s/api/0/markers/%s/%s/' %
+    #         (settings.SERVER_URL,
+    #          obj.id,
+    #          model_name_plural)}
 
     def get_url(self, obj):
         return '%s/api/0/datasets/%s/data/%s' % \
@@ -74,111 +149,29 @@ class RecordSerializerMixin(GeometrySerializer):
     def get_overlay_type(self, obj):
         return 'dataset_{0}'.format(obj.dataset.id)
 
-    def get_media(self, obj):
-        from django.contrib.contenttypes.models import ContentType
-        from localground.apps.site import models
-
-        media = {}
-        self.audio = self.get_audio(obj) or []
-        self.photos = self.get_photos(obj) or []
-        self.videos = self.get_videos(obj) or []
-        self.map_images = self.get_map_images(obj) or []
-        if self.audio:
-            media['audio'] = self.audio
-        if self.photos:
-            media['photos'] = self.photos
-        if self.videos:
-            media['videos'] = self.videos
-        if self.map_images:
-            media['map_images'] = self.map_images
-
-        return media
-
-    def get_photos(self, obj):
-        from localground.apps.site.api.serializers import PhotoSerializer
-
-        data = PhotoSerializer(
-            obj.photos,
-            many=True, context={'request': {}}).data
-        return self.serialize_list(obj, models.Photo, data)
-
-    def get_videos(self, obj):
-        from localground.apps.site.api.serializers import VideoSerializer
-
-        data = VideoSerializer(
-            obj.videos,
-            many=True, context={'request': {}}).data
-        return self.serialize_list(obj, models.Video, data)
-
-    def get_audio(self, obj):
-        from localground.apps.site.api.serializers import AudioSerializer
-
-        data = AudioSerializer(
-            obj.audio,
-            many=True, context={'request': {}}).data
-        return self.serialize_list(obj, models.Audio, data)
-
-    def get_map_images(self, obj):
-        from localground.apps.site.api.serializers import \
-            MapImageSerializerUpdate
-
-        data = MapImageSerializerUpdate(
-            obj.map_images,
-            many=True, context={'request': {}}).data
-        return self.serialize_list(obj, models.MapImage, data)
-
-    def get_attached_photos_ids(self, obj):
+    def get_attached_photos_videos(self, obj):
         try:
-            return obj.photo_array
+            return obj.photo_video_list
         except Exception:
             return None
 
-    def get_attached_audio_ids(self, obj):
+    def get_attached_map_images(self, obj):
         try:
-            return obj.audio_array
+            return obj.map_image_list
         except Exception:
             return None
 
-    def get_attached_videos_ids(self, obj):
+    def get_attached_audio(self, obj):
         try:
-            return obj.video_array
+            return obj.audio_list
         except Exception:
             return None
-
-    def get_attached_map_images_ids(self, obj):
-        try:
-            return obj.map_image_array
-        except Exception:
-            return None
-
-    def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
-                       model_name_plural=None):
-        if data is None or len(data) == 0:
-            return None
-        if name is None:
-            name = cls.model_name_plural.title()
-        if overlay_type is None:
-            overlay_type = cls.model_name
-        if model_name_plural is None:
-            model_name_plural = cls.model_name_plural
-        return {
-            'id': model_name_plural,
-            'name': name,
-            'overlay_type': overlay_type,
-            'data': data,
-            'attach_url': '%s/api/0/markers/%s/%s/' %
-            (settings.SERVER_URL,
-             obj.id,
-             model_name_plural)}
 
     class Meta:
         model = models.Record
         fields = GeometrySerializer.field_list + \
-            ('dataset', 'extras', 'url', 'media') + \
-            ('attached_photos_ids',
-             'attached_audio_ids',
-             'attached_videos_ids',
-             'attached_map_images_ids')
+            ('dataset', 'extras', 'url', 'attached_photos_videos',
+             'attached_map_images', 'attached_audio')
         depth = 0
 
     def _get_field_by_col_name(self, col_name):
@@ -240,32 +233,32 @@ class RecordSerializerMixin(GeometrySerializer):
 
 class RecordSerializer(RecordSerializerMixin):
 
-    media = serializers.SerializerMethodField()
+    # media = serializers.SerializerMethodField()
 
     class Meta:
-        fields = RecordSerializerMixin.Meta.fields + ('media',)
+        fields = RecordSerializerMixin.Meta.fields  # + ('media',)
 
-    def get_media(self, obj):
-        from django.contrib.contenttypes.models import ContentType
-        from localground.apps.site import models
-
-        raise Exception(obj)
-
-        media = {}
-        self.audio = self.get_audio(obj) or []
-        self.photos = self.get_photos(obj) or []
-        self.videos = self.get_videos(obj) or []
-        self.map_images = self.get_map_images(obj) or []
-        if self.audio:
-            media['audio'] = self.audio
-        if self.photos:
-            media['photos'] = self.photos
-        if self.videos:
-            media['videos'] = self.videos
-        if self.map_images:
-            media['map_images'] = self.map_images
-
-        return media
+    # def get_media(self, obj):
+    #     from django.contrib.contenttypes.models import ContentType
+    #     from localground.apps.site import models
+    #
+    #     raise Exception(obj)
+    #
+    #     media = {}
+    #     self.audio = self.get_audio(obj) or []
+    #     self.photos = self.get_photos(obj) or []
+    #     self.videos = self.get_videos(obj) or []
+    #     self.map_images = self.get_map_images(obj) or []
+    #     if self.audio:
+    #         media['audio'] = self.audio
+    #     if self.photos:
+    #         media['photos'] = self.photos
+    #     if self.videos:
+    #         media['videos'] = self.videos
+    #     if self.map_images:
+    #         media['map_images'] = self.map_images
+    #
+    #     return media
 
 
 def create_dynamic_serializer(dataset, **kwargs):

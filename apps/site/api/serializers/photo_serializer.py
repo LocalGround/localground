@@ -17,6 +17,7 @@ class PhotoSerializer(NamedSerializerMixin, MediaGeometrySerializer):
     path_small = serializers.SerializerMethodField()
     path_marker_lg = serializers.SerializerMethodField()
     path_marker_sm = serializers.SerializerMethodField()
+    ordering = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Photo
@@ -24,7 +25,7 @@ class PhotoSerializer(NamedSerializerMixin, MediaGeometrySerializer):
             MediaGeometrySerializer.field_list + (
                 'media_file', 'path', 'path_large', 'path_medium',
                 'path_medium_sm', 'path_small', 'path_marker_lg',
-                'path_marker_sm'
+                'path_marker_sm', 'ordering'
             )
         depth = 0
 
@@ -85,6 +86,12 @@ class PhotoSerializer(NamedSerializerMixin, MediaGeometrySerializer):
     def get_path_marker_sm(self, obj):
         try:
             return obj.media_file_marker_sm.url
+        except Exception:
+            return None
+
+    def get_ordering(self, obj):
+        try:
+            return obj.ordering
         except Exception:
             return None
 

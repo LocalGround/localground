@@ -1,7 +1,8 @@
 define(["models/base",
         "underscore",
-	    "models/association"],
-    function (Base, _, Association) {
+	    "models/association",
+	    "collections/audio"],
+    function (Base, _, Association, AudioCollection) {
         "use strict";
 
         var Record = Base.extend({
@@ -35,17 +36,54 @@ define(["models/base",
                 return json;
             },
 
-            attach: function (model, order, callbackSuccess, callbackError) {
+            attach: function (model, callbackSuccess, callbackError) {
                 var association = new Association({
                     model: this,
                     attachmentType: model.getDataTypePlural()
                 });
-                association.save({ object_id: model.id, ordering: order }, {
+                association.save({ object_id: model.id}, {
                     success: callbackSuccess,
                     error: callbackError
                 });
             },
 
+            getPhotoVideoCollection: function (dataManager) {
+                const mediaList = this.get("attached_photos_videos") || [];
+                const models = mediaList.map(item => dataManager.getCollection(item.overlay_type + 's').get(item.id))
+                    .filter(item => (item != null));
+                return new Backbone.Collection(models);
+            },
+
+            getAudioCollection: function (dataManager) {
+                const audioList = this.get("attached_audio") || [];
+                const models = audioList.map(item => dataManager.getAudio(item.id))
+                    .filter(model => model != null);
+                return new AudioCollection(models, {
+                    projectID: this.get('project_id')
+                });
+            },
+            getPhotos: function (dataManager) {
+                return this.getPhotoVideoCollection(dataManager).filter(
+                    model => model.get('overlay_type') === 'photo'
+                );
+            },
+            getAudio: function (dataManager) {
+                return this.getAudioCollection(dataManager);
+            },
+            getVideos: function (dataManager) {
+                return this.getPhotoVideoCollection(dataManager).filter(
+                    model => model.get('overlay_type') === 'video'
+                );
+            },
+            getFeaturedImage: function (dataManager) {
+                const extras = this.get("extras") || {}
+                if (extras.featured_image) {
+                    const photo = dataManager.getPhoto(extras.featured_image)
+                    if (photo) {
+                        return photo.toJSON();
+                    }
+                }
+            },
             detach: function (attachmentType, attachmentID, callback) {
                 var association = new Association({
                     model: this,

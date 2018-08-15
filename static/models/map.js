@@ -1,4 +1,5 @@
-define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
+define(["models/baseItem", "models/title-card", "collections/layers"],
+    function (BaseItem, TitleCard, Layers) {
     "use strict";
     var Map = BaseItem.extend({
         getMapBySlug: function (opts) {
@@ -62,6 +63,14 @@ define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
                 }
             };
         },
+        getTitleCardModel: function () {
+            if (!this.titleCard) {
+                const data = this.get('metadata').titleCardInfo || {};
+                data.id = 1;
+                this.titleCard = new TitleCard(data);
+            }
+            return this.titleCard;
+        },
 
         getDefaultSkin: function () {
             return {
@@ -80,6 +89,9 @@ define(["models/baseItem", "collections/layers"], function (BaseItem, Layers) {
             if (json.center != null) {
                 json.center = JSON.stringify(json.center);
             }
+            // serialize from helper TitleCard model
+            // (so that it gets committed) to the server:
+            json.metadata.titleCardInfo = this.getTitleCardModel().toJSON();
             return json;
         }
     });

@@ -7,6 +7,7 @@ from localground.apps.lib.helpers import upload_helpers
 
 class AudioSerializer(NamedSerializerMixin, MediaGeometrySerializer):
     file_path = serializers.SerializerMethodField()
+    ordering = serializers.SerializerMethodField()
     file_path_orig = serializers.SerializerMethodField()
     ext_whitelist = [
         'm4a', 'mp3', 'mp4', 'mpeg', '3gp', 'aif', 'aiff', 'ogg', 'wav'
@@ -15,6 +16,12 @@ class AudioSerializer(NamedSerializerMixin, MediaGeometrySerializer):
     def get_file_path(self, obj):
         try:
             return obj.media_file.url
+        except Exception:
+            return None
+
+    def get_ordering(self, obj):
+        try:
+            return obj.ordering
         except Exception:
             return None
 
@@ -28,7 +35,7 @@ class AudioSerializer(NamedSerializerMixin, MediaGeometrySerializer):
         model = models.Audio
         fields = NamedSerializerMixin.field_list + \
             MediaGeometrySerializer.field_list + \
-            ('file_path', 'file_path_orig')
+            ('file_path', 'file_path_orig', 'ordering')
         depth = 0
 
     def create(self, validated_data):

@@ -28,7 +28,8 @@ define([
                 },
                 basemap: scope.app.basemapView.getMapTypeId(),
                 zoom: scope.app.basemapView.getZoom(),
-                project_id: scope.app.getProjectID()
+                project_id: scope.app.getProjectID(),
+                metadata: {}
             });
             scope.view = new CreateMapForm({
                 app: scope.app,

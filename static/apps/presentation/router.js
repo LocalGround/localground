@@ -7,10 +7,8 @@ define([
     "use strict";
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
-            'layers/:layerId/:dataType/:recordId': 'dataDetail',
-            //'/^[\w-]+/': 'fetchMap'//,
-            //new RegExp('^([\w-]+)'): 'fetchMap',
-            ':slug': 'fetchMap'
+            '': 'titleCard',
+            'layers/:layerId/:dataType/:recordId': 'dataDetail'
         },
         initialize: function (options) {
             this.controller = new Controller({
@@ -18,8 +16,6 @@ define([
             });
             Marionette.AppRouter.prototype.initialize.apply(this, [options]);
             this.applyRoutingHacks();
-            ///^[a-zA-Z0-9-_]+$/
-            //this.route(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/, 'fetchMap');
         },
         applyRoutingHacks: function () {
             $('a').click(function () {

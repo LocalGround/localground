@@ -57,6 +57,7 @@ define([
                 });
             }
         },
+
         addModels: function () {
             const videos = this.app.dataManager.getCollection("videos");
             // add to data manager:

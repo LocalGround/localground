@@ -28,6 +28,9 @@ define([
             spyOn(PresentationApp.prototype, 'addMessageListeners');
             spyOn(PresentationApp.prototype, 'showMapTitle');
             spyOn(PresentationApp.prototype, 'showBasemap').and.callThrough();
+            spyOn(PresentationApp.prototype, 'showLegend').and.callThrough();
+            spyOn(PresentationApp.prototype, 'hideLegend').and.callThrough();
+            spyOn(PresentationApp.prototype, 'showTitleCard').and.callThrough();
 
             spyOn(scope.app.vent, 'trigger').and.callThrough();
 
@@ -57,11 +60,11 @@ define([
                 expect(presentationApp.projectID).toEqual(3);
                 expect(presentationApp.popover).toEqual(jasmine.any(Popover));
                 expect(presentationApp.loadRegions).toHaveBeenCalledTimes(1);
-                expect(presentationApp.addMessageListeners).toHaveBeenCalledTimes(1);  
+                expect(presentationApp.addMessageListeners).toHaveBeenCalledTimes(1);
             });
 
             it("loadRegions() works", function() {
-            
+
                 // loadRegions() already gets called in initialize()
                 expect(presentationApp.showMapTitle).toHaveBeenCalledTimes(1);
                 expect(presentationApp.showBasemap).toHaveBeenCalledTimes(1);
@@ -72,9 +75,9 @@ define([
                 expect(presentationApp.mapRegion.show).toHaveBeenCalledTimes(0);
 
                 presentationApp.showBasemap();
-                
+
                 expect(presentationApp.basemapView).toEqual(jasmine.any(Basemap));
-                
+
                 expect(presentationApp.basemapView.app).toEqual(presentationApp);
                 expect(presentationApp.basemapView.activeMapTypeID).toEqual(5);
                 expect(presentationApp.basemapView.zoom).toEqual(9);
@@ -86,6 +89,42 @@ define([
                 expect(presentationApp.basemapView.showSearchControl).toEqual(false);
 
                 expect(presentationApp.mapRegion.show).toHaveBeenCalledTimes(1);
+            });
+
+            it("honors presentation settings (map metadata)", function() {
+                expect(presentationApp.basemapView.allowPanZoom).toEqual(true);
+                expect(presentationApp.basemapView.allowStreetView).toEqual(true);
+            });
+
+            it("displays legend according to user settings", function() {
+                expect(presentationApp.hideLegend).toHaveBeenCalledTimes(0);
+                expect(presentationApp.showLegend).toHaveBeenCalledTimes(0);
+
+                presentationApp.initLegend();
+
+                expect(presentationApp.hideLegend).toHaveBeenCalledTimes(0);
+                expect(presentationApp.showLegend).toHaveBeenCalledTimes(1);
+
+                presentationApp.model.get('metadata').displayLegend = false;
+
+                presentationApp.initLegend();
+
+                expect(presentationApp.hideLegend).toHaveBeenCalledTimes(1);
+                expect(presentationApp.showLegend).toHaveBeenCalledTimes(1);
+
+            });
+
+            it("shows TitleCard with correct data", function() {
+                expect(presentationApp.showTitleCard).toHaveBeenCalledTimes(0);
+
+                presentationApp.vent.trigger('title-card');
+
+                expect(presentationApp.showTitleCard).toHaveBeenCalledTimes(1);
+
+                expect(presentationApp.sideRegion.currentView.model.get('header')).toEqual('Test Map Title');
+
+                expect(presentationApp.sideRegion.currentView.model.get('description')).toEqual('Test description of the map.');
+
             });
 
         });

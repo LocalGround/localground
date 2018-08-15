@@ -1772,196 +1772,188 @@ var __projectJSON = {
         "name": "Photos"
       },
       "audio": {
-        "dataType": "audio",
-        "overlay_type": "audio",
-        "data": [
-
-        ],
-        "name": "Audio"
-      },
-      "videos": {
-            "dataType": "videos",
-            "overlay_type": "video",
+            "dataType": "audio",
+            "overlay_type": "audio",
             "data": [
                 {
-                    "id": 53,
-                    "overlay_type": "video",
-                    "owner": "vanwars",
-                    "name": "Untitled",
-                    "caption": null,
+                    "id": 4,
+                    "name": "fffff",
+                    "caption": "",
                     "tags": [],
-                    "url": "/api/0/videos/53/",
+                    "url": "/api/0/audio/4/",
+                    "overlay_type": "audio",
+                    "owner": "vanwars",
                     "geometry": null,
                     "project_id": 2,
-                    "video_link": "https://www.youtube.com/watch?v=FTvZ8a2gHFc&list=PLtRfQThZ9ky9ErkuT2S0XCu-bfaP7jdPZ&index=2",
-                    "video_id": "FTvZ8a2gHFc",
-                    "video_provider": "youtube",
-                    "attribution": null
+                    "extras": null,
+                    "attribution": "vanwars",
+                    "media_file": "tmpjyzaep_uUc4AKm.mp3",
+                    "file_path": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpjyzaep_pfAu5SN.mp3",
+                    "file_path_orig": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpjyzaep_uUc4AKm.mp3"
                 },
                 {
-                    "id": 52,
-                    "overlay_type": "video",
-                    "owner": "vanwars",
-                    "name": "Untitled",
+                    "id": 3,
+                    "name": "tmpvpqx0b.mp3",
                     "caption": null,
                     "tags": [],
-                    "url": "/api/0/videos/52/",
+                    "url": "/api/0/audio/3/",
+                    "overlay_type": "audio",
+                    "owner": "vanwars",
                     "geometry": null,
                     "project_id": 2,
-                    "video_link": "https://vimeo.com/channels/staffpicks/256931635",
-                    "video_id": "256931635",
-                    "video_provider": "vimeo",
-                    "attribution": null
+                    "extras": null,
+                    "attribution": "vanwars",
+                    "media_file": "tmpvpqx0b_fRQGMtO.mp3",
+                    "file_path": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpvpqx0b_tkPm9ng.mp3",
+                    "file_path_orig": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpvpqx0b_fRQGMtO.mp3"
                 },
                 {
-                    "id": 51,
-                    "overlay_type": "video",
-                    "owner": "vanwars",
-                    "name": "Untitled",
+                    "id": 2,
+                    "name": "tmpjyzaep.mp3",
                     "caption": null,
                     "tags": [],
-                    "url": "/api/0/videos/51/",
+                    "url": "/api/0/audio/2/",
+                    "overlay_type": "audio",
+                    "owner": "vanwars",
                     "geometry": null,
                     "project_id": 2,
-                    "video_link": "https://vimeo.com/channels/staffpicks/256931635",
-                    "video_id": "256931635",
-                    "video_provider": "vimeo",
-                    "attribution": null
+                    "extras": null,
+                    "attribution": "vanwars",
+                    "media_file": "tmpjyzaep_L7qUNDB.mp3",
+                    "file_path": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpjyzaep_GUVsl5V.mp3",
+                    "file_path_orig": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpjyzaep_L7qUNDB.mp3"
                 },
                 {
-                    "id": 50,
-                    "overlay_type": "video",
-                    "owner": "vanwars",
-                    "name": "Untitled",
+                    "id": 1,
+                    "name": "tmprtpaim.mp3",
                     "caption": null,
                     "tags": [],
-                    "url": "/api/0/videos/50/",
-                    "geometry": null,
-                    "project_id": 2,
-                    "video_link": "https://www.youtube.com/watch?list=PLtRfQThZ9ky9ErkuT2S0XCu-bfaP7jdPZ&v=UfcAVejslrU",
-                    "video_id": "UfcAVejslrU",
-                    "video_provider": "youtube",
-                    "attribution": null
-                },
-                {
-                    "id": 49,
-                    "overlay_type": "video",
+                    "url": "/api/0/audio/1/",
+                    "overlay_type": "audio",
                     "owner": "vanwars",
-                    "name": "Untitled",
-                    "caption": null,
-                    "tags": [],
-                    "url": "/api/0/videos/49/",
                     "geometry": null,
                     "project_id": 2,
-                    "video_link": "https://www.youtube.com/watch?list=PLtRfQThZ9ky9ErkuT2S0XCu-bfaP7jdPZ&v=UfcAVejslrU",
-                    "video_id": "UfcAVejslrU",
-                    "video_provider": "youtube",
-                    "attribution": null
-                },
-                {
-                    "id": 48,
-                    "overlay_type": "video",
-                    "owner": "vanwars",
-                    "name": "Untitled",
-                    "caption": null,
-                    "tags": [],
-                    "url": "/api/0/videos/48/",
-                    "geometry": null,
-                    "project_id": 2,
-                    "video_link": "https://www.youtube.com/watch?v=1t-gK-",
-                    "video_id": "1t-gK-",
-                    "video_provider": "youtube",
-                    "attribution": null
-                },
-                {
-                    "id": 47,
-                    "overlay_type": "video",
-                    "owner": "vanwars",
-                    "name": "Untitled",
-                    "caption": null,
-                    "tags": [],
-                    "url": "/api/0/videos/47/",
-                    "geometry": null,
-                    "project_id": 2,
-                    "video_link": "https://www.youtube.com/watch?v=1t-gK-9EIq4&list=RDMM1t-gK-9EIq4",
-                    "video_id": "1t-gK-9EIq4",
-                    "video_provider": "youtube",
-                    "attribution": null
+                    "extras": null,
+                    "attribution": "vanwars",
+                    "media_file": "tmprtpaim_DdT2vNS.mp3",
+                    "file_path": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmprtpaim_yx56f48.mp3",
+                    "file_path_orig": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmprtpaim_DdT2vNS.mp3"
                 }
             ],
-            "name": "Videos"
+            "name": "Audio"
         },
-        "audio": {
-              "dataType": "audio",
-              "overlay_type": "audio",
-              "data": [
-                  {
-                      "id": 4,
-                      "name": "fffff",
-                      "caption": "",
-                      "tags": [],
-                      "url": "/api/0/audio/4/",
-                      "overlay_type": "audio",
-                      "owner": "vanwars",
-                      "geometry": null,
-                      "project_id": 2,
-                      "extras": null,
-                      "attribution": "vanwars",
-                      "media_file": "tmpjyzaep_uUc4AKm.mp3",
-                      "file_path": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpjyzaep_pfAu5SN.mp3",
-                      "file_path_orig": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpjyzaep_uUc4AKm.mp3"
-                  },
-                  {
-                      "id": 3,
-                      "name": "tmpvpqx0b.mp3",
-                      "caption": null,
-                      "tags": [],
-                      "url": "/api/0/audio/3/",
-                      "overlay_type": "audio",
-                      "owner": "vanwars",
-                      "geometry": null,
-                      "project_id": 2,
-                      "extras": null,
-                      "attribution": "vanwars",
-                      "media_file": "tmpvpqx0b_fRQGMtO.mp3",
-                      "file_path": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpvpqx0b_tkPm9ng.mp3",
-                      "file_path_orig": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpvpqx0b_fRQGMtO.mp3"
-                  },
-                  {
-                      "id": 2,
-                      "name": "tmpjyzaep.mp3",
-                      "caption": null,
-                      "tags": [],
-                      "url": "/api/0/audio/2/",
-                      "overlay_type": "audio",
-                      "owner": "vanwars",
-                      "geometry": null,
-                      "project_id": 2,
-                      "extras": null,
-                      "attribution": "vanwars",
-                      "media_file": "tmpjyzaep_L7qUNDB.mp3",
-                      "file_path": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpjyzaep_GUVsl5V.mp3",
-                      "file_path_orig": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmpjyzaep_L7qUNDB.mp3"
-                  },
-                  {
-                      "id": 1,
-                      "name": "tmprtpaim.mp3",
-                      "caption": null,
-                      "tags": [],
-                      "url": "/api/0/audio/1/",
-                      "overlay_type": "audio",
-                      "owner": "vanwars",
-                      "geometry": null,
-                      "project_id": 2,
-                      "extras": null,
-                      "attribution": "vanwars",
-                      "media_file": "tmprtpaim_DdT2vNS.mp3",
-                      "file_path": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmprtpaim_yx56f48.mp3",
-                      "file_path_orig": "https://localground-test.s3.amazonaws.com/media/vanwars/audio/tmprtpaim_DdT2vNS.mp3"
-                  }
-              ],
-              "name": "Audio"
-          },
+      "videos": {
+        "dataType": "videos",
+        "overlay_type": "video",
+        "data": [
+            {
+                "id": 53,
+                "overlay_type": "video",
+                "owner": "vanwars",
+                "name": "Untitled",
+                "caption": null,
+                "tags": [],
+                "url": "/api/0/videos/53/",
+                "geometry": null,
+                "project_id": 2,
+                "video_link": "https://www.youtube.com/watch?v=FTvZ8a2gHFc&list=PLtRfQThZ9ky9ErkuT2S0XCu-bfaP7jdPZ&index=2",
+                "video_id": "FTvZ8a2gHFc",
+                "video_provider": "youtube",
+                "attribution": null
+            },
+            {
+                "id": 52,
+                "overlay_type": "video",
+                "owner": "vanwars",
+                "name": "Untitled",
+                "caption": null,
+                "tags": [],
+                "url": "/api/0/videos/52/",
+                "geometry": null,
+                "project_id": 2,
+                "video_link": "https://vimeo.com/channels/staffpicks/256931635",
+                "video_id": "256931635",
+                "video_provider": "vimeo",
+                "attribution": null
+            },
+            {
+                "id": 51,
+                "overlay_type": "video",
+                "owner": "vanwars",
+                "name": "Untitled",
+                "caption": null,
+                "tags": [],
+                "url": "/api/0/videos/51/",
+                "geometry": null,
+                "project_id": 2,
+                "video_link": "https://vimeo.com/channels/staffpicks/256931635",
+                "video_id": "256931635",
+                "video_provider": "vimeo",
+                "attribution": null
+            },
+            {
+                "id": 50,
+                "overlay_type": "video",
+                "owner": "vanwars",
+                "name": "Untitled",
+                "caption": null,
+                "tags": [],
+                "url": "/api/0/videos/50/",
+                "geometry": null,
+                "project_id": 2,
+                "video_link": "https://www.youtube.com/watch?list=PLtRfQThZ9ky9ErkuT2S0XCu-bfaP7jdPZ&v=UfcAVejslrU",
+                "video_id": "UfcAVejslrU",
+                "video_provider": "youtube",
+                "attribution": null
+            },
+            {
+                "id": 49,
+                "overlay_type": "video",
+                "owner": "vanwars",
+                "name": "Untitled",
+                "caption": null,
+                "tags": [],
+                "url": "/api/0/videos/49/",
+                "geometry": null,
+                "project_id": 2,
+                "video_link": "https://www.youtube.com/watch?list=PLtRfQThZ9ky9ErkuT2S0XCu-bfaP7jdPZ&v=UfcAVejslrU",
+                "video_id": "UfcAVejslrU",
+                "video_provider": "youtube",
+                "attribution": null
+            },
+            {
+                "id": 48,
+                "overlay_type": "video",
+                "owner": "vanwars",
+                "name": "Untitled",
+                "caption": null,
+                "tags": [],
+                "url": "/api/0/videos/48/",
+                "geometry": null,
+                "project_id": 2,
+                "video_link": "https://www.youtube.com/watch?v=1t-gK-",
+                "video_id": "1t-gK-",
+                "video_provider": "youtube",
+                "attribution": null
+            },
+            {
+                "id": 47,
+                "overlay_type": "video",
+                "owner": "vanwars",
+                "name": "Untitled",
+                "caption": null,
+                "tags": [],
+                "url": "/api/0/videos/47/",
+                "geometry": null,
+                "project_id": 2,
+                "video_link": "https://www.youtube.com/watch?v=1t-gK-9EIq4&list=RDMM1t-gK-9EIq4",
+                "video_id": "1t-gK-9EIq4",
+                "video_provider": "youtube",
+                "attribution": null
+            }
+        ],
+        "name": "Videos"
+      },
       "map_images": {
         "dataType": "map-images",
         "overlay_type": "map_image",
@@ -2041,9 +2033,30 @@ var __projectJSON = {
             "allowPanZoom": true,
             "displayTitleCard": true,
             "titleCardInfo": {
-                "header": null,
-                "description": null,
-                "photo_ids": []
+                "header": 'Test Map Title',
+                "description": 'Test description of the map.',
+                "media": [
+                      {
+                          "overlay_type": "photo",
+                          "id": 20
+                      },
+                      {
+                          "overlay_type": "photo",
+                          "id": 19
+                      },
+                      {
+                          "overlay_type": "video",
+                          "id": 50
+                      },
+                      {
+                          "overlay_type": "audio",
+                          "id": 4
+                      },
+                      {
+                          "overlay_type": "audio",
+                          "id": 3
+                      }
+                  ]
             },
             "streetview": true,
             "accessLevel": 2
@@ -2084,8 +2097,7 @@ var __projectJSON = {
             }
           },
           "project_id": 3
-        },
-        {
+      }, {
           "url": "\/api\/0\/maps\/2\/",
           "id": 2,
           "name": "Map 2",
@@ -2114,7 +2126,7 @@ var __projectJSON = {
             "titleCardInfo": {
                 "header": null,
                 "description": null,
-                "photo_ids": []
+                "media": []
             },
             "streetview": true,
             "accessLevel": 2

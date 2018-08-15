@@ -27,6 +27,7 @@ define(["marionette",
             tileManager: null,
             userProfile: null,
             panorama: null,
+            allowPanZoom: true,
             //todo: populate this from user prefs:
             defaultLocation: {
                 zoom: 15,
@@ -109,7 +110,10 @@ define(["marionette",
                     rotateControlOptions: this.rotateControlOptions,
                     streetViewControlOptions: this.streetViewControlOptions,
                     zoom: this.zoom || this.defaultLocation.zoom,
-                    center: this.center || this.defaultLocation.center
+                    center: this.center || this.defaultLocation.center,
+                    gestureHandling: this.allowPanZoom ? 'auto' : 'none',
+                    zoomControl: this.allowPanZoom,
+                    streetViewControl: this.allowStreetView
                 };
 
                 if (!this.$el.find("#" + this.mapID).get(0)) {

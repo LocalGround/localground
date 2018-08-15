@@ -9,12 +9,13 @@ define([
     //"apps/presentation/views/marker-overlays",
     "apps/presentation/views/layer-list-manager",
     "apps/presentation/views/map-header",
+    "apps/presentation/views/title-card",
     "views/data-detail",
     "lib/popovers/popover",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, Basemap, DataManager, Map, Layers,
-             LegendView, MapHeaderView, DataDetail, Popover, appUtilities) {
+             LegendView, MapHeaderView, TitleCardView, DataDetail, Popover, appUtilities) {
     "use strict";
     var PresentationApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -47,6 +48,7 @@ define([
             this.loadRegions();
 
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
+            this.listenTo(this.vent, 'title-card', this.showTitleCard);
             this.listenToOnce(this.vent, 'map-loaded', this.initLegend);
             this.addMessageListeners();
         },
@@ -89,7 +91,9 @@ define([
                 },
                 rotateControlOptions: {
                     position: google.maps.ControlPosition.LEFT_BOTTOM
-                }
+                },
+                allowPanZoom: this.model.get('metadata').allowPanZoom,
+                allowStreetView: this.model.get('metadata').streetview
             });
             this.mapRegion.show(this.basemapView);
         },
@@ -97,7 +101,7 @@ define([
         initLegend: function () {
             //SV: this line breaks the centering:
             //$("#map").css({"position": "fixed", 'z-index': '0'});
-            if (this.model.get("panel_styles").display_legend === false) {
+            if (this.model.get('metadata').displayLegend === false) {
                 this.hideLegend();
             } else {
                 this.showLegend();
@@ -140,6 +144,16 @@ define([
             this.container.$el.removeClass("left none");
             this.container.$el.addClass(className);
         },
+
+        showTitleCard: function() {
+            const titleCardView = new TitleCardView({
+                model: this.model.getTitleCardModel(),
+                app: this,
+            });
+            this.unhideDetail();
+            this.sideRegion.show(titleCardView);
+        },
+
         showMediaDetail: function (opts) {
             this.routeInfo = opts;
             const dm = this.dataManager;

@@ -87,7 +87,10 @@ define([
                 $('#marker-detail-panel').css('background-color', '#' + paragraph.backgroundColor);
                 this.$el.find('.active-slide').css('background', 'paragraph.backgroundColor');
             }
-
+            const dm = this.app.dataManager;
+            const photo_count = this.model.getPhotos(dm).length;
+            const audio_count = this.model.getAudio(dm).length;
+            const video_count = this.model.getVideos(dm).length;
             return {
                 mode: this.app.mode,
                 dataType: this.dataType,
@@ -100,16 +103,16 @@ define([
                 paragraph: paragraph,
                 title: title,
                 expanded: this.expanded,
-                hasPhotoOrAudio: this.getPhotos().length > 0 || this.getAudio().length > 0,
-                featuredImage: this.getFeaturedImage(),
+                hasPhotoOrAudio: photo_count > 0 || audio_count > 0,
+                featuredImage: this.model.getFeaturedImage(dm),
                 thumbnail: this.getThumbnail(),
-                photo_count: this.getPhotos().length,
-                audio_count: this.getAudio().length,
-                video_count: this.getVideos().length,
+                photo_count: photo_count,
+                audio_count: audio_count,
+                video_count: video_count,
                 mobileMode: this.mobileMode,
-                hasAudio: this.getAudio().length,
-                hasPhotos: this.getPhotos().length,
-                video_photo_count: this.getVideos().length + this.getPhotos().length
+                hasPhotos: photo_count,
+                hasAudio: audio_count,
+                video_photo_count: photo_count + video_count
             };
         },
 
@@ -233,8 +236,9 @@ define([
         },
 
         getThumbnail: function () {
-            if (this.getFeaturedImage()) {
-                return this.getFeaturedImage();
+            const dm = this.app.dataManager;
+            if (this.model.getFeaturedImage(dm)) {
+                return this.model.getFeaturedImage(dm);
             } else if (!_.isEmpty(this.model.get("children"))) {
                 if (this.model.get("children").photos) {
                     var photoData = this.model.get("children").photos.data;
@@ -247,86 +251,29 @@ define([
             }
         },
 
-        getFeaturedImage: function () {
-            if (!this.model.get("children") || !this.model.get("extras") || !this.model.get("children").photos) {
-                return null;
-            }
-            var featuredID = this.model.get("extras").featured_image,
-                photoData = this.model.get("children").photos.data,
-                i;
-            for (i = 0; i < photoData.length; ++i) {
-                if (photoData[i].id === featuredID) {
-                    return photoData[i];
-                }
-            }
-            return null;
-        },
-        getPhotos: function () {
-            var media = this.model.get("media") || {},
-                featuredImage = this.getFeaturedImage(),
-                photos = media.photos ? new Photos(media.photos.data,
-                    { projectID: this.app.getProjectID() }) : new Photos([],
-                    { projectID: this.app.getProjectID() });
-            if (featuredImage) {
-                photos.remove(photos.get(featuredImage.id));
-            }
-            return photos;
-        },
-        getAudio: function () {
-            var media = this.model.get("media") || {};
-            return media.audio ? new Audio(media.audio.data,
-                { projectID: this.app.getProjectID() }) : new Audio([],
-                { projectID: this.app.getProjectID() });
-        },
-        getVideos: function () {
-            var media = this.model.get("media") || {};
-            return media.videos ? new Videos(media.videos.data,
-                { projectID: this.app.getProjectID() }) : new Videos([],
-                { projectID: this.app.getProjectID() });
-        },
-
         viewRender: function () {
-            //return;
-            //any extra view logic. Carousel functionality goes here
-            var c,
-                photos = this.getPhotos(),
-                videos = this.getVideos(),
-                audio = this.getAudio(),
-                that = this,
-                panelStyles,
-                genericList,
-                i;
-            if (this.panelStyles) {
-                panelStyles = this.panelStyles;
-            }
-            if (photos.length > 0 || videos.length > 0) {
-                genericList = [];
-                genericList = genericList.concat(photos.toJSON());
-                genericList = genericList.concat(videos.toJSON());
-                for (i = 0; i < genericList.length; i++) {
-                    genericList[i].id = (i + 1);
-                }
-                c = new Carousel({
+            const pvc = this.model.getPhotoVideoCollection(this.app.dataManager);
+            const ac = this.model.getAudio(this.app.dataManager);
+
+            if (pvc.length > 0) {
+                const carousel = new Carousel({
                     model: this.model,
                     app: this.app,
-                    mode: "videos",
-                    collection: new Backbone.Collection(genericList),
-                    panelStyles: panelStyles
+                    collection: pvc,
+                    panelStyles: this.panelStyles
                 });
-                this.$el.find(".carousel-videos-photos").append(c.$el);
+                this.$el.find(".carousel-videos-photos").append(carousel.$el);
             }
-            if (audio.length > 0) {
-                audio.forEach(function (audioTrack) {
-                    c = new AudioPlayer({
-                        model: audioTrack,
-                        app: that.app,
-                        panelStyles: panelStyles,
-                        audioMode: "detail",
-                        className: "audio-detail"
-                    });
-                    that.$el.find(".carousel-audio").append(c.$el);
+            ac.forEach(audioTrack => {
+                const player = new AudioPlayer({
+                    model: audioTrack,
+                    app: this.app,
+                    panelStyles: this.panelStyles,
+                    audioMode: "detail",
+                    className: "audio-detail"
                 });
-            }
+                this.$el.find(".carousel-audio").append(player.$el);
+            });
         },
         editRender: function () {
             if (this.form) {

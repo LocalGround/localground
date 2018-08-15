@@ -2,27 +2,14 @@ define(["jquery",
         "marionette",
         "underscore",
         "handlebars",
-        "views/media_browser",
-        "views/create-media",
-        "models/record",
-        "models/audio",
-        "models/video",
-        "collections/photos",
-        "collections/audio",
-        "collections/videos",
-        "views/field-child-view",
-        "models/field",
         "handsontable",
         "text!../../templates/spreadsheet/spreadsheet.html",
-        "text!../../templates/spreadsheet/create-field.html",
-        "lib/audio/audio-player",
-        "lib/carousel/carousel",
+        "lib/media/audio-viewer",
+        "lib/media/photo-video-viewer",
         "apps/main/views/spreadsheet/context-menu"
     ],
-    function ($, Marionette, _, Handlebars, MediaBrowser, MediaUploader,
-        Record, AudioModel, Video, Photos, Audio, Videos, CreateFieldView, Field, Handsontable,
-        SpreadsheetTemplate, CreateFieldTemplate, AudioPlayer, Carousel,
-        SpreadsheetMenu) {
+    function ($, Marionette, _, Handlebars, Handsontable, SpreadsheetTemplate,
+            AudioViewer, PhotoVideoViewer, SpreadsheetMenu) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             /**
@@ -35,16 +22,10 @@ define(["jquery",
             invalidCells: {},
             table: null,
             className: 'spreadsheet-panel',
-            currentModel: null,
             show_hide_deleteColumn: true,
             events: {
-                'click #addColumn': 'showCreateFieldForm',
-                'click .addMedia': 'showMediaBrowser',
                 'click .column-opts' : 'showContextMenu',
-                'click .carousel-media': 'carouselMedia',
-
             },
-            foo: "bar",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.popover = this.app.popover;
@@ -59,7 +40,6 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
-                this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
                 this.listenTo(this.app.vent, "field-updated", this.refreshHeaders);
             },
             registerRatingEditor: function () {
@@ -301,147 +281,44 @@ define(["jquery",
             htmlLinkRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
                 var htmlLink = "<a href='" + value + "' >" + value + "</a>"
                 td.innerHTML = htmlLink;
-
-
                 return td;
             },
 
-            thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-                var that = this,
-                    img = document.createElement('IMG'),
-                    model = this.collection.at(rowIndex),
-                    carousel = new Carousel({
-                        model: model,
-                        mode: "photos",
-                        app: that.app,
-                        collection: new Photos(model, { projectID: this.app.getProjectID() })
-                    });
-                img.src = value;
-                img.onclick = function (e) {
-                    that.showModal(carousel);
-                };
-                Handsontable.Dom.empty(td);
-                td.appendChild(img);
-
-                return td;
-            },
-            audioRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-                var audio_model = this.getModelFromCell(instance, rowIndex);
-
-                var player = new AudioPlayer({
-                    model: audio_model,
-                    audioMode: "basic",
-                    app: this.app
-                });
-                $(td).html(player.$el.addClass("spreadsheet"));
-                return td;
-            },
-
-
-            videoRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-                //return td;
-                // I found the problem is that id is set to "videos" string rather than a number
-                // and that id being set to "videos" can only happen at this javascript file
-                var that = this,
-                    img = document.createElement('IMG'),
-                    model = this.getModelFromCell(instance, rowIndex),
-                    i = document.createElement('i'),
-                    carousel = new Carousel({
-                        model: model,
-                        mode: "videos",
-                        app: that.app,
-                        collection: new Videos(model, { projectID: this.app.getProjectID() })
-                    });
-                //if (!model) return;
-                if (model.get('video_provider') === "vimeo") {
-                    i.className = "fa fa-3x fa-vimeo";
-                } else {
-                    i.className = "fa fa-3x fa-youtube";
-                }
-                i.onclick = function () {
-                    that.showModal(carousel);
-                    $("#carouselModal").find("iframe").get(0).className = "modal-content spreadsheet";
-                    $("#carouselModal").find("iframe").css({
-                        width: "70%",
-                        //height: "480px"
-                    });
-                };
-                Handsontable.Dom.empty(td);
-                td.appendChild(i);
-                return td;
-            },
-            photoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+            photoVideoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 td.innerHTML = '';
                 const model = this.getModelFromCell(instance, row);
                 if (model) {
-                    const ids = model.get("attached_photos_ids") || [];
-                    const imageList = ids.map(id => {
-                        const photo = this.app.dataManager.getPhoto(id);
-                        if (photo) {
-                            const imageURL = photo.get('path_marker_lg');
-                            return `<img src="${imageURL}" />`;
-                        }
-                        return '';
+                    this.photoVideoViewer = new PhotoVideoViewer({
+                        app: this.app,
+                        collection: model.getPhotoVideoCollection(this.app.dataManager),
+                        templateType: 'spreadsheet',
+                        detachMedia: this.detachMediaModel.bind(this),
+                        editFunction: this.editMediaModel.bind(this)
                     });
-                    td.innerHTML = imageList.join('');
+                    $(td).append(this.photoVideoViewer.$el);
                 }
                 return td;
+            },
+            editMediaModel: function (model) {
+                alert('edit: ' + model.get('name'));
+            },
+            detachMediaModel: function (model) {
+                alert('detach: ' + model.get('name'));
             },
 
             audioListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 td.innerHTML = '';
                 const model = this.getModelFromCell(instance, row);
-                const ids = model.get("attached_audio_ids") || [];
-                ids.forEach(id => {
-                    const audioModel = this.app.dataManager.getAudio(id);
-                    if (audioModel) {
-                        const player = new AudioPlayer({
-                            model: audioModel,
-                            audioMode: "basic",
-                            app: this.app
-                        });
-                        $(td).append(player.$el.css({
-                            display: 'inline-block'
-                        }));
-                    }
-                });
-                return td;
-            },
-
-            videoListRendererIframe: function (instance, td, row, col, prop, value, cellProperties) {
-                td.innerHTML = '';
-                const model = this.getModelFromCell(instance, row);
-                const ids = model.get("attached_videos_ids") || [];
-                const iframeList = ids.map(id => {
-                    const video = this.app.dataManager.getVideo(id);
-                    if (video) {
-                        const videoURL = video.getEmbedLink();
-                        const size = '50px';
-                        return `<iframe src="${videoURL}"
-                                style="width:${size};height:${size}" frameborder="0"
-                                allowfullscreen></iframe>`;
-                    }
-                    return '';
-                });
-                td.innerHTML = iframeList.join(' ');
-                return td;
-            },
-            videoListRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                td.innerHTML = '';
-                const model = this.getModelFromCell(instance, row);
-                const ids = model.get("attached_videos_ids") || [];
-                const iconList = ids.map(id => {
-                    const video = this.app.dataManager.getVideo(id);
-                    if (video) {
-                        if (video.get('video_provider') === 'vimeo') {
-                            return '<i class="fab fa-vimeo"></i>';
-                        } else {
-                            return '<i class="fab fa-youtube"></i>';
-                        }
-                    }
-                    return '';
-                });
-                td.innerHTML = iconList.join(' ');
+                if(model){
+                    this.audioView = new AudioViewer({
+                        app: this.app,
+                        collection: model.getAudioCollection(this.app.dataManager),
+                        templateType: 'spreadsheet',
+                        detachMedia: this.detachMediaModel.bind(this),
+                        editFunction: this.editMediaModel.bind(this)
+                    });
+                    $(td).append(this.audioView.$el);
+                }
                 return td;
             },
 
@@ -462,75 +339,6 @@ define(["jquery",
                 }
                 return td;
 
-            },
-            showModal: function(carousel) {
-                $("#carouselModal").empty();
-                $("#carouselModal").append(carousel.$el);
-                var $span = $("<span class='close big'>&times;</span>");
-                $span.click(function () {
-                    $("#carouselModal").hide();
-                })
-                $("#carouselModal").append($span);
-                var modal = document.getElementById('carouselModal');
-                modal.style.display = "block";
-            },
-
-            makeCarousel: function (e) {
-                /*
-                  Make sure all carousels are initalized
-                  Need that to be called for each and every row upon rendering spreadsheet
-                */
-                var that = this,
-                    rowIndex = $(e.target).attr("row-index"),
-                    collection;
-                this.currentModel = this.collection.at(parseInt(rowIndex));
-                this.currentModel.fetch({
-                    success: function () {
-                        collection = new Backbone.Collection();
-                        var photoCollection = that.currentModel.get("media").photos,
-                            audioCollection = that.currentModel.get("media").audio,
-                            videoCollection = that.currentModel.get("media").videos;
-                        if (photoCollection){
-                            collection.add(that.currentModel.get("media").photos.data);
-                        }
-                        if (videoCollection){
-                            collection.add(that.currentModel.get("media").videos.data);
-                        }
-
-                        /*
-                        So the carousel development has to be expanded
-                        so that it matches with data detail's
-                        carousel expansion
-                        */
-
-                        var carousel = new Carousel({
-                            model: that.currentModel,
-                            app: that.app,
-                            collection: collection
-                        });
-
-                        that.showModal(carousel);
-
-                        // Let's test this little experimentation out
-                        var a;
-                        if (audioCollection && audioCollection.data.length > 0) {
-                            audioCollection.data.forEach(function (audioTrack, i) {
-                                a = new AudioPlayer({
-                                    model: new AudioModel(audioTrack),
-                                    app: that.app,
-                                    audioMode: "detail",
-                                    className: "audio-detail"
-                                });
-                                carousel.$el.append(a.$el);
-                            });
-                        }
-                        //carousel.append(c.$el);
-                    }
-                });
-            },
-
-            carouselMedia: function(e){
-                this.makeCarousel(e);
             },
 
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
@@ -585,50 +393,6 @@ define(["jquery",
                 td.innerHTML = textVal;
                 return td;
             },
-
-            showMediaBrowser: function (e) {
-                var row_idx = $(e.target).attr("row-index");
-                if (row_idx != undefined){
-                    this.currentModel = this.collection.at(parseInt(row_idx));
-                }
-                var mediaBrowser = new MediaBrowser({
-                    app: this.app,
-                    parentModel: this.currentModel
-                });
-                this.app.vent.trigger("show-modal", {
-                    title: 'Media Browser',
-                    width: 1100,
-                    //height: 400,
-                    view: mediaBrowser,
-                    saveButtonText: "Add",
-                    showSaveButton: true,
-                    saveFunction: mediaBrowser.addModels.bind(mediaBrowser)
-                });
-            },
-
-            attachModels: function (models) {
-                var that = this,
-                    i = 0,
-                    ordering;
-                for (i = 0; i < models.length; i++) {
-                    var photoIds= this.currentModel.get("attached_photos_ids"),
-                        audioIds= this.currentModel.get("attached_audio_ids"),
-                        videoIds= this.currentModel.get("attached_videos_ids");
-                    var photoCount = photoIds != null ? photoIds.length : 0,
-                        audioCount = audioIds != null ? audioIds.length : 0,
-                        videoCount = videoIds != null ? videoIds.length : 0,
-                        ordering = photoCount + audioCount + videoCount;
-                    this.currentModel.attach(models[i], (ordering + i + 1), function () {
-                        that.currentModel.fetch({
-                            success: function(){
-                                that.renderSpreadsheet();
-                            }
-                        });
-                    }, function () {});
-                }
-
-                this.app.vent.trigger('hide-modal');
-            },
             getMenuTemplate: function (index) {
                 return `<a class="fa fa-ellipsis-v column-opts" fieldIndex="${index}" aria-hidden="true"></a>`;
             },
@@ -652,9 +416,8 @@ define(["jquery",
                     //     this.fields.at(i).get("col_alias") + menuButton
                     // );
                 }
-                cols.push("Photos");
+                cols.push("Photos & Videos");
                 cols.push("Audio Files");
-                cols.push("Video");
                 cols.push("Delete");
                 return cols;
             },
@@ -669,9 +432,8 @@ define(["jquery",
                         cols.push(150);
                     }
                 })
-                cols.push(250);  // photos column
+                cols.push(350);  // photos column
                 cols.push(210);  // audio column
-                cols.push(210);  // video column
                 cols.push(50);   // delete column
                 return cols;
             },
@@ -692,148 +454,85 @@ define(["jquery",
             },
 
             getColumns: function () {
-                switch (this.collection.getDataType()) {
-                    case "audio":
-                        return [
-                            { data: "id", readOnly: true},
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' },
-                            { data: "name", renderer: "html"},
-                            { data: "caption", renderer: "html"},
-                            { data: "file_path", renderer: this.audioRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                            { data: "tags", renderer: "html" },
-                            { data: "attribution", renderer: "html"},
-                            { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                        ];
-                    case "photos":
-                       return [
-                            { data: "id", readOnly: true},
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' },
-                            { data: "name", renderer: "html"},
-                            { data: "caption", renderer: "html"},
-                            { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                            { data: "tags", renderer: "html" },
-                            { data: "attribution", renderer: "html"},
-                            { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                       ];
-                   case "videos":
-                      return [
-                           { data: "id", readOnly: true},
-                           { data: "lat", type: "numeric", format: '0.00000' },
-                           { data: "lng", type: "numeric", format: '0.00000' },
-                           { data: "name", renderer: "html"},
-                           { data: "caption", renderer: "html"},
-                           { data: "video_provider", renderer: this.videoRenderer.bind(this), readOnly: true, disableVisualSelection: true},
-                           { data: "video_link", renderer: this.htmlLinkRenderer.bind(this), readOnly: true},
-                           { data: "tags", renderer: "html" },
-                           { data: "attribution", renderer: "html"},
-                           { data: "owner", readOnly: true},
-                           { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
-                      ];
-                    default:
-                        if (!this.fields) {
-                            return null;
-                        }
-                        var cols = [
-                            { data: "id", readOnly: true },
-                            { data: "lat", type: "numeric", format: '0.00000' },
-                            { data: "lng", type: "numeric", format: '0.00000' }
-                        ];
-                        for (var i = 0; i < this.fields.length; ++i) {
-                            // Make sure to add in the "-" symbol after field name to delete column
-                            var type = this.fields.at(i).get("data_type").toLowerCase();
-                            var field_format = "";
-                            var field_dateFormat = "";
-                            var field_correctFormat = false;
-                            var renderer = null;
-                            var editor = null;
-                            var entry = null;
-                            switch (type) {
-                                case "boolean":
-                                    entry = {
-                                        type:  "checkbox"
-                                    };
-                                    break;
-                                case "integer":
-                                    entry = {
-                                        type:  "numeric"
-                                    };
-                                    break;
-                                case "decimal":
-                                    entry = {
-                                        type:  "numeric",
-                                        format: "0,0.000"
-                                    };
-                                    break;
-                                case "choice":
-                                    var choiceOpts = [],
-                                        j = 0,
-                                        extras = this.fields.at(i).get("extras");
-                                    for (j = 0; j < extras.length; j++) {
-                                        choiceOpts.push(extras[j].name);
-                                    }
-                                    entry = {
-                                        type:  "text",
-                                        editor: "select",
-                                        selectOptions: choiceOpts
-                                    };
-                                    break;
-                                case "date-time":
-                                    entry = {
-                                        type:  "date",
-                                        dateFormat: "YYYY-MM-DDThh:mm",
-                                        correctFormat: true
-                                    };
-                                    break;
-                                case "rating":
-                                    entry = {
-                                        type:  "numeric",
-                                        editor: "select-ratings",
-                                        renderer: this.ratingRenderer.bind(this),
-                                        selectOptions: this.fields.at(i).get("extras") || []
-                                    };
-                                    break;
-                                default:
-                                    entry = {
-                                        type:  "text"
-                                    };
-                            }
-                            _.extend(entry, {
-                                data: this.fields.at(i).get("col_name")
-                            });
-                            cols.push(entry);
-                        };
-
-                        cols.push(
-                            { data: "media", renderer: this.photoListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            { data: "media", renderer: this.audioListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            { data: "media", renderer: this.videoListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
-                        );
-                        return cols;
+                if (!this.fields) {
+                    return null;
                 }
-            },
+                var cols = [
+                    { data: "id", readOnly: true },
+                    { data: "lat", type: "numeric", format: '0.00000' },
+                    { data: "lng", type: "numeric", format: '0.00000' }
+                ];
+                for (var i = 0; i < this.fields.length; ++i) {
+                    // Make sure to add in the "-" symbol after field name to delete column
+                    var type = this.fields.at(i).get("data_type").toLowerCase();
+                    var field_format = "";
+                    var field_dateFormat = "";
+                    var field_correctFormat = false;
+                    var renderer = null;
+                    var editor = null;
+                    var entry = null;
+                    switch (type) {
+                        case "boolean":
+                            entry = {
+                                type:  "checkbox"
+                            };
+                            break;
+                        case "integer":
+                            entry = {
+                                type:  "numeric"
+                            };
+                            break;
+                        case "decimal":
+                            entry = {
+                                type:  "numeric",
+                                format: "0,0.000"
+                            };
+                            break;
+                        case "choice":
+                            var choiceOpts = [],
+                                j = 0,
+                                extras = this.fields.at(i).get("extras");
+                            for (j = 0; j < extras.length; j++) {
+                                choiceOpts.push(extras[j].name);
+                            }
+                            entry = {
+                                type:  "text",
+                                editor: "select",
+                                selectOptions: choiceOpts
+                            };
+                            break;
+                        case "date-time":
+                            entry = {
+                                type:  "date",
+                                dateFormat: "YYYY-MM-DDThh:mm",
+                                correctFormat: true
+                            };
+                            break;
+                        case "rating":
+                            entry = {
+                                type:  "numeric",
+                                editor: "select-ratings",
+                                renderer: this.ratingRenderer.bind(this),
+                                selectOptions: this.fields.at(i).get("extras") || []
+                            };
+                            break;
+                        default:
+                            entry = {
+                                type:  "text"
+                            };
+                    }
+                    _.extend(entry, {
+                        data: this.fields.at(i).get("col_name")
+                    });
+                    cols.push(entry);
+                };
 
-            showCreateFieldForm: function () {
-                var formID = this.app.dataType.split("_")[1];
-                var fieldView = new CreateFieldView({
-                    formID: formID,
-                    fields: this.fields,
-                    app: this.app,
-                    model: new Field(null, { id: formID }),
-                    template: Handlebars.compile(CreateFieldTemplate),
-                    tagName: "div"
-                });
-                this.app.vent.trigger('show-modal', {
-                    title: "Create New Column",
-                    view: fieldView,
-                    saveFunction: fieldView.saveField,
-                    width: 600,
-                    height: 300
-                });
+                cols.push(
+                    { data: "media", renderer: this.photoVideoListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                    { data: "media", renderer: this.audioListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                    { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
+                );
+                return cols;
             },
 
             showContextMenu: function (e) {

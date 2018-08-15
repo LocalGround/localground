@@ -102,6 +102,7 @@ define([
                 this.parentModel.trigger('add-models-to-marker', selectedModels);
                 //for spreadsheet:
                 this.app.vent.trigger('add-models-to-marker', selectedModels);
+                this.parentModel.trigger('add-media-to-model', selectedModels);
             }
 
         });

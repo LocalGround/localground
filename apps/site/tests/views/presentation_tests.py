@@ -44,7 +44,7 @@ class PresentationTest(test.TestCase, ViewMixin):
         self.map.password = '123'
         self.map.metadata['accessLevel'] = 3
         self.map.save()
-        print self.csrf_token
+        # print self.csrf_token
         self.client_anonymous.cookies['csrftoken'] = self.csrf_token
         response = self.client_anonymous.post(
             self.url,
@@ -61,7 +61,7 @@ class PresentationTest(test.TestCase, ViewMixin):
         self.map.password = '123'
         self.map.metadata['accessLevel'] = 3
         self.map.save()
-        print self.csrf_token
+        # print self.csrf_token
         self.client_anonymous.cookies['csrftoken'] = self.csrf_token
         response = self.client_anonymous.post(
             self.url,

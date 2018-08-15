@@ -272,6 +272,12 @@ define(["underscore", "marionette", "models/project", "models/record",
                 }
                 return this.__dataDictionary[dataType];
             },
+
+            
+            getMediaItem: function(id, type) {
+                return this.getCollection(type).get(id);
+            },
+
             getPhoto: function (id) {
                 return this.getCollection('photos').get(id);
             },
@@ -281,6 +287,7 @@ define(["underscore", "marionette", "models/project", "models/record",
             getVideo: function (id) {
                 return this.getCollection('videos').get(id);
             },
+          
             getDatasets: function () {
                 return this.__getCollections().filter(collection => {
                     return collection.getIsCustomType();

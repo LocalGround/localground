@@ -116,8 +116,8 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         # check arrays:
         key = 'dataset_{0}'.format(self.dataset.id)
         record = datasets.get(key).get('data')[0]
-        self.assertTrue('attached_photos_ids' in record)
-        self.assertTrue('attached_audio_ids' in record)
+        self.assertTrue('attached_photos_videos' in record)
+        self.assertTrue('attached_audio' in record)
 
     def test_update_project_using_put(self, **kwargs):
         name, description = 'New Project Name', 'Test description'

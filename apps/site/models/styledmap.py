@@ -23,7 +23,7 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         'titleCardInfo': {
             'header': None,
             'description': None,
-            'photo_ids': []
+            'media': []
         },
         'accessLevel': Permissions.PUBLIC_UNLISTED
     }
@@ -91,7 +91,7 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
     def check_password(self, password):
         if not password:
             return False
-        print password
+        # print password
         import hashlib
         md5 = hashlib.md5(password)
         return self.password == md5.hexdigest()

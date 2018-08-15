@@ -58,86 +58,6 @@
     position: relative;
 }
 
-.upload-spot > h4{
-	margin:10px;
-}
-
-.upload-spot {
-    border: dashed;
-    text-align: center;
-    padding: 0px;
-    border-color: #e4e5eb;
-    border-width: 2px;
-    border-radius: 3px;
-    width: 96px;
-    height: 96px;
-    display: inline-block;
-    vertical-align: top;
-    margin-left: 28px !important;
-}
-
-.attached-container {
-    width: 100px;
-    height: 100px;
-    display: inline-block;
-}
-
-.attached-container > div {
-    width: 100px;
-    height: 100px;
-    background-position: center center !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
-}
-.attached-media-overlay {
-    background-color: rgba(0,0,0,0.1);
-    margin-top: -100px;
-    width: 100px;
-    height: 100px;
-    position: relative;
-}
-
-.attached-media-overlay {
-    background-color: rgba(0,0,0,0.1);
-    margin-top: -100px;
-    width: 100px;
-    height: 100px;
-    position: relative;
-}
-
-.attached-media-container {
-    margin-left: 15px;
-}
-
-.hover-to-show {
-    width: 100%;
-    height: 100%;
-}
-.attached-media-overlay:hover {
-    background-color: rgba(0,0,0,0.3);
-    margin-top: -100px;
-}
-
-.detach_media {
-    color: #FFF !important;
-    float: right;
-    font-size: 18px !important;
-    line-height: 14px;
-    margin: 5px;
-}
-.detach_media:hover {
-    color: #EEE !important;
-}
-
-.upload-spot, .attached-container {
-    margin: 16px 0px 0px 8px;
-    vertical-align: top;
-}
-
-#upload-from-computer > .upload-spot{
-	margin:20px;
-	height:408px;
-}
 
 
 .marker-thumb{
@@ -171,52 +91,7 @@
     right: 8px;
     float: right;
 }
-.hover-to-show {
-    opacity: 0;
-    -o-transition: .2s;
-    -ms-transition: .2s;
-    -moz-transition: .2s;
-    -webkit-transition: .2s;
-}
-.hover-to-show p {
-    display: none;
-}
-.hover-to-show:hover{
-	opacity:1;
-}
-.hover-to-show.featured {
-    opacity: 1;
-}
-.hover-to-show.featured .close {
-    opacity: 0;
-}
-.hover-to-show.featured:hover .close {
-    opacity: 1;
-}
-.hover-to-show.featured p {
-    color: #FFF;
-    text-shadow: 1px 1px 1px black;
-    position: absolute;
-    margin: 78px 0px 0px 3px;
-    font-weight: 600;
-    display: inline;
-    font-size: 14px;
-}
-.attached-media-overlay.video-hover {
-    height: 20px;
-}
-.edit-img-overlay .close {
-    position: absolute;
-    right: 6px;
-    top: 6px;
-    color: white;
-}
-.edit-img-overlay .fa-cog {
-    position: absolute;
-    right: 6px;
-    bottom: 6px;
-    color: white;
-}
+
 
 #add-data-type {
 

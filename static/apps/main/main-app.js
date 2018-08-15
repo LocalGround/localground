@@ -52,6 +52,9 @@ define([
             this.modal = new Modal({
                 app: this
             });
+            this.secondaryModal = new Modal({
+                app: this
+            });
             this.popover = new Popover({
                 app: this
             });

@@ -8,7 +8,7 @@ from localground.apps.site.managers.base import BaseMixin, \
 
 
 class MarkerMixin():
-    # Sarah wants to refactor this into two functions. 
+    # Sarah wants to refactor this into two functions.
     # It currently handles filtering of:
     # 1) Records with attributes (i.e. Markers with Attributes)
     # 2) Records without attributes (i.e. plain Markers)
@@ -58,17 +58,43 @@ class MarkerMixin():
             models.Photo, models.Audio, models.MapImage, models.Video]
 
         # build a custom query that includes child counts:
+        # Note: subquery needed to preserve media ordering
         select = {}
-        for cls in child_classes:
-            select[cls.model_name + '_' + suffix] = '''
-                SELECT %s(entity_id) FROM site_genericassociation e
-                WHERE e.entity_type_id = %s AND e.source_type_id = %s AND
+        query = '''
+            SELECT json_agg(
+                json_build_object(
+                    'id', e.entity_id, 'ordering', e.ordering,
+                    'overlay_type', ct.model
+                ) ORDER BY (e.ordering, ct.model)
+            )
+            FROM (
+               SELECT * FROM site_genericassociation
+            ) as e, django_content_type as ct
+            WHERE
+                ct.id = e.entity_type_id AND
+                e.entity_type_id in (%s) AND
+                e.source_type_id = %s AND
                 e.source_id = %s.id
-                ''' % (
-                    sql_function, cls.get_content_type().id, content_type_id,
-                    table_name
-                )
-
+            '''
+        select['photo_video_list'] = query % (
+                ','.join([
+                    str(c.get_content_type().id) for c in [
+                        models.Photo, models.Video
+                    ]]),
+                content_type_id,
+                table_name
+            )
+        select['map_image_list'] = query % (
+                models.MapImage.get_content_type().id,
+                content_type_id,
+                table_name
+            )
+        select['audio_list'] = query % (
+                models.Audio.get_content_type().id,
+                content_type_id,
+                table_name
+            )
+        # print select
         return q.extra(select)
 
     def get_objects_public_with_counts(

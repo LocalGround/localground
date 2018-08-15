@@ -26,7 +26,7 @@ virtualenv:
   system_site_packages: true
 
 addons:
-  postgresql: "9.3"
+  postgresql: "9.5"
 
 services:
   - postgresql
@@ -42,12 +42,13 @@ before_install:
   - sudo apt-get -y install cgi-mapserver
 
   # Install custom PostgreSQL / PostGIS
-  - sudo apt-get -y install postgresql-9.3
-  - sudo apt-get -y install postgresql-client-9.3
-  - sudo apt-get -y install postgresql-server-dev-9.3
-  - sudo apt-get -y install postgresql-plperl-9.3
-  - sudo apt-get -y install postgresql-9.3-postgis-2.3
-  - sudo apt-get -y install postgresql-9.3-postgis-2.3-scripts
+  - sudo apt-get -y install postgresql-9.5
+  - sudo apt-get -y install postgresql-client-9.5
+  - sudo apt-get -y install postgresql-server-dev-9.5
+  - sudo apt-get -y install postgresql-plperl-9.5
+  - sudo apt-get -y install postgresql-9.5-postgis-2.2
+  - sudo apt-get -y install postgresql-9.5-postgis-scripts
+  - sudo apt-get -y install libpq-dev
 
   # Install some final MapServer libraries (which I think need to
   # get installed after PostgreSQL / PostGIS)
