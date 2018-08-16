@@ -9,10 +9,6 @@ define ([
     function ($, _, Marionette, Handlebars, Field, AddFieldTemplate) {
         'use strict';
         return {
-            events: {
-                'click .add-new-choice': 'addChoice',
-                'click .remove-choice': 'removeChoice'
-            },
             makeChoicesSortable: function () {
                 //make choices re-orderable:
                 this.$el.find('.row.choices').sortable({

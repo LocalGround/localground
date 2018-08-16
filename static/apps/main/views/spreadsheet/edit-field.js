@@ -17,9 +17,6 @@ define ([
                 _.extend(this, opts);
                 this.template = Handlebars.compile(FieldItemTemplate);
             },
-            events: function () {
-                return ChoiceMixin.events;
-            },
             data_type_error: null,
             col_alias_error: null,
             templateHelpers: function () {

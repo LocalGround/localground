@@ -14,14 +14,6 @@ define ([
          * layer --> current layer (dataset accessible from layer)
          */
         var AddFieldView = Marionette.ItemView.extend({
-            events: function () {
-                return _.extend({
-                    'change #data_type': 'showDetailedOptions'
-                }, ChoiceMixin.events);
-                // 'change #data_type': 'showDetailedOptions',
-                // 'click .add-new-choice': 'addChoice',
-                // 'click .remove-choice': 'removeChoice'
-            },
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.model = new Field({
@@ -35,6 +27,11 @@ define ([
                      id: this.dataset.formID
                  });
                 this.template = Handlebars.compile(AddFieldTemplate);
+            },
+            events: {
+                'change #data_type': 'showDetailedOptions',
+                'click .add-new-choice': 'addChoice',
+                'click .remove-choice': 'removeChoice'
             },
             data_type_error: null,
             col_alias_error: null,
@@ -82,6 +79,7 @@ define ([
                 this.setChoices();
             },
             showDetailedOptions: function (e) {
+                console.log('showDetailedOptions');
                 if (e) { e.preventDefault(); }
                 this.commitData();
                 this.render();

@@ -64,6 +64,18 @@ define([
             });
         });
 
+        describe('AddField: UI events: ', function () {
+            beforeEach(function () {
+                initView(this);
+            });
+            it("datatype_toggle triggers show choices", function () {
+                expect(AddField.prototype.showDetailedOptions).toHaveBeenCalledTimes(0);
+                this.view.render();
+                this.view.$el.find('#data_type').trigger('change');
+                expect(AddField.prototype.showDetailedOptions).toHaveBeenCalledTimes(1);
+            });
+        });
+
         describe('AddField: instance methods: ', function () {
             beforeEach(function () {
                 initView(this);
@@ -71,48 +83,6 @@ define([
             it("works", function () {
                 expect(1).toEqual(1);
             });
-
-        //     it('reloadDataset() should work', function () {
-        //         expect(this.dataset.fetch).toHaveBeenCalledTimes(0);
-        //         expect(this.view.reloadDependentLayers).toHaveBeenCalledTimes(0);
-        //         this.view.reloadDataset();
-        //         expect(this.dataset.fetch).toHaveBeenCalledTimes(1);
-        //         expect(this.view.reloadDependentLayers).toHaveBeenCalledTimes(1);
-        //     });
-        //
-        //     it('reloadDependentLayers() should not refresh if field name did not change', function () {
-        //         expect(this.dataset.getDependentLayers).toHaveBeenCalledTimes(0);
-        //         expect(Layers.prototype.forEach).toHaveBeenCalledTimes(0);
-        //         expect(Layer.prototype.hasFieldDependency).toHaveBeenCalledTimes(0);
-        //         expect(Layer.prototype.getGroupByField).toHaveBeenCalledTimes(1);
-        //         expect(Layer.prototype.refreshFromServer).toHaveBeenCalledTimes(0);
-        //
-        //         this.view.reloadDependentLayers();
-        //         expect(this.dataset.getDependentLayers).toHaveBeenCalledTimes(1);
-        //         expect(Layers.prototype.forEach).toHaveBeenCalledTimes(1);
-        //         expect(Layer.prototype.hasFieldDependency).toHaveBeenCalledTimes(3);
-        //         expect(Layer.prototype.getGroupByField).toHaveBeenCalledTimes(3);
-        //         expect(Layer.prototype.refreshFromServer).toHaveBeenCalledTimes(0);
-        //     });
-        //
-        //
-        //     it('reloadDependentLayers() should  refresh if field name changed', function () {
-        //         expect(this.dataset.getDependentLayers).toHaveBeenCalledTimes(0);
-        //         expect(Layers.prototype.forEach).toHaveBeenCalledTimes(0);
-        //         expect(Layer.prototype.hasFieldDependency).toHaveBeenCalledTimes(0);
-        //         expect(Layer.prototype.getGroupByField).toHaveBeenCalledTimes(1);
-        //         expect(Layer.prototype.refreshFromServer).toHaveBeenCalledTimes(0);
-        //
-        //         this.field.set('col_alias', 'species');
-        //         this.field.set('col_name', 'species');
-        //         this.view.reloadDependentLayers();
-        //
-        //         expect(this.dataset.getDependentLayers).toHaveBeenCalledTimes(1);
-        //         expect(Layers.prototype.forEach).toHaveBeenCalledTimes(1);
-        //         expect(Layer.prototype.hasFieldDependency).toHaveBeenCalledTimes(3);
-        //         expect(Layer.prototype.getGroupByField).toHaveBeenCalledTimes(3);
-        //         expect(Layer.prototype.refreshFromServer).toHaveBeenCalledTimes(1);
-        //     });
         });
 
         describe('AddField: rendering: ', function () {
@@ -138,39 +108,6 @@ define([
                     time: "Time"
                 });
             });
-
-            // it("If column name is empty, the form should display an error", function () {
-            //     this.view.render();
-            //     const $el = this.view.$el;
-            //     expect(this.view.model.save).toHaveBeenCalledTimes(0);
-            //     expect(this.noErrorFound('#col_alias')).toBeTruthy();
-            //     $el.find('#col_alias').val('');
-            //     this.view.saveField();
-            //
-            //
-            //     expect(this.errorDisplaysCorrectly(
-            //         '#col_alias', 'A valid column name is required')).toBeTruthy();
-            //
-            //     expect(this.view.model.save).toHaveBeenCalledTimes(0);
-            // });
-            //
-            // it("If column name is valid, the form should save data to the model", function () {
-            //     this.view.render();
-            //     expect(this.app.vent.trigger).not.toHaveBeenCalledWith('field-updated');
-            //     expect(RenameField.prototype.reloadDataset).toHaveBeenCalledTimes(0);
-            //     expect(this.view.sourceModal.hide).toHaveBeenCalledTimes(0);
-            //     const $el = this.view.$el;
-            //     expect(this.view.model.save).toHaveBeenCalledTimes(0);
-            //     expect(this.noErrorFound('#col_alias')).toBeTruthy();
-            //     $el.find('#col_alias').val('Species');
-            //     this.view.saveField();
-            //
-            //     expect(this.view.model.save).toHaveBeenCalledTimes(1);
-            //     expect(this.view.model.get('col_alias')).toEqual('Species');
-            //     expect(RenameField.prototype.reloadDataset).toHaveBeenCalledTimes(1);
-            //     expect(this.app.vent.trigger).toHaveBeenCalledWith('field-updated');
-            //     expect(this.view.sourceModal.hide).toHaveBeenCalledTimes(1);
-            // });
 
         });
 
