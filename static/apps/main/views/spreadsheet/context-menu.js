@@ -1,12 +1,12 @@
 define(["underscore",
         "marionette",
         "handlebars",
-        'apps/main/views/spreadsheet/rename-field',
+        'apps/main/views/spreadsheet/edit-field',
         'apps/main/views/spreadsheet/add-field',
         "text!../../templates/spreadsheet/context-menu.html",
         "lib/modals/modal"
     ],
-    function (_, Marionette, Handlebars, RenameField, AddField, ContextMenuTemplate, Modal) {
+    function (_, Marionette, Handlebars, EditField, AddField, ContextMenuTemplate, Modal) {
         'use strict';
 
         var SpreadsheetMenu =  Marionette.ItemView.extend({
@@ -41,7 +41,7 @@ define(["underscore",
                 this.sort('desc');
             },
             renameColumn: function (e) {
-                const renameFieldForm = new RenameField({
+                const editFieldForm = new EditField({
                     app: this.app,
                     model: this.field,
                     dataset: this.collection,
@@ -50,11 +50,11 @@ define(["underscore",
 
                 this.secondaryModal.update({
                     app: this.app,
-                    view: renameFieldForm,
-                    title: 'Rename Column',
+                    view: editFieldForm,
+                    title: 'Edit Column',
                     width: '300px',
                     showSaveButton: true,
-                    saveFunction: renameFieldForm.saveField.bind(renameFieldForm),
+                    saveFunction: editFieldForm.saveField.bind(editFieldForm),
                     showDeleteButton: false
                 });
                 this.secondaryModal.show();
@@ -87,14 +87,24 @@ define(["underscore",
                 if (!confirm("Do you want to delete this field?")){
                     return;
                 }
-                console.log(this.fields, this.fieldIndex);
-                this.fields.at(this.fieldIndex).destroy({
-                    success: () => {
+                const field = this.fields.at(this.fieldIndex);
+                field.destroy({
+                    wait: true,
+                    success: (e) => {
                         this.app.vent.trigger('render-spreadsheet');
                         this.app.dataManager.reloadDatasetFromServer(this.collection);
                     },
-                    error: (e) => {
-                        console.error(e)
+                    error: (model, response) => {
+                        console.error(response);
+                        try {
+                            const error = JSON.parse(response.responseText);
+                            const dependencies = error.dependencies.join("</li></li>")
+                            const message = `
+                                ${error.error_message}:<ul><li>${dependencies}</li></ul>`;
+                            this.app.vent.trigger('error-message', message);
+                        } catch(e) {
+                            this.app.vent.trigger('error-message', 'The column could not be deleted: unknown error');
+                        }
                     }
                 });
                 this.popover.hide();

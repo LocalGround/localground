@@ -1,5 +1,4 @@
 <form class="form">
-    {{ data_type }} - {{ integer_mode }}
     <!-- ALIAS -->
     <div class="row {{#if col_alias_error}} error{{/if}}">
         <label>Field Name</label>
@@ -10,7 +9,7 @@
     </div>
 
     <!-- DATATYPE -->
-    <div class="row {{#if col_type_error}} error{{/if}}">
+    <div class="row {{#if data_type_error}} error{{/if}}">
         <label>Type</label>
         {{#if data_type_error}}
             <p>{{ data_type_error }}</p>

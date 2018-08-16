@@ -102,6 +102,8 @@ define(["models/base",
                     }
                 } else if (typeof extras !== 'object') {
                     return {};
+                } else if (extras === null) {
+                    return {};
                 }
                 return extras;
             },
@@ -114,9 +116,10 @@ define(["models/base",
                     const title = field.col_alias;
                     field.val = this.get(field.col_name);
                     field.extras = this.parseExtras(field.extras);
+                    const choices = field.extras.choices || [];
                     switch (type) {
                         case "rating":
-                            options = field.extras.choices.map(choice => {
+                            options = choices.map(choice => {
                                 return {
                                     label: choice.name,
                                     val: parseInt(choice.value, 10)
@@ -125,7 +128,7 @@ define(["models/base",
                             schema[name] = { type: 'Rating', title: title, options: options };
                             break;
                         case "choice":
-                            options = field.extras.choices.map(choice => choice.name);
+                            options = choices.map(choice => choice.name);
                             schema[name] = { type: 'Select', title: title, options: options, listType: 'Number' };
                             break;
                         case "date-time":

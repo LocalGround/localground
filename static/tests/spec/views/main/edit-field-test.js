@@ -1,18 +1,18 @@
 var rootDir = "../../../";
 define([
     "backbone",
-    rootDir + "apps/main/views/spreadsheet/rename-field",
+    rootDir + "apps/main/views/spreadsheet/edit-field",
     rootDir + 'models/layer',
     rootDir + 'collections/layers',
     "tests/spec-helper1"
 ],
-    function (Backbone, RenameField, Layer, Layers) {
+    function (Backbone, EditField, Layer, Layers) {
         'use strict';
 
         const initView = function (scope) {
-            spyOn(RenameField.prototype, 'initialize').and.callThrough();
-            spyOn(RenameField.prototype, 'saveField').and.callThrough();
-            spyOn(RenameField.prototype, 'reloadDataset').and.callThrough();
+            spyOn(EditField.prototype, 'initialize').and.callThrough();
+            spyOn(EditField.prototype, 'saveField').and.callThrough();
+            spyOn(EditField.prototype, 'reloadDataset').and.callThrough();
             spyOn(Layers.prototype, 'forEach').and.callThrough();
             spyOn(Layer.prototype, 'refreshFromServer'); // don't call through
             spyOn(Layer.prototype, 'hasFieldDependency').and.callThrough();
@@ -21,7 +21,7 @@ define([
             scope.layer = scope.categoricalLayer;
             scope.dataset = scope.layer.getDataset(scope.app.dataManager);
             scope.field = scope.layer.getGroupByField(scope.app.dataManager);
-            scope.view = new RenameField({
+            scope.view = new EditField({
                 app: scope.app,
                 model: scope.field,
                 dataset: scope.dataset,
@@ -46,7 +46,7 @@ define([
 
         };
 
-        describe("RenameField: initialization: ", function () {
+        describe("EditField: initialization: ", function () {
             beforeEach(function () {
                 initView(this);
             });
@@ -57,7 +57,7 @@ define([
             });
         });
 
-        describe('RenameField: instance methods: ', function () {
+        describe('EditField: instance methods: ', function () {
             beforeEach(function () {
                 initView(this);
             });
@@ -105,7 +105,7 @@ define([
             });
         });
 
-        describe('RenameField: rendering: ', function () {
+        describe('EditField: rendering: ', function () {
 
             beforeEach(function () {
                 initView(this);
@@ -114,7 +114,7 @@ define([
             it('should have all form elements', function () {
                 this.view.render();
                 const $el = this.view.$el;
-                expect($el.find('label').html()).toEqual('Column Name');
+                expect($el.find('label').html()).toEqual('Field Name');
                 expect($el.find('input').val()).toEqual('Type');
             });
 
@@ -136,7 +136,7 @@ define([
             it("If column name is valid, the form should save data to the model", function () {
                 this.view.render();
                 expect(this.app.vent.trigger).not.toHaveBeenCalledWith('field-updated');
-                expect(RenameField.prototype.reloadDataset).toHaveBeenCalledTimes(0);
+                expect(EditField.prototype.reloadDataset).toHaveBeenCalledTimes(0);
                 expect(this.view.sourceModal.hide).toHaveBeenCalledTimes(0);
                 const $el = this.view.$el;
                 expect(this.view.model.save).toHaveBeenCalledTimes(0);
@@ -146,7 +146,7 @@ define([
 
                 expect(this.view.model.save).toHaveBeenCalledTimes(1);
                 expect(this.view.model.get('col_alias')).toEqual('Species');
-                expect(RenameField.prototype.reloadDataset).toHaveBeenCalledTimes(1);
+                expect(EditField.prototype.reloadDataset).toHaveBeenCalledTimes(1);
                 expect(this.app.vent.trigger).toHaveBeenCalledWith('field-updated');
                 expect(this.view.sourceModal.hide).toHaveBeenCalledTimes(1);
             });

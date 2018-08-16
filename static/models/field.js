@@ -158,6 +158,13 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 }
                 return true;
             }
+            //,
+            // destroy: function (options) {
+            //     options = _.extend((options || {}), {
+            //         wait: true
+            //     });
+            //     return Base.prototype.destroy.apply(this, options);
+            // }
         });
         return Field;
     });

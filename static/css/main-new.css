@@ -1767,9 +1767,9 @@ nav li.active {
   display: none;
   z-index: 100000000;
   width: 500px;
-  top: 100px;
+  top: 50px;
   left: 30%;
-  padding: 20px;
+  padding: 10px;
   border-radius: 8px;
   border-width: 2px;
 }
@@ -1784,6 +1784,16 @@ nav li.active {
   color: #b94a48;
   background-color: #f2dede;
   border: solid 1px #eea6a6;
+  font-size: 14px;
+}
+
+.failure-message ul {
+  margin-left: 30px;
+}
+
+.failure-message li {
+  color: #b94a48;
+  font-size: 14px;
 }
 
 .warning-message {

@@ -54,7 +54,6 @@ define([
         enableMediaReordering: function () {
             if (this.updateOrdering) {
                 this.$el.sortable({
-                    helper: this.fixHelper,
                     items : '.attached-container',
                     update: (event, ui) => {
                         const $elem = ui.item.find('.detach_media');

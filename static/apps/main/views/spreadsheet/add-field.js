@@ -4,26 +4,30 @@ define ([
     "marionette",
     "handlebars",
     "models/field",
+    "apps/main/views/spreadsheet/choice-mixin",
     "text!../../templates/spreadsheet/add-field.html"
 ],
-    function ($, _, Marionette, Handlebars, Field, AddFieldTemplate) {
+    function ($, _, Marionette, Handlebars, Field, ChoiceMixin, AddFieldTemplate) {
         'use strict';
         /**
          * model --> Field
          * layer --> current layer (dataset accessible from layer)
          */
         var AddFieldView = Marionette.ItemView.extend({
-            events: {
-                'change #data_type': 'showDetailedOptions',
-                'click .add-new-choice': 'addChoice',
-                'click .remove-choice': 'removeChoice'
+            events: function () {
+                return _.extend({
+                    'change #data_type': 'showDetailedOptions'
+                }, ChoiceMixin.events);
+                // 'change #data_type': 'showDetailedOptions',
+                // 'click .add-new-choice': 'addChoice',
+                // 'click .remove-choice': 'removeChoice'
             },
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.model = new Field({
                     ordering: this.ordering,
                     extras: {
-                        choices: [{ name: '' }]
+                        choices: []
                     },
                     integer_mode: true, //not persisted to DB, but for convenience
                     data_type: 'text'
@@ -41,6 +45,12 @@ define ([
                     extras: this.model.get('extras'),
                     menuSelection: this.getMenuSelection()
                 };
+            },
+            onRender: function () {
+                //make choices re-orderable:
+                if (this.getMenuSelection() === 'choice') {
+                    this.makeChoicesSortable();
+                }
             },
             getMenuSelection: function () {
                 const selection = this.model.get('data_type');
@@ -69,32 +79,26 @@ define ([
                 this.setDataType();
 
                 // 3. save extras:
-                const choices = [];
-                this.$el.find('.choice').each(function () {
-                    choices.push({
-                        'name': $(this).val()
-                    });
-                });
-                this.model.get('extras').choices = choices;
+                this.setChoices();
             },
             showDetailedOptions: function (e) {
                 if (e) { e.preventDefault(); }
                 this.commitData();
                 this.render();
             },
-            addChoice: function (e) {
-                if (e) { e.preventDefault(); }
-                this.commitData();
-                this.model.get('extras').choices.push({'name': ''});
-                this.render();
-
-            },
-            removeChoice: function (e) {
-                if (e) { e.preventDefault(); }
-                $(e.target).parent().parent().remove();
-                this.commitData();
-                this.render();
-            },
+            // addChoice: function (e) {
+            //     if (e) { e.preventDefault(); }
+            //     this.commitData();
+            //     this.model.get('extras').choices.push({'name': ''});
+            //     this.render();
+            //
+            // },
+            // removeChoice: function (e) {
+            //     if (e) { e.preventDefault(); }
+            //     $(e.target).parent().parent().remove();
+            //     this.commitData();
+            //     this.render();
+            // },
             _clearErrorMessages: function () {
                 this.data_type_error = null;
                 this.col_alias_error = null;
@@ -119,10 +123,19 @@ define ([
                 }
                 return true;
             },
+            // _validateChoices: function () {
+            //     const data_type = this.model.get('data_type');
+            //     if (data_type === 'choice' && this.model.get('extras').choices.length === 0) {
+            //         this.data_type_error = "At least one choice is required";
+            //         this.render();
+            //         return false;
+            //     }
+            //     return true;
+            // },
             saveField: function () {
                 this.commitData();
                 this._clearErrorMessages();
-                if (!this._validateColAlias() || !this._validateColType()) {
+                if (!this._validateColAlias() || !this._validateColType() || !this._validateChoices()) {
                     return;
                 }
                 this.app.dataManager.addFieldToCollection(
@@ -133,6 +146,7 @@ define ([
                 this.sourceModal.hide();
             }
         });
+        _.extend(AddFieldView.prototype, ChoiceMixin);
         return AddFieldView;
 
     });

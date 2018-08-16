@@ -424,7 +424,7 @@ define(["jquery",
                     const val = model.get(this.model.get('group_by'));
                     return (typeof val === 'string') ? val.toLowerCase() : val;
                 }).filter(val => {
-                    return val !== null && val !== undefined
+                    return val !== null && val !== undefined && val !== '';
                 });
                 return Array.from(new Set(categoryList)).sort();
             },

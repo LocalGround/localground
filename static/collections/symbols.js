@@ -108,8 +108,8 @@ define(["underscore", "models/symbol", "collections/base"],
             })
             return matchedSymbol;
         },
-        isNotNull: function (value) {
-            return value !== null && value !== undefined;
+        isNotEmpty: function (value) {
+            return !(value === null || value === undefined || value.toString() === '');
         },
         __assignToNewSymbol: function (record) {
             // Note: new continuous symbols don't get created, and instead
@@ -132,7 +132,8 @@ define(["underscore", "models/symbol", "collections/base"],
                 matchedSymbol.addModel(record);
                 this.add(matchedSymbol);
 
-            } else if (this.layerModel.isCategorical() && this.isNotNull(value)) {
+            } else if (this.layerModel.isCategorical() && this.isNotEmpty(value)) {
+                console.log(value);
                 if (this.debug) {
                     console.log('creating new categorical symbol...');
                 }
@@ -234,6 +235,7 @@ define(["underscore", "models/symbol", "collections/base"],
         buildCategoricalSymbolSet: function (categoryList, layerModel) {
             const symbols = new Symbols(null, {layerModel: layerModel});
             const palette = layerModel.getPalette();
+            console.log(categoryList);
             categoryList.forEach((value, index) => {
                 symbols.add(Symbol.createCategoricalSymbol({
                     layerModel: layerModel,

@@ -191,16 +191,22 @@ def create_dynamic_serializer(dataset, **kwargs):
             allow_null=True, required=False)
 
     def createChoiceField(field):
-        try:
-            return serializers.ChoiceField(
-                source='attributes.' + field.unique_key,
-                choices=list(map(
-                    lambda d: (d['name'], d['name']), field.extras['choices']
-                )),
-                allow_null=True, required=False)
-        except Exception:
-            print 'ERROR CREATING CHOICE FIELD'
-            return createCharField(field)
+        return createCharField(field)
+        # ----------------------------------------------------------------------
+        # Note: can't use this b/c if the menu of choices is later
+        # changed by the user and old values are still in the choice list,
+        # this field will throw an error.
+        # ----------------------------------------------------------------------
+        # try:
+        #     return serializers.ChoiceField(
+        #         source='attributes.' + field.unique_key,
+        #         choices=list(map(
+        #             lambda d: (d['name'], d['name']), field.extras['choices']
+        #         )),
+        #         allow_null=True, required=False)
+        # except Exception:
+        #     print 'ERROR CREATING CHOICE FIELD'
+        #     return createCharField(field)
 
     def createRatingField(field):
         # https://github.com/encode/django-rest-framework/issues/1755

@@ -9,7 +9,7 @@ define(["jquery",
         "apps/main/views/spreadsheet/context-menu"
     ],
     function ($, Marionette, _, Handlebars, Handsontable, SpreadsheetTemplate,
-            AudioViewer, PhotoVideoViewer, SpreadsheetMenu) {
+            AudioViewer, PhotoVideoViewer, ContextMenu) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             /**
@@ -41,7 +41,7 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
-                this.listenTo(this.app.vent, "field-updated", this.refreshHeaders);
+                this.listenTo(this.app.vent, "field-updated", this.renderSpreadsheet);
             },
             registerRatingEditor: function () {
                 // following this tutorial: https://docs.handsontable.com/0.15.0-beta1/tutorial-cell-editor.html
@@ -400,9 +400,9 @@ define(["jquery",
 
             getColumnHeaders: function () {
                 const cols = [
-                    "ID" + this.getMenuTemplate(0),
-                    "Lat" + this.getMenuTemplate(1),
-                    "Lng" + this.getMenuTemplate(2)
+                    "ID", // + this.getMenuTemplate(0),
+                    "Lat", // + this.getMenuTemplate(1),
+                    "Lng" // + this.getMenuTemplate(2)
                 ];
 
                 for (var i = 0; i < this.fields.length; ++i) {
@@ -557,7 +557,7 @@ define(["jquery",
                 const columnID = parseInt($(src).attr('fieldIndex'));
                 this.popover.update({
                     $source: event.target,
-                    view: new SpreadsheetMenu({
+                    view: new ContextMenu({
                         app: this.app,
                         collection: this.collection,
                         table: this.table,

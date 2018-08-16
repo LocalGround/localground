@@ -38,7 +38,7 @@ def get_metadata():
         'field_4': {'read_only': False, 'required': False, 'type': 'field'},
         'field_5': {'read_only': False, 'required': False, 'type': 'float'},
         'field_6': {'read_only': False, 'required': False, 'type': 'choice'},
-        'field_7': {'read_only': False, 'required': False, 'type': 'choice'}
+        'field_7': {'read_only': False, 'required': False, 'type': 'string'}
     }
 
 
@@ -173,8 +173,7 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
             {'field_3': '199012-31T243:59:60Z'},
             {'field_4': 'invalid text'},
             {'field_5': 'invalid text'},
-            {'field_6': 'nothing'},
-            {'field_7': 'Invalid text'}
+            {'field_6': 'nothing'}
         ]:
             default_data = {
                 'project_id': self.project.id
