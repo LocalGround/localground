@@ -109,72 +109,84 @@ define(["jquery"], function ($) {
             if (this.operator == '*') {
                 return true;
             }
-            if (this.val === 'null') {
+            if (this.val === null) {
                 this.val = '';
             };
             var returnVal = false,
                 modelVal = model.get(this.key),
                 idx = -1;
-            //console.log(model.id, this.key, this.val, modelVal);
 
             // this is necessary to distinguish between a value of '0',
             // which is a legitimate numerical value, and a value of null or undefined
             if (typeof modelVal === 'undefined' || modelVal == null) {
                 return false;
             }
-
-            modelVal = this.convertType(modelVal);
+            if (typeof modelVal === 'string') {
+                modelVal = modelVal.toLowerCase();
+            }
+            this.val = this.convertValtoDataArgumentType(modelVal, this.val);
             if (this.operator == '=') {
-                returnVal = modelVal == this.val;
-            } else if (this.operator == '>') {
+                returnVal = modelVal === this.val;
+            } else if (this.operator === '>') {
                 returnVal = modelVal > this.val;
-            } else if (this.operator == '>=') {
+            } else if (this.operator === '>=') {
                 returnVal = modelVal >= this.val;
-            } else if (this.operator == '<') {
+            } else if (this.operator === '<') {
                 returnVal = modelVal < this.val;
-            } else if (this.operator == '<=') {
+            } else if (this.operator === '<=') {
                 returnVal = modelVal <= this.val;
             } else if (['<>', '!='].indexOf(this.operator) != -1) {
                 returnVal = modelVal != this.val;
-            } else if (this.operator == 'in') {
+            } else if (this.operator === 'in') {
                 returnVal = this.val.indexOf(modelVal) != -1;
-            } else if (this.operator == 'contains') {
+            } else if (this.operator === 'contains') {
                 returnVal = modelVal.indexOf(this.val) != -1;
-            } else if (this.operator == 'startswith') {
+            } else if (this.operator === 'startswith') {
                 returnVal = modelVal.indexOf(this.val) == 0;
-            } else if (this.operator == 'endswith') {
+            } else if (this.operator === 'endswith') {
                 idx = modelVal.length - this.val.length;
                 returnVal =  modelVal.indexOf(this.val, idx) !== -1;
             }
             return returnVal;
         };
-
-        this.convertType = function (modelVal) {
-            var i = 0,
-                isNumber = typeof modelVal == "number",
-                isString = typeof modelVal == "string",
-                converter = isNumber ? this.parseNum : this.parseString;
-            if ($.isArray(this.val)) {
-                for (i = 0; i < this.val.length; i++) {
-                    this.val[i] = converter(this.val[i]);
+        this.getConverter = function (modelVal) {
+            switch (typeof modelVal) {
+                case 'number':
+                    return this.parseNum;
+                case 'string':
+                    return this.parseString;
+                case 'boolean':
+                    return this.parseBoolean;
+                default:
+                    return (val) => { return val };
+            }
+        }
+        this.convertValtoDataArgumentType = function (modelVal, ruleValue) {
+            // this function looks at the record's value, and converts
+            // the rule value to match:
+            let i = 0;
+            const converter = this.getConverter(modelVal);
+            if (Array.isArray(ruleValue)) {
+                for (i = 0; i < ruleValue.length; i++) {
+                    ruleValue[i] = converter(ruleValue[i]);
                 }
+                return ruleValue;
             } else {
-                this.val = converter(this.val);
+                return converter(ruleValue);
             }
-            if (isString) {
-                modelVal = this.parseString(modelVal);
-            }
-            return modelVal;
         };
 
         this.parseNum = function (val) {
             return parseInt(val, 10);
         };
 
+        this.parseBoolean = function (val) {
+            return (val == 'true' || val === true) ? true : false;
+        };
+
         this.parseString = function (val) {
             // this first condition handles undefined numerical values,
             //which get converted to NaN, and therefore are not evaluated by this.parseNum()
-            //console.log('parseString', val);
             if (Number.isNaN(val)) {
                 return null;
             } else {

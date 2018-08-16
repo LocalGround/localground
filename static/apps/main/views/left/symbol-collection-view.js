@@ -185,7 +185,7 @@ define(["jquery",
             },
 
             highlightSymbolContent: function () {
-                console.log('HOVER, add color');
+                //console.log('HOVER, add color');
                 this.$el.find('.symbol-wrapper').addClass('symbol-highlight');
             },
             unHighlightSymbolContent: function () {
@@ -196,7 +196,7 @@ define(["jquery",
                     return;
                 }
 
-                console.log('HOVER, remove color');
+                //console.log('HOVER, remove color');
                 this.$el.find('.symbol-wrapper').removeClass('symbol-highlight');
             },
             onDestroy: function() {

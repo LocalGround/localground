@@ -2780,6 +2780,39 @@ span.action.rounded:hover, a.action.rounded:hover {
   margin: 0px;
 }
 
+.modal .title {
+  display: inline-block;
+  max-width: 250px;
+  margin-right: 10px;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+.modal .title h1 {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: 4px;
+}
+
+.modal .title:hover {
+  background: #F0F0F0;
+  border-radius: 4px;
+}
+
+.modal .title:hover .fa-pencil-alt {
+  visibility: visible;
+}
+
+.modal .title .fa-pencil-alt {
+  margin-left: 3px;
+  visibility: hidden;
+  display: inline-block;
+}
+
 .modal header .close {
   color: #888;
   float: right;

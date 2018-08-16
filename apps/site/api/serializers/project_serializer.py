@@ -5,6 +5,8 @@ from localground.apps.site.api.serializers.base_serializer import \
     NamedSerializerMixin, BaseSerializer
 from localground.apps.site.api.serializers.photo_serializer import \
     PhotoSerializer
+from localground.apps.site.api.serializers.field_serializer import \
+    FieldSerializerSimple
 from localground.apps.site.api.serializers.video_serializer import \
     VideoSerializer
 from localground.apps.site.api.serializers.mapimage_serializer import \
@@ -16,8 +18,6 @@ from localground.apps.site.api.serializers.map_serializer import \
     MapSerializerList
 from localground.apps.site.api.serializers.record_serializer import \
     create_dynamic_serializer
-from localground.apps.site.api.serializers.field_serializer import \
-    FieldSerializerSimple
 from django.contrib.gis.geos import GEOSGeometry
 import uuid
 

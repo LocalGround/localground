@@ -55,6 +55,7 @@ define ([
                     const integerMode = this.$el.find('#number_type').prop('checked');
                     this.model.set('integer_mode', integerMode);
                     dataType = integerMode ? 'integer' : 'decimal';
+                    console.log(integerMode, dataType);
                 }
                 this.model.set('data_type', dataType);
             },
@@ -80,17 +81,6 @@ define ([
                 if (e) { e.preventDefault(); }
                 this.commitData();
                 this.render();
-                // this.setDataType();
-                // this.$el.find('.numbers, .choices').hide();
-                // switch (this.model.get('data_type')) {
-                //     case 'integer':
-                //     case 'decimal':
-                //         this.$el.find('.row.numbers').show();
-                //         break;
-                //     case 'choice':
-                //         this.$el.find('.row.choices').show();
-                //         break;
-                // }
             },
             addChoice: function (e) {
                 if (e) { e.preventDefault(); }
@@ -121,11 +111,8 @@ define ([
                 return true;
             },
             _validateColType: function () {
-                const data_type = this.$el.find('#data_type').val();
-
-                if (['text', 'integer', 'boolean', 'choice', 'date-time'].includes(data_type)) {
-                    this.model.set('data_type', data_type);
-                } else {
+                const data_type = this.model.get('data_type');
+                if (!['text', 'integer', 'decimal', 'boolean', 'choice', 'date-time'].includes(data_type)) {
                     this.data_type_error = "A valid data type is required";
                     this.render();
                     return false;
@@ -138,7 +125,6 @@ define ([
                 if (!this._validateColAlias() || !this._validateColType()) {
                     return;
                 }
-                return;
                 this.app.dataManager.addFieldToCollection(
                     this.dataset, this.model, this.afterSave.bind(this)
                 );

@@ -42,6 +42,30 @@
         font-weight: 600;
         margin: 0px;
     }
+    .title {
+        display: inline-block;
+        max-width: 250px;
+        margin-right: 10px;
+        padding: 3px 8px;
+        cursor: pointer;
+        h1 {
+            max-width: 200px;
+            @include overflow-text();
+            border-radius: 4px;
+        }
+        &:hover {
+            background: #F0F0F0;
+            border-radius: 4px;
+            .fa-pencil-alt {
+                visibility: visible;
+            }
+        }
+        .fa-pencil-alt {
+            margin-left: 3px;
+            visibility: hidden;
+            display: inline-block;
+        }
+    }
     header .close {
         color: #888;
         float: right;

@@ -37,6 +37,7 @@ require(['boot'], function () {
         'spec/views/main/spreadsheet-test.js',
         'spec/views/main/spreadsheet-layout-test.js',
         'spec/views/main/rename-field-test.js',
+        'spec/views/main/add-field-test.js',
 
 
         // trouble mocking a Record to test the DataDetail View

@@ -11,7 +11,8 @@ define(["marionette",
                 toolbarRegion: '.spreadsheet-toolbar'
             },
             events: {
-                'click #add-row': 'addRow'
+                'click #add-row': 'addRow',
+                'click .title': 'openRenameForm'
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -20,10 +21,18 @@ define(["marionette",
             onRender: function () {
                 this.showSpreadsheet();
             },
+            openRenameForm: function () {
+                alert('rename!');
+            },
             addRow: function (e) {
                 this.getSpreadsheet().addRow();
                 if (e) {
                     e.preventDefault();
+                }
+            },
+            templateHelpers: function () {
+                return {
+                    dataset_name: this.collection.name
                 }
             },
 
@@ -37,7 +46,7 @@ define(["marionette",
                         collection: this.collection,
                         fields: this.collection.getFields(),
                         layer: this.layer,
-                        height: $(window).height() - 180
+                        height: $(window).height() - 160
                     });
                 }
                 return this.spreadsheet;

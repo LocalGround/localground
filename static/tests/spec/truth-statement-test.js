@@ -1,4 +1,5 @@
-define(["jquery", "lib/truthStatement", "tests/spec-helper1"], function ($, TruthStatement) {
+define(["jquery", "backbone", "lib/truthStatement", "tests/spec-helper1"],
+    function ($, Backbone, TruthStatement) {
     'use strict';
     var valid_statements = [
             'a = 3',
@@ -176,10 +177,26 @@ define(["jquery", "lib/truthStatement", "tests/spec-helper1"], function ($, Trut
                 record = this.dataset_3.get(1),
                 modelVal1 = this.dataset_3.get(key1),
                 modelVal2 = this.dataset_3.get(key2),
-                convertedVal1 = s1.convertType(modelVal1),
-                convertedVal2 = s2.convertType(modelVal2);
+                convertedVal1 = s1.convertValtoDataArgumentType(modelVal1),
+                convertedVal2 = s2.convertValtoDataArgumentType(modelVal2);
             expect(typeof modelVal1).toEqual(typeof convertedVal1);
             expect(typeof modelVal2).toEqual(typeof convertedVal2);
+        });
+
+        it("Honors boolean true rule", function () {
+            const model = new Backbone.Model({is_tree: true, name: 'hello'});
+            const s = new TruthStatement('is_tree = true', "and");
+            expect(s.truthTest(model)).toBeTruthy();
+            model.set("is_tree", false);
+            expect(s.truthTest(model)).toBeFalsy();
+        });
+
+        it("Honors boolean false", function () {
+            const model = new Backbone.Model({is_tree: false, name: 'hello'});
+            const s = new TruthStatement('is_tree = false', "and");
+            expect(s.truthTest(model)).toBeTruthy();
+            model.set("is_tree", true);
+            expect(s.truthTest(model)).toBeFalsy();
         });
 
         it("Records do not match queries which are untrue", function () {
@@ -207,7 +224,6 @@ define(["jquery", "lib/truthStatement", "tests/spec-helper1"], function ($, Trut
                         ++matches;
                     }
                 });
-                //console.log(matches === item.count, item.whereClause, matches, item.count);
                 expect(matches).toEqual(item.count);
             });
         });

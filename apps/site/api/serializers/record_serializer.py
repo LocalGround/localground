@@ -2,16 +2,11 @@ from localground.apps.site.api.serializers.base_serializer \
     import GeometrySerializer
 from rest_framework import serializers
 from django.conf import settings
-from rest_framework.reverse import reverse
-from localground.apps.site import models, widgets
+from localground.apps.site import models
 from localground.apps.site.api import fields
-from django.conf import settings
 from django_hstore.dict import HStoreDict
-from rest_framework.settings import api_settings
 import datetime
 import json
-
-from rest_framework import serializers
 
 
 def force_to_unicode(val):
@@ -19,12 +14,12 @@ def force_to_unicode(val):
     # https://gist.github.com/gornostal/1f123aaf838506038710
     if val is None:
         return val
+    if isinstance(val, unicode):
+        return val
     if isinstance(val, (datetime.datetime, datetime.date)):
         return val.isoformat().decode('utf8')
     if isinstance(val, (int, float)):
         return str(val).decode('utf8')
-    if isinstance(val, unicode):
-        return val
     else:
         return val.decode('utf8')
 
@@ -75,84 +70,6 @@ class RecordSerializerMixin(GeometrySerializer):
     attached_photos_videos = serializers.SerializerMethodField()
     attached_map_images = serializers.SerializerMethodField()
     attached_audio = serializers.SerializerMethodField()
-    # media = serializers.SerializerMethodField()
-    # attached_photos_ids = serializers.SerializerMethodField()
-    # attached_audio_ids = serializers.SerializerMethodField()
-    # attached_videos_ids = serializers.SerializerMethodField()
-    # attached_map_images_ids = serializers.SerializerMethodField()
-
-    # def get_media(self, obj):
-    #     from django.contrib.contenttypes.models import ContentType
-    #     from localground.apps.site import models
-    #
-    #     media = {}
-    #     self.audio = self.get_audio(obj) or []
-    #     self.photos = self.get_photos(obj) or []
-    #     self.videos = self.get_videos(obj) or []
-    #     self.map_images = self.get_map_images(obj) or []
-    #     if self.audio:
-    #         media['audio'] = self.audio
-    #     if self.photos:
-    #         media['photos'] = self.photos
-    #     if self.videos:
-    #         media['videos'] = self.videos
-    #     if self.map_images:
-    #         media['map_images'] = self.map_images
-    #
-    #     return media
-    #
-    # def get_photos(self, obj):
-    #     from localground.apps.site.api.serializers import PhotoSerializer
-    #
-    #     data = PhotoSerializer(
-    #         obj.photos,
-    #         many=True, context={'request': {}}).data
-    #     return self.serialize_list(obj, models.Photo, data)
-    #
-    # def get_videos(self, obj):
-    #     from localground.apps.site.api.serializers import VideoSerializer
-    #
-    #     data = VideoSerializer(
-    #         obj.videos,
-    #         many=True, context={'request': {}}).data
-    #     return self.serialize_list(obj, models.Video, data)
-    #
-    # def get_audio(self, obj):
-    #     from localground.apps.site.api.serializers import AudioSerializer
-    #
-    #     data = AudioSerializer(
-    #         obj.audio,
-    #         many=True, context={'request': {}}).data
-    #     return self.serialize_list(obj, models.Audio, data)
-    #
-    # def get_map_images(self, obj):
-    #     from localground.apps.site.api.serializers import \
-    #         MapImageSerializerUpdate
-    #
-    #     data = MapImageSerializerUpdate(
-    #         obj.map_images,
-    #         many=True, context={'request': {}}).data
-    #     return self.serialize_list(obj, models.MapImage, data)
-    #
-    # def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
-    #                    model_name_plural=None):
-    #     if data is None or len(data) == 0:
-    #         return None
-    #     if name is None:
-    #         name = cls.model_name_plural.title()
-    #     if overlay_type is None:
-    #         overlay_type = cls.model_name
-    #     if model_name_plural is None:
-    #         model_name_plural = cls.model_name_plural
-    #     return {
-    #         'id': model_name_plural,
-    #         'name': name,
-    #         'overlay_type': overlay_type,
-    #         'data': data,
-    #         'attach_url': '%s/api/0/markers/%s/%s/' %
-    #         (settings.SERVER_URL,
-    #          obj.id,
-    #          model_name_plural)}
 
     def get_url(self, obj):
         return '%s/api/0/datasets/%s/data/%s' % \
@@ -225,9 +142,6 @@ class RecordSerializerMixin(GeometrySerializer):
         from rest_framework.utils import model_meta
         validated_data.update(self.get_presave_update_dictionary())
         info = model_meta.get_field_info(instance)
-        # import sys
-        # reload(sys)
-        # sys.setdefaultencoding('utf-8')
         for attr, value in validated_data.items():
             if attr in info.relations and info.relations[attr].to_many:
                 field = getattr(instance, attr)
@@ -247,32 +161,8 @@ class RecordSerializerMixin(GeometrySerializer):
 
 class RecordSerializer(RecordSerializerMixin):
 
-    # media = serializers.SerializerMethodField()
-
     class Meta:
-        fields = RecordSerializerMixin.Meta.fields  # + ('media',)
-
-    # def get_media(self, obj):
-    #     from django.contrib.contenttypes.models import ContentType
-    #     from localground.apps.site import models
-    #
-    #     raise Exception(obj)
-    #
-    #     media = {}
-    #     self.audio = self.get_audio(obj) or []
-    #     self.photos = self.get_photos(obj) or []
-    #     self.videos = self.get_videos(obj) or []
-    #     self.map_images = self.get_map_images(obj) or []
-    #     if self.audio:
-    #         media['audio'] = self.audio
-    #     if self.photos:
-    #         media['photos'] = self.photos
-    #     if self.videos:
-    #         media['videos'] = self.videos
-    #     if self.map_images:
-    #         media['map_images'] = self.map_images
-    #
-    #     return media
+        fields = RecordSerializerMixin.Meta.fields
 
 
 def create_dynamic_serializer(dataset, **kwargs):
@@ -289,6 +179,58 @@ def create_dynamic_serializer(dataset, **kwargs):
         fields = RecordSerializerMixin.Meta.fields + \
             tuple(field_names)
 
+    def createCharField(field):
+        return serializers.CharField(
+            source='attributes.' + field.unique_key,
+            allow_null=True, required=False)
+
+    # functions to create custom hstore fields
+    def createIntField(field):
+        return serializers.IntegerField(
+            source='attributes.' + field.unique_key,
+            allow_null=True, required=False)
+
+    def createChoiceField(field):
+        try:
+            return serializers.ChoiceField(
+                source='attributes.' + field.unique_key,
+                choices=list(map(
+                    lambda d: (d['name'], d['name']), field.extras['choices']
+                )),
+                allow_null=True, required=False)
+        except Exception:
+            print 'ERROR CREATING CHOICE FIELD'
+            return createCharField(field)
+
+    def createRatingField(field):
+        # https://github.com/encode/django-rest-framework/issues/1755
+        return ChoiceIntField(
+            source='attributes.' + field.unique_key,
+            choices=list(
+                map(lambda d: (d['value'], d['name']), field.extras)
+            ),
+            allow_null=True, required=False)
+
+    def createTextField(field):
+        return serializers.CharField(
+            source='attributes.' + field.unique_key,
+            allow_null=True, allow_blank=True, required=False)
+
+    def createDateTimeField(field):
+        return CustomDataTimeField(
+            source='attributes.' + field.unique_key,
+            allow_null=True, required=False, format="iso-8601",
+            input_formats=None)
+
+    def createBooleanField(field):
+        return serializers.NullBooleanField(
+            source='attributes.' + field.unique_key, required=False)
+
+    def createFloatField(field):
+        return serializers.FloatField(
+            source='attributes.' + field.unique_key,
+            allow_null=True, required=False)
+
     attrs = {
         '__module__':
             'localground.apps.site.api.serializers.MarkerWAttrsSerializer',
@@ -296,72 +238,7 @@ def create_dynamic_serializer(dataset, **kwargs):
         'dataset': dataset
     }
 
-    # functions to create custom hstore fields
-    def createIntField():
-        attrs.update({
-            field.col_name: serializers.IntegerField(
-                source='attributes.' + field.unique_key,
-                allow_null=True,
-                required=False)
-        })
-
-    def createChoiceField():
-        attrs.update({
-            field.col_name: serializers.ChoiceField(
-                source='attributes.' + field.unique_key,
-                choices=list(
-                    map(lambda d: (d['name'], d['name']), field.extras)
-                ),
-                allow_null=True,
-                required=False)
-        })
-
-    def createRatingField():
-        # https://github.com/encode/django-rest-framework/issues/1755
-        attrs.update({
-            field.col_name: ChoiceIntField(
-                source='attributes.' + field.unique_key,
-                choices=list(
-                    map(lambda d: (d['value'], d['name']), field.extras)
-                ),
-                allow_null=True,
-                required=False)
-        })
-
-    def createTextField():
-        attrs.update({
-            field.col_name: serializers.CharField(
-                source='attributes.' + field.unique_key,
-                allow_null=True,
-                allow_blank=True,
-                required=False)
-        })
-
-    def createDateTimeField():
-        attrs.update({
-            field.col_name: CustomDataTimeField(
-                source='attributes.' + field.unique_key,
-                allow_null=True,
-                required=False,
-                format="iso-8601",
-                input_formats=None)
-        })
-
-    def createBooleanField():
-        attrs.update({
-            field.col_name: serializers.NullBooleanField(
-                source='attributes.' + field.unique_key,
-                required=False)
-        })
-
-    def createFloatField():
-        attrs.update({
-            field.col_name: serializers.FloatField(
-                source='attributes.' + field.unique_key,
-                allow_null=True,
-                required=False)
-        })
-    fieldCases = {
+    FieldTypes = {
         models.DataType.DataTypes.INTEGER: createIntField,
         models.DataType.DataTypes.TEXT: createTextField,
         models.DataType.DataTypes.DATETIME: createDateTimeField,
@@ -372,14 +249,13 @@ def create_dynamic_serializer(dataset, **kwargs):
     }
 
     for field in dataset.fields:
-        if field.data_type.id in fieldCases:
-            fieldCases[field.data_type.id]()
+        if field.data_type.id in FieldTypes:
+            attrs.update({
+                field.col_name: FieldTypes[field.data_type.id](field)
+            })
         else:
             attrs.update({
-                field.col_name: serializers.CharField(
-                    source='attributes.' + field.unique_key,
-                    allow_null=True,
-                    required=False)
+                field.col_name: createCharField(field)
             })
 
     return type(

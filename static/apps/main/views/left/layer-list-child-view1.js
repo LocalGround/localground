@@ -58,6 +58,7 @@ define(["marionette",
                 //this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
                 this.attachRecordEventHandlers();
+                console.log(this.symbolModels);
             },
             attachRecordEventHandlers: function () {
                 this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol);
@@ -302,6 +303,9 @@ define(["marionette",
             },
 
             openSpreadsheet: function (e) {
+                if (e) {
+                    e.preventDefault();
+                }
                 const spreadsheet = new SpreadsheetLayout({
                     app: this.app,
                     collection: this.dataCollection,
@@ -312,13 +316,12 @@ define(["marionette",
                     view: spreadsheet,
                     noTitle: true,
                     noFooter: true,
-                    width: '96vw',
+                    width: '97vw',
                     modalClass: 'spreadsheet',
                     showSaveButton: false,
                     showDeleteButton: false
                 });
                 this.modal.show();
-                e.preventDefault();
             }
         });
         return LayerListChild;

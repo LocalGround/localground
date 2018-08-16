@@ -28,6 +28,7 @@ define(["jquery",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.height = this.height || $(window).height() - 170,
                 this.popover = this.app.popover;
                 Marionette.ItemView.prototype.initialize.call(this);
                 this.registerRatingEditor();
@@ -162,7 +163,7 @@ define(["jquery",
                     autoInsertRow: true,
                     sortIndicator: true,
                     columnSorting: true,
-                    height: $(window).height() - 170,
+                    height: this.height,
                     fixedRowsTop: 0,
                     colWidths: this.getColumnWidths(),
                     rowHeights: 55,
@@ -464,7 +465,8 @@ define(["jquery",
                 ];
                 for (var i = 0; i < this.fields.length; ++i) {
                     // Make sure to add in the "-" symbol after field name to delete column
-                    var type = this.fields.at(i).get("data_type").toLowerCase();
+                    const field = this.fields.at(i);
+                    var type = field.get("data_type").toLowerCase();
                     var field_format = "";
                     var field_dateFormat = "";
                     var field_correctFormat = false;
@@ -489,17 +491,31 @@ define(["jquery",
                             };
                             break;
                         case "choice":
-                            var choiceOpts = [],
-                                j = 0,
-                                extras = this.fields.at(i).get("extras");
-                            for (j = 0; j < extras.length; j++) {
-                                choiceOpts.push(extras[j].name);
+                            try {
+                                console.log(field);
+                                const extras = field.get("extras");
+                                console.log(extras);
+                                const choiceOpts = extras.choices.map(
+                                    choice => choice.name
+                                );
+                                entry = {
+                                    type:  "text",
+                                    editor: "select",
+                                    selectOptions: choiceOpts
+                                };
+                            } catch (e) {
+                                console.error(e);
+                                entry = {
+                                    type:  "text"
+                                };
                             }
-                            entry = {
-                                type:  "text",
-                                editor: "select",
-                                selectOptions: choiceOpts
-                            };
+                            // var choiceOpts = [],
+                            //     j = 0,
+                            //     extras = this.fields.at(i).get("extras");
+                            // for (j = 0; j < extras.choices.length; j++) {
+                            //     choiceOpts.push(extras[j].name);
+                            // }
+
                             break;
                         case "date-time":
                             entry = {

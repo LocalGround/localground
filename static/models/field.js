@@ -9,7 +9,8 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 is_display_field: false,
                 display_width: 100,
                 is_printable: true,
-                ordering: 1
+                ordering: 1,
+                extras: {}
             }),
             url: function () {
                 let baseURL =  Base.prototype.url.apply(this, arguments);

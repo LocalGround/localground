@@ -175,14 +175,16 @@ define(['backbone', 'underscore', 'collections/records',
                 const fillColor = opts.fillColor;
                 const metadata = layerModel.get('metadata');
                 const prop = opts.layerModel.get('group_by');
+                const rule = (typeof value === 'string') ? `${prop} = '${value}'` : `${prop} = ${value}`;
                 const props = _.extend(
                     Symbol._getDefaultMetadataProperties(metadata), {
-                        'rule': `${prop} = '${value}'`,
+                        'rule': rule,
                         'title': value,
                         'id': id,
                         'fillColor': fillColor,
                         'layerModel': layerModel
                     });
+                //console.log('new symbol:', props.id, props.rule, props.title);
                 return new Symbol(props);
             },
             createContinuousSymbol: function (opts) {

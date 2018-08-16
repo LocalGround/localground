@@ -95,6 +95,7 @@ define(["underscore", "models/symbol", "collections/base"],
             return matchedSymbol;
         },
         __assignToExistingSymbol: function (record) {
+            const prop = this.layerModel.get('group_by')
             let matchedSymbol;
             this.each(symbol => {
                 if (symbol.checkModel(record)) {
@@ -106,6 +107,9 @@ define(["underscore", "models/symbol", "collections/base"],
                 }
             })
             return matchedSymbol;
+        },
+        isNotNull: function (value) {
+            return value !== null && value !== undefined;
         },
         __assignToNewSymbol: function (record) {
             // Note: new continuous symbols don't get created, and instead
@@ -128,9 +132,9 @@ define(["underscore", "models/symbol", "collections/base"],
                 matchedSymbol.addModel(record);
                 this.add(matchedSymbol);
 
-            } else if (this.layerModel.isCategorical() && value) {
+            } else if (this.layerModel.isCategorical() && this.isNotNull(value)) {
                 if (this.debug) {
-                    console.log('creating new categorical symbol');
+                    console.log('creating new categorical symbol...');
                 }
                 matchedSymbol = Symbol.createCategoricalSymbol({
                     layerModel: this.layerModel,

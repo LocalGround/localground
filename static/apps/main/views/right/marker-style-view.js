@@ -316,9 +316,10 @@ define(["jquery",
             },
 
             catData: function() {
-                let categoryList = this.getCatInfo();
+                let categoryList = this.getCategoryList();
                 this.updatePalettes(categoryList.length);
                 this.setSymbols(this.buildCategoricalSymbols(categoryList));
+                console.log('symbols set');
             },
 
             buildUniformSymbols: function (key) {
@@ -416,17 +417,16 @@ define(["jquery",
              * how many instances there are of each unique
              * category/entry
             */
-            getCatInfo: function () {
-                let categoryList = [];
-                var key = this.model.get('dataset').overlay_type,
-                selected = this.model.get('group_by'),
-                collection = this.app.dataManager.getCollection(key);
-                collection.models.forEach(function(d) {
-                    if (!categoryList.includes(d.get(selected)) && d.get(selected)) {
-                        categoryList.push(d.get(selected));
-                    }
+            getCategoryList: function () {
+                const key = this.model.get('dataset').overlay_type
+                const collection = this.app.dataManager.getCollection(key);
+                const categoryList = collection.map(model => {
+                    const val = model.get(this.model.get('group_by'));
+                    return (typeof val === 'string') ? val.toLowerCase() : val;
+                }).filter(val => {
+                    return val !== null && val !== undefined
                 });
-                return categoryList;
+                return Array.from(new Set(categoryList)).sort();
             },
 
             setSymbols: function (symbs) {

@@ -117,6 +117,7 @@ define(["underscore", "marionette", "models/project", "models/record",
                     key: opts.dataType
                 });
                 const collection = new Records(jsonData, opts);
+                //console.log(opts.fields);
                 this.__attachFieldsToRecords(opts.fields, collection);
                 return collection;
             },
@@ -273,7 +274,7 @@ define(["underscore", "marionette", "models/project", "models/record",
                 return this.__dataDictionary[dataType];
             },
 
-            
+
             getMediaItem: function(id, type) {
                 return this.getCollection(type).get(id);
             },
@@ -287,7 +288,7 @@ define(["underscore", "marionette", "models/project", "models/record",
             getVideo: function (id) {
                 return this.getCollection('videos').get(id);
             },
-          
+
             getDatasets: function () {
                 return this.__getCollections().filter(collection => {
                     return collection.getIsCustomType();

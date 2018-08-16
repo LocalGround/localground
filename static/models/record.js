@@ -92,60 +92,59 @@ define(["models/base",
                 });
                 association.destroy({success: callback});
             },
-            getFormSchema: function () {
-                var fields = this.get("fields"),
-                    field,
-                    type,
-                    name,
-                    title,
-                    i,
-                    options,
-                    extras,
-                    j,
-                    schema = {};
-                for (i = 0; i < this.get("fields").length; i++) {
-                    field = this.get("fields")[i];
-                    field.val = this.get(field.col_name);
-                    type = field.data_type.toLowerCase();
-                    name = field.col_name;
-                    title = field.col_alias;
-                    switch (type) {
-                    case "rating":
-                        options = [];
-                        extras = JSON.parse(field.extras);
-                        for (j = 0; j < extras.length; j++) {
-                            options.push({
-                                val: parseInt(extras[j].value, 10),
-                                label: extras[j].name
-                            });
-                        }
-                        schema[name] = { type: 'Rating', title: title, options: options };
-                        break;
-                    case "choice":
-                        options = [];
-                        extras = JSON.parse(field.extras);
-                        for (j = 0; j < extras.length; j++) {
-                            options.push(extras[j].name);
-                        }
-                        schema[name] = { type: 'Select', title: title, options: options, listType: 'Number' };
-                        break;
-                    case "date-time":
-                        schema[name] = {
-                            title: title,
-                            type: 'DateTimePicker'
-                        };
-                        break;
-                    case "boolean":
-                        schema[name] = { type: 'Checkbox', title: title };
-                        break;
-                    case "integer":
-                    case "decimal":
-                        schema[name] = { type: 'Number', title: title };
-                        break;
-                    default:
-                        schema[name] = { type: 'TextArea', title: title };
+            parseExtras: function (extras) {
+                if (typeof extras === 'string') {
+                    try {
+                        return JSON.parse(extras);
+                    } catch(e) {
+                        console.error(extras, 'not parsed');
+                        return {};
                     }
+                } else if (typeof extras !== 'object') {
+                    return {};
                 }
+                return extras;
+            },
+            getFormSchema: function () {
+                const schema = {};
+                let options;
+                this.get("fields").forEach(field => {
+                    const type = field.data_type.toLowerCase();
+                    const name = field.col_name;
+                    const title = field.col_alias;
+                    field.val = this.get(field.col_name);
+                    field.extras = this.parseExtras(field.extras);
+                    switch (type) {
+                        case "rating":
+                            options = field.extras.choices.map(choice => {
+                                return {
+                                    label: choice.name,
+                                    val: parseInt(choice.value, 10)
+                                };
+                            });
+                            schema[name] = { type: 'Rating', title: title, options: options };
+                            break;
+                        case "choice":
+                            options = field.extras.choices.map(choice => choice.name);
+                            schema[name] = { type: 'Select', title: title, options: options, listType: 'Number' };
+                            break;
+                        case "date-time":
+                            schema[name] = {
+                                title: title,
+                                type: 'DateTimePicker'
+                            };
+                            break;
+                        case "boolean":
+                            schema[name] = { type: 'Checkbox', title: title };
+                            break;
+                        case "integer":
+                        case "decimal":
+                            schema[name] = { type: 'Number', title: title };
+                            break;
+                        default:
+                            schema[name] = { type: 'TextArea', title: title };
+                    }
+                });
                 schema.children = { type: 'MediaEditor', title: 'children' };
                 return schema;
             }

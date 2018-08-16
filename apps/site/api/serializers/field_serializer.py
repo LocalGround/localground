@@ -8,22 +8,26 @@ from localground.apps.site.api import fields
 
 
 class FieldSerializerSimple(serializers.ModelSerializer):
-
     data_type = serializers.SlugRelatedField(
         queryset=models.DataType.objects.all(),
         slug_field='name',
         required=False
     )
+    extras = fields.JSONField(
+        style={'base_template': 'json.html', 'rows': 5},
+        required=False,
+        allow_null=True
+    )
     key = serializers.SerializerMethodField()
 
     def get_key(self, obj):
-        return obj.col_name_db
+        return obj.col_name
 
     class Meta:
         model = models.Field
         read_only_fields = fields = (
             'id',  'key', 'col_alias', 'col_name', 'extras', 'ordering',
-            'data_type')
+            'data_type', 'extras')
 
 
 class FieldSerializerBase(
@@ -36,21 +40,10 @@ class FieldSerializerBase(
     url = serializers.SerializerMethodField()
     col_name = serializers.SerializerMethodField()
     dataset = serializers.SerializerMethodField()
-    help_text = 'Use to store ratings and lookup tables. Example: ['
-    help_text += '{"key1": "value1", "key2": "value2" }, '
-    help_text += '{"key1": "value3", "key2": "value4" }]'
-    extras = fields.JSONField(
-        style={'base_template': 'json.html', 'rows': 5},
-        required=False,
-        allow_null=True,
-        help_text=help_text
-    )
 
     class Meta:
         model = models.Field
-        fields = (
-            'id', 'key', 'dataset', 'col_alias', 'col_name', 'extras',
-            'ordering', 'data_type', 'url')
+        fields = FieldSerializerSimple.Meta.fields + ('dataset', 'url')
 
     def get_url(self, obj):
         return '%s/api/0/datasets/%s/fields/%s' % \
