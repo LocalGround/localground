@@ -103,9 +103,9 @@ define([
                     text: "Text",
                     number: "Number",
                     boolean: "Yes / No",
-                    choice: "Choice",
-                    date: "Date",
-                    time: "Time"
+                    choice: "Choice" //,
+                    // date: "Date",
+                    // time: "Time"
                 });
             });
 
