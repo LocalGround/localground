@@ -172,6 +172,8 @@ define(["underscore", "marionette", "models/project", "models/record",
                 });
             },
             addLayerToMap: function (map, layer) {
+                console.log(layer.get("dataset"));
+                console.log(layer);
                 const dataset = layer.get("dataset");
                 if (!this.hasCollection(dataset.overlay_type)) {
                     this.__addDataset(dataset);

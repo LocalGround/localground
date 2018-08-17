@@ -2,9 +2,9 @@ define([
     "underscore",
     "collections/basePageableWithProject",
     "models/record",
-    "jquery",
+    "models/Form",
     "collections/baseMixin"
-], function (_, BasePageableWithProject, Record, $, CollectionMixin) {
+], function (_, BasePageableWithProject, Record, Form, CollectionMixin) {
     "use strict";
     var Records = BasePageableWithProject.extend({
         model: Record,
@@ -16,7 +16,7 @@ define([
         url: null,
         initialize: function (recs, opts) {
             opts = opts || {};
-            $.extend(this, opts);
+            _.extend(this, opts);
             if (!this.url) {
                 alert("The Records collection requires a url parameter upon initialization");
                 return;
@@ -42,6 +42,23 @@ define([
             sortKey: "ordering",
             pageSize: "page_size",
 			currentPage: "page"
+        },
+
+        getForm: function () {
+            if (!this.form) {
+                this.form = new Form({
+                    id: this.formID,
+                    name: this.name,
+                    project_id: this.projectID
+                });
+            }
+            return this.form;
+        },
+        getDatasetName: function () {
+            return this.getForm().get('name');
+        },
+        getDatasetID: function () {
+            return this.getForm().id;
         },
 
         parseState: function (resp, queryParams, state, options) {
@@ -121,7 +138,7 @@ define([
         fetch: function (options) {
             options = options || {};
 			options.data = options.data || {};
-			$.extend(options.data, {
+			_.extend(options.data, {
 				page_size: this.state.pageSize,
 				format: 'json',
 				page: this.state.currentPage,
@@ -129,7 +146,7 @@ define([
                 order: (this.state.order === -1) ? "asc" : "desc"
 			});
             if (this.query) {
-                $.extend(options.data, {
+                _.extend(options.data, {
 					query: this.query
 				});
             }

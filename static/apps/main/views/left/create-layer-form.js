@@ -16,7 +16,12 @@ define ([
                     title: this.getDefaultLayerTitle(),
                     create_new_dataset: '',
                     dataset: this.datasets[0].formID,
-                    datasets: this.datasets
+                    datasets: this.datasets.map(dataset => {
+                        return {
+                            id: dataset.getDatasetID(),
+                            title: dataset.getDatasetName()
+                        }
+                    })
                 };
             },
             events: {

@@ -49,52 +49,53 @@ define(["jquery",
                     items: len === 1 ? 'item' : 'items'
                 };
             },
-            onRender: function () {
-                var that = this,
-                    fillColor = this.model.get('fillColor'),
-                    strokeColor = this.model.get('strokeColor'),
-                    id = this.model.get('id');
-
-                //new color picker is added to the dom each time the icon is clicked,
-                //so we remove the previous color picker with each additional click.
-                //for this reason, each marker's picker needs to be uniquely identified
-                $(".marker-stroke-color-picker").remove();
-                this.strokePicker = this.$el.find('#stroke-color-picker').ColorPicker({
-                    color: strokeColor,
-                    onShow: function (colpkr) {
-                        //console.log(strokeColor);
-                        $(colpkr).fadeIn(200);
-                        return false;
-                    },
-                    onHide: function (colpkr) {
-                        if(that.model.get('strokeColor') !== strokeColor) {
-                            that.updateStrokeColor(strokeColor);
-                        }
-                        $(colpkr).fadeOut(200);
-                        return false;
-                    },
-                    onChange: function (hsb, hex, rgb) {
-                        strokeColor = "#" + hex;
-                    }
+            initColorPicker: function (opts) {
+                $('.' + opts.className).remove();
+                this.$el.find('#' + opts.elementID).ColorPicker({
+                   color: opts.color,
+                   onShow: function (colpkr) {
+                       $(colpkr).fadeIn(200);
+                       return false;
+                   },
+                   onHide: (colpkr) => {
+                       this.updateColor(opts.modelProperty, opts.color);
+                       $('#' + opts.id).css('background', opts.color);
+                       $(colpkr).fadeOut(200);
+                       return false;
+                   },
+                   onChange: (hsb, hex, rgb) => {
+                       opts.color = "#" + hex;
+                   }
                 });
-                $(".colorpicker:last-child").addClass('marker-stroke-color-picker');
+                $(".colorpicker:last-child").addClass(opts.className);
             },
+            onRender: function () {
+                // fill colorpicker:
+                this.initColorPicker({
+                    className: 'marker-fill-color-picker',
+                    elementID: 'fill-color-picker',
+                    color: this.model.get('fillColor'),
+                    modelProperty: 'fillColor'
+                });
 
+                // stroke colorpicker:
+                this.initColorPicker({
+                    className: 'marker-stroke-color-picker',
+                    elementID: 'stroke-color-picker',
+                    color: this.model.get('strokeColor'),
+                    modelProperty: 'strokeColor'
+                });
+            },
+            updateColor: function (prop, color) {
+                if (this.model.get(prop)!== color) {
+                    this.model.set(prop, color);
+                }
+            },
             updateSymbolTitle: function(e) {
                 this.model.set('title', this.$el.find('.symbol-title-input').val());
             },
             selectText: function (e) {
                 $(e.target).select();
-            },
-
-            updateFillColor: function (hex) {
-                this.model.set("fillColor", hex);
-                $('#fill-color-picker').css('background', hex);
-            },
-
-            updateStrokeColor: function (hex) {
-                this.model.set("strokeColor", hex);
-                $('#stroke-color-picker').css('background', hex);
             },
 
             updateShape: function (e) {

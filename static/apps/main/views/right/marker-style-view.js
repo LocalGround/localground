@@ -61,7 +61,8 @@ define(["jquery",
                 'click .style-by-menu_close': 'hideStyleMenu',
                 'click #cat-radio': 'toggleContCat',
                 'click #cont-radio': 'toggleContCat',
-                'click .style-options': 'toggleStyleOptions'
+                //'click .style-options': 'toggleStyleOptions',
+                'click .example-markers': 'toggleStyleOptions'
             },
 
             modelEvents: {
@@ -102,30 +103,43 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'update-map', this.updateMap);
             },
 
-            onRender: function () {
-                var that = this;
-                let strokeColor = this.model.get('metadata').strokeColor;
-                let fillColor = this.model.get('metadata').fillColor;
-
-                $(".layer-stroke-color-picker").remove();
-                this.$el.find('#stroke-color-picker').ColorPicker({
-                    color: strokeColor,
-                    onShow: function (colpkr) {
-                        $(colpkr).fadeIn(200);
-                        return false;
-                    },
-                    onHide: function (colpkr) {
-                        if(that.model.get('metadata').strokeColor !== strokeColor) {
-                            that.updateStrokeColor(strokeColor);
-                        }
-                        $(colpkr).fadeOut(200);
-                        return false;
-                    },
-                    onChange: function (hsb, hex, rgb) {
-                        strokeColor = "#" + hex;
-                    }
+            initColorPicker: function (opts) {
+                $('.' + opts.className).remove();
+                this.$el.find('#' + opts.elementID).ColorPicker({
+                   color: opts.color,
+                   onShow: function (colpkr) {
+                       $(colpkr).fadeIn(200);
+                       return false;
+                   },
+                   onHide: (colpkr) => {
+                       if (this.model.get('metadata')[opts.modelProperty] !== opts.color) {
+                           this.updateFillColor(opts.color);
+                       }
+                       $(colpkr).fadeOut(200);
+                       return false;
+                   },
+                   onChange: (hsb, hex, rgb) => {
+                       opts.color = "#" + hex;
+                   }
                 });
-                $(".colorpicker:last-child").addClass('layer-stroke-color-picker');
+                $(".colorpicker:last-child").addClass(opts.className);
+            },
+
+            onRender: function () {
+                // fill colorpicker:
+                this.initColorPicker({
+                    className: 'layer-fill-color-picker',
+                    elementID: 'fill-color-picker',
+                    color: this.model.get('metadata').fillColor,
+                    modelProperty: 'fillColor'
+                });
+                // stroke colorpicker:
+                this.initColorPicker({
+                    className: 'layer-stroke-color-picker',
+                    elementID: 'stroke-color-picker',
+                    color: this.model.get('metadata').strokeColor,
+                    modelProperty: 'strokeColor'
+                });
             },
 
             hideColorRamp: function (e) {

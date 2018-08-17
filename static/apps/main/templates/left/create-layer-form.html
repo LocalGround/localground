@@ -19,7 +19,7 @@
     <div class="row">
         <select id="dataset-list" {{#if create_new_dataset}}disabled="disabled"{{/if}}>
             {{#each datasets}}
-                <option value="{{this.formID}}" {{#ifequal this.formID dataset}}SELECTED{{/ifequal}}>{{this.title}}</option>
+                <option value="{{this.id}}" {{#ifequal this.id dataset}}SELECTED{{/ifequal}}>{{this.title}}</option>
             {{/each}}
         <select>
     </div>

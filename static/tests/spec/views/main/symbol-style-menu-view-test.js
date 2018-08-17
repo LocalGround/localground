@@ -14,8 +14,7 @@ define([
             spyOn(SymbolStyleMenuView.prototype, 'onRender').and.callThrough();
             spyOn(SymbolStyleMenuView.prototype, 'updateSymbolTitle').and.callThrough();
             spyOn(SymbolStyleMenuView.prototype, 'selectText').and.callThrough();
-            spyOn(SymbolStyleMenuView.prototype, 'updateFillColor').and.callThrough();
-            spyOn(SymbolStyleMenuView.prototype, 'updateStrokeColor').and.callThrough();
+            spyOn(SymbolStyleMenuView.prototype, 'updateColor').and.callThrough();
             spyOn(SymbolStyleMenuView.prototype, 'updateShape').and.callThrough();
             spyOn(SymbolStyleMenuView.prototype, 'updateLayerSymbols').and.callThrough();
             spyOn(SymbolStyleMenuView.prototype, 'updateOpacity').and.callThrough();
@@ -114,19 +113,19 @@ define([
                 expect(this.view.updateLayerSymbols).toHaveBeenCalledTimes(1);
                 expect(this.view.onRender).toHaveBeenCalledTimes(2);
             });
-            it('updateFillColor(color) should work', function () {
+            it('updateColor() should work for fill color', function () {
                 expect(this.view.updateLayerSymbols).toHaveBeenCalledTimes(0);
                 expect(this.view.onRender).toHaveBeenCalledTimes(1);
-                this.view.updateFillColor('red');
+                this.view.updateColor('fillColor', 'red');
                 expect(this.view.model.get('fillColor')).toEqual('red');
                 expect(this.view.$el.find('#fill-color-picker').css('background')).toEqual('red');
                 expect(this.view.updateLayerSymbols).toHaveBeenCalledTimes(1);
                 expect(this.view.onRender).toHaveBeenCalledTimes(2);
             });
-            it('updateStrokeColor() should work', function () {
+            it('updateColor() should work for stroke color', function () {
                 expect(this.view.updateLayerSymbols).toHaveBeenCalledTimes(0);
                 expect(this.view.onRender).toHaveBeenCalledTimes(1);
-                this.view.updateStrokeColor('red');
+                this.view.updateColor('strokeColor', 'red');
                 expect(this.view.model.get('strokeColor')).toEqual('red');
                 expect(this.view.$el.find('#stroke-color-picker').css('background')).toEqual('red');
                 expect(this.view.updateLayerSymbols).toHaveBeenCalledTimes(1);

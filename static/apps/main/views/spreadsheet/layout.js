@@ -1,9 +1,10 @@
 define(["marionette",
         "handlebars",
         "apps/main/views/spreadsheet/spreadsheet",
+        'apps/main/views/spreadsheet/rename-dataset',
         "text!../../templates/spreadsheet/layout.html"
     ],
-    function (Marionette, Handlebars, Spreadsheet, LayoutTemplate)  {
+    function (Marionette, Handlebars, Spreadsheet, RenameDataset, LayoutTemplate)  {
         'use strict';
         const SpreadsheetLayout = Marionette.LayoutView.extend({
             regions: {
@@ -17,12 +18,39 @@ define(["marionette",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.template = Handlebars.compile(LayoutTemplate);
+                this.secondaryModal = this.app.secondaryModal;
             },
             onRender: function () {
                 this.showSpreadsheet();
             },
-            openRenameForm: function () {
-                alert('rename!');
+            openRenameForm: function (e) {
+                const renameDatasetForm = new RenameDataset({
+                    app: this.app,
+                    model: this.collection.getForm(),
+                    dataset: this.collection,
+                    sourceModal: this.secondaryModal
+                });
+
+                this.secondaryModal.update({
+                    app: this.app,
+                    view: renameDatasetForm,
+                    title: 'Rename Dataset',
+                    width: '300px',
+                    showSaveButton: true,
+                    saveFunction: () => {
+                        renameDatasetForm.saveDataset.bind(renameDatasetForm)();
+                        this.updateDatasetName();
+                    },
+                    showDeleteButton: false
+                });
+                this.secondaryModal.show();
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+            updateDatasetName: function () {
+                const formModel = this.collection.getForm();
+                this.$el.find('.title h1').html(formModel.get('name'));
             },
             addRow: function (e) {
                 this.getSpreadsheet().addRow();
@@ -32,13 +60,10 @@ define(["marionette",
             },
             templateHelpers: function () {
                 return {
-                    dataset_name: this.collection.name
+                    dataset_name: this.collection.getDatasetName()
                 }
             },
 
-            showMenu: function () {
-                console.log('showMenu');
-            },
             getSpreadsheet: function () {
                 if (!this.spreadsheet) {
                     this.spreadsheet = new Spreadsheet({

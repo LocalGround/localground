@@ -25,7 +25,7 @@ define(["marionette",
          // layerListView
         var LayerListChild =  Marionette.CompositeView.extend({
             collectionEvents: {
-                'reset': 'reRender'
+                'reset': 'reRender',
             },
             modelEvents: {
                 'change:group_by': 'updateGroupBy',
@@ -63,6 +63,7 @@ define(["marionette",
             attachRecordEventHandlers: function () {
                 this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol);
                 this.listenTo(this.dataCollection, 'record-updated', this.reRenderOrReassignRecordToSymbol);
+                this.listenTo(this.dataCollection, 'renamed', this.updateDatasetName);
                 this.listenTo(this.app.vent, 'geometry-created', this.addRecord);
                 this.listenTo(this.app.vent, 'record-has-been-deleted', this.removeEmpty);
             },
@@ -76,7 +77,7 @@ define(["marionette",
                 //console.log('rendering...');
                 return {
                     project: this.app.dataManager.getProject(),
-                    name: this.dataCollection.name.toLowerCase(),
+                    name: this.dataCollection.getDatasetName().toLowerCase(),
                     isChecked: this.model.get("metadata").isShowing,
                     hasData: !this.isEmpty(),
                     isIndividual: this.model.isIndividual()
@@ -120,6 +121,10 @@ define(["marionette",
 
             reRender: function () {
                 this.symbolModels.assignRecords(this.dataCollection);
+            },
+            updateDatasetName: function () {
+                const datasetName = this.dataCollection.getDatasetName();
+                this.$el.find('.open-spreadsheet').html(datasetName.toLowerCase());
             },
             updateGroupBy: function () {
                 this.$el.find('.layer-style-by').html(

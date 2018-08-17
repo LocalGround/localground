@@ -25,9 +25,7 @@ define(["underscore",
                 this.fieldIndex = this.columnID - 3; //to account for admin columns
                 this.modal = this.app.modal;
                 this.popover = this.app.popover;
-                this.secondaryModal = new Modal({
-                    app: this.app
-                });
+                this.secondaryModal = this.app.secondaryModal;
             },
 
             template: Handlebars.compile(ContextMenuTemplate),
