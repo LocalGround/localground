@@ -2,7 +2,7 @@ define([
     "underscore",
     "collections/basePageableWithProject",
     "models/record",
-    "models/Form",
+    "models/form",
     "collections/baseMixin"
 ], function (_, BasePageableWithProject, Record, Form, CollectionMixin) {
     "use strict";
