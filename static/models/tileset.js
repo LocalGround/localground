@@ -1,5 +1,5 @@
-define(["models/base", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "lib/maps/tiles/virginia-dotmap"],
-    function (Base, MapBox, Stamen, VirginiaDotMap) {
+define(["models/base", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"],
+    function (Base, MapBox, Stamen) {
         "use strict";
         var TileSet = Base.extend({
             getClientStyles: function () {
