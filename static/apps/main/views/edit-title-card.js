@@ -6,8 +6,9 @@ define([
     "views/add-media",
     "lib/media/photo-video-viewer",
     "lib/media/audio-viewer",
+    "lib/media/edit-media-info",
     "text!../templates/edit-title-card.html"
-], function (_, Handlebars, Marionette, AddMedia, PhotoVideoView, AudioView, EditTitleCardTemplate) {
+], function (_, Handlebars, Marionette, AddMedia, PhotoVideoView, AudioView, EditMediaInfoView, EditTitleCardTemplate) {
     "use strict";
     var EditTitleCard = Marionette.ItemView.extend({
         template: Handlebars.compile(EditTitleCardTemplate),
@@ -60,7 +61,22 @@ define([
         },
 
         editModel: function (model) {
-            alert(model.get('name'));
+            console.log(model);
+            const editMediaInfo = new EditMediaInfoView({
+                app: this.app,
+                model: model
+            });
+
+            this.secondaryModal.update({
+                title: 'Edit Media Info',
+                view: editMediaInfo,
+                width: 700,
+                saveButtonText: "Save",
+                showDeleteButton: false,
+                showSaveButton: true,
+                saveFunction: editMediaInfo.saveMediaInfo.bind(editMediaInfo)
+            });
+            this.secondaryModal.show();
         },
 
         updateMediaOrdering: function (id, overlay_type, newOrder) {
@@ -89,7 +105,7 @@ define([
                 saveButtonText: "Add",
                 showDeleteButton: false,
                 showSaveButton: true,
-                saveFunction: uploadAttachMedia.addModels.bind(uploadAttachMedia),
+                saveFunction: uploadAttachMedia.addModels.bind(uploadAttachMedia)
             });
             this.secondaryModal.show();
             uploadAttachMedia.showUploader();

@@ -308,3 +308,15 @@ nav li.active {
     margin: 0px 15px;
     font-size: 13px;
 }
+
+.edit-media-info {
+    img {
+        width: 550px;
+        margin: 0 auto;
+        display: block;
+    }
+
+    .edit-media-info_input {
+        flex-grow: 8 !important;
+    }
+}
