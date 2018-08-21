@@ -92,6 +92,7 @@ $symbolPaddingRight: 26px;
 .symbol {
     padding-bottom: 7px;
     background: white;
+    overflow: hidden;
 
     .highlight {
         background: rgb(123, 155, 225);
@@ -115,6 +116,9 @@ $symbolPaddingRight: 26px;
     border:  3px solid #8bb8ed;
     .symbol-header {
         padding: 0px 7px 0px $symbolPaddingRight;
+    }
+    .symbol-edit, .symbol-edit-individual, .symbol-display.fa-eye  {
+        display: inline;
     }
     .symbol-item {
         a,
@@ -140,6 +144,7 @@ i.fa.fa.fa-question-circle {
     a:hover {
         background: #EEE;
         color: #444;
+        border-right: solid 3px rgba(0,0,0,0);
     }
 
     a, >div {

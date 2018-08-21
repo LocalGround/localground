@@ -31,13 +31,6 @@ define(["models/base", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"],
                         max: this.get("max_zoom"),
                         name: this.getMapTypeID()
                     });
-                case "cooper center":
-                    return new VirginiaDotMap({
-                        url: this.get("base_tile_url"),
-                        max: this.get("max_zoom"),
-                        min: this.get("min_zoom"),
-                        name: this.getMapTypeID()
-                    });
                 case "google":
                     if (this.isCustom()) {
                         return new google.maps.StyledMapType(

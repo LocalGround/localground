@@ -36,7 +36,9 @@ define(["marionette",
                 'change': 'render'
             },
             events: {
-                'click .symbol-edit-individual': 'showSymbolEditMenu'
+                'click .symbol-edit-individual': 'showSymbolEditMenu',
+                'mouseenter': 'highlightSymbolContent',
+                'mouseleave': 'unHighlightSymbolContent',
             },
             template: Handlebars.compile(SymbolItemTemplate),
             tagName: "li",
@@ -58,6 +60,12 @@ define(["marionette",
                     display_name: display_name === undefined ? "" : display_name,
                     geomType: this.model.get('geometry') ? this.model.get('geometry').type : null
                 };
+            },
+            highlightSymbolContent: function (e) {
+                this.parent.highlightSymbolContent(e);
+            },
+            unHighlightSymbolContent: function (e) {
+                this.parent.unHighlightSymbolContent(e);
             },
             getSVG: function () {
                 const icon = this.symbolModel.get('icon');

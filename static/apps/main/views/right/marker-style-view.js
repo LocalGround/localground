@@ -333,13 +333,14 @@ define(["jquery",
                 let categoryList = this.getCategoryList();
                 this.updatePalettes(categoryList.length);
                 this.setSymbols(this.buildCategoricalSymbols(categoryList));
-                console.log('symbols set');
             },
 
             buildUniformSymbols: function (key) {
                 name = this.app.dataManager.getCollection(key).getTitle();
                 this.updateMetadata('fillColor', Symbol.UNIFORM_SYMBOL_COLOR)
-                this.layerDraft.uniform = Symbol.createUniformSymbol(this.model, 1);
+                this.layerDraft.uniform = new Symbols([
+                    Symbol.createUniformSymbol(this.model, 1)
+                ], {layerModel: this.model});
                 this.layerNoLongerNew();
                 return this.layerDraft.uniform;
             },
