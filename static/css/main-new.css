@@ -1834,7 +1834,7 @@ nav li.active {
 
 .edit-media-info img {
   max-width: 500px;
-  max-height: 500px;
+  max-height: 400px;
   margin: 0 auto;
   display: block;
 }

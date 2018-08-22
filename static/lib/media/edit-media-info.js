@@ -21,9 +21,13 @@ define([
             this.model.set('attribution', this.$el.find('#media-attribution').val());
             this.model.set('name', this.$el.find('#media-name').val());
             this.model.set('caption', this.$el.find('#media-caption').val());
-            
-            this.model.save();
-            this.render();
+            console.log(this);
+            this.model.save(null, {
+                success: () => {
+                    this.secondaryModal.hide();
+                }
+            });
+            //this.render();
         }
     });
     return EditMediaInfo;

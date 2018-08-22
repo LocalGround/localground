@@ -228,7 +228,12 @@ define([
                 model: model
             });
 
-            this.app.modal.update({
+            // use the secondaryModal because in the other place where we use 
+            // the editMediaInfo view, we insert into the secondaryModal due to the fact
+            // that the primary modal is already in use. So we also use the secondary 
+            // modal here just to be consistent. Otherwise we encounter issues
+            // when trying to close the modal upon save.
+            this.app.secondaryModal.update({
                 title: 'Edit Media Info',
                 view: editMediaInfo,
                 width: 600,
@@ -238,7 +243,7 @@ define([
                 saveFunction: editMediaInfo.saveMediaInfo.bind(editMediaInfo)
             });
             console.log(this.app);
-            this.app.modal.show();
+            this.app.secondaryModal.show();
         },
         showMediaBrowser: function (e) {
             var addMediaLayoutView = new AddMedia({
