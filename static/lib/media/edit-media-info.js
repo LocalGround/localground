@@ -11,17 +11,10 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
             this.secondaryModal = this.app.secondaryModal;
+            console.log(this.model);
         },
         
         className: 'edit-media-info',
-
-        templateHelpers: function () {
-            return {
-                author: this.model.get('attribution'),
-                caption: this.model.get('caption'),
-                name: this.model.get('name')
-            };
-        },
 
         saveMediaInfo: function () {
             this.model.set('attribution', this.$el.find('#media-attribution').val());

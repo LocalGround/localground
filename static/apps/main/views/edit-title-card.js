@@ -70,7 +70,7 @@ define([
             this.secondaryModal.update({
                 title: 'Edit Media Info',
                 view: editMediaInfo,
-                width: 700,
+                width: 600,
                 saveButtonText: "Save",
                 showDeleteButton: false,
                 showSaveButton: true,
