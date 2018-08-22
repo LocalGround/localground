@@ -1833,7 +1833,8 @@ nav li.active {
 }
 
 .edit-media-info img {
-  width: 500px;
+  max-width: 500px;
+  max-height: 500px;
   margin: 0 auto;
   display: block;
 }

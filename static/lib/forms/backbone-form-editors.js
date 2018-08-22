@@ -8,13 +8,14 @@ define([
     "lib/media/photo-video-viewer",
     "lib/media/audio-viewer",
     "lib/audio/audio-player",
+    "lib/media/edit-media-info",
     "external/pikaday-forked",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
     "text!../forms/templates/date-time-template.html",
     "text!../forms/templates/media-editor-template.html",
     "form"
 ], function ($, Backbone, Handlebars, Association, Audio, AddMedia,
-            PhotoVideoView, AudioView, AudioPlayer, Pikaday, dateFns,
+            PhotoVideoView, AudioView, AudioPlayer, EditMediaInfoView, Pikaday, dateFns,
             DateTimeTemplate, MediaTemplate) {
     "use strict";
 
@@ -222,7 +223,22 @@ define([
             );
         },
         editModel: function (model) {
-            alert(model.get('name'));
+            const editMediaInfo = new EditMediaInfoView({
+                app: this.app,
+                model: model
+            });
+
+            this.app.modal.update({
+                title: 'Edit Media Info',
+                view: editMediaInfo,
+                width: 600,
+                saveButtonText: "Save",
+                showDeleteButton: false,
+                showSaveButton: true,
+                saveFunction: editMediaInfo.saveMediaInfo.bind(editMediaInfo)
+            });
+            console.log(this.app);
+            this.app.modal.show();
         },
         showMediaBrowser: function (e) {
             var addMediaLayoutView = new AddMedia({

@@ -11,6 +11,7 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
             this.secondaryModal = this.app.secondaryModal;
+            console.trace();
             console.log(this.model);
         },
         

@@ -70,7 +70,7 @@ define([
             this.listenTo(this.vent, 'show-modal', this.showModal);
             this.listenTo(this.vent, 'hide-modal', this.hideModal);
             this.addMessageListeners();
-
+            console.log(this);
         },
 
         showDataDetail: function(info) {
