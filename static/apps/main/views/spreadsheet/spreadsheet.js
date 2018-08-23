@@ -6,10 +6,12 @@ define(["jquery",
         "text!../../templates/spreadsheet/spreadsheet.html",
         "lib/media/audio-viewer",
         "lib/media/photo-video-viewer",
+        'apps/main/views/spreadsheet/add-field',
+        'apps/main/views/spreadsheet/edit-field',
         "apps/main/views/spreadsheet/context-menu"
     ],
     function ($, Marionette, _, Handlebars, Handsontable, SpreadsheetTemplate,
-            AudioViewer, PhotoVideoViewer, ContextMenu) {
+            AudioViewer, PhotoVideoViewer, AddField, EditField, ContextMenu) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             /**
@@ -30,6 +32,7 @@ define(["jquery",
                 _.extend(this, opts);
                 this.height = this.height || $(window).height() - 170,
                 this.popover = this.app.popover;
+                this.secondaryModal = this.app.secondaryModal;
                 Marionette.ItemView.prototype.initialize.call(this);
                 this.registerRatingEditor();
 
@@ -42,6 +45,9 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
                 this.listenTo(this.app.vent, "field-updated", this.renderSpreadsheet);
+                this.listenTo(this.app.vent, "add-field", this.addField);
+                this.listenTo(this.app.vent, "edit-field", this.editField);
+                this.listenTo(this.app.vent, "delete-field", this.deleteField);
             },
             registerRatingEditor: function () {
                 // following this tutorial: https://docs.handsontable.com/0.15.0-beta1/tutorial-cell-editor.html
@@ -176,14 +182,31 @@ define(["jquery",
                     manualColumnMove: true,
                     contextMenu: {
                         callback: (key, selection, clickEvent) => {
+                            let fieldIndex;
                             switch (key) {
+                                case 'insert_column_before':
+                                    fieldIndex = selection.end.col - 3; //to account for admin columns
+                                    this.addField(fieldIndex + 1);
+                                    break;
+                                case 'insert_column_after':
+                                    fieldIndex = selection.end.col - 3; //to account for admin columns
+                                    this.addField(fieldIndex + 2);
+                                    break;
+                                case 'edit_column':
+                                    fieldIndex = selection.end.col - 3; //to account for admin columns
+                                    this.editField(fieldIndex);
+                                    break;
+                                case 'delete_column':
+                                    fieldIndex = selection.end.col - 3; //to account for admin columns
+                                    this.deleteField(fieldIndex);
+                                    break;
+                                case 'insert_row_bottom':
+                                    this.addRow();
+                                    break;
                                 case 'delete_row':
                                     const startIndex = Math.min(selection.start.row, selection.end.row);
                                     const numRows = Math.abs(selection.start.row - selection.end.row) + 1;
                                     this.deleteRows(startIndex, numRows);
-                                    break;
-                                case 'insert_row_bottom':
-                                    this.addRow();
                                     break;
                                 default:
                                     console.log(key, selection, clickEvent);
@@ -602,6 +625,75 @@ define(["jquery",
                 this.table.updateSettings({
                     colHeaders: this.getColumnHeaders()
                 });
+            },
+            addField: function (ordering) {
+                const addFieldForm = new AddField({
+                    app: this.app,
+                    dataset: this.collection,
+                    sourceModal: this.secondaryModal,
+                    ordering: ordering
+                });
+
+                this.secondaryModal.update({
+                    app: this.app,
+                    view: addFieldForm,
+                    title: 'Add New Column',
+                    width: '350px',
+                    height: '250px',
+                    showSaveButton: true,
+                    saveFunction: addFieldForm.saveField.bind(addFieldForm),
+                    showDeleteButton: false
+                });
+                this.secondaryModal.show();
+                this.popover.hide();
+            },
+
+            editField: function (fieldIndex) {
+                const field = this.fields.at(fieldIndex);
+                const editFieldForm = new EditField({
+                    app: this.app,
+                    model: this.field,
+                    dataset: this.collection,
+                    sourceModal: this.secondaryModal
+                });
+
+                this.secondaryModal.update({
+                    app: this.app,
+                    view: editFieldForm,
+                    title: 'Edit Column',
+                    width: '300px',
+                    showSaveButton: true,
+                    saveFunction: editFieldForm.saveField.bind(editFieldForm),
+                    showDeleteButton: false
+                });
+                this.secondaryModal.show();
+                this.popover.hide();
+            },
+            deleteField: function (fieldIndex) {
+                const field = this.fields.at(fieldIndex);
+                if (!confirm(`Do you want to delete the "${field.get('col_alias')}" field? This cannot be undone, and may affect other maps and layers in your project.`)){
+                    return;
+                }
+                field.destroy({
+                    wait: true,
+                    success: (e) => {
+                        this.renderSpreadsheet();
+                        this.app.dataManager.reloadDatasetFromServer(this.collection);
+                    },
+                    error: (model, response) => {
+                        console.error(response);
+                        try {
+                            const error = JSON.parse(response.responseText);
+                            const dependencies = error.dependencies.join("</li></li>")
+                            const message = `
+                                ${error.error_message}:<ul><li>${dependencies}</li></ul>`;
+                            this.app.vent.trigger('error-message', message);
+                        } catch(e) {
+                            this.app.vent.trigger('error-message', 'The column could not be deleted: unknown error');
+                        }
+                    }
+                });
+                this.popover.hide();
             }
         });
         return Spreadsheet;

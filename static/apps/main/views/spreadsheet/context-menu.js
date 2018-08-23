@@ -1,12 +1,10 @@
 define(["underscore",
         "marionette",
         "handlebars",
-        'apps/main/views/spreadsheet/edit-field',
-        'apps/main/views/spreadsheet/add-field',
         "text!../../templates/spreadsheet/context-menu.html",
         "lib/modals/modal"
     ],
-    function (_, Marionette, Handlebars, EditField, AddField, ContextMenuTemplate, Modal) {
+    function (_, Marionette, Handlebars, ContextMenuTemplate, Modal) {
         'use strict';
 
         var SpreadsheetMenu =  Marionette.ItemView.extend({
@@ -16,8 +14,8 @@ define(["underscore",
                 'click .insert-col-before': 'addFieldBefore',
                 'click .insert-col-after': 'addFieldAfter',
                 'click .duplicate-col': 'itemClicked',
-                'click .delete-col': 'deleteColumn',
-                'click .rename-col': 'renameColumn'
+                'click .delete-col': 'deleteField',
+                'click .rename-col': 'editField'
             },
 
             initialize: function (opts) {
@@ -38,29 +36,6 @@ define(["underscore",
             sortDesc: function (e) {
                 this.sort('desc');
             },
-            renameColumn: function (e) {
-                const editFieldForm = new EditField({
-                    app: this.app,
-                    model: this.field,
-                    dataset: this.collection,
-                    sourceModal: this.secondaryModal
-                });
-
-                this.secondaryModal.update({
-                    app: this.app,
-                    view: editFieldForm,
-                    title: 'Edit Column',
-                    width: '300px',
-                    showSaveButton: true,
-                    saveFunction: editFieldForm.saveField.bind(editFieldForm),
-                    showDeleteButton: false
-                });
-                this.secondaryModal.show();
-                this.popover.hide();
-                if (e) {
-                    e.preventDefault();
-                }
-            },
             sort: function (direction) {
                 /*
                 MEGA HACK:
@@ -80,67 +55,27 @@ define(["underscore",
                     this.table.sort(this.columnID);
                 }
             },
-            deleteColumn: function (e) {
-                e.preventDefault();
-                if (!confirm("Do you want to delete this field?")){
-                    return;
-                }
-                const field = this.fields.at(this.fieldIndex);
-                field.destroy({
-                    wait: true,
-                    success: (e) => {
-                        this.app.vent.trigger('render-spreadsheet');
-                        this.app.dataManager.reloadDatasetFromServer(this.collection);
-                    },
-                    error: (model, response) => {
-                        console.error(response);
-                        try {
-                            const error = JSON.parse(response.responseText);
-                            const dependencies = error.dependencies.join("</li></li>")
-                            const message = `
-                                ${error.error_message}:<ul><li>${dependencies}</li></ul>`;
-                            this.app.vent.trigger('error-message', message);
-                        } catch(e) {
-                            this.app.vent.trigger('error-message', 'The column could not be deleted: unknown error');
-                        }
-                    }
-                });
-                this.popover.hide();
-            },
-
-            addField: function (ordering, e) {
-                const addFieldForm = new AddField({
-                    app: this.app,
-                    dataset: this.collection,
-                    sourceModal: this.secondaryModal,
-                    ordering: ordering
-                });
-
-                this.secondaryModal.update({
-                    app: this.app,
-                    view: addFieldForm,
-                    title: 'Add New Column',
-                    width: '350px',
-                    height: '250px',
-                    showSaveButton: true,
-                    saveFunction: addFieldForm.saveField.bind(addFieldForm),
-                    showDeleteButton: false
-                });
-                this.secondaryModal.show();
-                this.popover.hide();
-                if (e) {
-                    e.preventDefault();
-                }
-            },
             addFieldBefore: function (e) {
                 //put the column in the same position as the reference column
                 const ordering = this.fieldIndex + 1;
-                this.addField(ordering, e);
+                this.app.vent.trigger('add-field', ordering);
+                if (e) { e.preventDefault(); }
             },
             addFieldAfter: function (e) {
                 //put the column one after the reference column
                 const ordering = this.fieldIndex + 2;
-                this.addField(ordering, e);
+                this.app.vent.trigger('add-field', ordering);
+                if (e) { e.preventDefault(); }
+            },
+            editField: function (e) {
+                this.app.vent.trigger('edit-field', this.fieldIndex);
+                if (e) {
+                    e.preventDefault();
+                }
+            },
+            deleteField: function (e) {
+                this.app.vent.trigger('delete-field', this.fieldIndex);
+                if (e) { e.preventDefault(); }
             }
 
         });
