@@ -8,14 +8,13 @@ define([
     "lib/media/photo-video-viewer",
     "lib/media/audio-viewer",
     "lib/audio/audio-player",
-    "lib/media/edit-media-info",
     "external/pikaday-forked",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
     "text!../forms/templates/date-time-template.html",
     "text!../forms/templates/media-editor-template.html",
     "form"
 ], function ($, Backbone, Handlebars, Association, Audio, AddMedia,
-            PhotoVideoView, AudioView, AudioPlayer, EditMediaInfoView, Pikaday, dateFns,
+            PhotoVideoView, AudioView, AudioPlayer, Pikaday, dateFns,
             DateTimeTemplate, MediaTemplate) {
     "use strict";
 

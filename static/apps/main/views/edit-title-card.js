@@ -6,9 +6,8 @@ define([
     "views/add-media",
     "lib/media/photo-video-viewer",
     "lib/media/audio-viewer",
-    "lib/media/edit-media-info",
     "text!../templates/edit-title-card.html"
-], function (_, Handlebars, Marionette, AddMedia, PhotoVideoView, AudioView, EditMediaInfoView, EditTitleCardTemplate) {
+], function (_, Handlebars, Marionette, AddMedia, PhotoVideoView, AudioView, EditTitleCardTemplate) {
     "use strict";
     var EditTitleCard = Marionette.ItemView.extend({
         template: Handlebars.compile(EditTitleCardTemplate),

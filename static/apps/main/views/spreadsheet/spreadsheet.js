@@ -6,11 +6,10 @@ define(["jquery",
         "text!../../templates/spreadsheet/spreadsheet.html",
         "lib/media/audio-viewer",
         "lib/media/photo-video-viewer",
-        "lib/media/edit-media-info",
         "apps/main/views/spreadsheet/context-menu"
     ],
     function ($, Marionette, _, Handlebars, Handsontable, SpreadsheetTemplate,
-            AudioViewer, PhotoVideoViewer, EditMediaInfoView, ContextMenu) {
+            AudioViewer, PhotoVideoViewer, ContextMenu) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             /**
