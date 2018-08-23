@@ -242,7 +242,6 @@ define([
                 showSaveButton: true,
                 saveFunction: editMediaInfo.saveMediaInfo.bind(editMediaInfo)
             });
-            console.log(this.app);
             this.app.secondaryModal.show();
         },
         showMediaBrowser: function (e) {

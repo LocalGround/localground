@@ -19,7 +19,7 @@ define([
         //     'click .edit': 'editAudioFile'
         // },
         //className: 'media-items_wrapper',
-        //className: 'media-items_wrapper',
+        className: 'media-items_wrapper',
         templateHelpers: function () {
             const showHeader = this.collection.length > 0 && this.templateType === 'standard';
             return {
