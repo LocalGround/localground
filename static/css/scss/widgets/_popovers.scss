@@ -50,15 +50,32 @@ $arrowIndent: 8px;
     }
 }
 .popper,
-.tooltip {
+.tooltip
+{
     position: absolute;
     background: $tipBackground;
     color: black;
     width: 150px;
-    border-radius: 2px;
     /*box-shadow: 0 0 2px rgba(0,0,0,0.4);*/
     box-shadow: 1px 1px 16px 1px rgba(0, 0, 0, 0.2);
     padding: 0px 0px 5px 0px;
+}
+
+//for handsontable context menu:
+.htContextMenu table.htCore {
+    border-radius: 2px;
+    box-shadow: 1px 1px 16px 1px rgba(0, 0, 0, 0.2);
+    padding: 5px 0px 5px 0px;
+    border: none;
+    td {
+        padding: 4px;
+        &.highlight {
+            background-color: $dropdown-hover;
+            div {
+                color: white;
+            }
+        }
+    }
 }
 
 .popper .popper__arrow,

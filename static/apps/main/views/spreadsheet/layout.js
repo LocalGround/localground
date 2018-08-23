@@ -12,7 +12,7 @@ define(["marionette",
                 toolbarRegion: '.spreadsheet-toolbar'
             },
             events: {
-                'click #add-row': 'addRow',
+                //'click #add-row': 'addRow',
                 'click .title': 'openRenameForm'
             },
             initialize: function (opts) {
@@ -52,12 +52,12 @@ define(["marionette",
                 const formModel = this.collection.getForm();
                 this.$el.find('.title h1').html(formModel.get('name'));
             },
-            addRow: function (e) {
-                this.getSpreadsheet().addRow();
-                if (e) {
-                    e.preventDefault();
-                }
-            },
+            // addRow: function (e) {
+            //     this.getSpreadsheet().addRow();
+            //     if (e) {
+            //         e.preventDefault();
+            //     }
+            // },
             templateHelpers: function () {
                 return {
                     dataset_name: this.collection.getDatasetName()

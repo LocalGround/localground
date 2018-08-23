@@ -3014,10 +3014,28 @@ span.action.rounded:hover, a.action.rounded:hover {
   background: white;
   color: black;
   width: 150px;
-  border-radius: 2px;
   /*box-shadow: 0 0 2px rgba(0,0,0,0.4);*/
   box-shadow: 1px 1px 16px 1px rgba(0, 0, 0, 0.2);
   padding: 0px 0px 5px 0px;
+}
+
+.htContextMenu table.htCore {
+  border-radius: 2px;
+  box-shadow: 1px 1px 16px 1px rgba(0, 0, 0, 0.2);
+  padding: 5px 0px 5px 0px;
+  border: none;
+}
+
+.htContextMenu table.htCore td {
+  padding: 4px;
+}
+
+.htContextMenu table.htCore td.highlight {
+  background-color: #7b9be1;
+}
+
+.htContextMenu table.htCore td.highlight div {
+  color: white;
 }
 
 .popper .popper__arrow,

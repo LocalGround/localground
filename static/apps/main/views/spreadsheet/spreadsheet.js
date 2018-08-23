@@ -130,6 +130,22 @@ define(["jquery",
                     field.save({"ordering": newPosition}, { patch: true, wait: true });
                 }
             },
+            deleteRows: function (startIndex, numRows) {
+                const models = [];
+                for (let i = startIndex; i < startIndex + numRows; i++) {
+                    const model = this.getModelFromCell(null, i);
+                    models.push(this.getModelFromCell(null, i));
+                }
+                const doDelete = confirm(
+                    'Are you sure you want to delete the records associated with the following id numbers: #' +
+                    models.map(model => model.id).join(', #') + '? This cannot be undone.'
+                );
+                if (doDelete) {
+                    models.forEach(model => model.destroy());
+                    //calls handsontable event to delete rows:
+                    this.table.alter("remove_row", startIndex, numRows);
+                }
+            },
             renderSpreadsheet: function () {
                 console.log('rendering spreadsheet...');
                 // console.log(this.collection.toJSON());
@@ -158,7 +174,48 @@ define(["jquery",
                     undo: true,
                     manualColumnResize: true,
                     manualColumnMove: true,
-                    //autoRowSize: true,
+                    contextMenu: {
+                        callback: (key, selection, clickEvent) => {
+                            switch (key) {
+                                case 'delete_row':
+                                    const startIndex = Math.min(selection.start.row, selection.end.row);
+                                    const numRows = Math.abs(selection.start.row - selection.end.row) + 1;
+                                    this.deleteRows(startIndex, numRows);
+                                    break;
+                                case 'insert_row_bottom':
+                                    this.addRow();
+                                    break;
+                                default:
+                                    console.log(key, selection, clickEvent);
+                                    const onlyOneCellSelected = (selection.start.row === selection.end.row) &&
+                                        (selection.start.col === selection.end.col);
+                                    console.log(onlyOneCellSelected);
+                            }
+
+                        },
+                        items: {
+                            "insert_column_before": {
+                                name: 'Insert column before'
+                            },
+                            "insert_column_after": {
+                                name: 'Insert column after'
+                            },
+                            "hsep1{\d+}": "---------",
+                            "edit_column": {
+                                name: 'Edit column'
+                            },
+                            "delete_column": {
+                                name: 'Delete column'
+                            },
+                            "hsep2{\d+}": "---------",
+                            "insert_row_bottom": { // Own custom option
+                                name: 'Insert row at bottom'
+                            },
+                            "delete_row": {
+                                name: 'Delete row(s)'
+                            },
+                        }
+                    },
                     //rowHeaders: true,
                     autoInsertRow: true,
                     sortIndicator: true,
@@ -342,40 +399,6 @@ define(["jquery",
 
             },
 
-            buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var that = this,
-                    model;
-                const icon = document.createElement('i');
-                icon.classList.add('fa', 'fa-trash');
-                Handsontable.Dom.empty(td);
-                td.appendChild(icon);
-                icon.onclick = function () {
-                    if (!confirm("Are you sure you want to delete this row?")) {
-                        return;
-                    }
-                    // First grab the model of the target row to delete
-                    model = that.getModelFromCell(instance, row);
-
-                    // The model holding the row data is destroyed,
-                    // but the row containing the data still appears
-                    // inside the data from handsontable (H.O.T.)
-                    model.destroy();
-
-                    // We need to call instance, since it calls the data table
-                    // from H.O.T. to easily alter the table
-                    // by removing the target row
-                    instance.alter("remove_row", row);
-
-                    if(that.collection.length == 0){
-                        that.renderSpreadsheet();
-                    }
-
-                    // Now there is no trace of any deleted data,
-                    // especially when the user refreshes the page
-                };
-                return td;
-            },
-
             ratingRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 var that = this,
                     model = this.getModelFromCell(instance, row),
@@ -413,13 +436,9 @@ define(["jquery",
                         '</span>' +
                         menuButton
                     );
-                    // cols.push(
-                    //     this.fields.at(i).get("col_alias") + menuButton
-                    // );
                 }
                 cols.push("Photos & Videos");
                 cols.push("Audio Files");
-                cols.push("Delete");
                 return cols;
             },
             getColumnWidths: function () {
@@ -435,7 +454,6 @@ define(["jquery",
                 })
                 cols.push(350);  // photos column
                 cols.push(210);  // audio column
-                cols.push(50);   // delete column
                 return cols;
             },
 
@@ -546,7 +564,6 @@ define(["jquery",
                 cols.push(
                     { data: "media", renderer: this.photoVideoListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
                     { data: "media", renderer: this.audioListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                    { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                 );
                 return cols;
             },
