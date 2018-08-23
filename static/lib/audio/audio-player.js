@@ -1,5 +1,10 @@
-define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.html", "lib/handlebars-helpers"],
-    function (_, Marionette, Handlebars, PlayerTemplate) {
+define([
+    "underscore", "marionette", "handlebars",
+    "lib/media/edit-media-info",
+    "text!../audio/audio-player.html", 
+    "lib/handlebars-helpers"
+],
+    function (_, Marionette, Handlebars, EditMediaInfoView, PlayerTemplate) {
         'use strict';
 
         var AudioPlayer = Marionette.ItemView.extend({
@@ -25,6 +30,7 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 //this.detachMedia = this.detachMedia || (() => {});
                 this.render();
                 this.audio = this.$el.find(".audio").get(0);
+                this.secondaryModal = this.app.secondaryModal;
                 this.listenTo(this.app.vent, 'audio-carousel-advanced', this.stop);
 
                 // need to attach audio events directly to the element b/c the
@@ -45,12 +51,23 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 }
             },
             edit: function (e) {
-                // editFunction passed in via constructor:
-                if (this.editFunction) {
                     const audioID = parseInt($(e.target).attr('data-id'));
                     const audioModel = this.app.dataManager.getAudio(audioID);
-                    this.editFunction(audioModel);
-                }
+                    const editMediaInfo = new EditMediaInfoView({
+                        app: this.app,
+                        model: audioModel
+                    });
+        
+                    this.secondaryModal.update({
+                        title: 'Edit Media Info',
+                        view: editMediaInfo,
+                        width: 600,
+                        saveButtonText: "Save",
+                        showDeleteButton: false,
+                        showSaveButton: true,
+                        saveFunction: editMediaInfo.saveMediaInfo.bind(editMediaInfo)
+                    });
+                    this.secondaryModal.show();
             },
             onRender: function () {
                 if (!this.$el.find('.progress-container').get(0)) {

@@ -222,28 +222,7 @@ define([
                 this.refreshWidgetFromDatabase.bind(this)
             );
         },
-        editModel: function (model) {
-            const editMediaInfo = new EditMediaInfoView({
-                app: this.app,
-                model: model
-            });
-
-            // use the secondaryModal because in the other place where we use 
-            // the editMediaInfo view, we insert into the secondaryModal due to the fact
-            // that the primary modal is already in use. So we also use the secondary 
-            // modal here just to be consistent. Otherwise we encounter issues
-            // when trying to close the modal upon save.
-            this.app.secondaryModal.update({
-                title: 'Edit Media Info',
-                view: editMediaInfo,
-                width: 600,
-                saveButtonText: "Save",
-                showDeleteButton: false,
-                showSaveButton: true,
-                saveFunction: editMediaInfo.saveMediaInfo.bind(editMediaInfo)
-            });
-            this.app.secondaryModal.show();
-        },
+        
         showMediaBrowser: function (e) {
             var addMediaLayoutView = new AddMedia({
                 app: this.app,
@@ -277,7 +256,6 @@ define([
         attachPhotoVideoView: function () {
             this.photoVideoView = new PhotoVideoView({
                 detachMediaFunction: this.detachModel.bind(this),
-                editFunction: this.editModel.bind(this),
                 app: this.app,
                 showStars: true,
                 recordModel: this.model,
@@ -290,7 +268,6 @@ define([
         attachAudioView: function () {
             this.audioView = new AudioView({
                 detachMediaFunction: this.detachModel.bind(this),
-                editFunction: this.editModel.bind(this),
                 app: this.app,
                 collection: this.model.getAudioCollection(this.app.dataManager),
                 updateOrdering: this.updateOrdering.bind(this)

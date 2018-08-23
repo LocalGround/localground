@@ -4,13 +4,15 @@ define([
     "handlebars",
     "marionette",
     "lib/modals/modal",
+    "lib/media/edit-media-info",
     "text!./photo-video-viewer.html"
-], function (_, Handlebars, Marionette, Modal, PhotoVideoTemplate) {
+], function (_, Handlebars, Marionette, Modal, EditMediaInfoView, PhotoVideoTemplate) {
     "use strict";
     var PhotoVideoViewer = Marionette.ItemView.extend({
         template: Handlebars.compile(PhotoVideoTemplate),
         initialize: function (opts) {
             _.extend(this, opts);
+            this.secondaryModal = this.app.secondaryModal;
             this.render();
         },
         events: {
@@ -39,14 +41,26 @@ define([
             }
         },
         edit: function (e) {
-            // editFunction passed in via constructor:
-            if (this.editFunction) {
-                const $elem = $(e.target);
-                const attachmentType = $elem.attr("data-type") + 's';
-                const id = parseInt($elem.attr("data-id"));
-                const model = this.app.dataManager.getCollection(attachmentType).get(id);
-                this.editFunction(model);
-            }
+            const $elem = $(e.target);
+            const attachmentType = $elem.attr("data-type") + 's';
+            const id = parseInt($elem.attr("data-id"));
+            const model = this.app.dataManager.getCollection(attachmentType).get(id);
+
+            const editMediaInfo = new EditMediaInfoView({
+                app: this.app,
+                model: model
+            });
+
+            this.secondaryModal.update({
+                title: 'Edit Media Info',
+                view: editMediaInfo,
+                width: 600,
+                saveButtonText: "Save",
+                showDeleteButton: false,
+                showSaveButton: true,
+                saveFunction: editMediaInfo.saveMediaInfo.bind(editMediaInfo)
+            });
+            this.secondaryModal.show(); 
         },
         onRender: function () {
             this.enableMediaReordering();

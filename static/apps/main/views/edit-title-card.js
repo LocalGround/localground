@@ -43,8 +43,7 @@ define([
                 app: this.app,
                 collection: this.model.getPhotoVideoCollection(this.app.dataManager),
                 detachMediaFunction: this.detachMedia.bind(this),
-                updateOrdering: this.updateMediaOrdering.bind(this),
-                editFunction: this.editModel.bind(this)
+                updateOrdering: this.updateMediaOrdering.bind(this)
             });
             this.$el.find('.title-card_media').append(this.photoVideoView.$el);
         },
@@ -54,29 +53,9 @@ define([
                 app: this.app,
                 collection: this.model.getAudioCollection(this.app.dataManager),
                 detachMediaFunction: this.detachMedia.bind(this),
-                updateOrdering: this.updateMediaOrdering.bind(this),
-                editFunction: this.editModel.bind(this)
+                updateOrdering: this.updateMediaOrdering.bind(this)
             });
             this.$el.find('.title-card_media').append(this.audioView.$el);
-        },
-
-        editModel: function (model) {
-            console.log(model);
-            const editMediaInfo = new EditMediaInfoView({
-                app: this.app,
-                model: model
-            });
-
-            this.secondaryModal.update({
-                title: 'Edit Media Info',
-                view: editMediaInfo,
-                width: 600,
-                saveButtonText: "Save",
-                showDeleteButton: false,
-                showSaveButton: true,
-                saveFunction: editMediaInfo.saveMediaInfo.bind(editMediaInfo)
-            });
-            this.secondaryModal.show();
         },
 
         updateMediaOrdering: function (id, overlay_type, newOrder) {

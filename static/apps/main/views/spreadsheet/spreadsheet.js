@@ -6,10 +6,11 @@ define(["jquery",
         "text!../../templates/spreadsheet/spreadsheet.html",
         "lib/media/audio-viewer",
         "lib/media/photo-video-viewer",
+        "lib/media/edit-media-info",
         "apps/main/views/spreadsheet/context-menu"
     ],
     function ($, Marionette, _, Handlebars, Handsontable, SpreadsheetTemplate,
-            AudioViewer, PhotoVideoViewer, ContextMenu) {
+            AudioViewer, PhotoVideoViewer, EditMediaInfoView, ContextMenu) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             /**
@@ -30,6 +31,7 @@ define(["jquery",
                 _.extend(this, opts);
                 this.height = this.height || $(window).height() - 170,
                 this.popover = this.app.popover;
+                this.secondaryModal = this.app.secondaryModal;
                 Marionette.ItemView.prototype.initialize.call(this);
                 this.registerRatingEditor();
 
@@ -293,16 +295,13 @@ define(["jquery",
                         app: this.app,
                         collection: model.getPhotoVideoCollection(this.app.dataManager),
                         templateType: 'spreadsheet',
-                        detachMedia: this.detachMediaModel.bind(this),
-                        editFunction: this.editMediaModel.bind(this)
+                        detachMedia: this.detachMediaModel.bind(this)
                     });
                     $(td).append(this.photoVideoViewer.$el);
                 }
                 return td;
             },
-            editMediaModel: function (model) {
-                alert('edit: ' + model.get('name'));
-            },
+            
             detachMediaModel: function (model) {
                 alert('detach: ' + model.get('name'));
             },
@@ -315,8 +314,7 @@ define(["jquery",
                         app: this.app,
                         collection: model.getAudioCollection(this.app.dataManager),
                         templateType: 'spreadsheet',
-                        detachMedia: this.detachMediaModel.bind(this),
-                        editFunction: this.editMediaModel.bind(this)
+                        detachMedia: this.detachMediaModel.bind(this)
                     });
                     $(td).append(this.audioView.$el);
                 }
