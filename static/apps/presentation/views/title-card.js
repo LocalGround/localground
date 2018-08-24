@@ -14,6 +14,7 @@ define(["underscore",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this.model);
             },
 
             renderCarousel: function () {
