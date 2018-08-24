@@ -180,65 +180,7 @@ define(["jquery",
                     undo: true,
                     manualColumnResize: true,
                     manualColumnMove: true,
-                    contextMenu: {
-                        callback: (key, selection, clickEvent) => {
-                            let fieldIndex;
-                            switch (key) {
-                                case 'insert_column_before':
-                                    fieldIndex = selection.end.col - 3; //to account for admin columns
-                                    this.addField(fieldIndex + 1);
-                                    break;
-                                case 'insert_column_after':
-                                    fieldIndex = selection.end.col - 3; //to account for admin columns
-                                    this.addField(fieldIndex + 2);
-                                    break;
-                                case 'edit_column':
-                                    fieldIndex = selection.end.col - 3; //to account for admin columns
-                                    this.editField(fieldIndex);
-                                    break;
-                                case 'delete_column':
-                                    fieldIndex = selection.end.col - 3; //to account for admin columns
-                                    this.deleteField(fieldIndex);
-                                    break;
-                                case 'insert_row_bottom':
-                                    this.addRow();
-                                    break;
-                                case 'delete_row':
-                                    const startIndex = Math.min(selection.start.row, selection.end.row);
-                                    const numRows = Math.abs(selection.start.row - selection.end.row) + 1;
-                                    this.deleteRows(startIndex, numRows);
-                                    break;
-                                default:
-                                    console.log(key, selection, clickEvent);
-                                    const onlyOneCellSelected = (selection.start.row === selection.end.row) &&
-                                        (selection.start.col === selection.end.col);
-                                    console.log(onlyOneCellSelected);
-                            }
-
-                        },
-                        items: {
-                            "insert_column_before": {
-                                name: 'Insert column before'
-                            },
-                            "insert_column_after": {
-                                name: 'Insert column after'
-                            },
-                            "hsep1{\d+}": "---------",
-                            "edit_column": {
-                                name: 'Edit column'
-                            },
-                            "delete_column": {
-                                name: 'Delete column'
-                            },
-                            "hsep2{\d+}": "---------",
-                            "insert_row_bottom": { // Own custom option
-                                name: 'Insert row at bottom'
-                            },
-                            "delete_row": {
-                                name: 'Delete row(s)'
-                            },
-                        }
-                    },
+                    //contextMenu: this.contextMenuDefault,
                     //rowHeaders: true,
                     autoInsertRow: true,
                     sortIndicator: true,
@@ -274,9 +216,89 @@ define(["jquery",
                         }
                     }
                 });
+                this.table.addHook('beforeOnCellMouseDown', (event, cellObject, TD) => {
+                    if (event.button === 2){
+                        console.log(cellObject.col);
+                        // abridged context menu for first three and last two columns:
+                        if (cellObject.col < 3 || cellObject.col >= this.fields.length + 3) {
+                            this.table.updateSettings({
+                                contextMenu: this.getContextMenuReadOnly()
+                            });
+                        } else {
+                            this.table.updateSettings({
+                                contextMenu: this.getContextMenuDefault()
+                            });
+                        }
+                    }
+                });
                 if (this.fields) {
                     this.table.addHook('beforeColumnMove', this.columnMoveBefore.bind(this));
                     this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
+                }
+            },
+            getContextMenuReadOnly: function () {
+                return {
+                    callback: this.handleMenuEvents.bind(this),
+                    items: {
+                        "insert_row_bottom": { // Own custom option
+                            name: 'Insert row at bottom'
+                        },
+                        "delete_row": {
+                            name: 'Delete row(s)'
+                        },
+                    }
+                };
+            },
+            getContextMenuDefault: function () {
+                return {
+                    callback: this.handleMenuEvents.bind(this),
+                    items: {
+                        "insert_column_before": {
+                            name: 'Insert column before'
+                        },
+                        "insert_column_after": {
+                            name: 'Insert column after'
+                        },
+                        "hsep1{\d+}": "---------",
+                        "edit_column": {
+                            name: 'Edit column'
+                        },
+                        "delete_column": {
+                            name: 'Delete column'
+                        },
+                        "hsep2{\d+}": "---------",
+                        "insert_row_bottom": { // Own custom option
+                            name: 'Insert row at bottom'
+                        },
+                        "delete_row": {
+                            name: 'Delete row(s)'
+                        },
+                    }
+                };
+            },
+            handleMenuEvents: function (key, selection, clickEvent) {
+                const fieldIndex = selection.end.col - 3; //to account for admin columns
+                switch (key) {
+                    case 'insert_column_before':
+                        this.addField(fieldIndex + 1);
+                        break;
+                    case 'insert_column_after':
+                        this.addField(fieldIndex + 2);
+                        break;
+                    case 'edit_column':
+                        this.editField(fieldIndex);
+                        break;
+                    case 'delete_column':
+                        this.deleteField(fieldIndex);
+                        break;
+                    case 'insert_row_bottom':
+                        this.addRow();
+                        break;
+                    case 'delete_row':
+                        const startIndex = Math.min(selection.start.row, selection.end.row);
+                        const numRows = Math.abs(selection.start.row - selection.end.row) + 1;
+                        this.deleteRows(startIndex, numRows);
+                        break;
                 }
             },
             saveChanges: function (changes, source) {
@@ -465,7 +487,7 @@ define(["jquery",
                 return cols;
             },
             getColumnWidths: function () {
-                const cols = [50, 100, 100];
+                const cols = [65, 75, 75];
                 this.fields.forEach(field => {
                     if (field.get('data_type') === 'integer') {
                         cols.push(120);
@@ -649,10 +671,9 @@ define(["jquery",
             },
 
             editField: function (fieldIndex) {
-                const field = this.fields.at(fieldIndex);
                 const editFieldForm = new EditField({
                     app: this.app,
-                    model: this.field,
+                    model: this.fields.at(fieldIndex),
                     dataset: this.collection,
                     sourceModal: this.secondaryModal
                 });
