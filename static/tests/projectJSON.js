@@ -306,14 +306,13 @@ var __projectJSON = {
             "dataset": 2,
             "col_alias": "Deciduous\/Conifer",
             "col_name": "deciduousconifer",
-            "extras": [
-              {
-                "name": "Deciduous"
-              },
-              {
-                "name": "Conifer"
-              }
-            ],
+            "extras": {
+                "choices": [{
+                    "name": "Deciduous"
+                }, {
+                    "name": "Conifer"
+                }]
+            },
             "is_display_field": false,
             "ordering": 3,
             "data_type": "choice",

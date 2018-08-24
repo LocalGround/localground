@@ -1,7 +1,7 @@
 var rootDir = "../../../";
 define([
     "backbone",
-    rootDir + "apps/main/views/spreadsheet/rename-dataset"
+    rootDir + "apps/main/views/spreadsheet/rename-dataset",
     "tests/spec-helper1"
 ],
     function (Backbone, RenameDataset) {
@@ -12,10 +12,9 @@ define([
             spyOn(RenameDataset.prototype, 'saveDataset').and.callThrough();
 
             scope.layer = scope.categoricalLayer;
-            scope.dataset = scope.layer.getDataset(scope.app.dataManager);
             scope.view = new RenameDataset({
                 app: scope.app,
-                model: scope.dataset
+                model: scope.dataset_3.getForm()
             });
 
             spyOn(scope.app.vent, 'trigger');
@@ -31,7 +30,7 @@ define([
 
             it("should initialize correctly", function () {
                 expect(this.view.initialize).toHaveBeenCalledTimes(1);
-                expect(this.view.model).toEqual(this.dataset);
+                expect(this.view.model).toEqual(this.dataset_3.getForm());
             });
         });
 

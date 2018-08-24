@@ -11,10 +11,8 @@ define([
         const initView = function (scope) {
             //fixture = setFixtures('<div style="width:800px;height:600px"></div>');
             spyOn(SpreadsheetLayoutView.prototype, 'initialize').and.callThrough();
-            spyOn(SpreadsheetLayoutView.prototype, 'addRow').and.callThrough();
             spyOn(SpreadsheetLayoutView.prototype, 'showSpreadsheet').and.callThrough();
             spyOn(Spreadsheet.prototype, 'initialize').and.callThrough();
-            spyOn(Spreadsheet.prototype, 'addRow');
 
             scope.view = new SpreadsheetLayoutView({
                 app: scope.app,
@@ -40,24 +38,11 @@ define([
                 expect(this.view.showSpreadsheet).toHaveBeenCalledTimes(1);
                 expect(Spreadsheet.prototype.initialize).toHaveBeenCalledTimes(1);
             });
-
-            it("should listen for DOM clicks", function () {
-                this.view.render();
-                expect(this.view.addRow).toHaveBeenCalledTimes(0);
-                this.view.$el.find('#add-row').trigger('click');
-                expect(this.view.addRow).toHaveBeenCalledTimes(1);
-            });
         });
 
         describe("SpreadsheetLayout: instance methods work: ", function () {
             beforeEach(function () {
                 initView(this);
-            });
-
-            it("add row should call the spreadsheet's addRow method", function () {
-                expect(Spreadsheet.prototype.addRow).toHaveBeenCalledTimes(0);
-                this.view.addRow();
-                expect(Spreadsheet.prototype.addRow).toHaveBeenCalledTimes(1);
             });
         });
 

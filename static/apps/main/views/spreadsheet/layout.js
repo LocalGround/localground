@@ -12,7 +12,6 @@ define(["marionette",
                 toolbarRegion: '.spreadsheet-toolbar'
             },
             events: {
-                //'click #add-row': 'addRow',
                 'click .title': 'openRenameForm'
             },
             initialize: function (opts) {

@@ -41,6 +41,9 @@ define(["jquery",
                 this.listenTo(this.fields, 'update', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'add', this.renderSpreadsheet);
 
+                this.addAppVentListeners();
+            },
+            addAppVentListeners: function () {
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
@@ -89,7 +92,7 @@ define(["jquery",
                 Handsontable.editors.registerEditor('select-ratings', SelectRatingsEditor);
             },
             onShow: function () {
-                console.log('rendering spreadsheet!');
+                //console.log('rendering spreadsheet!');
                 this.renderSpreadsheet();
             },
             //
@@ -153,8 +156,7 @@ define(["jquery",
                 }
             },
             renderSpreadsheet: function () {
-                console.log('rendering spreadsheet...');
-                // console.log(this.collection.toJSON());
+                //console.log('rendering spreadsheet...');
                 const data = this.collection.map(model => {
                     var rec = model.toJSON();
                     if (rec.tags) {
@@ -240,12 +242,8 @@ define(["jquery",
                 return {
                     callback: this.handleMenuEvents.bind(this),
                     items: {
-                        "insert_row_bottom": { // Own custom option
-                            name: 'Insert row at bottom'
-                        },
-                        "delete_row": {
-                            name: 'Delete row(s)'
-                        },
+                        "insert_row_bottom": {name: 'Insert row at bottom'},
+                        "delete_row": {name: 'Delete row(s)'},
                     }
                 };
             },
@@ -253,52 +251,34 @@ define(["jquery",
                 return {
                     callback: this.handleMenuEvents.bind(this),
                     items: {
-                        "insert_column_before": {
-                            name: 'Insert column before'
-                        },
-                        "insert_column_after": {
-                            name: 'Insert column after'
-                        },
+                        "insert_column_before": {name: 'Insert column before'},
+                        "insert_column_after": {name: 'Insert column after'},
                         "hsep1{\d+}": "---------",
-                        "edit_column": {
-                            name: 'Edit column'
-                        },
-                        "delete_column": {
-                            name: 'Delete column'
-                        },
+                        "edit_column": {name: 'Edit column'},
+                        "delete_column": {name: 'Delete column'},
                         "hsep2{\d+}": "---------",
-                        "insert_row_bottom": { // Own custom option
-                            name: 'Insert row at bottom'
-                        },
-                        "delete_row": {
-                            name: 'Delete row(s)'
-                        },
+                        "insert_row_bottom": {name: 'Insert row at bottom'},
+                        "delete_row": {name: 'Delete row(s)'},
                     }
                 };
             },
             handleMenuEvents: function (key, selection, clickEvent) {
                 const fieldIndex = selection.end.col - 3; //to account for admin columns
-                switch (key) {
-                    case 'insert_column_before':
-                        this.addField(fieldIndex + 1);
-                        break;
-                    case 'insert_column_after':
-                        this.addField(fieldIndex + 2);
-                        break;
-                    case 'edit_column':
-                        this.editField(fieldIndex);
-                        break;
-                    case 'delete_column':
-                        this.deleteField(fieldIndex);
-                        break;
-                    case 'insert_row_bottom':
-                        this.addRow();
-                        break;
-                    case 'delete_row':
-                        const startIndex = Math.min(selection.start.row, selection.end.row);
-                        const numRows = Math.abs(selection.start.row - selection.end.row) + 1;
-                        this.deleteRows(startIndex, numRows);
-                        break;
+                if (key === 'insert_column_before') {
+                    this.addField(fieldIndex + 1);
+                } else if (key === 'insert_column_after') {
+                    this.addField(fieldIndex + 2);
+                } else if (key === 'edit_column') {
+                    this.editField(fieldIndex);
+                } else if (key === 'delete_column') {
+                    this.deleteField(fieldIndex);
+                } else if (key === 'insert_row_bottom') {
+                    this.addRow();
+                } else if (key === 'delete_row') {
+                    //note: handles multiple row deletes:
+                    const startIndex = Math.min(selection.start.row, selection.end.row);
+                    const numRows = Math.abs(selection.start.row - selection.end.row) + 1;
+                    this.deleteRows(startIndex, numRows);
                 }
             },
             saveChanges: function (changes, source) {
@@ -505,11 +485,7 @@ define(["jquery",
             doSearch: function (term) {
 
                 // If form exist, do search with 3 parameters, otherwise, do search with two parameters]
-                if (this.collection.getIsCustomType()){
-                    this.collection.doSearch(term, this.app.getProjectID(), this.fields);
-                } else {
-                    this.collection.doSearch(term, this.app.getProjectID());
-                }
+                this.collection.doSearch(term, this.app.getProjectID(), this.fields);
 
             },
 
@@ -555,9 +531,7 @@ define(["jquery",
                             break;
                         case "choice":
                             try {
-                                console.log(field);
                                 const extras = field.get("extras");
-                                console.log(extras);
                                 const choiceOpts = extras.choices.map(
                                     choice => choice.name
                                 );
@@ -572,13 +546,6 @@ define(["jquery",
                                     type:  "text"
                                 };
                             }
-                            // var choiceOpts = [],
-                            //     j = 0,
-                            //     extras = this.fields.at(i).get("extras");
-                            // for (j = 0; j < extras.choices.length; j++) {
-                            //     choiceOpts.push(extras[j].name);
-                            // }
-
                             break;
                         case "date-time":
                             entry = {
@@ -614,11 +581,11 @@ define(["jquery",
             },
 
             showContextMenu: function (e) {
-                const src = e.srcElement;
+                const src = e.target;
                 const headerLink = src.parentNode;
                 const columnID = parseInt($(src).attr('fieldIndex'));
                 this.popover.update({
-                    $source: event.target,
+                    $source: e.target,
                     view: new ContextMenu({
                         app: this.app,
                         collection: this.collection,
@@ -636,6 +603,12 @@ define(["jquery",
                    e.preventDefault();
                 }
             },
+            refreshHeaders: function () {
+                this.table.updateSettings({
+                    colHeaders: this.getColumnHeaders()
+                });
+            },
+
             addRow: function (top) {
                 const dm = this.app.dataManager;
                 dm.addRecordToCollection(this.collection, () => {
@@ -643,11 +616,7 @@ define(["jquery",
                     this.$el.find('.wtHolder').scrollTop(top ? 0 : 10000); //scroll to either top or bottom
                 });
             },
-            refreshHeaders: function () {
-                this.table.updateSettings({
-                    colHeaders: this.getColumnHeaders()
-                });
-            },
+
             addField: function (ordering) {
                 const addFieldForm = new AddField({
                     app: this.app,
@@ -690,6 +659,7 @@ define(["jquery",
                 this.secondaryModal.show();
                 this.popover.hide();
             },
+
             deleteField: function (fieldIndex) {
                 const field = this.fields.at(fieldIndex);
                 if (!confirm(`Do you want to delete the "${field.get('col_alias')}" field? This cannot be undone, and may affect other maps and layers in your project.`)){
