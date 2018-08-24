@@ -2105,7 +2105,6 @@ audio {
 
 .audio-container .play-ctrls .play {
   cursor: pointer;
-  margin: 20px auto;
 }
 
 .audio-container .play-ctrls .play.pause {
