@@ -7,9 +7,9 @@ define(["underscore",
         var MapHeader = Marionette.ItemView.extend({
 
             template: Handlebars.compile(
-                '<h1 style="font-weight: {{ fontWeight }}; color: {{ fontColor }}; font-size: {{ fontSize }}; font-family: {{ fontFamily }};">\
+                '<a href=""><h1 style="font-weight: {{ fontWeight }}; color: {{ fontColor }}; font-size: {{ fontSize }}; font-family: {{ fontFamily }};">\
                     {{ name }} \
-                </h1> \
+                </h1> </a>\
                 <h2>{{caption}}</h2> \
             '),
 
