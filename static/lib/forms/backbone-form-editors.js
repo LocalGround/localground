@@ -25,6 +25,24 @@ define([
         }
     });
 
+    Backbone.Form.editors.BooleanChoice = Backbone.Form.editors.Select.extend({
+        getValue: function () {
+            const value = this.$el.val();
+            if (value === 'true') return true;
+            if (value === 'false') return false;
+            return null;
+        },
+        setValue: function(value) {
+            //convert booleans to strings:
+            this.value = value;
+            try {
+                this.$el.val(value.toString());
+            } catch (e) {
+                this.$el.val('');
+            }
+        },
+    });
+
     Backbone.Form.editors.DatePicker = Backbone.Form.editors.Text.extend({
 
         initialize: function (options) {

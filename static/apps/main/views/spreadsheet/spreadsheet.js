@@ -8,10 +8,12 @@ define(["jquery",
         "lib/media/photo-video-viewer",
         'apps/main/views/spreadsheet/add-field',
         'apps/main/views/spreadsheet/edit-field',
-        "apps/main/views/spreadsheet/context-menu"
+        "apps/main/views/spreadsheet/context-menu",
+        'apps/main/views/spreadsheet/custom-cell-renderers'
     ],
     function ($, Marionette, _, Handlebars, Handsontable, SpreadsheetTemplate,
-            AudioViewer, PhotoVideoViewer, AddField, EditField, ContextMenu) {
+            AudioViewer, PhotoVideoViewer, AddField, EditField, ContextMenu,
+            CustomCellRenderers) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             /**
@@ -28,15 +30,18 @@ define(["jquery",
             events: {
                 'click .column-opts' : 'showContextMenu',
             },
+            collectionEvents: {
+                'reset': 'renderSpreadsheet'
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.height = this.height || $(window).height() - 170,
                 this.popover = this.app.popover;
                 this.secondaryModal = this.app.secondaryModal;
                 Marionette.ItemView.prototype.initialize.call(this);
-                this.registerRatingEditor();
+                this.registerBooleanSelectMenuEditor();
 
-                this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
+                //this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'update', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'add', this.renderSpreadsheet);
@@ -52,47 +57,7 @@ define(["jquery",
                 this.listenTo(this.app.vent, "edit-field", this.editField);
                 this.listenTo(this.app.vent, "delete-field", this.deleteField);
             },
-            registerRatingEditor: function () {
-                // following this tutorial: https://docs.handsontable.com/0.15.0-beta1/tutorial-cell-editor.html
-                var SelectRatingsEditor = Handsontable.editors.SelectEditor.prototype.extend(),
-                    that = this;
-                SelectRatingsEditor.prototype.prepare = function () {
-                    var me = this, selectOptions, i, option, optionElement;
-                    Handsontable.editors.SelectEditor.prototype.prepare.apply(this, arguments);
-                    selectOptions = this.cellProperties.selectOptions;
-                    $(this.select).empty();
-                    optionElement = document.createElement('OPTION');
-                    optionElement.value = "";
-                    optionElement.innerHTML = "-- Select --";
-                    this.select.appendChild(optionElement);
-                    for (i = 0; i < selectOptions.length; i++) {
-                        option = selectOptions[i];
-                        optionElement = document.createElement('OPTION');
-                        optionElement.value = option.value;
-                        optionElement.innerHTML = option.value + ": " + option.name;
-                        if (option.value == this.originalValue) {
-                            optionElement.selected = true;
-                        }
-                        this.select.appendChild(optionElement);
-                    }
-                    //this is a hack b/c the renderer isn't being called correctly:
-                    $(this.select).blur(function () {
-                        setTimeout(function () {
-                            that.table.setDataAtCell(me.row, me.col, me.getValue());
-                        }, 50);
-                    });
-                };
-                SelectRatingsEditor.prototype.getValue = function () {
-                    var val = this.select.value;
-                    if (val === "") {
-                        val = null;
-                    }
-                    return val;
-                };
-                Handsontable.editors.registerEditor('select-ratings', SelectRatingsEditor);
-            },
             onShow: function () {
-                //console.log('rendering spreadsheet!');
                 this.renderSpreadsheet();
             },
             //
@@ -156,7 +121,7 @@ define(["jquery",
                 }
             },
             renderSpreadsheet: function () {
-                //console.log('rendering spreadsheet...');
+                console.log('rendering spreadsheet...');
                 const data = this.collection.map(model => {
                     var rec = model.toJSON();
                     if (rec.tags) {
@@ -210,12 +175,13 @@ define(["jquery",
                             }
                         }
                     },
-                    afterChange: function (changes, source) {
+                    //afterChange: function (changes, source) {
+                    beforeChange: function (changes, source) {
                         //console.log('afterChange', that.table);
                         that.saveChanges(changes, source);
-                        if (changes && changes[0] && changes[0].length > 1 && changes[0][1] === "video_provider") {
-                            that.table.render();
-                        }
+                        // if (changes && changes[0] && changes[0].length > 1 && changes[0][1] === "video_provider") {
+                        //     that.table.render();
+                        // }
                     }
                 });
                 this.table.addHook('beforeOnCellMouseDown', (event, cellObject, TD) => {
@@ -283,6 +249,9 @@ define(["jquery",
             },
             saveChanges: function (changes, source) {
                 //sync with collection:
+                if (!source) {
+                    return;
+                }
                 source = source.split(".");
                 source = source[source.length - 1];
                 var i, idx, key, oldVal, newVal, model, geoJSON;
@@ -342,12 +311,14 @@ define(["jquery",
                         if (Object.values(changedAttributes) === 0) {
                             continue;
                         }
+                        m.set(changedAttributes);
                         m.save(changedAttributes, {
                             patch: true,
                             wait: true,
                             success: () => {
                                 //coordinates change with rebinning of symbol in LayerListChildView:
                                 m.trigger('record-updated', m);
+                                //this.table.render();
                             }
                         });
                     }
@@ -424,24 +395,6 @@ define(["jquery",
 
             },
 
-            ratingRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var that = this,
-                    model = this.getModelFromCell(instance, row),
-                    idx = col - 3,
-                    field = this.fields.getModelByAttribute('col_name', prop),
-                    extras = field.get("extras") || [],
-                    intVal = model.get(prop),
-                    textVal = null,
-                    i;
-                for (i = 0; i < extras.length; i++){
-                    if (extras[i].value == intVal){
-                        textVal = extras[i].value + ": " + extras[i].name;
-                        break;
-                    }
-                }
-                td.innerHTML = textVal;
-                return td;
-            },
             getMenuTemplate: function (index) {
                 return `<a class="fa fa-ellipsis-v column-opts" fieldIndex="${index}" aria-hidden="true"></a>`;
             },
@@ -514,8 +467,18 @@ define(["jquery",
                     var entry = null;
                     switch (type) {
                         case "boolean":
+                            // entry = {
+                            //     type:  "checkbox"
+                            // };
                             entry = {
-                                type:  "checkbox"
+                                type:  "text",
+                                editor: "boolean-select-menu-editor",
+                                renderer: this.booleanRenderer.bind(this),
+                                selectOptions: [
+                                    {'label' : 'No value', 'val': ''},
+                                    {'label' : 'Yes', 'val': true},
+                                    {'label' : 'No', 'val': false}
+                                ]
                             };
                             break;
                         case "integer":
@@ -557,7 +520,7 @@ define(["jquery",
                         case "rating":
                             entry = {
                                 type:  "numeric",
-                                editor: "select-ratings",
+                                editor: "select-menu-editor",
                                 renderer: this.ratingRenderer.bind(this),
                                 selectOptions: this.fields.at(i).get("extras") || []
                             };
@@ -687,5 +650,6 @@ define(["jquery",
                 this.popover.hide();
             }
         });
+        _.extend(Spreadsheet.prototype, CustomCellRenderers);
         return Spreadsheet;
     });
