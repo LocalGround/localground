@@ -24,6 +24,6 @@ class Project(NamedMixin, GenericRelationMixin,
 
     class Meta:
         app_label = 'site'
-        unique_together = ('slug', 'owner')
+        # unique_together = ('slug', 'owner')
         verbose_name = 'project'
         verbose_name_plural = 'projects'

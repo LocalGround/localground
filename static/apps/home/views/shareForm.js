@@ -16,11 +16,11 @@ define(["jquery",
             template: Handlebars.compile(ItemTemplate),
             events: {
                 'click .new_user_button': 'addUserButton',
-                'click .delete-project-user': 'removeRow',
-                'blur #projectName': 'generateSlug'
+                'click .delete-project-user': 'removeRow' //,
+                //'blur #projectName': 'generateSlug'
             },
 
-            slugError: null,
+            //slugError: null,
 
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -43,24 +43,24 @@ define(["jquery",
             },
 
             /* Make the slug based on project title */
-            generateSlug: function () {
-
-                if (this.$el.find('#slug').val().length > 0){
-                    return;
-                }
-
-                var name = this.$el.find('#projectName').val(),
-                    nameSplit = name.toLowerCase().split(" ");
-
-                // Remove all junk characters between words
-                for(var idx in nameSplit){
-                    nameSplit[idx] = nameSplit[idx].replace(/\W+/g, "").trim();
-                }
-                // clean up extra spaces and complete slug name
-                var slug = nameSplit.join(" ").trim().replace(/\s+/g, "-");
-
-                this.$el.find('#slug').val(slug);
-            },
+            // generateSlug: function () {
+            //
+            //     if (this.$el.find('#slug').val().length > 0){
+            //         return;
+            //     }
+            //
+            //     var name = this.$el.find('#projectName').val(),
+            //         nameSplit = name.toLowerCase().split(" ");
+            //
+            //     // Remove all junk characters between words
+            //     for(var idx in nameSplit){
+            //         nameSplit[idx] = nameSplit[idx].replace(/\W+/g, "").trim();
+            //     }
+            //     // clean up extra spaces and complete slug name
+            //     var slug = nameSplit.join(" ").trim().replace(/\s+/g, "-");
+            //
+            //     this.$el.find('#slug').val(slug);
+            // },
             childView: ProjectUserView,
             attachCollectionEventHandlers: function () {
                 this.listenTo(this.collection, 'add', this.render);
@@ -96,7 +96,7 @@ define(["jquery",
                 if (this.model && this.model.projectUsers) {
                     helpers.projectUsers = this.model.projectUsers.toJSON();
                 }
-                helpers.slugError = this.slugError;
+                //helpers.slugError = this.slugError;
                 return helpers;
             },
 
@@ -106,8 +106,8 @@ define(["jquery",
                 var projectName = this.$el.find('#projectName').val(),
                     shareType = this.$el.find('#access_authority').val(),
                     caption = this.$el.find('#caption').val(),
-                    slug = this.$el.find('#slug').val(),
-                    tags = this.$el.find('#tags').val(),
+                    // slug = this.$el.find('#slug').val(),
+                    // tags = this.$el.find('#tags').val(),
                     that = this;
                 if (this.blankInputs()) {
                     console.log("required items not filled: Need Name, Owner, and User");
@@ -115,10 +115,10 @@ define(["jquery",
                 }
                 this.model.set('name', projectName);
                 this.model.set('access_authority', shareType);
-                this.model.set('tags', tags);
                 this.model.set('caption', caption);
-                this.model.set('slug', this.setSlugValue(slug));
                 this.model.set('owner', this.app.username);
+                //this.model.set('tags', tags);
+                //this.model.set('slug', this.setSlugValue(slug));
                 this.model.save(null, {
                     success: this.handleServerSuccess.bind(this),
                     error: this.handleServerError.bind(this)
@@ -132,7 +132,7 @@ define(["jquery",
 
             handleServerSuccess: function(model, response) {
                 this.createNewProjectUsers();
-                this.slugError = null;
+                //this.slugError = null;
                 var projID = this.model.id;
                 this.render();
                 this.redirectToMapPage(projID);
@@ -142,16 +142,16 @@ define(["jquery",
                 console.log("Project Not Saved / Created");
                 this.app.vent.trigger('error-message', "Project Not Saved. Errors detected.");
                 var messages = JSON.parse(response.responseText);
-                if (messages.slug && messages.slug.length > 0) {
-                    this.slugError = messages.slug[0];
-                }
+                // if (messages.slug && messages.slug.length > 0) {
+                //     this.slugError = messages.slug[0];
+                // }
                 this.render();
             },
 
-            setSlugValue: function(slug_txt){
-                var convertedSlug = slug_txt.toLowerCase().split(" ").join("_");
-                return convertedSlug != "" ? convertedSlug : 'slug_' + parseInt(Math.random() * 100000, 10); // base10
-            },
+            // setSlugValue: function(slug_txt){
+            //     var convertedSlug = slug_txt.toLowerCase().split(" ").join("_");
+            //     return convertedSlug != "" ? convertedSlug : 'slug_' + parseInt(Math.random() * 100000, 10); // base10
+            // },
 
             createNewProjectUsers: function () {
                 var $userList = this.$el.find("#userList"),
@@ -254,8 +254,9 @@ define(["jquery",
                 // the required fields
                 var blankFields = false,
                     projectName_ = this.$el.find('#projectName').val(),
-                    shareType_ = this.$el.find('#access_authority').val(),
-                    slug_ = this.$el.find('#slug').val();
+                    shareType_ = this.$el.find('#access_authority').val()
+                    //,
+                    //slug_ = this.$el.find('#slug').val();
 
                 this.$el.find('#projectName').prev().css("color", '#000000');
                 this.$el.find('#access_authority').prev().css("color", '#000000');

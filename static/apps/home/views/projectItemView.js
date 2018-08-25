@@ -25,7 +25,6 @@ define(["marionette",
                 'click .action': 'shareModal'
             },
 
-
             className: "project-card",
 
             modelEvents: {
@@ -103,7 +102,6 @@ define(["marionette",
                 else {
                     lastEditString = "Today";
                 }
-
                 return lastEditString;
             },
 
