@@ -2104,10 +2104,17 @@ audio {
 
 .empty-message {
   text-align: center;
-  margin-top: 30vh;
+  margin-top: 6vh;
+  font-size: 16px;
+}
+
+.empty-message p {
   color: #AAA;
-  font-size: 30px;
-  font-weight: bold;
+  line-height: 24px;
+}
+
+.empty-message a {
+  font-size: 14px;
 }
 
 .fwd-back {

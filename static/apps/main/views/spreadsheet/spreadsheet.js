@@ -29,6 +29,7 @@ define(["jquery",
             show_hide_deleteColumn: true,
             events: {
                 'click .column-opts' : 'showContextMenu',
+                'click #add-row': 'addRow'
             },
             collectionEvents: {
                 'reset': 'renderSpreadsheet'
@@ -118,6 +119,11 @@ define(["jquery",
                     models.forEach(model => model.destroy());
                     //calls handsontable event to delete rows:
                     this.table.alter("remove_row", startIndex, numRows);
+                    if (this.collection.length === 0) {
+                        this.renderSpreadsheet();
+                    }
+                    //event that notifies the rest of the app to respond:
+                    this.app.vent.trigger('record-has-been-deleted');
                 }
             },
             renderSpreadsheet: function () {
@@ -131,13 +137,20 @@ define(["jquery",
                 });
                 if (this.table) {
                     this.table.destroy();
+                    this.table = null;
                 }
 
                 if (data.length == 0) {
                     // Render spreadsheet should be called after every removal of rows
-                    this.$el.find('#grid').html('<div class="empty-message">' +
-                        'No rows have been added yet.' +
-                        '</div>');
+                    this.$el.find('#grid').html(`
+                        <div class="empty-message">
+                            <p>This dataset is currently empty.</p>
+                            <a href="#" id="add-row" class="button-tertiary add-new"
+                                data-type="dataset_77" screen-type="table">
+                                <i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Insert Row
+                            </a>
+                        </div>`
+                    ).css({height: 'calc(100vh - 220px)'});
                     return;
                 }
                 const that = this;

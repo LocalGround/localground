@@ -96,10 +96,15 @@ audio {
 
 .empty-message {
     text-align: center;
-    margin-top: 30vh;
-    color: #AAA;
-    font-size: 30px;
-    font-weight: bold;
+    margin-top: 6vh;
+    font-size: 16px;
+    p {
+        color: #AAA;
+        line-height: 24px;
+    }
+    a {
+        font-size: 14px;
+    }
 }
 .fwd-back {
     vertical-align: top;

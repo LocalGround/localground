@@ -243,7 +243,6 @@ define(["marionette",
             getCenterFromState: function () {
                 try {
                     const state = that.app.restoreState("basemap");
-                    console.log('recenter', state.center);
                     return new google.maps.LatLng(
                         state.center[1],
                         state.center[0]
