@@ -52,7 +52,37 @@ class ProjectSerializer(
             )
         depth = 0
 
+    def get_client_ip(self):
+        request = self.context.get('request')
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
+
+    def get_lat_lng_by_ip_address(self):
+        import urllib
+        import json
+        try:
+            ip = self.get_client_ip()
+            url = 'http://api.ipstack.com/{0}?access_key={1}&format=1'.format(
+                ip, settings.IP_TO_LAT_LNG_KEY
+            )
+            response = urllib.urlopen(url).read()
+            d = json.loads(response)
+            lat = d.get('latitude', 38) or 38
+            lng = d.get('longitude', -122) or -122
+        except Exception:
+            lat, lng = 38, -122
+        return (lng, lat)
+
     def create(self, validated_data):
+        coords = self.get_lat_lng_by_ip_address()
+        # print coords
+        coords_string = '{{"type": "Point", "coordinates": [{0}, {1}]}}'.format(
+            coords[0], coords[1]
+        )
         # Overriding create so that creating a new projects also creates
         # a new map with a new dataset and a new layer
         self.instance = super(ProjectSerializer, self).create(validated_data)
@@ -60,8 +90,7 @@ class ProjectSerializer(
         # creates a new Layer and a new Dataset:
         # TODO: default lat/lng?
         models.StyledMap.create(
-            center=GEOSGeometry(
-                '{"type": "Point", "coordinates": [-122, 38]}'),
+            center=GEOSGeometry(coords_string),
             zoom=6,
             last_updated_by=self.instance.owner,
             owner=self.instance.owner,
