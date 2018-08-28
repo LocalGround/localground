@@ -3,8 +3,9 @@ define([
     "underscore",
     "handlebars",
     "marionette",
+    "lib/audio/audio-player",
     "text!./edit-media-info.html"
-], function (_, Handlebars, Marionette, EditMediaInfoTemplate) {
+], function (_, Handlebars, Marionette, AudioPlayer, EditMediaInfoTemplate) {
     "use strict";
     var EditMediaInfo = Marionette.ItemView.extend({
         template: Handlebars.compile(EditMediaInfoTemplate),
@@ -14,6 +15,19 @@ define([
         },
         
         className: 'edit-media-info',
+
+        onRender: function() {
+            if (this.model.get('overlay_type') === 'audio') {
+                this.audioPlayer = new AudioPlayer({
+                    model: this.model,
+                    app: this.app,
+                    panelStyles: this.panelStyles,
+                    audioMode: "detail",
+                    className: "audio-detail"
+                });
+                this.$el.find(".edit-audio").append(this.audioPlayer.$el);
+            }
+        },
 
         saveMediaInfo: function () {
             this.model.set('attribution', this.$el.find('#media-attribution').val());

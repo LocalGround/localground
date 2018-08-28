@@ -1,10 +1,9 @@
 define([
     "underscore", "marionette", "handlebars",
-    "lib/media/edit-media-info",
     "text!../audio/audio-player.html", 
     "lib/handlebars-helpers"
 ],
-    function (_, Marionette, Handlebars, EditMediaInfoView, PlayerTemplate) {
+    function (_, Marionette, Handlebars, PlayerTemplate) {
         'use strict';
 
         var AudioPlayer = Marionette.ItemView.extend({
@@ -53,21 +52,7 @@ define([
             edit: function (e) {
                     const audioID = parseInt($(e.target).attr('data-id'));
                     const audioModel = this.app.dataManager.getAudio(audioID);
-                    const editMediaInfo = new EditMediaInfoView({
-                        app: this.app,
-                        model: audioModel
-                    });
-        
-                    this.secondaryModal.update({
-                        title: 'Edit Media Info',
-                        view: editMediaInfo,
-                        width: 600,
-                        saveButtonText: "Save",
-                        showDeleteButton: false,
-                        showSaveButton: true,
-                        saveFunction: editMediaInfo.saveMediaInfo.bind(editMediaInfo)
-                    });
-                    this.secondaryModal.show();
+                    this.editAudio(audioModel);
             },
             onRender: function () {
                 if (!this.$el.find('.progress-container').get(0)) {

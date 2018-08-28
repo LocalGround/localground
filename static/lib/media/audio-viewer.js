@@ -4,14 +4,16 @@ define([
     "handlebars",
     "marionette",
     "lib/audio/audio-player",
+    "lib/media/edit-media-info",
     "text!./audio-viewer.html"
-], function (_, Handlebars, Marionette, AudioPlayer, AudioViewerTemplate) {
+], function (_, Handlebars, Marionette, AudioPlayer, EditMediaInfoView, AudioViewerTemplate) {
     "use strict";
     var AudioViewer = Marionette.ItemView.extend({
         template: Handlebars.compile(AudioViewerTemplate),
         initialize: function (opts) {
             _.extend(this, opts);
             this.templateType = this.templateType || 'standard';
+            this.secondaryModal = this.app.secondaryModal;
             this.render();
         },
         // events: {
@@ -35,7 +37,8 @@ define([
         renderAudioPlayers: function () {
             const opts = {
                 audioMode: "basic",
-                app: this.app
+                app: this.app,
+                editAudio: this.editAudio.bind(this)
             }
             if (this.editFunction) {
                 opts.editFunction = this.editFunction.bind(this);
@@ -49,6 +52,25 @@ define([
                 this.$el.append(player.$el);
             });
         },
+
+        editAudio: function (audioModel) {
+            const editMediaInfo = new EditMediaInfoView({
+                app: this.app,
+                model: audioModel
+            });
+
+            this.secondaryModal.update({
+                title: 'Edit Media Info',
+                view: editMediaInfo,
+                width: 600,
+                saveButtonText: "Save",
+                showDeleteButton: false,
+                showSaveButton: true,
+                saveFunction: editMediaInfo.saveMediaInfo.bind(editMediaInfo)
+            });
+            this.secondaryModal.show();
+        },
+
         enableMediaReordering: function () {
             if (this.updateOrdering) {
                 this.$el.sortable({
