@@ -2415,6 +2415,12 @@ audio {
 
 .breadcrumb-container .breadcrumb-hover span.current {
   font-weight: 600;
+  width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  margin-bottom: 1px;
 }
 
 #map-list {
