@@ -3,21 +3,32 @@
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 rgba(0, 0, 0, 0), 0 2px 4px -1px rgba(0, 0, 0, 0);
     display: block;
     background: $title-color;
+    display: flex;
     h2 {
         padding: 15px 10px;
         color: #fff;
         font-weight: 400;
         font-size: 18px;
         width: 260px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         .fa {
             display: none;
         }
+    }
+    .fa {
+        color: #fff;
+        font-size: 18px;
+        align-self: center;
+        padding-right: 10px;
+        visibility: hidden;
     }
 }
 .map-title:hover {
     background: $title-color-hover;
     .fa {
-        display: block;
+        visibility: visible;
     }
 }
 

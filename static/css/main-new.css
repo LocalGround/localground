@@ -138,6 +138,9 @@ div::-webkit-scrollbar-thumb, section::-webkit-scrollbar-thumb {
           box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 rgba(0, 0, 0, 0), 0 2px 4px -1px rgba(0, 0, 0, 0);
   display: block;
   background: #354c79;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
 }
 
 .map-title h2 {
@@ -146,10 +149,23 @@ div::-webkit-scrollbar-thumb, section::-webkit-scrollbar-thumb {
   font-weight: 400;
   font-size: 18px;
   width: 260px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .map-title h2 .fa {
   display: none;
+}
+
+.map-title .fa {
+  color: #fff;
+  font-size: 18px;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+  padding-right: 10px;
+  visibility: hidden;
 }
 
 .map-title:hover {
@@ -157,7 +173,7 @@ div::-webkit-scrollbar-thumb, section::-webkit-scrollbar-thumb {
 }
 
 .map-title:hover .fa {
-  display: block;
+  visibility: visible;
 }
 
 .add-layer {
@@ -446,9 +462,14 @@ div::-webkit-scrollbar-thumb, section::-webkit-scrollbar-thumb {
 .layer-container .layer-header .layer-name {
   cursor: pointer;
   font-weight: 600;
-  display: inline;
+  display: inline-block;
   font-size: 13px;
   margin-left: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 200px;
+  vertical-align: sub;
 }
 
 .layer-container .layer-header .collapse {
