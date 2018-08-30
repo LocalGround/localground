@@ -1041,14 +1041,28 @@ i.fa.fa.fa-question-circle {
           transform: translate(-50%, -50%);
 }
 
-.fullScreen .carousel-caption {
+.fullScreen .carousel-caption-wrapper {
   position: absolute;
-  bottom: 24px;
+  bottom: 12px;
   left: 0;
   right: 0;
+  height: 34px;
+}
+
+.fullScreen .carousel-caption {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+  display: block;
+  position: relative;
+}
+
+.fullScreen .carousel-author {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  display: block;
+  position: relative;
 }
 
 .close-fullscreen {
@@ -1062,6 +1076,18 @@ i.fa.fa.fa-question-circle {
 
 .show-slide {
   color: #999;
+}
+
+.carousel-author {
+  display: none;
+  color: #999;
+}
+
+.carousel-caption-wrapper {
+  margin-top: 18px;
+  position: absolute;
+  left: 0;
+  right: 0;
 }
 
 .share-settings {
