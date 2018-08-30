@@ -159,7 +159,7 @@ define(["marionette",
                 this.render();
             },
 
-            // only center the activeOverlay if it is outside the current boundaries of the map
+            // only center the active overlay if it is outside the current boundaries of the map
             centerIfOutsideMapBounds: function(overlay) {
                 if (!this.app.map.getBounds().contains(overlay.getCenter())) {
                     overlay.centerOn();
