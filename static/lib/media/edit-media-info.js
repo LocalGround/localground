@@ -31,8 +31,10 @@ define([
 
         saveMediaInfo: function () {
             this.model.set('attribution', this.$el.find('#media-attribution').val());
-            this.model.set('name', this.$el.find('#media-name').val());
             this.model.set('caption', this.$el.find('#media-caption').val());
+            if (this.model.get('overlay_type') === 'audio') {
+                this.model.set('name', this.$el.find('#media-name').val());
+            }
             this.model.save(null, {
                 success: () => {
                     this.secondaryModal.hide();

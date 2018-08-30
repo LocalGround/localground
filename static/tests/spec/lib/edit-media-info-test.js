@@ -48,11 +48,9 @@ define([
             it('renders correct info', function() {
                 expect(this.editMediaInfo.model.get('attribution')).toEqual('riley');
                 expect(this.editMediaInfo.model.get('caption')).toEqual(null);
-                expect(this.editMediaInfo.model.get('name')).toEqual('DSC04705.JPG');
 
                 expect(this.editMediaInfo.$el.find('#media-attribution').val()).toEqual('riley');
                 expect(this.editMediaInfo.$el.find('#media-caption').val()).toEqual('');
-                expect(this.editMediaInfo.$el.find('#media-name').val()).toEqual('DSC04705.JPG');
             });
 
             it('renders photos properly', function() {
@@ -67,17 +65,14 @@ define([
             it('saveMediaInfo() works', function() {
                 this.editMediaInfo.$el.find('#media-attribution').val('George Washington');
                 this.editMediaInfo.$el.find('#media-caption').val('photo of building');
-                this.editMediaInfo.$el.find('#media-name').val('building');
 
                 expect(this.editMediaInfo.model.get('attribution')).toEqual('riley');
                 expect(this.editMediaInfo.model.get('caption')).toEqual(null);
-                expect(this.editMediaInfo.model.get('name')).toEqual('DSC04705.JPG');
 
                 this.editMediaInfo.saveMediaInfo();
 
                 expect(this.editMediaInfo.model.get('attribution')).toEqual('George Washington');
                 expect(this.editMediaInfo.model.get('caption')).toEqual('photo of building');
-                expect(this.editMediaInfo.model.get('name')).toEqual('building');
             });
         });
         describe('EditMediaInfo (with video)', function () {
@@ -93,11 +88,9 @@ define([
             it('renders correct info', function() {
                 expect(this.editMediaInfo.model.get('attribution')).toEqual(null);
                 expect(this.editMediaInfo.model.get('caption')).toEqual(null);
-                expect(this.editMediaInfo.model.get('name')).toEqual('Untitled');
 
                 expect(this.editMediaInfo.$el.find('#media-attribution').val()).toEqual('');
                 expect(this.editMediaInfo.$el.find('#media-caption').val()).toEqual('');
-                expect(this.editMediaInfo.$el.find('#media-name').val()).toEqual('Untitled');
             });
 
             it('renders photos properly', function() {

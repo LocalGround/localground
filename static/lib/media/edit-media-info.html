@@ -34,10 +34,14 @@
         <label>Author:</label>
         <input id="media-attribution" class="edit-media-info_input" type="text" value="{{attribution}}">
     </div>
+
+    {{#ifequal overlay_type 'audio' }}
     <div class="row">
         <label>Name:</label>
         <input id="media-name" class="edit-media-info_input" type="text" value="{{name}}">
     </div>
+    {{/ifequal}}
+    
     <div class="row">
         <label>Caption:</label>
         <input id="media-caption" class="edit-media-info_input" type="text" value="{{caption}}">
