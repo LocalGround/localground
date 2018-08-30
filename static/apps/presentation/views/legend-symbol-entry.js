@@ -205,9 +205,16 @@ define(['marionette',
                         }
                         this.app.activeMapMarker = mapMarkerView;
                         mapMarkerView.activate();
+                        this.centerIfOutsideMapBounds(mapMarkerView);
                     }
                 });
-            }
+            },
+            // only center the activeOverlay if it is outside the current boundaries of the map
+            centerIfOutsideMapBounds: function(overlay) {
+                if (!this.app.map.getBounds().contains(overlay.getCenter())) {
+                    overlay.centerOn();
+                }
+            },
         });
         return LegendSymbolEntry;
     });
