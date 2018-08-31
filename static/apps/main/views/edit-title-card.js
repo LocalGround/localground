@@ -78,7 +78,10 @@ define([
                 parentModel: this.model
             });
             this.secondaryModal.update({
-                title: 'Media Browser',
+                title: 'Add Image, Audio or Video to Title Card',
+                width: 1100,
+                height: 'calc(100vh - 250px)',
+                bodyClass: 'media',
                 view: uploadAttachMedia,
                 saveButtonText: "Add",
                 showDeleteButton: false,

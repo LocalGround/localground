@@ -150,8 +150,12 @@ define([
                 model: this.model.getTitleCardModel(),
                 app: this,
             });
-            this.unhideDetail();
-            this.sideRegion.show(titleCardView);
+            if (this.model.get('metadata').displayTitleCard) {
+                this.unhideDetail();
+                this.sideRegion.show(titleCardView);
+            }
+            // this.unhideDetail();
+            // this.sideRegion.show(titleCardView);
         },
 
         showMediaDetail: function (opts) {
