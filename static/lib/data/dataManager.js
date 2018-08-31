@@ -5,7 +5,7 @@ define(["underscore", "marionette", "models/project", "models/record",
     function (_, Marionette, Project, Record, Photos, Audio, Videos, MapImages,
                 Records, Fields, TileSets, Maps) {
         'use strict';
-        var DataManager = Marionette.ItemView.extend({
+        const DataManager = Marionette.ItemView.extend({
             template: false,
             initialize: function (opts) {
                 _.extend(this, opts);

@@ -127,6 +127,23 @@ define([
 
             });
 
+            it("user cannot delete last map", function () {
+                lpv.render();
+                
+                expect(lpv.app.dataManager.getMaps().length).toEqual(2);
+
+                // have to remove the map manually to actually get rid of it in Jasmine
+                lpv.app.dataManager.getMaps().remove(lpv.model);
+
+                expect(lpv.app.dataManager.getMaps().length).toEqual(1);
+
+                spyOn(window, 'alert').and.returnValue(true);
+                lpv.$el.find('#map-delete').trigger('click');
+                
+                // test that last map is still there
+                expect(lpv.app.dataManager.getMaps().length).toEqual(1);
+            });
+
             it('scrollToLayer(layer) works', function () {
                 lpv.render();
                 spyOn(lpv.layers.$el, 'animate').and.callThrough();

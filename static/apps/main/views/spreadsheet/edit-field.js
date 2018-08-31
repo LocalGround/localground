@@ -15,6 +15,7 @@ define ([
         var RenameFieldView = Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this.model);
                 this.template = Handlebars.compile(FieldItemTemplate);
             },
             data_type_error: null,

@@ -235,7 +235,7 @@ define(["marionette",
                 google.maps.event.addDomListener($('#map').get(0), 'resize', function() {
                     google.maps.event.trigger(that.map, 'resize');
                     const center = that.getCenterFromState();
-                    if (center) {
+                    if (center && that.map) {
                         that.map.setCenter(center);
                     }
                 });
@@ -243,7 +243,6 @@ define(["marionette",
             getCenterFromState: function () {
                 try {
                     const state = that.app.restoreState("basemap");
-                    console.log('recenter', state.center);
                     return new google.maps.LatLng(
                         state.center[1],
                         state.center[0]
@@ -254,18 +253,22 @@ define(["marionette",
                 }
             },
             getZoom: function () {
+                if (!this.map) { return; }
                 return this.map.getZoom();
             },
             getCenter: function () {
+                if (!this.map) { return; }
                 return this.map.getCenter();
             },
             getMapTypeId: function () {
                 return this.tileManager.getMapTypeId();
             },
             setZoom: function (zoom) {
+                if (!this.map) { return; }
                 this.map.setZoom(zoom);
             },
             setCenter: function (center) {
+                if (!this.map) { return; }
                 this.map.setCenter(center);
             },
             setMapTypeId: function (id) {

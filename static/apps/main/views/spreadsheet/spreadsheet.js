@@ -6,10 +6,14 @@ define(["jquery",
         "text!../../templates/spreadsheet/spreadsheet.html",
         "lib/media/audio-viewer",
         "lib/media/photo-video-viewer",
-        "apps/main/views/spreadsheet/context-menu"
+        'apps/main/views/spreadsheet/add-field',
+        'apps/main/views/spreadsheet/edit-field',
+        "apps/main/views/spreadsheet/context-menu",
+        'apps/main/views/spreadsheet/custom-cell-renderers'
     ],
     function ($, Marionette, _, Handlebars, Handsontable, SpreadsheetTemplate,
-            AudioViewer, PhotoVideoViewer, ContextMenu) {
+            AudioViewer, PhotoVideoViewer, AddField, EditField, ContextMenu,
+            CustomCellRenderers) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             /**
@@ -25,65 +29,36 @@ define(["jquery",
             show_hide_deleteColumn: true,
             events: {
                 'click .column-opts' : 'showContextMenu',
+                'click #add-row': 'addRow'
+            },
+            collectionEvents: {
+                'reset': 'renderSpreadsheet'
             },
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.height = this.height || $(window).height() - 170,
                 this.popover = this.app.popover;
+                this.secondaryModal = this.app.secondaryModal;
                 Marionette.ItemView.prototype.initialize.call(this);
-                this.registerRatingEditor();
+                this.registerBooleanSelectMenuEditor();
 
-                this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
+                //this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'update', this.renderSpreadsheet);
                 this.listenTo(this.fields, 'add', this.renderSpreadsheet);
 
+                this.addAppVentListeners();
+            },
+            addAppVentListeners: function () {
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
                 this.listenTo(this.app.vent, "field-updated", this.renderSpreadsheet);
-            },
-            registerRatingEditor: function () {
-                // following this tutorial: https://docs.handsontable.com/0.15.0-beta1/tutorial-cell-editor.html
-                var SelectRatingsEditor = Handsontable.editors.SelectEditor.prototype.extend(),
-                    that = this;
-                SelectRatingsEditor.prototype.prepare = function () {
-                    var me = this, selectOptions, i, option, optionElement;
-                    Handsontable.editors.SelectEditor.prototype.prepare.apply(this, arguments);
-                    selectOptions = this.cellProperties.selectOptions;
-                    $(this.select).empty();
-                    optionElement = document.createElement('OPTION');
-                    optionElement.value = "";
-                    optionElement.innerHTML = "-- Select --";
-                    this.select.appendChild(optionElement);
-                    for (i = 0; i < selectOptions.length; i++) {
-                        option = selectOptions[i];
-                        optionElement = document.createElement('OPTION');
-                        optionElement.value = option.value;
-                        optionElement.innerHTML = option.value + ": " + option.name;
-                        if (option.value == this.originalValue) {
-                            optionElement.selected = true;
-                        }
-                        this.select.appendChild(optionElement);
-                    }
-                    //this is a hack b/c the renderer isn't being called correctly:
-                    $(this.select).blur(function () {
-                        setTimeout(function () {
-                            that.table.setDataAtCell(me.row, me.col, me.getValue());
-                        }, 50);
-                    });
-                };
-                SelectRatingsEditor.prototype.getValue = function () {
-                    var val = this.select.value;
-                    if (val === "") {
-                        val = null;
-                    }
-                    return val;
-                };
-                Handsontable.editors.registerEditor('select-ratings', SelectRatingsEditor);
+                this.listenTo(this.app.vent, "add-field", this.addField);
+                this.listenTo(this.app.vent, "edit-field", this.editField);
+                this.listenTo(this.app.vent, "delete-field", this.deleteField);
             },
             onShow: function () {
-                console.log('rendering spreadsheet!');
                 this.renderSpreadsheet();
             },
             //
@@ -130,9 +105,29 @@ define(["jquery",
                     field.save({"ordering": newPosition}, { patch: true, wait: true });
                 }
             },
+            deleteRows: function (startIndex, numRows) {
+                const models = [];
+                for (let i = startIndex; i < startIndex + numRows; i++) {
+                    const model = this.getModelFromCell(null, i);
+                    models.push(this.getModelFromCell(null, i));
+                }
+                const doDelete = confirm(
+                    'Are you sure you want to delete the records associated with the following id numbers: #' +
+                    models.map(model => model.id).join(', #') + '? This cannot be undone.'
+                );
+                if (doDelete) {
+                    models.forEach(model => model.destroy());
+                    //calls handsontable event to delete rows:
+                    this.table.alter("remove_row", startIndex, numRows);
+                    if (this.collection.length === 0) {
+                        this.renderSpreadsheet();
+                    }
+                    //event that notifies the rest of the app to respond:
+                    this.app.vent.trigger('record-has-been-deleted');
+                }
+            },
             renderSpreadsheet: function () {
                 console.log('rendering spreadsheet...');
-                // console.log(this.collection.toJSON());
                 const data = this.collection.map(model => {
                     var rec = model.toJSON();
                     if (rec.tags) {
@@ -142,13 +137,20 @@ define(["jquery",
                 });
                 if (this.table) {
                     this.table.destroy();
+                    this.table = null;
                 }
 
                 if (data.length == 0) {
                     // Render spreadsheet should be called after every removal of rows
-                    this.$el.find('#grid').html('<div class="empty-message">' +
-                        'No rows have been added yet.' +
-                        '</div>');
+                    this.$el.find('#grid').html(`
+                        <div class="empty-message">
+                            <p>This dataset is currently empty.</p>
+                            <a href="#" id="add-row" class="button-tertiary add-new"
+                                data-type="dataset_77" screen-type="table">
+                                <i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Insert Row
+                            </a>
+                        </div>`
+                    ).css({height: 'calc(100vh - 220px)'});
                     return;
                 }
                 const that = this;
@@ -158,7 +160,7 @@ define(["jquery",
                     undo: true,
                     manualColumnResize: true,
                     manualColumnMove: true,
-                    //autoRowSize: true,
+                    //contextMenu: this.contextMenuDefault,
                     //rowHeaders: true,
                     autoInsertRow: true,
                     sortIndicator: true,
@@ -186,11 +188,27 @@ define(["jquery",
                             }
                         }
                     },
-                    afterChange: function (changes, source) {
+                    //afterChange: function (changes, source) {
+                    beforeChange: function (changes, source) {
                         //console.log('afterChange', that.table);
                         that.saveChanges(changes, source);
-                        if (changes && changes[0] && changes[0].length > 1 && changes[0][1] === "video_provider") {
-                            that.table.render();
+                        // if (changes && changes[0] && changes[0].length > 1 && changes[0][1] === "video_provider") {
+                        //     that.table.render();
+                        // }
+                    }
+                });
+                this.table.addHook('beforeOnCellMouseDown', (event, cellObject, TD) => {
+                    if (event.button === 2){
+                        console.log(cellObject.col);
+                        // abridged context menu for first three and last two columns:
+                        if (cellObject.col < 3 || cellObject.col >= this.fields.length + 3) {
+                            this.table.updateSettings({
+                                contextMenu: this.getContextMenuReadOnly()
+                            });
+                        } else {
+                            this.table.updateSettings({
+                                contextMenu: this.getContextMenuDefault()
+                            });
                         }
                     }
                 });
@@ -199,8 +217,54 @@ define(["jquery",
                     this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
                 }
             },
+            getContextMenuReadOnly: function () {
+                return {
+                    callback: this.handleMenuEvents.bind(this),
+                    items: {
+                        "insert_row_bottom": {name: 'Insert row at bottom'},
+                        "delete_row": {name: 'Delete row(s)'},
+                    }
+                };
+            },
+            getContextMenuDefault: function () {
+                return {
+                    callback: this.handleMenuEvents.bind(this),
+                    items: {
+                        "insert_column_before": {name: 'Insert column before'},
+                        "insert_column_after": {name: 'Insert column after'},
+                        "hsep1{\d+}": "---------",
+                        "edit_column": {name: 'Edit column'},
+                        "delete_column": {name: 'Delete column'},
+                        "hsep2{\d+}": "---------",
+                        "insert_row_bottom": {name: 'Insert row at bottom'},
+                        "delete_row": {name: 'Delete row(s)'},
+                    }
+                };
+            },
+            handleMenuEvents: function (key, selection, clickEvent) {
+                const fieldIndex = selection.end.col - 3; //to account for admin columns
+                if (key === 'insert_column_before') {
+                    this.addField(fieldIndex + 1);
+                } else if (key === 'insert_column_after') {
+                    this.addField(fieldIndex + 2);
+                } else if (key === 'edit_column') {
+                    this.editField(fieldIndex);
+                } else if (key === 'delete_column') {
+                    this.deleteField(fieldIndex);
+                } else if (key === 'insert_row_bottom') {
+                    this.addRow();
+                } else if (key === 'delete_row') {
+                    //note: handles multiple row deletes:
+                    const startIndex = Math.min(selection.start.row, selection.end.row);
+                    const numRows = Math.abs(selection.start.row - selection.end.row) + 1;
+                    this.deleteRows(startIndex, numRows);
+                }
+            },
             saveChanges: function (changes, source) {
                 //sync with collection:
+                if (!source) {
+                    return;
+                }
                 source = source.split(".");
                 source = source[source.length - 1];
                 var i, idx, key, oldVal, newVal, model, geoJSON;
@@ -260,12 +324,14 @@ define(["jquery",
                         if (Object.values(changedAttributes) === 0) {
                             continue;
                         }
+                        m.set(changedAttributes);
                         m.save(changedAttributes, {
                             patch: true,
                             wait: true,
                             success: () => {
                                 //coordinates change with rebinning of symbol in LayerListChildView:
                                 m.trigger('record-updated', m);
+                                //this.table.render();
                             }
                         });
                     }
@@ -293,16 +359,13 @@ define(["jquery",
                         app: this.app,
                         collection: model.getPhotoVideoCollection(this.app.dataManager),
                         templateType: 'spreadsheet',
-                        detachMedia: this.detachMediaModel.bind(this),
-                        editFunction: this.editMediaModel.bind(this)
+                        detachMedia: this.detachMediaModel.bind(this)
                     });
                     $(td).append(this.photoVideoViewer.$el);
                 }
                 return td;
             },
-            editMediaModel: function (model) {
-                alert('edit: ' + model.get('name'));
-            },
+            
             detachMediaModel: function (model) {
                 alert('detach: ' + model.get('name'));
             },
@@ -315,8 +378,7 @@ define(["jquery",
                         app: this.app,
                         collection: model.getAudioCollection(this.app.dataManager),
                         templateType: 'spreadsheet',
-                        detachMedia: this.detachMediaModel.bind(this),
-                        editFunction: this.editMediaModel.bind(this)
+                        detachMedia: this.detachMediaModel.bind(this)
                     });
                     $(td).append(this.audioView.$el);
                 }
@@ -342,58 +404,6 @@ define(["jquery",
 
             },
 
-            buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var that = this,
-                    model;
-                const icon = document.createElement('i');
-                icon.classList.add('fa', 'fa-trash');
-                Handsontable.Dom.empty(td);
-                td.appendChild(icon);
-                icon.onclick = function () {
-                    if (!confirm("Are you sure you want to delete this row?")) {
-                        return;
-                    }
-                    // First grab the model of the target row to delete
-                    model = that.getModelFromCell(instance, row);
-
-                    // The model holding the row data is destroyed,
-                    // but the row containing the data still appears
-                    // inside the data from handsontable (H.O.T.)
-                    model.destroy();
-
-                    // We need to call instance, since it calls the data table
-                    // from H.O.T. to easily alter the table
-                    // by removing the target row
-                    instance.alter("remove_row", row);
-
-                    if(that.collection.length == 0){
-                        that.renderSpreadsheet();
-                    }
-
-                    // Now there is no trace of any deleted data,
-                    // especially when the user refreshes the page
-                };
-                return td;
-            },
-
-            ratingRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var that = this,
-                    model = this.getModelFromCell(instance, row),
-                    idx = col - 3,
-                    field = this.fields.getModelByAttribute('col_name', prop),
-                    extras = field.get("extras") || [],
-                    intVal = model.get(prop),
-                    textVal = null,
-                    i;
-                for (i = 0; i < extras.length; i++){
-                    if (extras[i].value == intVal){
-                        textVal = extras[i].value + ": " + extras[i].name;
-                        break;
-                    }
-                }
-                td.innerHTML = textVal;
-                return td;
-            },
             getMenuTemplate: function (index) {
                 return `<a class="fa fa-ellipsis-v column-opts" fieldIndex="${index}" aria-hidden="true"></a>`;
             },
@@ -413,17 +423,13 @@ define(["jquery",
                         '</span>' +
                         menuButton
                     );
-                    // cols.push(
-                    //     this.fields.at(i).get("col_alias") + menuButton
-                    // );
                 }
                 cols.push("Photos & Videos");
                 cols.push("Audio Files");
-                cols.push("Delete");
                 return cols;
             },
             getColumnWidths: function () {
-                const cols = [50, 100, 100];
+                const cols = [65, 75, 75];
                 this.fields.forEach(field => {
                     if (field.get('data_type') === 'integer') {
                         cols.push(120);
@@ -435,18 +441,13 @@ define(["jquery",
                 })
                 cols.push(350);  // photos column
                 cols.push(210);  // audio column
-                cols.push(50);   // delete column
                 return cols;
             },
 
             doSearch: function (term) {
 
                 // If form exist, do search with 3 parameters, otherwise, do search with two parameters]
-                if (this.collection.getIsCustomType()){
-                    this.collection.doSearch(term, this.app.getProjectID(), this.fields);
-                } else {
-                    this.collection.doSearch(term, this.app.getProjectID());
-                }
+                this.collection.doSearch(term, this.app.getProjectID(), this.fields);
 
             },
 
@@ -475,8 +476,18 @@ define(["jquery",
                     var entry = null;
                     switch (type) {
                         case "boolean":
+                            // entry = {
+                            //     type:  "checkbox"
+                            // };
                             entry = {
-                                type:  "checkbox"
+                                type:  "text",
+                                editor: "boolean-select-menu-editor",
+                                renderer: this.booleanRenderer.bind(this),
+                                selectOptions: [
+                                    {'label' : 'No value', 'val': ''},
+                                    {'label' : 'Yes', 'val': true},
+                                    {'label' : 'No', 'val': false}
+                                ]
                             };
                             break;
                         case "integer":
@@ -492,9 +503,7 @@ define(["jquery",
                             break;
                         case "choice":
                             try {
-                                console.log(field);
                                 const extras = field.get("extras");
-                                console.log(extras);
                                 const choiceOpts = extras.choices.map(
                                     choice => choice.name
                                 );
@@ -509,13 +518,6 @@ define(["jquery",
                                     type:  "text"
                                 };
                             }
-                            // var choiceOpts = [],
-                            //     j = 0,
-                            //     extras = this.fields.at(i).get("extras");
-                            // for (j = 0; j < extras.choices.length; j++) {
-                            //     choiceOpts.push(extras[j].name);
-                            // }
-
                             break;
                         case "date-time":
                             entry = {
@@ -527,7 +529,7 @@ define(["jquery",
                         case "rating":
                             entry = {
                                 type:  "numeric",
-                                editor: "select-ratings",
+                                editor: "select-menu-editor",
                                 renderer: this.ratingRenderer.bind(this),
                                 selectOptions: this.fields.at(i).get("extras") || []
                             };
@@ -546,17 +548,16 @@ define(["jquery",
                 cols.push(
                     { data: "media", renderer: this.photoVideoListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
                     { data: "media", renderer: this.audioListRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                    { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                 );
                 return cols;
             },
 
             showContextMenu: function (e) {
-                const src = e.srcElement;
+                const src = e.target;
                 const headerLink = src.parentNode;
                 const columnID = parseInt($(src).attr('fieldIndex'));
                 this.popover.update({
-                    $source: event.target,
+                    $source: e.target,
                     view: new ContextMenu({
                         app: this.app,
                         collection: this.collection,
@@ -574,6 +575,12 @@ define(["jquery",
                    e.preventDefault();
                 }
             },
+            refreshHeaders: function () {
+                this.table.updateSettings({
+                    colHeaders: this.getColumnHeaders()
+                });
+            },
+
             addRow: function (top) {
                 const dm = this.app.dataManager;
                 dm.addRecordToCollection(this.collection, () => {
@@ -581,11 +588,77 @@ define(["jquery",
                     this.$el.find('.wtHolder').scrollTop(top ? 0 : 10000); //scroll to either top or bottom
                 });
             },
-            refreshHeaders: function () {
-                this.table.updateSettings({
-                    colHeaders: this.getColumnHeaders()
+
+            addField: function (ordering) {
+                const addFieldForm = new AddField({
+                    app: this.app,
+                    dataset: this.collection,
+                    sourceModal: this.secondaryModal,
+                    ordering: ordering
                 });
+
+                this.secondaryModal.update({
+                    app: this.app,
+                    view: addFieldForm,
+                    title: 'Add New Column',
+                    width: '350px',
+                    height: '250px',
+                    showSaveButton: true,
+                    saveFunction: addFieldForm.saveField.bind(addFieldForm),
+                    showDeleteButton: false
+                });
+                this.secondaryModal.show();
+                this.popover.hide();
+            },
+
+            editField: function (fieldIndex) {
+                const editFieldForm = new EditField({
+                    app: this.app,
+                    model: this.fields.at(fieldIndex),
+                    dataset: this.collection,
+                    sourceModal: this.secondaryModal
+                });
+
+                this.secondaryModal.update({
+                    app: this.app,
+                    view: editFieldForm,
+                    title: 'Edit Column',
+                    width: '300px',
+                    showSaveButton: true,
+                    saveFunction: editFieldForm.saveField.bind(editFieldForm),
+                    showDeleteButton: false
+                });
+                this.secondaryModal.show();
+                this.popover.hide();
+            },
+
+            deleteField: function (fieldIndex) {
+                const field = this.fields.at(fieldIndex);
+                if (!confirm(`Do you want to delete the "${field.get('col_alias')}" field? This cannot be undone, and may affect other maps and layers in your project.`)){
+                    return;
+                }
+                field.destroy({
+                    wait: true,
+                    success: (e) => {
+                        this.renderSpreadsheet();
+                        this.app.dataManager.reloadDatasetFromServer(this.collection);
+                    },
+                    error: (model, response) => {
+                        console.error(response);
+                        try {
+                            const error = JSON.parse(response.responseText);
+                            const dependencies = error.dependencies.join("</li></li>")
+                            const message = `
+                                ${error.error_message}:<ul><li>${dependencies}</li></ul>`;
+                            this.app.vent.trigger('error-message', message);
+                        } catch(e) {
+                            this.app.vent.trigger('error-message', 'The column could not be deleted: unknown error');
+                        }
+                    }
+                });
+                this.popover.hide();
             }
         });
+        _.extend(Spreadsheet.prototype, CustomCellRenderers);
         return Spreadsheet;
     });

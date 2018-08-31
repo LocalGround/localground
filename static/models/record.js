@@ -129,7 +129,12 @@ define(["models/base",
                             break;
                         case "choice":
                             options = choices.map(choice => choice.name);
-                            schema[name] = { type: 'Select', title: title, options: options, listType: 'Number' };
+                            schema[name] = {
+                                type: 'Select',
+                                title: title,
+                                options: options,
+                                listType: 'Number'
+                            };
                             break;
                         case "date-time":
                             schema[name] = {
@@ -138,8 +143,18 @@ define(["models/base",
                             };
                             break;
                         case "boolean":
-                            schema[name] = { type: 'Checkbox', title: title };
+                            schema[name] = {
+                                type: 'BooleanChoice',
+                                title: title,
+                                options: [
+                                    {'label' : 'No value', 'val': ''},
+                                    {'label' : 'Yes', 'val': 'true'},
+                                    {'label' : 'No', 'val': 'false'}
+                                ]
+                            };
                             break;
+                            // schema[name] = { type: 'Checkbox', title: title };
+                            // break;
                         case "integer":
                         case "decimal":
                             schema[name] = { type: 'Number', title: title };

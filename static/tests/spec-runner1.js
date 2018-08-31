@@ -35,6 +35,7 @@ require(['boot'], function () {
 
         //spreadsheet tests:
         'spec/views/main/spreadsheet-test.js',
+        'spec/views/main/spreadsheet-context-menu-test.js',
         'spec/views/main/spreadsheet-layout-test.js',
         'spec/views/main/edit-field-test.js',
         'spec/views/main/add-field-test.js',
@@ -53,6 +54,7 @@ require(['boot'], function () {
         'spec/lib/carousel-test.js',
         'spec/sql-parser-test.js',
         'spec/truth-statement-test.js',
+        'spec/lib/edit-media-info-test.js',
 
         // models
         'spec/models/layer-test.js',

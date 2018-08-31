@@ -53,6 +53,10 @@ define(["underscore",
             },
 
             deleteMap: function () {
+                if (this.app.dataManager.getMaps().length < 2) {
+                    alert("You are trying to delete your only map. You must have at least one map at all times. Please create a new map before deleting the current one.")
+                    return;
+                }
                 if (!confirm("Are you sure you want to delete this map?")) {
                     return;
                 }

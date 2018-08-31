@@ -25,6 +25,24 @@ define([
         }
     });
 
+    Backbone.Form.editors.BooleanChoice = Backbone.Form.editors.Select.extend({
+        getValue: function () {
+            const value = this.$el.val();
+            if (value === 'true') return true;
+            if (value === 'false') return false;
+            return null;
+        },
+        setValue: function(value) {
+            //convert booleans to strings:
+            this.value = value;
+            try {
+                this.$el.val(value.toString());
+            } catch (e) {
+                this.$el.val('');
+            }
+        },
+    });
+
     Backbone.Form.editors.DatePicker = Backbone.Form.editors.Text.extend({
 
         initialize: function (options) {
@@ -221,9 +239,7 @@ define([
                 this.refreshWidgetFromDatabase.bind(this)
             );
         },
-        editModel: function (model) {
-            alert(model.get('name'));
-        },
+        
         showMediaBrowser: function (e) {
             var addMediaLayoutView = new AddMedia({
                 app: this.app,
@@ -257,7 +273,6 @@ define([
         attachPhotoVideoView: function () {
             this.photoVideoView = new PhotoVideoView({
                 detachMediaFunction: this.detachModel.bind(this),
-                editFunction: this.editModel.bind(this),
                 app: this.app,
                 showStars: true,
                 recordModel: this.model,
@@ -270,7 +285,6 @@ define([
         attachAudioView: function () {
             this.audioView = new AudioView({
                 detachMediaFunction: this.detachModel.bind(this),
-                editFunction: this.editModel.bind(this),
                 app: this.app,
                 collection: this.model.getAudioCollection(this.app.dataManager),
                 updateOrdering: this.updateOrdering.bind(this)

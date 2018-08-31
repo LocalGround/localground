@@ -1,0 +1,49 @@
+{{#ifequal overlay_type 'photo' }}
+    <img src="{{path_large}}"></img>
+{{/ifequal}}
+
+{{#ifequal overlay_type 'video' }}
+    {{#ifequal video_provider "vimeo"}}
+        <iframe class="photo" src="https://player.vimeo.com/video/{{video_id}}"
+        style="margin: 0 auto;
+        display: block;" height="200"
+        frameborder="0"
+        webkitallowfullscreen mozallowfullscreen allowfullscreen>
+        </iframe>
+    {{/ifequal}}
+
+    {{#ifequal video_provider "youtube"}}
+        <iframe class="photo" src="https://www.youtube.com/embed/{{video_id}}?ecver=1"
+        style="margin: 0 auto;
+        display: block;" height="200"
+        frameborder="0" allowfullscreen>
+        </iframe>
+    {{/ifequal}}
+{{/ifequal}}
+
+{{#ifequal overlay_type 'audio' }}
+    <div class="edit-audio">
+
+    </div>
+{{/ifequal}}
+
+
+
+<form class="form-inline">
+    <div class="row">
+        <label>Author:</label>
+        <input id="media-attribution" class="edit-media-info_input" type="text" value="{{attribution}}">
+    </div>
+
+    {{#ifequal overlay_type 'audio' }}
+    <div class="row">
+        <label>Name:</label>
+        <input id="media-name" class="edit-media-info_input" type="text" value="{{name}}">
+    </div>
+    {{/ifequal}}
+    
+    <div class="row">
+        <label>Caption:</label>
+        <input id="media-caption" class="edit-media-info_input" type="text" value="{{caption}}">
+    </div>
+</form>
