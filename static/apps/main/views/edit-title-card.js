@@ -42,8 +42,7 @@ define([
                 app: this.app,
                 collection: this.model.getPhotoVideoCollection(this.app.dataManager),
                 detachMediaFunction: this.detachMedia.bind(this),
-                updateOrdering: this.updateMediaOrdering.bind(this),
-                editFunction: this.editModel.bind(this)
+                updateOrdering: this.updateMediaOrdering.bind(this)
             });
             this.$el.find('.title-card_media').append(this.photoVideoView.$el);
         },
@@ -53,14 +52,9 @@ define([
                 app: this.app,
                 collection: this.model.getAudioCollection(this.app.dataManager),
                 detachMediaFunction: this.detachMedia.bind(this),
-                updateOrdering: this.updateMediaOrdering.bind(this),
-                editFunction: this.editModel.bind(this)
+                updateOrdering: this.updateMediaOrdering.bind(this)
             });
             this.$el.find('.title-card_media').append(this.audioView.$el);
-        },
-
-        editModel: function (model) {
-            alert(model.get('name'));
         },
 
         updateMediaOrdering: function (id, overlay_type, newOrder) {
@@ -89,7 +83,7 @@ define([
                 saveButtonText: "Add",
                 showDeleteButton: false,
                 showSaveButton: true,
-                saveFunction: uploadAttachMedia.addModels.bind(uploadAttachMedia),
+                saveFunction: uploadAttachMedia.addModels.bind(uploadAttachMedia)
             });
             this.secondaryModal.show();
             uploadAttachMedia.showUploader();
