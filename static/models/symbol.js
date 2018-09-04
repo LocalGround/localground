@@ -12,8 +12,8 @@ define(['backbone', 'underscore', 'collections/records',
             sqlParser: null,
             defaults: {
                 fillOpacity: 1,
-                width: 20,
-                height: 20,
+                width: 25,
+                height: 25,
                 fillColor: "#4e70d4",
                 strokeColor: "#FFFFFF",
                 strokeWeight: 1,
@@ -163,7 +163,7 @@ define(['backbone', 'underscore', 'collections/records',
                     'strokeWeight': Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeWeight), 1),
                     'strokeOpacity': Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeOpacity), 1),
                     'strokeColor': layerMetadata.strokeColor,
-                    'width': Symbol.defaultIfUndefined(parseFloat(layerMetadata.width), 20),
+                    'width': Symbol.defaultIfUndefined(parseFloat(layerMetadata.width), 25),
                     'isShowing': layerMetadata.isShowing
                 };
                 return defaults;

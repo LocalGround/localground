@@ -101,6 +101,7 @@ define(["jquery",
                 $('body').click($.proxy(this.hideColorRamp, this));
 
                 this.listenTo(this.app.vent, 'update-map', this.updateMap);
+                console.log(this.model.get('metadata'));
             },
 
             initColorPicker: function (opts) {

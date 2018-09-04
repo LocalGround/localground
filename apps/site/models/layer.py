@@ -11,7 +11,7 @@ class Layer(BaseAudit):
         'buckets': 4,
         'paletteId': 0,
         'fillOpacity': 1,
-        'width': 20,
+        'width': 25,
         'fillColor': '#4e70d4',
         'strokeColor': '#ffffff',
         'strokeWeight': 1,
