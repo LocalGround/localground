@@ -149,7 +149,8 @@ define(["jquery",
                 !$el.hasClass('selected-palette-list') &&
                 !$el.hasClass('selected-palette-wrapper') &&
                 !$el.hasClass('selected-ul') &&
-                !$el.hasClass('palette-item') ) {
+                !$el.hasClass('palette-item') &&
+                !$el.hasClass('palette-icon') ) {
                     $(".palette-wrapper").hide();
                 }
 
@@ -595,16 +596,11 @@ define(["jquery",
 
             //convenience function
             updateMetadata: function (newKey, newValue, doSave=false) {
-                console.log('updateMetadata:', newKey, newValue);
                 let localMeta = this.model.get("metadata") || {};
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta);
 
                 this.collection.each(function(symbol) {
-                    console.log('updating symbol');
-                    console.log('new key: ', newKey);
-                    console.log('new value: ', newValue);
-                    console.log('new symbol', symbol);
                     symbol.set(newKey, newValue);
                 });
                 this.app.layerHasBeenAltered = true;
