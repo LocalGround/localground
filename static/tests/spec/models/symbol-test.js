@@ -73,7 +73,7 @@ define([
                 expect(symbol.get('strokeWeight')).toEqual(1);
                 expect(symbol.get('strokeOpacity')).toEqual(1);
                 expect(symbol.get('strokeColor')).toEqual('#ffffff');
-                expect(symbol.get('height')).toEqual(20);
+                expect(symbol.get('height')).toEqual(25);
                 expect(symbol.get('id')).toEqual(7);
             });
 
@@ -157,8 +157,8 @@ define([
             it('initializes defaults', function () {
                 const defaults = {
                     fillOpacity: 1,
-                    width: 20,
-                    height: 20,
+                    width: 25,
+                    height: 25,
                     fillColor: '#4e70d4',
                     strokeColor: '#FFFFFF',
                     strokeWeight: 1,
@@ -237,8 +237,8 @@ define([
             });
 
             it('setHeight() works', function () {
-                expect(this.uniform.get('width')).toEqual(20);
-                expect(this.uniform.get('height')).toEqual(20);
+                expect(this.uniform.get('width')).toEqual(25);
+                expect(this.uniform.get('height')).toEqual(25);
                 this.uniform.set('width', 50);
                 expect(this.uniform.get('width')).toEqual(50);
                 expect(this.uniform.get('height')).toEqual(50);
