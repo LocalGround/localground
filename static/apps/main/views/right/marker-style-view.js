@@ -114,7 +114,7 @@ define(["jquery",
                    },
                    onHide: (colpkr) => {
                        if (this.model.get('metadata')[opts.modelProperty] !== opts.color) {
-                           this.updateFillColor(opts.color);
+                           opts.updateFunction(opts.color);
                        }
                        $(colpkr).fadeOut(200);
                        return false;
@@ -132,14 +132,16 @@ define(["jquery",
                     className: 'layer-fill-color-picker',
                     elementID: 'fill-color-picker',
                     color: this.model.get('metadata').fillColor,
-                    modelProperty: 'fillColor'
+                    modelProperty: 'fillColor',
+                    updateFunction: this.updateFillColor.bind(this)
                 });
                 // stroke colorpicker:
                 this.initColorPicker({
                     className: 'layer-stroke-color-picker',
                     elementID: 'stroke-color-picker',
                     color: this.model.get('metadata').strokeColor,
-                    modelProperty: 'strokeColor'
+                    modelProperty: 'strokeColor',
+                    updateFunction: this.updateStrokeColor.bind(this)
                 });
             },
 
