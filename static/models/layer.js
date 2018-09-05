@@ -14,7 +14,7 @@ define(["models/base", "models/symbol", "collections/symbols", "lib/lgPalettes"]
                 buckets: 4,
                 paletteId: 0,
                 fillOpacity: 1,
-                width: 25,
+                width: 20,
                 fillColor: "#4e70d4",
                 strokeColor: "#ffffff",
                 strokeWeight: 1,

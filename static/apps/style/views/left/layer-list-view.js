@@ -81,7 +81,7 @@ define(["marionette",
                     filters: {},
                     symbols: [{
                         "fillColor": "#7075FF",
-                        "width": 25,
+                        "width": 20,
                         "rule": "*",
                         "title": "At least 1 sculpture"
                     }],
