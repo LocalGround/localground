@@ -26,7 +26,21 @@
             <label>Marker</label>
             <div class="example-markers">
                 <div class="example-marker-wrapper">
+                    {{#ifequal metadata.shape 'marker'}}
+                    <i class="fa fa-2x fa-map-marker" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                    {{/ifequal}}
+                    {{#ifequal metadata.shape 'circle'}}
                     <i class="fa fa-2x fa-circle" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                    {{/ifequal}}
+                    {{#ifequal metadata.shape 'square'}}
+                    <i class="fa fa-2x fa-square" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                    {{/ifequal}}
+                    {{#ifequal metadata.shape 'plus'}}
+                    <i class="fa fa-2x fa-plus" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                    {{/ifequal}}
+                    {{#ifequal metadata.shape 'cross'}}
+                    <i class="fa fa-2x fa-times" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                    {{/ifequal}}
                 </div>
                 <i class="fa fa-lg fa-paint-brush style-options"></i>
             </div>

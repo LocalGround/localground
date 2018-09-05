@@ -543,6 +543,7 @@ define(["jquery",
                 this.updateMetadata("fillColor", hex, true);
                 this.$el.find('#fill-color-picker').css('background-color', hex);
                 this.$el.find('#example-marker_single').css('color', hex);
+                this.render();
             },
 
             // triggered from colorPicker
@@ -600,6 +601,10 @@ define(["jquery",
                 this.model.set("metadata", localMeta);
 
                 this.collection.each(function(symbol) {
+                    console.log('updating symbol');
+                    console.log('new key: ', newKey);
+                    console.log('new value: ', newValue);
+                    console.log('new symbol', symbol);
                     symbol.set(newKey, newValue);
                 });
                 this.app.layerHasBeenAltered = true;
