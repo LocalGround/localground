@@ -149,13 +149,40 @@ define([
                 expect(this.view.layer.save).toHaveBeenCalledTimes(1);
                 expect(this.view.onRender).toHaveBeenCalledTimes(2);
             });
+            it('updateOpacity() should work', function () {
+                expect(this.view.updateOpacity).toHaveBeenCalledTimes(0);
+                expect(this.view.onRender).toHaveBeenCalledTimes(1);
+                this.view.$el.find('#marker-opacity').val('50%');
+                this.view.$el.find('#marker-opacity').trigger('change');
+                expect(this.view.model.get('fillOpacity')).toEqual(0.5);
+                expect(this.view.$el.find('#marker-opacity').val()).toEqual('50%');
+                expect(this.view.updateOpacity).toHaveBeenCalledTimes(1);
+                expect(this.view.onRender).toHaveBeenCalledTimes(2);
+            });
             it('updateOpacity() > 1 should work', function () {
                 expect(this.view.updateOpacity).toHaveBeenCalledTimes(0);
                 expect(this.view.onRender).toHaveBeenCalledTimes(1);
-                this.view.$el.find('#marker-opacity').val(0.5);
+
+                // setting opacity to something other than 1
+                this.view.model.set('fillOpacity', 0.4);
+                expect(this.view.onRender).toHaveBeenCalledTimes(2);
+
+                this.view.$el.find('#marker-opacity').val('150%');
                 this.view.$el.find('#marker-opacity').trigger('change');
-                expect(this.view.model.get('fillOpacity')).toEqual(0.5);
-                expect(this.view.$el.find('#marker-opacity').val()).toEqual('0.5');
+                expect(this.view.model.get('fillOpacity')).toEqual(1);
+                expect(this.view.$el.find('#marker-opacity').val()).toEqual('100%');
+                expect(this.view.updateOpacity).toHaveBeenCalledTimes(1);
+                expect(this.view.onRender).toHaveBeenCalledTimes(3);
+            });
+
+            it('updateOpacity() < 1 should work', function () {
+                expect(this.view.updateOpacity).toHaveBeenCalledTimes(0);
+                expect(this.view.onRender).toHaveBeenCalledTimes(1);
+
+                this.view.$el.find('#marker-opacity').val('-150%');
+                this.view.$el.find('#marker-opacity').trigger('change');
+                expect(this.view.model.get('fillOpacity')).toEqual(0);
+                expect(this.view.$el.find('#marker-opacity').val()).toEqual('0%');
                 expect(this.view.updateOpacity).toHaveBeenCalledTimes(1);
                 expect(this.view.onRender).toHaveBeenCalledTimes(2);
             });
@@ -172,10 +199,10 @@ define([
             it('updateStrokeOpacity() should work', function () {
                 expect(this.view.updateStrokeOpacity).toHaveBeenCalledTimes(0);
                 expect(this.view.onRender).toHaveBeenCalledTimes(1);
-                this.view.$el.find('#stroke-opacity').val(0.6);
+                this.view.$el.find('#stroke-opacity').val('60%');
                 this.view.$el.find('#stroke-opacity').trigger('change');
                 expect(this.view.model.get('strokeOpacity')).toEqual(0.6);
-                expect(this.view.$el.find('#stroke-opacity').val()).toEqual('0.6');
+                expect(this.view.$el.find('#stroke-opacity').val()).toEqual('60%');
                 expect(this.view.updateStrokeOpacity).toHaveBeenCalledTimes(1);
                 expect(this.view.onRender).toHaveBeenCalledTimes(2);
             });
@@ -187,6 +214,31 @@ define([
                 expect(this.view.model.get('width')).toEqual(50);
                 expect(this.view.updateSize).toHaveBeenCalledTimes(1);
                 expect(this.view.onRender).toHaveBeenCalledTimes(2);
+            });
+            it("changes to a non-uniform symbol don't update its layer", function () {
+                expect(this.view.updateSize).toHaveBeenCalledTimes(0);
+                expect(this.view.onRender).toHaveBeenCalledTimes(1);
+                this.view.$el.find('#marker-width').val(40);
+                this.view.$el.find('#marker-width').trigger('change');
+                expect(this.view.model.get('width')).toEqual(40);
+                expect(this.view.updateSize).toHaveBeenCalledTimes(1);
+                expect(this.view.onRender).toHaveBeenCalledTimes(2);
+
+                expect(this.view.layer.get('metadata').width).not.toEqual(40);
+            });
+
+            it("changes to a uniform symbol also update its layer", function () {
+                this.view.layer.set('group_by', 'uniform');
+
+                expect(this.view.updateSize).toHaveBeenCalledTimes(0);
+                expect(this.view.onRender).toHaveBeenCalledTimes(1);
+                this.view.$el.find('#marker-width').val(40);
+                this.view.$el.find('#marker-width').trigger('change');
+                expect(this.view.model.get('width')).toEqual(40);
+                expect(this.view.updateSize).toHaveBeenCalledTimes(1);
+                expect(this.view.onRender).toHaveBeenCalledTimes(2);
+
+                expect(this.view.layer.get('metadata').width).toEqual(40);
             });
         });
     });

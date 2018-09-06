@@ -10,10 +10,10 @@ define([
 
         const initView = function (scope) {
             spyOn(MarkerStyleView.prototype, 'initialize').and.callThrough();
-            spyOn(MarkerStyleView.prototype, 'render').and.callThrough();
             spyOn(MarkerStyleView.prototype, 'setSymbols').and.callThrough();
             spyOn(MarkerStyleView.prototype, 'saveChanges').and.callThrough();
             spyOn(MarkerStyleView.prototype, 'updateGlobalShape').and.callThrough();
+            spyOn(MarkerStyleView.prototype, 'updatePaletteOpacity').and.callThrough();
 
             map = scope.dataManager.getMaps().at(0);
             layer = scope.getLayers(map.id).at(1);
@@ -62,6 +62,36 @@ define([
 
                 expect(this.view.updateGlobalShape).toHaveBeenCalledTimes(1);
                 expect(this.view.model.get('metadata').shape).toEqual('square');
+            });
+            it('updatePaletteOpacity() works', function () {
+                expect(this.view.updatePaletteOpacity).toHaveBeenCalledTimes(0);
+                this.view.$el.find('#palette-opacity').val('50%');
+                this.view.$el.find('#palette-opacity').trigger('change');
+                expect(this.view.model.get('metadata').fillOpacity).toEqual(0.5);
+                expect(this.view.$el.find('#palette-opacity').val()).toEqual('50%');
+                expect(this.view.updatePaletteOpacity).toHaveBeenCalledTimes(1);
+            });
+            it('updateOpacity() > 1 works', function () {
+                expect(this.view.updatePaletteOpacity).toHaveBeenCalledTimes(0);
+
+                // setting opacity to something other than 1 first
+                this.view.model.set('fillOpacity', 0.4);
+
+                this.view.$el.find('#palette-opacity').val('150%');
+                this.view.$el.find('#palette-opacity').trigger('change');
+                expect(this.view.model.get('metadata').fillOpacity).toEqual(1);
+                expect(this.view.$el.find('#palette-opacity').val()).toEqual('100%');
+                expect(this.view.updatePaletteOpacity).toHaveBeenCalledTimes(1);
+            });
+
+            it('updateOpacity() < 1 works', function () {
+                expect(this.view.updatePaletteOpacity).toHaveBeenCalledTimes(0);
+
+                this.view.$el.find('#palette-opacity').val('-150%');
+                this.view.$el.find('#palette-opacity').trigger('change');
+                expect(this.view.model.get('metadata').fillOpacity).toEqual(0);
+                expect(this.view.$el.find('#palette-opacity').val()).toEqual('0%');
+                expect(this.view.updatePaletteOpacity).toHaveBeenCalledTimes(1);
             });
         });
     });
