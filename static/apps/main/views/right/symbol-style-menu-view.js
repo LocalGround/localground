@@ -40,7 +40,8 @@ define(["jquery",
                 return {
                     groupBy: this.groupBy,
                     icons: IconLookup.getIcons(),
-                    fillOpacity: this.model.get("fillOpacity"),
+                    fillOpacity: this.opacityToPercent(this.model.get('fillOpacity')),
+                    strokeOpacity:  this.opacityToPercent(this.model.get('strokeOpacity')),
                     id: "cp" + this.model.get('id'),
                     metadata: this.model,
                     shape: this.model.get('shape'),
@@ -49,6 +50,12 @@ define(["jquery",
                     items: len === 1 ? 'item' : 'items'
                 };
             },
+
+            // for display purposes. Converts and opacity value (0.0 — 1.0) to a percentage (0% — 100%) 
+            opacityToPercent: function(val) {
+                return (val * 100) + '%'; 
+            },
+            
             initColorPicker: function (opts) {
                 $('.' + opts.className).remove();
                 this.$el.find('#' + opts.elementID).ColorPicker({
@@ -109,11 +116,13 @@ define(["jquery",
             },
 
             updateOpacity: function (e) {
-                let opacity = parseFloat($(e.target).val());
+                let opacity = parseFloat($(e.target).val())/100;
                 if (opacity > 1) {
                     opacity = 1;
+                    this.$el.find('#marker-opacity').val(this.opacityToPercent(opacity));
                 } else if (opacity < 0 ) {
                     opacity = 0;
+                    this.$el.find('#marker-opacity').val(this.opacityToPercent(opacity));
                 }
                 this.model.set("fillOpacity", opacity);
             },
@@ -123,11 +132,13 @@ define(["jquery",
             },
 
             updateStrokeOpacity: function(e) {
-                var opacity = parseFloat($(e.target).val());
+                var opacity = parseFloat($(e.target).val())/100;
                 if (opacity > 1) {
                     opacity = 1;
+                    this.$el.find('#stroke-opacity').val(this.opacityToPercent(opacity));
                 } else if (opacity < 0 ) {
                     opacity = 0;
+                    this.$el.find('#stroke-opacity').val(this.opacityToPercent(opacity));
                 }
                 this.model.set("strokeOpacity", opacity);
             },
