@@ -95,8 +95,8 @@ define(["jquery",
             },
             updateColor: function (prop, color) {
                 if (this.model.get(prop)!== color) {
-                    this.model.set(prop, color);
-                    this.updateLayerIfUniform(prop, color, this.layer);
+                    //this.updateLayerIfUniform(prop, color, this.layer);
+                    this.updateSymbol(prop, color);
                 }
             },
             updateSymbolTitle: function(e) {
@@ -108,8 +108,8 @@ define(["jquery",
 
             updateShape: function (e) {
                 const shape = e.currentTarget.dataset.shape;
-                this.model.set('shape', shape);
-                this.updateLayerIfUniform('shape', shape, this.layer);
+                //this.updateLayerIfUniform('shape', shape, this.layer);
+                this.updateSymbol('shape', shape);
             },
 
             updateLayerSymbols: function () {
@@ -126,14 +126,14 @@ define(["jquery",
                     opacity = 0;
                     this.$el.find('#marker-opacity').val(this.opacityToPercent(opacity));
                 }
-                this.model.set("fillOpacity", opacity);
-                this.updateLayerIfUniform('fillOpacity', opacity, this.layer);
+                //this.updateLayerIfUniform('fillOpacity', opacity, this.layer);
+                this.updateSymbol("fillOpacity", opacity);
             },
 
             updateStrokeWidth: function(e) {
-                const strokeWeight = parseFloat($(e.target).val())
-                this.model.set("strokeWeight", strokeWeight);
-                this.updateLayerIfUniform('strokeWeight', strokeWeight, this.layer);
+                const strokeWeight = parseFloat($(e.target).val());
+                //this.updateLayerIfUniform('strokeWeight', strokeWeight, this.layer);
+                this.updateSymbol("strokeWeight", strokeWeight);
             },
 
             updateStrokeOpacity: function(e) {
@@ -145,29 +145,25 @@ define(["jquery",
                     opacity = 0;
                     this.$el.find('#stroke-opacity').val(this.opacityToPercent(opacity));
                 }
-                this.model.set("strokeOpacity", opacity);
-                this.updateLayerIfUniform('strokeOpacity', opacity, this.layer);
+                //this.updateLayerIfUniform('strokeOpacity', opacity, this.layer);
+                this.updateSymbol("strokeOpacity", opacity);
             },
 
             updateSize: function(e) {
                 var width = parseInt($(e.target).val());
-                this.model.set('width', width);
-                this.updateLayerIfUniform('width', width, this.layer);
-            },
-            
-            updateLayerIfUniform: function(key, value, layer) {
-                console.log('updateLayerIfUniform', key, value, layer);
-                if (layer.isUniform()) {
-                    console.log('layer is uniform');
-                    let cloneOfMetadata = JSON.parse(JSON.stringify(layer.get('metadata')));
-                    cloneOfMetadata[key] = value;
-                    //layer.get('metadata')[key] = value;
-                    layer.set('metadata', cloneOfMetadata);
-                    console.log(layer.get('metadata'));
-                    layer.save();
-                }
-            }
 
+                this.updateSymbol('width', width);
+            },
+
+            updateSymbol: function(key, value) {
+                // because updates to this.model (the symbol) trigger a save via the modelevents, 
+                // we must update the layer (if it is uniform) first, before we update the symbol.
+                // Otherwise, the changes to the layer are sometimes lost due to syncing issues.
+                if (this.layer.isUniform()) {
+                    this.layer.get('metadata')[key] = value;
+                }
+                this.model.set(key, value);
+            }
         });
         return MarkerStyleChildView;
     });
