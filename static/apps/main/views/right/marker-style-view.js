@@ -185,12 +185,19 @@ define(["jquery",
                     propCanBeCont: this.propCanBeCont(),
                     paletteCounter: this.colorPaletteAmount(),
                     previewSVGs: this.collection.toSVGList(),
-                    extraOptions: this.extraOptions
+                    extraOptions: this.extraOptions,
+                    fillOpacity: this.opacityToPercent(metadata.fillOpacity),
+                    strokeOpacity: this.opacityToPercent(metadata.strokeOpacity)
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
                 }
                 return helpers;
+            },
+
+            // for display purposes. Converts and opacity value (0.0 — 1.0) to a percentage (0% — 100%) 
+            opacityToPercent: function(val) {
+                return (val * 100) + '%'; 
             },
 
             colorPaletteAmount: function () {
@@ -510,13 +517,13 @@ define(["jquery",
             },
 
             updatePaletteOpacity: function() {
-                let opacity = parseFloat(this.$el.find("#palette-opacity").val());
+                let opacity = parseFloat(this.$el.find("#palette-opacity").val())/100;
                 if (opacity > 1) {
                     opacity = 1;
-                    this.$el.find('#palette-opacity').val(opacity);
+                    this.$el.find('#palette-opacity').val(this.opacityToPercent(opacity));
                 } else if (opacity < 0 ) {
                     opacity = 0;
-                    this.$el.find('#palette-opacity').val(opacity);
+                    this.$el.find('#palette-opacity').val(this.opacityToPercent(opacity));
                 }
                 this.updateMetadata("fillOpacity", opacity, true);
             },
@@ -556,13 +563,13 @@ define(["jquery",
             },
 
             updateStrokeOpacity: function(e) {
-                let opacity = parseFloat($(e.target).val());
+                let opacity = parseFloat($(e.target).val())/100;
                 if (opacity > 1) {
                     opacity = 1;
-                    this.$el.find('#stroke-opacity').val(opacity);
+                    this.$el.find('#stroke-opacity').val(this.opacityToPercent(opacity));
                 } else if (opacity < 0 ) {
                     opacity = 0;
-                    this.$el.find('#stroke-opacity').val(opacity);
+                    this.$el.find('#stroke-opacity').val(this.opacityToPercent(opacity));
                 }
                 this.updateMetadata("strokeOpacity", opacity, true);
             },
