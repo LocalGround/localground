@@ -96,6 +96,7 @@ define(["jquery",
             updateColor: function (prop, color) {
                 if (this.model.get(prop)!== color) {
                     this.model.set(prop, color);
+                    this.updateLayerIfUniform(prop, color, this.layer);
                 }
             },
             updateSymbolTitle: function(e) {
@@ -108,6 +109,7 @@ define(["jquery",
             updateShape: function (e) {
                 const shape = e.currentTarget.dataset.shape;
                 this.model.set('shape', shape);
+                this.updateLayerIfUniform('shape', shape, this.layer);
             },
 
             updateLayerSymbols: function () {
@@ -125,10 +127,13 @@ define(["jquery",
                     this.$el.find('#marker-opacity').val(this.opacityToPercent(opacity));
                 }
                 this.model.set("fillOpacity", opacity);
+                this.updateLayerIfUniform('fillOpacity', opacity, this.layer);
             },
 
             updateStrokeWidth: function(e) {
-                this.model.set("strokeWeight", parseFloat($(e.target).val()));
+                const strokeWeight = parseFloat($(e.target).val())
+                this.model.set("strokeWeight", strokeWeight);
+                this.updateLayerIfUniform('strokeWeight', strokeWeight, this.layer);
             },
 
             updateStrokeOpacity: function(e) {
@@ -141,11 +146,26 @@ define(["jquery",
                     this.$el.find('#stroke-opacity').val(this.opacityToPercent(opacity));
                 }
                 this.model.set("strokeOpacity", opacity);
+                this.updateLayerIfUniform('strokeOpacity', opacity, this.layer);
             },
 
             updateSize: function(e) {
                 var width = parseInt($(e.target).val());
                 this.model.set('width', width);
+                this.updateLayerIfUniform('width', width, this.layer);
+            },
+            
+            updateLayerIfUniform: function(key, value, layer) {
+                console.log('updateLayerIfUniform', key, value, layer);
+                if (layer.isUniform()) {
+                    console.log('layer is uniform');
+                    let cloneOfMetadata = JSON.parse(JSON.stringify(layer.get('metadata')));
+                    cloneOfMetadata[key] = value;
+                    //layer.get('metadata')[key] = value;
+                    layer.set('metadata', cloneOfMetadata);
+                    console.log(layer.get('metadata'));
+                    layer.save();
+                }
             }
 
         });

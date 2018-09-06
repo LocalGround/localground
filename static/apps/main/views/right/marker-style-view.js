@@ -553,7 +553,6 @@ define(["jquery",
                 this.updateMetadata("fillColor", hex, true);
                 this.$el.find('#fill-color-picker').css('background-color', hex);
                 this.$el.find('#example-marker_single').css('color', hex);
-                this.render();
             },
 
             // triggered from colorPicker
