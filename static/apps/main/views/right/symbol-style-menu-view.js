@@ -95,7 +95,6 @@ define(["jquery",
             },
             updateColor: function (prop, color) {
                 if (this.model.get(prop)!== color) {
-                    //this.updateLayerIfUniform(prop, color, this.layer);
                     this.updateSymbol(prop, color);
                 }
             },
@@ -108,7 +107,6 @@ define(["jquery",
 
             updateShape: function (e) {
                 const shape = e.currentTarget.dataset.shape;
-                //this.updateLayerIfUniform('shape', shape, this.layer);
                 this.updateSymbol('shape', shape);
             },
 
@@ -126,13 +124,11 @@ define(["jquery",
                     opacity = 0;
                     this.$el.find('#marker-opacity').val(this.opacityToPercent(opacity));
                 }
-                //this.updateLayerIfUniform('fillOpacity', opacity, this.layer);
                 this.updateSymbol("fillOpacity", opacity);
             },
 
             updateStrokeWidth: function(e) {
                 const strokeWeight = parseFloat($(e.target).val());
-                //this.updateLayerIfUniform('strokeWeight', strokeWeight, this.layer);
                 this.updateSymbol("strokeWeight", strokeWeight);
             },
 
@@ -145,7 +141,6 @@ define(["jquery",
                     opacity = 0;
                     this.$el.find('#stroke-opacity').val(this.opacityToPercent(opacity));
                 }
-                //this.updateLayerIfUniform('strokeOpacity', opacity, this.layer);
                 this.updateSymbol("strokeOpacity", opacity);
             },
 
@@ -156,7 +151,7 @@ define(["jquery",
             },
 
             updateSymbol: function(key, value) {
-                // because updates to this.model (the symbol) trigger a save via the modelevents, 
+                // Because updates to this.model (the symbol) trigger a save via the modelevents, 
                 // we must update the layer (if it is uniform) first, before we update the symbol.
                 // Otherwise, the changes to the layer are sometimes lost due to syncing issues.
                 if (this.layer.isUniform()) {
