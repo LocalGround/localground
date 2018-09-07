@@ -114,14 +114,19 @@
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
+    cursor: pointer;
+
+    &:hover {
+        background: $button-hover-color-gray;
+        border-radius: 5px;
+    }
+    .style-options {
+        margin-top: 9px;
+    }
 }
 
 .example-marker-wrapper {
     padding: 2px;
-}
-
-.style-options {
-    margin-top: 18px;
 }
 
 .marker-style-extra {

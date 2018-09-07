@@ -12,6 +12,7 @@ from localground.apps.site.models.field import Field
 from localground.apps.site.models.dataset import Dataset
 from django.conf import settings
 from rest_framework.fields import empty
+import json
 
 
 class FieldField(serializers.SlugRelatedField):
@@ -185,7 +186,11 @@ class LayerSerializer(BaseSerializer):
                 'display_field': dataset.fields[0]
             })
             self.instance = self.Meta.model.objects.create(**validated_data)
-
+            metadata = json.loads(self.instance.metadata)
+            metadata['fillColor'] = self.instance.symbols[0]['fillColor']
+            metadata['shape'] = self.instance.symbols[0]['shape']
+            self.instance.metadata = json.dumps(metadata)
+            self.instance.save()
         return self.instance
 
 

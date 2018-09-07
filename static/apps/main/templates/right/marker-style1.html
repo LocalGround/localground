@@ -1,6 +1,6 @@
 <div class="marker-style" id="visual-marker-style">
     <form class="form">
-        <div class="color-properties row">
+        <div class="color-properties style-menu_row">
 
             <!-- <label>Style:  {{uniformOrInd}}</label> -->
             <select name="place-properties" id="data-type-select" class="marker-style-select">
@@ -22,18 +22,32 @@
         </div>
 
     {{#if uniformOrInd}}
-        <div class="row">
+        <div class="style-menu_row">
             <label>Marker</label>
             <div class="example-markers">
                 <div class="example-marker-wrapper">
+                    {{#ifequal metadata.shape 'marker'}}
+                    <i class="fa fa-2x fa-map-marker" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                    {{/ifequal}}
+                    {{#ifequal metadata.shape 'circle'}}
                     <i class="fa fa-2x fa-circle" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                    {{/ifequal}}
+                    {{#ifequal metadata.shape 'square'}}
+                    <i class="fa fa-2x fa-square" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                    {{/ifequal}}
+                    {{#ifequal metadata.shape 'plus'}}
+                    <i class="fa fa-2x fa-plus" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                    {{/ifequal}}
+                    {{#ifequal metadata.shape 'cross'}}
+                    <i class="fa fa-2x fa-times" style="color: {{metadata.fillColor}}" id='example-marker_single'></i>
+                    {{/ifequal}}
                 </div>
                 <i class="fa fa-lg fa-paint-brush style-options"></i>
             </div>
 
         </div>
     {{else}}
-        <div class="row">
+        <div class="style-menu_row">
             <label class="msv-label">Group by:</label>
             <div>
                 <input type="radio" name="rb" id="cat-radio" {{#unless metadata.isContinuous}}checked{{/unless}}>
@@ -42,7 +56,7 @@
                 <label {{#unless propCanBeCont}}class="disabled"{{/unless}}>Continuous</label><br>
             </div>
         </div>
-        <div class="row {{#unless metadata.isContinuous}}disabled{{/unless}}" id="bucket-row">
+        <div class="style-menu_row {{#unless metadata.isContinuous}}disabled{{/unless}}" id="bucket-row">
             <label class="msv-label"># of data buckets:</label>
             <select id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="8" {{#unless metadata.isContinuous}}disabled="disabled"{{/unless}}>
                 <option value="2" {{#ifequal metadata.buckets 2}}SELECTED{{/ifequal}}>2</option>
@@ -54,7 +68,7 @@
                 <option value="8" {{#ifequal metadata.buckets 8}}SELECTED{{/ifequal}}>8</option>
             </select>
         </div>
-        <div class="palette-container row">
+        <div class="style-menu_row">
             <label class="msv-label">Color Ramp:</label>
             <div>
                 <a>
@@ -97,7 +111,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="style-menu_row">
             <label>Marker</label>
             <div class="example-markers">
                 {{#each previewSVGs}}
@@ -146,7 +160,7 @@
                 </div>
                 {{#if uniformOrInd}}
                 <div class="style_attr">
-                    <div class="style-menu_block jscolor" id="fill-color-picker" style="padding:0; background: {{metadata.fillColor}}; opacity: {{metadata.fillOpacity}};">
+                    <div class="style-menu_block jscolor" id="fill-color-picker" style="padding:0; background: {{metadata.fillColor}};">
                     </div>
                     <div class="style-menu_input-descr">Color</div>
                 </div>
@@ -154,7 +168,7 @@
 
                 <div class="style_attr">
                     <div class="style-menu_block">
-                        <input id="palette-opacity" type="number" value="{{metadata.fillOpacity}}" min="0.0" max="1.0" step=".1">
+                        <input id="palette-opacity" value="{{fillOpacity}}">
                     </div>
                     <div class="style-menu_input-descr">Opacity</div>
                 </div>
@@ -171,13 +185,13 @@
             </div>
 
             <div class="style_attr">
-                <div class="style-menu_block jscolor" id="stroke-color-picker" style="padding:0; background: {{metadata.strokeColor}}; opacity: {{metadata.fillOpacity}};">
+                <div class="style-menu_block jscolor" id="stroke-color-picker" style="padding:0; background: {{metadata.strokeColor}};">
                 </div>
                 <div class="style-menu_input-descr">Color</div>
             </div>
             <div class="style_attr">
                 <div class="style-menu_block">
-                    <input id="stroke-opacity" type="number" value="{{metadata.strokeOpacity}}" min="0.0" max="1.0" step=".1">
+                    <input id="stroke-opacity" value="{{strokeOpacity}}">
                 </div>
                 <div class="style-menu_input-descr">Opacity</div>
             </div>

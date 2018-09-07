@@ -40,7 +40,8 @@ define(["jquery",
                 return {
                     groupBy: this.groupBy,
                     icons: IconLookup.getIcons(),
-                    fillOpacity: this.model.get("fillOpacity"),
+                    fillOpacity: this.opacityToPercent(this.model.get('fillOpacity')),
+                    strokeOpacity:  this.opacityToPercent(this.model.get('strokeOpacity')),
                     id: "cp" + this.model.get('id'),
                     metadata: this.model,
                     shape: this.model.get('shape'),
@@ -49,6 +50,12 @@ define(["jquery",
                     items: len === 1 ? 'item' : 'items'
                 };
             },
+
+            // for display purposes. Converts and opacity value (0.0 — 1.0) to a percentage (0% — 100%) 
+            opacityToPercent: function(val) {
+                return (val * 100) + '%'; 
+            },
+            
             initColorPicker: function (opts) {
                 $('.' + opts.className).remove();
                 this.$el.find('#' + opts.elementID).ColorPicker({
@@ -88,7 +95,7 @@ define(["jquery",
             },
             updateColor: function (prop, color) {
                 if (this.model.get(prop)!== color) {
-                    this.model.set(prop, color);
+                    this.updateSymbol(prop, color);
                 }
             },
             updateSymbolTitle: function(e) {
@@ -100,7 +107,7 @@ define(["jquery",
 
             updateShape: function (e) {
                 const shape = e.currentTarget.dataset.shape;
-                this.model.set('shape', shape);
+                this.updateSymbol('shape', shape);
             },
 
             updateLayerSymbols: function () {
@@ -109,34 +116,49 @@ define(["jquery",
             },
 
             updateOpacity: function (e) {
-                let opacity = parseFloat($(e.target).val());
+                let opacity = parseFloat($(e.target).val())/100;
                 if (opacity > 1) {
                     opacity = 1;
+                    this.$el.find('#marker-opacity').val(this.opacityToPercent(opacity));
                 } else if (opacity < 0 ) {
                     opacity = 0;
+                    this.$el.find('#marker-opacity').val(this.opacityToPercent(opacity));
                 }
-                this.model.set("fillOpacity", opacity);
+                this.updateSymbol("fillOpacity", opacity);
             },
 
             updateStrokeWidth: function(e) {
-                this.model.set("strokeWeight", parseFloat($(e.target).val()));
+                const strokeWeight = parseFloat($(e.target).val());
+                this.updateSymbol("strokeWeight", strokeWeight);
             },
 
             updateStrokeOpacity: function(e) {
-                var opacity = parseFloat($(e.target).val());
+                var opacity = parseFloat($(e.target).val())/100;
                 if (opacity > 1) {
                     opacity = 1;
+                    this.$el.find('#stroke-opacity').val(this.opacityToPercent(opacity));
                 } else if (opacity < 0 ) {
                     opacity = 0;
+                    this.$el.find('#stroke-opacity').val(this.opacityToPercent(opacity));
                 }
-                this.model.set("strokeOpacity", opacity);
+                this.updateSymbol("strokeOpacity", opacity);
             },
 
             updateSize: function(e) {
                 var width = parseInt($(e.target).val());
-                this.model.set('width', width);
-            }
 
+                this.updateSymbol('width', width);
+            },
+
+            updateSymbol: function(key, value) {
+                // Because updates to this.model (the symbol) trigger a save via the modelevents, 
+                // we must update the layer (if it is uniform) first, before we update the symbol.
+                // Otherwise, the changes to the layer are sometimes lost due to syncing issues.
+                if (this.layer.isUniform()) {
+                    this.layer.get('metadata')[key] = value;
+                }
+                this.model.set(key, value);
+            }
         });
         return MarkerStyleChildView;
     });
