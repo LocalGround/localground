@@ -51,7 +51,16 @@ class Layer(BaseAudit):
         if not kwargs.get('title'):
             kwargs['title'] = 'Untitled Layer'
         kwargs.pop('project')
-        return Layer.objects.create(dataset=dataset, **kwargs)
+        layer = Layer.objects.create(dataset=dataset, **kwargs)
+
+        # coordinate symbol with layer metadata:
+        metadata = json.loads(layer.metadata)
+        metadata['fillColor'] = layer.symbols[0]['fillColor']
+        metadata['shape'] = layer.symbols[0]['shape']
+        self.instance.metadata = json.dumps(metadata)
+        layer.save()
+
+        return layer
 
     def can_view(self, user, access_key=None):
         # all layer are viewable

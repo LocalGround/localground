@@ -52,8 +52,6 @@ define([
             });
 
             it('Has requisite static properties', function () {
-                expect(Symbol.UNIFORM_SYMBOL_COLOR).toEqual('#4e70d4');
-                expect(Symbol.INDIVIDUAL_SYMBOL_COLOR).toEqual('#ed867d');
                 expect(Symbol.UNCATEGORIZED_SYMBOL_COLOR).toEqual('#BBB');
                 expect(Symbol.UNCATEGORIZED_SYMBOL_RULE).toEqual('¯\\_(ツ)_/¯');
             });

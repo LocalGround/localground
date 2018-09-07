@@ -146,9 +146,7 @@ define(['backbone', 'underscore', 'collections/records',
                     return value;
                 }
             },
-            UNIFORM_SYMBOL_COLOR: '#4e70d4',
             UNIFORM_SYMBOL_RULE: '*',
-            INDIVIDUAL_SYMBOL_COLOR: '#ed867d',
             UNCATEGORIZED_SYMBOL_COLOR: '#BBB',
             UNCATEGORIZED_SYMBOL_RULE: '¯\\_(ツ)_/¯',
 
@@ -157,7 +155,7 @@ define(['backbone', 'underscore', 'collections/records',
                     return {};
                 }
                 const defaults = {
-                    'shape': 'circle',
+                    'shape': layerMetadata.shape || 'circle',
                     'fillColor': layerMetadata.fillColor,
                     'fillOpacity': Symbol.defaultIfUndefined(parseFloat(layerMetadata.fillOpacity), 1),
                     'strokeWeight': Symbol.defaultIfUndefined(parseFloat(layerMetadata.strokeWeight), 1),
@@ -240,6 +238,8 @@ define(['backbone', 'underscore', 'collections/records',
                     'id': id,
                     'layerModel': layerModel
                 });
+                metadata.fillColor;
+                console.log(props.fillColor);
                 return new Symbol(props);
             }
         });

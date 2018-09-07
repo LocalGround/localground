@@ -195,9 +195,9 @@ define(["jquery",
                 return helpers;
             },
 
-            // for display purposes. Converts and opacity value (0.0 — 1.0) to a percentage (0% — 100%) 
+            // for display purposes. Converts and opacity value (0.0 — 1.0) to a percentage (0% — 100%)
             opacityToPercent: function(val) {
-                return (val * 100) + '%'; 
+                return (val * 100) + '%';
             },
 
             colorPaletteAmount: function () {
@@ -337,18 +337,21 @@ define(["jquery",
 
             contData: function() {
                 this.updatePalettes(this.model.get("metadata").buckets);
-                this.setSymbols(this.buildContinuousSymbols(this.getContInfo()));
+                const symbols = this.buildContinuousSymbols(this.getContInfo());
+                this.updateMetadataFillColor(symbols);
+                this.setSymbols(symbols);
             },
 
             catData: function() {
                 let categoryList = this.getCategoryList();
                 this.updatePalettes(categoryList.length);
-                this.setSymbols(this.buildCategoricalSymbols(categoryList));
+                const symbols = this.buildCategoricalSymbols(categoryList);
+                this.updateMetadataFillColor(symbols);
+                this.setSymbols(symbols);
             },
 
             buildUniformSymbols: function (key) {
                 name = this.app.dataManager.getCollection(key).getTitle();
-                this.updateMetadata('fillColor', Symbol.UNIFORM_SYMBOL_COLOR)
                 this.layerDraft.uniform = new Symbols([
                     Symbol.createUniformSymbol(this.model, 1)
                 ], {layerModel: this.model});
@@ -356,16 +359,17 @@ define(["jquery",
                 return this.layerDraft.uniform;
             },
 
-            buildIndividualSymbols: function(key) {
+            buildIndividualSymbols: function (key) {
+                const metadata = this.model.get("metadata") || {};
+                const fillColor = metadata.fillColor;
                 this.layerDraft.individual = new Symbols(null, {layerModel: this.model});
-                this.updateMetadata('fillColor', Symbol.INDIVIDUAL_SYMBOL_COLOR)
                 let collection = this.app.dataManager.getCollection(key);
                 collection.forEach((item, index) => {
                     const symbol = Symbol.createIndividualSymbol({
                         layerModel: this.model,
                         category: item.id,
                         id: (index + 1),
-                        fillColor: Symbol.INDIVIDUAL_SYMBOL_COLOR
+                        fillColor: fillColor
                     });
                     this.layerDraft.individual.add(symbol);
                 });
@@ -375,7 +379,7 @@ define(["jquery",
             },
 
             buildContinuousSymbols: function (cont) {
-                var counter = 0,
+                let counter = 0,
                 selected = this.model.get('group_by');
                 if (!this.layerDraft.continuous === null) {
                     this.model.set('symbols', this.layerDraft.continuous);
@@ -574,12 +578,18 @@ define(["jquery",
             },
 
             selectPalette: function (e) {
+                console.log('selectPalette...');
                 this.$el.find(".palette-wrapper").toggle();
                 const paletteId = $(e.target).val();
+                this.updateMetadata("paletteId", paletteId);
                 this.selectedColorPalette = this.allColors[paletteId];
                 this.updatePalette();
-                this.updateMetadata("paletteId", paletteId, true);
                 e.stopImmediatePropagation();
+            },
+
+            updateMetadataFillColor: function (symbols) {
+                const metadata = this.model.get('metadata');
+                this.updateMetadata('fillColor', symbols.at(0).get('fillColor'));
             },
 
             updatePalette: function() {
@@ -588,9 +598,14 @@ define(["jquery",
                     if (symbol.isUncategorized()) {
                         return;
                     }
-                    symbol.set('fillColor', "#" + palette[i % palette.length]);
+                    const fillColor = "#" + palette[i % palette.length];
+                    if (i === 0) {
+                        this.updateMetadata("fillColor", fillColor);
+                    }
+                    symbol.set('fillColor', fillColor);
                 });
-                this.updateMapAndRender();
+                this.render();
+                //this.updateMapAndRender();
             },
 
 
@@ -601,7 +616,6 @@ define(["jquery",
             layerNoLongerNew: function() {
                 this.model.set('newLayer', false);
             },
-
             //convenience function
             updateMetadata: function (newKey, newValue, doSave=false) {
                 let localMeta = this.model.get("metadata") || {};
