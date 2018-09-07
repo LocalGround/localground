@@ -1,4 +1,8 @@
-define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.html", "lib/handlebars-helpers"],
+define([
+    "underscore", "marionette", "handlebars",
+    "text!../audio/audio-player.html", 
+    "lib/handlebars-helpers"
+],
     function (_, Marionette, Handlebars, PlayerTemplate) {
         'use strict';
 
@@ -25,6 +29,7 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 //this.detachMedia = this.detachMedia || (() => {});
                 this.render();
                 this.audio = this.$el.find(".audio").get(0);
+                this.secondaryModal = this.app.secondaryModal;
                 this.listenTo(this.app.vent, 'audio-carousel-advanced', this.stop);
 
                 // need to attach audio events directly to the element b/c the
@@ -45,12 +50,9 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 }
             },
             edit: function (e) {
-                // editFunction passed in via constructor:
-                if (this.editFunction) {
                     const audioID = parseInt($(e.target).attr('data-id'));
                     const audioModel = this.app.dataManager.getAudio(audioID);
-                    this.editFunction(audioModel);
-                }
+                    this.editAudio(audioModel);
             },
             onRender: function () {
                 if (!this.$el.find('.progress-container').get(0)) {

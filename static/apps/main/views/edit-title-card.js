@@ -42,8 +42,7 @@ define([
                 app: this.app,
                 collection: this.model.getPhotoVideoCollection(this.app.dataManager),
                 detachMediaFunction: this.detachMedia.bind(this),
-                updateOrdering: this.updateMediaOrdering.bind(this),
-                editFunction: this.editModel.bind(this)
+                updateOrdering: this.updateMediaOrdering.bind(this)
             });
             this.$el.find('.title-card_media').append(this.photoVideoView.$el);
         },
@@ -53,14 +52,9 @@ define([
                 app: this.app,
                 collection: this.model.getAudioCollection(this.app.dataManager),
                 detachMediaFunction: this.detachMedia.bind(this),
-                updateOrdering: this.updateMediaOrdering.bind(this),
-                editFunction: this.editModel.bind(this)
+                updateOrdering: this.updateMediaOrdering.bind(this)
             });
             this.$el.find('.title-card_media').append(this.audioView.$el);
-        },
-
-        editModel: function (model) {
-            alert(model.get('name'));
         },
 
         updateMediaOrdering: function (id, overlay_type, newOrder) {
@@ -84,12 +78,15 @@ define([
                 parentModel: this.model
             });
             this.secondaryModal.update({
-                title: 'Media Browser',
+                title: 'Add Image, Audio or Video to Title Card',
+                width: 1100,
+                height: 'calc(100vh - 250px)',
+                bodyClass: 'media',
                 view: uploadAttachMedia,
                 saveButtonText: "Add",
                 showDeleteButton: false,
                 showSaveButton: true,
-                saveFunction: uploadAttachMedia.addModels.bind(uploadAttachMedia),
+                saveFunction: uploadAttachMedia.addModels.bind(uploadAttachMedia)
             });
             this.secondaryModal.show();
             uploadAttachMedia.showUploader();

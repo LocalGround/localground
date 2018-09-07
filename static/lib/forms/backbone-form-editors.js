@@ -239,9 +239,7 @@ define([
                 this.refreshWidgetFromDatabase.bind(this)
             );
         },
-        editModel: function (model) {
-            alert(model.get('name'));
-        },
+        
         showMediaBrowser: function (e) {
             var addMediaLayoutView = new AddMedia({
                 app: this.app,
@@ -275,7 +273,6 @@ define([
         attachPhotoVideoView: function () {
             this.photoVideoView = new PhotoVideoView({
                 detachMediaFunction: this.detachModel.bind(this),
-                editFunction: this.editModel.bind(this),
                 app: this.app,
                 showStars: true,
                 recordModel: this.model,
@@ -288,7 +285,6 @@ define([
         attachAudioView: function () {
             this.audioView = new AudioView({
                 detachMediaFunction: this.detachModel.bind(this),
-                editFunction: this.editModel.bind(this),
                 app: this.app,
                 collection: this.model.getAudioCollection(this.app.dataManager),
                 updateOrdering: this.updateOrdering.bind(this)

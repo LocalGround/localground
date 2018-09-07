@@ -137,6 +137,7 @@ div::-webkit-scrollbar-thumb, section::-webkit-scrollbar-thumb {
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 10px 0 transparent, 0 2px 4px -1px transparent;
   display: block;
   background: #354c79;
+  display: flex;
 }
 
 .map-title h2 {
@@ -145,10 +146,21 @@ div::-webkit-scrollbar-thumb, section::-webkit-scrollbar-thumb {
   font-weight: 400;
   font-size: 18px;
   width: 260px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .map-title h2 .fa {
   display: none;
+}
+
+.map-title .fa {
+  color: #fff;
+  font-size: 18px;
+  align-self: center;
+  padding-right: 10px;
+  visibility: hidden;
 }
 
 .map-title:hover {
@@ -156,7 +168,7 @@ div::-webkit-scrollbar-thumb, section::-webkit-scrollbar-thumb {
 }
 
 .map-title:hover .fa {
-  display: block;
+  visibility: visible;
 }
 
 .add-layer {
@@ -440,9 +452,14 @@ div::-webkit-scrollbar-thumb, section::-webkit-scrollbar-thumb {
 .layer-container .layer-header .layer-name {
   cursor: pointer;
   font-weight: 600;
-  display: inline;
+  display: inline-block;
   font-size: 13px;
   margin-left: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 200px;
+  vertical-align: sub;
 }
 
 .layer-container .layer-header .collapse {
@@ -1016,14 +1033,28 @@ i.fa.fa.fa-question-circle {
   transform: translate(-50%, -50%);
 }
 
-.fullScreen .carousel-caption {
+.fullScreen .carousel-caption-wrapper {
   position: absolute;
-  bottom: 24px;
+  bottom: 12px;
   left: 0;
   right: 0;
+  height: 34px;
+}
+
+.fullScreen .carousel-caption {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+  display: block;
+  position: relative;
+}
+
+.fullScreen .carousel-author {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  display: block;
+  position: relative;
 }
 
 .close-fullscreen {
@@ -1037,6 +1068,18 @@ i.fa.fa.fa-question-circle {
 
 .show-slide {
   color: #999;
+}
+
+.carousel-author {
+  display: none;
+  color: #999;
+}
+
+.carousel-caption-wrapper {
+  margin-top: 18px;
+  position: absolute;
+  left: 0;
+  right: 0;
 }
 
 .share-settings {
@@ -1774,6 +1817,17 @@ nav li.active {
   font-size: 13px;
 }
 
+.edit-media-info img {
+  max-width: 500px;
+  max-height: 400px;
+  margin: 0 auto;
+  display: block;
+}
+
+.edit-media-info .edit-media-info_input {
+  flex-grow: 8 !important;
+}
+
 .success-message, .failure-message, .warning-message {
   position: absolute;
   display: none;
@@ -2032,7 +2086,6 @@ audio {
 
 .audio-container .play-ctrls .play {
   cursor: pointer;
-  margin: 20px auto;
 }
 
 .audio-container .play-ctrls .play.pause {
@@ -2324,6 +2377,12 @@ audio {
 
 .breadcrumb-container .breadcrumb-hover span.current {
   font-weight: 600;
+  width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  margin-bottom: 1px;
 }
 
 #map-list {

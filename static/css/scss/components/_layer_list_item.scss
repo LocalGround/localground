@@ -76,9 +76,14 @@
         .layer-name {
             cursor: pointer;
             font-weight: 600;
-            display: inline;
+            display: inline-block;
             font-size: 13px;
             margin-left: 4px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width: 200px;
+            vertical-align: sub;
         }
         .collapse {
             color: #777;
@@ -99,6 +104,10 @@
                 -ms-user-select: none;
                     user-select: none;
         }
+        // .layer-isShowing {
+        //     vertical-align: baseline;
+        //     height: 16px;
+        // }
     }
 
     .no-symbols-found {

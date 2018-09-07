@@ -154,8 +154,16 @@ define(["marionette",
                 this.active = true;
                 if (this.overlay != null) {
                     this.overlay.activate();
+                    this.centerIfOutsideMapBounds(this.overlay);
                 }
                 this.render();
+            },
+
+            // only center the active overlay if it is outside the current boundaries of the map
+            centerIfOutsideMapBounds: function(overlay) {
+                if (!this.app.map.getBounds().contains(overlay.getCenter())) {
+                    overlay.centerOn();
+                }
             },
 
             // this function only does something when adding or deleting entire markers:

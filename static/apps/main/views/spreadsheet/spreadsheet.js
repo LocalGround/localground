@@ -359,16 +359,13 @@ define(["jquery",
                         app: this.app,
                         collection: model.getPhotoVideoCollection(this.app.dataManager),
                         templateType: 'spreadsheet',
-                        detachMedia: this.detachMediaModel.bind(this),
-                        editFunction: this.editMediaModel.bind(this)
+                        detachMedia: this.detachMediaModel.bind(this)
                     });
                     $(td).append(this.photoVideoViewer.$el);
                 }
                 return td;
             },
-            editMediaModel: function (model) {
-                alert('edit: ' + model.get('name'));
-            },
+            
             detachMediaModel: function (model) {
                 alert('detach: ' + model.get('name'));
             },
@@ -381,8 +378,7 @@ define(["jquery",
                         app: this.app,
                         collection: model.getAudioCollection(this.app.dataManager),
                         templateType: 'spreadsheet',
-                        detachMedia: this.detachMediaModel.bind(this),
-                        editFunction: this.editMediaModel.bind(this)
+                        detachMedia: this.detachMediaModel.bind(this)
                     });
                     $(td).append(this.audioView.$el);
                 }

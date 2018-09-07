@@ -308,3 +308,16 @@ nav li.active {
     margin: 0px 15px;
     font-size: 13px;
 }
+
+.edit-media-info {
+    img {
+        max-width: 500px;
+        max-height: 400px;
+        margin: 0 auto;
+        display: block;
+    }
+
+    .edit-media-info_input {
+        flex-grow: 8 !important;
+    }
+}
