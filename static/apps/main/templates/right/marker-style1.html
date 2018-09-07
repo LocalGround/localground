@@ -1,6 +1,6 @@
 <div class="marker-style" id="visual-marker-style">
     <form class="form">
-        <div class="color-properties row">
+        <div class="color-properties style-menu_row">
 
             <!-- <label>Style:  {{uniformOrInd}}</label> -->
             <select name="place-properties" id="data-type-select" class="marker-style-select">
@@ -22,7 +22,7 @@
         </div>
 
     {{#if uniformOrInd}}
-        <div class="row">
+        <div class="style-menu_row">
             <label>Marker</label>
             <div class="example-markers">
                 <div class="example-marker-wrapper">
@@ -47,7 +47,7 @@
 
         </div>
     {{else}}
-        <div class="row">
+        <div class="style-menu_row">
             <label class="msv-label">Group by:</label>
             <div>
                 <input type="radio" name="rb" id="cat-radio" {{#unless metadata.isContinuous}}checked{{/unless}}>
@@ -56,7 +56,7 @@
                 <label {{#unless propCanBeCont}}class="disabled"{{/unless}}>Continuous</label><br>
             </div>
         </div>
-        <div class="row {{#unless metadata.isContinuous}}disabled{{/unless}}" id="bucket-row">
+        <div class="style-menu_row {{#unless metadata.isContinuous}}disabled{{/unless}}" id="bucket-row">
             <label class="msv-label"># of data buckets:</label>
             <select id="bucket" type="number" value="{{metadata.buckets}}" min="1" max="8" {{#unless metadata.isContinuous}}disabled="disabled"{{/unless}}>
                 <option value="2" {{#ifequal metadata.buckets 2}}SELECTED{{/ifequal}}>2</option>
@@ -68,7 +68,7 @@
                 <option value="8" {{#ifequal metadata.buckets 8}}SELECTED{{/ifequal}}>8</option>
             </select>
         </div>
-        <div class="palette-container row">
+        <div class="style-menu_row">
             <label class="msv-label">Color Ramp:</label>
             <div>
                 <a>
@@ -111,7 +111,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="style-menu_row">
             <label>Marker</label>
             <div class="example-markers">
                 {{#each previewSVGs}}
