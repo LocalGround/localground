@@ -57,7 +57,7 @@ class Layer(BaseAudit):
         metadata = json.loads(layer.metadata)
         metadata['fillColor'] = layer.symbols[0]['fillColor']
         metadata['shape'] = layer.symbols[0]['shape']
-        self.instance.metadata = json.dumps(metadata)
+        layer.metadata = json.dumps(metadata)
         layer.save()
 
         return layer
