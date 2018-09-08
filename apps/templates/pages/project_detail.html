@@ -1,0 +1,50 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-8">
+    <title>{{a}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/handsontable/5.0.0/handsontable.full.min.css">
+    <link rel=stylesheet type="text/css" href="/static/css/style.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/main.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/style-map.css" />
+    <link rel=stylesheet type="text/css" href="/static/css/main-new.css" />
+    <link rel=stylesheet type="text/css" href="/static/external/colorpicker/css/colorpicker.css" />
+    <script>
+        var projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
+        console.log(projectJSON);
+    </script>
+</head>
+<body>
+    <div id="breadcrumb" class="breadcrumb">
+        <!-- breadcrumb header -->
+        
+    </div>
+    <div class="project_header">
+        <h2>Project Title Goes Here</h2>
+    </div>
+    <div class="project_map-list">
+        
+    </div>
+    <div class="project_dataset-list">
+        
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.32&key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places,drawing"></script>
+    {% if DEBUG %}
+        <script>
+            var configPath = '../',
+                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
+        </script>
+        <script data-main="/static/apps/project_detail/kickoff.js" src="/static/external/require.js"></script>
+    {% else %}
+       <!-- Use minified, concatenated code -->
+        <script>
+            var configPath = '../apps/',
+                MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
+        </script>
+        <script data-main="/static/build/project_detail.min.js" src="/static/external/require.js"></script>
+    {% endif %}
+</body>
+</html>
