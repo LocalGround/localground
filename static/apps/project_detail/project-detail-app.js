@@ -5,12 +5,13 @@ define([
     "lib/data/dataManager",
     "apps/project_detail/views/project-header",
     "apps/project_detail/views/map-list-manager",
+    "apps/project_detail/views/dataset-list-manager",
     //"apps/presentation/views/marker-overlays",
     "lib/popovers/popover",
     "lib/appUtilities",
     "lib/handlebars-helpers",
 ], function (Marionette, Backbone, Router, DataManager, ProjectHeaderView, MapListView,
-            Popover, appUtilities) {
+            DatasetListView, Popover, appUtilities) {
     "use strict";
     var ProjectDetailApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -61,6 +62,7 @@ define([
         loadRegions: function () {
             this.showProjectHeader();
             this.showMapList();
+            this.showDatasetList();
         },
 
         showProjectHeader: function() {
@@ -78,6 +80,16 @@ define([
                 collection: this.dataManager.getMaps()
             });
             this.mapListRegion.show(this.mapListView);
+        },
+        showDatasetList: function() {
+            this.datasets = new Backbone.Collection(this.dataManager.getDatasets());
+            console.log(this.datasets);
+            this.datasetListView = new DatasetListView({
+                model: this.model,
+                app: this,
+                collection: this.datasets
+            });
+            this.datasetListRegion.show(this.datasetListView);
         },
 
         // showBasemap: function () {

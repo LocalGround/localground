@@ -3,16 +3,16 @@ define(["underscore",
         "handlebars",
         "text!../templates/map-item.html"
     ],
-    function (_, Marionette, Handlebars, MapItem) {
+    function (_, Marionette, Handlebars, MapItemTemplate) {
         'use strict';
-        var MapItem = Marionette.ItemView.extend({
+        var MapDetailItem = Marionette.ItemView.extend({
 
-            template: Handlebars.compile(MapItem),
+            template: Handlebars.compile(MapItemTemplate),
 
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.render();
             }
         });
-        return MapItem;
+        return MapDetailItem;
     });
