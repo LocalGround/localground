@@ -2,7 +2,7 @@ define([
     "jquery",
     "marionette",
     "backbone",
-    "apps/main/controller"
+    "apps/project_detail/controller"
 ], function ($, Marionette, Backbone, Controller) {
     "use strict";
     var Router = Marionette.AppRouter.extend({
