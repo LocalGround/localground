@@ -82,12 +82,11 @@ define([
             this.mapListRegion.show(this.mapListView);
         },
         showDatasetList: function() {
-            this.datasets = new Backbone.Collection(this.dataManager.getDatasets());
-            console.log(this.datasets);
+              
             this.datasetListView = new DatasetListView({
                 model: this.model,
                 app: this,
-                collection: this.datasets
+                collection: new Backbone.Collection(this.dataManager.getDatasets())
             });
             this.datasetListRegion.show(this.datasetListView);
         },

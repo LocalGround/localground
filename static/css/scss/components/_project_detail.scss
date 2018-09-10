@@ -1,0 +1,20 @@
+// main: ../main-new.scss
+
+.project-detail_wrapper {
+    height: calc(100% - 43px);
+    top: 43px;
+    position: absolute;
+    width: 100%;
+    border-top: 1px solid #dcdcdc;
+}
+
+.project-detail_inner {
+    margin: auto;
+    max-width: 900px;
+}
+
+
+.project_maps-header, .project_dataset-header {
+    height: 40px;
+    background: $light-gray;
+}
