@@ -13,7 +13,8 @@ define(["marionette",
                 this.modal = this.app.modal;
             },
             events: {
-            } 
+            },
+            className: 'project_header_inner'
         });
         return ProjectHeaderView;
     });
