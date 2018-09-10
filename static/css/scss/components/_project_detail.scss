@@ -40,6 +40,11 @@
 .map-item_map-area {
     background: #fbfafa;
     height: 190px;
+
+    .fa-ellipsis-v {
+        float: right;
+    }
+
 }
 
 .map-item_panel {
@@ -81,6 +86,17 @@
     }
 
     p {
+        font-size: 14px;
+    }
+}
+
+.dataset-item {
+    margin: 15px;
+
+    .fa-ellipsis-v {
+        float: right;
+    }
+    span {
         font-size: 14px;
     }
 }

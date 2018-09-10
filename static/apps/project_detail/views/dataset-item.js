@@ -12,7 +12,8 @@ define(["underscore",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.render();
-            }
+            },
+            className: 'dataset-item'
         });
         return DatasetItem;
     });
