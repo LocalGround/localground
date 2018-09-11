@@ -1,9 +1,9 @@
 {% extends "base/page_centered.html" %}
+{% block page_title %}Page Not Found{% endblock %}
 {% block extra_styles %}
-	{{block.super}}
+    {{ block.super }}
     .content p, .content form { margin-left: 20px; }
 {% endblock %}
-{% block page_title %}Page Not Found{% endblock %}
 {% block main_content %}
-  <p>The page you requested does not exist on our website.</p>
+    <p>The page you requested does not exist on our website.</p>
 {% endblock %}
