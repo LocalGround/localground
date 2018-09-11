@@ -29,7 +29,7 @@
 }
 
 .map-card {
-    height: 260px;
+    height: 266px;
     width: 190px;
     border: 1px solid #e4e5eb;
     min-width: 170px;
@@ -40,6 +40,8 @@
 .map-item_map-area {
     background: #fbfafa;
     height: 190px;
+    background-image: url(../assets/background-13.png);
+    background-size: cover;
 
     .fa-ellipsis-v {
         float: right;
@@ -49,11 +51,21 @@
 
 .map-item_panel {
     background: white;
-    height: 70px;
+    height: 76px;
     padding: 5px;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     padding: 5px;
+    padding-bottom: 2px;
     box-sizing: border-box;
+    display: grid;
+    grid-template-columns: auto 10px;
+    grid-auto-rows: auto;
+
+    i.fa.fa-ellipsis-v {
+        justify-self: end;
+        cursor: pointer;
+    }
 }
 
 .map-item_name {
@@ -63,18 +75,12 @@
     text-overflow: ellipsis;
 }
 
-.map-item_owner {
-    font-size: 12px;
+.map-item_small-text {
+    font-size: 11px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.map-item_datasets {
-    font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    grid-column-start: 1;
 }
 
 .project_header_inner {
