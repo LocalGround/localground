@@ -111,5 +111,8 @@ class MainView(TemplateView):
             context={'request': {}}
         )
         renderer = JSONRenderer()
-        context.update({'project': renderer.render(serializer.data)})
+        context.update({
+            'project': renderer.render(serializer.data),
+            'project_name': project.name
+        })
         return context
