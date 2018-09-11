@@ -2564,7 +2564,8 @@ audio {
 
 .breadcrumb-container .breadcrumb-hover span.current {
   font-weight: 600;
-  width: 200px;
+  max-width: 200px;
+  min-width: 100px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
