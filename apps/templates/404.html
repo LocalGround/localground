@@ -1,9 +1,13 @@
-{% extends "base/page_centered.html" %}
-{% block page_title %}Page Not Found{% endblock %}
-{% block extra_styles %}
-    {{ block.super }}
-    .content p, .content form { margin-left: 20px; }
+{% extends "base/base.html" %}
+{% block extra_css_links %}
+    <link rel=stylesheet type="text/css" href="/static/css/pages.css" />
 {% endblock %}
-{% block main_content %}
+
+{% block title %}Page Not Found{% endblock %}
+{% block h1 %}Page Not Found{% endblock %}
+{% block content %}
+
+<div class="container-center article flex">
     <p>The page you requested does not exist on our website.</p>
+</div>
 {% endblock %}
