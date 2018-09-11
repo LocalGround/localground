@@ -17,7 +17,11 @@ define([
             spyOn(LegendSymbolEntry.prototype, 'show').and.callThrough();
             spyOn(LegendSymbolEntry.prototype, 'handleRoute').and.callThrough();
             spyOn(LegendSymbolEntry.prototype, 'activateMapMarker').and.callThrough();
-            
+
+            // ignore overlay propogation
+            // spyOn(MarkerOverlay.prototype, "initialize");
+            // spyOn(MarkerOverlay.prototype, "redraw");
+
 
             spyOn(scope.app.vent, 'trigger').and.callThrough();
             // spyOn(scope.app.router, 'navigate');
@@ -29,6 +33,7 @@ define([
             spyOn(MarkerOverlay.prototype, "redraw");
             spyOn(MarkerOverlay.prototype, "show");
             spyOn(MarkerOverlay.prototype, "hide");
+            spyOn(MarkerOverlay.prototype, "getCenter");
             spyOn(MarkerOverlay.prototype, "activate").and.callThrough();
             spyOn(MarkerOverlay.prototype, "deactivate").and.callThrough();
 
@@ -72,7 +77,7 @@ define([
             it('onRender() should work', function() {
                 expect(this.view.onRender).toHaveBeenCalledTimes(1);
                 expect(this.view.addHiddenCSS).toHaveBeenCalledTimes(0);
-                
+
                 this.view.model.set('isShowing', false);
 
                 this.view.render();
@@ -107,7 +112,7 @@ define([
                 expect(this.view.removeHiddenCSS).toHaveBeenCalledTimes(0);
 
                 expect(this.view.model.get('isShowing')).toEqual(true);
-                
+
                 //this.view.showHideOverlays();
                 this.view.$el.find('.legend-show_symbol').click();
 
@@ -263,5 +268,5 @@ define([
 
 
         });
-        
+
     });

@@ -454,25 +454,35 @@ define([
             this.individualLayer = this.getLayers(this.map.id).get(65);
             this.layer = this.categoricalLayer;
             //spoof the main-app for child view testing
+            this.googleMap = {
+                getCenter: function () {
+                    return {
+                        lat: function () { return 84; },
+                        lng: function () { return -122; }
+                    };
+                },
+                getMapTypeId:  function () {
+                    return 5;
+                },
+                getZoom: function () {
+                    return 18;
+                },
+                getBounds: function () {
+                    return {
+                        contains: function (a) {
+                            return true;
+                        },
+                        lat: function () { return 84; },
+                        lng: function () { return -122; }
+                    };
+                }
+            };
             this.app = _.extend({}, appUtilities);
             _.extend(this.app, {
                 username: "Tester",
                 vent: this.vent,
                 dataManager: this.dataManager,
-                basemapView: {
-                    getCenter: function () {
-                        return {
-                            lat: function () { return 84; },
-                            lng: function () { return -122; }
-                        };
-                    },
-                    getMapTypeId:  function () {
-                        return 5;
-                    },
-                    getZoom: function () {
-                        return 18;
-                    }
-                },
+                basemapView: this.googleMap,
                 router: new Router({ app: this }),
                 start: function (options) {
                     Backbone.history.start();
@@ -496,20 +506,8 @@ define([
                 vent: this.vent,
                 dataManager: this.dataManager,
                 model: this.map,
-                basemapView: {
-                    getCenter: function () {
-                        return {
-                            lat: function () { return 84; },
-                            lng: function () { return -122; }
-                        };
-                    },
-                    getMapTypeId:  function () {
-                        return 5;
-                    },
-                    getZoom: function () {
-                        return 18;
-                    }
-                },
+                map: this.googleMap,
+                basemapView: this.googleMap,
                 router: new PresentationRouter({ app: this }),
                 start: function (options) {
                     Backbone.history.start();
