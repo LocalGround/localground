@@ -32,6 +32,7 @@ define([
         },
         templateHelpers: function () {
             return {
+                project_id: this.model.get("id"),
                 name: this.model.get("name"),
                 map: this.activeMap ? this.activeMap.toJSON() : null
             };
@@ -83,7 +84,7 @@ define([
                 saveFunction: shareSettings.saveShareSettings.bind(shareSettings),
                 closeButtonText: "Cancel",
                 width: 600,
-                height: null,   
+                height: null,
                 showSaveButton: true,
                 showDeleteButton: false
             });

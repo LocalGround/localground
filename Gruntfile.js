@@ -14,6 +14,18 @@ module.exports = function (grunt) {
                     optimize: 'none'
                 }
 	        },
+            project_detail: {
+                options: {
+                    out: './static/build/project_detail.js',
+                    baseUrl: "./static/",
+                    mainConfigFile: "./static/apps/require-config.js",
+                    name: 'apps/project_detail/kickoff',
+                    removeCombined: 'true',
+                    findNestedDependencies: 'true',
+                    wrapShim: 'true',
+                    optimize: 'none'
+                }
+	        },
             main: {
                 options: {
                     out: './static/build/main.js',
@@ -51,6 +63,12 @@ module.exports = function (grunt) {
                 files: {
                     './static/build/main.min.js':
 						['./static/build/main.js']
+				}
+	        },
+            project_detail: {
+                files: {
+                    './static/build/project_detail.min.js':
+						['./static/build/project_detail.js']
 				}
 	        },
 			presentation: {
