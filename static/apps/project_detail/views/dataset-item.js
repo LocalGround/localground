@@ -12,7 +12,17 @@ define(["underscore",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.render();
+                console.log('dataset ', this.model);
+                
             },
+
+            templateHelpers: function() {
+                const recordCount = this.model.get('models').length
+                return {
+                    recordCount: recordCount
+                }
+            },
+
             className: 'dataset-item'
         });
         return DatasetItem;

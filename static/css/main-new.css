@@ -1916,6 +1916,7 @@ nav li.active {
 .project-detail_inner {
   margin: auto;
   max-width: 900px;
+  padding-bottom: 60px;
 }
 
 .project_map-list, .project_dataset-list {
@@ -2013,8 +2014,28 @@ nav li.active {
   font-size: 14px;
 }
 
+.dataset-list_wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  margin: 0 15px;
+}
+
 .dataset-item {
-  margin: 15px;
+  padding: 15px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 1px solid transparent;
+  border-bottom: 1px solid #e4e5eb;
+  margin-bottom: -1px;
 }
 
 .dataset-item .fa-ellipsis-v {
@@ -2023,6 +2044,44 @@ nav li.active {
 
 .dataset-item span {
   font-size: 14px;
+}
+
+.dataset-item:hover {
+  border: 1px solid #e4e5eb;
+  border-radius: 4px;
+}
+
+.dataset-item_name {
+  font-size: 14px;
+}
+
+.dataset-item_description {
+  font-size: 12px;
+  color: gray;
+}
+
+.dataset-item_right-wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  justify-self: flex-end;
+  -ms-flex-item-align: end;
+      align-self: flex-end;
+  margin-left: auto;
+}
+
+.dataset-item_right-wrapper span {
+  font-size: 14px;
+  margin-right: 10px;
+  color: gray;
+}
+
+.dataset-item_right-wrapper .fa {
+  cursor: pointer;
 }
 
 .success-message, .failure-message, .warning-message {
