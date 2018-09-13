@@ -2,6 +2,7 @@ define([
     "marionette",
     "backbone",
     "apps/project_detail/router",
+    "lib/modals/modal",
     "lib/data/dataManager",
     "apps/project_detail/views/project-header",
     "apps/project_detail/views/map-list-manager",
@@ -10,7 +11,7 @@ define([
     "lib/popovers/popover",
     "lib/appUtilities",
     "lib/handlebars-helpers",
-], function (Marionette, Backbone, Router, DataManager, ProjectHeaderView, MapListView,
+], function (Marionette, Backbone, Router, Modal, DataManager, ProjectHeaderView, MapListView,
             DatasetListView, Popover, appUtilities) {
     "use strict";
     var ProjectDetailApp = Marionette.Application.extend(_.extend(appUtilities, {
@@ -34,6 +35,10 @@ define([
                 projectJSON: options.projectJSON
             });
             this.popover = new Popover({
+                app: this
+            });
+
+            this.modal = new Modal({
                 app: this
             });
             this.model = this.dataManager.getProject(options.projectJSON.id)

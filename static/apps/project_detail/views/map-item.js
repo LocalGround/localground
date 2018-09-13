@@ -30,6 +30,10 @@ define(["underscore",
                 'click .fa-ellipsis-v': 'showMenu'
             },
 
+            modelEvents: {
+                'change:name': 'render'
+            },
+
             showMenu: function(e) {
                 this.popover.update({
                     $source: e.target,
@@ -40,7 +44,6 @@ define(["underscore",
                     placement: 'bottom',
                     width: '150px'
                 });
-                console.log('show menu');
             }
 
         });

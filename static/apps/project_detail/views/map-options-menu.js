@@ -2,10 +2,11 @@ define(["underscore",
         "marionette",
         "handlebars",
         "text!../templates/map-options-menu.html",
+        "lib/editor-views/edit-map-form",
         "apps/main/views/left/edit-layer-name-modal-view",
         "apps/main/views/left/edit-display-field-modal-view",
     ],
-    function (_, Marionette, Handlebars, MapOptionsMenuTemplate,
+    function (_, Marionette, Handlebars, MapOptionsMenuTemplate, EditMapForm,
             EditLayerName, EditDisplayField) {
         'use strict';
 
@@ -54,7 +55,24 @@ define(["underscore",
             },
 
             renameMap: function() {
-                this.modal.update
+                const editMapForm = new EditMapForm({
+                    app: this.app,
+                    model: this.model
+                });
+                this.modal.update({
+                    app: this.app,
+                    class: "edit-map-name",
+                    view: editMapForm,
+                    title: 'Edit Map',
+                    width: 400,
+                    saveButtonText: "Save",
+                    closeButtonText: "Cancel",
+                    showSaveButton: true,
+                    saveFunction: editMapForm.saveMap.bind(editMapForm),
+                    showDeleteButton: false
+                });
+                this.modal.show();
+                this.app.popover.hide();
             }
             
         });
