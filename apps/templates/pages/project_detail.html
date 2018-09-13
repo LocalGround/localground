@@ -18,10 +18,18 @@
 </head>
 <body>
     <div id="breadcrumb" class="breadcrumb">
-        <!-- breadcrumb header -->
-        {{ project_name }}
-
+        <div class="breadcrumb-container">
+            <div class="breadcrumb-hover">
+                <a href="/">Home</a>
+            </div>
+        
+            <i class="fa fa-angle-right fa"></i>
+            <div class="breadcrumb-hover">
+                <a href="/projects/{{ project_id }}/">{{ project_name }}</a>
+            </div>
+        </div>
     </div>
+    
     <div class="project-detail_wrapper">
         <div class="project-detail_inner">
             <div class="project_header">
