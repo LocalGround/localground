@@ -1,9 +1,10 @@
 define(["underscore",
         "marionette",
         "handlebars",
+        "apps/project_detail/views/map-options-menu",
         "text!../templates/map-item.html"
     ],
-    function (_, Marionette, Handlebars, MapItemTemplate) {
+    function (_, Marionette, Handlebars, MapOptionsMenu, MapItemTemplate) {
         'use strict';
         var MapItem = Marionette.ItemView.extend({
 
@@ -11,6 +12,9 @@ define(["underscore",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+
+                this.popover = this.app.popover;
+
                 this.render();
             },
             className: 'map-card',
@@ -22,6 +26,22 @@ define(["underscore",
                     datasetList: datasetList
                 };
             },
+            events: {
+                'click .fa-ellipsis-v': 'showMenu'
+            },
+
+            showMenu: function(e) {
+                this.popover.update({
+                    $source: e.target,
+                    view: new MapOptionsMenu({
+                        app: this.app,
+                        model: this.model
+                    }),
+                    placement: 'bottom',
+                    width: '150px'
+                });
+                console.log('show menu');
+            }
 
         });
         return MapItem;
