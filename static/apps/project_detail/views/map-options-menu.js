@@ -3,11 +3,10 @@ define(["underscore",
         "handlebars",
         "text!../templates/map-options-menu.html",
         "lib/shared-views/edit-map-form",
-        "apps/main/views/left/edit-layer-name-modal-view",
-        "apps/main/views/left/edit-display-field-modal-view",
+        "views/generate-print"
     ],
     function (_, Marionette, Handlebars, MapOptionsMenuTemplate, EditMapForm,
-            EditLayerName, EditDisplayField) {
+            PrintLayoutView) {
         'use strict';
 
         var MapOptionsMenu =  Marionette.ItemView.extend({
@@ -17,7 +16,7 @@ define(["underscore",
                 'click .rename-map': 'renameMap',
                 'click .delete-map': 'deleteMap',
                 'click .share-map': 'shareMap',
-                'click .print-map': 'printMap'
+                'click .print-map': 'showPrintModal'
             },
 
             initialize: function (opts) {
@@ -26,25 +25,25 @@ define(["underscore",
                 console.log(this.model);
             },
 
-            editLayerName: function() {
-                const editLayerNameModal = new EditLayerName({
-                    app: this.app,
-                    model: this.model
-                });
-                this.modal.update({
-                    app: this.app,
-                    class: "edit-layer-name",
-                    view: editLayerNameModal,
-                    title: 'Edit Layer Name',
-                    width: 400,
-                    saveButtonText: "Save",
-                    closeButtonText: "Cancel",
-                    showSaveButton: true,
-                    saveFunction: editLayerNameModal.saveLayer.bind(editLayerNameModal),
-                    showDeleteButton: false
-                });
-                this.modal.show();
-            },
+            // editLayerName: function() {
+            //     const editLayerNameModal = new EditLayerName({
+            //         app: this.app,
+            //         model: this.model
+            //     });
+            //     this.modal.update({
+            //         app: this.app,
+            //         class: "edit-layer-name",
+            //         view: editLayerNameModal,
+            //         title: 'Edit Layer Name',
+            //         width: 400,
+            //         saveButtonText: "Save",
+            //         closeButtonText: "Cancel",
+            //         showSaveButton: true,
+            //         saveFunction: editLayerNameModal.saveLayer.bind(editLayerNameModal),
+            //         showDeleteButton: false
+            //     });
+            //     this.modal.show();
+            // },
 
             template: Handlebars.compile(MapOptionsMenuTemplate),
 
@@ -85,7 +84,28 @@ define(["underscore",
                 }
                 this.app.popover.hide();
                 this.app.dataManager.destroyMap(this.model);
-            }
+            },
+
+            //TODO: come back to this. Where does the print button go?
+            showPrintModal: function (opts) {
+                var printLayout = new PrintLayoutView({
+                    app: this.app
+                });
+                this.modal.update({
+                    bodyClass: 'gray',
+                    app: this.app,
+                    view: printLayout,
+                    title: 'Generate Print',
+                    saveButtonText: 'Print',
+                    width: 1000,
+                    height: null,
+                    closeButtonText: "Done",
+                    showSaveButton: true,
+                    showDeleteButton: false,
+                    saveFunction: printLayout.callMakePrint.bind(printLayout)
+                });
+                this.modal.show();
+        }
             
         });
         return MapOptionsMenu;
