@@ -1,10 +1,12 @@
 define(["marionette",
         "underscore",
         "handlebars",
+        "models/map",
         "apps/project_detail/views/map-item",
+        "lib/shared-views/new-map-model-view",
         "text!../templates/map-list-manager.html"
     ],
-    function (Marionette, _, Handlebars, MapItemView, MapListManagerTemplate) {
+    function (Marionette, _, Handlebars, Map, MapItemView, CreateMapModel, MapListManagerTemplate) {
         'use strict';
 
         // in this view, each childview is a layer
@@ -16,8 +18,7 @@ define(["marionette",
                 _.extend(this, opts);
             },
             events: {
-                'click .legend-top': 'toggleLegend',
-                'click this': 'toggleLegend'
+                'click #add-map': 'showAddMapModal'
             },
             childViewOptions: function (model, index) {
                 // const dm = this.app.dataManager;
@@ -29,6 +30,37 @@ define(["marionette",
             },
             childView: MapItemView,
             childViewContainer: '.map-list_wrapper',
+
+            showAddMapModal: function (e) {                
+                var createMapModel = new CreateMapModel({
+                    app: this.app,
+                    model: new Map({
+                        center: {
+                            "type": "Point",
+                            "coordinates": [ 151, -34 ]
+                        },
+                        basemap: 7,
+                        zoom: 15,
+                        project_id: this.model.get('id'),
+                        metadata: {}
+                    })
+                });
+    
+                this.app.modal.update({
+                    class: "add-map",
+                    view: createMapModel,
+                    title: 'New Map',
+                    width: 400,
+                    saveButtonText: "Create Map",
+                    closeButtonText: "Cancel",
+                    showSaveButton: true,
+                    saveFunction: createMapModel.saveMap.bind(createMapModel),
+                    showDeleteButton: false
+                });
+    
+                this.app.modal.show();
+                if (e) { e.preventDefault(); }
+            }
 
            
         });

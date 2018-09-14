@@ -2,7 +2,7 @@ var rootDir = '../../';
 define([
     'jquery',
     rootDir + 'lib/modals/modal',
-    rootDir + 'lib/editor-views/edit-map-form'
+    rootDir + 'lib/shared-views/edit-map-form'
 ],
     function ($, Modal, EditMapForm) {
         'use strict';

@@ -1,6 +1,6 @@
 define(["marionette",
         "handlebars",
-        "lib/editor-views/edit-map-form",
+        "lib/shared-views/edit-map-form",
         "models/layer",
         "apps/main/views/left/create-layer-form",
         "text!../../templates/left/map-title.html",
