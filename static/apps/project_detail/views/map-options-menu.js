@@ -3,9 +3,10 @@ define(["underscore",
         "handlebars",
         "text!../templates/map-options-menu.html",
         "lib/shared-views/edit-map-form",
+        "lib/shared-views/share-settings",
         "views/generate-print"
     ],
-    function (_, Marionette, Handlebars, MapOptionsMenuTemplate, EditMapForm,
+    function (_, Marionette, Handlebars, MapOptionsMenuTemplate, EditMapForm, ShareSettings,
             PrintLayoutView) {
         'use strict';
 
@@ -15,7 +16,7 @@ define(["underscore",
                 'click .copy-map': 'copyMap',
                 'click .rename-map': 'renameMap',
                 'click .delete-map': 'deleteMap',
-                'click .share-map': 'shareMap',
+                'click .share-map': 'showShareMenu',
                 'click .print-map': 'showPrintModal'
             },
 
@@ -86,6 +87,28 @@ define(["underscore",
                 this.app.dataManager.destroyMap(this.model);
             },
 
+            showShareMenu: function() {
+                let shareSettings = new ShareSettings({
+                    app: this.app,
+                    activeMap: this.model
+                });
+                this.modal.update({
+                    bodyClass: 'gray',
+                    app: this.app,
+                    view: shareSettings,
+                    title: 'Sharing Settings',
+                    saveButtonText: 'Save',
+                    saveFunction: shareSettings.saveShareSettings.bind(shareSettings),
+                    closeButtonText: "Cancel",
+                    width: 600,
+                    height: null,
+                    showSaveButton: true,
+                    showDeleteButton: false
+                });
+                this.modal.show();
+                this.app.popover.hide();
+            },
+
             //TODO: come back to this. Where does the print button go?
             showPrintModal: function (opts) {
                 var printLayout = new PrintLayoutView({
@@ -105,7 +128,7 @@ define(["underscore",
                     saveFunction: printLayout.callMakePrint.bind(printLayout)
                 });
                 this.modal.show();
-        }
+            }
             
         });
         return MapOptionsMenu;
