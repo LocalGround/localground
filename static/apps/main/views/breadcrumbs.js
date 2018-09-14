@@ -12,13 +12,12 @@ define([
     "marionette",
     "models/map",
     "views/generate-print",
-    "apps/main/views/left/new-map-modal-view",
     "apps/main/views/map-menu",
     "apps/main/views/share-settings",
     "apps/main/views/presentation-options",
     "text!../templates/breadcrumbs.html"
 ], function (_, Handlebars, Marionette, Map, PrintLayoutView,
-        CreateMapForm, MapMenu, ShareSettings, PresentationOptions, BreadcrumbsTemplate) {
+            MapMenu, ShareSettings, PresentationOptions, BreadcrumbsTemplate) {
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
         template: Handlebars.compile(BreadcrumbsTemplate),

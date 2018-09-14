@@ -4,7 +4,7 @@ define([
     rootDir + "apps/main/views/map-menu",
     rootDir + "models/map",
     rootDir + "lib/modals/modal",
-    "apps/main/views/left/new-map-modal-view",
+    rootDir + "lib/shared-views/new-map-modal-view",
     "tests/spec-helper1"
 ],
     function (Backbone, MapMenu, Map, Modal, CreateMapForm) {

@@ -11,7 +11,7 @@ define([
     "handlebars",
     "marionette",
     "models/map",
-    "apps/main/views/left/new-map-modal-view",
+    "lib/shared-views/new-map-modal-view",
     "text!../templates/map-menu.html"
 ], function (_, Handlebars, Marionette, Map, CreateMapForm, MapMenuTemplate) {
     "use strict";

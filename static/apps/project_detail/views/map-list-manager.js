@@ -3,7 +3,7 @@ define(["marionette",
         "handlebars",
         "models/map",
         "apps/project_detail/views/map-item",
-        "lib/shared-views/new-map-model-view",
+        "lib/shared-views/new-map-modal-view",
         "text!../templates/map-list-manager.html"
     ],
     function (Marionette, _, Handlebars, Map, MapItemView, CreateMapModel, MapListManagerTemplate) {
