@@ -13,7 +13,7 @@ define([
     "models/map",
     "views/generate-print",
     "apps/main/views/map-menu",
-    "apps/main/views/share-settings",
+    "lib/shared-views/share-settings",
     "apps/main/views/presentation-options",
     "text!../templates/breadcrumbs.html"
 ], function (_, Handlebars, Marionette, Map, PrintLayoutView,
