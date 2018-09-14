@@ -1925,13 +1925,23 @@ nav li.active {
 
 .project_maps-header, .project_dataset-header {
   padding: 7px;
+  border-bottom: 1px solid #e4e5eb;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin-bottom: 10px;
 }
 
 .project_maps-header h4, .project_dataset-header h4 {
   font-weight: 300;
   font-size: 25px;
-  border-bottom: 1px solid #e4e5eb;
-  padding-bottom: 6px;
+}
+
+.project_maps-header button, .project_dataset-header button {
+  margin-left: auto;
 }
 
 .map-list_wrapper {

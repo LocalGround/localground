@@ -22,12 +22,17 @@
 
 .project_maps-header, .project_dataset-header {
     padding: 7px;
+    border-bottom: 1px solid #e4e5eb;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
 
     h4 {
         font-weight: 300;
         font-size: 25px;
-        border-bottom: 1px solid #e4e5eb;
-        padding-bottom: 6px;
+    }
+    button {
+        margin-left: auto;
     }
 }
 
