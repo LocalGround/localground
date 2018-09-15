@@ -17,7 +17,7 @@ define(["underscore",
 
                 this.render();
             },
-            className: 'map-card',
+            className: 'project_map-item',
             templateHelpers: function () {
                 let datasetList = this.model.get('layers').models.map((layer) => {
                     return layer.get('dataset').name

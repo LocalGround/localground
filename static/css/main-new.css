@@ -1944,23 +1944,6 @@ nav li.active {
   margin-left: auto;
 }
 
-.map-list_wrapper {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-}
-
-.map-card {
-  height: 266px;
-  width: 190px;
-  border: 1px solid #e4e5eb;
-  min-width: 170px;
-  margin: 15px;
-  background: #fbfafa;
-}
-
 .map-item_map-area {
   background: #fbfafa;
   height: 190px;
@@ -1972,28 +1955,6 @@ nav li.active {
   float: right;
 }
 
-.map-item_panel {
-  background: white;
-  height: 76px;
-  padding: 5px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 5px;
-  padding-bottom: 2px;
-  box-sizing: border-box;
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-columns: auto 10px;
-      grid-template-columns: auto 10px;
-  grid-auto-rows: auto;
-}
-
-.map-item_panel i.fa.fa-ellipsis-v {
-  -ms-grid-column-align: end;
-      justify-self: end;
-  cursor: pointer;
-}
-
 .map-item_name {
   font-size: 14px;
   white-space: nowrap;
@@ -2002,12 +1963,14 @@ nav li.active {
 }
 
 .map-item_small-text {
-  font-size: 11px;
+  font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  -ms-grid-column: 1;
-      grid-column-start: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 600px;
 }
 
 .project_header_inner {
@@ -2024,7 +1987,7 @@ nav li.active {
   font-size: 14px;
 }
 
-.dataset-list_wrapper {
+.dataset-list_wrapper, .map-list_wrapper {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -2033,6 +1996,43 @@ nav li.active {
       -ms-flex-direction: column;
           flex-direction: column;
   margin: 0 15px;
+}
+
+.project_map-item {
+  padding: 15px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 1px solid transparent;
+  border-bottom: 1px solid #e4e5eb;
+  margin-bottom: -1px;
+}
+
+.project_map-item:hover {
+  border: 1px solid #e4e5eb;
+  border-radius: 4px;
+}
+
+.project_map-item_right-wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-left: auto;
+}
+
+.project_map-item_right-wrapper .map-item_right-text {
+  text-align: right;
+  margin-right: 10px;
+}
+
+.project_map-item_right-wrapper .fa {
+  cursor: pointer;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
 }
 
 .dataset-item {

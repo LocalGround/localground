@@ -36,19 +36,19 @@
     }
 }
 
-.map-list_wrapper {
-    display: flex;
-    flex-wrap: wrap;
-}
+// .map-list_wrapper {
+//     display: flex;
+//     flex-wrap: wrap;
+// }
 
-.map-card {
-    height: 266px;
-    width: 190px;
-    border: 1px solid #e4e5eb;
-    min-width: 170px;
-    margin: 15px;
-    background: #fbfafa;
-}
+// .map-card {
+//     height: 266px;
+//     width: 190px;
+//     border: 1px solid #e4e5eb;
+//     min-width: 170px;
+//     margin: 15px;
+//     background: #fbfafa;
+// }
 
 .map-item_map-area {
     background: #fbfafa;
@@ -62,24 +62,23 @@
 
 }
 
-.map-item_panel {
-    background: white;
-    height: 76px;
-    padding: 5px;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    padding: 5px;
-    padding-bottom: 2px;
-    box-sizing: border-box;
-    display: grid;
-    grid-template-columns: auto 10px;
-    grid-auto-rows: auto;
+// .map-item_panel {
+//     background: white;
+//     height: 76px;
+//     padding: 5px;
+//     -webkit-box-sizing: border-box;
+//     box-sizing: border-box;
+//     padding: 5px;
+//     padding-bottom: 2px;
+//     box-sizing: border-box;
+//     grid-template-columns: auto 10px;
+//     grid-auto-rows: auto;
 
-    i.fa.fa-ellipsis-v {
-        justify-self: end;
-        cursor: pointer;
-    }
-}
+//     i.fa.fa-ellipsis-v {
+//         justify-self: end;
+//         cursor: pointer;
+//     }
+// }
 
 .map-item_name {
     font-size: 14px;
@@ -89,11 +88,14 @@
 }
 
 .map-item_small-text {
-    font-size: 11px;
+    font-size: 12px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    grid-column-start: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 600px;
 }
 
 .project_header_inner {
@@ -110,10 +112,39 @@
     }
 }
 
-.dataset-list_wrapper {
+.dataset-list_wrapper, .map-list_wrapper {
     display: flex;
     flex-direction: column;
     margin: 0 15px;
+}
+
+.project_map-item {
+    padding: 15px;
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-bottom: 1px solid #e4e5eb;
+    margin-bottom: -1px;
+    &:hover {
+        border: 1px solid #e4e5eb;
+        border-radius: 4px;
+    }
+}
+
+.project_map-item_right-wrapper {
+    display: flex;
+    margin-left: auto;
+
+    .map-item_right-text {
+        text-align: right;
+        margin-right: 10px;
+    }
+
+    .fa {
+        cursor: pointer;
+        align-self: center;
+    }
 }
 
 .dataset-item {
