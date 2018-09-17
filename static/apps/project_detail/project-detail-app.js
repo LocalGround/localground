@@ -87,11 +87,22 @@ define([
             this.mapListRegion.show(this.mapListView);
         },
         showDatasetList: function() {
-              
+            console.log('not a bacbone collection', this.dataManager.getDatasets());
+            console.log(new Backbone.Collection(this.dataManager.getDatasets()));
+            let datasets = this.dataManager.getDatasets().map((item) => {
+                return {
+                    name: item.name,
+                    models: item.models,
+                    dataType: item.dataType,
+                    caption: item.caption,
+                    projectID: item.projectID
+                }
+            });
+
             this.datasetListView = new DatasetListView({
                 model: this.model,
                 app: this,
-                collection: new Backbone.Collection(this.dataManager.getDatasets())
+                collection: new Backbone.Collection(datasets)
             });
             this.datasetListRegion.show(this.datasetListView);
         },

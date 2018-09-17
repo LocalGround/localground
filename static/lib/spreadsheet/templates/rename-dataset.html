@@ -1,0 +1,9 @@
+<form class="form">
+    <div class="row {{#if error}} error{{/if}}">
+        <label>Dataset Name</label>
+        {{#if error}}
+            <p>{{ error }}</p>
+        {{/if}}
+        <input id="dataset_name" type="text" value="{{name}}">
+    </div>
+</form>
