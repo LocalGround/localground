@@ -1,7 +1,7 @@
 var rootDir = "../../../";
 define([
     "backbone",
-    rootDir + "apps/main/views/spreadsheet/rename-dataset",
+    rootDir + "lib/spreadsheet/views/rename-dataset",
     "tests/spec-helper1"
 ],
     function (Backbone, RenameDataset) {

@@ -1,13 +1,13 @@
 var rootDir = "../../";
 define([
     "handlebars",
-    rootDir + "../apps/main/views/spreadsheet/spreadsheet",
-    rootDir + "../apps/main/views/spreadsheet/context-menu",
+    rootDir + "../lib/spreadsheet/views/spreadsheet",
+    rootDir + "../lib/spreadsheet/views/context-menu",
     rootDir + "../models/form",
     rootDir + "../collections/records",
     rootDir + "../lib/data/dataManager",
-    rootDir + '../apps/main/views/spreadsheet/add-field',
-    rootDir + '../apps/main/views/spreadsheet/edit-field',
+    rootDir + '../lib/spreadsheet/views/add-field',
+    rootDir + '../lib/spreadsheet/views/edit-field',
     "tests/spec-helper1"
 ],
     function (Handlebars, Spreadsheet, ContextMenu, Form, Records, DataManager,

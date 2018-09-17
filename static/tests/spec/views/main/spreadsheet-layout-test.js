@@ -1,8 +1,8 @@
 var rootDir = "../../../";
 define([
     "backbone",
-    rootDir + "apps/main/views/spreadsheet/layout",
-    rootDir + "apps/main/views/spreadsheet/spreadsheet",
+    rootDir + "lib/spreadsheet/views/layout",
+    rootDir + "lib/spreadsheet/views/spreadsheet",
     "tests/spec-helper1"
 ],
     function (Backbone, SpreadsheetLayoutView, Spreadsheet) {

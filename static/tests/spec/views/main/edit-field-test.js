@@ -1,7 +1,7 @@
 var rootDir = "../../../";
 define([
     "backbone",
-    rootDir + "apps/main/views/spreadsheet/edit-field",
+    rootDir + "lib/spreadsheet/views/edit-field",
     rootDir + 'models/layer',
     rootDir + 'collections/layers',
     "tests/spec-helper1"
