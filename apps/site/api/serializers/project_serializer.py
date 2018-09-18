@@ -129,6 +129,7 @@ class ProjectDetailSerializer(ProjectSerializer):
             create_dynamic_serializer(dataset),
             records,
             name=dataset.name,
+            description=dataset.description,
             overlay_type='record',
             model_name_plural='dataset_%s' % dataset.id,
             fields=dataset.fields
@@ -178,7 +179,8 @@ class ProjectDetailSerializer(ProjectSerializer):
 
     def serialize_list(
             self, model_class, serializer_class, records, name=None,
-            overlay_type=None, model_name_plural=None, fields=None):
+            description=None, overlay_type=None, model_name_plural=None,
+            fields=None):
         if name is None:
             name = model_class.model_name_plural.title()
         if overlay_type is None:
@@ -192,6 +194,7 @@ class ProjectDetailSerializer(ProjectSerializer):
         d = {
             'dataType': model_name_plural,
             'name': name,
+            'description': description,
             'overlay_type': overlay_type,
             'data': serializer.data
         }
