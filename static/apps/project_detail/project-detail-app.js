@@ -94,7 +94,7 @@ define([
                     name: item.name,
                     models: item.models,
                     dataType: item.dataType,
-                    caption: item.caption,
+                    description: item.description,
                     projectID: item.projectID
                 }
             });
