@@ -172,6 +172,11 @@
 
 .dataset-item_name {
     font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .dataset-item_description {
@@ -181,10 +186,8 @@
 
 .dataset-item_right-wrapper {
     display: flex;
-    flex-direction: row;
-    justify-self: flex-end;
-    align-self: flex-end;
     margin-left: auto;
+    align-items: center;
 
     span {
         font-size: 14px;

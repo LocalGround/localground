@@ -58,7 +58,7 @@ define(["marionette",
                 //this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
                 this.attachRecordEventHandlers();
-                console.log(this.symbolModels);
+                console.log(this.dataCollection);
             },
             attachRecordEventHandlers: function () {
                 this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol);

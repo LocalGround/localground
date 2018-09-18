@@ -19,14 +19,11 @@ define(["marionette",
                 'click .legend-top': 'toggleLegend',
                 'click this': 'toggleLegend'
             },
-            // childViewOptions: function (model, index) {
-            //     const dm = this.app.dataManager;
-            //     return {
-            //         app: this.app,
-            //         collection: model.getSymbols(),
-            //         dataCollection: dm.getCollection(model.get('dataset').overlay_type)
-            //     };
-            // },
+            childViewOptions: function (model, index) {
+                return {
+                    app: this.app
+                };
+            },
             childView: DatasetItemView,
             childViewContainer: '.dataset-list_wrapper',
 

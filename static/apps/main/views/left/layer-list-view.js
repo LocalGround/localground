@@ -34,6 +34,7 @@ define(["marionette",
 
             childViewOptions: function (model, index) {
                 const dm = this.app.dataManager;
+                console.log(model);
                 return {
                     app: this.app,
                     collection: model.get('symbols'),

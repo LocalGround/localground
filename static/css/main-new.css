@@ -2063,6 +2063,11 @@ nav li.active {
 
 .dataset-item_name {
   font-size: 14px;
+  cursor: pointer;
+}
+
+.dataset-item_name:hover {
+  text-decoration: underline;
 }
 
 .dataset-item_description {
@@ -2074,14 +2079,10 @@ nav li.active {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  justify-self: flex-end;
-  -ms-flex-item-align: end;
-      align-self: flex-end;
   margin-left: auto;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 .dataset-item_right-wrapper span {
