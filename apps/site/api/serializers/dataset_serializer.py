@@ -15,6 +15,10 @@ class DatasetSerializerList(
     def create(self, validated_data):
         # Call the Dataset's custom create method, which creates
         # 2 fields "for free": Name and Description:
+        description = serializers.CharField(
+            source='description', required=False, allow_null=True, label='description',
+            style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
+        )
         validated_data.update(self.get_presave_create_dictionary())
         self.instance = models.Dataset.create(**validated_data)
         return self.instance
@@ -22,7 +26,7 @@ class DatasetSerializerList(
     class Meta:
         model = models.Dataset
         fields = BaseSerializer.field_list + \
-            NamedSerializerMixin.field_list + \
+            ('id', 'name', 'description', 'tags', 'url') + \
             ProjectSerializerMixin.field_list + ('data_url', 'fields_url')
         depth = 0
 

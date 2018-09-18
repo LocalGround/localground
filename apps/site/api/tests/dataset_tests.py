@@ -10,7 +10,7 @@ def get_metadata_dataset():
     return {
         'data_url': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': True, 'type': 'field'},
-        'caption': {'read_only': False, 'required': False, 'type': 'memo'},
+        'description': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False,
@@ -64,15 +64,15 @@ class ApiDatasetInstanceTest(test.TestCase, ViewMixinAPI):
         self.metadata = get_metadata_dataset()
         self.metadata['project_id']['read_only'] = True
 
-    def test_put_name_caption_tags(self, urls=None, **kwargs):
+    def test_put_name_description_tags(self, urls=None, **kwargs):
         name = 'my new dataset'
-        description = 'new caption'
+        description = 'new description'
         tags = 'bird, a cat, a dog'
         response = self.client_user.put(
             self.url,
             data=urllib.urlencode({
                 'name': name,
-                'caption': description,
+                'description': description,
                 'tags': tags
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -81,7 +81,7 @@ class ApiDatasetInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # check that response looks good:
         self.assertEqual(response.data.get('name'), name)
-        self.assertEqual(response.data.get('caption'), description)
+        self.assertEqual(response.data.get('description'), description)
         self.assertEqual(
             response.data.get('tags'), [u'bird', u'a cat', u'a dog'])
 
@@ -106,7 +106,7 @@ class ApiDatasetInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # check that response looks good:
         self.assertEqual(response.data.get('name'), name)
-        self.assertEqual(response.data.get('caption'), description)
+        self.assertEqual(response.data.get('description'), description)
         self.assertEqual(response.data.get('tags'), tags)
 
         # check that DB commit worked
