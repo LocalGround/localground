@@ -1961,7 +1961,16 @@ nav li.active {
   font-size: 25px;
 }
 
-.project_maps-header button, .project_dataset-header button {
+.project_maps-header span, .project_dataset-header span {
+  font-size: 14px;
+}
+
+.project_maps-header .description, .project_dataset-header .description {
+  font-size: 12px;
+  padding: 0px 10px;
+}
+
+.project_maps-header .sort-by_wrapper, .project_dataset-header .sort-by_wrapper {
   margin-left: auto;
 }
 

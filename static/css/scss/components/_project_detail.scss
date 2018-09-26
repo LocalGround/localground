@@ -53,7 +53,19 @@
         font-weight: 300;
         font-size: 25px;
     }
-    button {
+
+    span {
+        font-size: 14px;
+    }
+    // button {
+    //     margin-left: auto;
+    // }
+
+    .description {
+        font-size: 12px;
+        padding: 0px 10px;
+    }
+    .sort-by_wrapper {
         margin-left: auto;
     }
 }

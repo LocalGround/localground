@@ -1,8 +1,19 @@
 <div class="project_maps-header">
-    <h4>Project Maps:</h4>
-    <button class="button-action button-wide" id="add-map" style="margin-left: auto;">
+    <button class="button-action button-wide" id="add-map">
         New Map
     </button>
+    <p class="description">Project maps display geo-located information on a graphic base map of your choice.
+        <br>Maps can contain one or more layers; each layer displays locations from an associated dataset.</p>
+    
+    <div class="sort-by_wrapper">
+        <span>Sort by:</span>
+        <select name="sort_by">
+            <option value="name">Name</option>
+            <option value="share">Share</option>
+            <option value="created_by">Created by</option>
+            <option value="data_modified">Data Modified</option>
+        </select>
+    </div>
 </div>
 <div class='map-list_wrapper'>
 
