@@ -1,12 +1,18 @@
 <div>
     <p class="map-item_name">{{name}}</p>
-    <p class="map-item_small-text" title="{{datasetList}}">Datasets: {{datasetList}}</p>
+    <p class="map-item_small-text" title="{{caption}}">{{caption}}</p>
 </div>
 
 <div class="project_map-item_right-wrapper">
-    <div class="map-item_right-text">
-        <p class="map-item_small-text">create by: {{owner}}</p>
-        <p class="map-item_small-text">Jan 4, 2018</p> 
+    <div class="text-wrapper">
+        <div class="map-item_right-top">
+            <div class="access-button"><span>{{accessLevel}}</span></div>
+            <span class="map-item_small-text">create by: {{owner}}</span>
+            <span class="map-item_small-text">Jan 4, 2018</span> 
+        </div>
+        <div class="map-item_right-bottom">
+            <p class="map-item_small-text" title="{{datasetList}}">Datasets: {{datasetList}}</p>
+        </div>
     </div>
     <i class="fa fa-ellipsis-v"></i>
 </div>

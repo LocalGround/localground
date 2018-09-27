@@ -2053,9 +2053,23 @@ nav li.active {
   margin-left: auto;
 }
 
+.project_map-item_right-wrapper .text-wrapper {
+  margin-right: 20px;
+  width: 360px;
+}
+
 .project_map-item_right-wrapper .map-item_right-text {
   text-align: right;
   margin-right: 10px;
+}
+
+.project_map-item_right-wrapper .map-item_right-top {
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
 }
 
 .project_map-item_right-wrapper .fa {
@@ -2063,6 +2077,14 @@ nav li.active {
   -ms-flex-item-align: center;
       -ms-grid-row-align: center;
       align-self: center;
+}
+
+.project_map-item_right-wrapper .access-button {
+  width: 140px;
+  border: 1px solid gray;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 12px;
 }
 
 .dataset-item {

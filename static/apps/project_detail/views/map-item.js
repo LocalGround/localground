@@ -22,8 +22,10 @@ define(["underscore",
                 let datasetList = this.model.get('layers').models.map((layer) => {
                     return layer.get('dataset').name
                 });
+
                 return {
-                    datasetList: datasetList
+                    datasetList: datasetList,
+                    accessLevel: this.getAccessLevel(this.model.get('metadata').accessLevel)
                 };
             },
             events: {
@@ -32,6 +34,20 @@ define(["underscore",
 
             modelEvents: {
                 'change:name': 'render'
+            },
+
+            getAccessLevel: function(accessVal) {
+                switch(accessVal) {
+                    case 1:
+                        return 'Public'
+                        break;
+                    case 2:
+                    return 'Anyone with link'
+                        break;
+                    case 3:
+                    return 'Password protected'
+                        break;
+                }
             },
 
             showMenu: function(e) {

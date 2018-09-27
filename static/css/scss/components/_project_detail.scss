@@ -170,14 +170,31 @@
     display: flex;
     margin-left: auto;
 
+    .text-wrapper {
+        margin-right: 20px;
+        width: 360px;
+    }
+
     .map-item_right-text {
         text-align: right;
         margin-right: 10px;
     }
 
+    .map-item_right-top {
+        justify-content: space-between;
+        display: flex;
+    }
+
     .fa {
         cursor: pointer;
         align-self: center;
+    }
+    .access-button {
+        width: 140px;
+        border: 1px solid gray;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 12px;
     }
 }
 
