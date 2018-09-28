@@ -2132,6 +2132,7 @@ nav li.active {
   border-radius: 10px;
   text-align: center;
   font-size: 12px;
+  cursor: pointer;
 }
 
 .project_map-item_right-wrapper .access-button span {

@@ -67,6 +67,7 @@ define([
             this.activeMap.save(null, {
                 success: () => {
                     this.app.vent.trigger('close-modal');
+                    this.app.vent.trigger('update-access-level');
                 }
             })
         }

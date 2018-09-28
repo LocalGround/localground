@@ -3,9 +3,10 @@ define(["underscore",
         "handlebars",
         "apps/project_detail/views/map-options-menu",
         "lib/spreadsheet/views/layout",
+        "lib/shared-views/share-settings",
         "text!../templates/map-item.html"
     ],
-    function (_, Marionette, Handlebars, MapOptionsMenu, SpreadsheetLayout, MapItemTemplate) {
+    function (_, Marionette, Handlebars, MapOptionsMenu, SpreadsheetLayout, ShareSettings, MapItemTemplate) {
         'use strict';
         var MapItem = Marionette.ItemView.extend({
 
@@ -17,16 +18,12 @@ define(["underscore",
                 this.popover = this.app.popover;
                 this.modal = this.app.modal;
 
+                this.listenTo(this.app.vent, 'update-access-level', this.render);
+
                 this.render();
             },
             className: 'project_map-item',
             templateHelpers: function () {
-                // let datasetList = this.model.get('layers').models.map((layer) => {
-                //     return layer.get('dataset').overlay_type
-                // });
-
-                // let uniqueSet = Array.from(new Set(datasetList))
-
                 return {
                     datasetList: this.getDatasetInfo(this.model),
                     accessLevel: this.getAccessLevel(this.model.get('metadata').accessLevel)
@@ -34,11 +31,16 @@ define(["underscore",
             },
             events: {
                 'click .fa-ellipsis-v': 'showMenu',
-                'click .map_dataset-item': 'openSpreadsheet'
+                'click .map_dataset-item': 'openSpreadsheet',
+                'click .access-button': 'showShareMenu'
             },
 
             modelEvents: {
                 'change:name': 'render'
+            },
+
+            onRender: function() {
+                console.log('update');
             },
 
             getDatasetInfo: function(projectMap) {
@@ -48,11 +50,10 @@ define(["underscore",
 
                 let uniqueSet = Array.from(new Set(datasetList));
                 let finalInfo = uniqueSet.map((dataset) => {
-                    const info = {
+                    return {
                         name: this.app.dataManager.getCollection(dataset).name,
                         alias: dataset
-                    }
-                    return info
+                    };
                 });
                 return finalInfo;
             },
@@ -101,7 +102,27 @@ define(["underscore",
                     showSaveButton: false,
                     showDeleteButton: false
                 });
-                //this.popover.hide();
+                this.modal.show();
+            },
+
+            showShareMenu: function() {
+                let shareSettings = new ShareSettings({
+                    app: this.app,
+                    activeMap: this.model
+                });
+                this.modal.update({
+                    bodyClass: 'gray',
+                    app: this.app,
+                    view: shareSettings,
+                    title: 'Sharing Settings',
+                    saveButtonText: 'Save',
+                    saveFunction: shareSettings.saveShareSettings.bind(shareSettings),
+                    closeButtonText: "Cancel",
+                    width: 600,
+                    height: null,
+                    showSaveButton: true,
+                    showDeleteButton: false
+                });
                 this.modal.show();
             },
 
