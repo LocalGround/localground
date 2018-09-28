@@ -1,5 +1,13 @@
 // main: ../main-new.scss
 
+@mixin small-text {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #6d6b6b;
+}
+
 .project-detail_wrapper {
     height: calc(100% - 43px);
     top: 43px;
@@ -119,17 +127,21 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 600;
 }
 
-.map-item_small-text {
-    font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 600px;
+// .map-item_small-text {
+//     font-size: 12px;
+//     white-space: nowrap;
+//     overflow: hidden;
+//     text-overflow: ellipsis;
+//     max-width: 600px;
+// }
+
+
+.map-description {
+    @include small-text;
+    padding-top: 3px;
 }
 
 .project_header_inner {
@@ -153,7 +165,7 @@
 }
 
 .project_map-item {
-    padding: 15px;
+    padding: 12px 15px;
     display: flex;
     width: 100%;
     box-sizing: border-box;
@@ -161,7 +173,7 @@
     border-bottom: 1px solid #e4e5eb;
     margin-bottom: -1px;
     &:hover {
-        border: 1px solid #e4e5eb;
+        border: 1px solid #c1c1c1;
         border-radius: 4px;
     }
 }
@@ -172,7 +184,7 @@
 
     .text-wrapper {
         margin-right: 20px;
-        width: 360px;
+        width: 400px;
     }
 
     .map-item_right-text {
@@ -184,17 +196,55 @@
         justify-content: space-between;
         display: flex;
     }
+    .datasets-list {
+        font-size: 12px;
+        padding-top: 7px;
+        color: #797979;
+        font-weight: 600;
+        span {
+            font-size: 12px;
+            color: #797979;
+            cursor: pointer;
+            font-weight: 400;
+        }
+        span:hover {
+            text-decoration: underline;
+        }
+
+        span:after {
+            content: ',';
+        }
+        
+        span:last-of-type:after {
+            content: '';
+        }
+    }
+    
+    .map-owner {
+        @include small-text;
+        width: 100px;
+    }
+    
+    .map-date {
+        @include small-text;
+        width: 100px; 
+    }
 
     .fa {
         cursor: pointer;
-        align-self: center;
+        height: 20px;
+        // align-self: center;
     }
     .access-button {
         width: 140px;
-        border: 1px solid gray;
+        border: 1px solid #939393;
         border-radius: 10px;
         text-align: center;
         font-size: 12px;
+
+        span {
+            color: #6d6b6b;
+        }
     }
 }
 
@@ -215,7 +265,7 @@
     }
 
     &:hover {
-        border: 1px solid #e4e5eb;
+        border: 1px solid #c1c1c1;
         border-radius: 4px;
     }
     

@@ -1990,17 +1990,16 @@ nav li.active {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: 600;
 }
 
-.map-item_small-text {
+.map-description {
   font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 600px;
+  color: #6d6b6b;
+  padding-top: 3px;
 }
 
 .project_header_inner {
@@ -2029,7 +2028,7 @@ nav li.active {
 }
 
 .project_map-item {
-  padding: 15px;
+  padding: 12px 15px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -2042,7 +2041,7 @@ nav li.active {
 }
 
 .project_map-item:hover {
-  border: 1px solid #e4e5eb;
+  border: 1px solid #c1c1c1;
   border-radius: 4px;
 }
 
@@ -2055,7 +2054,7 @@ nav li.active {
 
 .project_map-item_right-wrapper .text-wrapper {
   margin-right: 20px;
-  width: 360px;
+  width: 400px;
 }
 
 .project_map-item_right-wrapper .map-item_right-text {
@@ -2072,19 +2071,65 @@ nav li.active {
   display: flex;
 }
 
+.project_map-item_right-wrapper .datasets-list {
+  font-size: 12px;
+  padding-top: 7px;
+  color: #797979;
+  font-weight: 600;
+}
+
+.project_map-item_right-wrapper .datasets-list span {
+  font-size: 12px;
+  color: #797979;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.project_map-item_right-wrapper .datasets-list span:hover {
+  text-decoration: underline;
+}
+
+.project_map-item_right-wrapper .datasets-list span:after {
+  content: ',';
+}
+
+.project_map-item_right-wrapper .datasets-list span:last-of-type:after {
+  content: '';
+}
+
+.project_map-item_right-wrapper .map-owner {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #6d6b6b;
+  width: 100px;
+}
+
+.project_map-item_right-wrapper .map-date {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #6d6b6b;
+  width: 100px;
+}
+
 .project_map-item_right-wrapper .fa {
   cursor: pointer;
-  -ms-flex-item-align: center;
-      -ms-grid-row-align: center;
-      align-self: center;
+  height: 20px;
 }
 
 .project_map-item_right-wrapper .access-button {
   width: 140px;
-  border: 1px solid gray;
+  border: 1px solid #939393;
   border-radius: 10px;
   text-align: center;
   font-size: 12px;
+}
+
+.project_map-item_right-wrapper .access-button span {
+  color: #6d6b6b;
 }
 
 .dataset-item {
@@ -2109,7 +2154,7 @@ nav li.active {
 }
 
 .dataset-item:hover {
-  border: 1px solid #e4e5eb;
+  border: 1px solid #c1c1c1;
   border-radius: 4px;
 }
 

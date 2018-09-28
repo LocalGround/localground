@@ -20,11 +20,14 @@ define(["underscore",
             className: 'project_map-item',
             templateHelpers: function () {
                 let datasetList = this.model.get('layers').models.map((layer) => {
+                    // if ()
                     return layer.get('dataset').name
                 });
 
+                let uniqueSet = Array.from(new Set(datasetList))
+
                 return {
-                    datasetList: datasetList,
+                    datasetList: uniqueSet,
                     accessLevel: this.getAccessLevel(this.model.get('metadata').accessLevel)
                 };
             },
