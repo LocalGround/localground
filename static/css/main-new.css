@@ -1985,6 +1985,12 @@ nav li.active {
   float: right;
 }
 
+.map-icon_wrapper {
+  height: 45px;
+  width: 45px;
+  margin-right: 15px;
+}
+
 .map-item_name {
   font-size: 14px;
   white-space: nowrap;
