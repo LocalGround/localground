@@ -13,7 +13,7 @@
         <div class="map-item_right-bottom">
             <p class="datasets-list" title="{{datasetList}}">Datasets: 
                 {{#each datasetList}}
-                    <span>{{this}}</span>
+                    <span class="map_dataset-item" data-alias="{{this.alias}}">{{this.name}}</span>
 
                 {{/each}}
             </p>

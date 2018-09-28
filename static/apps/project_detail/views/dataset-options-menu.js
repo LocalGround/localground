@@ -27,6 +27,7 @@ define(["underscore",
                     collection: this.app.dataManager.getCollection(this.model.get('dataType')),
                     layer: null
                 });
+                console.log(this.app.dataManager.getCollection(this.model.get('dataType')));
                 this.modal.update({
                     app: this.app,
                     view: spreadsheet,

@@ -2104,6 +2104,9 @@ nav li.active {
   text-overflow: ellipsis;
   color: #6d6b6b;
   width: 100px;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
 }
 
 .project_map-item_right-wrapper .map-date {
@@ -2113,6 +2116,9 @@ nav li.active {
   text-overflow: ellipsis;
   color: #6d6b6b;
   width: 100px;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
 }
 
 .project_map-item_right-wrapper .fa {

@@ -223,11 +223,13 @@
     .map-owner {
         @include small-text;
         width: 100px;
+        align-self: center;
     }
     
     .map-date {
         @include small-text;
         width: 100px; 
+        align-self: center;
     }
 
     .fa {
