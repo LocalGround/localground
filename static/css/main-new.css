@@ -2232,11 +2232,30 @@ nav li.active {
           justify-content: space-between;
 }
 
+.dataset-item_right-wrapper .in-maps-title {
+  font-size: 12px;
+  padding-top: 7px;
+  color: #797979;
+  font-weight: 600;
+}
+
 .dataset-item_right-wrapper .in-maps {
   font-size: 12px;
   color: #797979;
   cursor: pointer;
   font-weight: 400;
+}
+
+.dataset-item_right-wrapper .in-maps:hover {
+  text-decoration: underline;
+}
+
+.in-maps:after {
+  content: ',';
+}
+
+.in-maps:last-of-type:after {
+  content: '';
 }
 
 .success-message, .failure-message, .warning-message {

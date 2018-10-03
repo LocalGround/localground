@@ -13,7 +13,6 @@ define(["underscore",
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.render();
                 console.log('dataset ', this.model);
                 
             },
@@ -21,7 +20,8 @@ define(["underscore",
             templateHelpers: function() {
                 const recordCount = this.model.get('models').length
                 return {
-                    recordCount: recordCount
+                    recordCount: recordCount,
+                    matchingMaps: this.getMatchingMaps()
                 }
             },
 
@@ -29,6 +29,26 @@ define(["underscore",
             events: {
                 'click .fa-ellipsis-v': 'showMenu',
                 'click .dataset-item_name': 'openSpreadsheet'
+            },
+
+            getMatchingMaps: function() {
+                let matchingMaps = [];
+
+                this.app.dataManager.getMaps().each((map, index) => {
+                    let mapUsesDataset = false
+                    map.getLayers().each((layer, index2) => {
+                        if (layer.getDataset(this.app.dataManager).dataType === this.model.get('dataType')) {
+                            mapUsesDataset = true;
+                        }
+                    });
+                    if (mapUsesDataset) {
+                        matchingMaps.push({
+                            name: map.get('name'),
+                            id: map.get('id')
+                        })
+                    } 
+                });
+                return matchingMaps;
             },
 
             showMenu: function(e) {
