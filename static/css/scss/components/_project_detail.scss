@@ -294,17 +294,46 @@
     color: gray;
 }
 
+.dataset-icon_wrapper {
+    height: 43px;
+    width: 45px;
+    margin-right: 15px;
+    vertical-align: middle;
+    padding-top: 2px;
+}
+
 .dataset-item_right-wrapper {
     display: flex;
     margin-left: auto;
-    align-items: center;
+    // align-items: center;
 
-    span {
+    .record-count {
         font-size: 14px;
         margin-right: 10px;
         color: gray;
     }
+
+    .dataset-date {
+        @include small-text;
+    }
+
     .fa {
         cursor: pointer;
+    }
+
+    .text-wrapper {
+        margin-right: 20px;
+        width: 380px;
+    }
+
+    .dataset-item_right-top {
+        display: flex;
+        justify-content: space-between;
+    }
+    .in-maps {
+        font-size: 12px;
+        color: #797979;
+        cursor: pointer;
+        font-weight: 400;
     }
 }
