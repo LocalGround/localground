@@ -282,6 +282,10 @@
 
 .dataset-item_name {
     font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
     cursor: pointer;
 
     &:hover {
@@ -319,6 +323,7 @@
 
     .fa {
         cursor: pointer;
+        height: 20px;
     }
 
     .text-wrapper {
@@ -331,7 +336,7 @@
         justify-content: space-between;
     }
 
-    .in-maps-title {
+    .in-maps_title {
         font-size: 12px;
         padding-top: 7px;
         color: #797979;
@@ -345,18 +350,17 @@
         font-weight: 400;
     }
 
+    .in-maps:after {
+        content: ',';
+    }
+    
+    .in-maps:last-of-type:after {
+        content: '';
+    }
+
     .in-maps:hover {
         text-decoration: underline;
     }
-
-    
 }
 
 
-.in-maps:after {
-    content: ',';
-}
-
-.in-maps:last-of-type:after {
-    content: '';
-}

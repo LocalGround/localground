@@ -26,11 +26,10 @@
             <span class="dataset-date">two months ago</span>
         </div>
         <div class="dataset-item_right-bottom">
-            <span class="in-maps-title">In map(s): </span>
+            <span class="in-maps_title">In map(s): </span>
             {{#each matchingMaps}}
-                <span class="in-maps map_dataset-item" data-alias="{{this.id}}">{{this.name}}</span>
+                <a href="{{this.mapUrl}}" target="_blank" class="in-maps">{{this.name}}</a>
             {{/each}}
-            
         </div>
     </div>
     

@@ -32,11 +32,12 @@ define(["underscore",
             },
 
             getMatchingMaps: function() {
+                const projectID = this.model.get('projectID');
                 let matchingMaps = [];
 
-                this.app.dataManager.getMaps().each((map, index) => {
+                this.app.dataManager.getMaps().each((map) => {
                     let mapUsesDataset = false
-                    map.getLayers().each((layer, index2) => {
+                    map.getLayers().each((layer) => {
                         if (layer.getDataset(this.app.dataManager).dataType === this.model.get('dataType')) {
                             mapUsesDataset = true;
                         }
@@ -44,7 +45,8 @@ define(["underscore",
                     if (mapUsesDataset) {
                         matchingMaps.push({
                             name: map.get('name'),
-                            id: map.get('id')
+                            id: map.get('id'),
+                            mapUrl: `/projects/${projectID}/maps/#/${map.get('id')}`
                         })
                     } 
                 });
