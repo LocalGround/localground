@@ -36,7 +36,8 @@ define(["underscore",
             },
 
             modelEvents: {
-                'change:name': 'render'
+                'change:name': 'render',
+                'change:caption': 'render'
             },
 
             onRender: function() {
