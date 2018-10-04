@@ -46,12 +46,12 @@ define(["underscore",
                 this.modal.show();
             },
 
-            renameDataset: function() {
+            renameDataset: function(e) {
                 const collection = this.app.dataManager.getCollection(this.model.get('dataType'));
                 const renameDatasetForm = new RenameDataset({
                     app: this.app,
                     model: collection.getForm(),
-                    dataset: this.collection,
+                    dataset: collection,
                     sourceModal: this.modal
                 });
 
@@ -61,13 +61,11 @@ define(["underscore",
                     title: 'Rename Dataset',
                     width: '300px',
                     showSaveButton: true,
-                    saveFunction: () => {
-                        renameDatasetForm.saveDataset.bind(renameDatasetForm)();
-                        this.updateDatasetName();
-                    },
+                    saveFunction: renameDatasetForm.saveDataset.bind(renameDatasetForm),
                     showDeleteButton: false
                 });
                 this.modal.show();
+                this.app.popover.hide();
                 if (e) {
                     e.preventDefault();
                 }

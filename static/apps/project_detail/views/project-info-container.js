@@ -6,6 +6,7 @@ define(["marionette",
     ],
     function (Marionette, Handlebars, MapListView, DatasetListView, InfoContainerTemplate)  {
         'use strict';
+        // this view is the container for toggling between the maps list and the datasets list
         const InfoContainer = Marionette.LayoutView.extend({
             regions: {
                 mapListRegion: '.project_map-list',
@@ -67,22 +68,27 @@ define(["marionette",
                 this.mapListRegion.show(this.mapListView);
             },
             showDatasetList: function() {
-                console.log('not a bacbone collection', this.app.dataManager.getDatasets());
-                console.log(new Backbone.Collection(this.app.dataManager.getDatasets()));
-                let datasets = this.app.dataManager.getDatasets().map((item) => {
-                    return {
-                        name: item.name,
-                        models: item.models,
-                        dataType: item.dataType,
-                        description: item.description,
-                        projectID: item.projectID
-                    }
+                
+                // let datasetsOld = this.app.dataManager.getDatasets().map((item) => {
+                //     return {
+                //         name: item.name,
+                //         models: item.models,
+                //         dataType: item.dataType,
+                //         description: item.description,
+                //         projectID: item.projectID
+                //     }
+                // });
+
+                let datasetForms = this.app.dataManager.getDatasets().map((dataset) => {
+                    return dataset.getForm()
                 });
+
+                console.log(datasets);
     
                 this.datasetListView = new DatasetListView({
                     model: this.model,
                     app: this.app,
-                    collection: new Backbone.Collection(datasets)
+                    collection: new Backbone.Collection(datasetForms)
                 });
                 this.datasetListRegion.show(this.datasetListView);
             }

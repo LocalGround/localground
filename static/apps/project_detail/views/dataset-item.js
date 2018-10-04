@@ -31,8 +31,12 @@ define(["underscore",
                 'click .dataset-item_name': 'openSpreadsheet'
             },
 
+            modelEvents: {
+                'change:name': 'render'
+            },
+
             getMatchingMaps: function() {
-                const projectID = this.model.get('projectID');
+                const project_id = this.model.get('project_id');
                 let matchingMaps = [];
 
                 this.app.dataManager.getMaps().each((map) => {
@@ -46,7 +50,7 @@ define(["underscore",
                         matchingMaps.push({
                             name: map.get('name'),
                             id: map.get('id'),
-                            mapUrl: `/projects/${projectID}/maps/#/${map.get('id')}`
+                            mapUrl: `/projects/${project_id}/maps/#/${map.get('id')}`
                         })
                     } 
                 });
@@ -83,7 +87,7 @@ define(["underscore",
                     showSaveButton: false,
                     showDeleteButton: false
                 });
-                this.app.popover.hide();
+                //this.app.popover.hide();
                 this.app.modal.show();
             }
         });
