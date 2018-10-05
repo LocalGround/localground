@@ -2241,11 +2241,19 @@ nav li.active {
           justify-content: space-between;
 }
 
+.dataset-item_right-wrapper .dataset-item_right-bottom {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+
 .dataset-item_right-wrapper .in-maps_title {
   font-size: 12px;
-  padding-top: 7px;
   color: #797979;
   font-weight: 600;
+  padding-right: 3px;
 }
 
 .dataset-item_right-wrapper .in-maps {
@@ -2253,6 +2261,7 @@ nav li.active {
   color: #797979;
   cursor: pointer;
   font-weight: 400;
+  padding-right: 3px;
 }
 
 .dataset-item_right-wrapper .in-maps:after {

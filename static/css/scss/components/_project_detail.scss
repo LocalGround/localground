@@ -340,11 +340,16 @@
         justify-content: space-between;
     }
 
+    .dataset-item_right-bottom {
+        display: inline-flex;
+        flex-wrap: wrap;
+    }
+
     .in-maps_title {
         font-size: 12px;
-        padding-top: 7px;
         color: #797979;
         font-weight: 600;
+        padding-right: 3px;
     }
 
     .in-maps {
@@ -352,6 +357,7 @@
         color: #797979;
         cursor: pointer;
         font-weight: 400;
+        padding-right: 3px;
     }
 
     .in-maps:after {
