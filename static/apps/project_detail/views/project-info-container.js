@@ -83,7 +83,7 @@ define(["marionette",
                     return dataset.getForm()
                 });
 
-                console.log(datasets);
+                console.log(datasetForms);
     
                 this.datasetListView = new DatasetListView({
                     model: this.model,

@@ -32,7 +32,8 @@ define(["underscore",
             },
 
             modelEvents: {
-                'change:name': 'render'
+                'change:name': 'render',
+                'change:description': 'render'
             },
 
             getMatchingMaps: function() {

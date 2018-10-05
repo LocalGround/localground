@@ -59,7 +59,7 @@ define(["underscore",
                     app: this.app,
                     view: renameDatasetForm,
                     title: 'Rename Dataset',
-                    width: '300px',
+                    width: '400px',
                     showSaveButton: true,
                     saveFunction: renameDatasetForm.saveDataset.bind(renameDatasetForm),
                     showDeleteButton: false

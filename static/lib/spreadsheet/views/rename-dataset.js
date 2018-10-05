@@ -24,8 +24,10 @@ define ([
 
             _validateDatasetName: function () {
                 const name = this.$el.find('#dataset_name').val();
+                const description = this.$el.find('#dataset_description').val();
                 if (name.length > 0) {
                     this.model.set('name', name);
+                    this.model.set('description', description);
                 } else {
                     this.error = "A valid dataset name is required";
                     this.render();

@@ -2171,6 +2171,10 @@ nav li.active {
   border-radius: 4px;
 }
 
+.dataset-item_info {
+  padding-right: 10px;
+}
+
 .dataset-item_name {
   font-size: 14px;
   white-space: nowrap;
