@@ -2,7 +2,7 @@ define(["underscore",
         "marionette",
         "handlebars",
         "text!../templates/dataset-options-menu.html",
-        'lib/spreadsheet/views/rename-dataset',
+        "lib/spreadsheet/views/rename-dataset",
         "lib/spreadsheet/views/layout"
         ],
     function (_, Marionette, Handlebars, DatasetOptionsMenuTemplate, RenameDataset, SpreadsheetLayout) {

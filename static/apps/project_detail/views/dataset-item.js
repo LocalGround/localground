@@ -3,9 +3,10 @@ define(["underscore",
         "handlebars",
         "apps/project_detail/views/dataset-options-menu",
         "lib/spreadsheet/views/layout",
+        'lib/spreadsheet/views/rename-dataset',
         "text!../templates/dataset-item.html"
     ],
-    function (_, Marionette, Handlebars, DatasetOptionsMenu, SpreadsheetLayout, DatasetItemTemplate) {
+    function (_, Marionette, Handlebars, DatasetOptionsMenu, SpreadsheetLayout, RenameDataset, DatasetItemTemplate) {
         'use strict';
         var DatasetItem = Marionette.ItemView.extend({
 
@@ -28,7 +29,8 @@ define(["underscore",
             className: 'dataset-item',
             events: {
                 'click .fa-ellipsis-v': 'showMenu',
-                'click .dataset-item_name': 'openSpreadsheet'
+                'click .dataset-item_name': 'openSpreadsheet',
+                'click .add-description': 'editDataset'
             },
 
             modelEvents: {
@@ -90,6 +92,31 @@ define(["underscore",
                 });
                 //this.app.popover.hide();
                 this.app.modal.show();
+            },
+
+            editDataset: function(e) {
+                const collection = this.app.dataManager.getCollection(this.model.get('dataType'));
+                const renameDatasetForm = new RenameDataset({
+                    app: this.app,
+                    model: collection.getForm(),
+                    dataset: collection,
+                    sourceModal: this.modal,
+                    focusDataset: true
+                });
+
+                this.app.modal.update({
+                    app: this.app,
+                    view: renameDatasetForm,
+                    title: 'Rename Dataset',
+                    width: '400px',
+                    showSaveButton: true,
+                    saveFunction: renameDatasetForm.saveDataset.bind(renameDatasetForm),
+                    showDeleteButton: false
+                });
+                this.app.modal.show();
+                if (e) {
+                    e.preventDefault();
+                }
             }
         });
         return DatasetItem;

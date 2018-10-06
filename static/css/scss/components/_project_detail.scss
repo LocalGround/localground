@@ -302,6 +302,16 @@
     color: gray;
 }
 
+.add-description {
+    font-size: 12px;
+    color: #4691e8;
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
 .dataset-icon_wrapper {
     height: 43px;
     width: 45px;

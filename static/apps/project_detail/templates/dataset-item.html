@@ -17,7 +17,11 @@
 
 <div class="dataset-item_info">
     <div class="dataset-item_name">{{name}}</div>
-    <div class="dataset-item_description">{{description}}</div>
+    {{#if description}}
+        <div class="dataset-item_description">{{description}}</div>
+    {{else}}
+        <div class="add-description">add description</div>
+    {{/if}}
 </div>
 <div class="dataset-item_right-wrapper">
     <div class="text-wrapper">

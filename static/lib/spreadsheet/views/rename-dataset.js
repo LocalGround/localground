@@ -70,9 +70,15 @@ define ([
 
             },
             onShow: function () {
-                setTimeout(() => {
-                    this.$el.find('#dataset_name').focus().select();
-                }, 50);
+                if (this.focusDataset) {
+                    setTimeout(() => {
+                        this.$el.find('#dataset_description').focus().select();
+                    }, 50);
+                } else {
+                    setTimeout(() => {
+                        this.$el.find('#dataset_name').focus().select();
+                    }, 50);
+                }
             }
             // reloadDataset: function () {
             //     /*
