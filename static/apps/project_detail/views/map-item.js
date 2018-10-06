@@ -4,9 +4,10 @@ define(["underscore",
         "apps/project_detail/views/map-options-menu",
         "lib/spreadsheet/views/layout",
         "lib/shared-views/share-settings",
+        "lib/shared-views/edit-map-form",
         "text!../templates/map-item.html"
     ],
-    function (_, Marionette, Handlebars, MapOptionsMenu, SpreadsheetLayout, ShareSettings, MapItemTemplate) {
+    function (_, Marionette, Handlebars, MapOptionsMenu, SpreadsheetLayout, ShareSettings, EditMapForm, MapItemTemplate) {
         'use strict';
         var MapItem = Marionette.ItemView.extend({
 
@@ -32,7 +33,8 @@ define(["underscore",
             events: {
                 'click .fa-ellipsis-v': 'showMenu',
                 'click .map_dataset-item': 'openSpreadsheet',
-                'click .access-button': 'showShareMenu'
+                'click .access-button': 'showShareMenu',
+                'click .add-description': 'editMapDescription'
             },
 
             modelEvents: {
@@ -122,6 +124,27 @@ define(["underscore",
                     width: 600,
                     height: null,
                     showSaveButton: true,
+                    showDeleteButton: false
+                });
+                this.modal.show();
+            },
+
+            editMapDescription: function() {
+                const editMapForm = new EditMapForm({
+                    app: this.app,
+                    model: this.model,
+                    focusDataset: true
+                });
+                this.modal.update({
+                    app: this.app,
+                    class: "edit-map-name",
+                    view: editMapForm,
+                    title: 'Edit Map',
+                    width: 400,
+                    saveButtonText: "Save",
+                    closeButtonText: "Cancel",
+                    showSaveButton: true,
+                    saveFunction: editMapForm.saveMap.bind(editMapForm),
                     showDeleteButton: false
                 });
                 this.modal.show();

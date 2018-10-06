@@ -26,26 +26,6 @@ define(["underscore",
                 console.log(this.model);
             },
 
-            // editLayerName: function() {
-            //     const editLayerNameModal = new EditLayerName({
-            //         app: this.app,
-            //         model: this.model
-            //     });
-            //     this.modal.update({
-            //         app: this.app,
-            //         class: "edit-layer-name",
-            //         view: editLayerNameModal,
-            //         title: 'Edit Layer Name',
-            //         width: 400,
-            //         saveButtonText: "Save",
-            //         closeButtonText: "Cancel",
-            //         showSaveButton: true,
-            //         saveFunction: editLayerNameModal.saveLayer.bind(editLayerNameModal),
-            //         showDeleteButton: false
-            //     });
-            //     this.modal.show();
-            // },
-
             template: Handlebars.compile(MapOptionsMenuTemplate),
 
             templateHelpers: function() {

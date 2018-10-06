@@ -13,7 +13,11 @@
 
 <div>
     <p class="map-item_name">{{name}}</p>
-    <p class="map-description" title="{{caption}}">{{caption}}</p>
+    {{#if caption}}
+        <p class="map-description" title="{{caption}}">{{caption}}</p>
+    {{else}}
+        <p class="add-description">add description</p>
+    {{/if}}
 </div>
 
 <div class="project_map-item_right-wrapper">
