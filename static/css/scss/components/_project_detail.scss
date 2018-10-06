@@ -139,6 +139,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-weight: 600;
+    cursor: pointer;
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 // .map-item_small-text {

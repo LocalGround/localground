@@ -2003,6 +2003,11 @@ nav li.active {
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 600;
+  cursor: pointer;
+}
+
+.map-item_name:hover {
+  text-decoration: underline;
 }
 
 .map-description {

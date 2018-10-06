@@ -27,7 +27,8 @@ define(["underscore",
             templateHelpers: function () {
                 return {
                     datasetList: this.getDatasetInfo(this.model),
-                    accessLevel: this.getAccessLevel(this.model.get('metadata').accessLevel)
+                    accessLevel: this.getAccessLevel(this.model.get('metadata').accessLevel),
+                    mapUrl: `/projects/${this.model.get('project_id')}/maps/#/${this.model.get('id')}`
                 };
             },
             events: {
