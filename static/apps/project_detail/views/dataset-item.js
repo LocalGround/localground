@@ -100,7 +100,7 @@ define(["underscore",
                     app: this.app,
                     model: collection.getForm(),
                     dataset: collection,
-                    sourceModal: this.modal,
+                    sourceModal: this.app.modal,
                     focusDataset: true
                 });
 

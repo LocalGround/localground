@@ -1989,6 +1989,12 @@ nav li.active {
   height: 45px;
   width: 45px;
   margin-right: 15px;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+}
+
+.map-item_main {
+  max-width: 340px;
 }
 
 .map-item_name {
@@ -2209,6 +2215,8 @@ nav li.active {
   margin-right: 15px;
   vertical-align: middle;
   padding-top: 2px;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
 }
 
 .dataset-item_right-wrapper {

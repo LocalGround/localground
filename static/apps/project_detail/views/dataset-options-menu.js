@@ -11,7 +11,8 @@ define(["underscore",
         var MapOptionsMenu =  Marionette.ItemView.extend({
             events: {
                 'click .open-dataset': 'openSpreadsheet',
-                'click .rename-dataset': 'renameDataset'
+                'click .rename-dataset': 'renameDataset',
+                'click .delete-dataset': 'deleteDataset'
             },
 
             initialize: function (opts) {
@@ -71,7 +72,27 @@ define(["underscore",
                 }
             },
 
-            
+            deleteDataset: function(e) {
+                console.log('delete dataset');
+
+                const collectionName = this.model.get('dataType');
+                let that = this;
+
+                this.model.destroy({
+                    wait: true, 
+                    success: function() {
+                        console.log('success: deleting dataset');
+                        that.app.dataManager.deleteCollection(collectionName);
+                        that.app.popover.hide();
+                    },
+                    error: function() {
+                        alert('Unable to delete this dataset because it is currently being used by 1 or maps. To delete this dataset, first delete any map layers that use it.')
+                        console.log('error: unable to delete dataset');
+                        that.app.popover.hide();
+                    }
+                });
+
+            }
 
             
         });
