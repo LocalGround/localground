@@ -20,8 +20,6 @@ define(["underscore",
                 this.modal = this.app.modal;
 
                 this.listenTo(this.app.vent, 'update-access-level', this.render);
-
-                this.render();
             },
             className: 'project_map-item',
             templateHelpers: function () {
@@ -41,10 +39,6 @@ define(["underscore",
             modelEvents: {
                 'change:name': 'render',
                 'change:caption': 'render'
-            },
-
-            onRender: function() {
-                console.log('update');
             },
 
             getDatasetInfo: function(projectMap) {

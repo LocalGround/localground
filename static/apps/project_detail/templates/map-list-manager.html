@@ -7,11 +7,11 @@
     
     <div class="sort-by_wrapper">
         <span>Sort by:</span>
-        <select name="sort_by">
-            <option value="name">Name</option>
-            <option value="share">Share</option>
-            <option value="created_by">Created by</option>
-            <option value="data_modified">Data Modified</option>
+        <select name="sort_by" class="sort_by" value="{{sortProperty}}">
+            <option {{#ifequal sortProperty "name"}} SELECTED {{/ifequal}} value="name">Name</option>
+            <option {{#ifequal sortProperty "access_level"}} SELECTED {{/ifequal}} value="access_level">Share setting</option>
+            <option {{#ifequal sortProperty "created_by"}} SELECTED {{/ifequal}} value="created_by">Created by</option>
+            <option {{#ifequal sortProperty "date_modified"}} SELECTED {{/ifequal}} value="date_modified">Data Modified</option>
         </select>
     </div>
 </div>

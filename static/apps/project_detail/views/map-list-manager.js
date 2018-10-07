@@ -16,9 +16,16 @@ define(["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.sortProperty = 'name';
+            },
+            templateHelpers: function() {
+                return {
+                    sortProperty: this.sortProperty
+                }
             },
             events: {
-                'click #add-map': 'showAddMapModal'
+                'click #add-map': 'showAddMapModal',
+                'change .sort_by': 'sortMaps'
             },
             childViewOptions: function (model, index) {
                 // const dm = this.app.dataManager;
@@ -60,6 +67,13 @@ define(["marionette",
     
                 this.app.modal.show();
                 if (e) { e.preventDefault(); }
+            },
+
+            sortMaps: function(e) {
+                this.sortProperty = e.target.value;
+                this.collection.setComparator(e.target.value);
+                this.collection.sort();
+                this.render();
             }
 
            
