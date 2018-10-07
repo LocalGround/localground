@@ -73,7 +73,7 @@ define(["marionette",
                 this.sortProperty = e.target.value;
                 this.collection.setComparator(e.target.value);
                 this.collection.sort();
-                this.render();
+                //this.render();
             }
 
            

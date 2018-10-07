@@ -5,10 +5,10 @@
     
     <div class="sort-by_wrapper">
         <span>Sort by:</span>
-        <select name="sort_by">
-            <option value="name">Name</option>
-            <option value="num_records">Number of records</option>
-            <option value="data_modified">Date modified</option>
+        <select name="sort_by" class="sort_by">
+            <option {{#ifequal sortProperty "name"}} SELECTED {{/ifequal}} value="name">Name</option>
+            <option {{#ifequal sortProperty "record_count"}} SELECTED {{/ifequal}} value="record_count">Number of records</option>
+            <option {{#ifequal sortProperty "date_modified"}} SELECTED {{/ifequal}} value="date_modified">Date modified</option>
         </select>
     </div>
 </div>

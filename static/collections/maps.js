@@ -8,7 +8,8 @@ function (Map, BasePageableWithProject) {
         url: '/api/0/maps/',
         
         initialize: function() {
-           this.setComparator('name') 
+            console.log('initialize maps collection');
+            this.setComparator('name') 
         },
         setComparator: function(sortBy) {
             
@@ -39,9 +40,7 @@ function (Map, BasePageableWithProject) {
         },
         sortByAccessLevel: function (a) {
             return a.get('metadata').accessLevel;
-        },
-        
-
+        }
     });
     return Maps;
 });

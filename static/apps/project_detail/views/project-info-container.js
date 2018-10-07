@@ -1,10 +1,11 @@
 define(["marionette",
         "handlebars",
+        "collections/forms",
         "apps/project_detail/views/map-list-manager",
         "apps/project_detail/views/dataset-list-manager",
         "text!../templates/info-container.html"
     ],
-    function (Marionette, Handlebars, MapListView, DatasetListView, InfoContainerTemplate)  {
+    function (Marionette, Handlebars, Forms, MapListView, DatasetListView, InfoContainerTemplate)  {
         'use strict';
         // this view is the container for toggling between the maps list and the datasets list
         const InfoContainer = Marionette.LayoutView.extend({
@@ -68,27 +69,14 @@ define(["marionette",
                 this.mapListRegion.show(this.mapListView);
             },
             showDatasetList: function() {
-                
-                // let datasetsOld = this.app.dataManager.getDatasets().map((item) => {
-                //     return {
-                //         name: item.name,
-                //         models: item.models,
-                //         dataType: item.dataType,
-                //         description: item.description,
-                //         projectID: item.projectID
-                //     }
-                // });
-
                 let datasetForms = this.app.dataManager.getDatasets().map((dataset) => {
                     return dataset.getForm()
                 });
 
-                console.log(datasetForms);
-    
                 this.datasetListView = new DatasetListView({
                     model: this.model,
                     app: this.app,
-                    collection: new Backbone.Collection(datasetForms)
+                    collection: new Forms(datasetForms, {projectID: this.model.get('id')})
                 });
                 this.datasetListRegion.show(this.datasetListView);
             }

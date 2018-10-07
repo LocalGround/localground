@@ -13,9 +13,7 @@ define(["underscore",
             template: Handlebars.compile(DatasetItemTemplate),
 
             initialize: function (opts) {
-                _.extend(this, opts);
-                console.log('dataset ', this.model);
-                
+                _.extend(this, opts);                
             },
 
             templateHelpers: function() {

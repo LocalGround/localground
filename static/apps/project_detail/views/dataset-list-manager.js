@@ -14,10 +14,15 @@ define(["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.sortProperty = 'name';
+            },
+            templateHelpers: function() {
+                return {
+                    sortProperty: this.sortProperty
+                }
             },
             events: {
-                'click .legend-top': 'toggleLegend',
-                'click this': 'toggleLegend'
+                'change .sort_by': 'sortDatasets'
             },
             childViewOptions: function (model, index) {
                 return {
@@ -26,6 +31,12 @@ define(["marionette",
             },
             childView: DatasetItemView,
             childViewContainer: '.dataset-list_wrapper',
+
+            sortDatasets: function(e) {
+                this.sortProperty = e.target.value;
+                this.collection.setComparator(e.target.value);
+                this.collection.sort();
+            }
 
            
         });
