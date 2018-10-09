@@ -26,7 +26,8 @@ define(["underscore",
                 return {
                     datasetList: this.getDatasetInfo(this.model),
                     accessLevel: this.getAccessLevel(this.model.get('metadata').accessLevel),
-                    mapUrl: `/projects/${this.model.get('project_id')}/maps/#/${this.model.get('id')}`
+                    mapUrl: `/projects/${this.model.get('project_id')}/maps/#/${this.model.get('id')}`,
+                    timestamp: this.getDate(this.model.get('time_stamp'))
                 };
             },
             events: {
@@ -39,6 +40,11 @@ define(["underscore",
             modelEvents: {
                 'change:name': 'render',
                 'change:caption': 'render'
+            },
+
+            getDate: function(time_stamp) {
+                const options = {year: 'numeric', month: 'short', day: 'numeric' };
+                return new Date(time_stamp).toLocaleDateString('en-US', options);
             },
 
             getDatasetInfo: function(projectMap) {
