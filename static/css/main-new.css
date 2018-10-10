@@ -2010,7 +2010,8 @@ nav li.active {
 }
 
 .map-item_main {
-  max-width: 340px;
+  width: 340px;
+  flex-shrink: 0;
 }
 
 .map-item_name {
