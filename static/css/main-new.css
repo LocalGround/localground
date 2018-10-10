@@ -468,7 +468,7 @@ div::-webkit-scrollbar-thumb, section::-webkit-scrollbar-thumb {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 200px;
+  width: 197px;
   vertical-align: sub;
 }
 
@@ -1029,6 +1029,22 @@ i.fa.fa.fa-question-circle {
   text-align: center;
   margin-top: -20px;
   margin-bottom: 30px;
+}
+
+.preview-properties {
+  padding: 18px;
+}
+
+.field_row {
+  padding: 6px 0px;
+}
+
+.field_row .field_property {
+  color: #5d5d5d;
+}
+
+.field_row .field_value {
+  font-weight: 600;
 }
 
 .fullScreen {
