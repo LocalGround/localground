@@ -1,0 +1,58 @@
+.edit-fonts_section-header {
+    font-size: 14px;
+}
+
+.font-list {
+
+}
+
+.title-font, .feature-cards-font {
+    position: relative;
+}
+
+.font-options {
+    top: 46px;
+    left: 7px;
+}
+
+.font-display {
+    height: 18px;
+    width: 74px;
+    margin-left: 8px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid #bdbdbd;
+}
+
+.color-box {
+    height: 22px;
+    width: 90px;
+    margin-left: 8px;
+    border-radius: 4px;
+    border: 1px solid #bdbdbd;
+}
+
+.fonts-border {
+    border-top: 1px solid #bdbdbd;
+    margin-bottom: 20px;
+    margin-top: 25px;
+}
+
+.reset-wrapper {
+    padding: 20px;
+    padding-top: 5px;
+}
+
+.fonts-colors_row {
+    margin: 10px 0px;
+
+    label {
+        padding: 8px;
+    }
+}

@@ -3,8 +3,9 @@ define([
     "handlebars",
     "marionette",
     "apps/main/views/edit-title-card",
+    "apps/main/views/edit-fonts-colors",
     "text!../templates/presentation-options.html"
-], function (_, Handlebars, Marionette, EditTitleCard, PresentationOptionsTemplate) {
+], function (_, Handlebars, Marionette, EditTitleCard, EditFontsColors, PresentationOptionsTemplate) {
     "use strict";
     var PresentationOptions = Marionette.ItemView.extend({
         template: Handlebars.compile(PresentationOptionsTemplate),
@@ -27,12 +28,13 @@ define([
         },
 
         events: {
-             'click #display-legend': 'updateDisplayLegend',
-             'click #next-prev': 'updateNextPrev',
-             'click #pan-zoom': 'updatePanZoom',
-             'click #street-view': 'updateStreetView',
-             'click #title-card': 'updateTitleCardDisplay',
-             'click #edit-title-card': 'showTitleCardModal'
+            'click #display-legend': 'updateDisplayLegend',
+            'click #next-prev': 'updateNextPrev',
+            'click #pan-zoom': 'updatePanZoom',
+            'click #street-view': 'updateStreetView',
+            'click #title-card': 'updateTitleCardDisplay',
+            'click #edit-title-card': 'showTitleCardModal',
+            'click #edit-fonts': 'showFontsColorsModal'
 
         },
 
@@ -84,6 +86,26 @@ define([
             this.modal.show();
             if (e) { e.preventDefault(); }
         },
+        showFontsColorsModal: function(e) {
+            var editFontsColors = new EditFontsColors({
+                app: this.app,
+                model: this.activeMap
+            });
+
+            this.modal.update({
+                view: editFontsColors,
+                title: 'Edit Fonts and Colors',
+                width: 400,
+                saveButtonText: "Save",
+                closeButtonText: "Cancel",
+                showSaveButton: true,
+                saveFunction: editFontsColors.saveFontsColors.bind(editFontsColors),
+                showDeleteButton: false
+            });
+
+            this.modal.show();
+            if (e) { e.preventDefault(); }
+        }
     });
     return PresentationOptions;
 });
