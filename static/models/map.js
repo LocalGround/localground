@@ -22,7 +22,17 @@ define(["models/baseItem", "models/title-card", "collections/layers"],
 		},
         defaults: function () {
             return _.extend({}, BaseItem.prototype.defaults, {
-                checked: false
+                checked: false,
+                panel_styles: {
+                    title: {
+                        color: '#ffffff',
+                        background: '#4e70d4'
+                    },
+                    paragraph: {
+                        color: '#666',
+                        background: '#f0f1f5'
+                    }
+                }
             });
         },
         set: function (attributes, options) {

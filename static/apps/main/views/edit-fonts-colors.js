@@ -23,8 +23,6 @@ define([
 
         events: function () {
             return {
-                'change #text-type': 'updateType',
-                //   'change #font': 'updateFont',
                 'click #title-font': 'showTitleFonts',
                 'click #paragraph-font': 'showParagraphFonts',
                 'click #select-title-font div': 'updateTitleFont',
@@ -110,7 +108,7 @@ define([
 
         hideFonts: function (e) {
             var $el = $(e.target);                
-            if (!$el.hasClass('font-options') && !$el.hasClass('font-list') && !$el.hasClass('font-display')) {
+            if (!$el.hasClass('font-display')) {
                 $(".font-options").hide();
             }
         },
@@ -122,47 +120,38 @@ define([
             };
         },
         
-        updateType: function () {
-            this.activeKey = this.$el.find("#text-type").val();
-            this.render();
-        },
+        
         updateTitleFont: function (event) {
             this.model.get("panel_styles").title.font = $(event.target).text();
-            console.log('update title font');
             this.render();
         },
 
         updateParagraphFont: function (event) {
             this.model.get("panel_styles").paragraph.font = $(event.target).text();
-            console.log('update paragraph font');
             this.render();
         },
        
         // triggered from colorPicker
         updateTitleFontColor: function (hex) {
             this.model.get("panel_styles").title.color = hex;
-            //$('#font-color-picker').css('color', '#' + hex);
             this.render();
         }, 
 
         // triggered from colorPicker
         updateTitleBackgroundColor: function (hex) {
             this.model.get("panel_styles").title.backgroundColor = hex;
-            //$('#background-color-picker').css('color', '#' + hex);
             this.render();
         },
 
         // triggered from colorPicker
         updateParagraphFontColor: function (hex) {
             this.model.get("panel_styles").paragraph.color = hex;
-            //$('#font-color-picker').css('color', '#' + hex);
             this.render();
         }, 
 
         // triggered from colorPicker
         updateParagraphBackgroundColor: function (hex) {
             this.model.get("panel_styles").paragraph.backgroundColor = hex;
-            //$('#background-color-picker').css('color', '#' + hex);
             this.render();
         },
        
