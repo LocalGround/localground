@@ -58,7 +58,6 @@ define(["marionette",
                 //this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
                 this.attachRecordEventHandlers();
-                console.log(this.dataCollection);
             },
             attachRecordEventHandlers: function () {
                 this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol);
@@ -161,7 +160,6 @@ define(["marionette",
                 }
             },
             reRenderOrReassignRecordToSymbol: function (recordModel) {
-                console.log('reRenderOrReassignRecordToSymbol');
                 const symbol = this.symbolModels.reassignRecord(recordModel);
                 if (this.dataCollection.length === 1) {
                     this.render();

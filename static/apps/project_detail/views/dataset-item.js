@@ -18,8 +18,6 @@ define(["underscore",
 
             templateHelpers: function() {
                 const recordCount = this.model.get('models').length
-                // const timestamp = new Date('2018-10-08T19:13:53+00:00');
-                // console.log(timestamp);
                 return {
                     recordCount: recordCount,
                     matchingMaps: this.getMatchingMaps()

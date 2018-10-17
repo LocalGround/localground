@@ -578,7 +578,6 @@ define(["jquery",
             },
 
             selectPalette: function (e) {
-                console.log('selectPalette...');
                 this.$el.find(".palette-wrapper").toggle();
                 const paletteId = $(e.target).val();
                 this.updateMetadata("paletteId", paletteId);

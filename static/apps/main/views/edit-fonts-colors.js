@@ -42,7 +42,7 @@ define([
                 return;
             }
 
-            var panelStyleDefaults = this.model.defaults().panel_styles;
+            const panelStyleDefaults = this.model.defaults().panel_styles;
             this.model.get("panel_styles").title.color = panelStyleDefaults.title.color;
             this.model.get("panel_styles").title.backgroundColor = panelStyleDefaults.title.backgroundColor;
             this.model.get("panel_styles").paragraph.color = panelStyleDefaults.paragraph.color;

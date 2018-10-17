@@ -26,11 +26,11 @@ define(["models/baseItem", "models/title-card", "collections/layers"],
                 panel_styles: {
                     title: {
                         color: '#ffffff',
-                        background: '#4e70d4'
+                        backgroundColor: '#4e70d4'
                     },
                     paragraph: {
                         color: '#666',
-                        background: '#f0f1f5'
+                        backgroundColor: '#f0f1f5'
                     }
                 }
             });
