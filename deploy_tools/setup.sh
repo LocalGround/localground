@@ -33,7 +33,7 @@
 ## Set defaults
 log_file="$(pwd)/localground.log"
 repository='https://github.com/LocalGround/localground.git'
-gitbranch='nginx-config'
+gitbranch='master'
 owner=$(whoami | awk '{print $1}')
 sitesEnabled='/etc/nginx/sites-enabled/'
 sitesAvailable='/etc/nginx/sites-available/'
