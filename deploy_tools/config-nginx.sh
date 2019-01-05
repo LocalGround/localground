@@ -72,8 +72,9 @@ include $sslsnippet;
 
 	proxy_pass      http://django/;
 	include         uwsgi_params;
-        uwsgi_pass      unix:/run/uwsgi/localground-apps.sock;  # after you install the socket, uncomment this line (production)
-        }
+	# after you install the socket, uncomment this line (production)
+        # uwsgi_pass      unix:/run/uwsgi/localground-apps.sock;  
+    }
 }" > $sitesAvailable$domain
 
 	then
