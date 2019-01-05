@@ -283,11 +283,10 @@ fi
 	service nginx stop
 
 ##################################
-##								##
-#	 CONFIG Root Dir			 #
-##								##
-##################################
-#
+##				##
+#	 CONFIG Root Dir	 #
+##				##
+###################################
 # This section checks if root dir exists and clones git repo of localground
 #
 

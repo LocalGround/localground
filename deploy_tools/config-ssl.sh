@@ -53,7 +53,7 @@ fi
 if [ "$development" = false ] ; then
 	## Generate weak Diffie-Helman key (for Perfect Forward Secrecy).
 	echo -e $"CONFIG: Now Generating strong Diffie-Helman key." | tee -a "$log_file"
-	/usr/bin/openssl dhparam -out /etc/ssl/certs/dhparam.pem 4096
+#	/usr/bin/openssl dhparam -out /etc/ssl/certs/dhparam.pem 4096
 	echo -e $"✓ SUCCESS: Installed Diffie-Helman key! \n" | tee -a "$log_file"
 
 	echo -e $"CONFIG: Now Installing Certbot." | tee -a "$log_file"
