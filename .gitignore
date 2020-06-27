@@ -9,3 +9,6 @@ userdata
 static/swampdragon
 ~
 static/css/*css.map*          
+localground
+.keys
+ubuntu-xenial-16.04-cloudimg-console.log
