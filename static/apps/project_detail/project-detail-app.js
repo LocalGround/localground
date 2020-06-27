@@ -38,7 +38,6 @@ define([
                 app: this
             });
             this.model = this.dataManager.getProject(options.projectJSON.id)
-            console.log(this.model);
 
             this.loadRegions();
         },

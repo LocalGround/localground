@@ -155,6 +155,9 @@ define(["marionette",
             updateFontSize: function () {
                 this.model.get("panel_styles")[this.activeKey].size = +this.$el.find("#font-size").val();
                 this.render();
+            },
+            saveFontsColors: function() {
+                console.log('saving (not)');
             }
         }));
         return SelectSkinView;

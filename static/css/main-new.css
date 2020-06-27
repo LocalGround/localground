@@ -468,7 +468,7 @@ div::-webkit-scrollbar-thumb, section::-webkit-scrollbar-thumb {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 200px;
+  width: 197px;
   vertical-align: sub;
 }
 
@@ -1029,6 +1029,22 @@ i.fa.fa.fa-question-circle {
   text-align: center;
   margin-top: -20px;
   margin-bottom: 30px;
+}
+
+.preview-properties {
+  padding: 18px;
+}
+
+.field_row {
+  padding: 6px 0px;
+}
+
+.field_row .field_property {
+  color: #5d5d5d;
+}
+
+.field_row .field_value {
+  font-weight: 600;
 }
 
 .fullScreen {
@@ -2297,6 +2313,61 @@ nav li.active {
 
 .dataset-item_right-wrapper .in-maps:hover {
   text-decoration: underline;
+}
+
+.edit-fonts_section-header {
+  font-size: 14px;
+}
+
+.title-font, .feature-cards-font {
+  position: relative;
+}
+
+.font-options {
+  top: 46px;
+  left: 7px;
+}
+
+.font-display {
+  height: 18px;
+  width: 74px;
+  margin-left: 8px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #bdbdbd;
+}
+
+.color-box {
+  height: 22px;
+  width: 90px;
+  margin-left: 8px;
+  border-radius: 4px;
+  border: 1px solid #bdbdbd;
+}
+
+.fonts-border {
+  border-top: 1px solid #bdbdbd;
+  margin-bottom: 20px;
+  margin-top: 25px;
+}
+
+.reset-wrapper {
+  padding: 20px;
+  padding-top: 5px;
+}
+
+.fonts-colors_row {
+  margin: 10px 0px;
+}
+
+.fonts-colors_row label {
+  padding: 8px;
 }
 
 .success-message, .failure-message, .warning-message {

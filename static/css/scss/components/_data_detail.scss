@@ -67,3 +67,17 @@
       margin-top: -20px;
       margin-bottom: 30px;
   }
+
+  .preview-properties {
+    padding: 18px;
+  }
+
+  .field_row {
+    padding: 6px 0px;
+    .field_property {
+        color: #5d5d5d;
+    }
+    .field_value {
+        font-weight: 600;
+    }
+  }

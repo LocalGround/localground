@@ -102,26 +102,25 @@
                 {{#if description}}
                     <p>{{ description }}</p>
                 {{/if}}
-                <table class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
+                <div class="preview-properties" style="color: #{{paragraph.color}}; font-family: {{paragraph.font}}; border-color: #{{paragraph.color}}">
                 {{#each fields}}
                     {{#ifnotequal this.col_name "description"}}
-                    <tr>
-                        <td>{{ this.col_alias }}:</td>
-                        <td>{{ this.val }}</td>
-                    </tr>
+                        <div class="field_row">
+                            <p class="field_property">{{ this.col_alias }}:</p>
+                            <p class="field_value">{{ this.val }}</p>
+                        </div>
                     {{/ifnotequal}}
                 {{/each}}
                 {{#if tags}}
-                    <tr>
-                        <td></td>
-                        <td>
+                    <div>
+                        <div>
                             {{#each tags}}
                                 <a class="tag"> {{this}} </a>
                             {{/each}}
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
                 {{/if}}
-                </table>
+                </div>
             {{else}}
                 <div class="tag-container">
                 {{#each tags}}
@@ -130,9 +129,6 @@
                 </div>
             </div>
         {{/if}}
-        {{#ifequal screenType "map"}}
-            <button class="button button-tertiary streetview">Show Street View</button>
-        {{/ifequal}}
 
 
         {{#compare screenType "presentation" operator="!="}}
@@ -151,23 +147,14 @@
     <h4>{{#if id}}Edit{{else}}Add New{{/if}}</h4>
 
     {{#ifequal screenType "map"}}
-        {{#if geometry}}
-            <button class="button-secondary delete-marker-button" id="delete-geometry">Remove Location Marker</button>
-        {{else}}
+        {{#unless geometry}}
             <div class="add-lat-lng">
                 <button class="button-secondary add-marker-button" id="add-geometry">Add Location Marker</button>
             </div>
-        {{/if}}
-        {{#if lat }}
-            <div class="latlong-container">
-            <p class="latlong" style="font-style: italic">
-                ({{lat}}, {{lng}})
-            </p>
-            </div>
-        {{/if}}
+        {{/unless}}
     {{/ifequal}}
 
-    <div id="model-form"></div>
+    <div id="model-form" {{#if geometry}}style="padding-top: 30px"{{/if}}></div>
 
     {{#ifequal screenType "map"}}
         <button class="button button-tertiary streetview">Show Street View</button>
