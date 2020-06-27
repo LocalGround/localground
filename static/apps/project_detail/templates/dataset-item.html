@@ -1,0 +1,41 @@
+<div class="dataset-icon_wrapper">
+    <svg viewBox="0 0 239 174">
+        <g id="Artboard-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <rect id="Rectangle-19" fill="#E9E9E9" x="5" y="5" width="229" height="32"></rect>
+            <polygon id="Rectangle-19-Copy" fill="#E9E9E9" points="36.747155 33 36.747155 294.726563 2.84217094e-14 294.726563 8.6444874e-14 33"></polygon>
+            <rect id="Rectangle-18" stroke="#A7A6A6" stroke-width="5" x="2.5" y="2.5" width="234" height="169" rx="15"></rect>
+            <path d="M0.594059406,34.5 L239.417762,34.5" id="Line" stroke="#A7A6A6" stroke-width="3" stroke-linecap="square"></path>
+            <path d="M38,-8 L38,169" id="Line-Copy-5" stroke="#A7A6A6" stroke-width="3" stroke-linecap="square"></path>
+            <path d="M106,-2 L106,175" id="Line-Copy-6" stroke="#A7A6A6" stroke-width="3" stroke-linecap="square"></path>
+            <path d="M171,-2 L171,175" id="Line-Copy-7" stroke="#A7A6A6" stroke-width="3" stroke-linecap="square"></path>
+            <path d="M0.594059406,69.5 L239.417762,69.5" id="Line-Copy-2" stroke="#A7A6A6" stroke-width="3" stroke-linecap="square"></path>
+            <path d="M0.594059406,104.5 L239.417762,104.5" id="Line-Copy-3" stroke="#A7A6A6" stroke-width="3" stroke-linecap="square"></path>
+            <path d="M0.594059406,139.5 L239.417762,139.5" id="Line-Copy-4" stroke="#A7A6A6" stroke-width="3" stroke-linecap="square"></path>
+        </g>
+    </svg>
+</div>
+
+<div class="dataset-item_info">
+    <div class="dataset-item_name">{{name}}</div>
+    {{#if description}}
+        <div class="dataset-item_description">{{description}}</div>
+    {{else}}
+        <div class="add-description">add description</div>
+    {{/if}}
+</div>
+<div class="dataset-item_right-wrapper">
+    <div class="text-wrapper">
+        <div class="dataset-item_right-top">
+            <span class="record-count">{{recordCount}} records</span>
+            <span class="dataset-date">two months ago</span>
+        </div>
+        <div class="dataset-item_right-bottom">
+            <span class="in-maps_title">In map(s): </span>
+            {{#each matchingMaps}}
+                <a href="{{this.mapUrl}}" target="_blank" class="in-maps">{{this.name}}</a>
+            {{/each}}
+        </div>
+    </div>
+    
+    <i class="fa fa-ellipsis-v"></i>
+</div>

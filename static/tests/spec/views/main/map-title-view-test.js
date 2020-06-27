@@ -3,7 +3,7 @@ define([
     "backbone",
     rootDir + "apps/main/views/left/map-title-view",
     rootDir + "apps/main/views/left/create-layer-form",
-    rootDir + "apps/main/views/left/edit-map-form",
+    rootDir + "lib/shared-views/edit-map-form",
     rootDir + "lib/modals/modal",
     "tests/spec-helper1"
 ],

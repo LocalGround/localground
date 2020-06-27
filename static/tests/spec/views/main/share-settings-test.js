@@ -1,7 +1,7 @@
 var rootDir = "../../../";
 define([
     "backbone",
-    rootDir + "apps/main/views/share-settings"
+    rootDir + "lib/shared-views/share-settings"
 ],
     function (Backbone, ShareSettings) {
         'use strict';

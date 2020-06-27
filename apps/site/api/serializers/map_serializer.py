@@ -98,6 +98,8 @@ class MapSerializerList(
         required=False,
         validators=[MetadataValidator()]
     )
+    last_updated_by = serializers.SerializerMethodField(read_only=True)
+    thumb_url = serializers.SerializerMethodField(read_only=True)
     basemap = serializers.PrimaryKeyRelatedField(
         queryset=models.TileSet.objects.all())
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
@@ -109,6 +111,12 @@ class MapSerializerList(
     def get_sharing_url(self, obj):
         return '{0}/maps/{1}'.format(settings.SERVER_URL, obj.slug)
 
+    def get_thumb_url(self, obj):
+        return obj.get_thumb_url()
+
+    def get_last_updated_by(self, obj):
+        return obj.last_updated_by.username
+
     def get_layers(self, obj):
         layers = models.Layer.objects.filter(styled_map=obj)
         return LayerSerializer(layers, many=True, context={'request': {}}).data
@@ -118,11 +126,14 @@ class MapSerializerList(
 
     class Meta:
         model = models.StyledMap
+        read_only_fields = (
+            'time_stamp', 'date_created', 'last_updated_by', 'thumb_url')
         fields = BaseSerializer.field_list + \
             NamedSerializerMixin.field_list + \
             ProjectSerializerMixin.field_list + (
-                'sharing_url', 'center',  'basemap', 'zoom', 'panel_styles',
-                'metadata', 'slug', 'layers', 'layers_url'
+                'sharing_url', 'thumb_url', 'center',  'basemap', 'zoom',
+                'time_stamp', 'date_created', 'last_updated_by', 'slug',
+                'panel_styles', 'layers', 'layers_url', 'metadata'
             )
         depth = 0
 
@@ -142,11 +153,14 @@ class MapSerializerPost(MapSerializerList):
 
     class Meta:
         model = models.StyledMap
+        read_only_fields = (
+            'time_stamp', 'date_created', 'last_updated_by', 'thumb_url')
         fields = BaseSerializer.field_list + \
             NamedSerializerMixin.field_list + \
             ProjectSerializerMixin.field_list + (
-                'sharing_url', 'center',  'basemap', 'zoom',
-                'create_new_dataset', 'datasets', 'layers')
+                'sharing_url', 'thumb_url', 'center',  'basemap', 'zoom',
+                'create_new_dataset', 'time_stamp', 'date_created',
+                'last_updated_by', 'datasets', 'layers')
         depth = 0
 
     def get_datasets(self, dataset_ids, project_id):
@@ -219,8 +233,12 @@ class MapSerializerDetail(MapSerializerList):
 
     class Meta:
         model = models.StyledMap
+        read_only_fields = (
+            'time_stamp', 'date_created', 'last_updated_by', 'thumb_url')
         fields = MapSerializerList.Meta.fields + (
-            'slug', 'layers', 'layers_url', 'password')
+            'slug', 'layers', 'layers_url', 'password',
+            'time_stamp', 'date_created', 'last_updated_by',
+            'thumb_url')
         depth = 0
 
 

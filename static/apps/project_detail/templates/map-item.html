@@ -1,0 +1,40 @@
+<div class="map-icon_wrapper">
+    <svg viewBox="0 0 200 200" version="1.1">
+        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <rect id="Rectangle-17" stroke="#B5B5B5" stroke-width="2" x="-73" y="-27" width="120" height="142" rx="9"></rect>
+            <rect id="Rectangle-17" stroke="#B5B5B5" stroke-width="2" x="66" y="-27" width="181" height="142" rx="9"></rect>
+            <rect id="Rectangle-17" stroke="#B5B5B5" stroke-width="2" x="66" y="133" width="169" height="123" rx="9"></rect>
+            <rect id="Rectangle-17" stroke="#B5B5B5" stroke-width="2" x="-73" y="133" width="120" height="123" rx="9"></rect>
+            <path d="M125.142018,99.2617188 C140.898939,68.8052949 149.284036,57.4752865 149.284036,44.1420181 C149.284036,30.8087497 138.475286,20 125.142018,20 C111.80875,20 101,30.8087497 101,44.1420181 C101,57.4752865 110.522774,67.5472293 125.142018,99.2617188 Z" id="Oval-7" stroke="#979797" fill="#D8D8D8"></path>
+            <rect id="Rectangle-20" stroke="#B5B5B5" stroke-width="2" x="1" y="1" width="198" height="198" rx="17"></rect>
+        </g>
+    </svg>
+</div>
+
+<div class="map-item_main">
+    <a href='{{mapUrl}}' ><p class="map-item_name">{{name}}</p></a>
+    {{#if caption}}
+        <p class="map-description" title="{{caption}}">{{caption}}</p>
+    {{else}}
+        <p class="add-description">add description</p>
+    {{/if}}
+</div>
+
+<div class="project_map-item_right-wrapper">
+    <div class="text-wrapper">
+        <div class="map-item_right-top">
+            <div class="access-button"><span>{{accessLevel}}</span></div>
+            <span class="map-owner">by: {{owner}}</span>
+            <span class="map-date">{{time_stamp}}</span> 
+        </div>
+        <div class="map-item_right-bottom">
+            <p class="datasets-list" title="{{datasetList}}">Datasets: 
+                {{#each datasetList}}
+                    <span class="map_dataset-item" data-alias="{{this.alias}}">{{this.name}}</span>
+
+                {{/each}}
+            </p>
+        </div>
+    </div>
+    <i class="fa fa-ellipsis-v"></i>
+</div>

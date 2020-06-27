@@ -1,7 +1,7 @@
 var rootDir = "../../../";
 define([
     "backbone",
-    rootDir + "apps/main/views/left/new-map-modal-view",
+    rootDir + "lib/shared-views/new-map-modal-view",
     rootDir + "models/map",
     "tests/spec-helper1"
 ],

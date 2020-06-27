@@ -2,7 +2,7 @@ define([
     "underscore",
     "handlebars",
     "marionette",
-    "text!../templates/share-settings.html"
+    "text!./share-settings.html"
 ], function (_, Handlebars, Marionette, ShareSettingsTemplate) {
     "use strict";
     let ShareSettings = Marionette.ItemView.extend({
@@ -67,6 +67,7 @@ define([
             this.activeMap.save(null, {
                 success: () => {
                     this.app.vent.trigger('close-modal');
+                    this.app.vent.trigger('update-access-level');
                 }
             })
         }

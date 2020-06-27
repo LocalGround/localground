@@ -3,7 +3,7 @@ define ([
     "underscore",
     "marionette",
     "handlebars",
-    "text!../../templates/left/edit-map-form.html"],
+    "text!./edit-map-form.html"],
     function ($, _, Marionette, Handlebars, EditMapFormTemplate) {
         'use strict';
 
@@ -45,10 +45,16 @@ define ([
             },
 
             onShow: function () {
-                setTimeout(() => {
-                    this.$el.find('#map-name').focus();
-                    this.$el.find('#map-name').select();
-                }, 50);
+                if (this.focusDataset) {
+                    setTimeout(() => {
+                        this.$el.find('#map-caption').focus().select();
+                    }, 50);
+                } else {
+                    setTimeout(() => {
+                        this.$el.find('#map-name').focus().select();
+                    }, 50);
+                }
+                
             },
 
             saveMap: function () {

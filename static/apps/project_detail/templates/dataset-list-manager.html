@@ -1,0 +1,17 @@
+<div class="project_dataset-header">
+    <p class="description">Project datasets store location information such as name, description, and location coordinates. 
+        <br>
+        You can tailor dataset fields to track desired information. Multiple maps and layer can share a dataset.</p>
+    
+    <div class="sort-by_wrapper">
+        <span>Sort by:</span>
+        <select name="sort_by" class="sort_by">
+            <option {{#ifequal sortProperty "name"}} SELECTED {{/ifequal}} value="name">Name</option>
+            <option {{#ifequal sortProperty "record_count"}} SELECTED {{/ifequal}} value="record_count">Number of records</option>
+            <option {{#ifequal sortProperty "date_modified"}} SELECTED {{/ifequal}} value="date_modified">Date modified</option>
+        </select>
+    </div>
+</div>
+<div class='dataset-list_wrapper'>
+
+</div>

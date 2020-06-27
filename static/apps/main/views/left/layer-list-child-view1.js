@@ -8,7 +8,7 @@ define(["marionette",
         "apps/main/views/left/edit-layer-menu",
         "apps/main/views/right/marker-style-view",
         "apps/main/views/left/add-marker-menu",
-        "apps/main/views/spreadsheet/layout"
+        "lib/spreadsheet/views/layout"
     ],
     function (Marionette, Handlebars, LayerItemTemplate, Symbols, Symbol,
             Record, SymbolView, EditLayerMenu, MarkerStyleView, AddMarkerMenu,
@@ -58,7 +58,7 @@ define(["marionette",
                 //this.reAssignRecordsToSymbols();
                 this.model.get('metadata').collapsed = false;
                 this.attachRecordEventHandlers();
-                console.log(this.symbolModels);
+                console.log(this.dataCollection);
             },
             attachRecordEventHandlers: function () {
                 this.listenTo(this.dataCollection, 'add', this.reRenderOrAssignRecordToSymbol);

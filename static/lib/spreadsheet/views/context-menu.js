@@ -1,7 +1,7 @@
 define(["underscore",
         "marionette",
         "handlebars",
-        "text!../../templates/spreadsheet/context-menu.html",
+        "text!../templates/context-menu.html",
         "lib/modals/modal"
     ],
     function (_, Marionette, Handlebars, ContextMenuTemplate, Modal) {

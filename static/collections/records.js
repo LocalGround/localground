@@ -49,7 +49,10 @@ define([
                 this.form = new Form({
                     id: this.formID,
                     name: this.name,
-                    project_id: this.projectID
+                    project_id: this.projectID,
+                    models: this.models,
+                    dataType: this.dataType,
+                    description: this.description
                 });
             }
             return this.form;

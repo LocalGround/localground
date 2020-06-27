@@ -4,8 +4,8 @@ define ([
     "marionette",
     "handlebars",
     "models/field",
-    "apps/main/views/spreadsheet/choice-mixin",
-    "text!../../templates/spreadsheet/add-field.html"
+    "lib/spreadsheet/views/choice-mixin",
+    "text!../templates/add-field.html"
 ],
     function ($, _, Marionette, Handlebars, Field, ChoiceMixin, AddFieldTemplate) {
         'use strict';

@@ -3,8 +3,8 @@ define ([
     "underscore",
     "marionette",
     "handlebars",
-    "apps/main/views/spreadsheet/choice-mixin",
-    "text!../../templates/spreadsheet/field-item.html"
+    "lib/spreadsheet/views/choice-mixin",
+    "text!../templates/field-item.html"
 ],
     function ($, _, Marionette, Handlebars, ChoiceMixin, FieldItemTemplate) {
         'use strict';

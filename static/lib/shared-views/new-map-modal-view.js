@@ -3,7 +3,7 @@ define ([
     "underscore",
     "marionette",
     "handlebars",
-    "text!../../templates/left/new-map-modal.html"],
+    "text!./new-map-modal.html"],
     function ($, _, Marionette, Handlebars, CreateMapFormTemplate) {
         'use strict';
 
@@ -12,7 +12,7 @@ define ([
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.template = Handlebars.compile(CreateMapFormTemplate);
-
+                console.log('new map modal view');
                 const datasets = this.app.dataManager.getDatasets();
                 this.formData = {
                     name: this.getDefaultMapTitle(),
@@ -132,7 +132,9 @@ define ([
                 this.app.popover.hide();
                 this.app.dataManager.addMap(this.model);
                 this.app.vent.trigger('close-modal');
-                this.app.router.navigate('//' + this.model.id);
+                if (this.app.router) {
+                    this.app.router.navigate('//' + this.model.id);
+                }
             },
 
             handleServerError: function (errorMessage) {

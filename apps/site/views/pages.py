@@ -20,6 +20,10 @@ def about_pages(request, page_name):
         raise Http404()
 
 
+def page_404(request):
+    return direct_to_template(request, template_name="pages/404.html")
+
+
 def style_guide_pages(request, page_name='banners'):
     try:
         return render_to_response(
@@ -111,5 +115,8 @@ class MainView(TemplateView):
             context={'request': {}}
         )
         renderer = JSONRenderer()
-        context.update({'project': renderer.render(serializer.data)})
+        context.update({
+            'project': renderer.render(serializer.data),
+            'project_name': project.name
+        })
         return context

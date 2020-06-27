@@ -5,6 +5,8 @@ from localground.apps.site.models import \
 from jsonfield import JSONField
 from localground.apps.site.managers import StyledMapManager
 import json
+import os
+from django.conf import settings
 
 
 class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
@@ -134,6 +136,55 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         for layer in self.layers:
             layer.delete()
         super(StyledMap, self).delete(**kwargs)
+
+    def get_thumb_url(self):
+        images = [
+            'http://www.allwhitebackground.com/images/2/2581-190x190.jpg',
+            'https://pbs.twimg.com/profile_images/745530828/psychickitten.jpg',
+            'https://img3.goipadwallpapers.com/2013/10/24/32ffffc600d8938a_190x190.jpg',
+            'https://tse3.mm.bing.net/th?id=OIP.LLSOyontFkbYGW4ZYbcpEgHaHa&w=190&h=190&c=8&o=5&pid=1.7',
+            'https://i.pinimg.com/236x/f5/26/48/f52648919a746c5329602f3f12ce9d8e--why-not-ivy.jpg'
+        ]
+        from random import randint
+        return images[randint(0, len(images) - 1)]
+        # import os
+        # zoom = self.zoom - 5
+        # size = 256
+        # if self.basemap.overlay_source.name == 'mapbox':
+        #     zoom -= 1
+        #     map_url = self.basemap.static_url + \
+        #         "&access_token=" + os.environ.get(
+        #             'MAPBOX_API_KEY', settings.MAPBOX_API_KEY)
+        #     map_url = map_url.format(
+        #         x=self.center.x,
+        #         y=self.center.y,
+        #         z=zoom,
+        #         w=size,
+        #         h=size
+        #     )
+        #
+        # # if stamen is the map provider:
+        # elif self.basemap.overlay_source.name == 'stamen':
+        #     map_url = self.basemap.static_url.format(
+        #         x=self.center.x,
+        #         y=self.center.y,
+        #         z=zoom,
+        #         w=size,
+        #         h=size
+        #     )
+        # # google is the map provider:
+        # else:
+        #     zoom = zoom - 1
+        #     map_url = self.basemap.static_url + \
+        #         "&key=" + os.environ.get(
+        #             'GOOGLE_MAPS_API_KEY', settings.GOOGLE_MAPS_API_KEY)
+        #     map_url = map_url.format(
+        #         x=self.center.x,
+        #         y=self.center.y,
+        #         z=zoom,
+        #         w=size / 2,
+        #         h=size / 2
+        #     )
 
     @classmethod
     def create(cls, datasets=None, **kwargs):

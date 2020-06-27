@@ -1,8 +1,8 @@
 define(["marionette",
         "handlebars",
-        "apps/main/views/spreadsheet/spreadsheet",
-        'apps/main/views/spreadsheet/rename-dataset',
-        "text!../../templates/spreadsheet/layout.html"
+        "lib/spreadsheet/views/spreadsheet",
+        'lib/spreadsheet/views/rename-dataset',
+        "text!../templates/layout.html"
     ],
     function (Marionette, Handlebars, Spreadsheet, RenameDataset, LayoutTemplate)  {
         'use strict';

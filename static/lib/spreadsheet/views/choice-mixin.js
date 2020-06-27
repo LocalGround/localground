@@ -4,7 +4,7 @@ define ([
     "marionette",
     "handlebars",
     "models/field",
-    "text!../../templates/spreadsheet/add-field.html"
+    "text!../templates/add-field.html"
 ],
     function ($, _, Marionette, Handlebars, Field, AddFieldTemplate) {
         'use strict';

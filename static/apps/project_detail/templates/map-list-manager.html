@@ -1,0 +1,20 @@
+<div class="project_maps-header">
+    <button class="button-action button-wide" id="add-map">
+        New Map
+    </button>
+    <p class="description">Project maps display geo-located information on a graphic base map of your choice.
+        <br>Maps can contain one or more layers; each layer displays locations from an associated dataset.</p>
+    
+    <div class="sort-by_wrapper">
+        <span>Sort by:</span>
+        <select name="sort_by" class="sort_by" value="{{sortProperty}}">
+            <option {{#ifequal sortProperty "name"}} SELECTED {{/ifequal}} value="name">Name</option>
+            <option {{#ifequal sortProperty "access_level"}} SELECTED {{/ifequal}} value="access_level">Share setting</option>
+            <option {{#ifequal sortProperty "created_by"}} SELECTED {{/ifequal}} value="created_by">Created by</option>
+            <option {{#ifequal sortProperty "date_modified"}} SELECTED {{/ifequal}} value="date_modified">Data Modified</option>
+        </select>
+    </div>
+</div>
+<div class='map-list_wrapper'>
+
+</div>

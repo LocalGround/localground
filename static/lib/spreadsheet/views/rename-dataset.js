@@ -3,7 +3,7 @@ define ([
     "underscore",
     "marionette",
     "handlebars",
-    "text!../../templates/spreadsheet/rename-dataset.html"
+    "text!../templates/rename-dataset.html"
 ],
     function ($, _, Marionette, Handlebars, RenameDatasetTemplate) {
         'use strict';
@@ -24,8 +24,10 @@ define ([
 
             _validateDatasetName: function () {
                 const name = this.$el.find('#dataset_name').val();
+                const description = this.$el.find('#dataset_description').val();
                 if (name.length > 0) {
                     this.model.set('name', name);
+                    this.model.set('description', description);
                 } else {
                     this.error = "A valid dataset name is required";
                     this.render();
@@ -68,9 +70,15 @@ define ([
 
             },
             onShow: function () {
-                setTimeout(() => {
-                    this.$el.find('#dataset_name').focus().select();
-                }, 50);
+                if (this.focusDataset) {
+                    setTimeout(() => {
+                        this.$el.find('#dataset_description').focus().select();
+                    }, 50);
+                } else {
+                    setTimeout(() => {
+                        this.$el.find('#dataset_name').focus().select();
+                    }, 50);
+                }
             }
             // reloadDataset: function () {
             //     /*
