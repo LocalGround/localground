@@ -1,15 +1,15 @@
 #!/bin/bash
 
 ##################################
-##				##
-#	Install Localground	 #
-##				##
+##				                ##
+#	Install Localground	        #
+##				                ##
 ##################################
 
 echo -e $"INSTALL: Localground Dependencies" | tee -a "$log_file"
 
 ###################################
-# Install Mail			 #
+# Install Mail			          #
 ###################################
 apt-get install sendmail -y
 apt-get install libmail-sendmail-perl -y
@@ -48,6 +48,8 @@ apt-get install postgresql-server-dev-9.5 -y
 apt-get install postgresql-plperl-9.5 -y
 apt-get install postgresql-9.5-postgis-2.2 -y
 apt-get install postgresql-9.5-postgis-scripts -y
+# apt-get install postgresql-9.5-postgis-scripts -y 
+apt-get install postgresql-9.5-postgis-2.2-scripts -y
 apt-get install libpq-dev -y
 
 ########################################################################
