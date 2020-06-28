@@ -1,258 +1,98 @@
-/* Map Layout */
-#marker-detail-panel {
-    display: none;
-}
-/*** Override some of the "fixed / absolute" characteristics of fav bar ****/
-.filter .data, #toolbar-main {
-    position: static;
+@import url("https://unpkg.com/leaflet@1.5.1/dist/leaflet.css");
+body {
+  height: 100vh;
+  overflow: hidden;
 }
 
-#toolbar-main .buttons{
-    top: 0;
+main {
+  height: calc(100vh - 70px);
+  display: -ms-grid;
+  display: grid;
 }
 
-#toolbar-main > div{
-    display:flex;
+#mapid {
+  height: 100%;
 }
 
-.list-header {
-    padding: 10px;
-    border-bottom: solid 1px #ebebeb;
-    font-size: 12px;
-    background: #FFF;
-    font-weight: 600;
-    color: #666;
+#card-holder {
+  display: none;
+  -webkit-transition-property: top, bottom;
+  transition-property: top, bottom;
+  -webkit-transition-duration: .3s, .3s;
+          transition-duration: .3s, .3s;
 }
 
-.list-header .new-field-plus {
-
-    float: right;
-}
-
-.list-indent, .list-indent-simple, .preview-filter-list {
-    list-style: none;
-    margin: 0;
-}
-
-.list-indent > li, .preview-filter-list > li {
-    padding: 0px;
-    border-bottom: 1px solid #ebebeb;
-    font-size: 12px;
-}
-.list-indent > li.empty {
-    padding: 0px 40px;
-    color: #999;
-    height: 56px;
-    line-height: 56px;
-}
-
-.list-indent a {
-    text-decoration: none;
-    padding: 6px 22px;
-    display: inline-block;
-    width: 100%;
-}
-.new-feature-by-type {
-    float: right;
-    font-size: 1.3em;
-    position: relative;
-    top: .1em;
-    color: #4e70d4;
-    margin-right: 10px
-}
-
-svg, .fa-question-circle {
-    vertical-align: middle;
-    margin: 0px 5px 0px 5px;
-    color: #CCC;
-    font-size: 16px;
-}
-
-.list-header .zoom-to-extents,
-.list-header .new-field-plus,
-.list-header .toggle-visibility,
-li .toggle-visibility {
-    font-size: 12px;
-    margin-right: 6px;
-    float: right;
-    margin-top: 3px;
-}
-li .toggle-visibility {
-    margin-right: 36px;
-}
-.highlight .toggle-visibility {
-    color: #FFF;
-}
-.list-header .zoom-to-extents,
-.list-header .fa-eye,
-li .zoom-to-extents,
-li .fa-eye {
-    color: #AAA;
-    display: none;
-}
-.list-header .new-field-plus {
-    color: rgb(78,112,212);
-}
-.list-header:hover .zoom-to-extents,
-.list-header:hover .toggle-visibility,
-li:hover .zoom-to-extents,
-li:hover .fa-eye  {
-    cursor: pointer;
-    display: block;
-}
-
-.marker-container .highlight {
-    background: rgb(123, 155, 225);
-    color: white;
-}
-.marker-container .hover-highlight, .marker-container li:hover {
-    background: #EEE;
-    color: #444;
-}
-.marker-container .highlight a {
-    color: white;
-}
-.marker-container .highlight a p {
-    color: white;
-}
-
-
-.marker-container p {
-    display: inline-block;
-    margin-top: 3px;
-    vertical-align: middle;
-}
-
-/********** for dragging/dropping pins on map ********************/
-#follower {
+.more {
+  bottom: 14px;
+  background: white;
   position: absolute;
+  right: 7px;
+  text-decoration: none;
+  color: #444;
+  font-size: 1.5rem;
+}
+
+.more:hover {
+  color: #7B8CDE;
+}
+
+main.with-card #card-holder {
+  -ms-grid-row: 1;
+  -ms-grid-column: 1;
+  grid-area: left;
+  display: block;
+  overflow-y: auto;
+}
+
+main.with-card #card-holder .card > div {
+  border: none;
+}
+
+main.with-card #mapid {
+  -ms-grid-row: 1;
+  -ms-grid-column: 2;
+  grid-area: main;
+}
+
+main.with-card {
+  -ms-grid-columns: 7fr 10fr;
+      grid-template-columns: 7fr 10fr;
+      grid-template-areas: "left main";
+}
+
+main.with-card #card-holder.fullscreen {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 10000;
+  overflow-y: auto;
+  background: white;
+  padding-top: 30px;
+}
+
+main.with-card #card-holder.fullscreen .mobile {
   display: none;
 }
 
-
-#add-geometry, #add-rectangle, #delete-geometry {
-    display: block;
-    text-align: center;
-    margin: 30px auto;
-    min-width: 180px;
-    width: auto;
+main.with-card #card-holder.fullscreen .less {
+  display: block;
+  position: fixed;
+  right: -1px;
+  top: -1px;
+  background: white;
+  height: 40px;
+  width: 40px;
+  line-height: 35px;
+  text-align: center;
+  border: solid 1px #CCC;
+  text-decoration: none;
+  color: #444;
+  font-weight: 600;
 }
 
-#add-geometry:focus, #add-rectangle:focus, #delete-geometry:focus {
-    outline: none;
+main.with-card #card-holder.fullscreen .less:hover {
+  background: #F0F0F0;
 }
-
-.geometry-options {
-    position: absolute;
-    margin-top: -30px;
-}
-
-.geometry-list-wrapper {
-    display: block;
-    width: 180px;
-    background: #fafafc;
-    margin: 0 auto;
-    position: absolute;
-    left: 110px;
-    box-shadow: 1;
-    box-shadow: 1px 2px 4px 0px;
-    border-radius: 6px 6px 8px 8px;
-}
-
-#add-polygon, #add-polyline, #add-point {
-    display: block;
-    margin: 0px 0px;
-    padding: 3px 2px;
-    line-height: 26px;
-    font-size: 12px;
-    border-top: 1px solid #e4e5eb;
-}
-
-#add-polygon:hover, #add-polyline:hover, #add-point:hover {
-    background-color: #EEE;
-}
-
-.dropdown-svg:hover {
-    fill: #ffffff;
-    stroke: #ffffff;
-}
-
-#drop-marker-message {
-    margin-top: -20px;
-    margin-bottom: 20px;
-    text-align: center;
-
-}
-
-.latlong {
-    display: inline;
-}
-
-.latlong-container {
-    text-align: center;
-    margin-top: -20px;
-    margin-bottom: 30px;
-}
-
-.inline-form {
-    margin: 4px 16px;
-    display: flex;
-    width: calc(100% - 32px);
-    line-height: 20px;
-}
-
-.inline-form label {
-    padding: 8px;
-    font-weight: 400;
-    color: #666;
-    font-size: 12px;
-    text-align: right;
-    word-wrap: break-word;
-    flex: 1;
-    font-weight: 600;
-}
-
-.inline-form .container-input, .inline-form textarea {
-    flex: 3;
-    padding: 8px;
-}
-
-.inline-form form {
-    font-weight: 400;
-    color: #666;
-    font-size: 12px;
-}
-
-.load-message {
-    display: block;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
-    text-align: center;
-    font-size: 21px;
-    padding-top: 100px;
-    position: relative;
-    margin-top: -420px;
-    width: 100%;
-    height: 320px;
-}
-
-.load-message span{
-    color: white;
-    font-size: 20px;
-    display: inline-block;
-    margin-bottom: 20px;
-}
-
-.print-confirm {
-    display: block;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
-    text-align: center;
-    font-size: 36px;
-    padding-top: 150px;
-    position: absolute;
-    margin-top: -440px;
-    width: 100%;
-    height: 290px;
-    z-index: 100;
-}
+/*# sourceMappingURL=map.css.map */

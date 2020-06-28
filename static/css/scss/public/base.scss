@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400italic,800italic,400,500,600,800|Amatic+SC');
+@import url('https://use.fontawesome.com/releases/v5.8.1/css/all.css');
+
+html, body {
+    margin: 0;
+}
+* {
+    box-sizing: border-box;
+}
+body {
+    padding-top: 70px;
+}
+body, p {
+   font-family: "Open Sans", sans-serif;
+   line-height: 1.5;
+   font-size: 0.9em;
+}
+header {
+    z-index: 1000;
+    position: fixed;
+    background-color: white;
+    width: 100vw;
+    top: 0;
+    height: 70px;
+    display: grid;
+    grid-template-columns: 200px auto 200px;
+    grid-template-areas:
+        "left middle right";
+    padding-left: 30px;
+    padding-right: 30px;
+
+    > * {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    h1 {
+        grid-area: left;
+        font: 3em "Amatic SC", cursive;
+        margin-bottom: 10px;
+        justify-content: flex-start;
+        margin: 0px;
+    }
+}
+
+.mobile {
+    display: none;
+}
+.menu {
+    grid-area: right;
+    justify-content: flex-end;
+}
+.search {
+    grid-area: middle;
+
+    > div {
+        width: 70%;
+        min-width: 330px;
+        display: flex;
+        align-items: center;
+    }
+} 
+
+.menu-item {
+    font-size: 1.1rem;
+    
+    color: #CCC;
+    margin-left: 10px;
+    font-family: "Open Sans", sans-serif;
+    text-decoration: none;
+
+    &.active i {
+        background: #7B8CDE;
+        color: white;
+        padding: 6px;
+        border-radius: 5px;
+    }
+}
+
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+
+    th {
+        font-weight: 600;
+        text-align: right;
+        padding-right: 10px;
+    }
+    td, th {
+        border: dotted 1px #CCC;
+        padding: 3px;
+        font-size: 0.9em;
+    }
+}
+
+
+.tag {
+    background: #F0F0F0;
+    border-radius: 5px;
+    padding: 3px 6px;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    margin-right: 6px;
+    margin-top: 6px;
+    display: inline-block;
+}
+
+/**********/
+/* Search */
+/**********/
+
+
+.hide {
+    display: none;
+}
+.less {
+    display: none;
+}
+.no-matches {
+    font-size: 1.5rem;
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 200px);
+    align-items: center;
+    justify-content: center;
+}

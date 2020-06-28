@@ -1,0 +1,59 @@
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+h2 {
+   font: 2em "Amatic SC", cursive;
+   color: #777;
+   margin-bottom: 0.5em;
+   /* display: inline; */
+}
+.card .snippet {
+    display: none;
+}
+.card {
+    margin-bottom: 30px;
+}
+.card .add-button {
+   display: none;
+}
+.card:hover {
+   cursor: pointer;
+}
+.card:hover .add-button {
+   float: right;
+   font: 3em "Amatic SC", cursive;
+   color: #777;
+   text-decoration: none;
+   border: solid 1px #777;
+   line-height: 25px;
+   width: 30px;
+   height: 30px;
+   margin-right: -5px;
+   text-align: center;
+   border-radius: 20px;
+   display: block;
+}
+.card .metadata {
+   display: none;
+}
+
+img {
+   width: 100%;
+}
+
+.lat-lng {
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+.card > div {
+   border: solid 1px #ccc;
+   padding: 20px;
+   margin: 10px;
+   border-radius: 10px;
+   margin-top: 0px;
+}

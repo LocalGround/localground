@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <title>Map Prototype</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/public.css">
+</head>
+<body style="padding-bottom: 50px;">
+    <header>
+        <h1>Covid-19 Maps</h1>
+        <section class="search">
+            <div>
+                <input type="text" id="search-bar" placeholder="Search">
+                <a class="filter-button" href="#"><i class="fas fa-filter"></i></a>
+            </div>
+        </section>
+        <section class="menu">
+            <a class="menu-item" href="#">
+                <i class="fas fa-th-large"></i>
+            </a>
+            <a class="menu-item" href="#">
+                <i class="fas fa-table"></i>
+            </a>
+            <a class="menu-item active" href="#">
+                <i class="fas fa-map"></i>
+            </a>
+            <a class="menu-item" href="code.html">
+                <i class="fas fa-code"></i>
+            </a>
+        </section> 
+    </header>
+    <main class="map">
+        <section id="card-holder"></section>
+        <div id="mapid"></div>
+    </main>
+
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+ integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+ crossorigin=""></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
+ <script src="/static/js/card.js"></script>
+ <script src="/static/js/map.js"></script>
+ <script src="/static/js/filter.js"></script> 
+
+ {% if map %}
+    <script>
+        const projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
+        const mapJSON = {% autoescape off %}{{map}}{% endautoescape %};
+        init(projectJSON, mapJSON);
+    </script>
+ {% endif %}
+    
+</body>
+</html>
