@@ -210,8 +210,22 @@ h2 {
   display: none;
 }
 
-img {
+.carousel {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 20px;
   width: 100%;
+}
+
+.carousel .card {
+  width: 100%;
+  max-height: 60vh;
+}
+
+.carousel img {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .lat-lng {

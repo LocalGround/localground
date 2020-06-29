@@ -20,9 +20,12 @@ const getPropertiesTable = (item) => {
 };
 
 const getPhotos = (item) => {
+    const images = [];
     for (const photo of item.photos) {
-        return `<img src="${photo.path_large}" />`
+        images.push(`<div class="card"><img src="${photo.path_large}" /></div>`) 
     }
+    //return `<section class="carousel">${images.join('')}</section>`;
+    return `<section class="carousel">${images[0]}</section>`;
 };
 const generateCard = (item) => {
     const properties = getPropertiesTable(item);

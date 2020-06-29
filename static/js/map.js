@@ -8,23 +8,8 @@ let mapData;
 const init = (projectJSON, mapJSON) => {
     projectData = projectJSON;
     mapData = mapJSON;
-    //saveData(projectJSON, mapJSON);
-    //console.log(projectJSON);
-    console.log(mapJSON);
     drawMap();
     renderData();
-
-};
-
-// const popup = new L.Popup({
-//     offset: [0, -30]
-// });
-const popup = new L.Popup();
-const url = "../results/data.json";
-
-const saveData = (data) => {
-    // console.log(data);
-    mapData = data;
 };
 
 const showCard = marker => {
@@ -52,15 +37,11 @@ const showCard = marker => {
     document.querySelector('.mobile .more').onclick = showFullscreen;
     document.querySelector('.mobile h2').onclick = showFullscreen;
     document.querySelector('.less').onclick = minimize;
-
-    // popup
-    // popup.setContent(item.name);
-    // popup.setLatLng(latLng);
-    // map.openPopup(popup);
-    marker.openPopup();
 };
 
 const drawMap = () => {	
+    console.log(mapData);
+    document.querySelector('header h1').innerHTML = mapData.name;
     //Stamen Toner tiles attribution and URL
     var watercolorURL = 'http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}';
     var watercolorMap = L.tileLayer(watercolorURL,{
@@ -69,16 +50,20 @@ const drawMap = () => {
         maxZoom: 20,
         ext: 'png'
     });
+    const center = mapData.center.coordinates;
     map = L.map('mapid', {
         layers: [watercolorMap],
-        trackResize: true,
-        minZoom: 2,
-        maxZoom: 14
-    }).setView([36.972, -122.049], 5);
+        trackResize: true
+    }).setView([center[1], center[0]], mapData.zoom);
 
     // Add marker clustering control: 
     oms = new OverlappingMarkerSpiderfier(map);
     oms.addListener('click', showCard);
+    
+    // hide popup if it's a spiderify click:
+    oms.addListener('spiderfy', function(markers) {
+        map.closePopup();
+    });
 };
 
 const renderData = () => {
@@ -107,7 +92,7 @@ const renderData = () => {
                 continue;
             }
             item.fields = fields;
-            console.log(symbol)
+            
             item.icon = L.icon({
                 iconUrl: encodeURI("data:image/svg+xml," + symbol.svg).replace(/#/g,'%23'),
                 iconSize: symbol.iconSize,
@@ -121,6 +106,12 @@ const renderData = () => {
             marker.item = item;
             mapMarkers.push(marker);
             oms.addMarker(marker);
+            console.log(symbol.svg);
+            console.log(symbol.iconSize);
+            console.log(symbol.iconAnchor);
+            console.log(symbol.popupAnchor);
+            console.log(lng);
+            console.log(lat);
         }
     }
 };
