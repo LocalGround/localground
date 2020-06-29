@@ -9,20 +9,21 @@ const init = (projectJSON, mapJSON) => {
     projectData = projectJSON;
     mapData = mapJSON;
     //saveData(projectJSON, mapJSON);
-    console.log(projectJSON);
-    // console.log(mapJSON);
+    //console.log(projectJSON);
+    console.log(mapJSON);
     drawMap();
     renderData();
 
 };
 
-const popup = new L.Popup({
-    offset: [0, -30]
-});
+// const popup = new L.Popup({
+//     offset: [0, -30]
+// });
+const popup = new L.Popup();
 const url = "../results/data.json";
 
 const saveData = (data) => {
-    console.log(data);
+    // console.log(data);
     mapData = data;
 };
 
@@ -53,9 +54,10 @@ const showCard = marker => {
     document.querySelector('.less').onclick = minimize;
 
     // popup
-    popup.setContent(item.name);
-    popup.setLatLng(latLng);
-    map.openPopup(popup);
+    // popup.setContent(item.name);
+    // popup.setLatLng(latLng);
+    // map.openPopup(popup);
+    marker.openPopup();
 };
 
 const drawMap = () => {	
@@ -72,7 +74,7 @@ const drawMap = () => {
         trackResize: true,
         minZoom: 2,
         maxZoom: 14
-    }).setView([36.972, -122.049], 15);
+    }).setView([36.972, -122.049], 5);
 
     // Add marker clustering control: 
     oms = new OverlappingMarkerSpiderfier(map);
@@ -97,8 +99,7 @@ const renderData = () => {
         const key = layer.dataset.overlay_type;
         const dataset = projectData.datasets[key].data;
         const fields = projectData.datasets[key].fields;
-        console.log(dataset, fields);
-
+        const symbol = layer.symbols[0];
         const mapMarkers = [];
         markerLayers.push(mapMarkers);
         for (const item of dataset) {
@@ -106,9 +107,17 @@ const renderData = () => {
                 continue;
             }
             item.fields = fields;
+            console.log(symbol)
+            item.icon = L.icon({
+                iconUrl: encodeURI("data:image/svg+xml," + symbol.svg).replace(/#/g,'%23'),
+                iconSize: symbol.iconSize,
+                iconAnchor: symbol.iconAnchor,
+                popupAnchor: symbol.popupAnchor
+            });
             const lng = item.geometry.coordinates[0];
             const lat = item.geometry.coordinates[1];
             const marker = L.marker([lat, lng], item).addTo(map);
+            marker.bindPopup(item.name)
             marker.item = item;
             mapMarkers.push(marker);
             oms.addMarker(marker);

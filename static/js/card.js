@@ -2,6 +2,9 @@
 const getPropertiesTable = (item) => {
     const rows = [];
     for (const field of item.fields) {
+        if (['name', 'description'].find(item => {
+            return item === field.key;
+        })) { continue; }
         rows.push(`
             <tr>
                 <td>${field.col_alias}</td>
@@ -29,7 +32,7 @@ const generateCard = (item) => {
         <div class="desktop">
             <a class="less" href="#">x</a>
             <h2>${item.name}</h2>
-            <p>${item.description}</p>
+            <p>${item.description.replace(/(?:\r\n|\r|\n)/g, '<br>')}</p>
             ${photos}
             ${properties}
         </div>

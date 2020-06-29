@@ -26,6 +26,7 @@ define(['jquery', 'handlebars', 'lib/maps/overlays/icon'], function ($, Handleba
                 <svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">
                     <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>
                 </svg>`);
+            console.log(template);
             const shape = "marker";
             this.icon = new Icon({
                 shape: shape,
