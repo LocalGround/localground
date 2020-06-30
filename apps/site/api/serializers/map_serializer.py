@@ -6,7 +6,7 @@ from localground.apps.site.api import fields
 import uuid
 from django.conf import settings
 from localground.apps.site.api.serializers.layer_serializer import \
-    LayerSerializer, LayerSerializerPublic
+    LayerSerializer
 import hashlib
 from localground.apps.site.api.serializers.record_serializer import \
     create_dynamic_serializer
@@ -257,106 +257,3 @@ class MapSerializerDetailSlug(MapSerializerDetail):
     extra_kwargs = {
         'url': {'lookup_field': 'slug'}
     }
-
-
-
-class MapSerializerPublic(MapSerializerList):
-    layers = serializers.SerializerMethodField()
-    project_id = serializers.SerializerMethodField()
-    datasets = serializers.SerializerMethodField()
-    media = serializers.SerializerMethodField()
-    
-    def get_layers(self, obj):
-        layers = models.Layer.objects.filter(styled_map=obj)
-        return LayerSerializerPublic(
-            layers, many=True, context={'request': {}}
-        ).data
-
-    def get_project_id(self, obj):
-        return obj.project.id
-
-    def get_datasets(self, obj):
-        datasets = models.Dataset.objects.prefetch_related(
-                'field_set', 'field_set__data_type'
-            ).filter(project=obj.project)
-
-        dataset_dictionary = {}
-
-        # add table data:
-        for dataset in datasets:
-            dataset_dictionary['dataset_%s' % dataset.id] = self.get_table_records(dataset)
-        return dataset_dictionary
-
-    def get_table_records(self, dataset):
-        records = dataset.get_records()
-        return {
-            'data': self.serialize_list(
-                create_dynamic_serializer(dataset),
-                records
-            ),
-            'fields': self.serialize_list(
-                FieldSerializerSimple,
-                dataset.fields
-            )
-        }
-
-    def serialize_list(self, serializer_class, records):
-        serializer = serializer_class(
-            records, many=True, context={'request': {}})
-        lookup = {}
-        for item in serializer.data:
-            lookup[item.get('id')] = item
-        return lookup
-
-    def get_media(self, obj):
-        media = {
-            'photos': self.get_photos(obj.project),
-            'videos': self.get_videos(obj.project),
-            'audio': self.get_audio(obj.project),
-            'map_images': self.get_mapimages(obj.project)
-        }
-        return media
-
-    def get_photos(self, obj):
-        return self.serialize_list(
-            PhotoSerializer,
-            models.Photo.objects.get_objects(
-                obj.owner,
-                project=obj
-            )
-        )
-
-    def get_videos(self, obj):
-        return self.serialize_list(
-            VideoSerializer,
-            models.Video.objects.get_objects(
-                obj.owner,
-                project=obj
-            )
-        )
-
-    def get_audio(self, obj):
-        return self.serialize_list(
-            AudioSerializer,
-            models.Audio.objects.get_objects(
-                obj.owner,
-                project=obj
-            )
-        )
-
-    def get_mapimages(self, obj):
-        return self.serialize_list(
-            MapImageSerializerUpdate,
-            models.MapImage.objects.get_objects(
-                obj.owner,
-                project=obj,
-                processed_only=False
-            )
-        )
-    
-    class Meta:
-        model = models.StyledMap
-        fields = MapSerializerList.field_list + (
-            'layers', 'name', 'project_id', 'datasets', 'media'
-        )
-        depth = 0

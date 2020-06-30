@@ -56,7 +56,11 @@ const drawMap = () => {
             'subdomains': 'abcd'
         }
     }
-    const tileset = tilesets['toner-lite'];
+    // set tileset; default to toner
+    let tileset = tilesets[mapData.basemap];
+    if (!tileset) {
+        tileset = tilesets['toner-lite'];
+    }
     var basemapURL = tileset.url
     var basemap = L.tileLayer(basemapURL, {
         subdomains: tileset.subdomains,
@@ -112,44 +116,58 @@ const renderData = () => {
         const key = layer.dataset;
         const dataset = mapData.datasets[key].data;
         const fields = mapData.datasets[key].fields;
-        const symbol = layer.symbols[0];
-        const mapMarkers = [];
-        markerLayers.push(mapMarkers);
-        for (const key in dataset) {
-            const item = dataset[key];
-            if (!item.geometry) {
-                continue;
-            }
-            item.fields = fields;
-            
-            item.icon = L.icon({
-                iconUrl: encodeURI("data:image/svg+xml," + symbol.svg).replace(/#/g,'%23'),
-                iconSize: symbol.iconSize,
-                iconAnchor: symbol.iconAnchor,
-                popupAnchor: symbol.popupAnchor
-            });
-            const lng = item.geometry.coordinates[0];
-            const lat = item.geometry.coordinates[1];
-            const marker = L.marker([lat, lng], item).addTo(map);
-            const thumbURL = getThumbnail(item);
-            if (thumbURL) {
-                marker.bindPopup(`
-                    <div class='popup-section'>
-                        <img src="${thumbURL}" />
-                        <p class="fade">
-                            <strong>${item.name}</strong>
-                            <br>
-                            ${item.description}
-                        </p>
-                    </div>`
-                );
-            } else {
-                marker.bindPopup(item.name)
-            }
-            marker.item = item;
-            mapMarkers.push(marker);
-            oms.addMarker(marker);
+        // const symbol = layer.symbols[0];
+        for (const symbol of layer.symbols) {
+            const mapMarkers = renderMarkers(dataset, fields, symbol);
+            //markerLayers.push(mapMarkers);
         }
+    }
+};
+
+const renderMarkers = (dataset, fields, symbol) => {
+    const mapMarkers = [];
+    markerLayers.push(mapMarkers);
+    // console.log(symbol.rec_ids);
+    for (const item of symbol.records) {
+        // const item = dataset[id];
+        // console.log(item);
+        if (!item.geometry) {
+            continue;
+        }
+        item.fields = fields;
+        
+        item.icon = L.icon({
+            iconUrl: encodeURI("data:image/svg+xml," + symbol.svg).replace(/#/g,'%23'),
+            iconSize: symbol.iconSize,
+            iconAnchor: symbol.iconAnchor,
+            popupAnchor: symbol.popupAnchor
+        });
+        const lng = item.geometry.coordinates[0];
+        const lat = item.geometry.coordinates[1];
+        const marker = L.marker([lat, lng], item).addTo(map);
+        attachPopup(marker, item);
+        marker.item = item;
+        mapMarkers.push(marker);
+        oms.addMarker(marker);
+    }
+    return mapMarkers;
+};
+
+const attachPopup = (marker, item) => {
+    const thumbURL = getThumbnail(item);
+    if (thumbURL) {
+        marker.bindPopup(`
+            <div class='popup-section'>
+                <img src="${thumbURL}" />
+                <p class="fade">
+                    <strong>${item.name}</strong>
+                    <br>
+                    ${item.description}
+                </p>
+            </div>`
+        );
+    } else {
+        marker.bindPopup(item.name)
     }
 };
 

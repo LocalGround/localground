@@ -33,10 +33,12 @@ from localground.apps.site.api.serializers.mapimage_overlay_serializer import \
 from localground.apps.site.api.serializers.user_profile_serializer import \
     UserProfileSerializer, UserProfileListSerializer
 from localground.apps.site.api.serializers.layer_serializer import \
-    LayerSerializer, LayerSerializerPost, LayerDetailSerializer, LayerSerializerPublic
+    LayerSerializer, LayerSerializerPost, LayerDetailSerializer
 from localground.apps.site.api.serializers.map_serializer import \
     MapSerializerList, MapSerializerPost, MapSerializerDetail, \
-    MapSerializerDetailSlug, MapSerializerPublic
+    MapSerializerDetailSlug
+from localground.apps.site.api.serializers.public_map_serializer import \
+    MapSerializerPublic, LayerSerializerPublic
 from localground.apps.site.api.serializers.tileset_serializer import \
     TileSetSerializer
 from localground.apps.site.api.serializers.video_serializer import \
