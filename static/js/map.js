@@ -2,12 +2,12 @@ let numColumns = 4;
 let markerLayers = [];
 let map;
 let oms;
-let projectData;
 let mapData;
 
-const init = (projectJSON, mapJSON) => {
-    projectData = projectJSON;
+const init = (mapJSON) => {
     mapData = mapJSON;
+    console.log(mapData);
+    // console.log(mapData);
     drawMap();
     renderData();
 };
@@ -18,9 +18,7 @@ const showCard = marker => {
     if (item.attached_photos_videos) {
         for (const media of item.attached_photos_videos) {
             if (media.overlay_type === 'photo') {
-                const photo = projectData.media.photos.data.find( item => {
-                    return item.id === media.id;
-                });
+                const photo = mapData.media.photos[media.id];
                 item.photos.push(photo);
             }
         }
@@ -41,18 +39,34 @@ const showCard = marker => {
 
 const drawMap = () => {	
     console.log(mapData);
+    
     document.querySelector('header h1').innerHTML = mapData.name;
     //Stamen Toner tiles attribution and URL
-    var watercolorURL = 'http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}';
-    var watercolorMap = L.tileLayer(watercolorURL,{
-        subdomains: 'abcd',
+    const tilesets = {
+        'toner-lite': {
+            'url': 'http://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}',
+            'subdomains': 'abcd'
+        },
+        'watercolor': {
+            'url': 'http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}',
+            'subdomains': 'abcd'
+        },
+        'toner-background': {
+            'url': 'http://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.{ext}',
+            'subdomains': 'abcd'
+        }
+    }
+    const tileset = tilesets['toner-lite'];
+    var basemapURL = tileset.url
+    var basemap = L.tileLayer(basemapURL, {
+        subdomains: tileset.subdomains,
         minZoom: 0,
         maxZoom: 20,
         ext: 'png'
     });
     const center = mapData.center.coordinates;
     map = L.map('mapid', {
-        layers: [watercolorMap],
+        layers: [basemap],
         trackResize: true
     }).setView([center[1], center[0]], mapData.zoom);
 
@@ -64,6 +78,20 @@ const drawMap = () => {
     oms.addListener('spiderfy', function(markers) {
         map.closePopup();
     });
+
+    // var imageUrl = 'http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg',
+    // imageBounds = [[40.712216, -74.22655], [40.773941, -74.12544]];
+    // L.imageOverlay(imageUrl, imageBounds).addTo(map);
+};
+
+const getThumbnail = item => {
+    for (const media of item.attached_photos_videos) {
+        if (media.overlay_type === 'photo') {
+            const photo = mapData.media.photos[media.id];
+            return photo.path_small;
+        }
+    }
+    
 };
 
 const renderData = () => {
@@ -81,13 +109,14 @@ const renderData = () => {
     }
 
     for (const layer of mapData.layers) {
-        const key = layer.dataset.overlay_type;
-        const dataset = projectData.datasets[key].data;
-        const fields = projectData.datasets[key].fields;
+        const key = layer.dataset;
+        const dataset = mapData.datasets[key].data;
+        const fields = mapData.datasets[key].fields;
         const symbol = layer.symbols[0];
         const mapMarkers = [];
         markerLayers.push(mapMarkers);
-        for (const item of dataset) {
+        for (const key in dataset) {
+            const item = dataset[key];
             if (!item.geometry) {
                 continue;
             }
@@ -102,16 +131,24 @@ const renderData = () => {
             const lng = item.geometry.coordinates[0];
             const lat = item.geometry.coordinates[1];
             const marker = L.marker([lat, lng], item).addTo(map);
-            marker.bindPopup(item.name)
+            const thumbURL = getThumbnail(item);
+            if (thumbURL) {
+                marker.bindPopup(`
+                    <div class='popup-section'>
+                        <img src="${thumbURL}" />
+                        <p class="fade">
+                            <strong>${item.name}</strong>
+                            <br>
+                            ${item.description}
+                        </p>
+                    </div>`
+                );
+            } else {
+                marker.bindPopup(item.name)
+            }
             marker.item = item;
             mapMarkers.push(marker);
             oms.addMarker(marker);
-            console.log(symbol.svg);
-            console.log(symbol.iconSize);
-            console.log(symbol.iconAnchor);
-            console.log(symbol.popupAnchor);
-            console.log(lng);
-            console.log(lat);
         }
     }
 };

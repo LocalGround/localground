@@ -191,25 +191,20 @@ class Symbol(object):
             path = 'M7.5,0C5.0676,0,2.2297,1.4865,2.2297,5.2703 C2.2297,7.8378,6.2838,13.5135,7.5,15c1.0811-1.4865,5.2703-7.027,5.2703-9.7297C12.7703,1.4865,9.9324,0,7.5,0z';
             bbox = '1.5 1 12.5 12.5'
         
-        svg = '''
-            <svg width="{width}" height="{height}" viewBox="{bbox}" xmlns="http://www.w3.org/2000/svg">
-                <path stroke="{strokeColor}" 
-                    stroke-width="{strokeWeight}" 
-                    fill-opacity="{fillOpacity}"
-                    stroke-opacity="{strokeOpacity}"
-                    fill="{fillColor}" 
-                    d="{path}" />
-            </svg>'''.format(
-                width=self.width,
-                height=self.height,
-                bbox=bbox,
-                strokeColor=self.strokeColor,
-                strokeWeight=self.strokeWeight,
-                fillOpacity=self.fillOpacity,
-                strokeOpacity=self.strokeOpacity,
-                fillColor=self.fillColor,
-                path=path
-            )
+        svg = '<svg width="{width}" height="{height}" viewBox="{bbox}" xmlns="http://www.w3.org/2000/svg">'
+        svg += '<path stroke="{strokeColor}" stroke-width="{strokeWeight}" fill-opacity="{fillOpacity}" stroke-opacity="{strokeOpacity}" fill="{fillColor}" d="{path}" />'
+        svg += '</svg>'
+        svg = svg.format(
+            width=self.width,
+            height=self.height,
+            bbox=bbox,
+            strokeColor=self.strokeColor,
+            strokeWeight=self.strokeWeight,
+            fillOpacity=self.fillOpacity,
+            strokeOpacity=self.strokeOpacity,
+            fillColor=self.fillColor,
+            path=path
+        )
         return {
             'svg': svg,
             'iconSize': iconSize,

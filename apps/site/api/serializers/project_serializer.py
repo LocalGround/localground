@@ -75,6 +75,7 @@ class ProjectSerializer(
         return obj.last_updated_by.username
 
 
+
 class ProjectDetailSerializer(ProjectSerializer):
     # slug = serializers.SlugField(
     #     max_length=100, label='friendly url', required=False)

@@ -46,9 +46,9 @@
 
  {% if map %}
     <script>
-        const projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
+        // const projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
         const mapJSON = {% autoescape off %}{{map}}{% endautoescape %};
-        init(projectJSON, mapJSON);
+        init(mapJSON);
     </script>
  {% endif %}
     

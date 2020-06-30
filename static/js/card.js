@@ -1,7 +1,8 @@
 
 const getPropertiesTable = (item) => {
     const rows = [];
-    for (const field of item.fields) {
+    for (const key in item.fields) {
+        const field = item.fields[key];
         if (['name', 'description'].find(item => {
             return item === field.key;
         })) { continue; }

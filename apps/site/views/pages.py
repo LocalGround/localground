@@ -6,7 +6,7 @@ from django.views.generic import TemplateView
 from localground.apps.site.models import Project, StyledMap
 from django.http import Http404
 from localground.apps.site.api.serializers import \
-    ProjectDetailSerializer, MapSerializerDetail
+    ProjectDetailSerializer, MapSerializerDetail, MapSerializerPublic
 from rest_framework.renderers import JSONRenderer
 
 
@@ -76,12 +76,9 @@ class PublicView(TemplateView):
         context = super(PublicView, self).get_context_data(
             *args, **kwargs)
         if self._has_access():
-            projectJSON = ProjectDetailSerializer(
-                self.map.project, context={'request': {}}).data
-            mapJSON = MapSerializerDetail(
+            mapJSON = MapSerializerPublic(
                 self.map, context={'request': {}}).data
             context.update({
-                'project': renderer.render(projectJSON),
                 'map': renderer.render(mapJSON)
             })
         return context

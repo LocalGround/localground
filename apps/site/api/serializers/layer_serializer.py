@@ -238,3 +238,24 @@ class LayerDetailSerializer(LayerSerializer):
         })
         return super(LayerDetailSerializer, self).update(
             instance, validated_data)
+
+
+class LayerSerializerPublic(BaseSerializer):
+    dataset = serializers.SerializerMethodField(read_only=True)
+    symbols = serializers.SerializerMethodField(read_only=True)
+
+    def get_dataset(self, obj):
+        return 'dataset_{0}'.format(obj.dataset.id)
+
+    def get_symbols(self, obj):
+        symbols = []
+        for kwargs in obj.symbols:
+            s = Symbol(**kwargs)
+            symbols.append(s.generate_svg())
+        return symbols
+    
+    class Meta:
+        model = models.Layer
+        fields = BaseSerializer.field_list + (
+            'dataset', 'symbols')
+        depth = 0

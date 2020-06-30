@@ -43,11 +43,11 @@ h2 {
 
 .carousel {
     display: flex;
-    // margin-bottom: 20px;
+    margin-bottom: 20px;
     width: 100%;
     .card {
         width: 100%;
-        max-height: 60vh;
+        // max-height: 60vh;
         // border: solid 1px #000;
     }
     img {

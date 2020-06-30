@@ -95,4 +95,42 @@ main.with-card #card-holder.fullscreen .less {
 main.with-card #card-holder.fullscreen .less:hover {
   background: #F0F0F0;
 }
+
+.popup-section {
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.popup-section img {
+  max-height: 52px;
+  float: left;
+  margin-right: 8px;
+}
+
+.popup-section h3, .popup-section p {
+  margin: 0px;
+}
+
+.popup-section p {
+  font-size: 1.1em;
+  overflow: hidden;
+}
+
+.popup-section .fade {
+  position: relative;
+  height: 54px;
+  /* exactly three lines */
+}
+
+.popup-section .fade:after {
+  content: "...";
+  text-align: right;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50%;
+  height: 0.85em;
+  background: -webkit-gradient(linear, left top, right top, from(rgba(255, 255, 255, 0)), color-stop(50%, white));
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), white 50%);
+}
 /*# sourceMappingURL=map.css.map */
