@@ -314,27 +314,48 @@ input#search-bar:focus:-ms-placeholder {
 
 .legend {
   width: 250px;
-  min-height: 100px;
-  max-height: calc(100vh - 105px);
   background: rgba(255, 255, 255, 0.9);
   padding: 5px;
+}
+
+.legend section {
+  margin-top: 10px;
+  min-height: 100px;
+  max-height: calc(100vh - 145px);
   overflow-y: auto;
-  -webkit-transition-property: all;
-  transition-property: all;
-  -webkit-transition-duration: 0.4s;
-          transition-duration: 0.4s;
 }
 
-.legend ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  padding-top: 10px;
+.legend .layer-header {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 20px 20px auto;
+      grid-template-columns: 20px 20px auto;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
-.legend .layer_title {
+.legend .layer-header .collapse {
+  -ms-grid-column-align: center;
+      justify-self: center;
+  font-size: 1.2em;
+}
+
+.legend .layer-title {
   font-weight: 500;
   font-size: 1.1em;
+}
+
+.legend .symbol-container {
+  padding-top: 5px;
+}
+
+.legend .symbol-entry {
+  margin-bottom: 10px;
+}
+
+.legend .symbol-entry.hidden {
+  opacity: 0.4;
 }
 
 .legend .symbol-entry .symbol-header {
@@ -356,19 +377,22 @@ input#search-bar:focus:-ms-placeholder {
   font-weight: 500;
 }
 
-.legend .symbol-entry .symbol-header .legend-show_symbol {
-  display: none;
+.legend .symbol-entry .symbol-header .fa-eye, .legend .symbol-entry .symbol-header .fa-eye-slash {
   line-height: 30px;
+  color: #999;
+  cursor: pointer;
+}
+
+.legend .symbol-entry .symbol-header .fa-eye {
+  display: none;
 }
 
 .legend .symbol-entry .symbol-header:hover {
   background: #F0F0F0;
 }
 
-.legend .symbol-entry .symbol-header:hover .legend-show_symbol {
+.legend .symbol-entry .symbol-header:hover .fa-eye {
   display: block;
-  color: #999;
-  cursor: pointer;
 }
 
 .legend .symbol-entry .symbol-item {
@@ -376,8 +400,16 @@ input#search-bar:focus:-ms-placeholder {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 20px;
+  line-height: 22px;
   color: #666;
+}
+
+.legend .symbol-entry .symbol-item:hover {
+  background: #F0F0F0;
+}
+
+.legend .symbol-entry.minimized {
+  margin-bottom: 0px;
 }
 
 .legend .symbol-entry.minimized .symbol-item {
@@ -389,8 +421,7 @@ input#search-bar:focus:-ms-placeholder {
 }
 
 .legend svg {
-  max-height: 20px;
-  max-width: 20px;
+  max-width: 25px;
   vertical-align: middle;
   margin-right: 3px;
 }

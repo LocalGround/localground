@@ -2,118 +2,153 @@ class Legend {
     layerData;
 
     constructor (map, layerData) {
-        this.map = map;
         this.layerData = layerData;
-        this.legend = L.control({position: 'topright'});
-        this.legend.onAdd = this.renderLegend.bind(this);
-        this.legend.addTo(map);
+
+        // init legend:
+        const legend = L.control({position: 'topright'});
+        legend.onAdd = this.renderLegend.bind(this);
+        legend.addTo(map);
+
+        // create customEvents:
+        this.addCustomEvents();
+
+        // add event listeners to the the legend
         this.addEventHandlers();
+
     }
 
-    renderLegend (map) {
-        this.el = L.DomUtil.create('div', 'legend minimized');
-        let html = '<h2>Legend <i class="fas fa-chevron-down toggle-legend"></i></h2>';
-        for (const layer of this.layerData) {
-            html += `
-                <ul>
-                    <li>
-                        <input type="checkbox" checked />
-                        <i class="fa fa-lg collapse fa-angle-right"></i>
-                        <span class="layer_title">${layer.title}</span>`;
-            
-            html += '<ul class="symbol-container">'
-            for (const symbol of layer.symbols) {
-                html += this.renderSymbol(symbol);
-            }
-            html += '</ul></li></ul>';
-        }
-        this.el.innerHTML = html;
-        return this.el;
+    renderLegend () {
+        const legendEl = L.DomUtil.create('div', 'legend minimized');
+        L.DomEvent.on(legendEl, 'mousewheel', L.DomEvent.stopPropagation);
+        
+        const legendBody = this.layerData.map(
+                layer => this.renderLayer(layer)
+            ).join('');
+        
+            legendEl.innerHTML = `
+            <h2> Legend <i class="fas fa-chevron-down toggle-legend"></i></h2>
+            <section>${legendBody}</section>
+        `;
+        return legendEl;
     }
 
-    renderSymbol (symbol) {
+    renderLayer (layer) {
+        const symbols = layer.symbols.map(
+            symbol => this.renderSymbol(layer, symbol)
+        ).join('');
+
         return `
-            <li class="symbol-entry minimized">
+            <div class="layer-header">
+                <input type="checkbox" data-layer-id="${layer.id}" checked />
+                <i class="fa collapse fa-angle-right"></i>
+                <span class="layer-title">${layer.title}</span>
+            </div>
+            <div class="symbol-container">${symbols}</div>
+        `;
+    }
+
+    renderSymbol (layer, symbol) {
+        const symbolItems = this.renderSymbolItems(symbol.records);
+        return `
+            <div class="symbol-entry minimized">
                 <div class="symbol-header">
                     <span>
                         ${symbol.svg}
                         ${symbol.title} (${symbol.records.length})
                     </span>
-                    <i class="fa legend-show_symbol fa-eye"></i>
+                    <span>
+                        <i class="fa show-symbol fa-eye"
+                            data-symbol-id="${symbol.id}" 
+                            data-layer-id="${layer.id}"></i>
+                    </span>
                 </div>
-                ${this.renderMarkers(symbol.records)}
-            </li>
-        `;
+                ${symbolItems}
+            </div>`;
     }
 
-    renderMarkers (records) {
-        const items = [];
-        for (const rec of records) {
-            items.push(`<div class="symbol-item">${rec.name}</div>`)
+    renderSymbolItems (records) {
+        return records.map(
+            rec => `<div data-record-id="${rec.id}" class="symbol-item">${rec.name}</div>`
+        ).join('');
+    }
+
+    toggleLegendVisibility(ev) {
+        const legend = document.querySelector('.legend');
+        const arrow = legend.querySelector('.toggle-legend');
+        legend.classList.toggle('minimized');
+        arrow.classList.toggle('fa-chevron-down');
+        arrow.classList.toggle('fa-chevron-up');
+        ev.preventDefault();
+        ev.stopPropagation();
+    }
+
+    toggleSymbolDetail (ev) {
+        const toggler = ev.currentTarget;
+        toggler.classList.toggle('fa-angle-right')
+        toggler.classList.toggle('fa-angle-down');
+        const symbolEntries = toggler.parentElement.nextElementSibling.querySelectorAll('.symbol-entry');
+        for (const entry of symbolEntries) {
+            entry.classList.toggle('minimized');
         }
-        return items.join('');
+        ev.stopPropagation();
     }
 
-    addEventHandlers() {
-        document.querySelector('.legend h2').addEventListener('click', ev => {
-            const legend = document.querySelector('.legend');
-            const arrow = legend.querySelector('.toggle-legend');
-            legend.classList.toggle('minimized');
-            arrow.classList.toggle('fa-chevron-down');
-            arrow.classList.toggle('fa-chevron-up');
-            ev.preventDefault();
-            ev.stopPropagation();
-        });
-    
-        document.querySelector('.legend').addEventListener('dblclick', ev => {
-            ev.stopPropagation();
+    addCustomEvents () {
+        this.showMarkerEvent = new CustomEvent("toggle-layer-visibility", {
+            bubbles: true
         });
     }
+
+    broadcastEvent(name, ev, data) {
+        const customEvent = new CustomEvent(name, {
+            bubbles: true,
+            detail: data
+        });
+        ev.currentTarget.dispatchEvent(customEvent);
+    }
+
+    toggleLayerVisibility (ev) {
+        this.broadcastEvent('toggle-layer-visibility', ev, {
+            layerID: parseInt(ev.currentTarget.getAttribute('data-layer-id')),
+            show: ev.currentTarget.checked
+        })
+    }
+
+    toggleSymbolVisibility (ev) {
+        const i = ev.currentTarget;
+        const container = i.parentElement.parentElement.parentElement;
+        i.classList.toggle('fa-eye');
+        i.classList.toggle('fa-eye-slash');
+        container.classList.toggle('hidden');
+        this.broadcastEvent('toggle-symbol-visibility', ev, {
+            layerID: parseInt(i.getAttribute('data-layer-id')),
+            symbolID: parseInt(i.getAttribute('data-symbol-id')),
+            show: i.classList.contains('fa-eye')
+        });
+    }
+
+    showItem (ev) {
+        this.broadcastEvent('show-item', ev, {
+            recordID: parseInt(ev.currentTarget.getAttribute('data-record-id'))
+        });
+    }
+
+    attachListener (selector, eventName, listener) {
+        const elements = document.querySelectorAll(selector);
+        for (const el of elements) {
+            el.addEventListener(eventName, listener.bind(this));
+        }
+    }
+
+    addEventHandlers () {
+        this.attachListener('.legend h2', 'click', this.toggleLegendVisibility);
+        this.attachListener('.legend', 'dblclick', ev => ev.stopPropagation());
+        this.attachListener('.legend .collapse', 'click', this.toggleSymbolDetail);
+        this.attachListener('.legend .layer-header input', 'change', this.toggleLayerVisibility);
+        this.attachListener('.legend .show-symbol', 'click', this.toggleSymbolVisibility);
+        this.attachListener('.legend .symbol-item', 'click', this.showItem);
+    }
+    
 }
 
 
-
-/*
-<!-- svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ height }}">
-    <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
-          stroke-width="{{ strokeWeight }}" stroke="{{ icon.strokeColor }}" d="{{ icon.path }}"></path>
-</svg -->
-{{#if layerIsIndividual}}
-    <a href="{{records.0.url}}">
-        <div class="symbol-entry-header legend-symbol_collapsed legend-symbol_ind {{#ifequal records.0.itemId activeItemId}} selectedRecord {{/ifequal}} ">
-
-            <span class="legend-symbol_svg">{{{records.0.recordSvg}}}</span>
-            <span>{{ title }}</span>
-            <i class="fa fa-eye legend-show_symbol"></i>
-        </div>
-    </a>
-
-{{else}}
-    <div class="symbol-entry-header {{#if collapsed}}legend-symbol_collapsed {{else}} legend-symbol_expanded{{/if}}">
-
-        <span class="legend-symbol_svg">{{{symbolSvg}}}</span>
-        <div>
-            <span>{{ title }}</span>
-            <span class="count">({{count}})</span>
-        </div>
-        <i class="fa fa-eye legend-show_symbol"></i>
-    </div>
-
-    <ul class="presentation-records_wrapper" {{#if collapsed}}style="display: none" {{else}} style="display: block"{{/if}}>
-        {{#each records}}
-        <a href="{{this.url}}">
-            <li class="presentation-record_item {{#ifequal this.itemId ../activeItemId}} selectedRecord {{/ifequal}}">
-                <span class="legend-record_icon">
-                    {{#if this.recordSvg}} 
-                        {{{this.recordSvg}}} 
-                    {{else}}
-                        <i class="fa fa-question-circle"></i>
-                    {{/if}}
-                </span>
-                <span>{{this.displayText}}</span>
-            </li>
-        </a>
-        {{/each}}
-    </ul>
-{{/if}}
-*/

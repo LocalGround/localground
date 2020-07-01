@@ -23,7 +23,7 @@ class LayerSerializerPublic(BaseSerializer):
             obj.dataset.get_records(), many=True, context={'request': {}}
         ).data
         symbols = []
-        for kwargs in obj.symbols:
+        for i, kwargs in enumerate(obj.symbols):
             symbol = models.Symbol(**kwargs)
             
             symbol_dict = symbol.generate_svg()
@@ -36,6 +36,8 @@ class LayerSerializerPublic(BaseSerializer):
                 if symbol.check_if_match(rec):
                     recs.append(rec)
             symbol_dict['records'] = recs
+            symbol_dict['id'] = i + 1
+            print(symbol_dict['id'])
             symbols.append(symbol_dict)
         return symbols
     

@@ -1,25 +1,42 @@
 .legend {
     width: 250px;
-    min-height: 100px;
-    max-height: calc(100vh - 105px);
     background: rgba(255, 255, 255, 0.9);
     padding: 5px;
-    overflow-y: auto;
-    transition-property: all;
-    transition-duration: 0.4s;
-    ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        padding-top: 10px;
-    }
+    // transition-property: all;
+    // transition-duration: 0.4s;
 
-    .layer_title {
+    section {
+        margin-top: 10px;
+        min-height: 100px;
+        max-height: calc(100vh - 145px);
+        overflow-y: auto;
+    }
+    .layer-header {
+        display: grid;
+        grid-template-columns: 20px 20px auto;
+        align-items: center;
+        .collapse {
+            justify-self: center;
+            font-size: 1.2em;
+        }
+    }
+   
+    .layer-title {
         font-weight: 500;
         font-size: 1.1em;
     }
 
+    .symbol-container {
+        padding-top: 5px;
+    }
+
     .symbol-entry {
+        margin-bottom: 10px;
+        
+        &.hidden {
+            opacity: 0.4;
+        }
+        
         .symbol-header {
             padding-left: 25px;
             display: grid;
@@ -32,17 +49,19 @@
                 font-weight: 500;
             }
     
-            .legend-show_symbol {
-                display: none;
+            .fa-eye, .fa-eye-slash {
                 line-height: 30px;
+                color: #999;
+                cursor: pointer;
+            }
+            .fa-eye {
+                display: none;
             }
     
             &:hover {
                 background: #F0F0F0;
-                .legend-show_symbol {
+                .fa-eye {
                     display: block;
-                    color: #999;
-                    cursor: pointer;
                 }
             }
         }
@@ -52,11 +71,16 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            line-height: 20px;
+            line-height: 22px;
             color: #666;
+
+            &:hover {
+                background: #F0F0F0;
+            }
         }
 
         &.minimized {
+            margin-bottom: 0px;
             .symbol-item {
                 display: none;
             }
@@ -71,8 +95,8 @@
 
     svg {
         // transform: scale(0.5);
-        max-height: 20px;
-        max-width: 20px;
+        // max-height: 25px;
+        max-width: 25px;
         vertical-align: middle;
         margin-right: 3px;
     }

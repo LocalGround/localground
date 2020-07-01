@@ -1,5 +1,5 @@
 let numColumns = 4;
-let markerLayers = [];
+let markerLayers = {};
 let map;
 let oms;
 let mapData;
@@ -7,9 +7,34 @@ let mapData;
 const init = (mapJSON) => {
     mapData = mapJSON;
     console.log(mapData);
-    // console.log(mapData);
     drawMap();
     renderData();
+    document.addEventListener("toggle-layer-visibility", toggleLayerVisibility);
+    document.addEventListener("toggle-symbol-visibility", toggleSymbolVisibility);
+    document.addEventListener("show-item", showCardByEvent);
+};
+
+const toggleLayerVisibility = ev => {
+    if (ev.detail.show) {
+        showMarkerByLayerID(ev.detail.layerID);
+    } else {
+        hideMarkerByLayerID(ev.detail.layerID);
+    }
+};
+
+const toggleSymbolVisibility = ev => {
+    const symbol = markerLayers[ev.detail.layerID][ev.detail.symbolID];
+    if (ev.detail.symbolIDshow) {
+        showMarkerBySymbol(symbol);
+    } else {
+        hideMarkerBySymbol(symbol);
+    }
+};
+
+const showCardByEvent = ev => {
+    console.log(ev);
+    const marker = mapData.
+    showCard(marker);
 };
 
 const showCard = marker => {
@@ -38,7 +63,6 @@ const showCard = marker => {
 };
 
 const drawMap = () => {	
-    console.log(mapData);
     
     document.querySelector('header h1').innerHTML = mapData.name;
     //Stamen Toner tiles attribution and URL
@@ -95,7 +119,28 @@ const getThumbnail = item => {
             return photo.path_small;
         }
     }
-    
+};
+
+const hideMarkerByLayerID = (id) => {
+    for (const key in markerLayers[id]) {
+        hideMarkerBySymbol(markerLayers[id][key]);
+    }
+};
+const hideMarkerBySymbol = symbolLayer => {
+    for (const mapMarker of symbolLayer) {
+        map.removeLayer(mapMarker);
+    }
+};
+const showMarkerByLayerID = (id) => {
+    for (const key in markerLayers[id]) {
+        showMarkerBySymbol(markerLayers[id][key]);
+    }
+};
+
+const showMarkerBySymbol = symbolLayer => {
+    for (const mapMarker of symbolLayer) {
+        mapMarker.addTo(map);
+    }
 };
 
 const renderData = () => {
@@ -103,23 +148,19 @@ const renderData = () => {
     map.invalidateSize();
 
     // clear out old map markers if needed:
-    if (markerLayers.length > 0) {
-        for (const layer of markerLayers) {
-            for (const mapMarker of layer) {
-                map.removeLayer(mapMarker);
-            }
-        }
-        markerLayers = [];
+    for (const key in markerLayers) {
+        hideMarkerByLayerID(key);
     }
 
     for (const layer of mapData.layers) {
+        markerLayers[layer.id] = {}
         const key = layer.dataset;
-        const dataset = mapData.datasets[key].data;
+        // const dataset = mapData.datasets[key].data;
         const fields = mapData.datasets[key].fields;
         // const symbol = layer.symbols[0];
         for (const symbol of layer.symbols) {
-            const mapMarkers = renderMarkers(fields, symbol);
-            markerLayers.push(mapMarkers);
+            const mapMarkers = renderMarkers(layer, fields, symbol);
+            markerLayers[layer.id][symbol.id] = mapMarkers;
         }
     }
 
@@ -127,9 +168,9 @@ const renderData = () => {
     const legend = new Legend(map, mapData.layers);
 };
 
-const renderMarkers = (fields, symbol) => {
+const renderMarkers = (layer, fields, symbol) => {
     const mapMarkers = [];
-    markerLayers.push(mapMarkers);
+    // markerLayers[layer.id] = mapMarkers;
     for (const item of symbol.records) {
 
         if (!item.geometry) {
