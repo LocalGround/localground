@@ -37,7 +37,7 @@ main.with-card #card-holder {
 main.with-card #card-holder .card > div {
     border: none;
 }
-main.with-card  #mapid {
+main.with-card #mapid {
     grid-area: main;
 }
 main.with-card { 
@@ -111,4 +111,3 @@ main.with-card #card-holder.fullscreen .less:hover {
         background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 50%);
       }
 }
-

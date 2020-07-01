@@ -312,6 +312,113 @@ input#search-bar:focus:-ms-placeholder {
   padding: 10px;
 }
 
+.legend {
+  width: 250px;
+  min-height: 100px;
+  max-height: calc(100vh - 105px);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 5px;
+  overflow-y: auto;
+  -webkit-transition-property: all;
+  transition-property: all;
+  -webkit-transition-duration: 0.4s;
+          transition-duration: 0.4s;
+}
+
+.legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  padding-top: 10px;
+}
+
+.legend .layer_title {
+  font-weight: 500;
+  font-size: 1.1em;
+}
+
+.legend .symbol-entry .symbol-header {
+  padding-left: 25px;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: auto 20px;
+      grid-template-columns: auto 20px;
+  line-height: 30px;
+}
+
+.legend .symbol-entry .symbol-header span {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  font-weight: 500;
+}
+
+.legend .symbol-entry .symbol-header .legend-show_symbol {
+  display: none;
+  line-height: 30px;
+}
+
+.legend .symbol-entry .symbol-header:hover {
+  background: #F0F0F0;
+}
+
+.legend .symbol-entry .symbol-header:hover .legend-show_symbol {
+  display: block;
+  color: #999;
+  cursor: pointer;
+}
+
+.legend .symbol-entry .symbol-item {
+  padding-left: 50px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 20px;
+  color: #666;
+}
+
+.legend .symbol-entry.minimized .symbol-item {
+  display: none;
+}
+
+.legend .symbol-entry.minimized .symbol-header span {
+  font-weight: normal;
+}
+
+.legend svg {
+  max-height: 20px;
+  max-width: 20px;
+  vertical-align: middle;
+  margin-right: 3px;
+}
+
+.legend.minimized {
+  min-height: 0px;
+  max-height: 40px;
+  overflow: hidden;
+}
+
+.legend h2 {
+  margin: 0px;
+  cursor: -webkit-grab !important;
+  cursor: grab !important;
+  font-family: "Open Sans", sans-serif;
+  color: #222;
+  font-size: 1.3em;
+  line-height: 30px;
+  font-weight: 600;
+}
+
+.legend .toggle-legend {
+  float: right;
+  padding-right: 3px;
+  font-size: 1rem;
+  line-height: 30px;
+}
+
 body {
   height: 100vh;
   overflow: hidden;

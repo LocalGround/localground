@@ -1,0 +1,102 @@
+.legend {
+    width: 250px;
+    min-height: 100px;
+    max-height: calc(100vh - 105px);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px;
+    overflow-y: auto;
+    transition-property: all;
+    transition-duration: 0.4s;
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        padding-top: 10px;
+    }
+
+    .layer_title {
+        font-weight: 500;
+        font-size: 1.1em;
+    }
+
+    .symbol-entry {
+        .symbol-header {
+            padding-left: 25px;
+            display: grid;
+            grid-template-columns: auto 20px;
+            line-height: 30px;
+    
+            span {
+                display: flex;
+                align-items: center;
+                font-weight: 500;
+            }
+    
+            .legend-show_symbol {
+                display: none;
+                line-height: 30px;
+            }
+    
+            &:hover {
+                background: #F0F0F0;
+                .legend-show_symbol {
+                    display: block;
+                    color: #999;
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .symbol-item {
+            padding-left: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 20px;
+            color: #666;
+        }
+
+        &.minimized {
+            .symbol-item {
+                display: none;
+            }
+            .symbol-header {
+                span {
+                    font-weight: normal;
+                }
+            }
+        }
+
+    }
+
+    svg {
+        // transform: scale(0.5);
+        max-height: 20px;
+        max-width: 20px;
+        vertical-align: middle;
+        margin-right: 3px;
+    }
+
+    &.minimized {
+        min-height: 0px;
+        max-height: 40px;
+        overflow: hidden;
+        // cursor: pointer !important;
+    }
+
+    h2 {
+        margin: 0px;
+        cursor: grab !important;
+        font-family: "Open Sans", sans-serif;
+        color: #222;
+        font-size: 1.3em;
+        line-height: 30px;
+        font-weight: 600;
+    }
+    .toggle-legend {
+        float: right;
+        padding-right: 3px;
+        font-size: 1rem;
+        line-height: 30px;
+    }
+}

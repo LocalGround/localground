@@ -41,7 +41,7 @@ class LayerSerializerPublic(BaseSerializer):
     
     class Meta:
         model = models.Layer
-        fields = BaseSerializer.field_list + ('dataset', 'symbols')
+        fields = BaseSerializer.field_list + ('title', 'dataset', 'symbols')
         depth = 0
 
 class MapSerializerPublic(MapSerializerList):

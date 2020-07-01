@@ -118,19 +118,20 @@ const renderData = () => {
         const fields = mapData.datasets[key].fields;
         // const symbol = layer.symbols[0];
         for (const symbol of layer.symbols) {
-            const mapMarkers = renderMarkers(dataset, fields, symbol);
-            //markerLayers.push(mapMarkers);
+            const mapMarkers = renderMarkers(fields, symbol);
+            markerLayers.push(mapMarkers);
         }
     }
+
+    // add legend: 
+    const legend = new Legend(map, mapData.layers);
 };
 
-const renderMarkers = (dataset, fields, symbol) => {
+const renderMarkers = (fields, symbol) => {
     const mapMarkers = [];
     markerLayers.push(mapMarkers);
-    // console.log(symbol.rec_ids);
     for (const item of symbol.records) {
-        // const item = dataset[id];
-        // console.log(item);
+
         if (!item.geometry) {
             continue;
         }
@@ -154,7 +155,8 @@ const renderMarkers = (dataset, fields, symbol) => {
 };
 
 const attachPopup = (marker, item) => {
-    const thumbURL = getThumbnail(item);
+    marker.bindPopup(item.name)
+    /*const thumbURL = getThumbnail(item);
     if (thumbURL) {
         marker.bindPopup(`
             <div class='popup-section'>
@@ -168,7 +170,7 @@ const attachPopup = (marker, item) => {
         );
     } else {
         marker.bindPopup(item.name)
-    }
+    }*/
 };
 
 const showFullscreen = () => {
