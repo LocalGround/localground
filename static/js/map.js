@@ -24,7 +24,7 @@ const toggleLayerVisibility = ev => {
 
 const toggleSymbolVisibility = ev => {
     const symbol = markerLayers[ev.detail.layerID][ev.detail.symbolID];
-    if (ev.detail.symbolIDshow) {
+    if (ev.detail.show) {
         showMarkerBySymbol(symbol);
     } else {
         hideMarkerBySymbol(symbol);
@@ -32,8 +32,9 @@ const toggleSymbolVisibility = ev => {
 };
 
 const showCardByEvent = ev => {
-    console.log(ev);
-    const marker = mapData.
+    const layer = markerLayers[ev.detail.layerID];
+    const symbol = layer[ev.detail.symbolID];
+    const marker = symbol[ev.detail.recordID];
     showCard(marker);
 };
 
@@ -127,7 +128,7 @@ const hideMarkerByLayerID = (id) => {
     }
 };
 const hideMarkerBySymbol = symbolLayer => {
-    for (const mapMarker of symbolLayer) {
+    for (const mapMarker of Object.values(symbolLayer)) {
         map.removeLayer(mapMarker);
     }
 };
@@ -138,7 +139,7 @@ const showMarkerByLayerID = (id) => {
 };
 
 const showMarkerBySymbol = symbolLayer => {
-    for (const mapMarker of symbolLayer) {
+    for (const mapMarker of Object.values(symbolLayer)) {
         mapMarker.addTo(map);
     }
 };
@@ -152,13 +153,15 @@ const renderData = () => {
         hideMarkerByLayerID(key);
     }
 
-    for (const layer of mapData.layers) {
+    for (const layerID in mapData.layers) {
+        const layer = mapData.layers[layerID];
         markerLayers[layer.id] = {}
         const key = layer.dataset;
         // const dataset = mapData.datasets[key].data;
         const fields = mapData.datasets[key].fields;
         // const symbol = layer.symbols[0];
-        for (const symbol of layer.symbols) {
+        for (const symbolID in layer.symbols) {
+            const symbol = layer.symbols[symbolID];
             const mapMarkers = renderMarkers(layer, fields, symbol);
             markerLayers[layer.id][symbol.id] = mapMarkers;
         }
@@ -169,9 +172,10 @@ const renderData = () => {
 };
 
 const renderMarkers = (layer, fields, symbol) => {
-    const mapMarkers = [];
+    const mapMarkers = {};
     // markerLayers[layer.id] = mapMarkers;
-    for (const item of symbol.records) {
+    for (const recordID in symbol.records) {
+        const item = symbol.records[recordID];
 
         if (!item.geometry) {
             continue;
@@ -189,7 +193,7 @@ const renderMarkers = (layer, fields, symbol) => {
         const marker = L.marker([lat, lng], item).addTo(map);
         attachPopup(marker, item);
         marker.item = item;
-        mapMarkers.push(marker);
+        mapMarkers[item.id] = marker;
         oms.addMarker(marker);
     }
     return mapMarkers;

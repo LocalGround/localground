@@ -402,10 +402,17 @@ input#search-bar:focus:-ms-placeholder {
   text-overflow: ellipsis;
   line-height: 22px;
   color: #666;
+  cursor: pointer;
 }
 
 .legend .symbol-entry .symbol-item:hover {
   background: #F0F0F0;
+  color: #666;
+}
+
+.legend .symbol-entry .symbol-item.selected {
+  background: #7B8CDE;
+  color: #FFF;
 }
 
 .legend .symbol-entry.minimized {

@@ -32,7 +32,7 @@
 
     .symbol-entry {
         margin-bottom: 10px;
-        
+
         &.hidden {
             opacity: 0.4;
         }
@@ -73,9 +73,16 @@
             text-overflow: ellipsis;
             line-height: 22px;
             color: #666;
+            cursor: pointer;
 
             &:hover {
                 background: #F0F0F0;
+                color: #666;
+            }
+
+            &.selected {
+                background: #7B8CDE;
+                color: #FFF;
             }
         }
 

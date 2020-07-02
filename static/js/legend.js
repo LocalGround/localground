@@ -1,8 +1,8 @@
 class Legend {
     layerData;
 
-    constructor (map, layerData) {
-        this.layerData = layerData;
+    constructor (map, layerObj) {
+        this.layerData = Object.values(layerObj);
 
         // init legend:
         const legend = L.control({position: 'topright'});
@@ -33,7 +33,7 @@ class Legend {
     }
 
     renderLayer (layer) {
-        const symbols = layer.symbols.map(
+        const symbols = Object.values(layer.symbols).map(
             symbol => this.renderSymbol(layer, symbol)
         ).join('');
 
@@ -48,13 +48,13 @@ class Legend {
     }
 
     renderSymbol (layer, symbol) {
-        const symbolItems = this.renderSymbolItems(symbol.records);
+        const symbolItems = this.renderSymbolItems(layer.id, symbol.id, Object.values(symbol.records));
         return `
             <div class="symbol-entry minimized">
                 <div class="symbol-header">
                     <span>
                         ${symbol.svg}
-                        ${symbol.title} (${symbol.records.length})
+                        ${symbol.title} (${Object.keys(symbol.records).length})
                     </span>
                     <span>
                         <i class="fa show-symbol fa-eye"
@@ -66,9 +66,12 @@ class Legend {
             </div>`;
     }
 
-    renderSymbolItems (records) {
+    renderSymbolItems (layerID, symbolID, records) {
         return records.map(
-            rec => `<div data-record-id="${rec.id}" class="symbol-item">${rec.name}</div>`
+            rec => `<div class="symbol-item" 
+                data-layer-id="${layerID}"
+                data-symbol-id="${symbolID}"
+                data-record-id="${rec.id}">${rec.name}</div>`
         ).join('');
     }
 
@@ -128,9 +131,21 @@ class Legend {
     }
 
     showItem (ev) {
+        const elem = ev.currentTarget;
         this.broadcastEvent('show-item', ev, {
-            recordID: parseInt(ev.currentTarget.getAttribute('data-record-id'))
+            layerID: parseInt(elem.getAttribute('data-layer-id')),
+            symbolID: parseInt(elem.getAttribute('data-symbol-id')),
+            recordID: parseInt(elem.getAttribute('data-record-id'))
         });
+        this.removeClass('.symbol-item', 'selected')
+        elem.classList.add('selected');
+    }
+
+    removeClass(selector, className) {
+        const elements = document.querySelectorAll(selector);
+        for (const el of elements) {
+            el.classList.remove(className);
+        }
     }
 
     attachListener (selector, eventName, listener) {
