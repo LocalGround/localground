@@ -6,7 +6,6 @@ let mapData;
 
 const init = (mapJSON) => {
     mapData = mapJSON;
-    console.log(mapData);
     drawMap();
     renderData();
     document.addEventListener("toggle-layer-visibility", toggleLayerVisibility);
@@ -36,6 +35,16 @@ const showCardByEvent = ev => {
     const symbol = layer[ev.detail.symbolID];
     const marker = symbol[ev.detail.recordID];
     showCard(marker);
+
+    // this is a hack. Not sure why timeout is necessary:
+    setTimeout(() => {
+        L.popup()
+        .setLatLng(marker.getLatLng())
+        .setContent(marker.item.name)
+        .openOn(map)
+    }, 10);
+    
+    ev.stopPropagation();
 };
 
 const showCard = marker => {
