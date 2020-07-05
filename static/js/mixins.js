@@ -19,11 +19,11 @@ const mixins = {
         if (typeof selector === 'string') {
             const elements = document.querySelectorAll(selector);
             for (const el of elements) {
-                el.addEventListener(eventName, listener);
+                el.addEventListener(eventName, listener, false);
             }
         } else {
             const el = selector;
-            el.addEventListener(eventName, listener);
+            el.addEventListener(eventName, listener, false);
         }
     },
 

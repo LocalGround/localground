@@ -1,11 +1,11 @@
 class Legend {
-    layerData;
-
+    collection;
+    el;
     constructor (map, layerObj) {
         // add mixins:
         Object.assign(this, mixins);
 
-        this.layerData = Object.values(layerObj);
+        this.collection = Object.values(layerObj);
 
         // init legend:
         const legend = L.control({position: 'topright'});
@@ -16,22 +16,22 @@ class Legend {
 
     }
 
-
     addLegendContainer () {
-        const legendEl = L.DomUtil.create('div', 'legend minimized');
-        L.DomEvent.on(legendEl, 'mousewheel', L.DomEvent.stopPropagation);
+        this.el = L.DomUtil.create('div', 'legend minimized');
+        L.DomEvent.on(this.el, 'mousewheel', L.DomEvent.stopPropagation);
         
-        legendEl.innerHTML = `
+        this.el.innerHTML = `
             <h2> Legend <i class="fas fa-chevron-down toggle-legend"></i></h2>
             <section class="layer-list"></section>
         `;
-        return legendEl;
+        return this.el;
     }
 
     renderLegend () {
-        this.layerData.forEach( layerModel => {
-            const layerItem = new LayerItem(layerModel);
-            layerItem.addToDOM('.layer-list');
+        const parentEl = this.el.querySelector('.layer-list');
+        this.collection.forEach( layerModel => {
+            const layerItem = new LayerItem(layerModel, parentEl);
+            layerItem.addToDOM();
         });
     }
 
@@ -52,34 +52,47 @@ class Legend {
 }
 
 class LayerItem {
-    layerModel;
-    constructor (layerObj) {
+    model;
+    el;
+    parentEl;
+    constructor (layerObj, parentElement) {
         // add mixins:
         Object.assign(this, mixins);
-        this.layerModel = layerObj;
+        this.model = layerObj;
+        this.parentEl = parentElement;
+
+        this.el = this.renderElement();
     }
 
-    addToDOM (selector) {
-        const layer = this.layerModel;
+    renderElement () {
+        const layer = this.model;
         const checked = layer.isShowing ? 'checked' : '';
-        document.querySelector(selector).innerHTML = `
-            <div class="layer-header">
-                <input type="checkbox" data-layer-id="${layer.id}" ${checked} />
-                <i class="fa collapse fa-angle-right"></i>
-                <span class="layer-title">${layer.title}</span>
+        return this.createElementFromHTML(`
+            <div>
+                <div class="layer-header">
+                    <input type="checkbox" data-layer-id="${layer.id}" ${checked} />
+                    <i class="fa collapse fa-angle-right"></i>
+                    <span class="layer-title">${layer.title}</span>
+                </div>
+                <div class="symbol-container"></div>
             </div>
-            <div class="symbol-container"></div>
-        `;
-        
+        `);
+    }
+
+    addToDOM () {
+        this.parentEl.appendChild(this.el);
+
+        // add marker listings:
+        const layer = this.model;
         const symbols = Object.values(layer.symbols);
+        const parentEl = this.el.querySelector('.symbol-container');
         symbols.forEach( symbolModel => {
             symbolModel.layerID = layer.id;
-            const symbolItem = new SymbolItem(symbolModel);
-            symbolItem.addToDOM('.symbol-container');
+            const symbolItem = new SymbolItem(symbolModel, parentEl);
+            symbolItem.addToDOM();
         });
         this.addEventHandlers();
     }
-
 
     toggleSymbolDetail (ev) {
         const parent = ev.currentTarget.parentElement;
@@ -108,21 +121,22 @@ class LayerItem {
 }
 
 class SymbolItem {
-    symbolModel
+    model
     el;
-    constructor (symbolObj) {
+    parentEl;
+    constructor (symbolObj, parentElement) {
         // add mixins:
         Object.assign(this, mixins);
-        this.symbolModel = symbolObj;
+        this.model = symbolObj;
         this.el = this.renderElement();
+        this.parentEl = parentElement;
     }
 
     renderElement () {
-        const layerID = this.symbolModel.layerID;
-        const symbol = this.symbolModel;
+        const layerID = this.model.layerID;
+        const symbol = this.model;
         const headerClass = symbol.isShowing ? '' : 'hidden';
         const iconClass = symbol.isShowing ? 'fa-eye' : 'fa-eye-slash';
-        const symbolItems = this.renderSymbolItems(layerID, symbol.id, Object.values(symbol.records));
         
         return this.createElementFromHTML(`
             <div class="symbol-entry minimized ${headerClass}">
@@ -137,53 +151,92 @@ class SymbolItem {
                             data-layer-id="${layerID}"></i>
                     </span>
                 </div>
-                ${symbolItems}
+                <div class="symbol-items"></div>
             </div>`);
     }
 
-    addToDOM (selector) {
-        const container = document.querySelector(selector);
-        container.appendChild(this.el);
+    addToDOM () {
+        this.parentEl.appendChild(this.el);
         this.addEventHandlers();
+
+        // add individual marker listings:
+        this.addMarkerListingsToDOM();
+        
     }
 
-    renderSymbolItems (layerID, symbolID, records) {
-        return records.map(
-            rec => `<div class="symbol-item" 
-                data-layer-id="${layerID}"
-                data-symbol-id="${symbolID}"
-                data-record-id="${rec.id}">${rec.name}</div>`
-        ).join('');
+    addMarkerListingsToDOM () {
+        const records = Object.values(this.model.records);
+        const symbolID = this.model.id;
+        const layerID = this.model.layerID;
+        const container = this.el.querySelector('.symbol-items');
+        records.forEach( recordModel => {
+            const item = new Item(recordModel, container, symbolID, layerID);
+            item.addToDOM();
+        });
     }
 
     toggleSymbolVisibility (ev) {
         const container = this.el;
         const i = this.el.querySelector('.show-symbol');
-        console.log(i, container);
         i.classList.toggle('fa-eye');
         i.classList.toggle('fa-eye-slash');
         container.classList.toggle('hidden');
         this.broadcastEvent('toggle-symbol-visibility', ev, {
-            layerID: this.symbolModel.layerID,
-            symbolID: this.symbolModel.id,
+            layerID: this.model.layerID,
+            symbolID: this.model.id,
             show: i.classList.contains('fa-eye')
         });
     }
 
+    addEventHandlers () {
+        const elem = this.el.querySelector('.show-symbol');
+        elem.addEventListener('click', this.toggleSymbolVisibility.bind(this), false);
+    }
+}
+
+
+class Item {
+    model
+    el;
+    parentEl;
+    symbolID;
+    layerID;
+    constructor (recordObj, parentElement, symbolID, layerID) {
+        // add mixins:
+        Object.assign(this, mixins);
+
+        this.model = recordObj;
+        this.parentEl = parentElement;
+        this.symbolID = symbolID;
+        this.layerID = layerID;
+
+        this.el = this.renderElement();
+    }
+
+    renderElement () {
+        return this.createElementFromHTML(`
+            <div class="symbol-item">${this.model.name}</div>`);
+    }
+
+    addToDOM () {
+        // const container = document.querySelector(selector);
+        this.parentEl.appendChild(this.el);
+        this.addEventHandlers();
+    }
+
     showItem (ev) {
         const elem = ev.currentTarget;
-        this.broadcastEvent('show-item', ev, {
-            layerID: parseInt(elem.getAttribute('data-layer-id')),
-            symbolID: parseInt(elem.getAttribute('data-symbol-id')),
-            recordID: parseInt(elem.getAttribute('data-record-id'))
-        });
+        const data = {
+            layerID: this.layerID,
+            symbolID: this.symbolID,
+            recordID: this.model.id
+        };
+        this.broadcastEvent('show-item', ev, data);
         this.removeClass('.symbol-item', 'selected')
         elem.classList.add('selected');
     }
 
     addEventHandlers () {
-        const elem = this.el.querySelector('.show-symbol');
-        elem.addEventListener('click', this.toggleSymbolVisibility.bind(this));
-        this.attachListener('.legend .symbol-item', 'click', this.showItem.bind(this));
+        this.el.addEventListener('click', this.showItem.bind(this));
     }
 }
