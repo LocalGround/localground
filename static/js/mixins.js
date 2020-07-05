@@ -16,9 +16,20 @@ const mixins = {
     },
 
     attachListener: (selector, eventName, listener) => {
-        const elements = document.querySelectorAll(selector);
-        for (const el of elements) {
+        if (typeof selector === 'string') {
+            const elements = document.querySelectorAll(selector);
+            for (const el of elements) {
+                el.addEventListener(eventName, listener);
+            }
+        } else {
+            const el = selector;
             el.addEventListener(eventName, listener);
         }
+    },
+
+    createElementFromHTML: (htmlString) => {
+        const div = document.createElement('div');
+        div.innerHTML = htmlString.trim();
+        return div.firstChild; 
     }
 }
