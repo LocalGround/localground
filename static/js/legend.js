@@ -2,6 +2,10 @@ class Legend {
     layerData;
 
     constructor (map, layerObj) {
+        // add mixins:
+        Object.assign(this, mixins);
+        console.log(this);
+
         this.layerData = Object.values(layerObj);
 
         // init legend:
@@ -36,10 +40,10 @@ class Legend {
         const symbols = Object.values(layer.symbols).map(
             symbol => this.renderSymbol(layer, symbol)
         ).join('');
-
+        const checked = layer.isShowing ? 'checked' : '';
         return `
             <div class="layer-header">
-                <input type="checkbox" data-layer-id="${layer.id}" checked />
+                <input type="checkbox" data-layer-id="${layer.id}" ${checked} />
                 <i class="fa collapse fa-angle-right"></i>
                 <span class="layer-title">${layer.title}</span>
             </div>
@@ -49,15 +53,18 @@ class Legend {
 
     renderSymbol (layer, symbol) {
         const symbolItems = this.renderSymbolItems(layer.id, symbol.id, Object.values(symbol.records));
+        const headerClass = symbol.isShowing ? '' : 'hidden';
+        const iconClass = symbol.isShowing ? 'fa-eye' : 'fa-eye-slash';
+
         return `
-            <div class="symbol-entry minimized">
+            <div class="symbol-entry minimized ${headerClass}">
                 <div class="symbol-header">
                     <span>
                         ${symbol.svg}
                         ${symbol.title} (${Object.keys(symbol.records).length})
                     </span>
                     <span>
-                        <i class="fa show-symbol fa-eye"
+                        <i class="fa show-symbol ${iconClass}"
                             data-symbol-id="${symbol.id}" 
                             data-layer-id="${layer.id}"></i>
                     </span>
@@ -86,7 +93,8 @@ class Legend {
     }
 
     toggleSymbolDetail (ev) {
-        const toggler = ev.currentTarget;
+        const parent = ev.currentTarget.parentElement;
+        const toggler = parent.querySelector('.collapse');
         toggler.classList.toggle('fa-angle-right')
         toggler.classList.toggle('fa-angle-down');
         const symbolEntries = toggler.parentElement.nextElementSibling.querySelectorAll('.symbol-entry');
@@ -102,18 +110,11 @@ class Legend {
         });
     }
 
-    broadcastEvent(name, ev, data) {
-        const customEvent = new CustomEvent(name, {
-            bubbles: true,
-            detail: data
-        });
-        ev.currentTarget.dispatchEvent(customEvent);
-    }
-
     toggleLayerVisibility (ev) {
+        const isChecked = ev.currentTarget.checked;
         this.broadcastEvent('toggle-layer-visibility', ev, {
             layerID: parseInt(ev.currentTarget.getAttribute('data-layer-id')),
-            show: ev.currentTarget.checked
+            show: isChecked
         })
     }
 
@@ -141,27 +142,13 @@ class Legend {
         elem.classList.add('selected');
     }
 
-    removeClass(selector, className) {
-        const elements = document.querySelectorAll(selector);
-        for (const el of elements) {
-            el.classList.remove(className);
-        }
-    }
-
-    attachListener (selector, eventName, listener) {
-        const elements = document.querySelectorAll(selector);
-        for (const el of elements) {
-            el.addEventListener(eventName, listener.bind(this));
-        }
-    }
-
     addEventHandlers () {
         this.attachListener('.legend h2', 'click', this.toggleLegendVisibility);
         this.attachListener('.legend', 'dblclick', ev => ev.stopPropagation());
-        this.attachListener('.legend .collapse', 'click', this.toggleSymbolDetail);
-        this.attachListener('.legend .layer-header input', 'change', this.toggleLayerVisibility);
-        this.attachListener('.legend .show-symbol', 'click', this.toggleSymbolVisibility);
-        this.attachListener('.legend .symbol-item', 'click', this.showItem);
+        this.attachListener('.legend .collapse, .legend .layer-title', 'click', this.toggleSymbolDetail.bind(this));
+        this.attachListener('.legend .layer-header input', 'change', this.toggleLayerVisibility.bind(this));
+        this.attachListener('.legend .show-symbol', 'click', this.toggleSymbolVisibility.bind(this));
+        this.attachListener('.legend .symbol-item', 'click', this.showItem.bind(this));
     }
     
 }

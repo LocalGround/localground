@@ -2,6 +2,8 @@
     width: 250px;
     background: rgba(255, 255, 255, 0.9);
     padding: 5px;
+    border-radius: 6px;
+    border: solid 2px rgba(0, 0, 0, 0.1);
     // transition-property: all;
     // transition-duration: 0.4s;
 
@@ -18,12 +20,14 @@
         .collapse {
             justify-self: center;
             font-size: 1.2em;
+            cursor: pointer;
         }
     }
    
     .layer-title {
         font-weight: 500;
         font-size: 1.1em;
+        cursor: pointer;
     }
 
     .symbol-container {
@@ -102,8 +106,8 @@
 
     svg {
         // transform: scale(0.5);
-        // max-height: 25px;
-        max-width: 25px;
+        max-height: 25px;
+        max-width: 18px;
         vertical-align: middle;
         margin-right: 3px;
     }
@@ -121,7 +125,7 @@
         font-family: "Open Sans", sans-serif;
         color: #222;
         font-size: 1.3em;
-        line-height: 30px;
+        line-height: 27px;
         font-weight: 600;
     }
     .toggle-legend {

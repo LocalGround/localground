@@ -13,9 +13,17 @@ import random
 class LayerSerializerPublic(BaseSerializer):
     dataset = serializers.SerializerMethodField(read_only=True)
     symbols = serializers.SerializerMethodField(read_only=True)
+    isShowing = serializers.SerializerMethodField(read_only=True)
 
     def get_dataset(self, obj):
         return 'dataset_{0}'.format(obj.dataset.id)
+    
+    def get_isShowing(self, obj):
+        isShowing = 0
+        for s in obj.symbols:
+            symbol = models.Symbol(**s)
+            isShowing += symbol.isShowing
+        return isShowing
 
     def get_symbols(self, obj):
         serializer = create_dynamic_serializer(obj.dataset)
@@ -42,7 +50,7 @@ class LayerSerializerPublic(BaseSerializer):
     
     class Meta:
         model = models.Layer
-        fields = BaseSerializer.field_list + ('title', 'dataset', 'symbols')
+        fields = BaseSerializer.field_list + ('title', 'dataset', 'symbols', 'isShowing')
         depth = 0
 
 class MapSerializerPublic(MapSerializerList):

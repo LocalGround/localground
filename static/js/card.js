@@ -1,115 +1,79 @@
+class Card {
+    item;
+    cardHTML;
+    selector;
+    
+    constructor (item) {
+        this.item = item;
 
-const getPropertiesTable = (item) => {
-    const rows = [];
-    for (const key in item.fields) {
-        const field = item.fields[key];
-        if (['name', 'description'].find(item => {
-            return item === field.key;
-        })) { continue; }
-        rows.push(`
-            <tr>
-                <td>${field.col_alias}</td>
-                <td>${item[field.key]}</td>
-            </tr>`
-        );
-    }  
-    return `
-        <table>
-            ${rows.join('')}
-        </table>
-    `;
-};
-
-const getPhotos = (item) => {
-    const images = [];
-    for (const photo of item.photos) {
-        images.push(`<div class="card"><img src="${photo.path_large}" /></div>`) 
+        // add mixins:
+        Object.assign(this, mixins);
     }
-    //return `<section class="carousel">${images.join('')}</section>`;
-    return `<section class="carousel">${images[0]}</section>`;
-};
-const generateCard = (item) => {
-    const properties = getPropertiesTable(item);
-    const photos = getPhotos(item);
-     
-    return `<div class="card">
-        <div class="desktop">
-            <a class="less" href="#">x</a>
-            <h2>${item.name}</h2>
-            <p>${item.description.replace(/(?:\r\n|\r|\n)/g, '<br>')}</p>
-            ${photos}
-            ${properties}
-        </div>
-        <div class="mobile">
-            <h2>${item.name}</h2>
-            <a class="more" href="#"><i class="fas fa-expand"></i></a>
-        </div>
-   </div>`;
 
+    addCardToDOM (selector) {
+        this.selector = selector;
+        const item = this.item;
+        const properties = this.getPropertiesTable(item);
+        const photos = this.getPhotos(item);
+        document.querySelector(selector).innerHTML = `<div class="card">
+            <div class="desktop">
+                <a class="less" href="#">x</a>
+                <h2>${item.name}</h2>
+                <p>${item.description.replace(/(?:\r\n|\r|\n)/g, '<br>')}</p>
+                ${photos}
+                ${properties}
+            </div>
+            <div class="mobile">
+                <h2>${item.name}</h2>
+                <a class="more" href="#"><i class="fas fa-expand"></i></a>
+            </div>
+        </div>`;
 
-
-
-
-
-    let paragraphs = '';
-    if (map.paragraphs.length > 1) {
-        for (para of map.paragraphs.slice(1)) {
-            paragraphs += `<p>${para}</p>`;
-        }
+        // add event handlers to card:
+        document.querySelector('.mobile .more').onclick = this.showFullscreen.bind(this);
+        document.querySelector('.mobile h2').onclick = this.showFullscreen.bind(this);
+        document.querySelector('.less').onclick = this.minimize.bind(this);
     }
-    let placeInfo = '';
-    let geom = '';
-    if (map.location) {
-        let locale = '';
-        if (map.location.city) {
-            locale += map.location.city + ', ';
-        }
-        if (map.location.state) {
-            locale += map.location.state + ', ';
-        }
-        if (map.location.country) {
-            locale += map.location.country;
-        }
-        if (map.location.geometry && map.location.geometry.lng && map.location.geometry.lat) {
-            let lat = parseFloat(map.location.geometry.lat);
-            let lng = parseFloat( map.location.geometry.lng)
-            geom = '(' + lat.toFixed(3) + ', ' + lng.toFixed(3) + ')';
-        }
-        placeInfo = `
+
+    getPropertiesTable (item) {
+        const rows = [];
+        for (const key in item.fields) {
+            const field = item.fields[key];
+            if (['name', 'description'].find(item => {
+                return item === field.key;
+            })) { continue; }
+            rows.push(`
+                <tr>
+                    <td>${field.col_alias}</td>
+                    <td>${item[field.key]}</td>
+                </tr>`
+            );
+        }  
+        return `
             <table>
-                <tr>
-                    <th>Original:</th>
-                    <td>${map.place}</td>
-                </tr>
-                <tr>
-                    <th>Geocoded:</th>
-                    <td>${locale}</td>
-                </tr>
-                <tr>
-                    <th>Coordinates</th>
-                    <td>
-                        <i class="fas fa-map-marker-alt"></i> 
-                        ${geom}
-                    </td>
-                </tr>
+                ${rows.join('')}
             </table>
         `;
     }
-    return `<div class="card">
-        <div class="desktop">
-            <a class="less" href="#">x</a>
-            <h2>${map.header}</h2>
-            <p>${map.paragraphs[0]}</p>
-            <img src="${map.image_source}" />
-            ${paragraphs}
-            <p><strong>${map.footer}</strong></p>
-            ${placeInfo}
-            <span class="tag">${map.tags.join('</span><span class="tag">')}</span>
-        </div>
-        <div class="mobile">
-            <h2>${map.header}</h2>
-            <a class="more" href="#"><i class="fas fa-expand"></i></a>
-        </div>
-   </div>`;
-};
+
+    getPhotos (item) {
+        const images = [];
+        for (const photo of item.photos) {
+            images.push(`<div class="card"><img src="${photo.path_large}" /></div>`) 
+        }
+        //return `<section class="carousel">${images.join('')}</section>`;
+        return `<section class="carousel">${images[0]}</section>`;
+    }
+
+    showFullscreen (ev) {
+        document.querySelector('#card-holder').classList.add('fullscreen');
+        this.broadcastEvent('refactor-map-bounds', ev, null);
+    }
+
+    minimize (ev) {
+        document.querySelector('#card-holder').classList.remove('fullscreen');
+        this.broadcastEvent('refactor-map-bounds', ev, null);
+    }
+
+}
 

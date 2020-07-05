@@ -316,6 +316,8 @@ input#search-bar:focus:-ms-placeholder {
   width: 250px;
   background: rgba(255, 255, 255, 0.9);
   padding: 5px;
+  border-radius: 6px;
+  border: solid 2px rgba(0, 0, 0, 0.1);
 }
 
 .legend section {
@@ -339,11 +341,13 @@ input#search-bar:focus:-ms-placeholder {
   -ms-grid-column-align: center;
       justify-self: center;
   font-size: 1.2em;
+  cursor: pointer;
 }
 
 .legend .layer-title {
   font-weight: 500;
   font-size: 1.1em;
+  cursor: pointer;
 }
 
 .legend .symbol-container {
@@ -428,7 +432,8 @@ input#search-bar:focus:-ms-placeholder {
 }
 
 .legend svg {
-  max-width: 25px;
+  max-height: 25px;
+  max-width: 18px;
   vertical-align: middle;
   margin-right: 3px;
 }
@@ -446,7 +451,7 @@ input#search-bar:focus:-ms-placeholder {
   font-family: "Open Sans", sans-serif;
   color: #222;
   font-size: 1.3em;
-  line-height: 30px;
+  line-height: 27px;
   font-weight: 600;
 }
 
