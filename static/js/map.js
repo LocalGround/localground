@@ -7,6 +7,8 @@ class Map {
 
     constructor (mapJSON) {
         this.mapData = mapJSON;
+        this.model = new MapModel(mapJSON);
+        this.model.observers.push(this);
         this.drawMap();
         this.renderData();
         this.addEventListeners();
@@ -17,6 +19,9 @@ class Map {
         document.addEventListener("toggle-symbol-visibility", this.toggleSymbolVisibility.bind(this));
         document.addEventListener("show-item", this.showCardByEvent.bind(this));
         document.addEventListener("refactor-map-bounds", this.map.invalidateSize.bind(this));
+    }
+    update (model) {
+        document.querySelector('header h1').innerHTML = model.name;
     }
 
     toggleLayerVisibility (ev) {
@@ -103,7 +108,7 @@ class Map {
 
     drawMap () {	
     
-        document.querySelector('header h1').innerHTML = this.mapData.name;
+        document.querySelector('header h1').innerHTML = this.model.name;
         //Stamen Toner tiles attribution and URL
         const tilesets = {
             'toner-lite': {

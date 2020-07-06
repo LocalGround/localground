@@ -53,18 +53,23 @@ class Legend {
 
 class LayerItem {
     model;
+    layerModel;
     el;
     parentEl;
     constructor (layerObj, parentElement) {
         // add mixins:
         Object.assign(this, mixins);
-        this.model = layerObj;
+
+        this.model = new LayerModel(layerObj);
+        this.model.registerObserver(this);
+        
+        this.el = this.renderElement();
         this.parentEl = parentElement;
 
-        this.el = this.renderElement();
     }
 
     renderElement () {
+        console.log('rerendering!!!');
         const layer = this.model;
         const checked = layer.isShowing ? 'checked' : '';
         return this.createElementFromHTML(`
@@ -77,6 +82,11 @@ class LayerItem {
                 <div class="symbol-container"></div>
             </div>
         `);
+    }
+
+    update() {
+        console.log('re-rendering');
+        this.parentEl.innerHTML = this.renderElement().innerHTML;
     }
 
     addToDOM () {
@@ -107,11 +117,13 @@ class LayerItem {
     }
 
     toggleLayerVisibility (ev) {
-        const isChecked = ev.currentTarget.checked;
-        this.broadcastEvent('toggle-layer-visibility', ev, {
-            layerID: parseInt(ev.currentTarget.getAttribute('data-layer-id')),
-            show: isChecked
-        })
+        this.model.isVisible = ev.currentTarget.checked;
+        this.model.notifyAll();
+        // const isChecked = ev.currentTarget.checked;
+        // this.broadcastEvent('toggle-layer-visibility', ev, {
+        //     layerID: parseInt(ev.currentTarget.getAttribute('data-layer-id')),
+        //     show: isChecked
+        // })
     }
 
     addEventHandlers () {
