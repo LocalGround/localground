@@ -2,7 +2,7 @@ class Card {
     item;
     cardHTML;
     selector;
-    
+
     constructor (item) {
         this.item = item;
 
@@ -67,12 +67,12 @@ class Card {
 
     showFullscreen (ev) {
         document.querySelector('#card-holder').classList.add('fullscreen');
-        this.broadcastEvent('refactor-map-bounds', ev, null);
+        this.broadcastEvent('refactor-map-bounds', ev.currentTarget, null);
     }
 
     minimize (ev) {
         document.querySelector('#card-holder').classList.remove('fullscreen');
-        this.broadcastEvent('refactor-map-bounds', ev, null);
+        this.broadcastEvent('refactor-map-bounds', ev.currentTarget, null);
     }
 
 }

@@ -1,11 +1,11 @@
 const mixins = {
 
-    broadcastEvent: (name, ev, data) => {
+    broadcastEvent: (name, srcElement, data) => {
         const customEvent = new CustomEvent(name, {
             bubbles: true,
             detail: data
         });
-        ev.currentTarget.dispatchEvent(customEvent);
+        srcElement.dispatchEvent(customEvent);
     },
 
     removeClass: (selector, className) => {

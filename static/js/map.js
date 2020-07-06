@@ -4,8 +4,11 @@ class Map {
     map;
     oms;
     mapData;
+    childViews = [];
 
     constructor (mapJSON) {
+        Object.assign(this, mixins);
+
         this.mapData = mapJSON;
         this.model = new MapModel(mapJSON);
         // this.model.observers.push(this);
@@ -15,95 +18,49 @@ class Map {
     }
 
     addEventListeners () {
-        document.addEventListener("toggle-layer-visibility", this.toggleLayerVisibility.bind(this));
-        document.addEventListener("toggle-symbol-visibility", this.toggleSymbolVisibility.bind(this));
-        document.addEventListener("show-item", this.showCardByEvent.bind(this));
+        // document.addEventListener("toggle-layer-visibility", this.toggleLayerVisibility.bind(this));
+        // document.addEventListener("toggle-symbol-visibility", this.toggleSymbolVisibility.bind(this));
+        document.addEventListener("set-active-record", this.setActiveRecord.bind(this));
         document.addEventListener("refactor-map-bounds", this.map.invalidateSize.bind(this));
     }
-    // update (model) {
-    //     document.querySelector('header h1').innerHTML = model.name;
-    // }
 
-    toggleLayerVisibility (ev) {
-        if (ev.detail.show) {
-            this.showMarkerByLayerID(ev.detail.layerID);
-        } else {
-            this.hideMarkerByLayerID(ev.detail.layerID);
+    setActiveRecord (ev) {
+        // const item = marker.item;
+        // this.model.photos = [];
+        // if (this.model.attached_photos_videos) {
+        //     for (const media of this.model.attached_photos_videos) {
+        //         if (media.overlay_type === 'photo') {
+        //             const photo = this.model.media.photos[media.id];
+        //             this.model.photos.push(photo);
+        //         }
+        //     }
+        // }
+        if (this.selectedRecord) {
+            this.selectedRecord.setIsActive(false);
         }
-    }
-
-    toggleSymbolVisibility (ev) {
-        const symbol = this.markerLayers[ev.detail.layerID][ev.detail.symbolID];
-        if (ev.detail.show) {
-            this.showMarkerBySymbol(symbol);
-        } else {
-            this.hideMarkerBySymbol(symbol);
-        }
-    }
-
-
-    hideMarkerByLayerID (id) {
-        for (const key in this.markerLayers[id]) {
-            this.hideMarkerBySymbol(this.markerLayers[id][key]);
-        }
-    }
-    
-    hideMarkerBySymbol (symbolLayer) {
-        for (const mapMarker of Object.values(symbolLayer)) {
-            this.map.removeLayer(mapMarker);
-        }
-    }
-    showMarkerByLayerID (id) {
-        for (const key in this.markerLayers[id]) {
-            this.showMarkerBySymbol(this.markerLayers[id][key]);
-        }
-    }
-
-    showMarkerBySymbol (symbolLayer) {
-        for (const mapMarker of Object.values(symbolLayer)) {
-            mapMarker.addTo(this.map);
-        }
-    }
-
-    showCardByEvent (ev) {
-        const layer = this.markerLayers[ev.detail.layerID];
-        const symbol = layer[ev.detail.symbolID];
-        const marker = symbol[ev.detail.recordID];
-        this.showCard(marker);
-
-        // this is a hack. Not sure why timeout is necessary:
-        setTimeout((() => {
-            L.popup()
-            .setLatLng(marker.getLatLng())
-            .setContent(marker.item.name)
-            .openOn(this.map)
-        }).bind(this), 10);
-
-        ev.stopPropagation();
-    }
-
-    showCard (marker) {
-        const item = marker.item;
-        item.photos = [];
-        if (item.attached_photos_videos) {
-            for (const media of item.attached_photos_videos) {
-                if (media.overlay_type === 'photo') {
-                    const photo = this.mapData.media.photos[media.id];
-                    item.photos.push(photo);
-                }
-            }
-        }
-        const latLng = marker.getLatLng();
+        this.selectedRecord = ev.detail.recordModel;
+        this.selectedRecord.setIsActive(true);
+        const latLng = this.selectedRecord.getLatLng();
         setTimeout((() => { 
             this.map.invalidateSize()
             this.map.setView(latLng); 
         }).bind(this), 10);
 
         // Card right-hand side:
-        const card = new Card(item);
+        this.selectedRecord.photos = [];
+        const card = new Card(this.selectedRecord);
         document.querySelector('main').classList.add('with-card');
         card.addCardToDOM('#card-holder')
-        // document.querySelector('#card-holder').innerHTML = card.cardHTML
+
+        // Trigger popup:
+        if (ev.detail.triggerPopup) {
+            setTimeout((() => {
+                L.popup()
+                .setLatLng(latLng)
+                .setContent(this.selectedRecord.name)
+                .openOn(this.map)
+            }).bind(this), 10);
+        }
     };
 
     drawMap () {	
@@ -144,12 +101,18 @@ class Map {
 
         // Add marker clustering control: 
         this.oms = new OverlappingMarkerSpiderfier(this.map);
-        this.oms.addListener('click', this.showCard.bind(this));
+        this.oms.addListener('click', (marker => {
+            this.broadcastEvent('set-active-record', document, {
+                recordModel: marker.model,
+                triggerPopup: true
+            });
+        }).bind(this));
         
         // hide popup if it's a spiderify click:
         this.oms.addListener('spiderfy', (() => {
             this.map.closePopup()
         }).bind(this));
+        this.map.oms = this.oms;
 
         // var imageUrl = 'http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg',
         // imageBounds = [[40.712216, -74.22655], [40.773941, -74.12544]];
@@ -170,65 +133,92 @@ class Map {
         this.map.invalidateSize();
 
         // clear out old map markers if needed:
-        for (const key in this.markerLayers) {
-            hideMarkerByLayerID(key);
-        }
+        // for (const key in this.markerLayers) {
+        //     hideMarkerByLayerID(key);
+        // }
 
-        for (const layerID in this.mapData.layers) {
-            const layer = this.mapData.layers[layerID];
-            this.markerLayers[layer.id] = {}
-            const key = layer.dataset;
-            // const dataset = this.mapData.datasets[key].data;
-            const fields = this.mapData.datasets[key].fields;
-            // const symbol = layer.symbols[0];
-            for (const symbolID in layer.symbols) {
-                const symbol = layer.symbols[symbolID];
-                const mapMarkers = this.renderMarkers(layer, fields, symbol);
-                this.markerLayers[layer.id][symbol.id] = mapMarkers;
+        // for (const layerID in this.mapData.layers) {
+        //     const layer = this.mapData.layers[layerID];
+        //     this.markerLayers[layer.id] = {}
+        //     const key = layer.dataset;
+        //     // const dataset = this.mapData.datasets[key].data;
+        //     const fields = this.mapData.datasets[key].fields;
+        //     // const symbol = layer.symbols[0];
+        //     for (const symbolID in layer.symbols) {
+        //         const symbol = layer.symbols[symbolID];
+        //         const mapMarkers = this.renderMarkers(layer, fields, symbol);
+        //         this.markerLayers[layer.id][symbol.id] = mapMarkers;
+        //     }
+        // }
+
+        for (const layerModel of this.model.layers) {
+            for (const symbolModel of layerModel.symbols) {
+                const symbolView = new SymbolMarkerView(this.map, symbolModel);
+                this.childViews.push(symbolView);
             }
         }
 
         // add legend: 
-        console.log(this.model);
         this.legend = new LegendView(this.map, this.model);
     };
+  
+}
 
-    renderMarkers (layer, fields, symbol) {
-        const mapMarkers = {};
-        // this.markerLayers[layer.id] = mapMarkers;
-        for (const recordID in symbol.records) {
-            const item = symbol.records[recordID];
+class SymbolMarkerView {
+    constructor (map, symbolModel) {
+        this.map = map;
+        this.model = symbolModel;
+        this.model.registerObserver(this);
+        this.childViews = [];
 
-            if (!item.geometry) {
-                continue;
-            }
-            item.fields = fields;
-            
-            item.icon = L.icon({
-                iconUrl: encodeURI("data:image/svg+xml," + symbol.svg).replace(/#/g,'%23'),
-                iconSize: symbol.iconSize,
-                iconAnchor: symbol.iconAnchor,
-                popupAnchor: symbol.popupAnchor
-            });
-            const lng = item.geometry.coordinates[0];
-            const lat = item.geometry.coordinates[1];
-            const marker = L.marker([lat, lng], item);
-            if (symbol.isShowing) {
-                marker.addTo(this.map);
-            }
-            this.attachPopup(marker, item);
-            marker.item = item;
-            mapMarkers[item.id] = marker;
-            this.oms.addMarker(marker);
+        for (const recordModel of this.model.records) {
+            const markerView = new MarkerView(this.map, recordModel);
+            this.childViews.push(markerView);
         }
-        return mapMarkers;
     }
 
-    attachPopup (marker, item) {
-        marker.bindPopup(item.name)
-        /*const thumbURL = getThumbnail(item);
+    update () {
+
+    }
+}
+
+class MarkerView {
+    constructor (map, recordModel) {
+        this.map = map;
+        this.oms = this.map.oms;
+        this.model = recordModel;
+        this.model.registerObserver(this);
+
+        this.renderMarker();
+    }
+
+    renderMarker () {
+        this.marker = L.marker(this.model.getLatLng(), {
+            icon: this.model.getIcon()
+        });
+        this.marker.model = this.model;
+        this.marker.bindPopup(this.getPopupHTML())
+        if (this.model.symbolModel.isShowing) {
+            this.marker.addTo(this.map);
+        }
+        this.oms.addMarker(this.marker);
+    }
+
+    update () {
+        // console.log('Updating Record:', this.model.id);
+        if (!this.marker) { return; }
+        if (!this.model.isShowing()) {
+            this.map.removeLayer(this.marker);
+        } else {
+            this.marker.addTo(this.map);
+        }
+    }
+
+    getPopupHTML () {
+        /*
+        const thumbURL = getThumbnail(item);
         if (thumbURL) {
-            marker.bindPopup(`
+            return `
                 <div class='popup-section'>
                     <img src="${thumbURL}" />
                     <p class="fade">
@@ -237,9 +227,9 @@ class Map {
                         ${item.description}
                     </p>
                 </div>`
-            );
-        } else {
-            marker.bindPopup(item.name)
+            `;
         }*/
+        return this.model.name;
+        
     };
 }

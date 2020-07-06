@@ -22,7 +22,7 @@ class LegendView {
     }
 
     update () {
-        console.log('Legend: update called...');
+        // console.log('Legend: update called...');
         this.el.querySelector('.toggle-legend').className = this.getToggleClass();
         this.el.className = this.getLegendClass();
     }
@@ -59,7 +59,6 @@ class LegendView {
     }
 
     toggleLegendVisibility (ev) {
-        console.log('Legend > toggleLegendVisibility');
         this.model.legendIsMinimized = !this.model.legendIsMinimized;
         this.model.notifyAll();
         ev.preventDefault();
@@ -92,7 +91,6 @@ class LayerItemView {
     }
 
     renderElement () {
-        console.log('rerendering!!!');
         const layer = this.model;
         const checked = layer.isShowing ? 'checked' : '';
         return this.createElementFromHTML(`
@@ -116,7 +114,6 @@ class LayerItemView {
         const parentEl = this.el.querySelector('.symbol-container');
         const childViews = this.childViews;
         symbols.forEach(symbolModel => {
-            console.log(symbolModel);
             const symbolItem = new SymbolItemView(symbolModel, parentEl);
             symbolItem.addToDOM();
             childViews[symbolModel.id] = symbolItem;
@@ -125,7 +122,6 @@ class LayerItemView {
     }
 
     update () {
-        console.log('Layer update called: ', this.model.id);
         this.el.querySelector('.collapse').className = this.getToggleClass();
     }
 
@@ -136,18 +132,11 @@ class LayerItemView {
 
     toggleSymbolDetail (ev) {
         this.model.setIsExpanded(!this.model.isExpanded);
-        // ev.stopPropagation();
+        ev.stopPropagation();
     }
 
     toggleLayerVisibility (ev) {
-        console.log('Legend > Layer > toggleLayerVisibility');
-        // this.model.isVisible = ev.currentTarget.checked;
-        // this.model.notifyAll();
-        // const isChecked = ev.currentTarget.checked;
-        // this.broadcastEvent('toggle-layer-visibility', ev, {
-        //     layerID: parseInt(ev.currentTarget.getAttribute('data-layer-id')),
-        //     show: isChecked
-        // })
+        this.model.setIsShowing(!this.model.isShowing);
         ev.stopPropagation();
     }
 
@@ -212,19 +201,11 @@ class SymbolItemView {
     }
 
     toggleSymbolVisibility (ev) {
-        
         this.model.setIsShowing(!this.model.isShowing);
-
-        // TODO: deprecate when map listens to model
-        this.broadcastEvent('toggle-symbol-visibility', ev, {
-            layerID: this.model.layerID,
-            symbolID: this.model.id,
-            show: this.model.isShowing
-        });
     }
 
     update () {
-        console.log('Symbol update called: ', this.model.id);
+        // console.log('Symbol update called: ', this.model.id);
         this.el.className = this.getClass();
         const i = this.el.querySelector('.show-symbol');
         i.className = this.getEyeballClass();
@@ -237,7 +218,6 @@ class SymbolItemView {
     }
 
     getEyeballClass () {
-        console.log(this.model.isShowing, this.model.id);
         const iconClass = this.model.isShowing ? 'fa-eye' : 'fa-eye-slash';
         return `fa show-symbol ${iconClass}`;
     }
@@ -260,6 +240,7 @@ class ItemView {
         Object.assign(this, mixins);
 
         this.model = recordObj;
+        this.model.registerObserver(this);
         this.parentEl = parentElement;
         this.symbolID = symbolID;
         this.layerID = layerID;
@@ -267,9 +248,20 @@ class ItemView {
         this.el = this.renderElement();
     }
 
+    getClass () {
+        if (this.model.isActive) {
+            return 'symbol-item selected';
+        }
+        return 'symbol-item';
+    }
+
     renderElement () {
         return this.createElementFromHTML(`
-            <div class="symbol-item">${this.model.name}</div>`);
+            <div class="${this.getClass()}">${this.model.name}</div>`);
+    }
+
+    update () {
+        this.el.className = this.getClass();
     }
 
     addToDOM () {
@@ -279,15 +271,14 @@ class ItemView {
     }
 
     showItem (ev) {
-        const elem = ev.currentTarget;
-        const data = {
-            layerID: this.layerID,
-            symbolID: this.symbolID,
-            recordID: this.model.id
-        };
-        this.broadcastEvent('show-item', ev, data);
-        this.removeClass('.symbol-item', 'selected')
-        elem.classList.add('selected');
+        // ignore if disabled:
+        if (!this.model.isShowing()) { return; }
+        
+        // let the entire application know:
+        this.broadcastEvent('set-active-record', ev.currentTarget, {
+            recordModel: this.model,
+            triggerPopup: false
+        });
     }
 
     addEventHandlers () {

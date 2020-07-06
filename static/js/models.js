@@ -10,7 +10,6 @@ const ModelMixins = {
     },
 
     registerObserver: function (observer)  {
-        console.log(this);
         this.observers.push(observer);
     }
 }
@@ -25,7 +24,7 @@ class MapModel {
         this.basemap = mapJSON.basemap;
         this.zoom = mapJSON.zoom;
         this.name = mapJSON.name;
-        this.legendIsMinimized = true;
+        this.legendIsMinimized = false;
         
         // TODO: convert to collections
         this.initLayers(Object.values(mapJSON.layers));
@@ -68,6 +67,14 @@ class LayerModel {
         this.notifyAll();
     }
 
+    setIsShowing (isShowing) {
+        this.isShowing = isShowing;
+        for (const symbol of this.symbols) {
+            symbol.setIsShowing(isShowing);
+        }
+        this.notifyAll();
+    }
+
     initSymbols (symbolsJSON) {
         this.symbols = [];
         for (const symbolJSON of symbolsJSON) {
@@ -87,7 +94,7 @@ class SymbolModel {
         this.title = symbolJSON.title;
         this.isShowing = symbolJSON.isShowing;
         this.rule = symbolJSON.rule;
-        this.records = symbolJSON.records;
+        
         this.svg = symbolJSON.svg;
         this.iconAnchor = symbolJSON.iconAnchor;
         this.iconSize = symbolJSON.iconSize;
@@ -96,17 +103,65 @@ class SymbolModel {
         // from the layer model:
         this.layerID = layerModel.id;
         this.isExpanded = layerModel.isExpanded;
+
+        this.initRecords(Object.values(symbolJSON.records));
+    }
+
+    initRecords (recordsJSON) {
+        this.records = [];
+        for (const recordJSON of recordsJSON) {
+            this.records.push(new RecordModel(recordJSON, [], this));
+        }
     }
 
     setIsShowing (isShowing) {
         this.isShowing = isShowing;
+        for (const record of this.records) {
+            record.notifyAll();
+        }
         this.notifyAll();
+    }
+
+    getIcon () {
+        return L.icon({
+            iconUrl: encodeURI("data:image/svg+xml," + this.svg).replace(/#/g,'%23'),
+            iconSize: this.iconSize,
+            iconAnchor: this.iconAnchor,
+            popupAnchor: this.popupAnchor
+        });
     }
 
 }
 
 class RecordModel {
-    constructor (recordJSON, fieldsJSON) {
+    constructor (recordJSON, fieldsJSON, symbolModel) {
+        Object.assign(this, ModelMixins);
+        Object.assign(this, recordJSON);
+        this.isActive = false;
+        this.observers = [];
 
+        this.symbolModel = symbolModel;
+        this.fields = fieldsJSON;
+
+    }
+
+    setIsActive (isActive) {
+        this.isActive = isActive;
+        this.notifyAll();
+    }
+
+    getIcon () {
+        return this.symbolModel.getIcon();
+    }
+
+    isShowing () {
+        return this.symbolModel.isShowing;
+    }
+
+    getLatLng () {
+        return [
+            this.geometry.coordinates[1],
+            this.geometry.coordinates[0]
+        ];
     }
 }
