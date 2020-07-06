@@ -1,66 +1,89 @@
-class Legend {
+class LegendView {
     collection;
     el;
-    constructor (map, layerObj) {
+    childViews;
+    constructor (map, mapModel) {
         // add mixins:
         Object.assign(this, mixins);
+        
+        this.model = mapModel;
+        mapModel.registerObserver(this);
+        this.collection = this.model.layers;
+        this.childViews = {}
 
-        this.collection = Object.values(layerObj);
-
-        // init legend:
+        // init legend control container:
         const legend = L.control({position: 'topright'});
         legend.onAdd = this.addLegendContainer.bind(this);
         legend.addTo(map);
-        this.renderLegend();
+        
+        // render legend body:
+        this.renderLegendBody();
         this.addEventHandlers();
-
     }
 
-    addLegendContainer () {
-        this.el = L.DomUtil.create('div', 'legend minimized');
+    update () {
+        console.log('Legend: update called...');
+        this.el.querySelector('.toggle-legend').className = this.getToggleClass();
+        this.el.className = this.getLegendClass();
+    }
+
+    getLegendClass () {
+        const className = this.model.legendIsMinimized ? 'minimized' : '';
+        return 'legend leaflet-control ' + className;
+    }
+
+    getToggleClass () {
+        const className = this.model.legendIsMinimized ? 'fa-chevron-down' : 'fa-chevron-up';
+        return 'fas toggle-legend ' + className;
+    }
+
+    addLegendContainer () {;
+        this.el = L.DomUtil.create('div', this.getLegendClass());
         L.DomEvent.on(this.el, 'mousewheel', L.DomEvent.stopPropagation);
         
         this.el.innerHTML = `
-            <h2> Legend <i class="fas fa-chevron-down toggle-legend"></i></h2>
+            <h2>Legend <i class="${this.getToggleClass()}"></i></h2>
             <section class="layer-list"></section>
         `;
         return this.el;
     }
 
-    renderLegend () {
+    renderLegendBody () {
         const parentEl = this.el.querySelector('.layer-list');
+        const childViews = this.childViews;
         this.collection.forEach( layerModel => {
-            const layerItem = new LayerItem(layerModel, parentEl);
-            layerItem.addToDOM();
+            const layerItemView = new LayerItemView(layerModel, parentEl);
+            layerItemView.addToDOM();
+            childViews[layerModel.id] = layerItemView;   
         });
     }
 
-    toggleLegendVisibility(ev) {
-        const legend = document.querySelector('.legend');
-        const arrow = legend.querySelector('.toggle-legend');
-        legend.classList.toggle('minimized');
-        arrow.classList.toggle('fa-chevron-down');
-        arrow.classList.toggle('fa-chevron-up');
+    toggleLegendVisibility (ev) {
+        console.log('Legend > toggleLegendVisibility');
+        this.model.legendIsMinimized = !this.model.legendIsMinimized;
+        this.model.notifyAll();
         ev.preventDefault();
         ev.stopPropagation();
     }
 
     addEventHandlers () {
-        this.attachListener('.legend h2', 'click', this.toggleLegendVisibility);
+        this.attachListener('.legend h2', 'click', this.toggleLegendVisibility.bind(this));
         this.attachListener('.legend', 'dblclick', ev => ev.stopPropagation());
     } 
 }
 
-class LayerItem {
+class LayerItemView {
     model;
     layerModel;
+    childViews;
     el;
     parentEl;
-    constructor (layerObj, parentElement) {
+    constructor (layerModel, parentElement) {
         // add mixins:
         Object.assign(this, mixins);
+        this.childViews = {}
 
-        this.model = new LayerModel(layerObj);
+        this.model = layerModel;
         this.model.registerObserver(this);
         
         this.el = this.renderElement();
@@ -84,46 +107,48 @@ class LayerItem {
         `);
     }
 
-    update() {
-        console.log('re-rendering');
-        this.parentEl.innerHTML = this.renderElement().innerHTML;
-    }
-
     addToDOM () {
         this.parentEl.appendChild(this.el);
 
         // add marker listings:
         const layer = this.model;
-        const symbols = Object.values(layer.symbols);
+        const symbols = layer.symbols;
         const parentEl = this.el.querySelector('.symbol-container');
-        symbols.forEach( symbolModel => {
-            symbolModel.layerID = layer.id;
-            const symbolItem = new SymbolItem(symbolModel, parentEl);
+        const childViews = this.childViews;
+        symbols.forEach(symbolModel => {
+            console.log(symbolModel);
+            const symbolItem = new SymbolItemView(symbolModel, parentEl);
             symbolItem.addToDOM();
+            childViews[symbolModel.id] = symbolItem;
         });
         this.addEventHandlers();
     }
 
+    update () {
+        console.log('Layer update called: ', this.model.id);
+        this.el.querySelector('.collapse').className = this.getToggleClass();
+    }
+
+    getToggleClass () {
+        const className = this.model.isExpanded ? 'fa-angle-down' : 'fa-angle-right';
+        return 'fa collapse ' + className;
+    }
+
     toggleSymbolDetail (ev) {
-        const parent = ev.currentTarget.parentElement;
-        const toggler = parent.querySelector('.collapse');
-        toggler.classList.toggle('fa-angle-right')
-        toggler.classList.toggle('fa-angle-down');
-        const symbolEntries = toggler.parentElement.nextElementSibling.querySelectorAll('.symbol-entry');
-        for (const entry of symbolEntries) {
-            entry.classList.toggle('minimized');
-        }
-        ev.stopPropagation();
+        this.model.setIsExpanded(!this.model.isExpanded);
+        // ev.stopPropagation();
     }
 
     toggleLayerVisibility (ev) {
-        this.model.isVisible = ev.currentTarget.checked;
-        this.model.notifyAll();
+        console.log('Legend > Layer > toggleLayerVisibility');
+        // this.model.isVisible = ev.currentTarget.checked;
+        // this.model.notifyAll();
         // const isChecked = ev.currentTarget.checked;
         // this.broadcastEvent('toggle-layer-visibility', ev, {
         //     layerID: parseInt(ev.currentTarget.getAttribute('data-layer-id')),
         //     show: isChecked
         // })
+        ev.stopPropagation();
     }
 
     addEventHandlers () {
@@ -132,7 +157,7 @@ class LayerItem {
     }
 }
 
-class SymbolItem {
+class SymbolItemView {
     model
     el;
     parentEl;
@@ -140,6 +165,7 @@ class SymbolItem {
         // add mixins:
         Object.assign(this, mixins);
         this.model = symbolObj;
+        this.model.registerObserver(this);
         this.el = this.renderElement();
         this.parentEl = parentElement;
     }
@@ -147,18 +173,16 @@ class SymbolItem {
     renderElement () {
         const layerID = this.model.layerID;
         const symbol = this.model;
-        const headerClass = symbol.isShowing ? '' : 'hidden';
-        const iconClass = symbol.isShowing ? 'fa-eye' : 'fa-eye-slash';
         
         return this.createElementFromHTML(`
-            <div class="symbol-entry minimized ${headerClass}">
+            <div class="${this.getClass()}">
                 <div class="symbol-header">
                     <span>
                         ${symbol.svg}
                         ${symbol.title} (${Object.keys(symbol.records).length})
                     </span>
                     <span>
-                        <i class="fa show-symbol ${iconClass}"
+                        <i class="${this.getEyeballClass()}"
                             data-symbol-id="${symbol.id}" 
                             data-layer-id="${layerID}"></i>
                     </span>
@@ -182,22 +206,40 @@ class SymbolItem {
         const layerID = this.model.layerID;
         const container = this.el.querySelector('.symbol-items');
         records.forEach( recordModel => {
-            const item = new Item(recordModel, container, symbolID, layerID);
+            const item = new ItemView(recordModel, container, symbolID, layerID);
             item.addToDOM();
         });
     }
 
     toggleSymbolVisibility (ev) {
-        const container = this.el;
-        const i = this.el.querySelector('.show-symbol');
-        i.classList.toggle('fa-eye');
-        i.classList.toggle('fa-eye-slash');
-        container.classList.toggle('hidden');
+        
+        this.model.setIsShowing(!this.model.isShowing);
+
+        // TODO: deprecate when map listens to model
         this.broadcastEvent('toggle-symbol-visibility', ev, {
             layerID: this.model.layerID,
             symbolID: this.model.id,
-            show: i.classList.contains('fa-eye')
+            show: this.model.isShowing
         });
+    }
+
+    update () {
+        console.log('Symbol update called: ', this.model.id);
+        this.el.className = this.getClass();
+        const i = this.el.querySelector('.show-symbol');
+        i.className = this.getEyeballClass();
+    }
+
+    getClass () {
+        const fadeClass = this.model.isShowing ? '' : 'hidden';
+        const hiddenClass = this.model.isExpanded ? '' : 'minimized';
+        return `symbol-entry ${fadeClass} ${hiddenClass}`;
+    }
+
+    getEyeballClass () {
+        console.log(this.model.isShowing, this.model.id);
+        const iconClass = this.model.isShowing ? 'fa-eye' : 'fa-eye-slash';
+        return `fa show-symbol ${iconClass}`;
     }
 
     addEventHandlers () {
@@ -207,7 +249,7 @@ class SymbolItem {
 }
 
 
-class Item {
+class ItemView {
     model
     el;
     parentEl;

@@ -8,7 +8,7 @@ class Map {
     constructor (mapJSON) {
         this.mapData = mapJSON;
         this.model = new MapModel(mapJSON);
-        this.model.observers.push(this);
+        // this.model.observers.push(this);
         this.drawMap();
         this.renderData();
         this.addEventListeners();
@@ -20,9 +20,9 @@ class Map {
         document.addEventListener("show-item", this.showCardByEvent.bind(this));
         document.addEventListener("refactor-map-bounds", this.map.invalidateSize.bind(this));
     }
-    update (model) {
-        document.querySelector('header h1').innerHTML = model.name;
-    }
+    // update (model) {
+    //     document.querySelector('header h1').innerHTML = model.name;
+    // }
 
     toggleLayerVisibility (ev) {
         if (ev.detail.show) {
@@ -189,7 +189,8 @@ class Map {
         }
 
         // add legend: 
-        const legend = new Legend(this.map, this.mapData.layers);
+        console.log(this.model);
+        this.legend = new LegendView(this.map, this.model);
     };
 
     renderMarkers (layer, fields, symbol) {
