@@ -95,13 +95,15 @@ class Carousel {
             );
             this.parentEl.appendChild(this.el);
         } else {
+            const slides = `
+                <div class="slide active">
+                    ${images.join('</div><div class="slide hide-left">')}
+                </div>`;
             this.el = this.createElementFromHTML(`
                 <section class="carousel noselect">
                     <i class="fa fa-chevron-left prev"></i>
                     <i class="fa fa-chevron-right next"></i>
-                    <div class="slide active">
-                        ${images.join('</div><div class="slide hide-left">')}
-                    </div>
+                    ${slides}
                 </section>`);
             this.initAnimationClasses();
             this.parentEl.appendChild(this.el);
@@ -143,8 +145,6 @@ class Carousel {
         // first reposition the slide w/o animation:
         nextSlide.className = 'slide hide-left';
         setTimeout ((() => {
-            // then advance the carousel. Not sure why the setTimeout is needed,
-            // but <100 makes it jumpy.
             nextSlide.className = 'slide active';
             activeSlide.className = 'slide right';
             this.activeSlide = nextSlide;
@@ -162,11 +162,8 @@ class Carousel {
 
 
     getNextSlide () {
-       let nextSlide = this.activeSlide.nextElementSibling;
-        if (!nextSlide) {
-            nextSlide = this.el.querySelector('.slide');
-        }
-        return nextSlide;
+        return this.activeSlide.nextElementSibling || 
+            this.el.querySelector('.slide');
     }
 
     attachEventHandlers () {
