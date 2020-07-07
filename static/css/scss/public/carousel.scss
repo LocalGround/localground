@@ -1,0 +1,75 @@
+.carousel {
+    margin-bottom: 20px;
+    // margin-top: -3em;
+    width: 100%;
+    height: 310px;
+    overflow: hidden;
+    position: relative;
+    
+    .fa {
+        position: relative;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7) !important;
+        top: 150px;
+        font-size: 3em;
+        color: white;
+        height: 0px;
+        margin-left: 10px;
+        z-index: 20;
+        &.next {
+            float: right;
+            margin-right: 10px;
+        }
+    }
+    .slide {
+        width: 100%;
+        height: 100%;
+        padding: 0px;
+        left: 100%;
+        position: absolute;
+        display: inline-block;
+        background: white;
+        img {
+            max-width: 100%;
+            height: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            display: block
+        }
+        &.active {
+            left: 0%;
+            transition: 0.45s ease;
+        }
+        &.left {
+            left: -100%;
+            transition: 0.45s ease;
+        }
+        &.right {
+            left: 100%;
+            transition: 0.45s ease;
+            z-index: 5;
+        }
+        &.hide-left {
+            left: -100%;
+        }
+        &.hide-right {
+            left: 100%;
+        }
+    }
+}
+
+.no-carousel {
+    img {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}

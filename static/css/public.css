@@ -210,24 +210,33 @@ h2 {
   display: none;
 }
 
-.no-carousel img {
-  width: 100%;
-  margin-bottom: 20px;
+.lat-lng {
+  font-size: 0.85em;
+  margin-top: 5px;
 }
 
-.noselect {
-  -webkit-touch-callout: none;
-  /* iOS Safari */
-  -webkit-user-select: none;
-  /* Safari */
-  /* Konqueror HTML */
-  -moz-user-select: none;
-  /* Old versions of Firefox */
-  -ms-user-select: none;
-  /* Internet Explorer/Edge */
-  user-select: none;
-  /* Non-prefixed version, currently
-                                    supported by Chrome, Edge, Opera and Firefox */
+.card > div {
+  border: solid 1px #ccc;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 10px;
+  margin-top: 0px;
+}
+
+.card-header-minimized img {
+  height: 60px;
+  float: left;
+  margin-right: 8px;
+}
+
+.card-header-minimized h2 {
+  height: 60px;
+  line-height: 60px;
+  padding: 0px 40px 0px 0px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
 }
 
 .carousel {
@@ -261,7 +270,6 @@ h2 {
   left: 100%;
   position: absolute;
   display: inline-block;
-  z-index: 5;
   background: white;
 }
 
@@ -277,14 +285,12 @@ h2 {
   left: 0%;
   -webkit-transition: 0.45s ease;
   transition: 0.45s ease;
-  z-index: 10;
 }
 
 .carousel .slide.left {
   left: -100%;
   -webkit-transition: 0.45s ease;
   transition: 0.45s ease;
-  z-index: 5;
 }
 
 .carousel .slide.right {
@@ -302,33 +308,24 @@ h2 {
   left: 100%;
 }
 
-.lat-lng {
-  font-size: 0.85em;
-  margin-top: 5px;
+.no-carousel img {
+  width: 100%;
+  margin-bottom: 20px;
 }
 
-.card > div {
-  border: solid 1px #ccc;
-  padding: 20px;
-  margin: 10px;
-  border-radius: 10px;
-  margin-top: 0px;
-}
-
-.card-header-minimized img {
-  height: 60px;
-  float: left;
-  margin-right: 8px;
-}
-
-.card-header-minimized h2 {
-  height: 60px;
-  line-height: 60px;
-  padding: 0px 40px 0px 0px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin: 0;
+.noselect {
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Old versions of Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
 }
 
 input#search-bar {
