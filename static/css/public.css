@@ -16,8 +16,8 @@ body {
 
 body, p {
   font-family: "Open Sans", sans-serif;
-  line-height: 1.5;
-  font-size: 0.9em;
+  line-height: 1.6em;
+  font-size: 1.0em;
 }
 
 header {
@@ -175,12 +175,20 @@ h2 {
   /* display: inline; */
 }
 
-.card .snippet {
-  display: none;
-}
-
 .card {
   margin-bottom: 30px;
+}
+
+.card > div {
+  border: solid 1px #ccc;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 10px;
+  margin-top: 0px;
+}
+
+.card .snippet {
+  display: none;
 }
 
 .card .add-button {
@@ -210,47 +218,55 @@ h2 {
   display: none;
 }
 
-.lat-lng {
-  font-size: 0.85em;
-  margin-top: 5px;
+.card .properties {
+  width: 100%;
 }
 
-.card > div {
-  border: solid 1px #ccc;
-  padding: 20px;
-  margin: 10px;
-  border-radius: 10px;
-  margin-top: 0px;
+.card .properties td:first-child {
+  width: 120px;
+  text-align: right;
+  padding-right: 5px;
+}
+
+.card .properties td strong {
+  font-weight: 600;
 }
 
 .card-header-minimized img {
   height: 60px;
   float: left;
-  margin-right: 8px;
 }
 
 .card-header-minimized h2 {
+  margin: 0;
   height: 60px;
   line-height: 60px;
   padding: 0px 40px 0px 0px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin: 0;
+}
+
+.card-header-minimized h2 span {
+  display: inline-block;
+  margin-left: 8px;
 }
 
 .carousel {
-  margin-bottom: 20px;
   width: 100%;
-  height: 310px;
   overflow: hidden;
   position: relative;
+  border: solid 1px #EEE;
+}
+
+.carousel > section {
+  height: 340px;
 }
 
 .carousel .fa {
   position: relative;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7) !important;
-  top: 150px;
+  top: 155px;
   font-size: 3em;
   color: white;
   height: 0px;
@@ -265,20 +281,21 @@ h2 {
 
 .carousel .slide {
   width: 100%;
-  height: 100%;
   padding: 0px;
-  left: 100%;
   position: absolute;
   display: inline-block;
   background: white;
 }
 
-.carousel .slide img {
-  max-width: 100%;
-  height: 100%;
+.carousel .slide img, .carousel .slide iframe {
+  height: 310px;
   margin-left: auto;
   margin-right: auto;
   display: block;
+}
+
+.carousel .slide iframe {
+  width: 100%;
 }
 
 .carousel .slide.active {
@@ -288,24 +305,53 @@ h2 {
 }
 
 .carousel .slide.left {
-  left: -100%;
+  left: -110%;
   -webkit-transition: 0.45s ease;
   transition: 0.45s ease;
 }
 
 .carousel .slide.right {
-  left: 100%;
+  left: 110%;
   -webkit-transition: 0.45s ease;
   transition: 0.45s ease;
-  z-index: 5;
 }
 
 .carousel .slide.hide-left {
-  left: -100%;
+  left: -110%;
 }
 
 .carousel .slide.hide-right {
-  left: 100%;
+  left: 110%;
+}
+
+.carousel .slide.current {
+  left: 0%;
+}
+
+.carousel .slide .caption {
+  text-align: center;
+  line-height: 0.3em;
+}
+
+.thumbnails {
+  margin-bottom: 20px;
+  display: inline-block;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.thumbnails img {
+  width: 45px;
+  margin: 2px 2px 0px 0px;
+}
+
+.thumbnails .fa, .thumbnails .far, .thumbnails .fas {
+  color: #AAA;
+  margin: 15px 5px 0px 0px;
 }
 
 .no-carousel img {

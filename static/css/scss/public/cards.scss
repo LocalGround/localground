@@ -11,62 +11,76 @@ h2 {
    margin-bottom: 0.5em;
    /* display: inline; */
 }
-.card .snippet {
-    display: none;
-}
 .card {
     margin-bottom: 30px;
-}
-.card .add-button {
-   display: none;
-}
-.card:hover {
-   cursor: pointer;
-}
-.card:hover .add-button {
-   float: right;
-   font: 3em "Amatic SC", cursive;
-   color: #777;
-   text-decoration: none;
-   border: solid 1px #777;
-   line-height: 25px;
-   width: 30px;
-   height: 30px;
-   margin-right: -5px;
-   text-align: center;
-   border-radius: 20px;
-   display: block;
-}
-.card .metadata {
-   display: none;
+
+    > div {
+        border: solid 1px #ccc;
+        padding: 20px;
+        margin: 10px;
+        border-radius: 10px;
+        margin-top: 0px;
+    }
+
+    .snippet {
+        display: none;
+    }
+    .add-button {
+        display: none;
+    }
+    &:hover {
+        cursor: pointer;
+
+        .add-button {
+            float: right;
+            font: 3em "Amatic SC", cursive;
+            color: #777;
+            text-decoration: none;
+            border: solid 1px #777;
+            line-height: 25px;
+            width: 30px;
+            height: 30px;
+            margin-right: -5px;
+            text-align: center;
+            border-radius: 20px;
+            display: block;
+        }
+    }
+    .metadata {
+        display: none;
+    }
+    .properties {
+        width: 100%;
+        td:first-child {
+            width: 120px;
+            text-align: right;
+            padding-right: 5px;
+        }
+        td {
+            strong {
+                font-weight: 600;
+            }
+        }
+    }
 }
 
-.lat-lng {
-    font-size: 0.85em;
-    margin-top: 5px;
-}
-
-.card > div {
-   border: solid 1px #ccc;
-   padding: 20px;
-   margin: 10px;
-   border-radius: 10px;
-   margin-top: 0px;
-}
 
 .card-header-minimized {
     img {
         height: 60px;
         float: left;
-        margin-right: 8px;
     }
     h2 {
+        margin: 0;
         height: 60px;
         line-height: 60px;
         padding: 0px 40px 0px 0px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        margin: 0;
+        span {
+            display: inline-block;
+            margin-left: 8px;
+        }
     }
 }

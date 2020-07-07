@@ -110,7 +110,7 @@ class RecordSerializerMixin(GeometrySerializer):
         return 'dataset_{0}'.format(obj.dataset.id)
 
     def get_attached_photos_videos(self, obj):
-        if self.photos and self.videos and hasattr(obj, 'photo_video_list'):
+        if self.photos and self.videos and hasattr(obj, 'photo_video_list') and obj.photo_video_list is not None:
             data = []
             for item in obj.photo_video_list:
                 overlay_type = item.get('overlay_type')
@@ -125,10 +125,10 @@ class RecordSerializerMixin(GeometrySerializer):
                     item.update(video_dict)
                     data.append(item)
             return data
-        elif hasattr(obj, 'photo_video_list'):
+        elif hasattr(obj, 'photo_video_list') and obj.photo_video_list is not None:
             return obj.photo_video_list
         else:
-            return None
+            return []
         
 
     def get_attached_map_images(self, obj):
