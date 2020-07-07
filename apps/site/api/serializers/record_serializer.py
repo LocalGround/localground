@@ -114,7 +114,6 @@ class RecordSerializerMixin(GeometrySerializer):
             data = []
             for item in obj.photo_video_list:
                 overlay_type = item.get('overlay_type')
-                print(item)
                 if overlay_type == 'photo':
                     photo = self.photos.get(item.get('id'))
                     photo_dict = PhotoSerializer(photo, context={'request': {}}).data

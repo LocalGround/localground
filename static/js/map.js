@@ -63,16 +63,20 @@ class Map {
             'toner-background': {
                 'url': 'http://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.{ext}',
                 'subdomains': 'abcd'
-            }
+            },
+            'esri-grayscale': {
+                'url': 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+            } 
         }
         // set tileset; default to toner
         let tileset = tilesets[this.mapData.basemap];
+        // let tileset = tilesets['esri-grayscale'];
         if (!tileset) {
             tileset = tilesets['toner-lite'];
         }
         var basemapURL = tileset.url
         var basemap = L.tileLayer(basemapURL, {
-            subdomains: tileset.subdomains,
+            // subdomains: tileset.subdomains,
             minZoom: 0,
             maxZoom: 20,
             ext: 'png'
@@ -163,18 +167,8 @@ class MarkerView {
         }
     }
 
-
-
-    getThumbnail () {
-        for (const media of this.model.attached_photos_videos) {
-            if (media.overlay_type === 'photo') {
-                return media.path_small;
-            }
-        }
-    }
-
     getPopupHTML () {
-        // const thumbURL = this.getThumbnail();
+        // const thumbURL = this.model.getThumbnail();
         // if (thumbURL) {
         //     return `
         //         <div class='popup-section'>

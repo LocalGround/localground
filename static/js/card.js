@@ -15,18 +15,23 @@ class Card {
         const item = this.item;
         const properties = this.getPropertiesTable(item);
         const photos = this.getPhotos(item);
+        const thumbnail = item.getThumbnail();
+        let mobileHeader = `<h2>${item.name}</h2>`
+        if (thumbnail) {
+            mobileHeader = `<h2><img src="${thumbnail}" />${item.name}</h2>`
+        }
         document.querySelector(selector).innerHTML = `<div class="card">
             <div class="desktop">
                 <a class="less" href="#">x</a>
                 <h2>${item.name}</h2>
-                <p>${item.description.replace(/(?:\r\n|\r|\n)/g, '<br>')}</p>
                 ${photos}
+                <p>${item.description.replace(/(?:\r\n|\r|\n)/g, '<br>')}</p>
                 ${properties}
             </div>
-            <div class="mobile">
-                <h2>${item.name}</h2>
+            <section class="mobile card-header-minimized">
+                ${mobileHeader}
                 <a class="more" href="#"><i class="fas fa-expand"></i></a>
-            </div>
+            </section>
         </div>`;
 
         // add event handlers to card:

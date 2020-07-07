@@ -157,6 +157,14 @@ class RecordModel {
         return this.symbolModel.isShowing;
     }
 
+    getThumbnail () {
+        for (const media of this.attached_photos_videos) {
+            if (media.overlay_type === 'photo') {
+                return media.path_small;
+            }
+        }
+    }
+
     getLatLng () {
         return [
             this.geometry.coordinates[1],

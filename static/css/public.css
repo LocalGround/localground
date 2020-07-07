@@ -240,6 +240,21 @@ h2 {
   margin-top: 0px;
 }
 
+.card-header-minimized img {
+  height: 60px;
+  float: left;
+  margin-right: 8px;
+}
+
+.card-header-minimized h2 {
+  height: 60px;
+  line-height: 60px;
+  padding: 0px 40px 0px 0px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 input#search-bar {
   margin: 0;
   width: 100%;
@@ -702,14 +717,6 @@ main.with-card #card-holder.fullscreen .less:hover {
   }
   main.with-card .card > .mobile {
     display: block;
-  }
-  main.with-card .card > .mobile h2 {
-    text-align: center;
-    height: 40px;
-    padding: 0px 40px 0px 40px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   main.with-card #card-holder {
     overflow-y: hidden;

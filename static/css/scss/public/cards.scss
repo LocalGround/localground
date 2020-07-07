@@ -68,3 +68,20 @@ h2 {
    border-radius: 10px;
    margin-top: 0px;
 }
+
+.card-header-minimized {
+    img {
+        height: 60px;
+        float: left;
+        margin-right: 8px;
+    }
+    h2 {
+        height: 60px;
+        line-height: 60px;
+        padding: 0px 40px 0px 0px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin: 0;
+    }
+}
