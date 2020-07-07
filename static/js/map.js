@@ -32,9 +32,9 @@ class Map {
 
         // Card right-hand side:
         this.selectedRecord.photos = [];
-        const card = new Card(this.selectedRecord);
+        const card = new Card(this.selectedRecord, '#card-holder');
         document.querySelector('main').classList.add('with-card');
-        card.addCardToDOM('#card-holder')
+        card.addCardToDOM()
 
         // Trigger popup:
         if (ev.detail.triggerPopup) {

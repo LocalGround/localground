@@ -125,7 +125,7 @@ class RecordSerializerMixin(GeometrySerializer):
                     item.update(video_dict)
                     data.append(item)
             return data
-        elif hasattr(self, 'photo_video_list'):
+        elif hasattr(obj, 'photo_video_list'):
             return obj.photo_video_list
         else:
             return None
