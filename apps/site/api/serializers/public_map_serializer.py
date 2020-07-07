@@ -8,7 +8,28 @@ from localground.apps.site.api.serializers.video_serializer import VideoSerializ
 from localground.apps.site.api.serializers.mapimage_serializer import MapImageSerializerUpdate
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.map_serializer import MapSerializerList
-import random
+
+'''
+    The public map viewer requires a nested data structure as follows:
+    - Map
+        - Layer 1
+            - Symbol A
+                - Matched Records ->
+                    - Rec 1
+                        - id, name, description
+                        - a bunch of key-value pairs
+                        - photos_videos array: []
+                        - fields: []
+                        - audio: []
+                        - map_images: []
+            - Symbol B
+                - ...
+
+        - Layer 2
+            - Symbol C
+            - Symbol D
+'''
+
 
 class LayerSerializerPublic(BaseSerializer):
     dataset = serializers.SerializerMethodField(read_only=True)
@@ -28,7 +49,13 @@ class LayerSerializerPublic(BaseSerializer):
     def get_symbols(self, obj):
         serializer = create_dynamic_serializer(obj.dataset)
         records = serializer(
-            obj.dataset.get_records(), many=True, context={'request': {}}
+            obj.dataset.get_records(), many=True, context={
+                'request': {},
+                'photos': self.context.get('photos'),
+                'audio': self.context.get('audio'),
+                'videos': self.context.get('videos'),
+                'map_images': self.context.get('map_images')
+            }
         ).data
         symbols = {}
         for i, kwargs in enumerate(obj.symbols):
@@ -57,13 +84,17 @@ class MapSerializerPublic(MapSerializerList):
     layers = serializers.SerializerMethodField()
     basemap = serializers.SerializerMethodField()
     project_id = serializers.SerializerMethodField()
-    datasets = serializers.SerializerMethodField()
-    media = serializers.SerializerMethodField()
     
     def get_layers(self, obj):
         layers = models.Layer.objects.filter(styled_map=obj)
         data = LayerSerializerPublic(
-            layers, many=True, context={'request': {}}
+            layers, many=True, context={
+                'request': {},
+                'photos': self.getMediaMap(models.Photo, obj),
+                'audio': self.getMediaMap(models.Audio, obj),
+                'videos': self.getMediaMap(models.Video, obj),
+                'map_images': self.getMediaMap(models.MapImage, obj, processed_only=False)
+            }
         ).data
         layers_dict = {}
         for layer in data:
@@ -76,89 +107,17 @@ class MapSerializerPublic(MapSerializerList):
     def get_project_id(self, obj):
         return obj.project.id
 
-    def get_datasets(self, obj):
-        datasets = models.Dataset.objects.prefetch_related(
-                'field_set', 'field_set__data_type'
-            ).filter(project=obj.project)
-
-        dataset_dictionary = {}
-
-        # add table data:
-        for dataset in datasets:
-            dataset_dictionary['dataset_%s' % dataset.id] = self.get_table_records(dataset)
-        return dataset_dictionary
-
-    def get_table_records(self, dataset):
-        records = dataset.get_records()
-        return {
-            'data': self.serialize_list(
-                create_dynamic_serializer(dataset),
-                records
-            ),
-            'fields': self.serialize_list(
-                FieldSerializerSimple,
-                dataset.fields
-            )
-        }
-
-    def serialize_list(self, serializer_class, records):
-        serializer = serializer_class(
-            records, many=True, context={'request': {}})
-        lookup = {}
-        for item in serializer.data:
-            lookup[item.get('id')] = item
-        return lookup
-
-    def get_media(self, obj):
-        media = {
-            'photos': self.get_photos(obj.project),
-            'videos': self.get_videos(obj.project),
-            'audio': self.get_audio(obj.project),
-            'map_images': self.get_mapimages(obj.project)
-        }
+    def getMediaMap(self, ModelClass, obj, **kwargs):
+        media = {}
+        media_list = ModelClass.objects.get_objects(obj.owner, project=obj.project, **kwargs)
+        for rec in media_list:
+            media[rec.id] = rec 
         return media
 
-    def get_photos(self, obj):
-        return self.serialize_list(
-            PhotoSerializer,
-            models.Photo.objects.get_objects(
-                obj.owner,
-                project=obj
-            )
-        )
-
-    def get_videos(self, obj):
-        return self.serialize_list(
-            VideoSerializer,
-            models.Video.objects.get_objects(
-                obj.owner,
-                project=obj
-            )
-        )
-
-    def get_audio(self, obj):
-        return self.serialize_list(
-            AudioSerializer,
-            models.Audio.objects.get_objects(
-                obj.owner,
-                project=obj
-            )
-        )
-
-    def get_mapimages(self, obj):
-        return self.serialize_list(
-            MapImageSerializerUpdate,
-            models.MapImage.objects.get_objects(
-                obj.owner,
-                project=obj,
-                processed_only=False
-            )
-        )
     
     class Meta:
         model = models.StyledMap
         fields = MapSerializerList.field_list + (
-            'layers', 'name', 'project_id', 'datasets', 'media',
-            'basemap'
+            'layers', 'name', 'project_id', 'basemap'
         )
         depth = 0

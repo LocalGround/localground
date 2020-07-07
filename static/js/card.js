@@ -35,17 +35,16 @@ class Card {
         document.querySelector('.less').onclick = this.minimize.bind(this);
     }
 
-    getPropertiesTable (item) {
+    getPropertiesTable (model) {
         const rows = [];
-        for (const key in item.fields) {
-            const field = item.fields[key];
-            if (['name', 'description'].find(item => {
-                return item === field.key;
+        for (const field of model.dataset.fields) {
+            if (['name', 'description'].find(model => {
+                return model === field.key;
             })) { continue; }
             rows.push(`
                 <tr>
                     <td>${field.col_alias}</td>
-                    <td>${item[field.key]}</td>
+                    <td>${model[field.key]}</td>
                 </tr>`
             );
         }  
@@ -56,10 +55,12 @@ class Card {
         `;
     }
 
-    getPhotos (item) {
+    getPhotos (model) {
         const images = [];
-        for (const photo of item.photos) {
-            images.push(`<div class="card"><img src="${photo.path_large}" /></div>`) 
+        for (const item of model.attached_photos_videos) {
+            if (item.overlay_type === 'photo') {
+                images.push(`<div class="card"><img src="${item.path_large}" /></div>`) 
+            }
         }
         //return `<section class="carousel">${images.join('')}</section>`;
         return `<section class="carousel">${images[0]}</section>`;

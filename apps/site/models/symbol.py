@@ -22,8 +22,8 @@ class TruthStatement(object):
         # initialize if user passed in arguments:
         # conjunction = kwargs.get('conjunction')
         # statement = kwargs.get('statement') 
-        print('statement:', statement)
-        print('conjunction:', conjunction)
+        # print('statement:', statement)
+        # print('conjunction:', conjunction)
         if statement is not None and conjunction is not None:
             self.parse_statement(statement, conjunction)
 
@@ -45,7 +45,7 @@ class TruthStatement(object):
         tokens = re.split(exp, statement)
         tokens.pop(0) # remove top entry
         tokens.pop() # remove bottom entry
-        print(tokens)
+        # print(tokens)
         if len(tokens) != 3:
             raise Exception("Statement should parse to three tokens")
         self.tokens = tokens
@@ -132,7 +132,7 @@ class TruthStatement(object):
         self.val = self.convert_val_to_data_argument_type(modelVal, self.val)
 
 
-        print('**************\n', self.key, modelVal, type(modelVal), self.val, '\n**************\n')
+        # print('**************\n', self.key, modelVal, type(modelVal), self.val, '\n**************\n')
 
         if self.operator == '=':
             returnVal = modelVal == self.val
@@ -159,16 +159,16 @@ class TruthStatement(object):
 
     def get_converter(self, modelVal):
         if isinstance(modelVal, basestring):
-            print('self.parse_string')
+            #print('self.parse_string')
             return self.parse_string
         elif isinstance(modelVal, float) or isinstance(modelVal, int):
-            print('self.parse_num')
+            #print('self.parse_num')
             return self.parse_num
         elif isinstance(modelVal, bool):
-            print('self.parse_boolean')
+            #print('self.parse_boolean')
             return self.parse_boolean
         else:
-            print('self.dummy')
+            #print('self.dummy')
             def dummy(val):
                 return val
             return dummy
@@ -230,7 +230,7 @@ class RuleParser(object):
             #try:
             truthStatement = TruthStatement(raw_statements[i + 1], raw_statements[i])
             self.statements.append(truthStatement)
-            truthStatement.debug()
+            # truthStatement.debug()
             # except:
             #     self.failureFlag = 1
             #     self.failureMessage = "error parsing truth statement: " +  e
@@ -241,7 +241,7 @@ class RuleParser(object):
         truthVal = not self.failureFlag
         for i in range(0, len(self.statements)):
             s = self.statements[i]
-            print(s)
+            # print(s)
             if s.conjunction == 'and':
                 truthVal = truthVal and s.truth_test(model_dict)
             else:

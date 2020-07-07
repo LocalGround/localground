@@ -40,7 +40,6 @@ class MapModel {
     }
 }
 
-
 class LayerModel {
 
     constructor (layerJSON) {

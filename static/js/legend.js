@@ -1,7 +1,6 @@
 class LegendView {
     collection;
     el;
-    childViews;
     constructor (map, mapModel) {
         // add mixins:
         Object.assign(this, mixins);
@@ -9,7 +8,6 @@ class LegendView {
         this.model = mapModel;
         mapModel.registerObserver(this);
         this.collection = this.model.layers;
-        this.childViews = {}
 
         // init legend control container:
         const legend = L.control({position: 'topright'});
@@ -50,19 +48,15 @@ class LegendView {
 
     renderLegendBody () {
         const parentEl = this.el.querySelector('.layer-list');
-        const childViews = this.childViews;
         this.collection.forEach( layerModel => {
             const layerItemView = new LayerItemView(layerModel, parentEl);
             layerItemView.addToDOM();
-            childViews[layerModel.id] = layerItemView;   
         });
     }
 
     toggleLegendVisibility (ev) {
         this.model.legendIsMinimized = !this.model.legendIsMinimized;
         this.model.notifyAll();
-        ev.preventDefault();
-        ev.stopPropagation();
     }
 
     addEventHandlers () {
@@ -74,13 +68,11 @@ class LegendView {
 class LayerItemView {
     model;
     layerModel;
-    childViews;
     el;
     parentEl;
     constructor (layerModel, parentElement) {
         // add mixins:
         Object.assign(this, mixins);
-        this.childViews = {}
 
         this.model = layerModel;
         this.model.registerObserver(this);
@@ -112,11 +104,9 @@ class LayerItemView {
         const layer = this.model;
         const symbols = layer.symbols;
         const parentEl = this.el.querySelector('.symbol-container');
-        const childViews = this.childViews;
         symbols.forEach(symbolModel => {
             const symbolItem = new SymbolItemView(symbolModel, parentEl);
             symbolItem.addToDOM();
-            childViews[symbolModel.id] = symbolItem;
         });
         this.addEventHandlers();
     }
@@ -132,12 +122,10 @@ class LayerItemView {
 
     toggleSymbolDetail (ev) {
         this.model.setIsExpanded(!this.model.isExpanded);
-        ev.stopPropagation();
     }
 
     toggleLayerVisibility (ev) {
         this.model.setIsShowing(!this.model.isShowing);
-        ev.stopPropagation();
     }
 
     addEventHandlers () {
@@ -277,7 +265,7 @@ class ItemView {
         // let the entire application know:
         this.broadcastEvent('set-active-record', ev.currentTarget, {
             recordModel: this.model,
-            triggerPopup: false
+            triggerPopup: true
         });
     }
 

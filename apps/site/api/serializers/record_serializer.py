@@ -7,6 +7,10 @@ from localground.apps.site.api import fields
 from django_hstore.dict import HStoreDict
 import datetime
 import json
+from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
+from localground.apps.site.api.serializers.video_serializer import VideoSerializer
+from localground.apps.site.api.serializers.mapimage_serializer import MapImageSerializerUpdate
+from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 
 
 def force_to_unicode(val):
@@ -22,6 +26,17 @@ def force_to_unicode(val):
         return str(val).decode('utf8')
     else:
         return val.decode('utf8')
+
+
+class FieldSerializer(serializers.ModelSerializer):
+    key = serializers.SerializerMethodField()
+
+    def get_key(self, obj):
+        return obj.col_name
+
+    class Meta:
+        model = models.Field
+        read_only_fields = fields = ('key', 'col_alias')
 
 
 class ChoiceIntField(serializers.ChoiceField):
@@ -58,6 +73,14 @@ class CustomDataTimeField(serializers.DateTimeField):
 
 
 class RecordSerializerMixin(GeometrySerializer):
+
+    def __init__(self, *args, **kwargs):
+        super(RecordSerializerMixin, self).__init__(*args, **kwargs)
+        self.photos = self.context.get('photos')
+        self.audio = self.context.get('audio')
+        self.videos = self.context.get('videos')
+        self.map_images = self.context.get('map_images')
+
     # update_metadata = serializers.SerializerMethodField()
     # url = serializers.HyperlinkedIdentityField(
     '''
@@ -76,28 +99,69 @@ class RecordSerializerMixin(GeometrySerializer):
                 (settings.SERVER_URL, obj.dataset.id, obj.id)
 
     def get_dataset(self, obj):
-        return self.dataset.id
+        fields = obj.dataset.fields
+        return {
+            'id': self.dataset.id,
+            'name': self.dataset.name,
+            'fields': FieldSerializer(fields, many=True, context={'request': {}}).data
+        }
 
     def get_overlay_type(self, obj):
         return 'dataset_{0}'.format(obj.dataset.id)
 
     def get_attached_photos_videos(self, obj):
-        try:
+        if self.photos and self.videos and hasattr(obj, 'photo_video_list'):
+            data = []
+            for item in obj.photo_video_list:
+                overlay_type = item.get('overlay_type')
+                print(item)
+                if overlay_type == 'photo':
+                    photo = self.photos.get(item.get('id'))
+                    photo_dict = PhotoSerializer(photo, context={'request': {}}).data
+                    item.update(photo_dict)
+                    data.append(item)
+                elif overlay_type == 'video':
+                    video = self.videos.get(item.get('id'))
+                    video_dict = VideoSerializer(video, context={'request': {}}).data
+                    item.update(video_dict)
+                    data.append(item)
+            return data
+        elif hasattr(self, 'photo_video_list'):
             return obj.photo_video_list
-        except Exception:
+        else:
             return None
+        
 
     def get_attached_map_images(self, obj):
-        try:
+        if self.map_images and hasattr(obj, 'map_image_list') and obj.map_image_list is not None:
+            data = []
+            for item in obj.map_image_list:
+                map_image = self.map_images.get(item.get('id'))
+                map_image_dict = MapImageSerializerUpdate(map_image, context={'request': {}}).data
+                item.update(map_image_dict)
+                data.append(item)
+            return data
+
+        elif hasattr(obj, 'map_image_list'):
             return obj.map_image_list
-        except Exception:
+        else:
             return None
 
     def get_attached_audio(self, obj):
-        try:
+        if self.audio and hasattr(obj, 'audio_list') and obj.audio_list is not None:
+            data = []
+            for item in obj.audio_list:
+                audio = self.audio.get(item.get('id'))
+                audio_dict = AudioSerializer(audio, context={'request': {}}).data
+                item.update(audio_dict)
+                data.append(item)
+            return data
+
+        elif hasattr(obj, 'audio_list'):
             return obj.audio_list
-        except Exception:
+        else:
             return None
+
 
     class Meta:
         model = models.Record
@@ -107,9 +171,7 @@ class RecordSerializerMixin(GeometrySerializer):
         depth = 0
 
     def _get_field_by_col_name(self, col_name):
-        print self.dataset.fields
         for field in self.dataset.fields:
-            print field.col_name, col_name
             if field.col_name == col_name:
                 return field.unique_key
         raise exceptions.ValidationError(
