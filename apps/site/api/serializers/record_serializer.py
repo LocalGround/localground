@@ -80,6 +80,7 @@ class RecordSerializerMixin(GeometrySerializer):
         self.audio = self.context.get('audio')
         self.videos = self.context.get('videos')
         self.map_images = self.context.get('map_images')
+        self.display_field = self.context.get('display_field')
 
     # update_metadata = serializers.SerializerMethodField()
     # url = serializers.HyperlinkedIdentityField(
@@ -93,10 +94,17 @@ class RecordSerializerMixin(GeometrySerializer):
     attached_photos_videos = serializers.SerializerMethodField()
     attached_map_images = serializers.SerializerMethodField()
     attached_audio = serializers.SerializerMethodField()
+    display_value = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         return '%s/api/0/datasets/%s/data/%s' % \
                 (settings.SERVER_URL, obj.dataset.id, obj.id)
+    
+    def get_display_value(self, obj):
+        if self.display_field:
+            return obj.attributes.get(self.display_field.col_name_db)
+        else:
+            return None
 
     def get_dataset(self, obj):
         fields = obj.dataset.fields
@@ -165,7 +173,7 @@ class RecordSerializerMixin(GeometrySerializer):
     class Meta:
         model = models.Record
         fields = GeometrySerializer.field_list + \
-            ('dataset', 'extras', 'url', 'attached_photos_videos',
+            ('dataset', 'extras', 'url', 'display_value', 'attached_photos_videos',
              'attached_map_images', 'attached_audio')
         depth = 0
 
@@ -324,6 +332,7 @@ def create_dynamic_serializer(dataset, **kwargs):
             attrs.update({
                 field.col_name: createCharField(field)
             })
+
 
     return type(
         'DynamicMarkerSerializer', (RecordSerializerMixin, ), attrs

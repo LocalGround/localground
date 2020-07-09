@@ -109,7 +109,11 @@ class SymbolModel {
     initRecords (recordsJSON) {
         this.records = [];
         for (const recordJSON of recordsJSON) {
-            this.records.push(new RecordModel(recordJSON, [], this));
+            this.records.push(new RecordModel({
+                recordJSON: recordJSON, 
+                fieldsJSON: [], 
+                symbolModel: this
+            }));
         }
     }
 
@@ -133,14 +137,14 @@ class SymbolModel {
 }
 
 class RecordModel {
-    constructor (recordJSON, fieldsJSON, symbolModel) {
+    constructor (opts) {
         Object.assign(this, ModelMixins);
-        Object.assign(this, recordJSON);
+        Object.assign(this, opts.recordJSON);
         this.isActive = false;
         this.observers = [];
 
-        this.symbolModel = symbolModel;
-        this.fields = fieldsJSON;
+        this.symbolModel = opts.symbolModel;
+        this.fields = opts.fieldsJSON;
 
     }
 

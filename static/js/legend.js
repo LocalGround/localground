@@ -245,7 +245,7 @@ class ItemView {
 
     renderElement () {
         return this.createElementFromHTML(`
-            <div class="${this.getClass()}">${this.model.name}</div>`);
+            <div class="${this.getClass()}">${this.model.display_value}</div>`);
     }
 
     update () {

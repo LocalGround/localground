@@ -17,13 +17,17 @@ class Card {
         if (thumbnail) {
             mobileHeader = `<h2><img src="${thumbnail}" /><span>${model.name}</span></h2>`
         }
+        let description = '';
+        if (model.description) {
+            description = `<p>${model.description.replace(/(?:\r\n|\r|\n)/g, '<br>')}</p>`;
+        }
         this.el.innerHTML = `<div class="card">
             <div class="desktop">
                 <a class="less" href="#">x</a>
                 <h2>${model.name}</h2>
                 <section class="carousel-container"></section>
                 <section class="audio-container"></section>
-                <p>${model.description.replace(/(?:\r\n|\r|\n)/g, '<br>')}</p>
+                ${description}
                 ${properties}
             </div>
             <section class="mobile card-header-minimized">

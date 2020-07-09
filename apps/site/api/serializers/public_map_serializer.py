@@ -35,6 +35,7 @@ class LayerSerializerPublic(BaseSerializer):
     dataset = serializers.SerializerMethodField(read_only=True)
     symbols = serializers.SerializerMethodField(read_only=True)
     isShowing = serializers.SerializerMethodField(read_only=True)
+    display_field = serializers.SerializerMethodField(read_only=True)
 
     def get_dataset(self, obj):
         return 'dataset_{0}'.format(obj.dataset.id)
@@ -46,6 +47,9 @@ class LayerSerializerPublic(BaseSerializer):
             isShowing += symbol.isShowing
         return isShowing
 
+    def get_display_field(self, obj):
+        return obj.display_field.col_name
+
     def get_symbols(self, obj):
         serializer = create_dynamic_serializer(obj.dataset)
         records = serializer(
@@ -54,7 +58,8 @@ class LayerSerializerPublic(BaseSerializer):
                 'photos': self.context.get('photos'),
                 'audio': self.context.get('audio'),
                 'videos': self.context.get('videos'),
-                'map_images': self.context.get('map_images')
+                'map_images': self.context.get('map_images'),
+                'display_field': obj.display_field
             }
         ).data
         symbols = {}
@@ -77,7 +82,7 @@ class LayerSerializerPublic(BaseSerializer):
     
     class Meta:
         model = models.Layer
-        fields = BaseSerializer.field_list + ('title', 'dataset', 'symbols', 'isShowing')
+        fields = BaseSerializer.field_list + ('title', 'dataset', 'symbols', 'isShowing', 'display_field')
         depth = 0
 
 class MapSerializerPublic(MapSerializerList):
@@ -109,7 +114,7 @@ class MapSerializerPublic(MapSerializerList):
 
     def getMediaMap(self, ModelClass, obj, **kwargs):
         media = {}
-        media_list = ModelClass.objects.get_objects(obj.owner, project=obj.project, **kwargs)
+        media_list = ModelClass.objects.filter(project=obj.project)
         for rec in media_list:
             media[rec.id] = rec 
         return media
