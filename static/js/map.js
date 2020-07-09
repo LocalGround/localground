@@ -41,7 +41,7 @@ class Map {
             setTimeout((() => {
                 L.popup()
                 .setLatLng(latLng)
-                .setContent(this.selectedRecord.name)
+                .setContent(this.selectedRecord.display_value)
                 .openOn(this.map)
             }).bind(this), 10);
         }
