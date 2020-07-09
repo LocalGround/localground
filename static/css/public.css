@@ -882,26 +882,38 @@ main.with-card #card-holder.fullscreen .less:hover {
     margin-left: 0px;
     margin-right: 0px;
   }
-  header h1 {
-    font: 2em "Amatic SC", cursive;
-    -webkit-box-pack: left;
-        -ms-flex-pack: left;
-            justify-content: left;
-    text-align: left;
-    margin: 0px;
-    margin-left: 10px;
+  header .heading {
     padding: 0px;
   }
-  .header-right {
+  header .heading h1 {
+    margin: 0px;
+    -ms-grid-row: 2;
+    -ms-grid-column: 1;
+    grid-area: left;
+    font: 2.0em "Amatic SC", cursive;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding: 0px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 90%;
+  }
+  header .header-right {
     justify-self: flex-end;
     -ms-grid-columns: 100%;
         grid-template-columns: 100%;
   }
-  .header-right .search {
+  header .header-right .search {
     display: none;
   }
-  .header-right .menu {
-    margin-right: 10px;
+  header .header-right .menu {
+    margin-right: 5px;
+  }
+  header .header-right .menu .menu-item {
+    margin-left: 5px;
   }
   main {
     margin-left: 10px;
