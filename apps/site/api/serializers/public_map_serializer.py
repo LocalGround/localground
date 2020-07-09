@@ -89,16 +89,59 @@ class MapSerializerPublic(MapSerializerList):
     layers = serializers.SerializerMethodField()
     basemap = serializers.SerializerMethodField()
     project_id = serializers.SerializerMethodField()
+    title_card = serializers.SerializerMethodField()
+
+    def get_title_card(self, obj):
+        display_title_card = obj.metadata.get('displayTitleCard')
+        if not display_title_card:
+            return None
+        
+        title_card = obj.metadata.get('titleCardInfo')
+        media = title_card.get('media')
+        # return title_card
+        
+        if not media:
+            title_card['attached_photos_videos'] = []
+            title_card['attached_audio'] = []
+            return title_card
+
+
+        photos = self.get_photos(obj)
+        videos = self.get_videos(obj)
+        audio_files = self.get_audio(obj)
+        
+        attached_photos_videos = []
+        attached_audio = []
+        for item in media:
+            overlay_type = item.get('overlay_type')
+            if overlay_type == 'photo':
+                photo = photos.get(item.get('id'))
+                photo_dict = PhotoSerializer(photo, context={'request': {}}).data
+                attached_photos_videos.append(photo_dict)
+            elif overlay_type == 'video':
+                video = videos.get(item.get('id'))
+                video_dict = VideoSerializer(video, context={'request': {}}).data
+                attached_photos_videos.append(video_dict)
+            elif overlay_type == 'audio':
+                audio = audio_files.get(item.get('id'))
+                audio_dict = AudioSerializer(audio, context={'request': {}}).data
+                attached_audio.append(audio_dict)
+
+        title_card['attached_photos_videos'] = attached_photos_videos
+        title_card['attached_audio'] = attached_audio
+        # del title_card['media']
+        return title_card
     
     def get_layers(self, obj):
         layers = models.Layer.objects.filter(styled_map=obj)
         data = LayerSerializerPublic(
             layers, many=True, context={
                 'request': {},
-                'photos': self.getMediaMap(models.Photo, obj),
-                'audio': self.getMediaMap(models.Audio, obj),
-                'videos': self.getMediaMap(models.Video, obj),
-                'map_images': self.getMediaMap(models.MapImage, obj, processed_only=False)
+                'photos': self.get_photos(obj),
+                'audio': self.get_audio(obj),
+                'videos': self.get_videos(obj),
+                'map_images': self.get_map_images(obj),
+                'title_card': self.get_title_card(obj)
             }
         ).data
         layers_dict = {}
@@ -112,7 +155,7 @@ class MapSerializerPublic(MapSerializerList):
     def get_project_id(self, obj):
         return obj.project.id
 
-    def getMediaMap(self, ModelClass, obj, **kwargs):
+    def get_media_map(self, ModelClass, obj, **kwargs):
         media = {}
         media_list = (
             ModelClass
@@ -124,10 +167,30 @@ class MapSerializerPublic(MapSerializerList):
             media[rec.id] = rec 
         return media
 
+    def get_photos(self, obj):
+        if not hasattr(self, 'photos'):
+            self.photos = self.get_media_map(models.Photo, obj)
+        return self.photos
+
+    def get_audio(self, obj):
+        if not hasattr(self, 'audio'):
+            self.audio = self.get_media_map(models.Audio, obj)
+        return self.audio
+        
+    def get_videos(self, obj):
+        if not hasattr(self, 'videos'):
+            self.videos = self.get_media_map(models.Video, obj)
+        return self.videos
+
+    def get_map_images(self, obj):
+        if not hasattr(self, 'map_images'):
+            self.map_images = self.get_media_map(models.MapImage, obj)
+        return self.map_images
+
     
     class Meta:
         model = models.StyledMap
         fields = MapSerializerList.field_list + (
-            'layers', 'name', 'project_id', 'basemap'
+            'layers', 'name', 'project_id', 'basemap', 'title_card'
         )
         depth = 0

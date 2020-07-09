@@ -30,6 +30,13 @@ class MapModel {
         this.initLayers(Object.values(mapJSON.layers));
         this.datasets = mapJSON.datasets;
         this.media = mapJSON.media;
+        if (mapJSON.title_card) {
+            this.titleCard = new RecordModel({
+                recordJSON: mapJSON.title_card, 
+                fieldsJSON: [], 
+                symbolModel: null
+            });
+        }
     }
 
     initLayers (layersJSON) {
@@ -143,9 +150,20 @@ class RecordModel {
         this.isActive = false;
         this.observers = [];
 
+        this.applyTitleCardCrosswalk();
+
         this.symbolModel = opts.symbolModel;
         this.fields = opts.fieldsJSON;
 
+    }
+
+    applyTitleCardCrosswalk () {
+        // if (this.media) {
+        //     this.attached_photos_videos = this.media;
+        // }
+        if (this.header) {
+            this.name = this.display_value = this.header;
+        }
     }
 
     setIsActive (isActive) {

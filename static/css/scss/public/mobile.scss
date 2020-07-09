@@ -14,8 +14,14 @@
     // header {
     //     grid-template-columns: auto 170px;
     // }
-    .search > div {
-        width: 80%;
+    // .search > div {
+    //     width: 80%;
+    // }
+    header {
+        grid-template-columns: 1fr 1fr;
+        .search {
+            margin-right: 10px;
+        }
     }
     main.with-card { 
         grid-template-columns: 1fr 1fr;
@@ -45,7 +51,19 @@
         justify-content: left;
         text-align: left;
         margin: 0px;
+        margin-left: 10px;
         padding: 0px;
+    }
+
+    .header-right {
+        justify-self: flex-end;
+        grid-template-columns: 100%;
+        .search {
+            display: none;
+        }
+        .menu {
+            margin-right: 10px;
+        }
     }
     // header {
     //     padding: 10px;

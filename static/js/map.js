@@ -11,11 +11,23 @@ class Map {
         this.drawMap();
         this.renderData();
         this.addEventListeners();
+
+        this.showTitleCard();
     }
 
     addEventListeners () {
+        this.attachListener("header h1", "click", this.showTitleCard.bind(this));
         document.addEventListener("set-active-record", this.setActiveRecord.bind(this));
         document.addEventListener("refactor-map-bounds", this.map.invalidateSize.bind(this));
+    }
+
+    showTitleCard () {
+        if (!this.model.titleCard) {
+            return;
+        }
+        const card = new Card(this.model.titleCard, '#card-holder');
+        document.querySelector('main').classList.add('with-card');
+        card.addCardToDOM();
     }
 
     setActiveRecord (ev) {
@@ -60,6 +72,22 @@ class Map {
                 'url': 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}',
                 'subdomains': 'abcd'
             },
+            'roadmap': {
+                'url': 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+                'subdomains': ['mt0','mt1','mt2','mt3']
+            },
+            'satellite': {
+                'url': 'https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+                'subdomains': ['mt0','mt1','mt2','mt3']
+            },
+            'terrain': {
+                'url': 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
+                'subdomains': ['mt0','mt1','mt2','mt3']
+            },
+            'hybrid': {
+                'url': 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
+                'subdomains': ['mt0','mt1','mt2','mt3']
+            },
             'toner-background': {
                 'url': 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.{ext}',
                 'subdomains': 'abcd'
@@ -70,17 +98,25 @@ class Map {
         }
         // set tileset; default to toner
         let tileset = tilesets[this.mapData.basemap];
-        // let tileset = tilesets['esri-grayscale'];
         if (!tileset) {
-            tileset = tilesets['watercolor'];
+            tileset = tilesets['toner-background'];
         }
-        var basemapURL = tileset.url
-        var basemap = L.tileLayer(basemapURL, {
-            // subdomains: tileset.subdomains,
-            minZoom: 0,
-            maxZoom: 20,
-            ext: 'png'
-        });
+        var basemapURL = tileset.url;
+        var basemap;
+        if (tileset.subdomains) {
+            basemap = L.tileLayer(basemapURL, {
+                subdomains: tileset.subdomains,
+                minZoom: 0,
+                maxZoom: 20,
+                ext: 'png'
+            });
+        } else {
+            var basemap = L.tileLayer(basemapURL, {
+                minZoom: 0,
+                maxZoom: 20,
+                ext: 'png'
+            });
+        }
         const center = this.mapData.center.coordinates;
         this.map = L.map('mapid', {
             layers: [basemap],

@@ -61,6 +61,9 @@ class Card {
     }
 
     getPropertiesTable (model) {
+        if (!model.dataset || !model.dataset.fields) {
+            return '';
+        }
         const rows = [];
         for (const field of model.dataset.fields) {
             if (['name', 'description'].find(model => {

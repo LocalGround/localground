@@ -18,27 +18,31 @@
 <body style="padding-bottom: 50px;">
     {% if map %}
         <header>
-            <h1></h1>
-            <!-- <section class="search">
-                <div>
-                    <input type="text" id="search-bar" placeholder="Search">
-                    <a class="filter-button" href="#"><i class="fas fa-filter"></i></a>
-                </div>
-            </section> -->
-            <section class="menu">
-                <a class="menu-item" href="#">
-                    <i class="fas fa-th-large"></i>
-                </a>
-                <a class="menu-item" href="#">
-                    <i class="fas fa-table"></i>
-                </a>
-                <a class="menu-item active" href="#">
-                    <i class="fas fa-map"></i>
-                </a>
-                <a class="menu-item" href="code.html">
-                    <i class="fas fa-code"></i>
-                </a>
-            </section> 
+            <section class="heading">
+                <h1></h1>
+            </section>
+            <section class="header-right">
+                <section class="search">
+                    <div>
+                        <input type="text" id="search-bar" placeholder="Search">
+                        <a class="filter-button" href="#"><i class="fas fa-filter"></i></a>
+                    </div>
+                </section>
+                <section class="menu">
+                    <a class="menu-item" href="#">
+                        <i class="fas fa-th-large"></i>
+                    </a>
+                    <a class="menu-item" href="#">
+                        <i class="fas fa-table"></i>
+                    </a>
+                    <a class="menu-item active" href="#">
+                        <i class="fas fa-map"></i>
+                    </a>
+                    <a class="menu-item" href="code.html">
+                        <i class="fas fa-code"></i>
+                    </a>
+                </section> 
+            </section>
         </header>
         <main class="map">
             <section id="card-holder"></section>
@@ -81,7 +85,7 @@
  <script src="/static/js/card.js"></script>
  <script src="/static/js/legend.js"></script>
  <script src="/static/js/map.js"></script>
- <!-- <script src="/static/js/filter.js"></script>  -->
+ <script src="/static/js/filter.js"></script> 
 
  {% if map %}
     <script>

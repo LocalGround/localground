@@ -29,11 +29,9 @@ header {
   height: 60px;
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: auto 200px;
-      grid-template-columns: auto 200px;
+  -ms-grid-columns: 7fr 10fr;
+      grid-template-columns: 7fr 10fr;
       grid-template-areas: "left right";
-  padding-left: 30px;
-  padding-right: 30px;
 }
 
 header > * {
@@ -48,29 +46,65 @@ header > * {
           justify-content: center;
 }
 
-header h1 {
+header .heading {
+  -ms-grid-row: 1;
+  -ms-grid-column: 1;
+  grid-area: left;
+  padding-left: 20px;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+}
+
+header .heading h1 {
+  margin: 0px;
   -ms-grid-row: 1;
   -ms-grid-column: 1;
   grid-area: left;
   font: 2.5em "Amatic SC", cursive;
+  margin-top: 5px;
   margin-bottom: 10px;
-  -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
-  margin: 0px;
+  padding: 0px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+header .heading h1:hover {
+  background: #EEE;
 }
 
 .mobile {
   display: none;
 }
 
-.menu {
+.header-right {
   -ms-grid-row: 1;
   -ms-grid-column: 2;
   grid-area: right;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: calc(100% - 150px) 150px;
+      grid-template-columns: calc(100% - 150px) 150px;
+}
+
+.menu {
   -webkit-box-pack: end;
       -ms-flex-pack: end;
           justify-content: flex-end;
+}
+
+.search {
+  margin-right: 30px;
+}
+
+.search > div {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 .menu-item {
@@ -818,8 +852,12 @@ main.with-card #card-holder.fullscreen .less:hover {
     -ms-grid-columns: 1fr 1fr;
         grid-template-columns: 1fr 1fr;
   }
-  .search > div {
-    width: 80%;
+  header {
+    -ms-grid-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+  }
+  header .search {
+    margin-right: 10px;
   }
   main.with-card {
     -ms-grid-columns: 1fr 1fr;
@@ -851,7 +889,19 @@ main.with-card #card-holder.fullscreen .less:hover {
             justify-content: left;
     text-align: left;
     margin: 0px;
+    margin-left: 10px;
     padding: 0px;
+  }
+  .header-right {
+    justify-self: flex-end;
+    -ms-grid-columns: 100%;
+        grid-template-columns: 100%;
+  }
+  .header-right .search {
+    display: none;
+  }
+  .header-right .menu {
+    margin-right: 10px;
   }
   main {
     margin-left: 10px;
