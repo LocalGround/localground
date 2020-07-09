@@ -18,7 +18,7 @@
     //     width: 80%;
     // }
     header {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 5fr 4fr;
         .search {
             margin-right: 10px;
         }
@@ -52,6 +52,7 @@
     header {
         .heading {
             padding: 0px;
+            overflow: hidden;
             h1 {
                 margin: 0px;
                 -ms-grid-row: 1;
@@ -66,7 +67,7 @@
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 overflow: hidden;
-                width: 90%;
+                // width: 90%;
             }
         }
         .header-right {

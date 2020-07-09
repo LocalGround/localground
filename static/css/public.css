@@ -853,8 +853,8 @@ main.with-card #card-holder.fullscreen .less:hover {
         grid-template-columns: 1fr 1fr;
   }
   header {
-    -ms-grid-columns: 1fr 1fr;
-        grid-template-columns: 1fr 1fr;
+    -ms-grid-columns: 5fr 4fr;
+        grid-template-columns: 5fr 4fr;
   }
   header .search {
     margin-right: 10px;
@@ -884,6 +884,7 @@ main.with-card #card-holder.fullscreen .less:hover {
   }
   header .heading {
     padding: 0px;
+    overflow: hidden;
   }
   header .heading h1 {
     margin: 0px;
@@ -899,7 +900,6 @@ main.with-card #card-holder.fullscreen .less:hover {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    width: 90%;
   }
   header .header-right {
     justify-self: flex-end;
