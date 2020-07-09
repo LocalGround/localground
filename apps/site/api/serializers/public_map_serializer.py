@@ -114,7 +114,12 @@ class MapSerializerPublic(MapSerializerList):
 
     def getMediaMap(self, ModelClass, obj, **kwargs):
         media = {}
-        media_list = ModelClass.objects.filter(project=obj.project)
+        media_list = (
+            ModelClass
+                .objects.distinct()
+                .select_related('owner', 'last_updated_by')
+                .filter(project=obj.project)
+        )
         for rec in media_list:
             media[rec.id] = rec 
         return media
