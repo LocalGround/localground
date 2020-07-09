@@ -72,7 +72,7 @@ class Map {
         let tileset = tilesets[this.mapData.basemap];
         // let tileset = tilesets['esri-grayscale'];
         if (!tileset) {
-            tileset = tilesets['toner-lite'];
+            tileset = tilesets['watercolor'];
         }
         var basemapURL = tileset.url
         var basemap = L.tileLayer(basemapURL, {
