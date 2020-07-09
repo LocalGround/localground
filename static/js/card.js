@@ -13,9 +13,9 @@ class Card {
         const model = this.model;
         const properties = this.getPropertiesTable(model);
         const thumbnail = model.getThumbnail();
-        let mobileHeader = `<h2><span>${model.name}</span></h2>`
+        let mobileHeader = `<h2><span>${model.display_value}</span></h2>`
         if (thumbnail) {
-            mobileHeader = `<h2><img src="${thumbnail}" /><span>${model.name}</span></h2>`
+            mobileHeader = `<h2><img src="${thumbnail}" /><span>${model.display_value}</span></h2>`
         }
         let description = '';
         if (model.description) {
@@ -24,7 +24,7 @@ class Card {
         this.el.innerHTML = `<div class="card">
             <div class="desktop">
                 <a class="less" href="#">x</a>
-                <h2>${model.name}</h2>
+                <h2>${model.display_value}</h2>
                 <section class="carousel-container"></section>
                 <section class="audio-container"></section>
                 ${description}
