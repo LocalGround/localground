@@ -228,8 +228,8 @@ table td, table th {
 h2 {
   font: 2em "Amatic SC", cursive;
   color: #777;
+  margin-top: 0;
   margin-bottom: 0.5em;
-  /* display: inline; */
 }
 
 .card {
@@ -376,23 +376,23 @@ h2 {
 }
 
 .carousel .slide.left {
-  left: -110%;
+  left: -150%;
   -webkit-transition: 0.45s ease;
   transition: 0.45s ease;
 }
 
 .carousel .slide.right {
-  left: 110%;
+  left: 150%;
   -webkit-transition: 0.45s ease;
   transition: 0.45s ease;
 }
 
 .carousel .slide.hide-left {
-  left: -110%;
+  left: -150%;
 }
 
 .carousel .slide.hide-right {
-  left: 110%;
+  left: 150%;
 }
 
 .carousel .slide.current {
