@@ -22,6 +22,7 @@ class Card {
                 <a class="less" href="#">x</a>
                 <h2>${model.name}</h2>
                 <section class="carousel-container"></section>
+                <section class="audio-container"></section>
                 <p>${model.description.replace(/(?:\r\n|\r|\n)/g, '<br>')}</p>
                 ${properties}
             </div>
@@ -30,10 +31,22 @@ class Card {
                 <a class="more" href="#"><i class="fas fa-expand"></i></a>
             </section>
         </div>`;
-        const carousel = new Carousel(
-            model.attached_photos_videos, 
-            this.el.querySelector('.carousel-container'));
-        carousel.addToDOM();
+
+        //init carousel
+        this.carousel = new Carousel(
+            this.carousel = model.attached_photos_videos,
+            '.carousel-container'
+        );
+
+        // init audio players
+        this.audioPlayers = [];
+        for (const audioModel of model.attached_audio) {
+            const player = new AudioPlayer(
+                audioModel,
+                '.audio-container'
+            );
+            this.audioPlayers.push(player);
+        }
 
         // add event handlers to card:
         document.querySelector('.mobile .more').onclick = this.showFullscreen.bind(this);

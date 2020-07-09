@@ -159,6 +159,87 @@ table td, table th {
           justify-content: center;
 }
 
+.audio-player {
+  width: 100%;
+  padding: 35px 0px 0px 0px;
+  margin: auto;
+}
+
+.audio-player:last-child {
+  padding: 35px 0px 35px 0px;
+}
+
+.audio-player .player-controls {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+      align-items: center;
+}
+
+.audio-player .playAudio {
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+  border: none;
+  width: 30px;
+  height: 30px;
+  background: url("https://image.flaticon.com/icons/svg/149/149125.svg") no-repeat center;
+  background-size: contain;
+}
+
+.audio-player .playAudio.pause {
+  background: url("https://image.flaticon.com/icons/svg/149/149127.svg") no-repeat center;
+  background-size: contain;
+}
+
+.audio-player p {
+  margin: 0 0 0 5px;
+  line-height: 1;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.audio-player p small {
+  font-size: 10px;
+}
+
+.audio-player p.caption {
+  width: 100%;
+  text-align: center;
+  display: inline-block;
+  font-size: 0.8em;
+}
+
+.audio-player .seekObjContainer {
+  position: relative;
+  width: calc(100% - 110px);
+  margin: 0 5px;
+  height: 5px;
+}
+
+.audio-player .seekObjContainer .seekObj {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #e3e3e3;
+  border: 1px solid #CCC;
+}
+
+.audio-player .seekObjContainer .percentage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background-color: #7B8CDE;
+}
+
 .grid {
   display: -ms-grid;
   display: grid;

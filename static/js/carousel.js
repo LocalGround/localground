@@ -1,9 +1,10 @@
 class Carousel {
-    constructor (photosVideos, parentElement) {
+    constructor (photosVideos, selector) {
         Object.assign(this, mixins);
         this.photosVideos = photosVideos;
-        this.parentEl = parentElement;
+        this.parentEl = document.querySelector(selector);
         this.numSlides = this.photosVideos.length;
+        this.addToDOM();
     } 
 
     renderVideoCard (item) {

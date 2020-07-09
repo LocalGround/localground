@@ -1,0 +1,75 @@
+.audio-player {
+    width: 100%;
+    padding: 35px 0px 0px 0px;
+    margin: auto;
+
+    &:last-child {
+        padding: 35px 0px 35px 0px;
+    }
+
+    .player-controls {
+        position: relative;
+        display: -webkit-box;
+        display: flex;
+        -webkit-box-pack: justify;
+                justify-content: space-between;
+        -webkit-box-align: center;
+                align-items: center;
+    }
+
+    .playAudio {
+        -webkit-appearance: none;
+        outline: none;
+        cursor: pointer;
+        border: none;
+        width: 30px;
+        height: 30px;
+        background: url("https://image.flaticon.com/icons/svg/149/149125.svg") no-repeat center;
+        background-size: contain;
+
+        &.pause {
+            background: url("https://image.flaticon.com/icons/svg/149/149127.svg") no-repeat center;
+            background-size: contain;
+        }
+    }
+
+    p {
+        margin: 0 0 0 5px;
+        line-height: 1;
+        display: -webkit-inline-box;
+        display: inline-flex;
+        small { font-size: 10px; }
+
+        &.caption {
+            width: 100%;
+            text-align: center;
+            display: inline-block;
+            font-size: 0.8em;
+        }
+    }
+    
+    .seekObjContainer {
+        position: relative;
+        width: calc(100% - 110px);
+        margin: 0 5px;
+        height: 5px;
+    
+        .seekObj {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #e3e3e3;
+            border: 1px solid #CCC;
+        }
+    
+        .percentage {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background-color: #7B8CDE;
+        }
+    }
+}
+
+
