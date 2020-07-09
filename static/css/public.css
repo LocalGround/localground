@@ -279,14 +279,34 @@ h2 {
   width: 100%;
 }
 
-.card .properties td:first-child {
+.card .properties.table-style td:first-child {
   width: 120px;
   text-align: right;
   padding-right: 5px;
 }
 
-.card .properties td strong {
+.card .properties.table-style strong {
   font-weight: 600;
+}
+
+.card .properties.paragraph-style th, .card .properties.paragraph-style td {
+  font-size: 0.9em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100% !important;
+  font-size: 1.0em;
+  border: none;
+}
+
+.card .properties.paragraph-style td:first-child {
+  margin-top: 15px;
+  font-weight: 600;
+  margin-bottom: -8px;
+}
+
+.card .properties.paragraph-style strong {
+  font-weight: 500;
 }
 
 .card-header-minimized img {

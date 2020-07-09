@@ -50,18 +50,39 @@ h2 {
         display: none;
     }
     .properties {
+        
         width: 100%;
-        td:first-child {
-            width: 120px;
-            text-align: right;
-            padding-right: 5px;
-        }
-        td {
+        &.table-style {
+            td:first-child {
+                width: 120px;
+                text-align: right;
+                padding-right: 5px;
+            }
             strong {
                 font-weight: 600;
             }
         }
+
+        &.paragraph-style {
+            th, td {
+                font-size: 0.9em;
+                display: flex;
+                width: 100% !important;
+                font-size: 1.0em;
+                border: none;
+            }
+            td:first-child {
+                margin-top: 15px;
+                font-weight: 600;
+                margin-bottom: -8px;
+            }
+            strong {
+                font-weight: 500;
+            }
+
+        }
     }
+    
 }
 
 

@@ -74,7 +74,7 @@ class Card {
             );
         }  
         return `
-            <table class="properties">
+            <table class="properties paragraph-style">
                 ${rows.join('')}
             </table>
         `;
