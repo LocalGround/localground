@@ -43,13 +43,15 @@ class Card {
         );
 
         // init audio players
-        this.audioPlayers = [];
-        for (const audioModel of model.attached_audio) {
-            const player = new AudioPlayer(
-                audioModel,
-                '.audio-container'
-            );
-            this.audioPlayers.push(player);
+        if (model.attached_audio) {
+            this.audioPlayers = [];
+            for (const audioModel of model.attached_audio) {
+                const player = new AudioPlayer(
+                    audioModel,
+                    '.audio-container'
+                );
+                this.audioPlayers.push(player);
+            }
         }
 
         // add event handlers to card:

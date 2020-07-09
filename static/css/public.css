@@ -11,7 +11,7 @@ html, body {
 }
 
 body {
-  padding-top: 70px;
+  padding-top: 60px;
 }
 
 body, p {
@@ -26,12 +26,12 @@ header {
   background-color: white;
   width: 100vw;
   top: 0;
-  height: 70px;
+  height: 60px;
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: 200px auto 200px;
-      grid-template-columns: 200px auto 200px;
-      grid-template-areas: "left middle right";
+  -ms-grid-columns: auto 200px;
+      grid-template-columns: auto 200px;
+      grid-template-areas: "left right";
   padding-left: 30px;
   padding-right: 30px;
 }
@@ -52,7 +52,7 @@ header h1 {
   -ms-grid-row: 1;
   -ms-grid-column: 1;
   grid-area: left;
-  font: 3em "Amatic SC", cursive;
+  font: 2.5em "Amatic SC", cursive;
   margin-bottom: 10px;
   -webkit-box-pack: start;
       -ms-flex-pack: start;
@@ -66,28 +66,11 @@ header h1 {
 
 .menu {
   -ms-grid-row: 1;
-  -ms-grid-column: 3;
+  -ms-grid-column: 2;
   grid-area: right;
   -webkit-box-pack: end;
       -ms-flex-pack: end;
           justify-content: flex-end;
-}
-
-.search {
-  -ms-grid-row: 1;
-  -ms-grid-column: 2;
-  grid-area: middle;
-}
-
-.search > div {
-  width: 70%;
-  min-width: 330px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
 }
 
 .menu-item {
@@ -307,23 +290,37 @@ h2 {
 }
 
 .card-header-minimized img {
-  height: 60px;
+  height: 70px;
   float: left;
 }
 
 .card-header-minimized h2 {
   margin: 0;
-  height: 60px;
-  line-height: 60px;
-  padding: 0px 40px 0px 0px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  height: 70px;
+  line-height: 70px;
 }
 
 .card-header-minimized h2 span {
-  display: inline-block;
-  margin-left: 8px;
+  display: inherit;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 40px;
+  padding-left: 10px;
+  overflow: hidden;
+}
+
+.card-header-minimized .more {
+  bottom: 24px;
+  background: white;
+  position: absolute;
+  right: 7px;
+  text-decoration: none;
+  color: #444;
+  font-size: 1.5rem;
+}
+
+.card-header-minimized .more:hover {
+  color: #7B8CDE;
 }
 
 .carousel {
@@ -334,7 +331,7 @@ h2 {
 }
 
 .carousel > section {
-  height: 340px;
+  height: 390px;
 }
 
 .carousel .fa {
@@ -362,7 +359,7 @@ h2 {
 }
 
 .carousel .slide img, .carousel .slide iframe {
-  height: 310px;
+  height: 360px;
   margin-left: auto;
   margin-right: auto;
   display: block;
@@ -676,7 +673,7 @@ body {
 }
 
 main {
-  height: calc(100vh - 70px);
+  height: calc(100vh - 60px);
   display: -ms-grid;
   display: grid;
 }
@@ -691,20 +688,6 @@ main {
   transition-property: top, bottom;
   -webkit-transition-duration: .3s, .3s;
           transition-duration: .3s, .3s;
-}
-
-.more {
-  bottom: 14px;
-  background: white;
-  position: absolute;
-  right: 7px;
-  text-decoration: none;
-  color: #444;
-  font-size: 1.5rem;
-}
-
-.more:hover {
-  color: #7B8CDE;
 }
 
 main.with-card #card-holder {
@@ -815,10 +798,6 @@ main.with-card #card-holder.fullscreen .less:hover {
     -ms-grid-columns: 1fr 1fr;
         grid-template-columns: 1fr 1fr;
   }
-  header {
-    -ms-grid-columns: 200px auto 170px;
-        grid-template-columns: 200px auto 170px;
-  }
   .search > div {
     width: 80%;
   }
@@ -832,7 +811,7 @@ main.with-card #card-holder.fullscreen .less:hover {
   .card > div {
     border: none;
     margin: 0px;
-    padding: 10px;
+    padding: 10px 20px 10px 20px;
   }
   .grid {
     -ms-grid-columns: 1fr;
@@ -854,23 +833,6 @@ main.with-card #card-holder.fullscreen .less:hover {
     margin: 0px;
     padding: 0px;
   }
-  header {
-    padding: 10px;
-    height: 110px;
-    /* border-bottom: solid 1px #CCC; */
-    -ms-grid-columns: 1fr 1fr;
-        grid-template-columns: 1fr 1fr;
-    -ms-grid-rows: auto auto;
-        grid-template-rows: auto auto;
-        grid-template-areas: "left right" "middle middle";
-  }
-  body {
-    padding-top: 110px;
-  }
-  .search > div {
-    width: 100%;
-    padding-top: 5px;
-  }
   main {
     margin-left: 10px;
     margin-right: 10px;
@@ -889,12 +851,12 @@ main.with-card #card-holder.fullscreen .less:hover {
   main.with-card {
     -ms-grid-columns: auto;
         grid-template-columns: auto;
-    -ms-grid-rows: auto 100px;
-        grid-template-rows: auto 100px;
+    -ms-grid-rows: auto 70px;
+        grid-template-rows: auto 70px;
         grid-template-areas: "main" "left";
   }
   main.with-card #card-holder {
-    top: calc(100vh - 100px);
+    top: calc(100vh - 70px);
   }
   main.with-card .card {
     overflow: hidden;

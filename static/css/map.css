@@ -5,7 +5,7 @@ body {
 }
 
 main {
-  height: calc(100vh - 70px);
+  height: calc(100vh - 60px);
   display: -ms-grid;
   display: grid;
 }
@@ -20,20 +20,6 @@ main {
   transition-property: top, bottom;
   -webkit-transition-duration: .3s, .3s;
           transition-duration: .3s, .3s;
-}
-
-.more {
-  bottom: 14px;
-  background: white;
-  position: absolute;
-  right: 7px;
-  text-decoration: none;
-  color: #444;
-  font-size: 1.5rem;
-}
-
-.more:hover {
-  color: #7B8CDE;
 }
 
 main.with-card #card-holder {

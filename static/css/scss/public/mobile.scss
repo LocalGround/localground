@@ -8,9 +8,12 @@
     .grid {
        grid-template-columns: 1fr 1fr;
     }
-    header {
-        grid-template-columns: 200px auto 170px;
-    }
+    // header {
+    //     grid-template-columns: 200px auto 170px;
+    // }
+    // header {
+    //     grid-template-columns: auto 170px;
+    // }
     .search > div {
         width: 80%;
     }
@@ -23,7 +26,7 @@
     .card > div {
         border: none;
         margin: 0px;
-        padding: 10px;
+        padding: 10px 20px 10px 20px;
     } 
 
     .grid {
@@ -44,23 +47,23 @@
         margin: 0px;
         padding: 0px;
     }
-    header {
-        padding: 10px;
-        height: 110px;
-        /* border-bottom: solid 1px #CCC; */
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto;
-        grid-template-areas:
-            "left right"
-            "middle middle";
-    }
-    body {
-        padding-top: 110px;
-    }
-    .search > div {
-        width: 100%;
-        padding-top: 5px;
-    }
+    // header {
+    //     padding: 10px;
+    //     height: 110px;
+    //     /* border-bottom: solid 1px #CCC; */
+    //     grid-template-columns: 1fr 1fr;
+    //     grid-template-rows: auto auto;
+    //     grid-template-areas:
+    //         "left right"
+    //         "middle middle";
+    // }
+    // body {
+    //     padding-top: 110px;
+    // }
+    // .search > div {
+    //     width: 100%;
+    //     padding-top: 5px;
+    // }
 
     main {
         margin-left: 10px;
@@ -79,13 +82,13 @@
     }
     main.with-card { 
         grid-template-columns: auto;
-        grid-template-rows:  auto 100px;
+        grid-template-rows:  auto 70px;
         grid-template-areas:
             "main"
             "left";
     }
     main.with-card #card-holder {
-        top: calc(100vh - 100px);
+        top: calc(100vh - 70px);
     }
     main.with-card .card {
         overflow: hidden;

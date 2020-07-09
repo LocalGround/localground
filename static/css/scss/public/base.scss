@@ -8,7 +8,7 @@ html, body {
     box-sizing: border-box;
 }
 body {
-    padding-top: 70px;
+    padding-top: 60px;
 }
 body, p {
    font-family: "Open Sans", sans-serif;
@@ -21,11 +21,14 @@ header {
     background-color: white;
     width: 100vw;
     top: 0;
-    height: 70px;
+    height: 60px;
     display: grid;
-    grid-template-columns: 200px auto 200px;
+    // grid-template-columns: 200px auto 200px;
+    // grid-template-areas:
+    //     "left middle right";
+    grid-template-columns: auto 200px;
     grid-template-areas:
-        "left middle right";
+        "left right";
     padding-left: 30px;
     padding-right: 30px;
 
@@ -36,7 +39,7 @@ header {
     }
     h1 {
         grid-area: left;
-        font: 3em "Amatic SC", cursive;
+        font: 2.5em "Amatic SC", cursive;
         margin-bottom: 10px;
         justify-content: flex-start;
         margin: 0px;
@@ -50,16 +53,16 @@ header {
     grid-area: right;
     justify-content: flex-end;
 }
-.search {
-    grid-area: middle;
+// .search {
+//     grid-area: middle;
 
-    > div {
-        width: 70%;
-        min-width: 330px;
-        display: flex;
-        align-items: center;
-    }
-} 
+//     > div {
+//         width: 70%;
+//         min-width: 330px;
+//         display: flex;
+//         align-items: center;
+//     }
+// } 
 
 .menu-item {
     font-size: 1.1rem;
