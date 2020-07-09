@@ -174,12 +174,12 @@ class MarkerView {
         //         <div class='popup-section'>
         //             <img src="${thumbURL}" />
         //             <p class="fade">
-        //                 <strong>${this.model.name}</strong>
+        //                 <strong>${this.model.display_value}</strong>
         //                 <br>
         //                 ${this.model.description}
         //             </p>
         //         </div>`;
         // }
-        return this.model.name;
+        return this.model.display_value;
     };
 }
