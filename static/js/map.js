@@ -49,7 +49,7 @@ class Map {
 
     drawMap () {	
     
-        document.querySelector('header h1').innerHTML = this.model.display_value;
+        document.querySelector('header h1').innerHTML = this.model.name;
         //Stamen Toner tiles attribution and URL
         const tilesets = {
             'toner-lite': {
