@@ -53,15 +53,15 @@ class Map {
         //Stamen Toner tiles attribution and URL
         const tilesets = {
             'toner-lite': {
-                'url': 'http://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}',
+                'url': 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}',
                 'subdomains': 'abcd'
             },
             'watercolor': {
-                'url': 'http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}',
+                'url': 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}',
                 'subdomains': 'abcd'
             },
             'toner-background': {
-                'url': 'http://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.{ext}',
+                'url': 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.{ext}',
                 'subdomains': 'abcd'
             },
             'esri-grayscale': {
