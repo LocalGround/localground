@@ -154,11 +154,13 @@ class SymbolItemView {
         return this.createElementFromHTML(`
             <div class="${this.getClass()}">
                 <div class="symbol-header">
-                    <span>
+                    <span class="symbol">
                         ${symbol.svg}
+                    </span>
+                    <span class="title">
                         ${symbol.title} (${Object.keys(symbol.records).length})
                     </span>
-                    <span>
+                    <span class="show-hide">
                         <i class="${this.getEyeballClass()}"
                             data-symbol-id="${symbol.id}" 
                             data-layer-id="${layerID}"></i>

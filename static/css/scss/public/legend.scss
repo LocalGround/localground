@@ -42,24 +42,45 @@
         }
         
         .symbol-header {
-            padding-left: 25px;
+            // padding-left: 25px;
             display: grid;
-            grid-template-columns: auto 20px;
-            line-height: 30px;
+            grid-template-columns: 35px 25px auto 20px;
+            grid-template-areas:
+                ". symbol label eye";
+            line-height: 25px;
+            height: 25px;
     
-            span {
+            .symbol {
+                grid-area: symbol;
+                display: flex;
+                justify-content: flex-end;
+                svg {
+                    vertical-align: middle;
+                    // transform: scale(0.6);
+                    // max-height: 28px;
+                    // width: auto;
+                    height: 25px;
+                    width: 25px;
+                }
+            }
+            .title {
+                padding-left: 3px;
+                grid-area: label;
                 display: flex;
                 align-items: center;
                 font-weight: 500;
             }
-    
-            .fa-eye, .fa-eye-slash {
-                line-height: 30px;
-                color: #999;
-                cursor: pointer;
-            }
-            .fa-eye {
-                display: none;
+
+            .show-hide {
+                grid-area: eye;
+                .fa-eye, .fa-eye-slash {
+                    line-height: 25px;
+                    color: #999;
+                    cursor: pointer;
+                }
+                .fa-eye {
+                    display: none;
+                }
             }
     
             &:hover {
@@ -69,9 +90,12 @@
                 }
             }
         }
+        .symbol-items {
+            margin-top: 4px;
+        }
 
         .symbol-item {
-            padding-left: 50px;
+            padding-left: 63px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -102,14 +126,6 @@
             }
         }
 
-    }
-
-    svg {
-        // transform: scale(0.5);
-        max-height: 25px;
-        max-width: 18px;
-        vertical-align: middle;
-        margin-right: 3px;
     }
 
     &.minimized {

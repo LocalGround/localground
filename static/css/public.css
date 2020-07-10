@@ -622,15 +622,38 @@ input#search-bar:focus:-ms-placeholder {
 }
 
 .legend .symbol-entry .symbol-header {
-  padding-left: 25px;
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: auto 20px;
-      grid-template-columns: auto 20px;
-  line-height: 30px;
+  -ms-grid-columns: 35px 25px auto 20px;
+      grid-template-columns: 35px 25px auto 20px;
+      grid-template-areas: ". symbol label eye";
+  line-height: 25px;
+  height: 25px;
 }
 
-.legend .symbol-entry .symbol-header span {
+.legend .symbol-entry .symbol-header .symbol {
+  -ms-grid-row: 1;
+  -ms-grid-column: 2;
+  grid-area: symbol;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+
+.legend .symbol-entry .symbol-header .symbol svg {
+  vertical-align: middle;
+  height: 25px;
+  width: 25px;
+}
+
+.legend .symbol-entry .symbol-header .title {
+  padding-left: 3px;
+  -ms-grid-row: 1;
+  -ms-grid-column: 3;
+  grid-area: label;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -640,13 +663,19 @@ input#search-bar:focus:-ms-placeholder {
   font-weight: 500;
 }
 
-.legend .symbol-entry .symbol-header .fa-eye, .legend .symbol-entry .symbol-header .fa-eye-slash {
-  line-height: 30px;
+.legend .symbol-entry .symbol-header .show-hide {
+  -ms-grid-row: 1;
+  -ms-grid-column: 4;
+  grid-area: eye;
+}
+
+.legend .symbol-entry .symbol-header .show-hide .fa-eye, .legend .symbol-entry .symbol-header .show-hide .fa-eye-slash {
+  line-height: 25px;
   color: #999;
   cursor: pointer;
 }
 
-.legend .symbol-entry .symbol-header .fa-eye {
+.legend .symbol-entry .symbol-header .show-hide .fa-eye {
   display: none;
 }
 
@@ -658,8 +687,12 @@ input#search-bar:focus:-ms-placeholder {
   display: block;
 }
 
+.legend .symbol-entry .symbol-items {
+  margin-top: 4px;
+}
+
 .legend .symbol-entry .symbol-item {
-  padding-left: 50px;
+  padding-left: 63px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -688,13 +721,6 @@ input#search-bar:focus:-ms-placeholder {
 
 .legend .symbol-entry.minimized .symbol-header span {
   font-weight: normal;
-}
-
-.legend svg {
-  max-height: 25px;
-  max-width: 18px;
-  vertical-align: middle;
-  margin-right: 3px;
 }
 
 .legend.minimized {
