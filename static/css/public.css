@@ -167,7 +167,7 @@ table td, table th {
   display: -ms-flexbox;
   display: flex;
   width: 100%;
-  height: calc(100vh - 200px);
+  height: calc(var(--vh, 1vh) * 100 - 200px);
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
@@ -749,7 +749,7 @@ input#search-bar:focus:-ms-placeholder {
 
 body {
   overflow: hidden;
-  height: calc(var(--vh, 1vh) * 100);
+  height: calc(var(--vh, 1vh) * 100 - 0px);
 }
 
 main {
@@ -796,7 +796,7 @@ main.with-card {
 
 main.with-card #card-holder.fullscreen {
   width: 100vw;
-  height: calc(var(--vh, 1vh) * 100);
+  height: calc(var(--vh, 1vh) * 100 - 0px);
   position: absolute;
   top: 0px;
   left: 0px;
