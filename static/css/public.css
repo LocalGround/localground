@@ -959,8 +959,8 @@ main.with-card #card-holder.fullscreen .less:hover {
   main.with-card {
     -ms-grid-columns: auto;
         grid-template-columns: auto;
-    -ms-grid-rows: auto 70px;
-        grid-template-rows: auto 70px;
+    -ms-grid-rows: calc(100% - 70px) 70px;
+        grid-template-rows: calc(100% - 70px) 70px;
         grid-template-areas: "main" "left";
   }
   main.with-card #card-holder {

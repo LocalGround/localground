@@ -120,7 +120,7 @@
     }
     main.with-card { 
         grid-template-columns: auto;
-        grid-template-rows:  auto 70px;
+        grid-template-rows:  calc(100% - 70px) 70px;
         grid-template-areas:
             "main"
             "left";
