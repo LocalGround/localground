@@ -126,7 +126,7 @@
             "left";
     }
     main.with-card #card-holder {
-        top: calc(100vh - 70px);
+        top: calc(var(--vh, 1vh) * 100 - 70px); 
     }
     main.with-card .card {
         overflow: hidden;

@@ -1,17 +1,13 @@
 @import url('https://unpkg.com/leaflet@1.5.1/dist/leaflet.css');
 
 body {
+    overflow: hidden;
+    height: calc(var(--vh, 1vh) * 100);
     // height: 100vh;
-    // overflow: hidden;
-    height: var(--vh);
 }
 
-// .fullheight {
-//     height: calc(var(--vh, 1vh) * 100);
-//     }
-
 main { 
-    height: calc(var(--vh) - 60px); 
+    height: calc(var(--vh, 1vh) * 100 - 60px); 
     display: grid;
 }
 #mapid {
@@ -41,7 +37,8 @@ main.with-card {
 
 main.with-card #card-holder.fullscreen {
     width: 100vw;
-    height: 100vh;
+    // height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
     position: absolute;
     top: 0px;
     left: 0px;

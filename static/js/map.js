@@ -6,6 +6,7 @@ class Map {
     constructor (mapJSON) {
         Object.assign(this, mixins);
 
+        this.applyMobileLayoutHack();
         this.mapData = mapJSON;
         this.model = new MapModel(mapJSON);
         this.drawMap();
@@ -13,6 +14,17 @@ class Map {
         this.addEventListeners();
 
         this.showTitleCard();
+    }
+
+    applyMobileLayoutHack () {
+        // From the Internet: Hack to ensure mobile fullscreen
+        // https://chanind.github.io/javascript/2019/09/28/avoid-100vh-on-mobile-web.html
+        function setDocHeight() {
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight/100}px`);
+        };
+        window.addEventListener('resize', setDocHeight);
+        window.addEventListener('orientationchange', setDocHeight);
+        setDocHeight();
     }
 
     addEventListeners () {

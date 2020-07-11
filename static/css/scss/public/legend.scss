@@ -10,7 +10,8 @@
     section {
         margin-top: 10px;
         min-height: 100px;
-        max-height: calc(100vh - 145px);
+        // max-height: calc(100vh - 145px); 
+        max-height: calc(var(--vh, 1vh) * 100 - 145px); 
         overflow-y: auto;
     }
     .layer-header {

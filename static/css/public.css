@@ -582,7 +582,7 @@ input#search-bar:focus:-ms-placeholder {
 .legend section {
   margin-top: 10px;
   min-height: 100px;
-  max-height: calc(100vh - 145px);
+  max-height: calc(var(--vh, 1vh) * 100 - 145px);
   overflow-y: auto;
 }
 
@@ -748,11 +748,12 @@ input#search-bar:focus:-ms-placeholder {
 }
 
 body {
-  height: var(--vh);
+  overflow: hidden;
+  height: calc(var(--vh, 1vh) * 100);
 }
 
 main {
-  height: calc(var(--vh) - 60px);
+  height: calc(var(--vh, 1vh) * 100 - 60px);
   display: -ms-grid;
   display: grid;
 }
@@ -795,7 +796,7 @@ main.with-card {
 
 main.with-card #card-holder.fullscreen {
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   position: absolute;
   top: 0px;
   left: 0px;
@@ -963,7 +964,7 @@ main.with-card #card-holder.fullscreen .less:hover {
         grid-template-areas: "main" "left";
   }
   main.with-card #card-holder {
-    top: calc(100vh - 70px);
+    top: calc(var(--vh, 1vh) * 100 - 70px);
   }
   main.with-card .card {
     overflow: hidden;
