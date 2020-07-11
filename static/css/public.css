@@ -645,7 +645,7 @@ input#search-bar:focus:-ms-placeholder {
 
 .legend .symbol-entry .symbol-header .symbol svg {
   vertical-align: middle;
-  height: 25px;
+  max-height: 25px;
   width: 25px;
 }
 

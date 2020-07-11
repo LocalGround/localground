@@ -67,6 +67,8 @@ class LayerSerializerPublic(BaseSerializer):
             symbol = models.Symbol(**kwargs)
             symbol_id = i + 1
             symbol_dict = symbol.generate_svg()
+            symbol_dict.update(symbol.generate_svg(for_legend=True))
+            print(symbol_dict)
             # get matches here
             # 1. Parse into "truth statement"
             # 2. Check which models match

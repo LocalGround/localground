@@ -405,13 +405,14 @@ class Symbol(object):
             'fillColor': self.fillColor
         }
         opts.update(self.generate_svg())
+        opts.update(self.generate_svg(for_legend=True))
         return opts
 
     def check_if_match(self, recordModel):
         rule = RuleParser(self.get_rule(None))
         return rule.check_model(recordModel)
     
-    def generate_svg(self):
+    def generate_svg(self, for_legend=False):
         '''
         Notes:
          *  viewBox: min-x, min-y, width, height
@@ -456,7 +457,11 @@ class Symbol(object):
 
     
         bbox = '{0} {1} {2} {3}'.format(x1, y1, w, h)
-        # print(bbox)   
+        # print(bbox)
+
+        strokeWeight = self.strokeWeight
+        if for_legend:
+            strokeWeight = min([strokeWeight, 3])   
         
         svg = '<svg width="{width}" height="{height}" viewBox="{bbox}" xmlns="http://www.w3.org/2000/svg">'
         svg += '<path vector-effect="non-scaling-stroke" stroke="{strokeColor}" stroke-width="{strokeWeight}" fill-opacity="{fillOpacity}" stroke-opacity="{strokeOpacity}" fill="{fillColor}" d="{path}" />'
@@ -466,12 +471,16 @@ class Symbol(object):
             height=self.height,
             bbox=bbox,
             strokeColor=self.strokeColor,
-            strokeWeight=self.strokeWeight,
+            strokeWeight=strokeWeight,
             fillOpacity=self.fillOpacity,
             strokeOpacity=self.strokeOpacity,
             fillColor=self.fillColor,
             path=path
         )
+        if for_legend:
+            return {
+                'svg_legend': svg
+            }
         return {
             'svg': svg,
             'iconSize': iconSize,

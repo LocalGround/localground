@@ -102,6 +102,7 @@ class SymbolModel {
         this.rule = symbolJSON.rule;
         
         this.svg = symbolJSON.svg;
+        this.svg_legend = symbolJSON.svg_legend;
         this.iconAnchor = symbolJSON.iconAnchor;
         this.iconSize = symbolJSON.iconSize;
         this.popupAnchor = symbolJSON.popupAnchor;

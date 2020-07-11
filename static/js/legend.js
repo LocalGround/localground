@@ -155,7 +155,7 @@ class SymbolItemView {
             <div class="${this.getClass()}">
                 <div class="symbol-header">
                     <span class="symbol">
-                        ${symbol.svg}
+                        ${symbol.svg_legend}
                     </span>
                     <span class="title">
                         ${symbol.title} (${Object.keys(symbol.records).length})
