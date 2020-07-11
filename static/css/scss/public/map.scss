@@ -1,12 +1,17 @@
 @import url('https://unpkg.com/leaflet@1.5.1/dist/leaflet.css');
 
 body {
-    height: 100vh;
+    // height: 100vh;
     // overflow: hidden;
+    height: var(--vh);
 }
 
+// .fullheight {
+//     height: calc(var(--vh, 1vh) * 100);
+//     }
+
 main { 
-    height: calc(100vh - 60px); 
+    height: calc(var(--vh) - 60px); 
     display: grid;
 }
 #mapid {

@@ -748,12 +748,11 @@ input#search-bar:focus:-ms-placeholder {
 }
 
 body {
-  height: 100vh;
-  overflow: hidden;
+  height: var(--vh);
 }
 
 main {
-  height: calc(100vh - 60px);
+  height: calc(var(--vh) - 60px);
   display: -ms-grid;
   display: grid;
 }

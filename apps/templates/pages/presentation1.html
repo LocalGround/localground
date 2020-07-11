@@ -90,6 +90,29 @@
 
  {% if map %}
     <script>
+        // document.body.style.height = window.innerHeight;
+        // document.querySelector('main').style.height = window.innerHeight - 
+
+        function setDocHeight() {
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight}px`);
+            // const bodyHeight = `${window.innerHeight}px`;
+            // const mainHeight = `${window.innerHeight - 60}px`;
+            // console.log(bodyHeight, mainHeight);
+            // document.querySelector('body').style.setProperty('--vh', bodyHeight);
+            // document.querySelector('main').style.setProperty('--vh', mainHeight);
+        };
+
+        window.addEventListener('resize', function () {
+            setDocHeight();
+        });
+        window.addEventListener('orientationchange', function () {
+            setDocHeight();
+        });
+
+            setDocHeight();
+
+
+
         // const projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
         const mapJSON = {% autoescape off %}{{map}}{% endautoescape %};
         // const data = new DataTree(mapJSON);
