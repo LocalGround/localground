@@ -1,7 +1,6 @@
 @import url("https://unpkg.com/leaflet@1.5.1/dist/leaflet.css");
 body {
   height: 100vh;
-  overflow: hidden;
 }
 
 main {
