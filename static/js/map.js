@@ -100,15 +100,23 @@ class Map {
                 'url': 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
                 'subdomains': ['mt0','mt1','mt2','mt3']
             },
-            'toner-background': {
-                'url': 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.{ext}',
+            'hybrid': {
+                'url': 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
+                'subdomains': ['mt0','mt1','mt2','mt3']
+            },
+            'toner': {
+                'url': 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}',
                 'subdomains': 'abcd'
+            },
+            'blueprint': {
+                'url': 'https://api.mapbox.com/styles/v1/lg/ckchr87ca2ct31iqt1f93334t/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoibGciLCJhIjoibWd5aTl2VSJ9.W9ZsT1zQsI9ZP72KtTdZTA'
             },
             'esri-grayscale': {
                 'url': 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
             } 
         }
         // set tileset; default to toner
+        // let tileset = tilesets['blueprint'];
         let tileset = tilesets[this.mapData.basemap];
         if (!tileset) {
             tileset = tilesets['toner-background'];
