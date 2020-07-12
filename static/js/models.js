@@ -33,7 +33,7 @@ class MapModel {
         if (mapJSON.title_card) {
             this.titleCard = new RecordModel({
                 recordJSON: mapJSON.title_card, 
-                fieldsJSON: [], 
+                datasetJSON: [], 
                 symbolModel: null
             });
         }
@@ -94,7 +94,7 @@ class SymbolModel {
     constructor (layerModel, symbolJSON) {
         Object.assign(this, ModelMixins);
         this.observers = [];
-
+        this.layerModel = layerModel;
         this.id = symbolJSON.id;
         
         this.title = symbolJSON.title;
@@ -114,12 +114,16 @@ class SymbolModel {
         this.initRecords(Object.values(symbolJSON.records));
     }
 
+    getDataset () {
+        return this.layerModel.dataset;
+    }
+
     initRecords (recordsJSON) {
         this.records = [];
         for (const recordJSON of recordsJSON) {
             this.records.push(new RecordModel({
                 recordJSON: recordJSON, 
-                fieldsJSON: [], 
+                datasetJSON: this.getDataset(), 
                 symbolModel: this
             }));
         }
@@ -154,8 +158,8 @@ class RecordModel {
         this.applyTitleCardCrosswalk();
 
         this.symbolModel = opts.symbolModel;
-        this.fields = opts.fieldsJSON;
-
+        this.dataset = opts.datasetJSON;
+        console.log(this);
     }
 
     applyTitleCardCrosswalk () {

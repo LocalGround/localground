@@ -110,8 +110,7 @@ class RecordSerializerMixin(GeometrySerializer):
         fields = obj.dataset.fields
         return {
             'id': self.dataset.id,
-            'name': self.dataset.name,
-            'fields': FieldSerializer(fields, many=True, context={'request': {}}).data
+            'name': self.dataset.name
         }
 
     def get_overlay_type(self, obj):

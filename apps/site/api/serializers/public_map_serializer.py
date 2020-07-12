@@ -38,7 +38,13 @@ class LayerSerializerPublic(BaseSerializer):
     display_field = serializers.SerializerMethodField(read_only=True)
 
     def get_dataset(self, obj):
-        return 'dataset_{0}'.format(obj.dataset.id)
+        return {
+            'key': 'dataset_{0}'.format(obj.dataset.id),
+            'id': obj.dataset.id,
+            'name': obj.dataset.name,
+            'fields': FieldSerializerSimple(obj.dataset.fields, many=True, context={'request': {}}).data
+        }
+
     
     def get_isShowing(self, obj):
         isShowing = 0
