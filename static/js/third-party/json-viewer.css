@@ -1,7 +1,8 @@
 .json-viewer {
 	color: #000;
-    padding-left: 20px;
     font-size: 1.2em;
+    padding: 30px;
+    background: #F7F7F7;
 }
 
 .json-viewer ul {
