@@ -10,6 +10,7 @@ class CardView {
     }
 
     renderData () {
+        document.querySelector('header h1').innerHTML = this.model.name;
         document.querySelector('main').className = 'grid'; 
         document.querySelector('body').style.overflowY = 'scroll'; 
         let i = 0;
@@ -63,7 +64,7 @@ class CardView {
             if (tablet.matches) {
                 this.numColumns = 2;
             }
-            renderData()
+            this.renderData()
         });
        
         const mobile = window.matchMedia("(max-width: 700px)");
@@ -72,7 +73,7 @@ class CardView {
             if (mobile.matches) {
                 this.numColumns = 1;
             }
-            renderData();
+            this.renderData();
         });
     }
     

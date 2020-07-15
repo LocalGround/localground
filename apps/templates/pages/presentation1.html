@@ -30,16 +30,16 @@
                     </div>
                 </section>
                 <section class="menu">
-                    <a class="menu-item" href="#">
+                    <a class="menu-item card" href="#">
                         <i class="fas fa-th-large"></i>
                     </a>
-                    <a class="menu-item" href="#">
+                    <a class="menu-item table" href="#">
                         <i class="fas fa-table"></i>
                     </a>
-                    <a class="menu-item active" href="#">
+                    <a class="menu-item map active" href="#">
                         <i class="fas fa-map"></i>
                     </a>
-                    <a class="menu-item" href="code.html">
+                    <a class="menu-item code" href="code.html">
                         <i class="fas fa-code"></i>
                     </a>
                 </section> 
@@ -91,7 +91,19 @@
         const mapJSON = {% autoescape off %}{{map}}{% endautoescape %};
         const mapModel = new MapModel(mapJSON);
         const mapView = new MapView(mapModel);
-        // const cardView = new CardView(mapModel);
+
+        const showView = (activeButton, ViewClass) => {
+            document.querySelector('.menu-item.active').classList.toggle('active');
+            activeButton.classList.toggle('active');
+            new ViewClass(mapModel);
+        };
+
+        document.querySelector('.menu-item.map').addEventListener('click', (ev) => {
+            showView(ev.currentTarget, MapView);
+        });
+        document.querySelector('.menu-item.card').addEventListener('click', (ev) => {
+            showView(ev.currentTarget, CardView);
+        });
     </script>
  {% endif %}
     

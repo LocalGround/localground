@@ -165,6 +165,6 @@ class Carousel {
         this.attachListener(this.el.querySelector('.next'), 'click', this.next.bind(this));
         this.attachListener(this.el.querySelector('.prev'), 'click', this.prev.bind(this));
         this.attachListener(this.el.querySelector('.slide'), 'click', this.next.bind(this));
-        this.attachListener(this.el.querySelector('.fa-circle'), 'click', this.jump.bind(this));
+        this.attachListener(this.el.querySelectorAll('.fa-circle'), 'click', this.jump.bind(this));
     }
 }

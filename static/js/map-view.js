@@ -73,6 +73,7 @@ class MapView {
     drawMap () {	
     
         document.querySelector('header h1').innerHTML = this.model.name;
+        document.querySelector('body').style.overflowY = 'hidden'; 
         document.querySelector('main').innerHTML = `
             <section id="card-holder"></section>
             <div id="mapid"></div>`;

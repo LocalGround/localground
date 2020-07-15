@@ -22,8 +22,14 @@ const mixins = {
                 el.addEventListener(eventName, listener, false);
             }
         } else {
-            const el = selector;
-            el.addEventListener(eventName, listener, false);
+            try {
+                const el = selector;
+                el.addEventListener(eventName, listener, false);
+            } catch {
+                for (const el of selector) {
+                    el.addEventListener(eventName, listener, false);
+                }
+            }
         }
     },
 
