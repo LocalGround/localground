@@ -45,10 +45,7 @@
                 </section> 
             </section>
         </header>
-        <main class="map">
-            <section id="card-holder"></section>
-            <div id="mapid"></div>
-        </main>
+        <main></main>
     {% else %}
         <div class='pw-required-background'>
             <div class="pw-required-wrapper">
@@ -85,25 +82,16 @@
  <script src="/static/js/audio-player.js"></script>
  <script src="/static/js/card.js"></script>
  <script src="/static/js/legend.js"></script>
- <script src="/static/js/map.js"></script>
+ <script src="/static/js/map-view.js"></script>
+ <script src="/static/js/card-view.js"></script>
  <script src="/static/js/filter.js"></script> 
 
  {% if map %}
     <script>
-        
-        // // From the Internet: Hack to ensure mobile fullscreen
-        // // https://chanind.github.io/javascript/2019/09/28/avoid-100vh-on-mobile-web.html
-        // function setDocHeight() {
-        //     document.documentElement.style.setProperty('--vh', `${window.innerHeight/100}px`);
-        // };
-        // window.addEventListener('resize', setDocHeight);
-        // window.addEventListener('orientationchange', setDocHeight);
-        // setDocHeight();
-
-        // const projectJSON = {% autoescape off %}{{project}}{% endautoescape %};
         const mapJSON = {% autoescape off %}{{map}}{% endautoescape %};
-        // const data = new DataTree(mapJSON);
-        const mapView = new Map(mapJSON);
+        const mapModel = new MapModel(mapJSON);
+        const mapView = new MapView(mapModel);
+        // const cardView = new CardView(mapModel);
     </script>
  {% endif %}
     

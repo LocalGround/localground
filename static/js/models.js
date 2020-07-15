@@ -39,6 +39,17 @@ class MapModel {
         }
     }
 
+    getRecords () {
+        const reducer = (accumulator, currentLayer) => {
+            if (!Array.isArray(accumulator)) {
+                accumulator = accumulator.getRecords();
+            }
+            return accumulator.concat(currentLayer.getRecords())
+        };
+        return this.layers.length === 1 ? 
+            this.layers[0].getRecords() : this.layers.reduce(reducer);
+    }
+
     initLayers (layersJSON) {
         this.layers = [];
         for (const layerJSON of layersJSON) {
@@ -87,6 +98,16 @@ class LayerModel {
             this.symbols.push(new SymbolModel(this, symbolJSON));
         }
     }
+    getRecords () {
+        const reducer = (accumulator, currentSymbol) => {
+            if (!Array.isArray(accumulator)) {
+                accumulator = accumulator.records;
+            }
+            return accumulator.concat(currentSymbol.records)
+        };
+        return this.symbols.length === 1 ? 
+            this.symbols[0].records : this.symbols.reduce(reducer);
+    }
 }
 
 class SymbolModel {
@@ -116,6 +137,10 @@ class SymbolModel {
 
     getDataset () {
         return this.layerModel.dataset;
+    }
+
+    getRecords () {
+        return this.records;
     }
 
     initRecords (recordsJSON) {
@@ -159,7 +184,6 @@ class RecordModel {
 
         this.symbolModel = opts.symbolModel;
         this.dataset = opts.datasetJSON;
-        console.log(this);
     }
 
     applyTitleCardCrosswalk () {

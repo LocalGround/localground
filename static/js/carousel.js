@@ -1,8 +1,13 @@
 class Carousel {
-    constructor (photosVideos, selector) {
+    constructor (photosVideos, selectorOrElement) {
         Object.assign(this, mixins);
         this.photosVideos = photosVideos;
-        this.parentEl = document.querySelector(selector);
+        //this.parentEl = document.querySelector(selector);
+        if (typeof selectorOrElement === 'string') {
+            this.parentEl = document.querySelector(selectorOrElement);
+        } else {
+            this.parentEl = selectorOrElement;
+        }
         this.numSlides = this.photosVideos.length;
         this.addToDOM();
     } 
@@ -157,9 +162,9 @@ class Carousel {
     }
 
     attachEventHandlers () {
-        this.attachListener('.next', 'click', this.next.bind(this));
-        this.attachListener('.prev', 'click', this.prev.bind(this));
-        this.attachListener('.slide', 'click', this.next.bind(this));
-        this.attachListener('.fa-circle', 'click', this.jump.bind(this));
+        this.attachListener(this.el.querySelector('.next'), 'click', this.next.bind(this));
+        this.attachListener(this.el.querySelector('.prev'), 'click', this.prev.bind(this));
+        this.attachListener(this.el.querySelector('.slide'), 'click', this.next.bind(this));
+        this.attachListener(this.el.querySelector('.fa-circle'), 'click', this.jump.bind(this));
     }
 }

@@ -1,14 +1,13 @@
-class Map {
+class MapView {
     map;
     oms;
-    mapData;
 
-    constructor (mapJSON) {
+    constructor (model) {
         Object.assign(this, mixins);
+        this.model = model;
+        console.log(this.model.getRecords());
 
         this.applyMobileLayoutHack();
-        this.mapData = mapJSON;
-        this.model = new MapModel(mapJSON);
         this.drawMap();
         this.renderData();
         this.addEventListeners();
@@ -37,9 +36,9 @@ class Map {
         if (!this.model.titleCard) {
             return;
         }
-        const card = new Card(this.model.titleCard, '#card-holder');
         document.querySelector('main').classList.add('with-card');
-        card.addCardToDOM();
+        const card = new Card(this.model.titleCard);
+        card.addCardToDOM('#card-holder');
     }
 
     setActiveRecord (ev) {
@@ -56,9 +55,9 @@ class Map {
 
         // Card right-hand side:
         this.selectedRecord.photos = [];
-        const card = new Card(this.selectedRecord, '#card-holder');
         document.querySelector('main').classList.add('with-card');
-        card.addCardToDOM()
+        const card = new Card(this.selectedRecord);
+        card.addCardToDOM('#card-holder');
 
         // Trigger popup:
         if (ev.detail.triggerPopup) {
@@ -74,6 +73,10 @@ class Map {
     drawMap () {	
     
         document.querySelector('header h1').innerHTML = this.model.name;
+        document.querySelector('main').innerHTML = `
+            <section id="card-holder"></section>
+            <div id="mapid"></div>`;
+        document.querySelector('main').className = 'map'; 
         //Stamen Toner tiles attribution and URL
         const tilesets = {
             'toner-lite': {
@@ -117,7 +120,7 @@ class Map {
         }
         // set tileset; default to toner
         // let tileset = tilesets['blueprint'];
-        let tileset = tilesets[this.mapData.basemap];
+        let tileset = tilesets[this.model.basemap];
         if (!tileset) {
             tileset = tilesets['toner-background'];
         }
@@ -137,11 +140,11 @@ class Map {
                 ext: 'png'
             });
         }
-        const center = this.mapData.center.coordinates;
+        const center = this.model.center.coordinates;
         this.map = L.map('mapid', {
             layers: [basemap],
             trackResize: true
-        }).setView([center[1], center[0]], this.mapData.zoom);
+        }).setView([center[1], center[0]], this.model.zoom);
 
         // Add marker clustering control: 
         this.oms = new OverlappingMarkerSpiderfier(this.map);

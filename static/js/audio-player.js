@@ -1,11 +1,16 @@
 class AudioPlayer {
 
-    constructor (model, selector) {
+    constructor (model, selectorOrElement) {
         // add mixins:
         Object.assign(this, mixins);
 
         this.model = model;
-        this.parentEl = document.querySelector(selector);
+        // this.parentEl = document.querySelector(selector);
+        if (typeof selectorOrElement === 'string') {
+            this.parentEl = document.querySelector(selectorOrElement);
+        } else {
+            this.parentEl = selectorOrElement;
+        }
 
         this.addToDOM(); 
     }
