@@ -122,6 +122,16 @@ header .heading h1:hover {
   border-radius: 5px;
 }
 
+pre {
+  margin-left: 30px;
+  margin-right: 30px;
+  padding: 20px;
+  background-color: #F7F7F7;
+  font-size: 1.0em;
+  line-height: 1.3em;
+  border-radius: 5px;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;
@@ -257,6 +267,7 @@ table td, table th {
       grid-template-columns: 1fr 1fr 1fr;
   margin-left: 20px;
   margin-right: 20px;
+  margin-top: 20px;
 }
 
 h2 {
@@ -430,23 +441,23 @@ h2 {
 }
 
 .carousel .slide.left {
-  left: -150%;
+  left: -250%;
   -webkit-transition: 0.45s ease;
   transition: 0.45s ease;
 }
 
 .carousel .slide.right {
-  left: 150%;
+  left: 250%;
   -webkit-transition: 0.45s ease;
   transition: 0.45s ease;
 }
 
 .carousel .slide.hide-left {
-  left: -150%;
+  left: -250%;
 }
 
 .carousel .slide.hide-right {
-  left: 150%;
+  left: 250%;
 }
 
 .carousel .slide.current {

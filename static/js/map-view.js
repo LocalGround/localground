@@ -15,15 +15,16 @@ class MapView {
         this.showTitleCard();
     }
 
+    setDocHeight () {
+        document.documentElement.style.setProperty('--vh', `${window.innerHeight/100}px`);
+    }
+
     applyMobileLayoutHack () {
         // From the Internet: Hack to ensure mobile fullscreen
         // https://chanind.github.io/javascript/2019/09/28/avoid-100vh-on-mobile-web.html
-        function setDocHeight() {
-            document.documentElement.style.setProperty('--vh', `${window.innerHeight/100}px`);
-        };
-        window.addEventListener('resize', setDocHeight);
-        window.addEventListener('orientationchange', setDocHeight);
-        setDocHeight();
+        window.addEventListener('resize', this.setDocHeight);
+        window.addEventListener('orientationchange', this.setDocHeight);
+        this.setDocHeight();
     }
 
     addEventListeners () {
@@ -179,7 +180,13 @@ class MapView {
 
         // add legend: 
         this.legend = new LegendView(this.map, this.model);
-    };
+    }
+
+    destroy () {
+        // make sure you remove event handlers or there will be chaos:
+        window.removeEventListener('resize', this.setDocHeight);
+        window.removeEventListener('orientationchange', this.setDocHeight);
+    }
   
 }
 

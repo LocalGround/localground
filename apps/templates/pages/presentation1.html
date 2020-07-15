@@ -33,13 +33,13 @@
                     <a class="menu-item card" href="#">
                         <i class="fas fa-th-large"></i>
                     </a>
-                    <a class="menu-item table" href="#">
+                    <!-- <a class="menu-item table" href="#">
                         <i class="fas fa-table"></i>
-                    </a>
+                    </a> -->
                     <a class="menu-item map active" href="#">
                         <i class="fas fa-map"></i>
                     </a>
-                    <a class="menu-item code" href="code.html">
+                    <a class="menu-item code" href="#">
                         <i class="fas fa-code"></i>
                     </a>
                 </section> 
@@ -84,25 +84,37 @@
  <script src="/static/js/legend.js"></script>
  <script src="/static/js/map-view.js"></script>
  <script src="/static/js/card-view.js"></script>
+ <script src="/static/js/code-view.js"></script>
  <script src="/static/js/filter.js"></script> 
 
  {% if map %}
     <script>
         const mapJSON = {% autoescape off %}{{map}}{% endautoescape %};
         const mapModel = new MapModel(mapJSON);
-        const mapView = new MapView(mapModel);
+        let currentView = new MapView(mapModel);
 
-        const showView = (activeButton, ViewClass) => {
+        const renderView = (activeButton, ViewClass, data) => {
+
+            // highlight active tab:
             document.querySelector('.menu-item.active').classList.toggle('active');
             activeButton.classList.toggle('active');
-            new ViewClass(mapModel);
+            
+            // destroy current view:
+            console.log(currentView);
+            currentView.destroy();
+
+            // re-render active view
+            currentView = new ViewClass(data);
         };
 
         document.querySelector('.menu-item.map').addEventListener('click', (ev) => {
-            showView(ev.currentTarget, MapView);
+            renderView(ev.currentTarget, MapView, mapModel);
         });
         document.querySelector('.menu-item.card').addEventListener('click', (ev) => {
-            showView(ev.currentTarget, CardView);
+            renderView(ev.currentTarget, CardView, mapModel);
+        });
+        document.querySelector('.menu-item.code').addEventListener('click', (ev) => {
+            renderView(ev.currentTarget, CodeView, mapJSON);
         });
     </script>
  {% endif %}
