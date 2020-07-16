@@ -27,7 +27,7 @@ class MapModel {
         this.legendIsMinimized = false;
         
         // TODO: convert to collections
-        this.initLayers(Object.values(mapJSON.layers));
+        this.initLayers(mapJSON.layers);
         this.datasets = mapJSON.datasets;
         this.media = mapJSON.media;
         if (mapJSON.title_card) {
@@ -72,7 +72,7 @@ class LayerModel {
         this.isExpanded = false;
 
         // create a collection:
-        this.initSymbols(Object.values(layerJSON.symbols));
+        this.initSymbols(layerJSON.symbols);
     }
 
     setIsExpanded (isExpanded) {
@@ -132,7 +132,7 @@ class SymbolModel {
         this.layerID = layerModel.id;
         this.isExpanded = layerModel.isExpanded;
 
-        this.initRecords(Object.values(symbolJSON.records));
+        this.initRecords(symbolJSON.records);
     }
 
     getDataset () {

@@ -68,24 +68,23 @@ class LayerSerializerPublic(BaseSerializer):
                 'display_field': obj.display_field
             }
         ).data
-        symbols = {}
+        symbols = []
         for i, kwargs in enumerate(obj.symbols):
             symbol = models.Symbol(**kwargs)
             symbol_id = i + 1
             symbol_dict = symbol.generate_svg()
             symbol_dict.update(symbol.generate_svg(for_legend=True))
-            print(symbol_dict)
             # get matches here
             # 1. Parse into "truth statement"
             # 2. Check which models match
             # 3. Add ids to symbol
-            recs = {}
+            recs = []
             for rec in records:
                 if symbol.check_if_match(rec):
-                    recs[rec.get('id')] = rec
+                    recs.append(rec)
             symbol_dict['records'] = recs
             symbol_dict['id'] = symbol_id
-            symbols[symbol_id] = symbol_dict
+            symbols.append(symbol_dict)
         return symbols
     
     class Meta:
@@ -142,7 +141,7 @@ class MapSerializerPublic(MapSerializerList):
     
     def get_layers(self, obj):
         layers = models.Layer.objects.filter(styled_map=obj)
-        data = LayerSerializerPublic(
+        return LayerSerializerPublic(
             layers, many=True, context={
                 'request': {},
                 'photos': self.get_photos(obj),
@@ -152,10 +151,6 @@ class MapSerializerPublic(MapSerializerList):
                 'title_card': self.get_title_card(obj)
             }
         ).data
-        layers_dict = {}
-        for layer in data:
-            layers_dict[layer.get('id')] = layer
-        return layers_dict
 
     def get_basemap(self, obj):
         return obj.basemap.name.lower().replace(' ', '-')

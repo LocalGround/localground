@@ -180,7 +180,7 @@ class SymbolItemView {
     }
 
     addMarkerListingsToDOM () {
-        const records = Object.values(this.model.records);
+        const records = this.model.records;
         const symbolID = this.model.id;
         const layerID = this.model.layerID;
         const container = this.el.querySelector('.symbol-items');
