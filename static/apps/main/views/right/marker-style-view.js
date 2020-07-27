@@ -234,6 +234,8 @@ define(["jquery",
             },
 
             propCanBeCont: function() {
+                console.log("this.model.isUniform()", this.model.isUniform());
+                console.log("this.model.isIndividual()", this.model.isIndividual());
                 if (this.model.isUniform()) {
                     return false;
                 }
@@ -243,7 +245,9 @@ define(["jquery",
                 let currentProp = this.dataColumnsList.find((item) => {
                     return (item.value === this.model.get('group_by'))
                 });
-                if (currentProp.type === 'integer' || currentProp.type === 'rating') {
+                console.log("currentProp", currentProp, currentProp.type);
+                
+                if (['integer', 'decimal', 'rating'].includes(currentProp.type)) {
                     return true;
                 } else {
                     return false;
@@ -396,7 +400,7 @@ define(["jquery",
                     this.layerDraft.continuous.add(Symbol.createContinuousSymbol({
                         layerModel: this.model,
                         rule: `${selected} >= ${cont.currentFloor.toFixed(0)} and ${selected} <${lastRuleSymbol} ${(cont.currentFloor + cont.segmentSize).toFixed(0)}`,
-                        title: "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize).toFixed(0),
+                        title: "between " + cont.currentFloor.toFixed(0) + " and " + (cont.currentFloor + cont.segmentSize - 1).toFixed(0),
                         fillColor: '#' + this.selectedColorPalette[counter],
                         id: (counter + 1)
                     }));

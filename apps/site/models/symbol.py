@@ -63,7 +63,11 @@ class TruthStatement(object):
     def set_conjunction(self, conjunction):
         conjunction = conjunction.lower().strip()
         if conjunction not in self.validConjunctions:
-            raise Exception("Conjunction must be 'AND' or 'OR' (case insensitive)")
+            raise Exception('''
+                Invalid conjunction: "{0}". 
+                Conjunction must be 'AND' or 'OR' (case insensitive).'''.format(
+                    conjunction
+                ))
         self.conjunction = conjunction
 
     def _trim_character(self, val, character):
@@ -131,6 +135,7 @@ class TruthStatement(object):
 
         self.val = self.convert_val_to_data_argument_type(modelVal, self.val)
 
+        print(modelVal, self.operator, self.val)
 
         # print('**************\n', self.key, modelVal, type(modelVal), self.val, '\n**************\n')
 
@@ -159,17 +164,15 @@ class TruthStatement(object):
 
     def get_converter(self, modelVal):
         if isinstance(modelVal, basestring):
-            #print('self.parse_string')
             return self.parse_string
         elif isinstance(modelVal, float) or isinstance(modelVal, int):
-            #print('self.parse_num')
             return self.parse_num
         elif isinstance(modelVal, bool):
-            #print('self.parse_boolean')
             return self.parse_boolean
         else:
-            #print('self.dummy')
             def dummy(val):
+                if val.lower() in ['none', 'null']:
+                    return None
                 return val
             return dummy
 
@@ -188,6 +191,8 @@ class TruthStatement(object):
 
 
     def parse_num(self, val):
+        if val.lower() in ['none', 'null']:
+            return None
         return int(val, 10)
 
     def parse_boolean(self, val):
@@ -196,6 +201,8 @@ class TruthStatement(object):
         return False
 
     def parse_string(self, val):
+        if val.lower() in ['none', 'null']:
+            return ''
         return str(val).lower()
 
     def debug(self):
@@ -208,45 +215,50 @@ class TruthStatement(object):
 
 class RuleParser(object):
 
+    UNCATEGORIZED_SYMBOL_RULE = u'\xaf\\_(\u30c4)_/\xaf'
+
     def __init__(self, sqlString):
         i = 0
         self.statements = []
         self.sql = None
         self.failureFlag = 0
         self.failureMessage = ''
-
         self.sql = sqlString.lower().replace("where", "")
-        raw_statements = re.split("\s+and\s+|\s+or\s+", self.sql)
+        
+        # splits on and/or but keeps and/or as tokens in the 'raw_statements' list:
+        raw_statements = re.split("(\s+and\s+|\s+or\s+)", self.sql)
         truthStatement = None
 
         # add an "and" to the top of the stack to make processing consistent:
         raw_statements.insert(0, "and")
-        for i in range(0, len(raw_statements)-1):
+        i = 1
+        while i <= len(raw_statements):
+            # if raw_statements[i] == RuleParser.UNCATEGORIZED_SYMBOL_RULE:
+            #     pass
+            # else:
             raw_statements[i] = raw_statements[i].strip()
-            # Fails silently.
-            # TODO: have UI check for failureFlag / Message and give
-            # user feedback.
-            # 
-            #try:
-            truthStatement = TruthStatement(raw_statements[i + 1], raw_statements[i])
+            truthStatement = TruthStatement(raw_statements[i], raw_statements[i-1])
             self.statements.append(truthStatement)
-            # truthStatement.debug()
-            # except:
-            #     self.failureFlag = 1
-            #     self.failureMessage = "error parsing truth statement: " +  e
+            # increment by two, as every other token is a conjunction:
+            i += 2
+            
 
+    def is_uncategorized_symbol(self):
+        return self.sql == UNCATEGORIZED_SYMBOL_RULE
 
     def check_model(self, model_dict):
-        i = 0,
-        truthVal = not self.failureFlag
+        if self.statements and self.statements[0]:
+            truthVal = self.statements[0].truth_test(model_dict)
+        else:
+            truthVal = False
+    
         for i in range(0, len(self.statements)):
             s = self.statements[i]
-            # print(s)
             if s.conjunction == 'and':
                 truthVal = truthVal and s.truth_test(model_dict)
             else:
                 truthVal = truthVal or s.truth_test(model_dict)
-        return truthVal
+        return truthVal 
 
 
 class Symbol(object):
@@ -255,6 +267,7 @@ class Symbol(object):
     def SIMPLE(cls):
         return Symbol(title='All items')
     CIRCLE = 'circle'
+    UNCATEGORIZED_SYMBOL_RULE = u'\xaf\\_(\u30c4)_/\xaf'
 
     def get_random_color(self):
         # Taken from:
@@ -288,7 +301,7 @@ class Symbol(object):
         random_color = 'rgb({0}, {1}, {2})'.format(r, g, b)
         return random_color
 
-    def __init__(self, **kwargs):
+    def __init__(self, layer=None, **kwargs):
         self.rule = kwargs.get('rule', '*')
         self.title = kwargs.get('title', 'Untitled Symbol')
         self.shape = kwargs.get('shape', Symbol.CIRCLE)
@@ -300,17 +313,18 @@ class Symbol(object):
         self.height = kwargs.get('height', 25)
         self.isShowing = kwargs.get('isShowing', True)
         self.fillColor = kwargs.get('fillColor', self.get_random_color())
+        self.layer = layer
 
     def set_rule(self, rule, layer):
         rule = rule.lower()
-        if rule == '*' or rule == u'\xaf\\_(\u30c4)_/\xaf':
+        if rule == '*' or self.rule == Symbol.UNCATEGORIZED_SYMBOL_RULE:
             self.rule = rule
             return
         server_rule = self._serialize_field_names(rule, layer)
         self.rule = server_rule
 
     def get_rule(self, layer):
-        if self.rule == '*' or self.rule == u'\xaf\\_(\u30c4)_/\xaf':
+        if self.rule == '*' or self.rule == Symbol.UNCATEGORIZED_SYMBOL_RULE:
             return self.rule
         return self._deserialize_field_names(layer)
 
@@ -409,7 +423,14 @@ class Symbol(object):
         return opts
 
     def check_if_match(self, recordModel):
-        rule = RuleParser(self.get_rule(None))
+        sql = self.get_rule(None)
+        if sql == Symbol.UNCATEGORIZED_SYMBOL_RULE:
+            sql = self.layer.group_by + ' = null'
+            # return False
+            crosswalk = self._generate_deserialization_crosswalk(sql)
+            sql = self._do_substitutions(sql, crosswalk)
+            # print(sql)
+        rule = RuleParser(sql)
         return rule.check_model(recordModel)
     
     def generate_svg(self, for_legend=False):
@@ -443,7 +464,7 @@ class Symbol(object):
 
         if self.shape in ['circle', 'square', 'plus', 'cross']:
             self.width += border_padding
-            self.height += border_padding
+            self.height = self.width + border_padding
             iconSize = [self.width, self.height]
             iconAnchor = [self.width / 2.0, self.height / 2.0]
             popupAnchor = [0, 0]

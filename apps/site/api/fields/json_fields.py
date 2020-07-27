@@ -125,7 +125,7 @@ class SymbolsField(JSONField):
 
     def to_representation(self, layerModel):
         for i, symbol_dict in enumerate(layerModel.symbols):
-            s = Symbol(**symbol_dict)
+            s = Symbol(layer=layerModel, **symbol_dict)
             layerModel.symbols[i] = s.to_dict()
             layerModel.symbols[i]['rule'] = s.get_rule(layerModel)
         return layerModel.symbols

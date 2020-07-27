@@ -117,7 +117,7 @@ class RecordSerializerMixin(GeometrySerializer):
         return 'dataset_{0}'.format(obj.dataset.id)
 
     def get_attached_photos_videos(self, obj):
-        if self.photos and self.videos and hasattr(obj, 'photo_video_list') and obj.photo_video_list is not None:
+        if (self.photos or self.videos) and hasattr(obj, 'photo_video_list') and obj.photo_video_list is not None:
             data = []
             for item in obj.photo_video_list:
                 overlay_type = item.get('overlay_type')

@@ -124,7 +124,7 @@ class MapView {
         // let tileset = tilesets['blueprint'];
         let tileset = tilesets[this.model.basemap];
         if (!tileset) {
-            tileset = tilesets['toner-background'];
+            tileset = tilesets['toner-lite'];
         }
         var basemapURL = tileset.url;
         var basemap;

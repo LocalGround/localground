@@ -10,11 +10,12 @@ class Card {
     }
 
     renderHTML () {
+        const title = this.model.display_value || 'Untitled';
         const properties = this.getPropertiesTable(this.model);
         const thumbnail = this.model.getThumbnail();
-        let mobileHeader = `<h2><span>${this.model.display_value}</span></h2>`
+        let mobileHeader = `<h2><span>${title}</span></h2>`
         if (thumbnail) {
-            mobileHeader = `<h2><img src="${thumbnail}" /><span>${this.model.display_value}</span></h2>`
+            mobileHeader = `<h2><img src="${thumbnail}" /><span>${title}</span></h2>`
         }
         let description = '';
         if (this.model.description) {
@@ -23,7 +24,7 @@ class Card {
         return `<div class="card">
             <div class="desktop">
                 <a class="less" href="#">x</a>
-                <h2>${this.model.display_value}</h2>
+                <h2>${title}</h2>
                 <section class="carousel-container"></section>
                 <section class="audio-container"></section>
                 ${description}
@@ -89,7 +90,7 @@ class Card {
             rows.push(`
                 <tr>
                     <td>${field.col_alias}</td>
-                    <td><strong>${model[field.key]}</strong></td>
+                    <td><strong>${model[field.key] || ''}</strong></td>
                 </tr>`
             );
         }  

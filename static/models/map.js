@@ -74,11 +74,13 @@ define(["models/baseItem", "models/title-card", "collections/layers"],
             };
         },
         getTitleCardModel: function () {
+            // console.log(this.titleCard);
             if (!this.titleCard) {
-                const data = this.get('metadata').titleCardInfo || {};
+                const data = this.get('metadata').titleCardInfo;
                 data.id = 1;
                 this.titleCard = new TitleCard(data);
             }
+            // console.log(this.titleCard.toJSON());
             return this.titleCard;
         },
 
@@ -99,6 +101,7 @@ define(["models/baseItem", "models/title-card", "collections/layers"],
             if (json.center != null) {
                 json.center = JSON.stringify(json.center);
             }
+            console.log(json.zoom, json.center);
             // serialize from helper TitleCard model
             // (so that it gets committed) to the server:
             json.metadata.titleCardInfo = this.getTitleCardModel().toJSON();

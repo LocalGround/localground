@@ -5,9 +5,10 @@ define(["backbone"], function (Backbone) {
         // functionality
         initialize: function (data, opts) {
             Backbone.Model.prototype.initialize.apply(this, arguments);
-            this.set('media', this.get('media') || []);
+            //this.set('media', this.get('media') || []);
             this.photoVideoCollection = [];
             this.audioCollection = [];
+            // console.log(this.get('media'));
 		},
 
         getMedia: function () {

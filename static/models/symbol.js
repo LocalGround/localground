@@ -81,6 +81,12 @@ define(['backbone', 'underscore', 'collections/records',
                 </svg>`
             },
             checkModel: function (model) {
+                if (this.get('rule') === Symbol.UNCATEGORIZED_SYMBOL_RULE) {
+                    console.log(this.get('rule'))
+                    // console.log(this.sqlParser);
+                    console.log(model.toJSON());
+                    console.log(this.sqlParser.checkModel(model));
+                }
                 return this.sqlParser.checkModel(model);
             },
             addModel: function (model) {

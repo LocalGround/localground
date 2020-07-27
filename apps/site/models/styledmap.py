@@ -21,7 +21,7 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         'nextPrevButtons': False,
         'allowPanZoom': True,
         'streetview': True,
-        'displayTitleCard': True,
+        'displayTitleCard': False,
         'titleCardInfo': {
             'header': None,
             'description': None,

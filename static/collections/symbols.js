@@ -133,7 +133,7 @@ define(["underscore", "models/symbol", "collections/base"],
                 this.add(matchedSymbol);
 
             } else if (this.layerModel.isCategorical() && this.isNotEmpty(value)) {
-                console.log(value);
+                // console.log(value);
                 if (this.debug) {
                     console.log('creating new categorical symbol...');
                 }

@@ -49,7 +49,7 @@ class LayerSerializerPublic(BaseSerializer):
     def get_isShowing(self, obj):
         isShowing = 0
         for s in obj.symbols:
-            symbol = models.Symbol(**s)
+            symbol = models.Symbol(layer=obj, **s)
             isShowing += symbol.isShowing
         return isShowing
 
@@ -70,7 +70,7 @@ class LayerSerializerPublic(BaseSerializer):
         ).data
         symbols = []
         for i, kwargs in enumerate(obj.symbols):
-            symbol = models.Symbol(**kwargs)
+            symbol = models.Symbol(layer=obj, **kwargs)
             symbol_id = i + 1
             symbol_dict = symbol.generate_svg()
             symbol_dict.update(symbol.generate_svg(for_legend=True))

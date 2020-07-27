@@ -17,7 +17,9 @@ class Layer(BaseAudit):
         'strokeWeight': 1,
         'strokeOpacity': 1,
         'shape': 'circle',
-        'isShowing': True
+        'isShowing': True,
+        'isContinuous': False,
+        'collapsed': False 
     }
     styled_map = models.ForeignKey('StyledMap', related_name='%(class)s+')
     dataset = models.ForeignKey('Dataset', related_name='%(class)s+')
