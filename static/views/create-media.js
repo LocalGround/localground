@@ -320,6 +320,7 @@ define([
 
         addModels: function () {
             const selectedModels = [];
+            console.log(this.parentModel);
             // const dm = this.app.dataManager;
             this.collection.each(function (model) {
                 // if (this.model.get('overlay_type') === 'audio') {

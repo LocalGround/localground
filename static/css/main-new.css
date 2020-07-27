@@ -3481,6 +3481,7 @@ span.action.rounded:hover, a.action.rounded:hover {
   border-top: 1px solid #e4e5eb;
   max-height: 75vh;
   overflow-y: auto;
+  min-height: 300px;
 }
 
 .modal .body.media > div {

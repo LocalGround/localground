@@ -63,6 +63,7 @@ define([
         },
 
         saveTitleCard: function () {
+            console.log('saving title card...')
             this.model.set('header', this.$el.find('.title-card_title').val());
             this.model.set('description',this.$el.find('.title-card_textarea').val());
             this.activeMap.save(null, {

@@ -587,6 +587,7 @@ define(["jquery",
                 this.updateMetadata("paletteId", paletteId);
                 this.selectedColorPalette = this.allColors[paletteId];
                 this.updatePalette();
+                this.saveChanges();
                 e.stopImmediatePropagation();
             },
 

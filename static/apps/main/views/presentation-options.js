@@ -75,7 +75,7 @@ define([
             this.modal.update({
                 view: editTitleCard,
                 title: 'Edit Title Card',
-                width: 400,
+                width: 600,
                 saveButtonText: "Save",
                 closeButtonText: "Cancel",
                 showSaveButton: true,

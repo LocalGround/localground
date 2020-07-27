@@ -70,6 +70,8 @@ define(["marionette",
             },
 
             addModels: function () {
+                console.log('adding models...');
+                console.log(this.currentView);
                 this.currentView.addModels();
             }
         });

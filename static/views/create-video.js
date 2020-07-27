@@ -64,8 +64,10 @@ define([
             this.models.forEach(model => {
                 videos.add(model);
             });
+            console.log(this.models);
+            console.log(this.parentModel);
             this.parentModel.trigger('add-models-to-marker', this.models)
-            this.app.vent.trigger('add-models-to-marker', this.models);
+            this.parentModel.trigger('add-media-to-model', this.models);
 
         }
     });
