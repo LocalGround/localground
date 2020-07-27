@@ -135,7 +135,7 @@ class TruthStatement(object):
 
         self.val = self.convert_val_to_data_argument_type(modelVal, self.val)
 
-        print(modelVal, self.operator, self.val)
+        # print(modelVal, self.operator, self.val)
 
         # print('**************\n', self.key, modelVal, type(modelVal), self.val, '\n**************\n')
 
@@ -191,9 +191,12 @@ class TruthStatement(object):
 
 
     def parse_num(self, val):
-        if val.lower() in ['none', 'null']:
-            return None
-        return int(val, 10)
+        try:
+            if val.lower() in ['none', 'null']:
+                return None 
+            return int(val, 10)
+        except:
+            return val
 
     def parse_boolean(self, val):
         if val in ['true', 1, True]:

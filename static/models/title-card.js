@@ -8,7 +8,6 @@ define(["backbone"], function (Backbone) {
             //this.set('media', this.get('media') || []);
             this.photoVideoCollection = [];
             this.audioCollection = [];
-            // console.log(this.get('media'));
 		},
 
         getMedia: function () {
@@ -28,6 +27,11 @@ define(["backbone"], function (Backbone) {
                     this.photoVideoCollection.add(model);
                 }
             }
+            //and add to the media array as well (to be saved to the server)
+            this.get('media').push({ 
+                id: model.id, 
+                overlay_type: model.get('overlay_type')
+            })
         },
 
         removeMediaModel: function(attachmentType, id) {
@@ -94,7 +98,8 @@ define(["backbone"], function (Backbone) {
                 id: this.get('id'),
                 description: this.get('description'),
                 header: this.get('header'),
-                media: this.getMediaJSON()
+                // media: this.getMediaJSON(),
+                media: this.get('media')
             };
         }
     });
