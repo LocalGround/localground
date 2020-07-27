@@ -228,10 +228,10 @@ class MediaMixin(models.Model):
     def pil_to_django_file(self, im, file_name):
         from django.core.files.uploadedfile import InMemoryUploadedFile
         str_io = StringIO()
-        im = im.convert('RGB')
-        im.save(str_io, format='JPEG')
+        im = im.convert('RGBA')
+        im.save(str_io, format='PNG')
         thumb_file = InMemoryUploadedFile(
-            str_io, None, file_name, 'image/jpeg', str_io.len, None)
+            str_io, None, file_name, 'image/png', str_io.len, None)
         return thumb_file
 
     def django_file_field_to_pil(self, file_field):

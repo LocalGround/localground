@@ -320,14 +320,7 @@ define([
 
         addModels: function () {
             const selectedModels = [];
-            console.log(this.parentModel);
-            // const dm = this.app.dataManager;
             this.collection.each(function (model) {
-                // if (this.model.get('overlay_type') === 'audio') {
-                //     dm.getCollection('audio').add(model);
-                // } else {
-                //     dm.getCollection('photos').add(model);
-                // }
                 selectedModels.push(model);
             });
             this.parentModel.trigger('add-models-to-marker', selectedModels);

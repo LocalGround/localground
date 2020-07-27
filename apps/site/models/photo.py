@@ -55,30 +55,30 @@ class Photo(ExtrasMixin, PointMixin, BaseUploadedMedia):
             self.pil_to_django_file(im, file_name)
         )
         self.media_file_large.save(
-            '{0}_1000.jpg'.format(base_name),
-            self.generate_thumbnail(im, 1000, '{0}_1000.jpg'.format(base_name))
+            '{0}_1000.png'.format(base_name),
+            self.generate_thumbnail(im, 1000, '{0}_1000.png'.format(base_name))
         )
         self.media_file_medium.save(
-            '{0}_500.jpg'.format(base_name),
-            self.generate_thumbnail(im, 500, '{0}_500.jpg'.format(base_name))
+            '{0}_500.png'.format(base_name),
+            self.generate_thumbnail(im, 500, '{0}_500.png'.format(base_name))
         )
         self.media_file_medium_sm.save(
-            '{0}_250.jpg'.format(base_name),
-            self.generate_thumbnail(im, 250, '{0}_250.jpg'.format(base_name))
+            '{0}_250.png'.format(base_name),
+            self.generate_thumbnail(im, 250, '{0}_250.png'.format(base_name))
         )
         self.media_file_small.save(
-            '{0}_128.jpg'.format(base_name),
-            self.generate_thumbnail(im, 128, '{0}_128.jpg'.format(base_name))
+            '{0}_128.png'.format(base_name),
+            self.generate_thumbnail(im, 128, '{0}_128.png'.format(base_name))
         )
         self.media_file_marker_lg.save(
-            '{0}_50.jpg'.format(base_name),
-            self.generate_thumbnail(im, 50, '{0}_50.jpg'.format(base_name))
+            '{0}_50.png'.format(base_name),
+            self.generate_thumbnail(im, 50, '{0}_50.png'.format(base_name))
         )
         self.media_file_marker_sm.save(
-            '{0}_20.jpg'.format(base_name),
-            self.generate_thumbnail(im, 20, '{0}_20.jpg'.format(base_name))
+            '{0}_20.png'.format(base_name),
+            self.generate_thumbnail(im, 20, '{0}_20.png'.format(base_name))
         )
-        self.content_type = 'JPG'
+        self.content_type = 'PNG'
 
     def process_file(self, file, name=None):
         im = Image.open(file)
