@@ -15,6 +15,7 @@ define(["models/base",
                 if (opts.urlRoot) {
                     this.urlRoot = opts.urlRoot;
                 }
+                console.log(this.url());
                 Base.prototype.initialize.apply(this, arguments);
                 if (opts) {
                     this.viewSchema = this._generateSchema(opts.updateMetadata, false);

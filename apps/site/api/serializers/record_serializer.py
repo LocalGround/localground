@@ -14,21 +14,6 @@ from localground.apps.site.api.serializers.mapimage_serializer import MapImageSe
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 
 
-def force_to_unicode(val):
-    # For special characters:
-    # https://gist.github.com/gornostal/1f123aaf838506038710
-    if val is None:
-        return val
-    if isinstance(val, unicode):
-        return val
-    if isinstance(val, (datetime.datetime, datetime.date)):
-        return val.isoformat().decode('utf8')
-    if isinstance(val, (int, float)):
-        return str(val).decode('utf8')
-    else:
-        return val.decode('utf8')
-
-
 class FieldSerializer(serializers.ModelSerializer):
     key = serializers.SerializerMethodField()
 
@@ -98,7 +83,7 @@ class RecordSerializerMixin(GeometrySerializer):
     display_value = serializers.SerializerMethodField()
 
     def get_url(self, obj):
-        return '%s/api/0/datasets/%s/data/%s' % \
+        return '%s/api/0/datasets/%s/data/%s/' % \
                 (settings.SERVER_URL, obj.dataset.id, obj.id)
     
     def get_display_value(self, obj):
@@ -216,12 +201,7 @@ class RecordSerializerMixin(GeometrySerializer):
                 field = getattr(instance, attr)
                 field.set(value)
             elif attr == 'attributes':
-                # stringify all non-null attributes before DB commit:
-                attribute_dict = value
-                for prop in attribute_dict:
-                    attribute_dict[prop] = \
-                        force_to_unicode(attribute_dict[prop])
-                instance.attributes.update(attribute_dict)
+                instance.attributes.update(value)
             else:
                 setattr(instance, attr, value)
         instance.save()

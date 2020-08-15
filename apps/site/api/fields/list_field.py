@@ -26,7 +26,7 @@ class ListField(serializers.ListField):
         val = dictionary.get(self.field_name, None)
         if val == None:
             return empty
-        if isinstance(val, basestring):
+        if isinstance(val, str):
             # return html.parse_html_list(dictionary, prefix=self.field_name)
             val = convert_tags_to_list(val)   
         return val

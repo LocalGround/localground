@@ -192,6 +192,19 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                     }
                 });
             },
+            // Default URL for the model's representation on the server -- if you're
+            // using Backbone's restful methods, override this to change the endpoint
+            // that will be called.
+            url: function() {
+                var base =
+                _.result(this, 'urlRoot') ||
+                _.result(this.collection, 'url') ||
+                urlError();
+                if (this.isNew()) return base;
+                var id = this.get(this.idAttribute);
+                return base.replace(/[^\/]$/, '$&/') + encodeURIComponent(id) + '/';
+            },
+            
             fetchUpdateMetadata: function (callback) {
                 var that = this;
                 if (this.urlRoot == null) {

@@ -352,6 +352,7 @@ define([
             var that = this,
                 isNew = this.model.get("id") ? false : true;
             this.commitForm();
+            console.log(this.model);
             this.model.save(null, {
                 success: function (model, response) {
                     that.app.vent.trigger('success-message', "The form was saved successfully");

@@ -26,6 +26,7 @@ define([
                 return;
             }
             BasePageableWithProject.prototype.initialize.apply(this, arguments);
+            console.log(this.url);
         },
         state: {
             currentPage: 1,
