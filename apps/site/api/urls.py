@@ -7,6 +7,8 @@ from localground.apps.site import models
 from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
 
+from django.urls import path, re_path
+
 entities = ['audio', 'photos', 'map-images']
 
 # Create a router and register our viewsets with it.
@@ -20,47 +22,46 @@ router.register(r'overlay-sources', views.OverlaySourceViewSet)
 # The API URLs are now determined automatically by the router.
 # Additionally, we include the login URLs for the browseable API.
 urlpatterns = [
-    '',
-    url(r'^$', views.api_root),
+    re_path(r'^$', views.api_root),
     # a hack to include both ViewSets and views on the front
     # page
-    url(r'^', include(router.urls[1:])),
+    re_path(r'^', include(router.urls[1:])),
 ]
 
 urlpatterns += format_suffix_patterns([
-    url(
+    re_path(
         r'^usernames/$',
         views.ListUsernames.as_view(),
         name="usernames"),
-    url(
+    re_path(
         r'^(?P<group_name_plural>prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
         views.RelatedMediaList.as_view(),
         name='related-media-list'),
-    url(
+    re_path(
         r'^(?P<group_name_plural>prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
         views.RelatedMediaInstance.as_view(),
         name='related-media-detail'),
-    url(
+    re_path(
         r'^datasets/(?P<group_name_plural>[0-9]+)/data/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
         views.RelatedMediaList.as_view(),
         name='related-media-list'),
-    url(
+    re_path(
         r'^datasets/(?P<group_name_plural>[0-9]+)/data/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
         views.RelatedMediaInstance.as_view(),
         name='related-media-detail'),
-    url(
+    re_path(
         r'^projects/(?P<project_id>[0-9]+)/users/(?P<username>\w+)/$',
         views.SharingInstance.as_view(),
         name='userauthorityobject-detail'),
-    url(
+    re_path(
         r'^projects/(?P<project_id>[0-9]+)/users/$',
         views.SharingList.as_view(),
         name='userauthorityobject-list'),
-    url(
+    re_path(
         r'^projects/(?P<pk>[0-9]+)/$',
         views.ProjectInstance.as_view(),
         name='project-detail'),
-    url(r'^projects/$',
+    re_path(r'^projects/$',
         views.ProjectList.as_view(),
         name='project-list'),
     #url(
@@ -70,123 +71,123 @@ urlpatterns += format_suffix_patterns([
     #url(r'^layers/$',
     #    views.LayerList.as_view(),
     #    name='layer-list'),
-    url(
+    re_path(
         r'^maps/(?P<map_id>[0-9]+)/layers/(?P<pk>[0-9]+)/$',
         views.LayerInstance.as_view(),
         name='layer-detail'),
-    url(
+    re_path(
         r'^maps/(?P<map_id>[0-9]+)/layers/$',
         views.LayerList.as_view(),
         name='layer-list'),
-    url(
+    re_path(
         r'^maps/(?P<pk>[0-9]+)/$',
         views.MapInstance.as_view(),
         name='map-detail'),
-    url(
+    re_path(
         r'^maps/(?P<slug>[\w-]+)/$',
         views.MapInstanceSlug.as_view(),
         name='map-detail-slug'),
-    url(r'^maps/$',
+    re_path(r'^maps/$',
         views.MapList.as_view(),
         name='map-list'),
-    url(
+    re_path(
         r'^photos/(?P<pk>[0-9]+)/$',
         views.PhotoInstance.as_view(),
         name='photo-detail'),
-    url(r'^photos/$',
+    re_path(r'^photos/$',
         views.PhotoList.as_view(),
         name='photo-list'),
-    url(
+    re_path(
         r'^icons/(?P<pk>[0-9]+)/$',
         views.IconInstance.as_view(),
         name='icon-detail'),
-    url(r'^icons/$',
+    re_path(r'^icons/$',
         views.IconList.as_view(),
         name='icon-list'),
-    url(
+    re_path(
         r'^audio/(?P<pk>[0-9]+)/$',
         views.AudioInstance.as_view(),
         name='audio-detail'),
-    url(r'^audio/$',
+    re_path(r'^audio/$',
         views.AudioList.as_view(),
         name='audio-list'),
-    url(
+    re_path(
         r'^map-images/(?P<map_id>[0-9]+)/overlays/$',
         views.MapImageOverlayList.as_view(),
         name='imageopts-list'),
-    url(
+    re_path(
         r'^map-images/(?P<map_id>[0-9]+)/overlays/(?P<pk>[0-9]+)/$',
         views.MapImageOverlayInstance.as_view(),
         name='imageopts-detail'),
-    url(
+    re_path(
         r'^map-images/(?P<pk>[0-9]+)/$',
         views.MapImageInstance.as_view(),
         name='mapimage-detail'),
-    url(r'^map-images/$',
+    re_path(r'^map-images/$',
         views.MapImageList.as_view(),
         name='mapimage-list'),
-    url(
+    re_path(
         r'^datasets/(?P<dataset_id>[0-9]+)/data/(?P<pk>[0-9]+)/$',
         views.RecordInstance.as_view()),
-    url(r'^datasets/(?P<dataset_id>[0-9]+)/data/$',
+    re_path(r'^datasets/(?P<dataset_id>[0-9]+)/data/$',
         views.RecordList.as_view()),
-    url(
+    re_path(
         r'^prints/(?P<pk>[0-9]+)/$',
         views.PrintInstance.as_view(),
         name='print-detail'),
-    url(r'^prints/$',
+    re_path(r'^prints/$',
         views.PrintList.as_view(),
         name='print-list'),
-    url(
+    re_path(
         r'^datasets/(?P<dataset_id>[0-9]+)/fields/(?P<pk>[0-9]+)/$',
         views.FieldInstance.as_view(),
         name='field-detail'),
-    url(
+    re_path(
         r'^datasets/(?P<dataset_id>[0-9]+)/fields/$',
         views.FieldList.as_view(),
         name='field-list'),
-    url(
+    re_path(
         r'^datasets/(?P<pk>[0-9]+)/$',
         views.DatasetInstance.as_view(),
         name='dataset-detail'),
-    url(r'^datasets/$',
+    re_path(r'^datasets/$',
         views.DatasetList.as_view(),
         name='dataset-list'),
-    url(
+    re_path(
         r'^photos/(?P<pk>[0-9]+)/rotate-left/$',
         views.rotate_left,
         name='rotate-left'),
-    url(
+    re_path(
         r'^photos/(?P<pk>[0-9]+)/rotate-right/$',
         views.rotate_right,
         name='rotate-right'),
-    url(r'^tags/(?P<term>\w+)/$',
+    re_path(r'^tags/(?P<term>\w+)/$',
         views.TagList.as_view(),
         name='tag-list'),
-    url(r'^tags/$',
+    re_path(r'^tags/$',
         views.TagList.as_view(),
         name='tag-list'),
-    url(r'^user-profile/$',
+    re_path(r'^user-profile/$',
         views.UserProfileList.as_view(),
         name='userprofile-list'),
-    url(
+    re_path(
         r'^user-profile/(?P<pk>[0-9]+)/$',
         views.UserProfileInstance.as_view(),
         name='userprofile-detail'),
-    url(
+    re_path(
         r'^tiles/(?P<pk>[0-9]+)/$',
         views.TileSetInstance.as_view(),
         name='tileset-detail'),
-    url(r'^tiles/$',
+    re_path(r'^tiles/$',
         views.TileSetList.as_view(),
         name='tileset-list'),
     # Todo: generalize this one:
-    url(r'^datasets/84/data/tracks/$',
+    re_path(r'^datasets/84/data/tracks/$',
         views.TrackList.as_view(),
         name='air-quality-tracks'),
-    url(r'^videos/$', views.VideoList.as_view(),
+    re_path(r'^videos/$', views.VideoList.as_view(),
         name='video-list'),
-    url(r'^videos/(?P<pk>[0-9]+)/$', views.VideoInstance.as_view(),
+    re_path(r'^videos/(?P<pk>[0-9]+)/$', views.VideoInstance.as_view(),
         name='video-detail'),
 ])
 

@@ -158,7 +158,6 @@ TEMPLATE_LOADERS = (
 # renamed to MIDDLEWARE instead of MIDDLEWARE_CLASSES
 MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

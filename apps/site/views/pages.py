@@ -100,21 +100,23 @@ class MainView(TemplateView):
         return super(MainView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, project_id, *args, **kwargs):
-        from localground.apps.site.api.serializers import \
-            ProjectDetailSerializer
-        from rest_framework.renderers import JSONRenderer
+        # from localground.apps.site.api.serializers import \
+        #     ProjectDetailSerializer
+        # from rest_framework.renderers import JSONRenderer
 
         context = super(MainView, self).get_context_data(
-            *args, **kwargs)
-
-        project = Project.objects.get(id=project_id)
+             *args, **kwargs)
+        # this is an annoying hack that is needed for Django3.x
+        project_id = int(str(project_id))
+        print(project_id, self.request)
+        project = Project.objects.get(pk=project_id)
         serializer = ProjectDetailSerializer(
             project,
-            context={'request': {}}
+            context={'request': self.request}
         )
         renderer = JSONRenderer()
         context.update({
-            'project': renderer.render(serializer.data),
+            'project': renderer.render(serializer.data).decode('utf-8'),
             'project_name': project.name
         })
         return context

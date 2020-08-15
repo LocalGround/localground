@@ -31,17 +31,17 @@ def persistant_queries(request):
             'projects': Project.objects.get_objects(request.user)
         })
     
-    '''
-    TODO:
-    This "show_air_quality" flag is a serious hack.  Needs to devise a generalized
-    method for showing particular views to particular people (rather than hard-coding)
-    '''
-    try:
-        context.update({
-            'show_air_quality': Dataset.objects.get(id=84).has_access(request.user)
-        })
-    except Exception:
-        pass
+    # '''
+    # TODO:
+    # This "show_air_quality" flag is a serious hack.  Needs to devise a generalized
+    # method for showing particular views to particular people (rather than hard-coding)
+    # '''
+    # try:
+    #     context.update({
+    #         'show_air_quality': Dataset.objects.get(id=84).has_access(request.user)
+    #     })
+    # except Exception:
+    #     pass
     
     add_overlays = False
     for p in ['/print/', '/maps/', '/ebays/', '/viewer/', '/map-images/update-record/']:

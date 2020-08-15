@@ -189,8 +189,9 @@ class ProjectDetailSerializer(ProjectSerializer):
         if model_name_plural is None:
             model_name_plural = model_class.model_name_plural
 
+        request = self.context.get('request')
         serializer = serializer_class(
-            records, many=True, context={'request': {}})
+            records, many=True, context={'request': request })
 
         d = {
             'dataType': model_name_plural,
@@ -199,9 +200,10 @@ class ProjectDetailSerializer(ProjectSerializer):
             'overlay_type': overlay_type,
             'data': serializer.data
         }
+        request = self.context.get('request')
         if fields:
             d.update({
                 'fields': FieldSerializerSimple(
-                    fields, many=True, context={'request': {}}).data
+                    fields, many=True, context={'request': request }).data
             })
         return d

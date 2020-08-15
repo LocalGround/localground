@@ -16,7 +16,7 @@ urlpatterns = [
     re_path(r'^style-guide/$', pages.style_guide_pages),
     re_path(r'^style-guide/(?P<page_name>\w+)/$', pages.style_guide_pages),
     re_path(r'^projects/(?P<project_id>[0-9]+)/$', MainView.as_view(template_name='pages/project_detail.html')),
-    re_path(r'^projects/(?P<project_id>[0-9]+)/maps/$', MainView.as_view(template_name='pages/main.html')),
+    path('projects/<int:project_id>/maps/', MainView.as_view(template_name='pages/main.html')),
     re_path(r'^maps/(?P<map_slug>[\w-]+)/$', PublicView.as_view(template_name='pages/presentation1.html')),
     # # (r'^data/(?P<project_id>[0-9]+)/$', MainView.as_view(template_name='pages/data.html')),
     re_path(r'^pages/(?P<page_name>\w+)/', pages.about_pages),
@@ -34,7 +34,7 @@ urlpatterns = [
     #     'localground.apps.site.views.mediaserver.serve_media'),
 
     # # data API
-    # url(r'^api/0/', include('localground.apps.site.api.urls')),
+    re_path(r'^api/0/', include('localground.apps.site.api.urls')),
 
     # # document
     path('amazon-tester/', document_view.DocumentCreateView.as_view(), name='home')
