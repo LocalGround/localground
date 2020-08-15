@@ -88,7 +88,7 @@ class PublicView(TemplateView):
 class MainView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return HttpResponseRedirect('/accounts/login/')
         try:
             project = Project.objects.get(id=kwargs.get('project_id'))

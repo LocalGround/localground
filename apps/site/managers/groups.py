@@ -12,7 +12,7 @@ class ProjectMixin(GroupMixin):
     def _get_objects(self, user, authority_id=1, request=None, context=None,
                      ordering_field='-time_stamp', with_counts=True, **kwargs):
 
-        if user is None or not user.is_authenticated():
+        if user is None or not user.is_authenticated:
             raise GenericLocalGroundError('The user cannot be empty')
 
         q = (
@@ -79,7 +79,7 @@ class FormMixin(GroupMixin):
                      context=None, ordering_field='-time_stamp'
                      ):
 
-        if user is None or not user.is_authenticated():
+        if user is None or not user.is_authenticated:
             raise GenericLocalGroundError('The user cannot be empty')
 
         q = (
@@ -159,7 +159,7 @@ class LayerMixin(GroupMixin):
     def _get_objects(self, user, authority_id=1, request=None, context=None,
                      ordering_field='-time_stamp', with_counts=True, **kwargs):
 
-        if user is None or not user.is_authenticated():
+        if user is None or not user.is_authenticated:
             raise GenericLocalGroundError('The user cannot be empty')
 
         q = (

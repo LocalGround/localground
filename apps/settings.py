@@ -155,14 +155,15 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader'
 )
-
-MIDDLEWARE_CLASSES = (
+# renamed to MIDDLEWARE instead of MIDDLEWARE_CLASSES
+MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'localground.apps.middleware.impersonate.ImpersonateMiddleware'
+    #'localground.apps.middleware.impersonate.ImpersonateMiddleware'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -173,37 +174,59 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     # for our application-level context objects
     'localground.apps.middleware.context_processors.persistant_queries',
-    'social.apps.django_app.context_processors.backends',
-    'social.apps.django_app.context_processors.login_redirect',
+    # 'social.apps.django_app.context_processors.backends',
+    # 'social.apps.django_app.context_processors.login_redirect',
 )
 
 AUTHENTICATION_BACKENDS = (
-    'social.backends.google.GoogleOAuth2',
+    # 'social.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_PIPELINE = (
-    'social.pipeline.social_auth.social_details',
-    'social.pipeline.social_auth.social_uid',
-    'social.pipeline.social_auth.auth_allowed',
-    'social.pipeline.social_auth.social_user',
-    'social.pipeline.user.get_username',
-    'social.pipeline.social_auth.associate_by_email',  # <--- enable this one
-    'social.pipeline.user.create_user',
-    'social.pipeline.social_auth.associate_user',
-    'social.pipeline.social_auth.load_extra_data',
-    'social.pipeline.user.user_details'
-)
+# SOCIAL_AUTH_PIPELINE = (
+#     'social.pipeline.social_auth.social_details',
+#     'social.pipeline.social_auth.social_uid',
+#     'social.pipeline.social_auth.auth_allowed',
+#     'social.pipeline.social_auth.social_user',
+#     'social.pipeline.user.get_username',
+#     'social.pipeline.social_auth.associate_by_email',  # <--- enable this one
+#     'social.pipeline.user.create_user',
+#     'social.pipeline.social_auth.associate_user',
+#     'social.pipeline.social_auth.load_extra_data',
+#     'social.pipeline.user.user_details'
+# )
 
 ROOT_URLCONF = 'localground.apps.site.urls'
 
-TEMPLATE_DIRS = (
-    '%s/templates' % APPS_ROOT,
-)
+# TEMPLATE_DIRS Deprecated in Django3
+# TEMPLATE_DIRS = (
+#     '%s/templates' % APPS_ROOT,
+# )
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [ '{0}/templates'.format(APPS_ROOT) ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                # for our application-level context objects
+                'localground.apps.middleware.context_processors.persistant_queries',
+                # 'social.apps.django_app.context_processors.backends',
+                # 'social.apps.django_app.context_processors.login_redirect',
+            ]
+        }
+    },
+]
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+# SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 
 INSTALLED_APPS = (
     'django.contrib.sites',
@@ -221,9 +244,10 @@ INSTALLED_APPS = (
     'tagging',  # for tagging of blog posts in Django
     # 'django.contrib.admin',
     'rest_framework',
+    'django_registration',
     'corsheaders',
     'djcelery',
-    'social.apps.django_app.default',
+    # 'social.apps.django_app.default',
     'storages',
     'django.contrib.postgres',
 )

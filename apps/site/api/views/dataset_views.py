@@ -11,7 +11,7 @@ class DatasetList(QueryableListCreateAPIView):
     model = models.Dataset
 
     def get_queryset(self):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             return models.Dataset.objects.get_objects(self.request.user)
         else:
             raise exceptions.ParseError('Login Required')
@@ -24,7 +24,7 @@ class DatasetInstance(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.DatasetSerializerDetail
 
     def get_queryset(self):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             return models.Dataset.objects.get_objects(self.request.user)
         else:
             raise exceptions.ParseError('Login Required')

@@ -316,7 +316,7 @@ class ObjectPermissionsMixin(models.Model):
 
     def __has_user_permissions(self, user, authority_id):
         # anonymous or null users don't have user-level permissions:
-        if user is None or not user.is_authenticated():
+        if user is None or not user.is_authenticated:
             return False
 
         # object owners have blanket view/edit/manage user-level permissions:

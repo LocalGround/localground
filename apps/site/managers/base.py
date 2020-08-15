@@ -96,7 +96,7 @@ class ObjectMixin(BaseMixin):
         '''
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             raise GenericLocalGroundError('The user cannot be anonymous')
         q = (
             self.model.objects

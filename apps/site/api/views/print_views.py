@@ -11,7 +11,7 @@ class PrintList(QueryableListCreateAPIView):
     model = models.Print
 
     def get_queryset(self):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             return models.Print.objects.get_objects(self.request.user)
         else:
             return models.Print.objects.get_objects_public(

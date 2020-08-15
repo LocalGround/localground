@@ -123,7 +123,7 @@ class ProjectSerializerMixin(serializers.ModelSerializer):
     def get_projects(self):
         if self.context.get('view'):
             view = self.context['view']
-            if view.request.user.is_authenticated():
+            if view.request.user.is_authenticated:
                 return models.Project.objects.get_objects(view.request.user)
             else:
                 return models.Project.objects.get_objects_public(

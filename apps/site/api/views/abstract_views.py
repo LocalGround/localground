@@ -71,7 +71,7 @@ class MediaList(QueryableListCreateAPIView):
     ext_whitelist = []
 
     def get_queryset(self):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             return self.model.objects.get_objects(self.request.user)
         else:
             return self.model.objects.get_objects_public(

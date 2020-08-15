@@ -81,15 +81,15 @@ class UserProfile(models.Model):
         return profile
 
     def can_view(self, user=None, access_key=None):
-        if user.is_authenticated():
+        if user.is_authenticated:
             return True
 
     def can_edit(self, user):
-        if user.is_authenticated():
+        if user.is_authenticated:
             return True
 
     def can_manage(self, user):
-        if user.is_authenticated():
+        if user.is_authenticated:
             return True
 
 

@@ -15,7 +15,7 @@ class ProjectList(QueryableListCreateAPIView):
     paginate_by = 100
 
     def get_queryset(self):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             return models.Project.objects.get_objects(self.request.user)
         else:
             return models.Project.objects.get_objects_public(

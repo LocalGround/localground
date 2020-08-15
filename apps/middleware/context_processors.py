@@ -12,10 +12,11 @@ def persistant_queries(request):
     import simplejson as json
     from django.conf import settings
     #raise Exception(os.environ)
+    print(request.user.is_authenticated)
     context = {
         'path': request.path,
         'user': request.user,
-        'is_authenticated': request.user.is_authenticated(),
+        'is_authenticated': request.user.is_authenticated,
         'is_impersonation': request.session.get('active_impersonation') is not None,
         'MAPBOX_API_KEY': os.environ.get('MAPBOX_API_KEY', settings.MAPBOX_API_KEY),
         'serverURL': settings.SERVER_URL,
@@ -25,7 +26,7 @@ def persistant_queries(request):
         'ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE': settings.ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE,
         'DEBUG': settings.DEBUG
     }
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         context.update({
             'projects': Project.objects.get_objects(request.user)
         })
