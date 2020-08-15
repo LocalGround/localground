@@ -14,31 +14,31 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='audio',
             name='attribution',
-            field=models.CharField(help_text=b'Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name=b'Author / Creator', blank=True),
+            field=models.CharField(help_text='Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name='Author / Creator', blank=True),
         ),
         migrations.AlterField(
             model_name='photo',
             name='attribution',
-            field=models.CharField(help_text=b'Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name=b'Author / Creator', blank=True),
+            field=models.CharField(help_text='Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name='Author / Creator', blank=True),
         ),
         migrations.AlterField(
             model_name='scan',
             name='attribution',
-            field=models.CharField(help_text=b'Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name=b'Author / Creator', blank=True),
+            field=models.CharField(help_text='Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name='Author / Creator', blank=True),
         ),
         migrations.AlterField(
             model_name='scan',
             name='status',
-            field=models.ForeignKey(default=1, to='site.StatusCode'),
+            field=models.ForeignKey(on_delete=models.CASCADE, default=1, to='site.StatusCode'),
         ),
         migrations.AlterField(
             model_name='scan',
             name='upload_source',
-            field=models.ForeignKey(default=1, to='site.UploadSource'),
+            field=models.ForeignKey(on_delete=models.CASCADE, default=1, to='site.UploadSource'),
         ),
         migrations.AlterField(
             model_name='video',
             name='attribution',
-            field=models.CharField(help_text=b'Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name=b'Author / Creator', blank=True),
+            field=models.CharField(help_text='Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name='Author / Creator', blank=True),
         ),
     ]

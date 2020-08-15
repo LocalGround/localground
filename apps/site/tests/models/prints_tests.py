@@ -13,7 +13,7 @@ from localground.apps.site.tests.models import \
     MediaMixinTest, BaseAuditAbstractModelClassTest, ExtentsMixinTest, \
     ProjectMixinTest, GenericRelationMixinTest
 
-import httplib
+import http.client
 import urllib
 from urlparse import urlparse
 
@@ -85,7 +85,7 @@ class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
         # Successfully adds PDF and Image to S3
         for url in urls:
             p = urlparse(url)
-            conn = httplib.HTTPConnection(p.netloc)
+            conn = http.client.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
             self.assertEqual(conn.getresponse().status, 200)
 
@@ -95,6 +95,6 @@ class PrintsTest(ExtentsMixinTest, MediaMixinTest, ProjectMixinTest,
         # files should not exist on S3:
         for url in urls:
             p = urlparse(url)
-            conn = httplib.HTTPConnection(p.netloc)
+            conn = http.client.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
             self.assertEqual(conn.getresponse().status, 403)

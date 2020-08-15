@@ -1,4 +1,5 @@
-from django.contrib.gis.db.models import GeoManager
+# from django.contrib.gis.db.models import GeoManager
+from django.db.models import Manager as GeoManager
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from localground.apps.site.managers.base import BaseMixin, \

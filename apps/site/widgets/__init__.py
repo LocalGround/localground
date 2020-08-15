@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.contrib.gis.geos import GEOSGeometry, GEOSException
 from django.forms.widgets import Widget, TextInput, Textarea, HiddenInput
 #from tagging_autocomplete.widgets import TagAutocomplete
@@ -360,7 +360,7 @@ class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
         final_attrs = self.build_attrs(attrs, name=name)
         output = [u'<table id="table_%s" class="tbl_multiselect">' % (name)]
         # Normalize to strings
-        str_values = set([force_unicode(v) for v in value])
+        str_values = set([force_text(v) for v in value])
         for i, (option_value, option_label) in enumerate(chain(self.choices, choices)):
             # If an ID attribute was given, add a numeric index as a suffix,
             # so that the checkboxes don't all have the same ID attribute.
@@ -373,9 +373,9 @@ class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
             cb = forms.CheckboxInput(
                 final_attrs,
                 check_test=lambda value: value in str_values)
-            option_value = force_unicode(option_value)
+            option_value = force_text(option_value)
             rendered_cb = cb.render(name, option_value)
-            option_label = conditional_escape(force_unicode(option_label))
+            option_label = conditional_escape(force_text(option_label))
             output.append(
                 u'<tr><td>%s </td><td><label style="text-align:left;" %s>%s</label></td></tr>' %
                 (rendered_cb, label_for, option_label))

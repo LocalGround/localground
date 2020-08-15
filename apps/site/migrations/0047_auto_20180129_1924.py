@@ -23,11 +23,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='mapimage',
             name='media_file_scaled',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
         migrations.AddField(
             model_name='mapimage',
             name='media_file_thumb',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
     ]

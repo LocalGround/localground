@@ -24,6 +24,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='icon',
             name='file_type',
-            field=models.CharField(max_length=63, verbose_name=b'file type', choices=[(b'svg', b'svg'), (b'jpg', b'jpg'), (b'png', b'png'), (b'gif', b'gif')]),
+            field=models.CharField(max_length=63, verbose_name='file type', choices=[(b'svg', b'svg'), (b'jpg', b'jpg'), (b'png', b'png'), (b'gif', b'gif')]),
         ),
     ]

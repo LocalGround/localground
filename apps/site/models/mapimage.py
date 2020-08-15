@@ -11,30 +11,32 @@ from localground.apps.site.models import (
     ExtentsMixin)
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
-from django.contrib.contenttypes import generic
 from localground.apps.site.fields import LGImageField
 from PIL import Image
 
 
 class MapImage(BaseUploadedMedia):
     uuid = models.CharField(unique=True, max_length=8)
-    source_print = models.ForeignKey('Print', blank=True, null=True)
-    status = models.ForeignKey('StatusCode',
-                               default=StatusCode.READY_FOR_PROCESSING)
+    source_print = models.ForeignKey('Print', blank=True, null=True,
+        on_delete=models.PROTECT)
+    status = models.ForeignKey(
+        'StatusCode',
+        default=StatusCode.READY_FOR_PROCESSING,
+        on_delete=models.PROTECT)
     # looks like file_name_thumb was the primary key
     # whereas file_name_scaled is never used elsewhere
     file_name_thumb = models.CharField(max_length=255, blank=True, null=True)
     file_name_scaled = models.CharField(max_length=255, blank=True, null=True)
     # file name chars will eventually be replaced
     scale_factor = models.FloatField(blank=True, null=True)
-    upload_source = models.ForeignKey('UploadSource', default=1)
+    upload_source = models.ForeignKey('UploadSource', default=1, on_delete=models.PROTECT)
     email_sender = models.CharField(max_length=255, blank=True, null=True)
     email_subject = models.CharField(max_length=500, blank=True, null=True)
     email_body = models.TextField(null=True, blank=True)
     qr_rect = models.CharField(max_length=255, blank=True, null=True)
     qr_code = models.CharField(max_length=8, blank=True, null=True)
     map_rect = models.CharField(max_length=255, blank=True, null=True)
-    processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
+    processed_image = models.ForeignKey('ImageOpts', blank=True, null=True, on_delete=models.PROTECT)
     # S3 File fields
     media_file_thumb = LGImageField(null=True)
     media_file_scaled = LGImageField(null=True)
@@ -127,7 +129,7 @@ class MapImage(BaseUploadedMedia):
 
 
 class ImageOpts(ExtentsMixin, MediaMixin, BaseAudit):
-    source_mapimage = models.ForeignKey(MapImage)
+    source_mapimage = models.ForeignKey(MapImage, on_delete=models.CASCADE)
     opacity = models.FloatField(default=1)
     name = models.CharField(max_length=255, null=True, blank=True)
 

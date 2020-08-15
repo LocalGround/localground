@@ -55,7 +55,7 @@ class GroupByField(serializers.CharField):
             field = Field.get_field_by_unique_key(group_by)
             return field.col_name
         except Exception:
-            print group_by + ' not found'
+            print(group_by + ' not found')
             return group_by
 
 

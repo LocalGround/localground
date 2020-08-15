@@ -23,56 +23,56 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='print',
             name='map_image_path_S3',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
         migrations.AddField(
             model_name='print',
             name='pdf_path_S3',
-            field=localground.apps.site.fields.LGFileField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGFileField(null=True, upload_to=''),
         ),
         migrations.AlterField(
             model_name='audio',
             name='media_file',
-            field=localground.apps.site.fields.LGFileField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGFileField(null=True, upload_to=''),
         ),
         migrations.AlterField(
             model_name='audio',
             name='media_file_orig',
-            field=localground.apps.site.fields.LGFileField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGFileField(null=True, upload_to=''),
         ),
         migrations.AlterField(
             model_name='photo',
             name='media_file_large',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
         migrations.AlterField(
             model_name='photo',
             name='media_file_marker_lg',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
         migrations.AlterField(
             model_name='photo',
             name='media_file_marker_sm',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
         migrations.AlterField(
             model_name='photo',
             name='media_file_medium',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
         migrations.AlterField(
             model_name='photo',
             name='media_file_medium_sm',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
         migrations.AlterField(
             model_name='photo',
             name='media_file_orig',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
         migrations.AlterField(
             model_name='photo',
             name='media_file_small',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
     ]

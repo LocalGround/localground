@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
             new_name='tags',
             old_name='newtags'),
         migrations.RenameField(
-            model_name='wmsoverlay',
+            model_name='WMSOverlay',
             new_name='tags',
             old_name='newtags'),
     ]

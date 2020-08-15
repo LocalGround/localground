@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
             field=django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None),
         ),
         migrations.AddField(
-            model_name='wmsoverlay',
+            model_name='WMSOverlay',
             name='newtags',
             field=django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None),
         ),

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='styledmap',
             name='project',
-            field=models.ForeignKey(related_name='styledmap+', default=1, to='site.Project'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='styledmap+', default=1, to='site.Project'),
             preserve_default=False,
         ),
     ]

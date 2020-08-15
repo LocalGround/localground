@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
             name='tags',
         ),
         migrations.RemoveField(
-            model_name='wmsoverlay',
+            model_name='WMSOverlay',
             name='tags',
         ),
     ]

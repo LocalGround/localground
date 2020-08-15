@@ -25,12 +25,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='mapimage',
             name='last_updated_by',
-            field=models.ForeignKey(related_name='site_mapimage_related', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='site_mapimage_related', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
             model_name='mapimage',
             name='project',
-            field=models.ForeignKey(related_name='mapimage+', to='site.Project'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='mapimage+', to='site.Project'),
         ),
          migrations.RenameField(
             model_name='imageopts',

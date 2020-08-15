@@ -31,8 +31,10 @@ class Print(ExtentsMixin, MediaMixin, ProjectMixin,
     map_provider = models.ForeignKey(
         'TileSet',
         db_column='fk_provider',
-        related_name='prints_print_tilesets')
-    layout = models.ForeignKey('Layout')
+        related_name='prints_print_tilesets',
+        on_delete=models.PROTECT)
+    layout = models.ForeignKey('Layout',
+        on_delete=models.PROTECT)
     northeast = models.PointField(null=True)
     southwest = models.PointField(null=True)
     center = models.PointField(null=True)

@@ -4,6 +4,7 @@ from django.db.models import Q
 from localground.apps.site.managers.base import ObjectMixin
 from localground.apps.site.managers.overlays import MarkerMixin
 from localground.apps.lib.errors import GenericLocalGroundError
+from django.db.models import Manager as GeoManager
 
 
 class UploadMixin(ObjectMixin):
@@ -46,7 +47,7 @@ class MapImageQuerySet(QuerySet, MapImageMixin):
     pass
 
 
-class MapImageManager(models.GeoManager, MapImageMixin):
+class MapImageManager(GeoManager, MapImageMixin):
     def get_queryset(self):
         return MapImageQuerySet(self.model, using=self._db)
 
@@ -55,7 +56,7 @@ class StyledMapMixin(UploadMixin):
     pass
 
 
-class StyledMapManager(models.GeoManager, StyledMapMixin):
+class StyledMapManager(GeoManager, StyledMapMixin):
     pass
 
 
@@ -73,7 +74,7 @@ class PrintPermissionsMixin(object):
             return [p.to_dict() for p in self]
 
 
-class PhotoManager(models.GeoManager, PhotoMixin):
+class PhotoManager(GeoManager, PhotoMixin):
     pass
 
 
@@ -81,7 +82,7 @@ class AudioMixin(UploadMixin):
     pass
 
 
-class AudioManager(models.GeoManager, AudioMixin):
+class AudioManager(GeoManager, AudioMixin):
     pass
 
 
@@ -89,11 +90,11 @@ class VideoMixin(UploadMixin):
     pass
 
 
-class VideoManager(models.GeoManager, VideoMixin):
+class VideoManager(GeoManager, VideoMixin):
     pass
 
 
-class IconManager(models.GeoManager, UploadMixin):
+class IconManager(GeoManager, UploadMixin):
      def get_objects_public(self, request=None, ordering_field='name', **kwargs):
         '''
         This returns all generic icons that are owned by the system
@@ -137,7 +138,7 @@ class RecordMixin(UploadMixin, MarkerMixin):
         return q
 
 
-class RecordManager(models.GeoManager, RecordMixin):
+class RecordManager(GeoManager, RecordMixin):
     related_fields = ['project', 'owner']
     pass
 

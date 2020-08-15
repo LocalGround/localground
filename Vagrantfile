@@ -12,12 +12,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = 'vagrant.host'
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "ubuntu/xenial64"
-  config.vm.provision "shell" do |s|
-	s.path="deploy_tools/setup.sh"
-	s.args = ['-d']
-	s.privileged = true
-  end
+  # config.vm.box = "ubuntu/xenial64"
+  # config.vm.provision "shell" do |s|
+  # 	s.path="deploy_tools/setup.sh"
+  # 	s.args = ['-d']
+  # 	s.privileged = true
+  # end
+
+  # Every Vagrant virtual environment requires a box to build off of.
+  config.vm.box = "ubuntu/focal64" # upgrading to LTS 20.04 Focal Fossa
+  #config.vm.provision "shell" do |s|
+  #	s.path="deploy_tools/setup.sh"
+  #	s.args = ['-d']
+  #	s.privileged = true
+  #end
 
 
   # Disable automatic box update checking. If you disable this, then
@@ -33,7 +41,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  config.vm.network "private_network", ip: "192.168.33.10"
+  # config.vm.network "private_network", ip: "192.168.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on

@@ -1,61 +1,60 @@
-Django==1.8.2
-Paste==1.7.5.1
-Pygments==1.6
-TileCache==2.11
+Django
+psycopg2
+Paste
+Pygments
+# TileCache
 django-debug-toolbar
-django-extensions==1.1.1
-django-filter==0.10.0
+django-extensions
+django-filter
 # django-jenkins==0.14.0
-django-tagging==0.3.6
-django-tagging-autocomplete==0.4.2
-djangorestframework==3.1.1
-djangorestframework-csv==1.2.0
-djangorestframework-gis==0.8.2
-djangorestframework-jsonp==1.0.0
-djangorestframework-xml==1.0.1
-djangorestframework-hstore==1.3
-drf-compound-fields==1.0.0
-django-cors-headers==0.12
-django-websocket-redis==0.4.3
-django-registration==2.0.4
-sendgrid-django==1.4.0
-jsonfield==1.0.0
-flup==1.0.3.dev-20110405
-numpy==1.14.0
-oauth==1.0.1
-psycopg2==2.6
-python-dateutil==2.4.2
-reportlab==3.5.1
-simplejson==2.3.2
-python-social-auth==0.2.10
-sqlparse==0.1.15
-six==1.9.0
-South==1.0.2
-#SwampDragon==0.4.2.2
-celery==3.1
-django-celery==3.1.17
-flower==0.9.0
-piexif==1.0.13
+django-tagging
+django-tagging-autocomplete
+djangorestframework
+djangorestframework-csv
+djangorestframework-gis
+djangorestframework-jsonp
+djangorestframework-xml
+djangorestframework-hstore
+markdown
+drf-compound-fields
+django-cors-headers
+django-websocket-redis
+django-registration
+sendgrid-django
+jsonfield
+flup
+numpy
+oauth
+python-dateutil
+reportlab
+simplejson
+python-social-auth
+social-auth-app-django
+sqlparse
+six
+South
+celery
+django-celery
+flower
+piexif
 
 
 ##################
 # Amazon Storage #
 ##################
-boto3==1.4.7
-django-storages==1.6.1
-python-decouple==3.0
+boto3
+django-storages
+python-decouple
 
 
 ###########################
 # Acetate Layer Libraries #
 ###########################
-svgpathtools==1.3.1
-svgwrite==1.1.10
-yolk==0.4.3
-pycparser==2.17
-Pillow==5.2.0
-#cffi==1.10.0
-#cairocffi==0.8.0
+svgpathtools
+svgwrite
+yolk
+pycparser
+Pillow
 
 #MapScript (installed via apt-get (python-mapscript))
 #GDAL (installed via apt-get (python-gdal))

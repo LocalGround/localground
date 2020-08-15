@@ -24,11 +24,11 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(null=True, blank=True)),
                 ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
                 ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
-                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
+                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column='last_updated')),
                 ('table_name', models.CharField(unique=True, max_length=255)),
-                ('last_updated_by', models.ForeignKey(related_name='site_dataset_related', to=settings.AUTH_USER_MODEL)),
-                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('project', models.ForeignKey(related_name='dataset+', to='site.Project')),
+                ('last_updated_by', models.ForeignKey(on_delete=models.CASCADE, related_name='site_dataset_related', to=settings.AUTH_USER_MODEL)),
+                ('owner', models.ForeignKey(on_delete=models.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('project', models.ForeignKey(on_delete=models.CASCADE, related_name='dataset+', to='site.Project')),
             ],
             options={
                 'verbose_name': 'dataset',
@@ -54,12 +54,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='layer',
             name='dataset',
-            field=models.ForeignKey(related_name='layer+', to='site.Dataset'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='layer+', to='site.Dataset'),
         ),
         migrations.AlterField(
             model_name='layer',
             name='metadata',
-            field=jsonfield.fields.JSONField(default=b'{"width": 20, "shape": "circle", "fillOpacity": 1, "fillColor": "#4e70d4", "strokeWeight": 1, "buckets": 4, "isShowing": false, "strokeColor": "#ffffff", "strokeOpacity": 1, "paletteId": 0}', null=True, blank=True),
+            field=jsonfield.fields.JSONField(default='{"width": 20, "shape": "circle", "fillOpacity": 1, "fillColor": "#4e70d4", "strokeWeight": 1, "buckets": 4, "isShowing": false, "strokeColor": "#ffffff", "strokeOpacity": 1, "paletteId": 0}', null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='layer',
@@ -73,12 +73,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='field',
             name='dataset',
-            field=models.ForeignKey(default=1, to='site.Dataset'),
+            field=models.ForeignKey(on_delete=models.CASCADE, default=1, to='site.Dataset'),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='record',
             name='dataset',
-            field=models.ForeignKey(to='site.Dataset', null=True),
+            field=models.ForeignKey(on_delete=models.CASCADE, to='site.Dataset', null=True),
         )
     ]

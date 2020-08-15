@@ -14,36 +14,36 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='photo',
             name='file_path_large',
-            field=models.FileField(null=True, upload_to=b''),
+            field=models.FileField(null=True, upload_to=''),
         ),
         migrations.AddField(
             model_name='photo',
             name='file_path_marker_lg',
-            field=models.FileField(null=True, upload_to=b''),
+            field=models.FileField(null=True, upload_to=''),
         ),
         migrations.AddField(
             model_name='photo',
             name='file_path_marker_sm',
-            field=models.FileField(null=True, upload_to=b''),
+            field=models.FileField(null=True, upload_to=''),
         ),
         migrations.AddField(
             model_name='photo',
             name='file_path_medium',
-            field=models.FileField(null=True, upload_to=b''),
+            field=models.FileField(null=True, upload_to=''),
         ),
         migrations.AddField(
             model_name='photo',
             name='file_path_medium_sm',
-            field=models.FileField(null=True, upload_to=b''),
+            field=models.FileField(null=True, upload_to=''),
         ),
         migrations.AddField(
             model_name='photo',
             name='file_path_orig',
-            field=models.FileField(null=True, upload_to=b''),
+            field=models.FileField(null=True, upload_to=''),
         ),
         migrations.AddField(
             model_name='photo',
             name='file_path_small',
-            field=models.FileField(null=True, upload_to=b''),
+            field=models.FileField(null=True, upload_to=''),
         ),
     ]

@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='layer',
             name='metadata',
-            field=jsonfield.fields.JSONField(default=b'{"width": 20, "shape": "circle", "fillOpacity": 1, "fillColor": "#4e70d4", "strokeWeight": 1, "buckets": 4, "isShowing": true, "strokeColor": "#ffffff", "strokeOpacity": 1, "paletteId": 0}', null=True, blank=True),
+            field=jsonfield.fields.JSONField(default='{"width": 20, "shape": "circle", "fillOpacity": 1, "fillColor": "#4e70d4", "strokeWeight": 1, "buckets": 4, "isShowing": true, "strokeColor": "#ffffff", "strokeOpacity": 1, "paletteId": 0}', null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='layer',

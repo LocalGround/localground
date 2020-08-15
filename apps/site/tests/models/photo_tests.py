@@ -15,7 +15,7 @@ from django.conf import settings
 from rest_framework import status
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.core.files import File
-import httplib
+import http.client
 import urllib
 from urlparse import urlparse
 # by adding the json name, the error is different:
@@ -99,7 +99,7 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
         # test that stale images have been removed from Amazon:
         for url in stale_urls:
             p = urlparse(url)
-            conn = httplib.HTTPConnection(p.netloc)
+            conn = http.client.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
             self.assertEqual(conn.getresponse().status, 403)
 
@@ -137,7 +137,7 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
         # files should exist on S3:
         for url in urls:
             p = urlparse(url)
-            conn = httplib.HTTPConnection(p.netloc)
+            conn = http.client.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
             self.assertEqual(conn.getresponse().status, 200)
 
@@ -147,7 +147,7 @@ class PhotoModelTest(ExtrasMixinTest, PointMixinTest, ProjectMixinTest,
         # files should not exist on S3:
         for url in urls:
             p = urlparse(url)
-            conn = httplib.HTTPConnection(p.netloc)
+            conn = http.client.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
             self.assertEqual(conn.getresponse().status, 403)
 

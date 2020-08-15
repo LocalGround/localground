@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from django.http import Http404, HttpResponseRedirect
 from django.template import TemplateDoesNotExist, RequestContext
-from django.shortcuts import render as direct_to_template, render_to_response
+from django.shortcuts import render as direct_to_template
 from django.views.generic import TemplateView
 from localground.apps.site.models import Project, StyledMap
 from django.http import Http404
@@ -63,10 +63,11 @@ class PublicView(TemplateView):
             context.update({
                 'error': 'Incorrect Password'
             })
+            
         return super(TemplateView, self).render_to_response(context)
 
     def dispatch(self, request, *args, **kwargs):
-        print 'dispatch'
+        ('dispatch')
         self.access_key = request.GET.get('access_key')
         self.map = self._get_map(kwargs.get('map_slug'))
         return super(PublicView, self).dispatch(request, *args, **kwargs)
@@ -94,7 +95,7 @@ class MainView(TemplateView):
         except Project.DoesNotExist:
             msg = 'Either project id={0} does not exist or you don\'t '
             msg += 'have access to it.'
-            print msg.format(kwargs.get('project_id'))
+            print(msg.format(kwargs.get('project_id')))
             return HttpResponseRedirect('/')
         return super(MainView, self).dispatch(request, *args, **kwargs)
 

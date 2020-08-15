@@ -168,7 +168,7 @@ def contains(col, val):
     key = "{}__icontains".format(col, sql_lookup["LIKE"])
     val = val.strip("'")
     args = {key: val}
-    #print args
+    #print(args)
     return Q(**args)
 
 @parser.pattern_handler(r"""
@@ -180,7 +180,7 @@ def startswith(col, val):
     key = "{}__startswith".format(col, sql_lookup["LIKE"])
     val = val.strip("'")
     args = {key: val}
-    #print args
+    #print(args)
     return Q(**args)
 
 @parser.pattern_handler(r"""
@@ -192,7 +192,7 @@ def endswith(col, val):
     key = "{}__iendswith".format(col, sql_lookup["LIKE"])
     val = val.strip("'")
     args = {key: val}
-    #print args
+    #print(args)
     return Q(**args)
 
 @parser.pattern_handler(r"""
@@ -237,7 +237,7 @@ def distance_pattern(col, lat, lon, op, dist):
     args = {
         key: val
     }
-    print args
+    print(args)
     return Q(**args)
 
 @parser.pattern_handler(r'''
@@ -256,5 +256,5 @@ def buffer_pattern(col, lat, lon, dist):
     args = {
         key: val
     }
-    #print args
+    #print(args)
     return Q(**args)

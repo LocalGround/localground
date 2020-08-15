@@ -219,7 +219,7 @@ INSTALLED_APPS = (
     # taken from the django-registration module
     # 'localground.apps.registration',
     'tagging',  # for tagging of blog posts in Django
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'rest_framework',
     'corsheaders',
     'djcelery',
@@ -249,9 +249,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
         'localground.apps.site.api.permissions.CheckProjectPermissions',
     ),
-    'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework.filters.DjangoFilterBackend',
-    ),
+    # 'DEFAULT_FILTER_BACKENDS': (
+    #     'rest_framework.filters.DjangoFilterBackend',
+    # ),
     # Commenting out authentication classes for now. It was throwing a
     # really weird error for shared projects
     #

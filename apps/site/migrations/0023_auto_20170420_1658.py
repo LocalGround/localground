@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
-                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
+                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column='last_updated')),
                 ('name', models.CharField(max_length=255, null=True, blank=True)),
                 ('description', models.TextField(null=True, blank=True)),
                 ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
@@ -35,9 +35,9 @@ class Migration(migrations.Migration):
                 ('key', models.CharField(max_length=512, null=True, blank=True)),
                 ('attribution', models.CharField(max_length=1000, null=True, blank=True)),
                 ('extras', jsonfield.fields.JSONField(null=True, blank=True)),
-                ('last_updated_by', models.ForeignKey(related_name='site_tileset_related', to=settings.AUTH_USER_MODEL)),
-                ('overlay_source', models.ForeignKey(to='site.OverlaySource')),
-                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('last_updated_by', models.ForeignKey(on_delete=models.CASCADE, related_name='site_tileset_related', to=settings.AUTH_USER_MODEL)),
+                ('overlay_source', models.ForeignKey(on_delete=models.CASCADE, to='site.OverlaySource')),
+                ('owner', models.ForeignKey(on_delete=models.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'ordering': ('id',),
@@ -92,22 +92,22 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='marker',
             name='color',
-            field=models.CharField(default=b'CCCCCC', max_length=6),
+            field=models.CharField(default='CCCCCC', max_length=6),
         ),
         migrations.DeleteModel(
             name='Snapshot',
         ),
-        migrations.DeleteModel(
-            name='WMSOverlay',
-        ),
+        # migrations.DeleteModel(
+        #     name='WMSOverlay',
+        # ),
         migrations.AlterField(
             model_name='print',
             name='map_provider',
-            field=models.ForeignKey(related_name='prints_print_tilesets', db_column=b'fk_provider', to='site.TileSet'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='prints_print_tilesets', db_column='fk_provider', to='site.TileSet'),
         ),
         migrations.AlterField(
             model_name='styledmap',
             name='basemap',
-            field=models.ForeignKey(default=1, to='site.TileSet'),
+            field=models.ForeignKey(on_delete=models.CASCADE, default=1, to='site.TileSet'),
         )
     ]

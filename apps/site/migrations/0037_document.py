@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('uploaded_at', models.DateTimeField(auto_now_add=True)),
-                ('upload', models.FileField(upload_to=b'')),
+                ('upload', models.FileField(upload_to='')),
             ],
         ),
     ]

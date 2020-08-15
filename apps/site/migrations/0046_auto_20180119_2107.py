@@ -15,11 +15,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='icon',
             name='media_file_new',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
         migrations.AddField(
             model_name='icon',
             name='media_file_resized',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
     ]

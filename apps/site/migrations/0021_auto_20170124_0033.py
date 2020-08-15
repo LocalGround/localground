@@ -24,12 +24,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='layer',
             name='layer_type',
-            field=models.CharField(default=b'basic', max_length=64, choices=[(b'categorical', b'Category'), (b'continuous', b'Continuous'), (b'basic', b'Basic'), (b'individual', b'Individual Sites')]),
+            field=models.CharField(default='basic', max_length=64, choices=[(b'categorical', b'Category'), (b'continuous', b'Continuous'), (b'basic', b'Basic'), (b'individual', b'Individual Sites')]),
         ),
         migrations.AddField(
             model_name='layer',
             name='styled_map',
-            field=models.ForeignKey(related_name='layer+', default=3, to='site.StyledMap'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='layer+', default=3, to='site.StyledMap'),
             preserve_default=False,
         ),
         migrations.AddField(

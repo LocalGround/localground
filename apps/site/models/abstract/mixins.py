@@ -4,9 +4,9 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import ArrayField
 from localground.apps.lib.helpers import upload_helpers
 import operator
-from PIL import Image
-from StringIO import StringIO
-import ImageOps
+from PIL import Image, ImageOps
+from io import StringIO
+
 '''
 This file contains the following mixins:
     * PointMixin
@@ -70,7 +70,7 @@ class ExtentsMixin(models.Model):
 
 
 class ProjectMixin(models.Model):
-    project = models.ForeignKey('Project', related_name='%(class)s+')
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='%(class)s+')
 
     def can_view(self, user=None, access_key=None):
         return self.owner == user or \
@@ -304,6 +304,7 @@ class ObjectPermissionsMixin(models.Model):
     Abstract base class for media groups (Project and View objects).
     """
     access_authority = models.ForeignKey('ObjectAuthority',
+                                         on_delete=models.CASCADE,
                                          db_column='view_authority',
                                          verbose_name='Sharing')
     access_key = models.CharField(max_length=16, null=True, blank=True)

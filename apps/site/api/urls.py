@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.conf.urls.static import static
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.conf.urls import include
 from localground.apps.site.api import views
 from localground.apps.site import models
@@ -19,15 +19,15 @@ router.register(r'overlay-sources', views.OverlaySourceViewSet)
 
 # The API URLs are now determined automatically by the router.
 # Additionally, we include the login URLs for the browseable API.
-urlpatterns = patterns(
+urlpatterns = [
     '',
     url(r'^$', views.api_root),
     # a hack to include both ViewSets and views on the front
     # page
     url(r'^', include(router.urls[1:])),
-)
+]
 
-urlpatterns += format_suffix_patterns(patterns('',
+urlpatterns += format_suffix_patterns([
     url(
         r'^usernames/$',
         views.ListUsernames.as_view(),
@@ -188,7 +188,7 @@ urlpatterns += format_suffix_patterns(patterns('',
         name='video-list'),
     url(r'^videos/(?P<pk>[0-9]+)/$', views.VideoInstance.as_view(),
         name='video-detail'),
-    ))
+])
 
 if settings.DEBUG:
     # Store static CSS, JS, etc. locally:

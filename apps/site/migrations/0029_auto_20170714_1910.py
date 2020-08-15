@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='video',
             name='provider',
-            field=models.CharField(default='youtube', max_length=63, verbose_name=b'video provider', choices=[(b'vimeo', b'Vimeo'), (b'youtube', b'YouTube')]),
+            field=models.CharField(default='youtube', max_length=63, verbose_name='video provider', choices=[(b'vimeo', b'Vimeo'), (b'youtube', b'YouTube')]),
             preserve_default=False,
         ),
         migrations.AddField(

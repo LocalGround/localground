@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='markerwithattributes',
             name='form',
-            field=models.ForeignKey(default=1, to='site.Form'),
+            field=models.ForeignKey(on_delete=models.CASCADE, default=1, to='site.Form'),
             preserve_default=False,
         ),
         migrations.AlterField(

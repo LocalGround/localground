@@ -1,5 +1,25 @@
 from rest_framework.relations import PrimaryKeyRelatedField
-from rest_framework.utils.model_meta import _resolve_model
+
+def _resolve_model(obj):	
+    """	
+    Resolve supplied `obj` to a Django model class.	
+    `obj` must be a Django model class itself, or a string	
+    representation of one.  Useful in situations like GH #1225 where	
+    Django may not have resolved a string-based reference to a model in	
+    another model's foreign key definition.	
+    String representations should have the format:	
+        'appname.ModelName'	
+    """	
+    if isinstance(obj, six.string_types) and len(obj.split('.')) == 2:	
+        app_name, model_name = obj.split('.')	
+        resolved_model = apps.get_model(app_name, model_name)	
+        if resolved_model is None:	
+            msg = "Django did not return a model for {0}.{1}"	
+            raise ImproperlyConfigured(msg.format(app_name, model_name))	
+        return resolved_model	
+    elif inspect.isclass(obj) and issubclass(obj, models.Model):	
+        return obj	
+    raise ValueError("{0} is not a Django model".format(obj))
 
 class CustomModelField(PrimaryKeyRelatedField):
     '''

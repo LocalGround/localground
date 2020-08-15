@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='video',
             name='attribution',
-            field=models.CharField(help_text=b'Name of the person / group who created the media file (text)', max_length=500, null=True, verbose_name=b'Author / Creator', blank=True),
+            field=models.CharField(help_text='Name of the person / group who created the media file (text)', max_length=500, null=True, verbose_name='Author / Creator', blank=True),
         ),
     ]

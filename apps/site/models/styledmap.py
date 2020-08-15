@@ -78,7 +78,7 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
         max_length=100,
         db_index=True,
         help_text='Unique url identifier')
-    basemap = models.ForeignKey('TileSet', default=1)  # default to grayscale
+    basemap = models.ForeignKey('TileSet', default=1, on_delete=models.PROTECT)  # default to grayscale
     filter_fields = BaseAudit.filter_fields + \
         ('slug', 'name', 'description', 'tags', 'owner', 'project')
     objects = StyledMapManager()

@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='layer',
             name='dataset',
-            field=models.ForeignKey(related_name='layer+', default=1, to='site.Form'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='layer+', default=1, to='site.Form'),
             preserve_default=False,
         ),
     ]

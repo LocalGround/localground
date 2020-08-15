@@ -7,7 +7,6 @@ import sys
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import GEOSGeometry
-from urllib import unquote
 from rest_framework.decorators import api_view
 
 

@@ -21,9 +21,9 @@ class Layer(BaseAudit):
         'isContinuous': False,
         'collapsed': False 
     }
-    styled_map = models.ForeignKey('StyledMap', related_name='%(class)s+')
-    dataset = models.ForeignKey('Dataset', related_name='%(class)s+')
-    display_field = models.ForeignKey('Field', related_name='%(class)s+')
+    styled_map = models.ForeignKey('StyledMap', on_delete=models.CASCADE, related_name='%(class)s+')
+    dataset = models.ForeignKey('Dataset', on_delete=models.CASCADE, related_name='%(class)s+')
+    display_field = models.ForeignKey('Field', on_delete=models.RESTRICT, related_name='%(class)s+')
     title = models.CharField(max_length=255, null=False, blank=False)
     ordering = models.IntegerField()
     group_by = models.CharField(max_length=255)

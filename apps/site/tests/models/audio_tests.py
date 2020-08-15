@@ -8,7 +8,7 @@ from localground.apps.lib.helpers import upload_helpers
 from django import test
 import os
 from django.core.files import File
-import httplib
+import http.client
 from urlparse import urlparse
 
 
@@ -69,7 +69,7 @@ class AudioModelTest(ExtrasMixinTest, PointMixinTest,
         urls = [self.model.media_file_orig.url, self.model.media_file.url]
         for url in urls:
             p = urlparse(url)
-            conn = httplib.HTTPConnection(p.netloc)
+            conn = http.client.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
             self.assertEqual(conn.getresponse().status, 200)
 
@@ -88,7 +88,7 @@ class AudioModelTest(ExtrasMixinTest, PointMixinTest,
 
         for url in urls:
             p = urlparse(url)
-            conn = httplib.HTTPConnection(p.netloc)
+            conn = http.client.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
             self.assertEqual(conn.getresponse().status, 200)
 
@@ -98,7 +98,7 @@ class AudioModelTest(ExtrasMixinTest, PointMixinTest,
         self.assertTrue(self.model.id is None)
         for url in urls:
             p = urlparse(url)
-            conn = httplib.HTTPConnection(p.netloc)
+            conn = http.client.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
             self.assertEqual(conn.getresponse().status, 403)
 

@@ -11,27 +11,25 @@ echo -e $"INSTALL: Localground Dependencies" | tee -a "$log_file"
 ###################################
 # Install Mail			          #
 ###################################
-apt-get install sendmail -y
-apt-get install libmail-sendmail-perl -y
+apt install sendmail -y
+apt install libmail-sendmail-perl -y
 ## add use TLS for mail
 echo "include('/etc/mail/tls/starttls.m4')dnl" >> /etc/mail/sendmail.mc
 
 ################
 # Install Java #
 ################
-sudo apt-add-repository -y ppa:openjdk-r/ppa
-sudo apt-get update
-sudo apt-get -y install openjdk-7-jre
+sudo apt install openjdk-8-jdk
 
 #######################################
 # Install GDAL, MapServer, Etc. First #
 #######################################
-apt-get install python-software-properties -y
-apt-get install mapserver-bin -y
-apt-get install gdal-bin -y
-apt-get install cgi-mapserver-y
-apt-get install python-gdal -y
-apt-get install python-mapscript -y
+# apt install python-software-properties -y
+apt install mapserver-bin -y
+apt install gdal-bin -y
+apt install cgi-mapserver -y
+apt install python3-gdal -y
+apt install python3-mapscript -y
 
 ###############################################
 # Add the google projection to the proj4 file #
@@ -42,41 +40,46 @@ printf '\n#Google Projection\n<900913> +proj=merc +a=6378137 +b=6378137 +lat_ts=
 ###########################################
 # Then Install PostgreSQL9.5, PostGIS 9.5 #
 ###########################################
-apt-get install postgresql-9.5 -y
-apt-get install postgresql-client-9.5 -y
-apt-get install postgresql-server-dev-9.5 -y
-apt-get install postgresql-plperl-9.5 -y
-apt-get install postgresql-9.5-postgis-2.2 -y
-apt-get install postgresql-9.5-postgis-scripts -y
-# apt-get install postgresql-9.5-postgis-scripts -y 
-apt-get install postgresql-9.5-postgis-2.2-scripts -y
-apt-get install libpq-dev -y
+# https://computingforgeeks.com/how-to-install-postgis-on-ubuntu-debian/
+# sudo apt -y install gnupg2
+# wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+# echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
+# wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+# echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
+# sudo apt update
+# sudo apt -y install postgresql-12 postgresql-client-12
+# sudo apt -y install postgis postgresql-12-postgis-3
+
+# Note: don't forget to create POSTGIS Extension from psql prompt.
+# CREATE EXTENSION postgis;
 
 ########################################################################
 # Install Graphics, Miscellaneous Stuff...
 ######################################################################## -y
-apt-get install python-gdal -y
-apt-get install libcv-dev libopencv-dev python-opencv -y
-apt-get install python-psycopg2 -y
-apt-get install python-setuptools -y
-apt-get install -y software-properties-common
+apt install gdal-bin -y
+# apt install libcv-dev libopencv-dev python-opencv -y
+apt install python3-opencv -y
+# apt install python-psycopg2 -y
+apt install python3-setuptools -y
+apt install -y software-properties-common
 apt-add-repository -y universe
-apt-get update
-apt-get install -y python-pip
-apt-get install python-dev -y
-apt-get install python-mapscript -y
-apt-get install python-scipy -y
+apt update
+apt install -y python3-pip
+apt install python3-dev -y
+apt install libpq-dev -y
+apt install python3-mapscript -y
+apt install python3-scipy -y
 ## Ubuntu Xenial doesn't have an ffmpeg package (only libav)
 apt-add-repository -y ppa:jonathonf/ffmpeg-3
-apt-get update -y
-apt-get install ffmpeg -y
-apt-get install redis-server -y
+apt update -y
+apt install ffmpeg -y
+apt install redis-server -y
 
 #################
 # SVG Libraries #
 #################
-apt-get -y install python-cffi
-apt-get -y install libffi-dev
+apt -y install python3-cffi
+apt -y install libffi-dev
 
 ############################
 # Install PIP Dependencies #
@@ -84,10 +87,10 @@ apt-get -y install libffi-dev
 # Configure Locales:
 export LC_ALL="en_US.UTF-8"
 export LC_CTYPE="en_US.UTF-8"
-sudo dpkg-reconfigure locales
+# sudo dpkg-reconfigure locales
 
 ##TODO: Investigate, there may be some problems with the map script / map server install
-pip install -r $userDir$rootDir/deploy_tools/requirements.txt
+pip3 install -r $userDir$rootDir/deploy_tools/requirements.txt
 
 ## Due to difficulties installing cairo via requirements.txt, I'm
 ## Installing it the manual way...
@@ -100,8 +103,8 @@ pip install cairosvg==1.0.22
 # Install Node.js and Bower #
 #############################
 #curl -sL https://deb.nodesource.com/setup | sudo bash -
-apt-get install nodejs -y
-apt-get install npm -y
+apt install nodejs -y
+apt install npm -y
 npm install -g grunt-cli
 ln -s /usr/bin/nodejs /usr/bin/node
 
@@ -119,10 +122,10 @@ mkdir -p $userDir$rootDir/userdata/deleted
 #################
 # Install Redis #
 #################
-apt-get -y install redis-server rabbitmq-server
+apt -y install redis-server rabbitmq-server
 
 ## We use supervisor to run our celery worker
-apt-get -y install supervisor
+apt -y install supervisor
 cp $userDir$rootDir/deploy_tools/celeryd.conf /etc/supervisor/conf.d/celeryd.conf
 mkdir /var/log/celery
 

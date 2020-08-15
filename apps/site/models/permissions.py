@@ -54,15 +54,16 @@ class UserAuthorityObject(Base):
     Model that assigns a particular User (auth_user) and UserAuthority
     object to a particular Group.
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    authority = models.ForeignKey('UserAuthority')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    authority = models.ForeignKey('UserAuthority', on_delete=models.CASCADE)
     time_stamp = models.DateTimeField(default=datetime.now)
     granted_by = models.ForeignKey(
         'auth.User',
-        related_name="%(app_label)s_%(class)s_related")
+        related_name="%(app_label)s_%(class)s_related",
+        on_delete=models.PROTECT)
 
     # Following fields are required for using GenericForeignKey
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     object = fields.GenericForeignKey()
 

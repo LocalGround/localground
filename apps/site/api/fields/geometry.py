@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.gis.geos import GEOSGeometry, GEOSException
-from django.contrib.gis.gdal import OGRException
+from django.contrib.gis.gdal import GDALException
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 import json
@@ -41,7 +41,7 @@ class GeometryField(serializers.CharField):
         if value is not None and value != '':
             try:
                 return GEOSGeometry(value)
-            except (ValueError, GEOSException, OGRException, TypeError) as e:
+            except (ValueError, GEOSException, GDALException, TypeError) as e:
                 raise serializers.ValidationError(
                     _('Invalid format: "{0} {1}"'.format(
                         value,

@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from PIL import Image, ImageFilter, ImageDraw, ImageFont, ImageOps
 from localground.apps.lib.helpers.units import Units
 from django.contrib.gis.geos import Point, LinearRing, Polygon
-import cStringIO as StringIO
+from io import StringIO
 import logging, mapscript, urllib, json
 
 class OutputFormat():

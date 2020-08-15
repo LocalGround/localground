@@ -10,7 +10,7 @@ from localground.apps.site.fields import LGImageField
 from localground.apps.lib.helpers import generic
 from rest_framework import status
 from django.core.files import File
-import httplib
+import http.client
 import urllib
 from urlparse import urlparse
 
@@ -125,7 +125,7 @@ class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
         # files should exist on S3:
         for url in urls:
             p = urlparse(url)
-            conn = httplib.HTTPConnection(p.netloc)
+            conn = http.client.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
             self.assertEqual(conn.getresponse().status, 200)
 
@@ -135,7 +135,7 @@ class MapImageTest(BaseUploadedMediaAbstractModelClassTest, test.TestCase):
         # files should not exist on S3:
         for url in urls:
             p = urlparse(url)
-            conn = httplib.HTTPConnection(p.netloc)
+            conn = http.client.HTTPConnection(p.netloc)
             conn.request('HEAD', p.path)
             self.assertEqual(conn.getresponse().status, 403)
 

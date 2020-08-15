@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='form',
             name='project',
-            field=models.ForeignKey(related_name='form+', default=2, to='site.Project'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='form+', default=2, to='site.Project'),
             preserve_default=False,
         ),
         migrations.AlterField(
@@ -39,6 +39,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='video',
             name='attribution',
-            field=models.CharField(help_text=b'Person / group who created the media file (text)', max_length=500, null=True, verbose_name=b'Author / Creator', blank=True),
+            field=models.CharField(help_text='Person / group who created the media file (text)', max_length=500, null=True, verbose_name='Author / Creator', blank=True),
         ),
     ]

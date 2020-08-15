@@ -269,7 +269,7 @@ a.generate_acetate_layer_with_map()
         #map_type = models.TileSet.objects.get(id=8)
         #map_type = models.TileSet.objects.get(id=9)
         map_type = models.TileSet.objects.get(id=10)
-        print self.center
+        print(self.center)
         map_image = m.get_basemap(
             map_type, self.zoom, self.center, self.width, self.height
         )

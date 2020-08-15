@@ -1,6 +1,5 @@
 from rest_framework import serializers, relations
 from django.contrib.gis.geos import GEOSGeometry, GEOSException
-from django.contrib.gis.gdal import OGRException
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _

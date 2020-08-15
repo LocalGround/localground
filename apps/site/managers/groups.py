@@ -3,6 +3,7 @@ from django.db.models.query import QuerySet
 from localground.apps.site.managers.base import GroupMixin
 from localground.apps.site.managers.base import GenericLocalGroundError
 from django.db.models import Q
+from django.db.models import Manager as GeoManager
 
 
 class ProjectMixin(GroupMixin):
@@ -52,7 +53,7 @@ class ProjectQuerySet(QuerySet, ProjectMixin):
     pass
 
 
-class ProjectManager(models.GeoManager, ProjectMixin):
+class ProjectManager(GeoManager, ProjectMixin):
 
     def get_queryset(self):
         return ProjectQuerySet(self.model, using=self._db)
@@ -147,7 +148,7 @@ class FormQuerySet(QuerySet, FormMixin):
             m.delete()
 
 
-class FormManager(models.GeoManager, FormMixin):
+class FormManager(GeoManager, FormMixin):
 
     def get_queryset(self):
         return FormQuerySet(self.model, using=self._db)
@@ -182,7 +183,7 @@ class LayerMixin(GroupMixin):
 #    pass
 
 
-class LayerManager(models.GeoManager, LayerMixin):
+class LayerManager(GeoManager, LayerMixin):
     #def get_queryset(self):
     #    return LayerQuerySet(self.model, using=self._db)
     pass

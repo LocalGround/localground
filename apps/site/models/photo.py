@@ -6,8 +6,7 @@ from localground.apps.site.models import ExtrasMixin, PointMixin, \
     BaseUploadedMedia
 
 from django.core.files import File
-import Image
-import ImageOps
+from PIL import Image, ImageOps
 from localground.apps.site.fields import LGImageField
 
 

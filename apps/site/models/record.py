@@ -2,7 +2,6 @@ from django.contrib.gis.db import models
 from localground.apps.site.models import ObjectTypes
 from datetime import datetime
 from localground.apps.site.managers import MarkerManager
-from django.contrib.contenttypes import generic
 from localground.apps.site.models import PointMixin, ExtrasMixin, \
     NamedMixin, GenericRelationMixin, ProjectMixin, BaseAudit
 from django.contrib.postgres.fields import HStoreField
@@ -21,7 +20,7 @@ class Record(ExtrasMixin, PointMixin, ProjectMixin,
     tags = ArrayField(models.TextField(), default=list)
     polyline = models.LineStringField(blank=True, null=True)
     polygon = models.PolygonField(blank=True, null=True)
-    dataset = models.ForeignKey('Dataset', null=True)
+    dataset = models.ForeignKey('Dataset', on_delete=models.CASCADE, null=True)
 
     objects = MarkerManager()
     filter_fields = ('id', 'project', 'tags',)

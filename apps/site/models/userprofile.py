@@ -8,12 +8,14 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 import uuid
+from django.db.models import Manager as GeoManager
+
 
 
 class UserProfile(models.Model):
     # https://docs.djangoproject.com/en/dev/topics/auth/#creating-users
     # This field is required.
-    user = models.OneToOneField(User, related_name="profile")
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
     email_announcements = models.BooleanField(default=True)
     default_location = models.PointField(
         null=True,
@@ -23,6 +25,7 @@ class UserProfile(models.Model):
     default_view_authority = models.ForeignKey(
         'ObjectAuthority',
         default=1,
+        on_delete=models.PROTECT,
         verbose_name='Share Preference',
         help_text='Your default sharing settings for your maps and media')
     contacts = models.ManyToManyField(
@@ -34,7 +37,7 @@ class UserProfile(models.Model):
     time_stamp = models.DateTimeField(
         default=datetime.now,
         db_column='last_updated')
-    objects = models.GeoManager()
+    objects = GeoManager()
 
     class Meta:
         app_label = 'site'

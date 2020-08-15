@@ -4,7 +4,8 @@ from rest_framework import serializers
 from django.conf import settings
 from localground.apps.site import models
 from localground.apps.site.api import fields
-from django_hstore.dict import HStoreDict
+# from django_hstore.dict import HStoreDict
+from localground.apps.lib.helpers.django_hstore.dict import HStoreDict
 import datetime
 import json
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer

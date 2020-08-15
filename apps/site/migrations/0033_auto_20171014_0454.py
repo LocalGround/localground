@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='marker',
             name='project',
-            field=models.ForeignKey(related_name='marker+', to='site.Project'),
+            field=models.ForeignKey(on_delete=models.CASCADE, related_name='marker+', to='site.Project'),
         ),
         migrations.AlterField(
             model_name='video',

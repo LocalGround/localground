@@ -47,7 +47,7 @@ class TileSet(NamedMixin, BaseAudit):
     """
     min_zoom = models.IntegerField(default=1)
     max_zoom = models.IntegerField(default=20)
-    overlay_source = models.ForeignKey('OverlaySource')
+    overlay_source = models.ForeignKey('OverlaySource', on_delete=models.PROTECT)
     is_printable = models.BooleanField(default=False)
     provider_id = models.CharField(max_length=30, blank=True)
     tile_url = models.CharField(max_length=2000, blank=True)

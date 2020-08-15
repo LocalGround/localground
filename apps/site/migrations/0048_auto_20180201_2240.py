@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='imageopts',
             name='file_path_s3',
-            field=localground.apps.site.fields.LGImageField(null=True, upload_to=b''),
+            field=localground.apps.site.fields.LGImageField(null=True, upload_to=''),
         ),
     ]

@@ -19,4 +19,4 @@ def load_customized_sql(app, created_models, verbosity=2, **kwargs):
 			cursor = connection.cursor()
 			cursor.execute(fp.read().decode(settings.FILE_CHARSET))
 
-signals.post_syncdb.connect(load_customized_sql)
+# signals.post_syncdb.connect(load_customized_sql)

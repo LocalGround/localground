@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes import fields
 from localground.apps.site.models import BaseAudit
 
 
@@ -17,16 +17,17 @@ class GenericAssociation(BaseAudit):
 
     # analogous to the "subject" in a triplet,
     # (e.g. "The 'source' has an 'entity.'")
-    source_type = models.ForeignKey(ContentType)
+    source_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     source_id = models.PositiveIntegerField()
-    source_object = generic.GenericForeignKey('source_type', 'source_id')
+    source_object = fields.GenericForeignKey('source_type', 'source_id')
 
     # analogous to the "object" in a triplet
     entity_type = models.ForeignKey(
         ContentType,
+        on_delete=models.CASCADE,
         related_name="%(app_label)s_%(class)s_related")
     entity_id = models.PositiveIntegerField()
-    entity_object = generic.GenericForeignKey('entity_type', 'entity_id')
+    entity_object = fields.GenericForeignKey('entity_type', 'entity_id')
 
     def to_dict(self):
         return {

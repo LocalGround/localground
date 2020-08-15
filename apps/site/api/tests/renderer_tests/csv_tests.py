@@ -2,7 +2,7 @@ import csv
 from django import test
 from localground.apps.site.tests import Client, ModelMixin
 from rest_framework import status
-from StringIO import StringIO
+from io import StringIO
 from django.contrib.gis.geos import Point
 from localground.apps.site.api.tests.renderer_tests import mixins
 from localground.apps.site import models

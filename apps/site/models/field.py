@@ -8,10 +8,10 @@ from rest_framework import exceptions
 
 
 class Field(BaseAudit):
-    dataset = models.ForeignKey('Dataset')
+    dataset = models.ForeignKey('Dataset', on_delete=models.CASCADE)
     col_name_db = models.CharField(max_length=255, db_column="col_name")
     col_alias = models.CharField(max_length=255, verbose_name="column name")
-    data_type = models.ForeignKey('DataType')
+    data_type = models.ForeignKey('DataType', on_delete=models.PROTECT)
     extras = JSONField(blank=True, null=True)
     ordering = models.IntegerField()
 

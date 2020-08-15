@@ -1,4 +1,4 @@
-from StringIO import StringIO
+from io import StringIO
 from rest_framework import renderers
 import zipfile
 import base64
@@ -7,7 +7,7 @@ from django.conf import settings
 from . import CSVRenderer
 import csv
 import urllib
-import httplib
+import http.client
 
 
 class ZIPRenderer(renderers.BaseRenderer):

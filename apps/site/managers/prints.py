@@ -3,13 +3,14 @@ from django.db.models.query import QuerySet
 from django.db.models import Q
 from django.db.models import Count
 from localground.apps.site.managers.base import ObjectMixin
+from django.db.models import Manager as GeoManager
 
 
 #class PrintPermissionsQuerySet(QuerySet, ObjectMixin):
 #    pass
 
 
-class PrintPermissionsManager(models.GeoManager, ObjectMixin):
+class PrintPermissionsManager(GeoManager, ObjectMixin):
     #def get_queryset(self):
     #    return PrintPermissionsQuerySet(self.model, using=self._db)
     pass
@@ -68,7 +69,7 @@ class PrintQuerySet(QuerySet, PrintMixin):
     pass
 
 
-class PrintManager(models.GeoManager, PrintMixin):
+class PrintManager(GeoManager, PrintMixin):
     def get_queryset(self):
         return PrintQuerySet(self.model, using=self._db)
 

@@ -24,6 +24,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='userprofile',
             name='default_location',
-            field=django.contrib.gis.db.models.fields.PointField(help_text=b'Default center point', srid=4326, null=True, blank=True),
+            field=django.contrib.gis.db.models.fields.PointField(help_text='Default center point', srid=4326, null=True, blank=True),
         )
     ]

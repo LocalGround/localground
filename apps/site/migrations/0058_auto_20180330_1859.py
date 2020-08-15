@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='layer',
             name='group_by',
-            field=models.CharField(default=b'uniform', max_length=255),
+            field=models.CharField(default='uniform', max_length=255),
         ),
     ]

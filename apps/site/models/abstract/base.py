@@ -145,9 +145,10 @@ class Base(models.Model):
 
 
 class BaseAudit(Base):
-    owner = models.ForeignKey('auth.User',)
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     last_updated_by = models.ForeignKey(
         'auth.User',
+        on_delete=models.CASCADE,
         related_name="%(app_label)s_%(class)s_related")
     date_created = models.DateTimeField(default=get_timestamp_no_milliseconds)
     time_stamp = models.DateTimeField(default=get_timestamp_no_milliseconds,
