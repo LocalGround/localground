@@ -85,7 +85,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         for k in ['photos', 'audio', 'map_images']:
             self.assertFalse(children.get(k) is None)
             self.assertTrue(
-                isinstance(children.get(k).get('overlay_type'), basestring))
+                isinstance(children.get(k).get('overlay_type'), str))
             self.assertTrue(isinstance(children.get(k).get('data'), list))
 
     def test_get_project_with_marker_arrays(self, **kwargs):
@@ -113,7 +113,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         name, description = 'New Project Name', 'Test description'
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'name': name,
                 'caption': description
             }),
@@ -130,7 +130,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         name = 'Dummy name'
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({'name': name}),
+            data=urllib.parse.urlencode({'name': name}),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -151,7 +151,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         try:
             models.Project.objects.get(id=project_id)
             # throw assertion error if project still in database
-            print 'Project not deleted'
+            print('Project not deleted')
             self.assertEqual(1, 0)
         except models.Project.DoesNotExist:
             # trigger assertion success if project is removed

@@ -1,6 +1,9 @@
 from django import test
 from django.conf import settings
-from django.core.urlresolvers import resolve
+# deprecated:
+# from django.core.urlresolvers import resolve
+from django.urls import resolve
+
 from rest_framework import status
 from localground.apps.site import models
 from localground.apps.site.models import DataType
@@ -94,7 +97,7 @@ class ModelMixin(object):
         if self._csrf_token is None:
             c = Client()
             response = c.get('/accounts/login/')
-            self._csrf_token = unicode(response.context['csrf_token'])
+            self._csrf_token = str(response.context['csrf_token'])
         return self._csrf_token
 
     @property

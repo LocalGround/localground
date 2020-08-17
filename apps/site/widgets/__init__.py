@@ -79,7 +79,7 @@ class PointWidget(Textarea):
         # value is either None, a string/unicode value, or a GEOSGeometry
         if value is None:  # no value
             lat, lng, zoom = DEFAULT_LAT, DEFAULT_LNG, 5
-        elif isinstance(value, basestring):  # value is unicode/string
+        elif isinstance(value, str):  # value is unicode/string
             try:
                 value = GEOSGeometry(value)
                 lat, lng, zoom = value.y, value.x, 13
@@ -223,7 +223,7 @@ class PointWidgetHidden(Textarea):
         # value is either None, a string/unicode value, or a GEOSGeometry
         if value is None:  # no value
             lat, lng = DEFAULT_LAT, DEFAULT_LNG
-        elif isinstance(value, basestring):  # value is unicode/string
+        elif isinstance(value, str):  # value is unicode/string
             try:
                 value = GEOSGeometry(value)
                 lat, lng = value.y, value.x
@@ -278,7 +278,7 @@ class PointWidgetTextbox(Textarea):
             lat, lng = DEFAULT_LAT, DEFAULT_LNG
         else:
             try:
-                if isinstance(value, basestring):  # value is unicode/string
+                if isinstance(value, str):  # value is unicode/string
                     value = GEOSGeometry(value)
                     lat, lng = value.y, value.x
                 elif isinstance(value, dict):

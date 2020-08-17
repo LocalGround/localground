@@ -84,7 +84,7 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
     def test_post_creates_videos_only_when_has_required_params(self, **kwargs):
         response = self.client_user.post(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'owner': self.user,
                 'project_id': self.project.id,
                 'video_provider': 'youtube'
@@ -103,7 +103,7 @@ class ApiVideoListTest(test.TestCase, ViewMixinAPI):
         }
         response = self.client_user.post(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'geometry': point,
                 'name': name,
                 'caption': caption,
@@ -152,7 +152,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
     def test_required_params_using_put(self, **kwargs):
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'caption': 'My video',
                 'attribution': 'Phil'
             }),
@@ -171,7 +171,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         vl = 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'video_link': vl
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -191,7 +191,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         }
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'geometry': point,
                 'name': name,
                 'caption': caption,
@@ -218,7 +218,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         }
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({'geometry': point}),
+            data=urllib.parse.urlencode({'geometry': point}),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )
@@ -235,7 +235,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         }
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'geometry': point,
                 'name': 'New Name',
                 'caption': 'New Caption'
@@ -268,7 +268,7 @@ class ApiVideoInstanceTest(test.TestCase, ViewMixinAPI):
         try:
             models.Video.objects.get(id=video_id)
             # throw assertion error if video still in database
-            print 'Video not deleted'
+            print('Video not deleted')
             self.assertEqual(1, 0)
         except models.Video.DoesNotExist:
             # trigger assertion success if video is removed

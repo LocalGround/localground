@@ -52,7 +52,7 @@ class MetadataValidator(object):
 
     def _get_metadata(self):
         import json
-        if isinstance(self.data.get('metadata'), basestring):
+        if isinstance(self.data.get('metadata'), str):
             return json.loads(self.data.get('metadata'))
         else:
             return self.data.get('metadata')

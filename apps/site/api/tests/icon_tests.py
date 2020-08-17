@@ -324,7 +324,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
 
     def test_required_params_and_resize_using_put(self, **kwargs):
         response = self.client_user.put(self.url,
-                                        data=urllib.urlencode({
+                                        data=urllib.parse.urlencode({
                                             'name': 'icon_new',
                                             'size': 40,
                                             'anchor_x': 10,
@@ -343,7 +343,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
 
     def test_patch_name(self, **kwargs):
         response = self.client_user.patch(self.url,
-                                        data=urllib.urlencode({
+                                        data=urllib.parse.urlencode({
                                             'name': 'icon_patch',
                                         }),
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -357,7 +357,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
 
     def test_patch_resize(self, **kwargs):
         response = self.client_user.patch(self.url,
-                                        data=urllib.urlencode({
+                                        data=urllib.parse.urlencode({
                                             'size': 50,
                                         }),
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -388,7 +388,7 @@ class ApiIconInstanceTest(test.TestCase, ViewMixinAPI):
         try:
             models.Icon.objects.get(id=icon_id)
             # throw assertion error if photo still in database
-            print 'Icon not deleted'
+            print('Icon not deleted')
             self.assertEqual(1, 0)
         except models.Icon.DoesNotExist:
             # trigger assertion success if photo is removed

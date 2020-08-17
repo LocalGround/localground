@@ -248,7 +248,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
         slug = 'newmap'
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'name': name,
                 'caption': description,
                 'basemap': basemap,
@@ -269,7 +269,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
         slug = 'my-new-map-name'
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'name': name,
                 'slug': slug
             }),
@@ -293,7 +293,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
         slug = 'newmap'
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'name': name,
                 'caption': description,
                 'basemap': basemap,
@@ -312,7 +312,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
     def test_update_map_metadata(self, **kwargs):
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'metadata': json.dumps(map_config_metadata)
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -330,7 +330,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
             del metadata[key]
             response = self.client_user.patch(
                 self.url,
-                data=urllib.urlencode({
+                data=urllib.parse.urlencode({
                     'metadata': json.dumps(metadata)
                 }),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -347,7 +347,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
             metadata['accessLevel'] = val
             response = self.client_user.patch(
                 self.url,
-                data=urllib.urlencode({
+                data=urllib.parse.urlencode({
                     'metadata': json.dumps(metadata),
                     'password': '123'
                 }),
@@ -361,7 +361,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
             metadata['accessLevel'] = val
             response = self.client_user.patch(
                 self.url,
-                data=urllib.urlencode({
+                data=urllib.parse.urlencode({
                     'metadata': json.dumps(metadata)
                 }),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -378,7 +378,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
         metadata['accessLevel'] = 3
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'metadata': json.dumps(metadata)
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -395,7 +395,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
         metadata['accessLevel'] = 3
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'metadata': json.dumps(metadata)
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -416,7 +416,7 @@ class ApiMapInstanceTest(test.TestCase, ViewMixinAPI):
         metadata['displayTitleCard'] = True
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'metadata': json.dumps(metadata),
                 'basemap': 1,
                 'center': json.dumps({

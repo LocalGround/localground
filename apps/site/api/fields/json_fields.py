@@ -81,7 +81,7 @@ class JSONField(serializers.Field):
     def to_internal_value(self, data):
         if isinstance(data, dict) or isinstance(data, list):
             return data
-        if isinstance(data, basestring) and len(data) == 0:
+        if isinstance(data, str) and len(data) == 0:
             return None
         try:
             d = json.loads(data)

@@ -220,7 +220,7 @@ class ApiRelatedMediaInstanceTest(
         self.assertEqual(relation.ordering, 1)
         response = self.client_user.put(
             self.url_p1,
-            data=urllib.urlencode({'ordering': 5}),
+            data=urllib.parse.urlencode({'ordering': 5}),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -233,7 +233,7 @@ class ApiRelatedMediaInstanceTest(
         self.assertEqual(relation.ordering, 1)
         response = self.client_user.patch(
             self.url_a1,
-            data=urllib.urlencode({'ordering': 5}),
+            data=urllib.parse.urlencode({'ordering': 5}),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -245,7 +245,7 @@ class ApiRelatedMediaInstanceTest(
         counter = 1
         response = self.client_user.patch(
             self.url_a1,
-            data=urllib.urlencode({'ordering': 2}),
+            data=urllib.parse.urlencode({'ordering': 2}),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, status.HTTP_200_OK)

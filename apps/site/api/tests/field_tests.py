@@ -53,7 +53,7 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
 
         response = self.client_user.post(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'col_alias': 'Display Name',
                 'ordering': 1,
                 'data_type': 'text'
@@ -71,7 +71,7 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
     def test_create_field_using_post(self, **kwargs):
         response = self.client_user.post(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'col_alias': 'Field 3',
                 'ordering': 2,
                 'data_type': 'text'
@@ -91,7 +91,7 @@ class ApiFieldListTest(test.TestCase, FieldTestMixin):
         ]:
             response = self.client_user.post(
                 self.url,
-                data=urllib.urlencode({
+                data=urllib.parse.urlencode({
                     'col_alias': col_alias,
                     'ordering': 1,
                     'data_type': 'text'
@@ -134,7 +134,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
     def test_update_field_using_put(self, **kwargs):
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'col_alias': 'Address',
                 'ordering': 2
             }),
@@ -150,7 +150,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
     def test_update_field_using_patch(self, **kwargs):
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'col_alias': 'Address 1'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -163,7 +163,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
     def test_no_columns_same_name(self, **kwargs):
         response = self.client_user.patch(
             self.url2,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'col_alias': 'Field 1'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -177,7 +177,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
                 'owner', 'last_updated_by', 'date_created', 'timestamp']:
             response = self.client_user.put(
                 self.url,
-                data=urllib.urlencode({
+                data=urllib.parse.urlencode({
                     'col_alias': col_alias,
                     'ordering': 1
                 }),
@@ -249,7 +249,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
         ]:
             response = self.client_user.patch(
                 self.url,
-                data=urllib.urlencode({'col_alias': col_alias}),
+                data=urllib.parse.urlencode({'col_alias': col_alias}),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
                 content_type="application/x-www-form-urlencoded"
             )
@@ -282,7 +282,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
         try:
             models.Field.objects.get(id=field_id)
             # throw assertion error if photo still in database
-            print 'Field not deleted'
+            print('Field not deleted')
             self.assertEqual(1, 0)
         except models.Field.DoesNotExist:
             # trigger assertion success if photo is removed
@@ -301,7 +301,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
         for d in values:
             response = self.client_user.post(
                 record_url,
-                data=urllib.urlencode(d),
+                data=urllib.parse.urlencode(d),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
                 content_type="application/x-www-form-urlencoded"
             )
@@ -317,7 +317,7 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
 
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'col_alias': 'soil moisture'
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,

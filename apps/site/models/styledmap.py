@@ -85,7 +85,7 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
 
     def get_metadata(self):
         import json
-        if isinstance(self.metadata, basestring):
+        if isinstance(self.metadata, str):
             return json.loads(self.metadata)
         else:
             return self.metadata
@@ -93,10 +93,11 @@ class StyledMap(NamedMixin, ProjectMixin, BaseAudit):
     def check_password(self, password):
         if not password:
             return False
-        # print password
         import hashlib
-        md5 = hashlib.md5(password)
-        return self.password == md5.hexdigest()
+        md5 = hashlib.md5(password.encode('utf-8'))
+        hashed_user_attempt_password = md5.hexdigest()
+        # print(self.password, hashed_user_attempt_password)
+        return self.password == hashed_user_attempt_password
 
     def _get_access_level(self):
         return self.get_metadata().get('accessLevel')

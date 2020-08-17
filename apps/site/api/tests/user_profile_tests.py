@@ -4,7 +4,7 @@ from django.conf import settings
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.gis.geos import GEOSGeometry
@@ -17,7 +17,7 @@ last_name = 'Jones'
 class UserProfileList(APITestCase, ViewMixinAPI):
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.urls = ['/api/0/user-profile/.json']
+        self.urls = ['/api/0/user-profile.json']
         self.url = self.urls[0]
         self.view = views.UserProfileList.as_view()
         self.metadata = {}
@@ -43,7 +43,7 @@ class UserProfileInstance(APITestCase, ViewMixinAPI):
         self.user.last_name = 'Grawl'
         self.user.email = 'test@bla.com'
         self.user.save()
-        self.urls = ['/api/0/user-profile/%s/.json' % self.user_profile.id]
+        self.urls = ['/api/0/user-profile/%s.json' % self.user_profile.id]
         self.url = self.urls[0]
         self.view = views.UserProfileInstance.as_view()
         self.metadata = {
@@ -105,7 +105,7 @@ class UserProfileInstance(APITestCase, ViewMixinAPI):
         }
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode(params),
+            data=urllib.parse.urlencode(params),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )
@@ -136,7 +136,7 @@ class UserProfileInstance(APITestCase, ViewMixinAPI):
         }
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode(params),
+            data=urllib.parse.urlencode(params),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )

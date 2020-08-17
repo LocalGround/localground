@@ -104,7 +104,7 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI, PrintMixin):
 
         response = self.client_user.post(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'center': self.point,
                 'map_title': map_title,
                 'instructions': instructions,
@@ -211,7 +211,7 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
         try:
             self.model.objects.get(id=print_id)
             # throw assertion error if print still in database
-            print 'Print not deleted'
+            print('Print not deleted')
             self.assertEqual(1, 0)
         except self.model.DoesNotExist:
             # trigger assertion success if print is removed

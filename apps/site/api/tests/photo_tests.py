@@ -100,7 +100,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
             new_photo = models.Photo.objects.get(id=response.data.get("id"))
             # looks like the new_photo does not retrieve the geometry attribute
             file_name = tmp_file.name.split("/")[-1]
-            file_name = unicode(file_name, "utf-8")
+            file_name = str(file_name).encode("utf-8")
             self.assertEqual(file_name, new_photo.name)
             self.assertEqual(author_string, new_photo.attribution)
             self.assertEqual(extras, new_photo.extras)
@@ -188,7 +188,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         )
         """
         response = self.client_user.put(self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'geometry': point,
                 'name': name,
                 'caption': description,
@@ -212,7 +212,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
     def test_update_photo_using_patch(self, **kwargs):
         import json
         response = self.client_user.patch(self.url,
-                                          data=urllib.urlencode({'geometry': point}),
+                                          data=urllib.parse.urlencode({'geometry': point}),
                                           HTTP_X_CSRFTOKEN=self.csrf_token,
                                           content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -236,7 +236,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         try:
             models.Photo.objects.get(id=photo_id)
             # throw assertion error if photo still in database
-            print 'Photo not deleted'
+            print('Photo not deleted')
             self.assertEqual(1, 0)
         except models.Photo.DoesNotExist:
             # trigger assertion success if photo is removed

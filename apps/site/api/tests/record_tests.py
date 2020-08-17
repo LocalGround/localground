@@ -114,7 +114,7 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 url = url + '?project_id={0}'.format(self.project.id)
                 response = self.client_user.post(
                     url,
-                    data=urllib.urlencode(default_data),
+                    data=urllib.parse.urlencode(default_data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded"
                 )
@@ -147,7 +147,7 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 url = url + '?project_id={0}'.format(self.project.id)
                 response = self.client_user.post(
                     url,
-                    data=urllib.urlencode(data),
+                    data=urllib.parse.urlencode(data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded"
                 )
@@ -184,7 +184,7 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 url = url + '?project_id={0}'.format(self.project.id)
                 response = self.client_user.post(
                     url,
-                    data=urllib.urlencode(default_data),
+                    data=urllib.parse.urlencode(default_data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded"
                 )
@@ -221,7 +221,7 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 data.update(hstore_data)
                 response = self.client_user.post(
                     url + '?project_id={0}'.format(self.project.id),
-                    data=urllib.urlencode(data),
+                    data=urllib.parse.urlencode(data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded"
                 )
@@ -259,7 +259,7 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 url = url + '?project_id={0}'.format(self.project.id)
                 response = self.client_user.post(
                     url,
-                    data=urllib.urlencode(params),
+                    data=urllib.parse.urlencode(params),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded")
                 self.assertEqual(
@@ -275,7 +275,7 @@ class APIRecordListTest(test.TestCase, ViewMixinAPI, DataMixin):
                 geom = getattr(self, k)
                 response = self.client_user.post(
                     url,
-                    data=urllib.urlencode({
+                    data=urllib.parse.urlencode({
                         'geometry': geom,
                         'name': name,
                         'caption': description,
@@ -342,7 +342,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         url = self.list_url + '?project_id={0}'.format(self.project.id)
         response = self.client_user.post(
             url,
-            data=urllib.urlencode(default_data),
+            data=urllib.parse.urlencode(default_data),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )
@@ -364,7 +364,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             url = self.list_url + '?project_id={0}'.format(self.project.id)
             response = self.client_user.post(
                 url,
-                data=urllib.urlencode(default_data),
+                data=urllib.parse.urlencode(default_data),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
                 content_type="application/x-www-form-urlencoded"
             )
@@ -432,7 +432,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             }
             response = self.client_user.put(
                     url,
-                    data=urllib.urlencode(new_data),
+                    data=urllib.parse.urlencode(new_data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded")
 
@@ -476,7 +476,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         for key in new_data:
             response = self.client_user.patch(
                     url,
-                    data=urllib.urlencode({
+                    data=urllib.parse.urlencode({
                         key: new_data[key]
                     }),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -510,7 +510,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         )
         url = self.list_url + '%s/' % record_with_geometry.id
         # How to clear out geometry via Python:
-        data = urllib.urlencode({
+        data = urllib.parse.urlencode({
             'geometry': ''
         })
         response = self.client_user.patch(
@@ -540,7 +540,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             for i, url in enumerate(self.urls):
                 response = self.client_user.put(
                     url,
-                    data=urllib.urlencode(params),
+                    data=urllib.parse.urlencode(params),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded")
                 self.assertEqual(
@@ -553,7 +553,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
             for url in self.urls:
                 response = self.client_user.patch(
                     url,
-                    data=urllib.urlencode({'geometry': geom}),
+                    data=urllib.parse.urlencode({'geometry': geom}),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded"
                 )
@@ -583,7 +583,7 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         try:
             models.Record.objects.get(id=marker_id)
             # throw assertion error if marker still in database
-            print 'Marker not deleted'
+            print('Marker not deleted')
             self.assertEqual(1, 0)
         except models.Record.DoesNotExist:
             # trigger assertion success if marker is removed
@@ -631,13 +631,13 @@ class APIRecordInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
             photo_response = self.client_user.post(
                     photo_url,
-                    data=urllib.urlencode(photo_data),
+                    data=urllib.parse.urlencode(photo_data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded")
 
             audio_response = self.client_user.post(
                     audio_url,
-                    data=urllib.urlencode(audio_data),
+                    data=urllib.parse.urlencode(audio_data),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded")
 

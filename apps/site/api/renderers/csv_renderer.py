@@ -18,12 +18,12 @@ class CSVRenderer(renderers.BaseRenderer):
         for row in data:
             self.flatten_data(row)
             for cell in row:
-                if isinstance(row[cell], basestring):
-                    row[cell] = unicode(row[cell]).encode("utf-8")
+                if isinstance(row[cell], str):
+                    row[cell] = str(row[cell]).encode("utf-8")
             try:
                 csv_writer.writerow(row)
             except Exception:
-                raise Exception(isinstance(row['name'], basestring))
+                raise Exception(isinstance(row['name'], str))
         return csv_buffer.getvalue()
 
     def flatten_data(self, row):

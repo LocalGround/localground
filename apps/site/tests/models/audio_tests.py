@@ -9,7 +9,7 @@ from django import test
 import os
 from django.core.files import File
 import http.client
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 
 class AudioModelTest(ExtrasMixinTest, PointMixinTest,

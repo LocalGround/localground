@@ -80,7 +80,7 @@ class PublicView(TemplateView):
             mapJSON = MapSerializerPublic(
                 self.map, context={'request': {}}).data
             context.update({
-                'map': renderer.render(mapJSON)
+                'map': renderer.render(mapJSON).decode('utf-8')
             })
         return context
 

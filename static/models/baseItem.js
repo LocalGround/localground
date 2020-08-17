@@ -11,7 +11,7 @@ define(["models/base", "underscore"], function (Base, _) {
             }
         },
         url: function () {
-            var url = Backbone.Model.prototype.url.call(this);
+            var url = Base.prototype.url.call(this);
             if (url.indexOf('project_id') === -1) {
                 if (url.indexOf('?') === -1) {
                     url += '?project_id=' + this.projectID;

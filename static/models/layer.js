@@ -69,13 +69,6 @@ define(["models/base", "models/symbol", "collections/symbols", "lib/lgPalettes"]
                 col_name: this.get('group_by')
             });
         },
-        url: function () {
-            let baseURL =  Base.prototype.url.apply(this, arguments);
-            if (baseURL.indexOf('.json') === -1) {
-                baseURL += '/.json';
-            }
-            return baseURL;
-        },
         set: function(key, val, options) {
             //save symbols to a temporary variable:
             var symbols;

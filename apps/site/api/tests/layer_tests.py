@@ -178,7 +178,7 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
     def test_update_view_using_patch(self, **kwargs):
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'title': 'My new title',
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -217,7 +217,7 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
         # and then get rid of them:
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'symbols': []
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
@@ -244,7 +244,7 @@ class ApiLayerInstanceTest(ViewMixinAPI, test.TestCase):
         try:
             self.model.objects.get(id=view_id)
             # throw assertion error if photo still in database
-            print 'Object not deleted'
+            print('Object not deleted')
             self.assertEqual(1, 0)
         except self.model.DoesNotExist:
             # trigger assertion success if photo is removed

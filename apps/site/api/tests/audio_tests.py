@@ -108,7 +108,7 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
             # generated correctly:
             new_audio = models.Audio.objects.get(id=response.data.get("id"))
             file_name = tmp_file.name.split("/")[-1]
-            file_name = unicode(file_name, "utf-8")
+            file_name = str(file_name).encode("utf-8")
             path = new_audio.encrypt_url(new_audio.file_name_new)
             self.assertEqual(json.loads(ExtrasGood), new_audio.extras)
             self.assertEqual(author_string, new_audio.attribution)
@@ -144,7 +144,7 @@ class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
             "coordinates": [12.492324113849, 41.890307434153]
         }
         response = self.client_user.put(
-            self.url, data=urllib.urlencode({
+            self.url, data=urllib.parse.urlencode({
                 'geometry': point,
                 'name': name,
                 'caption': caption,
@@ -171,7 +171,7 @@ class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
         }
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({'geometry': point}),
+            data=urllib.parse.urlencode({'geometry': point}),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded"
         )
@@ -197,7 +197,7 @@ class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
         try:
             models.Audio.objects.get(id=audio_id)
             # throw assertion error if audio still in database
-            print 'Audio not deleted'
+            print('Audio not deleted')
             self.assertEqual(1, 0)
         except models.Audio.DoesNotExist:
             # trigger assertion success if audio is removed

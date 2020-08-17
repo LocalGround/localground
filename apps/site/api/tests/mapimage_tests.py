@@ -67,7 +67,7 @@ class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
         import Image
         import tempfile
         if os.environ.get('TRAVIS', False):
-            print 'Skipping test on TRAVIS because of Celery'
+            print('Skipping test on TRAVIS because of Celery')
             self.assertEqual(1, 1)
             return
         image = Image.new('RGB', (100, 100))
@@ -89,7 +89,7 @@ class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
                 id=response.data.get("id")
             )
             file_name = tmp_file.name.split("/")[-1]
-            file_name = unicode(file_name, "utf-8")
+            file_name = str(file_name).encode("utf-8")
             path = new_object.media_file_thumb.url
             self.assertEqual(file_name, new_object.name)
             self.assertEqual(
@@ -129,7 +129,7 @@ class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):
     def test_update_print_using_put(self, **kwargs):
         import os
         if os.environ.get('TRAVIS', False):
-            print 'Skipping test on TRAVIS because of Celery'
+            print('Skipping test on TRAVIS because of Celery')
             self.assertEqual(1, 1)
             return
         response = self.client_user.get(

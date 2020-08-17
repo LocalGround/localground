@@ -130,7 +130,7 @@ class TruthStatement(object):
         if modelVal is None:
             return False
 
-        if isinstance(modelVal, basestring):
+        if isinstance(modelVal, str):
             modelVal = modelVal.lower()
 
         self.val = self.convert_val_to_data_argument_type(modelVal, self.val)
@@ -163,7 +163,7 @@ class TruthStatement(object):
         return returnVal
 
     def get_converter(self, modelVal):
-        if isinstance(modelVal, basestring):
+        if isinstance(modelVal, str):
             return self.parse_string
         elif isinstance(modelVal, float) or isinstance(modelVal, int):
             return self.parse_num

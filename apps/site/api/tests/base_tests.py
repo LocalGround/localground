@@ -1,5 +1,5 @@
 from localground.apps.site.tests import Client, ModelMixin
-from django.core.urlresolvers import resolve
+from django.urls import resolve
 from rest_framework import status
 
 
@@ -123,5 +123,5 @@ class ViewMixinAPI(ModelMixin):
         s = '\n {0} \nERROR: API Endpoint Mismatch for {1}:\n'
         s += 'Actual: {2}\n Target: {3}\n'
         s = s.format('-' * 50, key, actual, ideal)
-        print s
+        print(s)
         return s

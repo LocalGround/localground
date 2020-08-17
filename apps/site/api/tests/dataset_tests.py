@@ -70,7 +70,7 @@ class ApiDatasetInstanceTest(test.TestCase, ViewMixinAPI):
         tags = 'bird, a cat, a dog'
         response = self.client_user.put(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'name': name,
                 'description': description,
                 'tags': tags
@@ -97,7 +97,7 @@ class ApiDatasetInstanceTest(test.TestCase, ViewMixinAPI):
         tags = self.dataset_1.tags
         response = self.client_user.patch(
             self.url,
-            data=urllib.urlencode({
+            data=urllib.parse.urlencode({
                 'name': name
             }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
