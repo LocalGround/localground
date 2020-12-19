@@ -128,6 +128,13 @@ class SymbolModel {
         this.iconSize = symbolJSON.iconSize;
         this.popupAnchor = symbolJSON.popupAnchor;
 
+
+        this.fillColor = symbolJSON.fillColor;
+        this.strokeColor = symbolJSON.strokeColor,
+        this.strokeWeight = symbolJSON.strokeWeight,
+        this.fillOpacity = symbolJSON.fillOpacity,
+        this.strokeOpacity = symbolJSON.strokeOpacity;
+
         // from the layer model:
         this.layerID = layerModel.id;
         this.isExpanded = layerModel.isExpanded;
@@ -184,6 +191,7 @@ class RecordModel {
 
         this.symbolModel = opts.symbolModel;
         this.dataset = opts.datasetJSON;
+        console.log(this.geometry);
     }
 
     applyTitleCardCrosswalk () {
@@ -200,10 +208,40 @@ class RecordModel {
         this.notifyAll();
     }
 
+    getCoordinates() {
+        if (this.isPoint()) {
+            return [
+                this.geometry.coordinates[1],
+                this.geometry.coordinates[0]
+            ];
+        }
+
+        let sourceCoords = this.geometry.coordinates;
+        if (this.isPolygon()) {
+            sourceCoords = sourceCoords[0];
+        }
+        const coords = [];
+        for (const coord of sourceCoords) {
+            coords.push([coord[1], coord[0]]);
+        }
+        return coords;
+    }
+
     getIcon () {
         return this.symbolModel.getIcon();
     }
 
+    isPoint () {
+        return this.geometry.type === 'Point';
+    }
+
+    isPolyline() {
+        return this.geometry.type === 'LineString';
+    }
+
+    isPolygon () {
+        return this.geometry.type === 'Polygon';
+    }
     isShowing () {
         return this.symbolModel.isShowing;
     }
@@ -216,10 +254,4 @@ class RecordModel {
         }
     }
 
-    getLatLng () {
-        return [
-            this.geometry.coordinates[1],
-            this.geometry.coordinates[0]
-        ];
-    }
 }

@@ -74,6 +74,13 @@ class LayerSerializerPublic(BaseSerializer):
             symbol_id = i + 1
             symbol_dict = symbol.generate_svg()
             symbol_dict.update(symbol.generate_svg(for_legend=True))
+            symbol_dict.update(dict(
+                strokeColor=symbol.strokeColor,
+                strokeWeight=symbol.strokeWeight,
+                fillOpacity=symbol.fillOpacity,
+                strokeOpacity=symbol.strokeOpacity,
+                fillColor=symbol.fillColor
+            ))
             # get matches here
             # 1. Parse into "truth statement"
             # 2. Check which models match
