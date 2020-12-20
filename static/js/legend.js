@@ -129,8 +129,10 @@ class LayerItemView {
     }
 
     addEventHandlers () {
+        // only apply these listeners to the markers associated with this layer:
         const scopingID = '#legend_layer_' + this.model.id;
-        this.attachListener(scopingID + ' .collapse, ' +  scopingID + ' .layer-title', 'click', this.toggleSymbolDetail.bind(this));
+        this.attachListener(scopingID + ' .collapse', 'click', this.toggleSymbolDetail.bind(this));
+        this.attachListener(scopingID + ' .layer-title', 'click', this.toggleSymbolDetail.bind(this));
         this.attachListener(scopingID + ' .layer-header input', 'change', this.toggleLayerVisibility.bind(this));
     }
 }
@@ -203,13 +205,18 @@ class SymbolItemView {
     }
 
     getClass () {
-        const fadeClass = this.model.isShowing ? '' : 'hidden';
+        const fadeClass = this.model.getIsShowing() ? '' : 'hidden';
         const hiddenClass = this.model.isExpanded ? '' : 'minimized';
         return `symbol-entry ${fadeClass} ${hiddenClass}`;
     }
+    
+    // isShowing () {
+    //     return this.model.isShowing && this.model.layerModel.isShowing;
+    // }
 
     getEyeballClass () {
-        const iconClass = this.model.isShowing ? 'fa-eye' : 'fa-eye-slash';
+        // console.log(this.model.layerModel.isShowing);
+        const iconClass = this.model.getIsShowing() ? 'fa-eye' : 'fa-eye-slash';
         return `fa show-symbol ${iconClass}`;
     }
 

@@ -267,7 +267,7 @@ class MarkerView {
             this.shape.model = this.model;
             this.model.shape = this.shape;
             this.shape.bindPopup(this.getPopupHTML())
-            if (this.model.symbolModel.isShowing) {
+            if (this.model.symbolModel.getIsShowing()) {
                 this.shape.addTo(this.map);
             }
         }

@@ -47,11 +47,18 @@ class LayerSerializerPublic(BaseSerializer):
 
     
     def get_isShowing(self, obj):
-        isShowing = 0
-        for s in obj.symbols:
-            symbol = models.Symbol(layer=obj, **s)
-            isShowing += symbol.isShowing
-        return isShowing
+        try:
+            try:
+                return obj.metadata.get('isShowing')
+            except:
+                print('Dictionary stored as unicode instead of as a dictionary. This is a bug.')
+                import json
+                metadata = json.loads(obj.metadata)
+                return metadata.get('isShowing')
+        except:
+            print('error parsing...default to True')
+            return True
+        
 
     def get_display_field(self, obj):
         return obj.display_field.col_name

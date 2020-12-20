@@ -4,12 +4,16 @@ const ModelMixins = {
     //  b) observers array needs to be initialized in the constructor
     
     notifyAll: function () {
+        // all views which are listening to the model will 
+        // invoke their "update function" when notified that
+        // the model has changed:
         for (const observer of this.observers) {
             observer.update(this);
         }
     },
 
     registerObserver: function (observer)  {
+        // how a view attaches its gaze to a particular model
         this.observers.push(observer);
     }
 }
@@ -167,6 +171,10 @@ class SymbolModel {
             record.notifyAll();
         }
         this.notifyAll();
+    }
+
+    getIsShowing () {
+        return this.isShowing && this.layerModel.isShowing;
     }
 
     getIcon () {
