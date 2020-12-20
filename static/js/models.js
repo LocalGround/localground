@@ -209,6 +209,9 @@ class RecordModel {
     }
 
     getCoordinates() {
+        if (!this.hasGeometry()) {
+            return;
+        }
         if (this.isPoint()) {
             return [
                 this.geometry.coordinates[1],
@@ -231,16 +234,20 @@ class RecordModel {
         return this.symbolModel.getIcon();
     }
 
+    hasGeometry() {
+        return this.geometry != null;
+    }
+
     isPoint () {
-        return this.geometry.type === 'Point';
+        return this.geometry ? this.geometry.type === 'Point' : false;
     }
 
     isPolyline() {
-        return this.geometry.type === 'LineString';
+        return this.geometry ? this.geometry.type === 'LineString' : false;
     }
 
     isPolygon () {
-        return this.geometry.type === 'Polygon';
+        return this.geometry ? this.geometry.type === 'Polygon' : false;
     }
     isShowing () {
         return this.symbolModel.isShowing;

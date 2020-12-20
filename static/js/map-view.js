@@ -201,7 +201,9 @@ class SymbolMarkerView {
         this.model = symbolModel;
 
         for (const recordModel of this.model.records) {
-            new MarkerView(this.map, recordModel);
+            if (recordModel.hasGeometry()) {
+                new MarkerView(this.map, recordModel);
+            }
         }
     }
 
