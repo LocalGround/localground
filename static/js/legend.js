@@ -86,7 +86,7 @@ class LayerItemView {
         const layer = this.model;
         const checked = layer.isShowing ? 'checked' : '';
         return this.createElementFromHTML(`
-            <div>
+            <div id="legend_layer_${layer.id}">
                 <div class="layer-header">
                     <input type="checkbox" data-layer-id="${layer.id}" ${checked} />
                     <i class="fa collapse fa-angle-right"></i>
@@ -129,8 +129,9 @@ class LayerItemView {
     }
 
     addEventHandlers () {
-        this.attachListener('.legend .collapse, .legend .layer-title', 'click', this.toggleSymbolDetail.bind(this));
-        this.attachListener('.legend .layer-header input', 'change', this.toggleLayerVisibility.bind(this));
+        const scopingID = '#legend_layer_' + this.model.id;
+        this.attachListener(scopingID + ' .collapse, ' +  scopingID + ' .layer-title', 'click', this.toggleSymbolDetail.bind(this));
+        this.attachListener(scopingID + ' .layer-header input', 'change', this.toggleLayerVisibility.bind(this));
     }
 }
 
