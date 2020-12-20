@@ -5,8 +5,6 @@ class MapView {
     constructor (model) {
         Object.assign(this, mixins);
         this.model = model;
-        console.log(this.model.getRecords());
-
         this.applyMobileLayoutHack();
         this.drawMap();
         this.renderData();
@@ -46,14 +44,12 @@ class MapView {
         if (this.selectedRecord) {
             this.selectedRecord.setIsActive(false);
         }
-        console.log(ev, 'setActiveRecord');
-        this.selectedShape = ev.detail.shape;
         this.selectedRecord = ev.detail.recordModel;
         this.selectedRecord.setIsActive(true);
-        const latLng = this.selectedShape.getLatLng();
+        const shape = this.selectedRecord.shape;
         setTimeout((() => { 
             this.map.invalidateSize()
-            this.map.setView(latLng); 
+            this.map.setView(shape.getLatLng()); 
         }).bind(this), 10);
 
         // Card right-hand side:
@@ -65,10 +61,7 @@ class MapView {
         // Trigger popup:
         if (ev.detail.triggerPopup) {
             setTimeout((() => {
-                L.popup()
-                .setLatLng(latLng)
-                .setContent(this.selectedRecord.display_value)
-                .openOn(this.map)
+                shape.openPopup();
             }).bind(this), 10);
         }
     };
@@ -152,15 +145,7 @@ class MapView {
 
         // Add marker clustering control: 
         this.oms = new OverlappingMarkerSpiderfier(this.map);
-        this.oms.addListener('click', (shape => {
-            const data = {
-                shape: shape,
-                recordModel: shape.model,
-                triggerPopup: false
-            };
-            console.log(data)
-            this.broadcastEvent('set-active-record', document, data);
-        }).bind(this));
+        this.oms.addListener('click', this.clickEventHandler.bind(this));
         
         // hide popup if it's a spiderify click:
         this.oms.addListener('spiderfy', (() => {
@@ -171,6 +156,15 @@ class MapView {
         // var imageUrl = 'http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg',
         // imageBounds = [[40.712216, -74.22655], [40.773941, -74.12544]];
         // L.imageOverlay(imageUrl, imageBounds).addTo(this.map);
+    }
+
+    clickEventHandler (shape) {
+        const data = {
+            shape: shape,
+            recordModel: shape.model,
+            triggerPopup: false
+        };
+        this.broadcastEvent('set-active-record', document, data);
     }
 
     renderData () {
@@ -210,7 +204,9 @@ class SymbolMarkerView {
 }
 
 class MarkerView {
+
     constructor (map, recordModel) {
+        Object.assign(this, mixins);
         this.map = map;
         this.oms = this.map.oms;
         this.model = recordModel;
@@ -224,30 +220,40 @@ class MarkerView {
             icon: this.model.getIcon()
         });
     }
+    clickEventHandler () {
+        const data = {
+            shape: this.shape,
+            recordModel: this.model,
+            triggerPopup: false
+        };
+        this.broadcastEvent('set-active-record', document, data);
+    }
 
     renderPolyline () {
-        console.log('Model:', this.model);
         this.shape = L.polyline(this.model.getCoordinates(), {
             color: this.model.symbolModel.fillColor
         });
         // this is a hack so that the spiderify library works clustering works
         // which requires that the getLatLng method exists:
         this.shape.getLatLng = this.shape.getCenter;
+        this.shape.on('click', this.clickEventHandler.bind(this));
     }
 
     renderPolygon () {
-        console.log('render polygon:', this.model.getCoordinates());
         this.shape = L.polygon(this.model.getCoordinates(), {
             color: this.model.symbolModel.fillColor
         });
         // this is a hack so that the spiderify library works clustering works
         // which requires that the getLatLng method exists:
         this.shape.getLatLng = this.shape.getCenter;
+        this.shape.on('click', this.clickEventHandler.bind(this));
     }
 
     renderShape () {
         if (this.model.isPoint()) {
             this.renderPoint();
+            //only add points to Spiderify (no polylines or polygons)
+            this.oms.addMarker(this.shape);
         } else if (this.model.isPolyline()) {
             this.renderPolyline();
         } else if (this.model.isPolygon()) {
@@ -259,16 +265,15 @@ class MarkerView {
         // once symbol has been set, add to map; add event handlers:
         if (this.shape) {
             this.shape.model = this.model;
+            this.model.shape = this.shape;
             this.shape.bindPopup(this.getPopupHTML())
             if (this.model.symbolModel.isShowing) {
                 this.shape.addTo(this.map);
             }
-            this.oms.addMarker(this.shape);
         }
     }
 
     update () {
-        // console.log('Updating Record:', this.model.id);
         if (!this.shape) { return; }
         if (!this.model.isShowing()) {
             this.map.removeLayer(this.shape);

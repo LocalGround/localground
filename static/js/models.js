@@ -191,7 +191,6 @@ class RecordModel {
 
         this.symbolModel = opts.symbolModel;
         this.dataset = opts.datasetJSON;
-        console.log(this.geometry);
     }
 
     applyTitleCardCrosswalk () {
