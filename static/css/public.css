@@ -280,6 +280,7 @@ h2 {
 
 .card {
   margin-bottom: 30px;
+  word-break: break-all;
 }
 
 .card > div {
